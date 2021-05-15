@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,6 +50,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -193,7 +193,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     return tab_helper_->srp_metrics().predicted_urls_count_;
   }
 
-  base::Optional<base::TimeDelta> navigation_to_prefetch_start() const {
+  absl::optional<base::TimeDelta> navigation_to_prefetch_start() const {
     return tab_helper_->srp_metrics().navigation_to_prefetch_start_;
   }
 
@@ -206,7 +206,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     return tab_helper_->after_srp_metrics()->prefetch_eligible_count_;
   }
 
-  base::Optional<size_t> after_srp_clicked_link_srp_position() const {
+  absl::optional<size_t> after_srp_clicked_link_srp_position() const {
     DCHECK(tab_helper_->after_srp_metrics());
     return tab_helper_->after_srp_metrics()->clicked_link_srp_position_;
   }
@@ -335,7 +335,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
     std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), base::nullopt /* server_time */));
+        url, value, base::Time::Now(), absl::nullopt /* server_time */));
     EXPECT_TRUE(cc.get());
 
     net::CookieOptions options;
@@ -589,7 +589,7 @@ TEST_F(PrefetchProxyTabHelperTest, HTTPSPredictionsOnly) {
       prediction_url,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -624,7 +624,7 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchGoogleLinks) {
       prediction_url,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -659,7 +659,7 @@ TEST_F(PrefetchProxyTabHelperTest, DontFetchIPAddresses) {
       prediction_url,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleHostIsIPAddress);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -750,7 +750,7 @@ TEST_F(PrefetchProxyTabHelperTest, NoCookies) {
       prediction_url,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -789,7 +789,7 @@ TEST_F(PrefetchProxyTabHelperTest, 2XXOnly) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNon2XX);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -829,7 +829,7 @@ TEST_F(PrefetchProxyTabHelperTest, NetErrorOKOnly) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNetError);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -869,7 +869,7 @@ TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNotHTML);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -948,7 +948,7 @@ TEST_F(PrefetchProxyTabHelperTest, IgnoreSameDocNavigations) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -999,7 +999,7 @@ TEST_F(PrefetchProxyTabHelperTest, SuccessCase) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1039,7 +1039,7 @@ TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
       GURL("https://wasnt-on-srp.com"),
       PrefetchProxyPrefetchStatus::kNavigatedToLinkNotOnSRP);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::nullopt, after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::nullopt, after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1120,7 +1120,7 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByCmdLine) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url_1, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 3U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1239,7 +1239,7 @@ TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerRegistered) {
       prediction_url,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 TEST_F(PrefetchProxyTabHelperTest, ServiceWorkerNotRegistered) {
@@ -1309,7 +1309,7 @@ TEST_F(PrefetchProxyTabHelperWithDecoyTest, Cookies) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -1351,7 +1351,7 @@ TEST_F(PrefetchProxyTabHelperWithDecoyTest, ServiceWorkerRegistered) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -1402,7 +1402,7 @@ TEST_F(PrefetchProxyTabHelperBodyLimitTest, ResponseBodyLimit) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchFailedNetError);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1441,7 +1441,7 @@ TEST_F(PrefetchProxyTabHelperPredictionPositionsTest,
   NavigateAndVerifyPrefetchStatus(
       eligible_url, PrefetchProxyPrefetchStatus::kPrefetchPositionIneligible);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(1), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(1), after_srp_clicked_link_srp_position());
 }
 
 class PrefetchProxyTabHelperNoPrefetchesTest
@@ -1484,7 +1484,7 @@ TEST_F(PrefetchProxyTabHelperNoPrefetchesTest, LimitedNumberOfPrefetches_Zero) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchNotStarted);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -1553,7 +1553,7 @@ TEST_F(PrefetchProxyTabHelperUnlimitedPrefetchesTest,
   NavigateAndVerifyPrefetchStatus(
       prediction_url_3, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 3U);
-  EXPECT_EQ(base::Optional<size_t>(2), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(2), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1613,7 +1613,7 @@ TEST_F(PrefetchProxyTabHelperConcurrentPrefetchesTest, ConcurrentPrefetches) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url_2, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 2U);
-  EXPECT_EQ(base::Optional<size_t>(1), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(1), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
@@ -1816,7 +1816,7 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest, ServiceWorkerRegistered) {
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -1856,7 +1856,7 @@ TEST_F(PrefetchProxyTabHelperRedirectWithDecoyTest,
   NavigateAndVerifyPrefetchStatus(
       prediction_url, PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 0U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0);
@@ -1890,7 +1890,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Cookies) {
       site_with_cookies,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Insecure) {
@@ -1910,7 +1910,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Insecure) {
   NavigateAndVerifyPrefetchStatus(
       url, PrefetchProxyPrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Insecure_Continued) {
@@ -1946,7 +1946,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Insecure_Continued) {
             tab_helper()->after_srp_metrics()->prefetch_status_.value());
 
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Google) {
@@ -1966,7 +1966,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_Google) {
   NavigateAndVerifyPrefetchStatus(
       url, PrefetchProxyPrefetchStatus::kPrefetchNotEligibleGoogleDomain);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_ServiceWorker) {
@@ -1990,7 +1990,7 @@ TEST_F(PrefetchProxyTabHelperRedirectTest, NoRedirect_ServiceWorker) {
       site_with_worker,
       PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 1U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 }
 
 class PrefetchProxyTabHelperRedirectUnlimitedPrefetchesTest
@@ -2050,7 +2050,7 @@ TEST_F(PrefetchProxyTabHelperRedirectUnlimitedPrefetchesTest,
   NavigateAndVerifyPrefetchStatus(
       redirect_url, PrefetchProxyPrefetchStatus::kPrefetchSuccessful);
   EXPECT_EQ(after_srp_prefetch_eligible_count(), 2U);
-  EXPECT_EQ(base::Optional<size_t>(0), after_srp_clicked_link_srp_position());
+  EXPECT_EQ(absl::optional<size_t>(0), after_srp_clicked_link_srp_position());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 1, 1);

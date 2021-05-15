@@ -24,7 +24,6 @@
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -51,6 +50,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -343,7 +343,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
         .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
     };
     for (int i = 0; i < num_pages; ++i) {
-      base::Optional<gfx::SizeF> size_in_points =
+      absl::optional<gfx::SizeF> size_in_points =
           chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
       ASSERT_TRUE(size_in_points.has_value());
 

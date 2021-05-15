@@ -182,8 +182,8 @@ class PrintServersProviderImpl : public PrintServersProvider {
     }
   }
 
-  base::Optional<std::vector<PrintServer>> GetPrintServers() override {
-    return IsCompleted() ? base::make_optional(result_servers_) : base::nullopt;
+  absl::optional<std::vector<PrintServer>> GetPrintServers() override {
+    return IsCompleted() ? absl::make_optional(result_servers_) : absl::nullopt;
   }
 
   void AddObserver(PrintServersProvider::Observer* observer) override {
@@ -242,7 +242,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
 
   // Called when a new allowlist is available.
   void UpdateAllowlist() {
-    allowlist_ = base::nullopt;
+    allowlist_ = absl::nullopt;
     // Fetch and parse the allowlist.
     const PrefService::Preference* pref =
         prefs_->FindPreference(allowlist_pref_);
@@ -319,7 +319,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // The current input list of servers.
   std::vector<PrintServer> servers_;
   // The current allowlist.
-  base::Optional<std::set<std::string>> allowlist_ = base::nullopt;
+  absl::optional<std::set<std::string>> allowlist_ = absl::nullopt;
   // The current resultant list of servers.
   std::vector<PrintServer> result_servers_;
 

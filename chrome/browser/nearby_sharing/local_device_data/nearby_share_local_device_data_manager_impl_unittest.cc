@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
@@ -23,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -40,8 +40,8 @@ const char kFakeTooLongTruncatedDeviceName[] =
     "this is a 33-...'s Chrome device";
 
 nearbyshare::proto::UpdateDeviceResponse CreateResponse(
-    const base::Optional<std::string>& full_name,
-    const base::Optional<std::string>& icon_url) {
+    const absl::optional<std::string>& full_name,
+    const absl::optional<std::string>& icon_url) {
   nearbyshare::proto::UpdateDeviceResponse response;
   if (full_name)
     response.set_person_name(*full_name);
@@ -132,7 +132,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void DownloadDeviceData(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
           response) {
     manager_->DownloadDeviceData();
 
@@ -154,12 +154,12 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadContacts(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
           response) {
-    base::Optional<bool> returned_success;
+    absl::optional<bool> returned_success;
     manager_->UploadContacts(
         GetFakeContacts(),
-        base::BindOnce([](base::Optional<bool>* returned_success,
+        base::BindOnce([](absl::optional<bool>* returned_success,
                           bool success) { *returned_success = success; },
                        &returned_success));
 
@@ -181,12 +181,12 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   void UploadCertificates(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
           response) {
-    base::Optional<bool> returned_success;
+    absl::optional<bool> returned_success;
     manager_->UploadCertificates(
         GetFakeCertificates(),
-        base::BindOnce([](base::Optional<bool>* returned_success,
+        base::BindOnce([](absl::optional<bool>* returned_success,
                           bool success) { *returned_success = success; },
                        &returned_success));
 
@@ -276,7 +276,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
   CreateManager();
 
   // If given name is null, only return the device type.
-  profile_info_provider()->set_given_name(base::nullopt);
+  profile_info_provider()->set_given_name(absl::nullopt);
   EXPECT_EQ(base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             manager()->GetDeviceName());
 
@@ -374,11 +374,11 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DownloadDeviceData_Success) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DownloadDeviceData_Failure) {
   CreateManager();
-  DownloadDeviceData(/*response=*/base::nullopt);
+  DownloadDeviceData(/*response=*/absl::nullopt);
 
   // No full name or icon URL set because response was null.
-  EXPECT_EQ(base::nullopt, manager()->GetFullName());
-  EXPECT_EQ(base::nullopt, manager()->GetIconUrl());
+  EXPECT_EQ(absl::nullopt, manager()->GetFullName());
+  EXPECT_EQ(absl::nullopt, manager()->GetIconUrl());
   EXPECT_TRUE(notifications().empty());
 }
 
@@ -399,11 +399,11 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadContacts_Success) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadContacts_Failure) {
   CreateManager();
-  UploadContacts(/*response=*/base::nullopt);
+  UploadContacts(/*response=*/absl::nullopt);
 
   // No full name or icon URL set because response was null.
-  EXPECT_EQ(base::nullopt, manager()->GetFullName());
-  EXPECT_EQ(base::nullopt, manager()->GetIconUrl());
+  EXPECT_EQ(absl::nullopt, manager()->GetFullName());
+  EXPECT_EQ(absl::nullopt, manager()->GetIconUrl());
   EXPECT_TRUE(notifications().empty());
 }
 
@@ -424,10 +424,10 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadCertificates_Success) {
 
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, UploadCertificates_Failure) {
   CreateManager();
-  UploadCertificates(/*response=*/base::nullopt);
+  UploadCertificates(/*response=*/absl::nullopt);
 
   // No full name or icon URL set because response was null.
-  EXPECT_EQ(base::nullopt, manager()->GetFullName());
-  EXPECT_EQ(base::nullopt, manager()->GetIconUrl());
+  EXPECT_EQ(absl::nullopt, manager()->GetFullName());
+  EXPECT_EQ(absl::nullopt, manager()->GetIconUrl());
   EXPECT_TRUE(notifications().empty());
 }

@@ -93,7 +93,7 @@ void CaptionBubbleControllerViews::OnAudioStreamEnd(
 }
 
 void CaptionBubbleControllerViews::UpdateCaptionStyle(
-    base::Optional<ui::CaptionStyle> caption_style) {
+    absl::optional<ui::CaptionStyle> caption_style) {
   caption_bubble_->UpdateCaptionStyle(caption_style);
 }
 
@@ -105,7 +105,7 @@ void CaptionBubbleControllerViews::SetActiveModel(
         web_contents ? views::Widget::GetTopLevelWidgetForNativeView(
                            web_contents->GetNativeView())
                      : nullptr;
-    base::Optional<gfx::Rect> context_bounds = base::nullopt;
+    absl::optional<gfx::Rect> context_bounds = absl::nullopt;
     if (context_widget)
       context_bounds = context_widget->GetClientAreaBoundsInScreen();
     caption_bubble_models_.emplace(

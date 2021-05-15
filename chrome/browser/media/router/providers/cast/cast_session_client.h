@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
@@ -33,7 +33,7 @@ class CastSessionClient {
   virtual ~CastSessionClient();
 
   const std::string& client_id() const { return client_id_; }
-  const base::Optional<std::string>& session_id() const { return session_id_; }
+  const absl::optional<std::string>& session_id() const { return session_id_; }
   const url::Origin& origin() const { return origin_; }
   int tab_id() const { return tab_id_; }
 
@@ -51,7 +51,7 @@ class CastSessionClient {
   // is used to look up the sequence number of a previous request, which is
   // included in the outgoing message.
   virtual void SendMediaStatusToClient(const base::Value& media_status,
-                                       base::Optional<int> request_id) = 0;
+                                       absl::optional<int> request_id) = 0;
 
   // Changes the PresentationConnection state to CLOSED/TERMINATED and resets
   // PresentationConnection message pipes.
@@ -76,7 +76,7 @@ class CastSessionClient {
   virtual void SendErrorCodeToClient(
       int sequence_number,
       CastInternalMessage::ErrorCode error_code,
-      base::Optional<std::string> description) = 0;
+      absl::optional<std::string> description) = 0;
 
   // NOTE: This is current only called from SendErrorCodeToClient, but based on
   // the old code this method based on, it seems likely it will have other
@@ -85,7 +85,7 @@ class CastSessionClient {
 
  private:
   std::string client_id_;
-  base::Optional<std::string> session_id_;
+  absl::optional<std::string> session_id_;
 
   // The origin and tab ID parameters originally passed to the CreateRoute
   // method of the MediaRouteProvider Mojo interface.

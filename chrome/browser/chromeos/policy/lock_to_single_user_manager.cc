@@ -150,7 +150,7 @@ void LockToSingleUserManager::LockToSingleUser() {
 }
 
 void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
-    base::Optional<RebootOnSignOutReply> reply) {
+    absl::optional<RebootOnSignOutReply> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "Signing out user: no reply from "
                   "LockToSingleUserMountUntilReboot D-Bus call.";

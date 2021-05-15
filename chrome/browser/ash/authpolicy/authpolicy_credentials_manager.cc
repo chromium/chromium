@@ -203,7 +203,7 @@ void AuthPolicyCredentialsManager::GetUserKerberosFiles() {
 void AuthPolicyCredentialsManager::OnGetUserKerberosFilesCallback(
     authpolicy::ErrorType error,
     const authpolicy::KerberosFiles& kerberos_files) {
-  auto nullstr = base::Optional<std::string>();
+  auto nullstr = absl::optional<std::string>();
   kerberos_files_handler_.SetFiles(
       kerberos_files.has_krb5cc() ? kerberos_files.krb5cc() : nullstr,
       kerberos_files.has_krb5conf() ? kerberos_files.krb5conf() : nullstr);
@@ -274,7 +274,7 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
 
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](base::Optional<int> button_index) {
+          base::BindRepeating([](absl::optional<int> button_index) {
             chrome::AttemptUserExit();
           }));
 

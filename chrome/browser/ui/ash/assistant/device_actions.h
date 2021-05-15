@@ -45,7 +45,7 @@ class DeviceActions : public ash::AndroidIntentHelper,
       chromeos::assistant::AppListEventSubscriber* subscriber) override;
 
   // ash::AndroidIntentHelper overrides:
-  base::Optional<std::string> GetAndroidAppLaunchIntent(
+  absl::optional<std::string> GetAndroidAppLaunchIntent(
       const chromeos::assistant::AndroidAppInfo& app_info) override;
 
  private:

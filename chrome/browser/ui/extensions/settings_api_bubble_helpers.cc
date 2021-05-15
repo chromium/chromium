@@ -143,7 +143,7 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!browser)
     return;
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(browser->profile());
   if (!params)
     return;
@@ -191,7 +191,7 @@ void MaybeShowExtensionControlledNewTabPage(
   if (model->has_active_bubble())
     return;
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);
   if (!params)
     return;

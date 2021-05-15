@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -37,6 +36,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "base/test/metrics/histogram_tester.h"
@@ -140,8 +140,8 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
   ScopedTestDialogAutoConfirm auto_confirm(
       accept_dialog ? ScopedTestDialogAutoConfirm::ACCEPT
                     : ScopedTestDialogAutoConfirm::CANCEL);
-  base::Optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
-      base::nullopt;
+  absl::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
+      absl::nullopt;
   if (use_user_gesture)
     gesture.emplace();
   scoped_refptr<ManagementSetEnabledFunction> function =

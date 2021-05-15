@@ -457,12 +457,12 @@ void SmbService::MountInternal(
     if (info.use_kerberos()) {
       if (user->IsActiveDirectoryUser()) {
         smbfs_options.kerberos_options =
-            base::make_optional<SmbFsShare::KerberosOptions>(
+            absl::make_optional<SmbFsShare::KerberosOptions>(
                 SmbFsShare::KerberosOptions::Source::kActiveDirectory,
                 user->GetAccountId().GetObjGuid());
       } else if (smb_credentials_updater_) {
         smbfs_options.kerberos_options =
-            base::make_optional<SmbFsShare::KerberosOptions>(
+            absl::make_optional<SmbFsShare::KerberosOptions>(
                 SmbFsShare::KerberosOptions::Source::kKerberos,
                 smb_credentials_updater_->active_account_name());
       } else {
@@ -664,7 +664,7 @@ void SmbService::Remount(const ProvidedFileSystemInfo& file_system_info) {
 
     ParseUserPrincipalName(user->GetDisplayEmail(), &username, &workgroup);
   } else {
-    base::Optional<std::string> user_workgroup =
+    absl::optional<std::string> user_workgroup =
         GetUserFromFileSystemId(file_system_info.file_system_id());
     if (user_workgroup &&
         !ParseUserName(*user_workgroup, &username, &workgroup)) {

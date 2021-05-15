@@ -61,7 +61,7 @@ class LoadingStatsCollector {
   // All results are reported to UMA and UKM.
   void RecordPageRequestSummary(
       const PageRequestSummary& summary,
-      const base::Optional<OptimizationGuidePrediction>&
+      const absl::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction);
   // Evicts all stale stats that are kept in memory. All speculative actions are
   // reported and considered as waste.

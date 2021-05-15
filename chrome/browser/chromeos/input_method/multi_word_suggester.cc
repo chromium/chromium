@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/input_method/multi_word_suggester.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
@@ -16,16 +16,16 @@ namespace {
 using TextSuggestion = ::chromeos::ime::TextSuggestion;
 using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
 
-base::Optional<TextSuggestion> GetMultiWordSuggestion(
+absl::optional<TextSuggestion> GetMultiWordSuggestion(
     const std::vector<TextSuggestion>& suggestions) {
   if (suggestions.empty())
-    return base::nullopt;
+    return absl::nullopt;
   if (suggestions[0].type == TextSuggestionType::kMultiWord) {
     // There should only ever be one multi word suggestion given at a time.
     DCHECK_EQ(suggestions.size(), 1);
     return suggestions[0];
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

@@ -332,7 +332,7 @@ void ArcAppReinstallSearchProvider::OnGetAppReinstallCandidates(
 
   for (const auto& candidate : results) {
     // only keep candidates with icons.
-    if (candidate->icon_url != base::nullopt) {
+    if (candidate->icon_url != absl::nullopt) {
       loaded_value_.push_back(candidate.Clone());
     }
   }

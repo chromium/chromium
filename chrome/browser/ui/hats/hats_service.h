@@ -14,10 +14,10 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -63,8 +63,8 @@ class HatsService : public KeyedService {
     SurveyConfig(
         const base::Feature* feature,
         const std::string& trigger,
-        const base::Optional<std::string>& presupplied_trigger_id =
-            base::nullopt,
+        const absl::optional<std::string>& presupplied_trigger_id =
+            absl::nullopt,
         const std::vector<std::string>& product_specific_data_fields = {});
     SurveyConfig();
     SurveyConfig(const SurveyConfig&);
@@ -96,13 +96,13 @@ class HatsService : public KeyedService {
     ~SurveyMetadata();
 
     // Trigger specific metadata.
-    base::Optional<int> last_major_version;
-    base::Optional<base::Time> last_survey_started_time;
-    base::Optional<bool> is_survey_full;
-    base::Optional<base::Time> last_survey_check_time;
+    absl::optional<int> last_major_version;
+    absl::optional<base::Time> last_survey_started_time;
+    absl::optional<bool> is_survey_full;
+    absl::optional<base::Time> last_survey_check_time;
 
     // Metadata affecting all triggers.
-    base::Optional<base::Time> any_last_survey_started_time;
+    absl::optional<base::Time> any_last_survey_started_time;
   };
 
   class DelayedSurveyTask : public content::WebContentsObserver {

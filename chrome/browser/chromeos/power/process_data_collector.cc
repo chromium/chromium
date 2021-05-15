@@ -78,7 +78,7 @@ struct CpuUsageAndPowerAverage {
 using ProcCpuUsageAndPpid = std::pair<int64_t, pid_t>;
 
 // Returns ARC's init PID.
-base::Optional<pid_t> GetAndroidInitPid(
+absl::optional<pid_t> GetAndroidInitPid(
     const base::FilePath& android_pid_file) {
   // This function does I/O and must be done on a blocking thread.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -86,7 +86,7 @@ base::Optional<pid_t> GetAndroidInitPid(
 
   std::string android_pid_contents;
   if (!base::ReadFileToString(android_pid_file, &android_pid_contents))
-    return base::nullopt;
+    return absl::nullopt;
 
   // This file contains a single number which contains the PID of the Android
   // init PID.
@@ -94,60 +94,60 @@ base::Optional<pid_t> GetAndroidInitPid(
   base::TrimWhitespaceASCII(android_pid_contents, base::TRIM_ALL,
                             &android_pid_contents);
   if (!base::StringToInt(android_pid_contents, &android_pid))
-    return base::nullopt;
+    return absl::nullopt;
 
   return android_pid;
 }
 
 // Calculates the total CPU time used by a single process in jiffies and its
 // PPID.
-base::Optional<ProcCpuUsageAndPpid> ComputeProcCpuTimeJiffiesAndPpid(
+absl::optional<ProcCpuUsageAndPpid> ComputeProcCpuTimeJiffiesAndPpid(
     const base::FilePath& proc_stat_file) {
   // This function does I/O and must be done on a blocking thread.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::Optional<system::SingleProcStat> stat =
+  absl::optional<system::SingleProcStat> stat =
       system::GetSingleProcStat(proc_stat_file);
   if (!stat.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   return std::make_pair(stat.value().utime + stat.value().stime,
                         stat.value().ppid);
 }
 
 // Reads a process' name from |comm_file|, a file like "/proc/%u/comm".
-base::Optional<std::string> GetProcName(const base::FilePath& comm_file) {
+absl::optional<std::string> GetProcName(const base::FilePath& comm_file) {
   // This function does I/O and must be done on a blocking thread.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::string comm_contents;
   if (!base::ReadFileToString(comm_file, &comm_contents))
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TrimWhitespaceASCII(comm_contents, base::TRIM_ALL, &comm_contents);
 
-  return comm_contents.empty() ? base::nullopt
-                               : base::make_optional(comm_contents);
+  return comm_contents.empty() ? absl::nullopt
+                               : absl::make_optional(comm_contents);
 }
 
 // Reads a process's command line from |cmdline|, a path like
 // "/proc/%u/cmdline".
-base::Optional<std::string> GetProcCmdline(const base::FilePath& cmdline) {
+absl::optional<std::string> GetProcCmdline(const base::FilePath& cmdline) {
   // This function does I/O and must be done on a blocking thread.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::string cmdline_contents;
   if (!base::ReadFileToString(cmdline, &cmdline_contents))
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TrimWhitespaceASCII(cmdline_contents, base::TRIM_ALL,
                             &cmdline_contents);
 
-  return cmdline_contents.empty() ? base::nullopt
-                                  : base::make_optional(cmdline_contents);
+  return cmdline_contents.empty() ? absl::nullopt
+                                  : absl::make_optional(cmdline_contents);
 }
 
 // Finds all children of a root PID recursively and stores the results in
@@ -382,11 +382,11 @@ ProcessDataCollector::ProcessSampleMap ProcessDataCollector::GetValidProcesses(
 
     // Don't track if either the process name or cmdline are empty or
     // non-existent.
-    base::Optional<std::string> proc_name = GetProcName(
+    absl::optional<std::string> proc_name = GetProcName(
         base::FilePath(base::StringPrintf(config.proc_comm_fmt.c_str(), proc)));
     if (!proc_name)
       continue;
-    base::Optional<std::string> proc_cmdline = GetProcCmdline(base::FilePath(
+    absl::optional<std::string> proc_cmdline = GetProcCmdline(base::FilePath(
         base::StringPrintf(config.proc_cmdline_fmt.c_str(), proc)));
     if (!proc_cmdline)
       continue;
@@ -421,7 +421,7 @@ ProcessDataCollector::ProcessSampleMap ProcessDataCollector::ComputeSample(
   // later be calculated. Additionally, a PPID to PID map is constructed so that
   // different types of processes can be classified; this is needed to classify
   // ARC process for example.
-  base::Optional<int64_t> total_cpu_time =
+  absl::optional<int64_t> total_cpu_time =
       system::GetCpuTimeJiffies(config.total_cpu_time_path);
   // If this can't be read, then the average CPU usage over this interval can't
   // be calculated. Ignore these samples.
@@ -432,13 +432,13 @@ ProcessDataCollector::ProcessSampleMap ProcessDataCollector::ComputeSample(
     return curr_samples;
   }
 
-  base::Optional<int64_t> concierge_pid = base::nullopt;
+  absl::optional<int64_t> concierge_pid = absl::nullopt;
   std::unordered_map<pid_t, int64_t> pid_to_cpu_usage_before;
   std::unordered_set<uint64_t> chrome_pids;
   PpidToPidMap proc_ppid_to_pid;
 
   for (auto& sample : curr_samples) {
-    base::Optional<ProcCpuUsageAndPpid> proc_cpu_time_and_ppid =
+    absl::optional<ProcCpuUsageAndPpid> proc_cpu_time_and_ppid =
         ComputeProcCpuTimeJiffiesAndPpid(base::FilePath(
             base::StringPrintf(config.proc_stat_fmt.c_str(), sample.first)));
 
@@ -468,7 +468,7 @@ ProcessDataCollector::ProcessSampleMap ProcessDataCollector::ComputeSample(
   }
 
   std::unordered_set<pid_t> arc_pids;
-  base::Optional<pid_t> android_init_pid =
+  absl::optional<pid_t> android_init_pid =
       GetAndroidInitPid(config.android_init_pid_path);
   // Compute all processes associated with ARC.
   if (android_init_pid.has_value())

@@ -149,7 +149,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::ShowInterstitial(
           handle->IsSignedExchangeInnerResponse(), triggered_by_initial_url,
           std::move(controller)));
 
-  base::Optional<std::string> error_page_contents =
+  absl::optional<std::string> error_page_contents =
       blocking_page->GetHTMLContents();
 
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/media/android/cdm/per_device_provisioning_permission.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -80,7 +80,7 @@ void CreateOriginIdWithMediaDrmOriginIdManager(Profile* profile,
       MediaDrmOriginIdManagerFactory::GetForProfile(profile);
   if (!origin_id_manager) {
     ReportResultToUma(GetOriginIdResult::kFailureWithNoFactory);
-    std::move(callback).Run(false, base::nullopt);
+    std::move(callback).Run(false, absl::nullopt);
     return;
   }
 

@@ -14,11 +14,11 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -30,7 +30,7 @@ DeviceLocalAccountExternalDataService::DeviceLocalAccountExternalDataService(
       chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA);
   resource_cache_ =
       std::make_unique<ResourceCache>(cache_dir, backend_task_runner_,
-                                      /* max_cache_size */ base::nullopt);
+                                      /* max_cache_size */ absl::nullopt);
   parent_->AddObserver(this);
 }
 

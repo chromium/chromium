@@ -691,7 +691,7 @@ void PasswordSaveUpdateWithAccountStoreView::MaybeShowIPH(IPHType type) {
       // If the regular promo was shown, the failed reauth promo is
       // definitely finished. If not, we can't be confident it hasn't
       // finished.
-      failed_reauth_promo_id_ = base::nullopt;
+      failed_reauth_promo_id_ = absl::nullopt;
     }
   } else {
     bubble_params.body_string_specifier =
@@ -720,7 +720,7 @@ void PasswordSaveUpdateWithAccountStoreView::CloseIPHBubbleIfOpen() {
   // IDs, and we reset ours when showing a normal IPH bubble.
   promo_controller_->CloseBubbleForCriticalPromo(
       failed_reauth_promo_id_.value());
-  failed_reauth_promo_id_ = base::nullopt;
+  failed_reauth_promo_id_ = absl::nullopt;
 }
 
 void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {

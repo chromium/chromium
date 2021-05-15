@@ -45,7 +45,7 @@ class BackgroundBorderAdderImageSource : public gfx::CanvasImageSource {
  public:
   BackgroundBorderAdderImageSource(const gfx::ImageSkia& image,
                                    bool add_background,
-                                   base::Optional<SkColor> background_color,
+                                   absl::optional<SkColor> background_color,
                                    SkColor border_color,
                                    int radius)
       : gfx::CanvasImageSource(gfx::Size(radius, radius)),
@@ -60,7 +60,7 @@ class BackgroundBorderAdderImageSource : public gfx::CanvasImageSource {
  private:
   const gfx::ImageSkia image_;
   const bool add_background_;
-  const base::Optional<SkColor> background_color_;
+  const absl::optional<SkColor> background_color_;
   const SkColor border_color_;
 };
 
@@ -114,8 +114,8 @@ class ImageWithBadge : public views::ImageView {
   void Render();
 
   const gfx::VectorIcon* main_vector_icon_ = nullptr;
-  base::Optional<gfx::ImageSkia> main_image_skia_;
-  base::Optional<gfx::ImageSkia> badge_image_skia_;
+  absl::optional<gfx::ImageSkia> main_image_skia_;
+  absl::optional<gfx::ImageSkia> badge_image_skia_;
 };
 
 ImageWithBadge::ImageWithBadge(const gfx::ImageSkia& main_image)
@@ -175,7 +175,7 @@ void ImageWithBadge::Render() {
   gfx::ImageSkia main_image_with_border =
       gfx::CanvasImageSource::MakeImageSkia<BackgroundBorderAdderImageSource>(
           GetMainImage(), /*add_background=*/false,
-          /*background_color=*/base::nullopt, kBorderColor, kImageSize);
+          /*background_color=*/absl::nullopt, kBorderColor, kImageSize);
 
   gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
       main_image_with_border, rounded_badge_with_background_and_border);

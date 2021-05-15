@@ -16,11 +16,11 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/browser_process.h"
@@ -207,7 +207,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     if (base::FeatureList::IsEnabled(
             chromeos::features::kHelpAppLauncherSearch)) {
       infos.at(SystemAppType::HELP).timer_info = SystemAppBackgroundTaskInfo(
-          base::nullopt, GURL("chrome://help-app/background"),
+          absl::nullopt, GURL("chrome://help-app/background"),
           /*open_immediately=*/true);
     }
   }
@@ -597,27 +597,27 @@ SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
   return system_app_infos_;
 }
 
-base::Optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
+absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemAppType id) const {
   auto app_url_it = system_app_infos_.find(id);
 
   if (app_url_it == system_app_infos_.end())
-    return base::Optional<AppId>();
+    return absl::optional<AppId>();
 
   return registrar_->LookupExternalAppId(app_url_it->second.install_url);
 }
 
-base::Optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
+absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     AppId app_id) const {
   WebAppRegistrar* web_registrar = registrar_->AsWebAppRegistrar();
 
   if (!web_registrar) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const WebApp* web_app = web_registrar->GetAppById(app_id);
   if (!web_app || !web_app->client_data().system_web_app_data.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // The registered system apps can change from previous runs (e.g. flipping a
@@ -632,13 +632,13 @@ base::Optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     return proto_type;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<AppId> SystemWebAppManager::GetAppIds() const {
   std::vector<AppId> app_ids;
   for (const auto& app_type_to_app_info : system_app_infos_) {
-    base::Optional<AppId> app_id =
+    absl::optional<AppId> app_id =
         GetAppIdForSystemApp(app_type_to_app_info.first);
     if (app_id.has_value()) {
       app_ids.push_back(app_id.value());
@@ -693,7 +693,7 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  const base::Optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id);
+  const absl::optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id);
   // This function should only be called when an navigation happens inside a
   // System App. So the |app_id| should always have a valid associated System
   // App type.
@@ -775,30 +775,30 @@ bool SystemWebAppManager::ShouldHaveTabStrip(SystemAppType type) const {
   return it->second.has_tab_strip;
 }
 
-base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
+absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AppId> app_id = registrar_->FindAppWithUrlInScope(url);
+  absl::optional<AppId> app_id = registrar_->FindAppWithUrlInScope(url);
   if (!app_id.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id.value());
+  absl::optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id.value());
   if (!type.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto it = system_app_infos_.find(type);
   if (it == system_app_infos_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!it->second.capture_navigations)
-    return base::nullopt;
+    return absl::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (type == SystemAppType::CAMERA &&
       url.spec() != chromeos::kChromeUICameraAppMainURL)
-    return base::nullopt;
+    return absl::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
@@ -816,7 +816,7 @@ gfx::Rect SystemWebAppManager::GetDefaultBounds(SystemAppType type,
 }
 
 gfx::Size SystemWebAppManager::GetMinimumWindowSize(const AppId& app_id) const {
-  base::Optional<SystemAppType> app_type = GetSystemAppTypeForAppId(app_id);
+  absl::optional<SystemAppType> app_type = GetSystemAppTypeForAppId(app_id);
 
   if (!app_type.has_value())
     return gfx::Size();
@@ -935,7 +935,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   // Web Apps, does not run when for apps installed in the background.
   for (const auto& it : system_app_infos_) {
     const SystemAppType& type = it.first;
-    base::Optional<AppId> app_id = GetAppIdForSystemApp(type);
+    absl::optional<AppId> app_id = GetAppIdForSystemApp(type);
     if (!app_id)
       continue;
 

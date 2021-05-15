@@ -396,7 +396,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     request.mutable_authorization_request();
     fake_userdataauth_client_->AddKey(
         request,
-        base::BindOnce([](base::Optional<::user_data_auth::AddKeyReply> reply) {
+        base::BindOnce([](absl::optional<::user_data_auth::AddKeyReply> reply) {
           ASSERT_TRUE(reply.has_value());
           EXPECT_EQ(
               reply->error(),

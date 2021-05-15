@@ -89,13 +89,13 @@ class PredictionModelDownloadManager {
   // |file_path| is successfully verified.
   //
   // Must be called on the background thread, as it performs file I/O.
-  base::Optional<std::pair<base::FilePath, base::FilePath>> ProcessDownload(
+  absl::optional<std::pair<base::FilePath, base::FilePath>> ProcessDownload(
       const base::FilePath& file_path);
 
   // Starts unzipping the contents of |unzip_paths|, if present. |unzip_paths|
   // is a pair of the form (src, dst), if present.
   void StartUnzipping(
-      const base::Optional<std::pair<base::FilePath, base::FilePath>>&
+      const absl::optional<std::pair<base::FilePath, base::FilePath>>&
           unzip_paths);
 
   // Invoked when the contents of |original_file_path| have been unzipped to
@@ -107,13 +107,13 @@ class PredictionModelDownloadManager {
   // Processes the contents in |unzipped_dir_path|.
   //
   // Must be called on the background thread, as it performs file I/O.
-  base::Optional<proto::PredictionModel> ProcessUnzippedContents(
+  absl::optional<proto::PredictionModel> ProcessUnzippedContents(
       const base::FilePath& unzipped_dir_path);
 
   // Notifies |observers_| that a model is ready.
   //
   // Must be invoked on the UI thread.
-  void NotifyModelReady(const base::Optional<proto::PredictionModel>& model);
+  void NotifyModelReady(const absl::optional<proto::PredictionModel>& model);
 
   // The set of GUIDs that are still pending download.
   std::set<std::string> pending_download_guids_;
@@ -124,7 +124,7 @@ class PredictionModelDownloadManager {
   download::DownloadService* download_service_;
 
   // The directory to store verified models in.
-  base::Optional<base::FilePath> models_dir_;
+  absl::optional<base::FilePath> models_dir_;
 
   // Whether the download service is available.
   bool is_available_for_downloads_;

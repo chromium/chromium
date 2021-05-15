@@ -23,12 +23,12 @@ void FakeNearbyShareScheduler::Reschedule() {
   ++num_reschedule_calls_;
 }
 
-base::Optional<base::Time> FakeNearbyShareScheduler::GetLastSuccessTime()
+absl::optional<base::Time> FakeNearbyShareScheduler::GetLastSuccessTime()
     const {
   return last_success_time_;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 FakeNearbyShareScheduler::GetTimeUntilNextRequest() const {
   return time_until_next_request_;
 }
@@ -55,12 +55,12 @@ void FakeNearbyShareScheduler::InvokeRequestCallback() {
 }
 
 void FakeNearbyShareScheduler::SetLastSuccessTime(
-    base::Optional<base::Time> time) {
+    absl::optional<base::Time> time) {
   last_success_time_ = time;
 }
 
 void FakeNearbyShareScheduler::SetTimeUntilNextRequest(
-    base::Optional<base::TimeDelta> time_delta) {
+    absl::optional<base::TimeDelta> time_delta) {
   time_until_next_request_ = time_delta;
 }
 

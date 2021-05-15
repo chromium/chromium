@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -76,7 +76,7 @@ class MockAccessibilityObserver {
 
   bool observed() const { return observed_; }
   bool observed_enabled() const { return observed_enabled_; }
-  base::Optional<AccessibilityNotificationType> observed_type() const {
+  absl::optional<AccessibilityNotificationType> observed_type() const {
     return observed_type_;
   }
 
@@ -95,7 +95,7 @@ class MockAccessibilityObserver {
 
   bool observed_ = false;
   bool observed_enabled_ = false;
-  base::Optional<AccessibilityNotificationType> observed_type_;
+  absl::optional<AccessibilityNotificationType> observed_type_;
 
   base::CallbackListSubscription accessibility_subscription_;
 

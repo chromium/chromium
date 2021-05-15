@@ -49,12 +49,12 @@ class SyncStorageBackend : public syncer::SyncableService {
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   void StopSyncing(syncer::ModelType type) override;

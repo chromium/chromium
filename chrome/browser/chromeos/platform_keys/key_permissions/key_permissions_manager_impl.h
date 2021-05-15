@@ -13,12 +13,12 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/arc_key_permissions_manager_delegate.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -73,7 +73,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     void UpdatePermissionsForKey(const std::string& public_key_spki_der);
     void UpdatePermissionsForKeyWithCorporateFlag(
         const std::string& public_key_spki_der,
-        base::Optional<bool> corporate_usage_allowed,
+        absl::optional<bool> corporate_usage_allowed,
         Status corporate_usage_retrieval_status);
     void OnKeyPermissionsUpdated(Status permissions_update_status);
 
@@ -174,13 +174,13 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   void OnKeyPermissionsRetrieved(
       IsKeyAllowedForUsageCallback callback,
-      const base::Optional<std::string>& attribute_value,
+      const absl::optional<std::string>& attribute_value,
       Status status);
 
   void IsKeyAllowedForUsageWithPermissions(
       IsKeyAllowedForUsageCallback callback,
       KeyUsage usage,
-      const base::Optional<std::string>& serialized_key_permissions,
+      const absl::optional<std::string>& serialized_key_permissions,
       Status key_attribute_retrieval_status);
 
   // Called when the token is ready and the one-time migration is done.

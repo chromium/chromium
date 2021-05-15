@@ -192,7 +192,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
 
-    base::Optional<base::Value> body_value =
+    absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
 
     base::Value request(base::Value::Type::DICTIONARY);

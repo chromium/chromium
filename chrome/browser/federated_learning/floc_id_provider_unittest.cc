@@ -45,7 +45,7 @@ class MockFlocSortingLshService : public FlocSortingLshClustersService {
  public:
   using FlocSortingLshClustersService::FlocSortingLshClustersService;
   using MappingFunction =
-      base::RepeatingCallback<base::Optional<uint64_t>(uint64_t)>;
+      base::RepeatingCallback<absl::optional<uint64_t>(uint64_t)>;
 
   // Configure the version and the mapping function and trigger the file-ready
   // event. If |mapping_function| is not provided, it will map any input
@@ -53,7 +53,7 @@ class MockFlocSortingLshService : public FlocSortingLshClustersService {
   void ConfigureSortingLsh(base::Version version,
                            MappingFunction mapping_function =
                                base::BindRepeating([](uint64_t sim_hash) {
-                                 return base::Optional<uint64_t>(sim_hash);
+                                 return absl::optional<uint64_t>(sim_hash);
                                })) {
     version_ = version;
     mapping_function_ = mapping_function;
@@ -173,7 +173,7 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
 // compute_time.
 class FlocIdTester {
  public:
-  static FlocId Create(base::Optional<uint64_t> id,
+  static FlocId Create(absl::optional<uint64_t> id,
                        base::Time history_begin_time,
                        base::Time history_end_time,
                        uint32_t finch_config_version,
@@ -234,7 +234,7 @@ class FlocIdProviderUnitTest : public testing::Test {
       base::Version version,
       MockFlocSortingLshService::MappingFunction mapping_function =
           base::BindRepeating([](uint64_t sim_hash) {
-            return base::Optional<uint64_t>(sim_hash);
+            return absl::optional<uint64_t>(sim_hash);
           })) {
     InitializeFlocIdProvider();
     sorting_lsh_service_->ConfigureSortingLsh(version, mapping_function);
@@ -845,7 +845,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(kTime3, kTime4),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/base::nullopt);
+      /*restrict_urls=*/absl::nullopt);
   OnURLsDeleted(history_service_.get(), deletion_info);
 
   EXPECT_EQ(expected_floc, floc_id());
@@ -868,7 +868,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(kTime2, kTime3),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/base::nullopt);
+      /*restrict_urls=*/absl::nullopt);
   OnURLsDeleted(history_service_.get(), deletion_info);
 
   EXPECT_FALSE(floc_id().IsValid());
@@ -890,7 +890,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(kTime1, kTime2),
       /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
-      /*restrict_urls=*/base::nullopt);
+      /*restrict_urls=*/absl::nullopt);
   OnURLsDeleted(history_service_.get(), deletion_info);
 
   EXPECT_FALSE(floc_id().IsValid());
@@ -1177,8 +1177,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, NonDefaultSortingLshMapping) {
   InitializeFlocIdProviderAndSortingLsh(
       base::Version("99.0.0"), base::BindRepeating([](uint64_t sim_hash) {
         if (sim_hash == FlocId::SimHashHistory({"foo.com"}))
-          return base::Optional<uint64_t>(2);
-        return base::Optional<uint64_t>();
+          return absl::optional<uint64_t>(2);
+        return absl::optional<uint64_t>();
       }));
 
   task_environment_.RunUntilIdle();
@@ -1195,7 +1195,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Block the sim-hash.
   InitializeFlocIdProviderAndSortingLsh(
       base::Version("999.0.0"), base::BindRepeating([](uint64_t sim_hash) {
-        return base::Optional<uint64_t>();
+        return absl::optional<uint64_t>();
       }));
 
   task_environment_.RunUntilIdle();
@@ -1222,7 +1222,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
   // Configure the |sorting_lsh_service_| to block any input sim-hash.
   sorting_lsh_service_->ConfigureSortingLsh(
       base::Version("3.4.5"), base::BindRepeating([](uint64_t sim_hash) {
-        return base::Optional<uint64_t>();
+        return absl::optional<uint64_t>();
       }));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
@@ -1242,8 +1242,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
   sorting_lsh_service_->ConfigureSortingLsh(
       base::Version("999.0"), base::BindRepeating([](uint64_t sim_hash) {
         if (sim_hash == FlocId::SimHashHistory({"foo.com"}))
-          return base::Optional<uint64_t>(6789);
-        return base::Optional<uint64_t>();
+          return absl::optional<uint64_t>(6789);
+        return absl::optional<uint64_t>();
       }));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
@@ -1374,7 +1374,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProvider();
 
   FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(base::nullopt, kTwentyDaysBeforeStart,
+      FlocIdTester::Create(absl::nullopt, kTwentyDaysBeforeStart,
                            kNineteenDaysBeforeStart, 1, 888, kLastComputeTime);
 
   // Initially the floc is invalidated as the last floc has expired, but other
@@ -1424,7 +1424,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProvider();
 
   FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(base::nullopt, kFourDaysBeforeStart,
+      FlocIdTester::Create(absl::nullopt, kFourDaysBeforeStart,
                            kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
 
   // Initially the floc is invalidated as the "presumed next computation delay"
@@ -1477,7 +1477,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProvider();
 
   FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(base::nullopt, kFourDaysBeforeStart,
+      FlocIdTester::Create(absl::nullopt, kFourDaysBeforeStart,
                            kThreeDaysBeforeStart, 0, 999, kLastComputeTime);
 
   // Initially the floc is invalidated as the version mismatches, but other

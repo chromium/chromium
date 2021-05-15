@@ -391,7 +391,7 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
   pref_manager_->SetActiveUser(account_id);
   user_pod_last_focused_timestamp_ = base::TimeTicks::Now();
   SetProximityAuthDevices(account_id_, multidevice::RemoteDeviceRefList(),
-                          base::nullopt /* local_device */);
+                          absl::nullopt /* local_device */);
   ResetScreenlockState();
 
   pref_manager_->SetActiveUser(account_id);
@@ -574,13 +574,13 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
 
   remote_device_cache_->SetRemoteDevices(remote_devices);
 
-  base::Optional<multidevice::RemoteDeviceRef> unlock_key_device =
+  absl::optional<multidevice::RemoteDeviceRef> unlock_key_device =
       remote_device_cache_->GetRemoteDevice(
-          base::nullopt /* instance_id */,
+          absl::nullopt /* instance_id */,
           unlock_key_id /* legacy_device_id */);
-  base::Optional<multidevice::RemoteDeviceRef> local_device =
+  absl::optional<multidevice::RemoteDeviceRef> local_device =
       remote_device_cache_->GetRemoteDevice(
-          base::nullopt /* instance_id */,
+          absl::nullopt /* instance_id */,
           local_device_id /* legacy_device_id */);
 
   // TODO(hansberry): It is possible that there may not be an unlock key by this

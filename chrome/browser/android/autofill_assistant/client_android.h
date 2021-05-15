@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/controller.h"
@@ -23,6 +22,7 @@
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -57,7 +57,7 @@ class ClientAndroid : public Client,
              std::unique_ptr<TriggerContext> trigger_context,
              std::unique_ptr<Service> test_service_to_inject,
              const base::android::JavaRef<jobject>& joverlay_coordinator,
-             const base::Optional<TriggerScriptProto>& trigger_script);
+             const absl::optional<TriggerScriptProto>& trigger_script);
   void OnJavaDestroyUI(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcaller);
   void TransferUITo(
@@ -104,7 +104,7 @@ class ClientAndroid : public Client,
   version_info::Channel GetChannel() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;
   std::string GetChromeSignedInEmailAddress() const override;
-  base::Optional<std::pair<int, int>> GetWindowSize() const override;
+  absl::optional<std::pair<int, int>> GetWindowSize() const override;
   ClientContextProto::ScreenOrientation GetScreenOrientation() const override;
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
@@ -130,7 +130,7 @@ class ClientAndroid : public Client,
 
   void CreateController(
       std::unique_ptr<Service> service,
-      const base::Optional<TriggerScriptProto>& trigger_script);
+      const absl::optional<TriggerScriptProto>& trigger_script);
   void DestroyController();
   void AttachUI(const base::android::JavaRef<jobject>& joverlay_coordinator);
   bool NeedsUI();

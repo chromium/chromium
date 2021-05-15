@@ -116,7 +116,7 @@ void DeleteStoragePartitionDataForTimeRange(
     content::StoragePartition* storage_partition,
     base::Time delete_begin,
     base::Time delete_end,
-    const base::Optional<std::set<GURL>>& urls) {
+    const absl::optional<std::set<GURL>>& urls) {
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder;
   if (urls) {
     filter_builder = content::BrowsingDataFilterBuilder::Create(

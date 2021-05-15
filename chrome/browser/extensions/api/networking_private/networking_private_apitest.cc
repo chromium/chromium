@@ -252,14 +252,14 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
 
   void ValueResult(const std::string& guid, PropertiesCallback callback) {
     if (fail_) {
-      std::move(callback).Run(base::nullopt, kFailure);
+      std::move(callback).Run(absl::nullopt, kFailure);
       return;
     }
     base::Value result(base::Value::Type::DICTIONARY);
     result.SetStringKey(::onc::network_config::kGUID, guid);
     result.SetStringKey(::onc::network_config::kType,
                         ::onc::network_config::kWiFi);
-    std::move(callback).Run(std::move(result), base::nullopt);
+    std::move(callback).Run(std::move(result), absl::nullopt);
   }
 
  private:

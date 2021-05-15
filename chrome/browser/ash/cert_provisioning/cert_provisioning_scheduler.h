@@ -180,7 +180,7 @@ class CertProvisioningSchedulerImpl
   // Continues an existing worker if it is in a waiting state.
   void ProcessProfile(const CertProfile& profile);
 
-  base::Optional<CertProfile> GetOneCertProfile(
+  absl::optional<CertProfile> GetOneCertProfile(
       const CertProfileId& cert_profile_id);
   std::vector<CertProfile> GetCertProfiles();
 

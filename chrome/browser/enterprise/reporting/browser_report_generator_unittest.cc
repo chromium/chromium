@@ -75,7 +75,7 @@ class BrowserReportGeneratorTest : public ::testing::Test,
   void InitializeUpdate() {
     auto* build_state = g_browser_process->GetBuildState();
     build_state->SetUpdate(BuildState::UpdateType::kNormalUpdate,
-                           base::Version("1.2.3.4"), base::nullopt);
+                           base::Version("1.2.3.4"), absl::nullopt);
   }
 
   void InitializeProfile() {

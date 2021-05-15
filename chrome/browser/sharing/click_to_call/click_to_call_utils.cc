@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cctype>
 
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -18,6 +17,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -51,14 +51,14 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
 }
 
 // Returns the first possible phone number in |selection_text| given the
-// |regex_variant| to be used or base::nullopt if the regex did not match.
-base::Optional<std::string> ExtractPhoneNumber(
+// |regex_variant| to be used or absl::nullopt if the regex did not match.
+absl::optional<std::string> ExtractPhoneNumber(
     const std::string& selection_text) {
   std::string parsed_number;
 
   const re2::RE2& regex = GetPhoneNumberRegex();
   if (!re2::RE2::PartialMatch(selection_text, regex, &parsed_number))
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::UTF16ToUTF8(
       base::TrimWhitespace(base::UTF8ToUTF16(parsed_number), base::TRIM_ALL));
@@ -83,21 +83,21 @@ bool ShouldOfferClickToCallForURL(content::BrowserContext* browser_context,
          IsUrlSafeForClickToCall(url) && IsClickToCallEnabled(browser_context);
 }
 
-base::Optional<std::string> ExtractPhoneNumberForClickToCall(
+absl::optional<std::string> ExtractPhoneNumberForClickToCall(
     content::BrowserContext* browser_context,
     const std::string& selection_text) {
   DCHECK(!selection_text.empty());
 
   if (selection_text.size() > kSelectionTextMaxLength)
-    return base::nullopt;
+    return absl::nullopt;
 
   int digits = std::count_if(selection_text.begin(), selection_text.end(),
                              [](char c) { return std::isdigit(c); });
   if (digits > kSelectionTextMaxDigits)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!IsClickToCallEnabled(browser_context))
-    return base::nullopt;
+    return absl::nullopt;
 
   return ExtractPhoneNumber(selection_text);
 }

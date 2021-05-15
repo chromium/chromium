@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -20,6 +19,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,7 +86,7 @@ class PrefetchProxyPageLoadMetricsObserver
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.
-  base::Optional<int> min_days_since_last_visit_to_origin_;
+  absl::optional<int> min_days_since_last_visit_to_origin_;
 
   // Metrics related to Prefetch Proxy prefetching on a SRP, for plumbing
   // into UKM.
@@ -94,7 +94,7 @@ class PrefetchProxyPageLoadMetricsObserver
 
   // Metrics for the page load after a Google SRP where NavigationPredictor
   // passed parsed SRP links to the TabHelper. Not set if that isn't true.
-  base::Optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics_;
+  absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics_;
 
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;

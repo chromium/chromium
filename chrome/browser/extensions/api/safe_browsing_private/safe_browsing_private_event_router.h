@@ -260,8 +260,8 @@ class SafeBrowsingPrivateEventRouter
 
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
-  // base::nullopt represents that reporting should not be done.
-  base::Optional<enterprise_connectors::ReportingSettings>
+  // absl::nullopt represents that reporting should not be done.
+  absl::optional<enterprise_connectors::ReportingSettings>
   GetReportingSettings();
 
   // Called whenever the real-time reporting policy changes.

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -25,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
@@ -929,7 +929,7 @@ void ProtocolHandlerRegistry::UpdateAppProtocolsWithOS(
     if (handlers.size() == 1 && handlers[0] == default_handler)
       app_protocols[protocol] = default_handler.web_app_id();
     else
-      app_protocols[protocol] = base::nullopt;
+      app_protocols[protocol] = absl::nullopt;
   }
 
   delegate_->RegisterAppProtocolsWithOS(

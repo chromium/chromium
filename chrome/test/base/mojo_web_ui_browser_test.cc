@@ -42,7 +42,7 @@ class WebUITestPageHandler : public web_ui_test::mojom::TestRunner,
   }
 
   // web_ui_test::mojom::TestRunner:
-  void TestComplete(const base::Optional<std::string>& message) override {
+  void TestComplete(const absl::optional<std::string>& message) override {
     WebUITestHandler::TestComplete(message);
   }
 

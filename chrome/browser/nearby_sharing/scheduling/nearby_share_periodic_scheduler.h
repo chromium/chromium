@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A NearbyShareSchedulerBase that schedules periodic tasks at fixed intervals.
 // Immediate requests and/or failure retries can interrupt this pattern. The
@@ -32,7 +32,7 @@ class NearbySharePeriodicScheduler : public NearbyShareSchedulerBase {
  private:
   // Returns the time until the next periodic request using the time since
   // the last success. Immediately runs a first-time periodic request.
-  base::Optional<base::TimeDelta> TimeUntilRecurringRequest(
+  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override;
 
   base::TimeDelta request_period_;

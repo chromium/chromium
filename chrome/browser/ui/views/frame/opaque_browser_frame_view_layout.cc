@@ -288,7 +288,7 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
   // non-null.
   bool should_show_toolbar =
       !delegate_->IsFullscreen() && web_app_frame_toolbar_;
-  base::Optional<int> icon_spacing;
+  absl::optional<int> icon_spacing;
 
   if (should_show_icon || should_show_title || should_show_toolbar) {
     use_hidden_icon_location = false;

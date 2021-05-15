@@ -267,7 +267,7 @@ const char* const kTestParams[] = {"8.8.4.4", "2001:4860:4860::8888"};
 // string.
 std::string NormalizeJson(const std::string& json) {
   std::string result = json;
-  base::Optional<base::Value> value = base::JSONReader::Read(result);
+  absl::optional<base::Value> value = base::JSONReader::Read(result);
   DCHECK(value) << result;
   base::JSONWriter::Write(*value, &result);
   return result;
@@ -770,7 +770,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulPWGLocalPrintDuplex) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
   local_print_operation_->SetData(RefCountedBytesFromString("foobar"));
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTDuplex);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTDuplex);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(
@@ -806,7 +806,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulPWGLocalPrintMono) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
   local_print_operation_->SetData(RefCountedBytesFromString("foobar"));
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTMono);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTMono);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(
@@ -840,7 +840,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulPWGLocalPrintMonoToGRAY8Printer) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
   local_print_operation_->SetData(RefCountedBytesFromString("foobar"));
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTMono);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJTMono);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(
@@ -873,7 +873,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulPWGLocalPrintMonoToGRAY8Printer) {
 TEST_P(PrivetLocalPrintTest, SuccessfulLocalPrintWithCreatejob) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetData(
@@ -906,7 +906,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulLocalPrintWithOverlongName) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname(
       "123456789:123456789:123456789:123456789:123456789:123456789:123456789:");
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(kSampleCapabilitiesResponse);
@@ -931,7 +931,7 @@ TEST_P(PrivetLocalPrintTest, SuccessfulLocalPrintWithOverlongName) {
 TEST_P(PrivetLocalPrintTest, PDFPrintInvalidDocumentTypeRetry) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(kSampleCapabilitiesResponse);
@@ -960,7 +960,7 @@ TEST_P(PrivetLocalPrintTest, PDFPrintInvalidDocumentTypeRetry) {
 TEST_P(PrivetLocalPrintTest, LocalPrintRetryOnInvalidJobID) {
   local_print_operation_->SetUsername("sample@gmail.com");
   local_print_operation_->SetJobname("Sample job name");
-  base::Optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(kSampleCJT);
   ASSERT_TRUE(ticket);
   local_print_operation_->SetTicket(std::move(*ticket));
   local_print_operation_->SetCapabilities(kSampleCapabilitiesResponse);

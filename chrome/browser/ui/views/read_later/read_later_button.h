@@ -57,7 +57,7 @@ class ReadLaterButton : public views::LabelButton,
     // |highlight_color_| and on the current animation state (which
     // influences the alpha channel).
     SkColor GetTextColor() const;
-    base::Optional<SkColor> GetBackgroundColor() const;
+    absl::optional<SkColor> GetBackgroundColor() const;
     SkColor GetIconColor() const;
 
     void AnimationEnded(const gfx::Animation* animation) override;

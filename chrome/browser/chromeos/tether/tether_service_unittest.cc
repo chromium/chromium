@@ -1237,7 +1237,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
   SetTetherTechnologyStateEnabled(false);
   fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
       chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      false /* expected_enabled */, base::nullopt /* expected_auth_token */,
+      false /* expected_enabled */, absl::nullopt /* expected_auth_token */,
       true /* success */);
   profile_->GetPrefs()->SetBoolean(
       chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, false);
@@ -1256,7 +1256,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
   SetTetherTechnologyStateEnabled(true);
   fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
       chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-      true /* expected_enabled */, base::nullopt /* expected_auth_token */,
+      true /* expected_enabled */, absl::nullopt /* expected_auth_token */,
       false /* success */);
   profile_->GetPrefs()->SetBoolean(
       chromeos::multidevice_setup::kInstantTetheringEnabledPrefName, true);

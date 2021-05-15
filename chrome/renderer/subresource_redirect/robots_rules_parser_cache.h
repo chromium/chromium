@@ -37,14 +37,14 @@ class RobotsRulesParserCache {
   // Update the robots |rules| to the parser for the |origin|. This update only
   // happens when the cache already has an entry for |origin|.
   void UpdateRobotsRules(const url::Origin& origin,
-                         const base::Optional<std::string>& rules);
+                         const absl::optional<std::string>& rules);
 
   // Returns the result of checking whether resource |url| is allowed by robots
   // rules parser for the url origin. When the determination can be made
-  // immediately, the decision should be returned. Otherwise base::nullopt
+  // immediately, the decision should be returned. Otherwise absl::nullopt
   // should be returned and the |callback| will be invoked when the decision was
   // made.
-  base::Optional<RobotsRulesParser::CheckResult> CheckRobotsRules(
+  absl::optional<RobotsRulesParser::CheckResult> CheckRobotsRules(
       int routing_id,
       const GURL& url,
       RobotsRulesParser::CheckResultCallback callback);

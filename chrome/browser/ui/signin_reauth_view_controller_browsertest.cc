@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -40,6 +39,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_switches.h"
 
 using ::testing::ElementsAre;
@@ -202,7 +202,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
     reauth_result_loop_->Quit();
   }
 
-  base::Optional<signin::ReauthResult> WaitForReauthResult() {
+  absl::optional<signin::ReauthResult> WaitForReauthResult() {
     reauth_result_loop_->Run();
     return reauth_result_;
   }
@@ -242,7 +242,7 @@ class SigninReauthViewControllerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<SigninViewController::ReauthAbortHandle> abort_handle_;
 
   std::unique_ptr<base::RunLoop> reauth_result_loop_;
-  base::Optional<signin::ReauthResult> reauth_result_;
+  absl::optional<signin::ReauthResult> reauth_result_;
 };
 
 // Tests that the abort handle cancels an ongoing reauth flow.

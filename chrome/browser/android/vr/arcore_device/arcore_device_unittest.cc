@@ -187,7 +187,7 @@ class StubCompositorFrameSink
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {}
   void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -196,7 +196,7 @@ class StubCompositorFrameSink
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
   void InitializeCompositorFrameSinkType(
@@ -247,8 +247,8 @@ class StubXrFrameSinkClient : public XrFrameSinkClient {
     std::move(on_initialized).Run();
   }
   void SurfaceDestroyed() override {}
-  base::Optional<viz::SurfaceId> GetDOMSurface() override {
-    return base::nullopt;
+  absl::optional<viz::SurfaceId> GetDOMSurface() override {
+    return absl::nullopt;
   }
   viz::FrameSinkId FrameSinkId() override { return {}; }
 

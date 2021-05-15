@@ -53,7 +53,7 @@ size_t GenerateRandomIndex(size_t size) {
 
 std::vector<int> GetAvailableColorIndices(
     const std::set<ProfileThemeColors>& used_theme_colors,
-    base::Optional<double> current_color_lightness) {
+    absl::optional<double> current_color_lightness) {
   std::vector<int> available_color_indices;
   for (size_t i = 0; i < base::size(chrome_colors::kGeneratedColorsInfo); ++i) {
     ProfileThemeColors theme_colors =
@@ -170,7 +170,7 @@ chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
   // needed.
   std::set<ProfileThemeColors> used_theme_colors;
   for (ProfileAttributesEntry* entry : storage.GetAllProfilesAttributes()) {
-    base::Optional<ProfileThemeColors> current_colors =
+    absl::optional<ProfileThemeColors> current_colors =
         entry->GetProfileThemeColorsIfSet();
     if (current_colors)
       used_theme_colors.insert(*current_colors);
@@ -185,13 +185,13 @@ chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
   // Relax the constraints until some colors become available.
   if (available_color_indices.empty()) {
     available_color_indices =
-        GetAvailableColorIndices(used_theme_colors, base::nullopt);
+        GetAvailableColorIndices(used_theme_colors, absl::nullopt);
   }
   if (available_color_indices.empty()) {
     // If needed, we could allow unsaturated colors (shades of grey) before
     // allowing a duplicate color.
     available_color_indices =
-        GetAvailableColorIndices(std::set<ProfileThemeColors>(), base::nullopt);
+        GetAvailableColorIndices(std::set<ProfileThemeColors>(), absl::nullopt);
   }
   DCHECK(!available_color_indices.empty());
 

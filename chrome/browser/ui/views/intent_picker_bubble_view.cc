@@ -147,7 +147,7 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
     std::vector<AppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse intent_picker_cb) {
   if (intent_picker_bubble_) {
     intent_picker_bubble_->CloseBubble();
@@ -203,7 +203,7 @@ IntentPickerBubbleView::CreateBubbleViewForTesting(
     std::vector<AppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse intent_picker_cb,
     content::WebContents* web_contents) {
   auto bubble = std::make_unique<IntentPickerBubbleView>(
@@ -274,7 +274,7 @@ IntentPickerBubbleView::IntentPickerBubbleView(
     content::WebContents* web_contents,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    const base::Optional<url::Origin>& initiating_origin)
+    const absl::optional<url::Origin>& initiating_origin)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       intent_picker_cb_(std::move(intent_picker_cb)),
       selected_app_tag_(0),

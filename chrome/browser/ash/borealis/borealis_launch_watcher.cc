@@ -50,7 +50,7 @@ void BorealisLaunchWatcher::OnContainerStarted(
 
 void BorealisLaunchWatcher::TimeoutCallback() {
   while (!callback_queue_.empty()) {
-    std::move(callback_queue_.front()).Run(base::nullopt);
+    std::move(callback_queue_.front()).Run(absl::nullopt);
     callback_queue_.pop();
   }
 }

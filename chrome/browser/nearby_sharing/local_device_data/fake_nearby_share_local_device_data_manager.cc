@@ -69,12 +69,12 @@ std::string FakeNearbyShareLocalDeviceDataManager::GetDeviceName() const {
   return device_name_;
 }
 
-base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetFullName()
+absl::optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetFullName()
     const {
   return full_name_;
 }
 
-base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
+absl::optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
     const {
   return icon_url_;
 }
@@ -119,7 +119,7 @@ void FakeNearbyShareLocalDeviceDataManager::UploadCertificates(
                                           std::move(callback));
 }
 void FakeNearbyShareLocalDeviceDataManager::SetFullName(
-    const base::Optional<std::string>& full_name) {
+    const absl::optional<std::string>& full_name) {
   if (full_name_ == full_name)
     return;
 
@@ -131,7 +131,7 @@ void FakeNearbyShareLocalDeviceDataManager::SetFullName(
 }
 
 void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
-    const base::Optional<std::string>& icon_url) {
+    const absl::optional<std::string>& icon_url) {
   if (icon_url_ == icon_url)
     return;
 

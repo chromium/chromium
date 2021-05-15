@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_RECORD_UPLOAD_REQUEST_BUILDER_H_
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/reporting/proto/record.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -85,14 +85,14 @@ class UploadEncryptedReportingRequestBuilder {
   UploadEncryptedReportingRequestBuilder& AddRecord(
       const EncryptedRecord& record);
 
-  base::Optional<base::Value> Build();
+  absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedRecordListPath();
   static base::StringPiece GetAttachEncryptionSettingsPath();
 
   static const char kEncryptedRecordListKey_[];
 
-  base::Optional<base::Value> result_;
+  absl::optional<base::Value> result_;
 };
 
 // Builds a |base::Value| dictionary from a |EncryptedRecord|
@@ -102,7 +102,7 @@ class EncryptedRecordDictionaryBuilder {
   explicit EncryptedRecordDictionaryBuilder(const EncryptedRecord& record);
   ~EncryptedRecordDictionaryBuilder();
 
-  base::Optional<base::Value> Build();
+  absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedWrappedRecordPath();
   static base::StringPiece GetUnsignedSequencingInformationKeyPath();
@@ -110,7 +110,7 @@ class EncryptedRecordDictionaryBuilder {
   static base::StringPiece GetEncryptionInfoPath();
 
  private:
-  base::Optional<base::Value> result_;
+  absl::optional<base::Value> result_;
 };
 
 // Builds a |base::Value| dictionary from a |SequencingInformation|
@@ -121,14 +121,14 @@ class SequencingInformationDictionaryBuilder {
       const SequencingInformation& sequencing_information);
   ~SequencingInformationDictionaryBuilder();
 
-  base::Optional<base::Value> Build();
+  absl::optional<base::Value> Build();
 
   static base::StringPiece GetSequencingIdPath();
   static base::StringPiece GetGenerationIdPath();
   static base::StringPiece GetPriorityPath();
 
  private:
-  base::Optional<base::Value> result_;
+  absl::optional<base::Value> result_;
 };
 
 // Builds a |base::Value| dictionary from a |EncryptionInfo| proto.
@@ -138,13 +138,13 @@ class EncryptionInfoDictionaryBuilder {
       const EncryptionInfo& encryption_info);
   ~EncryptionInfoDictionaryBuilder();
 
-  base::Optional<base::Value> Build();
+  absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptionKeyPath();
   static base::StringPiece GetPublicKeyIdPath();
 
  private:
-  base::Optional<base::Value> result_;
+  absl::optional<base::Value> result_;
 };
 
 }  // namespace reporting

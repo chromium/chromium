@@ -53,8 +53,8 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
   base::UnguessableToken AddPort(
       const std::string& display_name,
       const base::FilePath& path,
-      base::Optional<uint16_t> vendor_id = base::nullopt,
-      base::Optional<uint16_t> product_id = base::nullopt) {
+      absl::optional<uint16_t> vendor_id = absl::nullopt,
+      absl::optional<uint16_t> product_id = absl::nullopt) {
     auto port = device::mojom::SerialPortInfo::New();
     port->token = base::UnguessableToken::Create();
     port->display_name = display_name;

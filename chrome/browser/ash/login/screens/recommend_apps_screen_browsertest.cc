@@ -219,7 +219,7 @@ class RecommendAppsScreenTest : public OobeBaseTest {
   }
 
   RecommendAppsScreen* recommend_apps_screen_;
-  base::Optional<RecommendAppsScreen::Result> screen_result_;
+  absl::optional<RecommendAppsScreen::Result> screen_result_;
   StubRecommendAppsFetcher* recommend_apps_fetcher_ = nullptr;
 
   LoginManagerMixin login_manager_{&mixin_host_};

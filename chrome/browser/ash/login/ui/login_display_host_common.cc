@@ -344,7 +344,7 @@ void LoginDisplayHostCommon::LoadSigninWallpaper() {
 
 bool LoginDisplayHostCommon::IsUserAllowlisted(
     const AccountId& account_id,
-    const base::Optional<user_manager::UserType>& user_type) {
+    const absl::optional<user_manager::UserType>& user_type) {
   if (!GetExistingUserController())
     return true;
   return GetExistingUserController()->IsUserAllowlisted(account_id, user_type);

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/extensions/printing/print_job_controller.h"
 #include "chrome/browser/chromeos/extensions/printing/print_job_submitter.h"
@@ -24,6 +23,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class PrefRegistrySimple;
@@ -54,13 +54,13 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                            public chromeos::CupsPrintJobManager::Observer {
  public:
   using SubmitJobCallback = base::OnceCallback<void(
-      base::Optional<api::printing::SubmitJobStatus> status,
+      absl::optional<api::printing::SubmitJobStatus> status,
       std::unique_ptr<std::string> job_id,
-      base::Optional<std::string> error)>;
+      absl::optional<std::string> error)>;
   using GetPrinterInfoCallback = base::OnceCallback<void(
-      base::Optional<base::Value> capabilities,
-      base::Optional<api::printing::PrinterStatus> status,
-      base::Optional<std::string> error)>;
+      absl::optional<base::Value> capabilities,
+      absl::optional<api::printing::PrinterStatus> status,
+      absl::optional<std::string> error)>;
 
   static std::unique_ptr<PrintingAPIHandler> CreateForTesting(
       content::BrowserContext* browser_context,
@@ -96,7 +96,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                  PrintJobSubmitter::SubmitJobCallback callback);
 
   // Returns an error message if an error occurred.
-  base::Optional<std::string> CancelJob(const std::string& extension_id,
+  absl::optional<std::string> CancelJob(const std::string& extension_id,
                                         const std::string& job_id);
 
   std::vector<api::printing::Printer> GetPrinters();
@@ -126,14 +126,14 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   void OnPrintJobSubmitted(
       std::unique_ptr<PrintJobSubmitter> print_job_submitter,
       PrintJobSubmitter::SubmitJobCallback callback,
-      base::Optional<api::printing::SubmitJobStatus> status,
+      absl::optional<api::printing::SubmitJobStatus> status,
       std::unique_ptr<std::string> job_id,
-      base::Optional<std::string> error);
+      absl::optional<std::string> error);
 
   void GetPrinterStatus(
       const std::string& printer_id,
       GetPrinterInfoCallback callback,
-      base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
+      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
 
   void OnPrinterStatusRetrieved(
       GetPrinterInfoCallback callback,

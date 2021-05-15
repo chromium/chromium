@@ -10,11 +10,11 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_tcp_connected_socket.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_udp_socket.h"
 #include "services/network/test/test_network_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -30,11 +30,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
   // network::TestNetworkContext:
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
 
   void CreateTCPConnectedSocket(
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -48,10 +48,10 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
   // Sets the fake TCP connect code. TODO(khegde): Change this to
   // SetTCPConnectCompleteCode.
-  void SetTCPConnectCode(base::Optional<net::Error>& tcp_connect_code);
+  void SetTCPConnectCode(absl::optional<net::Error>& tcp_connect_code);
 
   // Sets the fake TLS upgrade code.
-  void SetTLSUpgradeCode(base::Optional<net::Error>& tls_upgrade_code);
+  void SetTLSUpgradeCode(absl::optional<net::Error>& tls_upgrade_code);
 
   // Sets the fake UDP connect code.
   void SetUdpConnectCode(net::Error udp_connect_code);

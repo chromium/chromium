@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 struct SearchSuggestData;
@@ -39,7 +39,7 @@ class SearchSuggestLoader {
   };
   using SearchSuggestionsCallback =
       base::OnceCallback<void(Status,
-                              const base::Optional<SearchSuggestData>&)>;
+                              const absl::optional<SearchSuggestData>&)>;
 
   virtual ~SearchSuggestLoader() = default;
 

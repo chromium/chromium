@@ -65,13 +65,13 @@ sql::InitStatus MediaHistoryImagesTable::CreateTableIfNonExistent() {
   return sql::INIT_OK;
 }
 
-base::Optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
+absl::optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
     const GURL& url,
     const url::Origin& playback_origin,
     const std::u16string& mime_type) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
-    return base::nullopt;
+    return absl::nullopt;
 
   {
     // First we should try and save the image in the database. It will not save
@@ -89,7 +89,7 @@ base::Optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
     statement.BindString16(2, mime_type);
 
     if (!statement.Run())
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   // If the insert is successful and we have store an image row then we should
@@ -123,7 +123,7 @@ base::Optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace media_history

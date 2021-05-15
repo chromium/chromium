@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -22,6 +21,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -80,7 +80,7 @@ class WebAppUrlLoaderTest : public InProcessBrowserTest {
   }
 
   Result LoadUrlAndWait(UrlComparison url_comparison, const std::string& path) {
-    base::Optional<Result> result;
+    absl::optional<Result> result;
     base::RunLoop run_loop;
     WebAppUrlLoader loader;
     loader.LoadUrl(embedded_test_server()->GetURL(path), web_contents(),
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
 
   WebAppUrlLoader loader;
-  base::Optional<Result> result;
+  absl::optional<Result> result;
 
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
                  UrlComparison::kExact,
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  base::Optional<Result> result;
+  absl::optional<Result> result;
 
   base::RunLoop run_loop;
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
@@ -227,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, MultipleLoadUrlCalls) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  base::Optional<Result> title1_result;
-  base::Optional<Result> title2_result;
+  absl::optional<Result> title1_result;
+  absl::optional<Result> title2_result;
 
   std::unique_ptr<content::WebContents> web_contents1 =
       content::WebContents::Create(

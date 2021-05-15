@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -177,7 +177,7 @@ void SigninReauthViewController::OnGaiaReauthPageComplete(
 
   if (ui_state_ == UIState::kGaiaReauthDialog ||
       ui_state_ == UIState::kGaiaReauthTab) {
-    base::Optional<UserAction> action;
+    absl::optional<UserAction> action;
     if (gaia_reauth_page_result_ == signin::ReauthResult::kSuccess) {
       action = UserAction::kPassGaiaReauth;
     }

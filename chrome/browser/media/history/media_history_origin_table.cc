@@ -122,7 +122,7 @@ bool MediaHistoryOriginTable::RecalculateAggregateAudioVideoWatchTime(
   if (!CanAccessDatabase())
     return false;
 
-  base::Optional<int64_t> origin_id;
+  absl::optional<int64_t> origin_id;
   {
     // Get the ID for the origin.
     sql::Statement statement(DB()->GetCachedStatement(

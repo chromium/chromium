@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class DebugDaemonClient;
@@ -42,7 +42,7 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void DnsResolution(DnsResolutionCallback callback) override;
   void CaptivePortal(CaptivePortalCallback callback) override;
   void HttpsLatency(HttpsLatencyCallback callback) override;
-  void VideoConferencing(const base::Optional<std::string>& stun_server_name,
+  void VideoConferencing(const absl::optional<std::string>& stun_server_name,
                          VideoConferencingCallback callback) override;
 
  private:

@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "printing/print_job_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -52,7 +52,7 @@ class PrintPreviewStickySettings {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  base::Optional<std::string> printer_app_state_;
+  absl::optional<std::string> printer_app_state_;
 };
 
 }  // namespace printing

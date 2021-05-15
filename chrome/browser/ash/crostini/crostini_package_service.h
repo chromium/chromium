@@ -15,7 +15,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_package_notification.h"
 #include "chrome/browser/ash/crostini/crostini_package_operation_status.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 

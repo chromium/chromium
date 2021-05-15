@@ -74,7 +74,7 @@ class ProfileColorsUtilTest : public testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
 
-  ProfileAttributesEntry* AddProfile(base::Optional<SkColor> color) {
+  ProfileAttributesEntry* AddProfile(absl::optional<SkColor> color) {
     size_t number_of_profiles = storage()->GetNumberOfProfiles();
 
     base::FilePath profile_path =
@@ -221,8 +221,8 @@ TEST_P(ProfileColorsUtilTestDarkModeParam,
   ExpectAllSaturatedColorsMatchingColorSchemeAvailable(should_use_dark_colors);
 
   // Add some profiles with the default theme.
-  AddProfile(base::nullopt);
-  AddProfile(base::nullopt);
+  AddProfile(absl::nullopt);
+  AddProfile(absl::nullopt);
   // Add a profile with a custom color.
   AddProfile(SK_ColorRED);
 

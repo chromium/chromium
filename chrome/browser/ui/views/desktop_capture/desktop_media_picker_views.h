@@ -92,7 +92,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DialogSource dialog_source_;
 
-  base::Optional<content::DesktopMediaID> accepted_source_;
+  absl::optional<content::DesktopMediaID> accepted_source_;
 };
 
 // Implementation of DesktopMediaPicker for Views.

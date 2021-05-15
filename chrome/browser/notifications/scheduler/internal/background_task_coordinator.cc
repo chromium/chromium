@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 namespace {
@@ -170,7 +170,7 @@ class BackgroundTaskCoordinatorHelper {
   NotificationBackgroundTaskScheduler* background_task_;
   const SchedulerConfig* config_;
   base::Clock* clock_;
-  base::Optional<base::Time> background_task_time_;
+  absl::optional<base::Time> background_task_time_;
 };
 
 }  // namespace

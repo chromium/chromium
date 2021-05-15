@@ -161,8 +161,8 @@ bool ShouldFetchModels(Profile* profile) {
 std::unique_ptr<optimization_guide::proto::PredictionModel>
 BuildPredictionModelFromCommandLineForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
+  absl::optional<
+      std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
       model_file_path_and_metadata =
           optimization_guide::switches::GetModelOverrideForOptimizationTarget(
               optimization_target);
@@ -244,7 +244,7 @@ void PredictionManager::Initialize() {
 
 void PredictionManager::RegisterOptimizationTargets(
     const std::vector<
-        std::pair<proto::OptimizationTarget, base::Optional<proto::Any>>>&
+        std::pair<proto::OptimizationTarget, absl::optional<proto::Any>>>&
         optimization_targets_and_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -293,7 +293,7 @@ void PredictionManager::RegisterOptimizationTargets(
 
 void PredictionManager::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
+    const absl::optional<proto::Any>& model_metadata,
     OptimizationTargetModelObserver* observer) {
   DCHECK(registered_observers_for_optimization_targets_.find(
              optimization_target) ==
@@ -362,7 +362,7 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
   std::vector<std::pair<std::string, float>> feature_map;
   feature_map.reserve(model_features.size());
   for (const auto& model_feature : model_features) {
-    base::Optional<float> value;
+    absl::optional<float> value;
     if (host_model_features) {
       const auto it = host_model_features->find(model_feature);
       if (it != host_model_features->end())
@@ -565,7 +565,7 @@ void PredictionManager::FetchModels() {
 }
 
 void PredictionManager::OnModelsFetched(
-    base::Optional<std::unique_ptr<proto::GetModelsResponse>>
+    absl::optional<std::unique_ptr<proto::GetModelsResponse>>
         get_models_response_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!get_models_response_data)
@@ -690,7 +690,7 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
 
 void PredictionManager::NotifyObserversOfNewModelPath(
     proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
+    const absl::optional<proto::Any>& model_metadata,
     const base::FilePath& file_path) const {
   auto observers_it =
       registered_observers_for_optimization_targets_.find(optimization_target);
@@ -1078,17 +1078,17 @@ void PredictionManager::ClearHostModelFeatures() {
     model_and_features_store_->ClearHostModelFeaturesFromDatabase();
 }
 
-base::Optional<base::flat_map<std::string, float>>
+absl::optional<base::flat_map<std::string, float>>
 PredictionManager::GetHostModelFeaturesForHost(const std::string& host) const {
   auto it = host_model_features_cache_.Peek(host);
   if (it == host_model_features_cache_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return it->second;
 }
 
 void PredictionManager::OverrideTargetModelFileForTesting(
     proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
+    const absl::optional<proto::Any>& model_metadata,
     const base::FilePath& file_path) {
   proto::PredictionModel prediction_model;
   prediction_model.mutable_model_info()->set_version(1);

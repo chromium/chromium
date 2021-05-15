@@ -46,7 +46,7 @@ ExtensionFunction::ResponseAction LoginScreenUiCloseFunction::Run() {
 
 void LoginScreenUiCloseFunction::OnClosed(
     bool success,
-    const base::Optional<std::string>& error) {
+    const absl::optional<std::string>& error) {
   if (!success) {
     Respond(Error(error.value()));
     return;

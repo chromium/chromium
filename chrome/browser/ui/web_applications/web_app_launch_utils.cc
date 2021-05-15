@@ -74,15 +74,15 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
 namespace web_app {
 
-base::Optional<AppId> GetWebAppForActiveTab(Browser* browser) {
+absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
   WebAppProvider* provider = WebAppProvider::Get(browser->profile());
   if (!provider)
-    return base::nullopt;
+    return absl::nullopt;
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
-    return base::nullopt;
+    return absl::nullopt;
 
   return provider->registrar().FindInstalledAppWithUrlInScope(
       web_contents->GetMainFrame()->GetLastCommittedURL());
@@ -114,7 +114,7 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 }
 
 Browser* ReparentWebAppForActiveTab(Browser* browser) {
-  base::Optional<AppId> app_id = GetWebAppForActiveTab(browser);
+  absl::optional<AppId> app_id = GetWebAppForActiveTab(browser);
   if (!app_id)
     return nullptr;
   return ReparentWebContentsIntoAppBrowser(
@@ -135,7 +135,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   AppRegistrar& registrar =
       WebAppProviderBase::GetProviderBase(profile)->registrar();
   if (registrar.IsInstalled(app_id)) {
-    base::Optional<GURL> app_scope = registrar.GetAppScope(app_id);
+    absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)
       app_scope = registrar.GetAppStartUrl(app_id).GetWithoutFilename();
 

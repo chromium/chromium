@@ -13,12 +13,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_updater.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 #include "chrome/browser/win/conflicts/module_list_component_updater.h"
 #include "chrome/chrome_elf/third_party_dlls/packed_list_format.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class IncompatibleApplicationsUpdater;
 class InstalledApplications;
@@ -232,7 +232,7 @@ class ThirdPartyConflictsManager : public ModuleDatabaseObserver {
       incompatible_applications_updater_;
 
   // The final state of this instance.
-  base::Optional<State> terminal_state_;
+  absl::optional<State> terminal_state_;
 
   // The callback that is invoked when |state_| changes.
   OnInitializationCompleteCallback on_initialization_complete_callback_;

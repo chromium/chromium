@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -29,6 +28,7 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -106,14 +106,14 @@ void RetrieveFinalSequencingInformation(const base::Value& request,
   }
 }
 
-base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
+absl::optional<base::Value> BuildEncryptionSettingsFromRequest(
     const base::Value& request) {
   // If attach_encryption_settings it true, process that.
   const auto attach_encryption_settings =
       request.FindBoolKey("attachEncryptionSettings");
   if (!attach_encryption_settings.has_value() ||
       !attach_encryption_settings.value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::Value encryption_settings{base::Value::Type::DICTIONARY};
@@ -360,8 +360,8 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<2>(Invoke(
-          [](base::OnceCallback<void(base::Optional<base::Value>)> callback) {
-            std::move(callback).Run(base::nullopt);
+          [](base::OnceCallback<void(absl::optional<base::Value>)> callback) {
+            std::move(callback).Run(absl::nullopt);
           })));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> response_event;

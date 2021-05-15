@@ -7,9 +7,9 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -34,8 +34,8 @@ std::wstring GetProgIdForApp(const base::FilePath& profile_path,
 
 // Makes an app-specific copy of chrome_pwa_launcher.exe that lives in the web
 // application directory |web_app_path|. Returns path of the launcher file if
-// successful, base::nullopt otherwise.
-base::Optional<base::FilePath> CreateAppLauncherFile(
+// successful, absl::nullopt otherwise.
+absl::optional<base::FilePath> CreateAppLauncherFile(
     const std::wstring& app_name,
     const std::wstring& app_name_extension,
     const base::FilePath& web_app_path);

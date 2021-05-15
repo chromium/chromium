@@ -29,7 +29,7 @@ void FakeNearbyConnection::Close() {
 
   if (callback_) {
     has_read_callback_been_run_ = true;
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
   }
 }
 

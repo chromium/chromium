@@ -136,15 +136,15 @@ void PrintingAPIHandler::SubmitJob(
 void PrintingAPIHandler::OnPrintJobSubmitted(
     std::unique_ptr<PrintJobSubmitter> print_job_submitter,
     PrintJobSubmitter::SubmitJobCallback callback,
-    base::Optional<api::printing::SubmitJobStatus> status,
+    absl::optional<api::printing::SubmitJobStatus> status,
     std::unique_ptr<std::string> job_id,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), status, std::move(job_id), error));
 }
 
-base::Optional<std::string> PrintingAPIHandler::CancelJob(
+absl::optional<std::string> PrintingAPIHandler::CancelJob(
     const std::string& extension_id,
     const std::string& job_id) {
   auto it = print_jobs_extension_ids_.find(job_id);
@@ -159,14 +159,14 @@ base::Optional<std::string> PrintingAPIHandler::CancelJob(
     return kNoActivePrintJobWithIdError;
 
   // Return no error otherwise.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<api::printing::Printer> PrintingAPIHandler::GetPrinters() {
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context_)->GetPrefs();
 
-  base::Optional<DefaultPrinterRules> default_printer_rules =
+  absl::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(prefs->GetString(
           prefs::kPrintPreviewDefaultDestinationSelectionRules));
 
@@ -197,8 +197,8 @@ void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
   if (!printers_manager_->GetPrinter(printer_id)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /*capabilities=*/base::nullopt,
-                       /*status=*/base::nullopt, kInvalidPrinterIdError));
+        base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
+                       /*status=*/absl::nullopt, kInvalidPrinterIdError));
     return;
   }
   printer_capabilities_provider_.GetPrinterCapabilities(
@@ -210,13 +210,13 @@ void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
 void PrintingAPIHandler::GetPrinterStatus(
     const std::string& printer_id,
     GetPrinterInfoCallback callback,
-    base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
+    absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
   if (!capabilities.has_value()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /*capabilities=*/base::nullopt,
+        base::BindOnce(std::move(callback), /*capabilities=*/absl::nullopt,
                        api::printing::PRINTER_STATUS_UNREACHABLE,
-                       /*error=*/base::nullopt));
+                       /*error=*/absl::nullopt));
     return;
   }
   base::Value capabilities_value =
@@ -236,7 +236,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(capabilities),
                                   api::printing::PRINTER_STATUS_UNREACHABLE,
-                                  /*error=*/base::nullopt));
+                                  /*error=*/absl::nullopt));
     return;
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -245,7 +245,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           std::move(callback), std::move(capabilities),
           PrinterStatusToIdl(chromeos::PrinterErrorCodeFromPrinterStatusReasons(
               *printer_status)),
-          /*error=*/base::nullopt));
+          /*error=*/absl::nullopt));
 }
 
 void PrintingAPIHandler::SetPrintJobControllerForTesting(

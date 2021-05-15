@@ -50,7 +50,7 @@ class ClickToCallUiControllerTest : public testing::Test {
           return std::make_unique<testing::NiceMock<MockSharingService>>();
         }));
     ClickToCallUiController::ShowDialog(
-        web_contents_.get(), /*initiating_origin=*/base::nullopt,
+        web_contents_.get(), /*initiating_origin=*/absl::nullopt,
         GURL(base::StrCat({"tel:", kPhoneNumber})), false);
     controller_ = ClickToCallUiController::GetOrCreateFromWebContents(
         web_contents_.get());

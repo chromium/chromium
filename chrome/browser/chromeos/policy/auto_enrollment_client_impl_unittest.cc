@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -41,6 +40,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "third_party/shell-encryption/src/testing/status_testing.h"
@@ -286,7 +286,7 @@ class AutoEnrollmentClientImplTest
       bool is_license_packaged_with_device) {
     if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
       ServerWillSendStateForFRE(management_domain, restore_mode,
-                                device_disabled_message, base::nullopt);
+                                device_disabled_message, absl::nullopt);
     } else {
       ServerWillSendStateForInitialEnrollment(
           management_domain, is_license_packaged_with_device,
@@ -307,7 +307,7 @@ class AutoEnrollmentClientImplTest
       const std::string& management_domain,
       em::DeviceStateRetrievalResponse::RestoreMode restore_mode,
       const std::string& device_disabled_message,
-      base::Optional<em::DeviceInitialEnrollmentStateResponse>
+      absl::optional<em::DeviceInitialEnrollmentStateResponse>
           initial_state_response) {
     em::DeviceManagementResponse response;
     em::DeviceStateRetrievalResponse* state_response =
@@ -473,7 +473,7 @@ class AutoEnrollmentClientImplTest
     EXPECT_FALSE(state_dict->GetString(kDeviceStateDisabledMessage,
                                        &actual_disabled_message));
 
-    base::Optional<bool> actual_is_license_packaged_with_device;
+    absl::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
         state_dict->FindBoolPath(kDeviceStatePackagedLicense);
     if (actual_is_license_packaged_with_device) {
@@ -1282,7 +1282,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
       std::string(),
-      base::Optional<em::DeviceInitialEnrollmentStateResponse>(
+      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1315,7 +1315,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
       std::string(),
-      base::Optional<em::DeviceInitialEnrollmentStateResponse>(
+      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1349,7 +1349,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
       std::string(),
-      base::Optional<em::DeviceInitialEnrollmentStateResponse>(
+      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
   base::RunLoop().RunUntilIdle();

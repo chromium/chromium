@@ -184,7 +184,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
     const CoreAccountInfo& account,
     RegisterPolicyWithAccountCallback callback) {
   if (!ShouldLoadPolicyForUser(account.email)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -193,7 +193,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
       base::BindOnce(
           [](RegisterPolicyWithAccountCallback callback,
              const std::string& dm_token, const std::string& client_id) {
-            base::Optional<ManagementCredentials> credentials;
+            absl::optional<ManagementCredentials> credentials;
             if (!dm_token.empty()) {
               credentials.emplace(dm_token, client_id);
             }
@@ -220,7 +220,7 @@ void SigninManagerAndroid::FetchAndApplyCloudPolicy(
 void SigninManagerAndroid::OnPolicyRegisterDone(
     const CoreAccountInfo& account,
     base::OnceCallback<void()> policy_callback,
-    const base::Optional<ManagementCredentials>& credentials) {
+    const absl::optional<ManagementCredentials>& credentials) {
   if (credentials) {
     FetchPolicyBeforeSignIn(account, std::move(policy_callback),
                             credentials.value());
@@ -256,7 +256,7 @@ void SigninManagerAndroid::IsAccountManaged(
       account,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
-             const base::Optional<ManagementCredentials>& credentials) {
+             const absl::optional<ManagementCredentials>& credentials) {
             base::android::RunBooleanCallbackAndroid(callback,
                                                      credentials.has_value());
           },

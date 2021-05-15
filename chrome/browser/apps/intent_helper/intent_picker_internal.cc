@@ -69,7 +69,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url,
                                               /*window_only=*/true);
   if (!app_id)
@@ -106,7 +106,7 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
   IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
-      PageActionIconType::kIntentPicker, base::nullopt, std::move(callback));
+      PageActionIconType::kIntentPicker, absl::nullopt, std::move(callback));
 }
 
 bool InAppBrowser(content::WebContents* web_contents) {

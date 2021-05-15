@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -36,6 +35,7 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::BulkLeakCheckService;
 using password_manager::InsecureCredential;
@@ -178,8 +178,8 @@ auto ExpectCompromisedCredentialForUI(
     const std::u16string& display_username,
     const std::u16string& display_origin,
     const GURL& url,
-    const base::Optional<std::string>& package_name,
-    const base::Optional<std::string>& change_password_url,
+    const absl::optional<std::string>& package_name,
+    const absl::optional<std::string>& change_password_url,
     InsecureCredentialTypeFlags insecure_type,
     bool has_startable_script,
     bool has_auto_change_button) {
@@ -346,7 +346,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
   RunUntilIdle();
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), base::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureCredentialTypeFlags::kCredentialLeaked,
                   /*has_startable_script=*/false,
@@ -372,13 +372,13 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
       UnorderedElementsAre(
           ExpectCompromisedCredentialForUI(
               kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
-              "com.example.app", base::nullopt,
+              "com.example.app", absl::nullopt,
               InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_startable_script=*/false,
               /*has_auto_change_button=*/false),
           ExpectCompromisedCredentialForUI(
               kUsername2, u"Example App", GURL(kExampleCom), "com.example.app",
-              base::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
+              absl::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_startable_script=*/false,
               /*has_auto_change_button=*/false)));
 }
@@ -434,7 +434,7 @@ TEST_F(PasswordCheckManagerTest,
   EXPECT_CALL(fetcher(), IsScriptAvailable).Times(0);
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), base::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureCredentialTypeFlags::kCredentialLeaked,
                   /*has_startable_script=*/false,
@@ -464,7 +464,7 @@ TEST_F(PasswordCheckManagerTest,
   EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), base::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureCredentialTypeFlags::kCredentialLeaked,
                   /*has_startable_script=*/true,
@@ -496,7 +496,7 @@ TEST_F(PasswordCheckManagerTest,
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredentialForUI(
-          u"No username", u"example.com", GURL(kExampleCom), base::nullopt,
+          u"No username", u"example.com", GURL(kExampleCom), absl::nullopt,
           "https://example.com/.well-known/change-password",
           InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_startable_script=*/false,
@@ -529,7 +529,7 @@ TEST_F(PasswordCheckManagerTest,
   EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), base::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureCredentialTypeFlags::kCredentialLeaked,
                   /*has_startable_script=*/true,
@@ -560,7 +560,7 @@ TEST_F(PasswordCheckManagerTest,
   EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(false));
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), base::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureCredentialTypeFlags::kCredentialLeaked,
                   /*has_startable_script=*/false,

@@ -69,9 +69,9 @@ void DesktopMediaListController::FocusView() {
     view_->RequestFocus();
 }
 
-base::Optional<content::DesktopMediaID>
+absl::optional<content::DesktopMediaID>
 DesktopMediaListController::GetSelection() const {
-  return view_ ? view_->GetSelection() : base::nullopt;
+  return view_ ? view_->GetSelection() : absl::nullopt;
 }
 
 void DesktopMediaListController::OnSourceListLayoutChanged() {

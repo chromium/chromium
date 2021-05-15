@@ -310,7 +310,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
               // Check that the descriptions make sense.
               for (auto kv : node_descriptions_json) {
                 keys_received.push_back(kv.first);
-                base::Optional<base::Value> v =
+                absl::optional<base::Value> v =
                     base::JSONReader::Read(kv.second);
                 EXPECT_TRUE(v->is_dict());
                 std::string* str = v->FindStringKey("test");

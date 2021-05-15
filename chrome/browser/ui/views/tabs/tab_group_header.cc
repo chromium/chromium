@@ -330,7 +330,7 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
 
   editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
       tab_strip_->controller()->GetBrowser(), group().value(), this,
-      base::nullopt, nullptr, kStopContextMenuPropagation));
+      absl::nullopt, nullptr, kStopContextMenuPropagation));
 }
 
 bool TabGroupHeader::DoesIntersectRect(const views::View* target,

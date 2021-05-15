@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -56,6 +55,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -413,7 +413,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
 
   auto notification = notification_service.GetNotification(
       "crostini_powerwash_request_instead_of_run");
-  EXPECT_NE(base::nullopt, notification);
+  EXPECT_NE(absl::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest,
@@ -450,7 +450,7 @@ TEST_F(CrostiniManagerTest,
 
   auto notification = notification_service.GetNotification(
       "crostini_powerwash_request_cryptohome_error");
-  EXPECT_NE(base::nullopt, notification);
+  EXPECT_NE(absl::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
@@ -792,7 +792,7 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  base::Optional<ContainerInfo> container_info =
+  absl::optional<ContainerInfo> container_info =
       crostini_manager()->GetContainerInfo(container_id());
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
@@ -813,7 +813,7 @@ TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  base::Optional<ContainerInfo> container_info =
+  absl::optional<ContainerInfo> container_info =
       crostini_manager()->GetContainerInfo(container_id());
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
@@ -846,7 +846,7 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  base::Optional<ContainerInfo> container_info =
+  absl::optional<ContainerInfo> container_info =
       crostini_manager()->GetContainerInfo(container_id());
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
@@ -866,7 +866,7 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
   EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
-  base::Optional<ContainerInfo> container_info =
+  absl::optional<ContainerInfo> container_info =
       crostini_manager()->GetContainerInfo(container_id());
   EXPECT_EQ(container_info.value().username, "helloworld");
   ExpectRestarterUmaCount(1);

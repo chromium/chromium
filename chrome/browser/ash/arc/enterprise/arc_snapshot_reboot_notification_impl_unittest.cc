@@ -45,7 +45,7 @@ class ArcSnapshotRebootNotificationTest : public testing::Test {
     tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT,
         ArcSnapshotRebootNotificationImpl::get_notification_id_for_testing(),
-        base::nullopt, base::nullopt);
+        absl::nullopt, absl::nullopt);
   }
 
   void ClickOnRestartButton() {
@@ -53,7 +53,7 @@ class ArcSnapshotRebootNotificationTest : public testing::Test {
         NotificationHandler::Type::TRANSIENT,
         ArcSnapshotRebootNotificationImpl::get_notification_id_for_testing(),
         ArcSnapshotRebootNotificationImpl::get_restart_button_id_for_testing(),
-        base::nullopt);
+        absl::nullopt);
   }
 
   void OnNotificationAdded() { is_notification_shown_ = true; }

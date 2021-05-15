@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace {
-base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
+absl::optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     const TransferMetadata& transfer_metadata) {
   switch (transfer_metadata.status()) {
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
@@ -80,7 +80,7 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
       // Ignore all other transfer status updates.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -131,7 +131,7 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
                   << TransferMetadata::StatusToString(
                          transfer_metadata.status());
 
-  base::Optional<nearby_share::mojom::TransferStatus> status =
+  absl::optional<nearby_share::mojom::TransferStatus> status =
       GetTransferStatus(transfer_metadata);
 
   if (!status) {

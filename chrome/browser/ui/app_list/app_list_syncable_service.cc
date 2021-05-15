@@ -946,7 +946,7 @@ void AppListSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
   }
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 AppListSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -1056,7 +1056,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
     on_initialized_.Signal();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AppListSyncableService::StopSyncing(syncer::ModelType type) {
@@ -1076,7 +1076,7 @@ syncer::SyncDataList AppListSyncableService::GetAllSyncDataForTesting() const {
   return list;
 }
 
-base::Optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
+absl::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!sync_processor_.get()) {
@@ -1107,7 +1107,7 @@ base::Optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
 
   GetModelUpdater()->NotifyProcessSyncChangesFinished();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AppListSyncableService::Shutdown() {

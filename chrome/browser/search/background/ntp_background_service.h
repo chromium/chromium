@@ -53,7 +53,7 @@ class NtpBackgroundService : public KeyedService {
   // dropped until the currently active loader completes.
   void FetchNextCollectionImage(
       const std::string& collection_id,
-      const base::Optional<std::string>& resume_token);
+      const absl::optional<std::string>& resume_token);
 
   // Add/remove observers. All observers must unregister themselves before the
   // NtpBackgroundService is destroyed.

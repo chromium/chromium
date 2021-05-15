@@ -37,7 +37,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     return;
   }
 
-  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
+  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
           ->GetRegistration(app_id);
   if (!registration.has_value()) {
@@ -46,7 +46,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     std::move(callback).Run(UninstallResult::kError);
     return;
   }
-  base::Optional<int> uninstall_app_id = GetBorealisAppId(registration->Exec());
+  absl::optional<int> uninstall_app_id = GetBorealisAppId(registration->Exec());
   if (!uninstall_app_id.has_value()) {
     LOG(ERROR) << "Couldn't retrieve the borealis app id from the exec "
                   "information provided";
@@ -54,7 +54,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
     return;
   }
   // TODO(174282035): Changeup string usage and finish tests.
-  base::Optional<guest_os::GuestOsRegistryService::Registration> main_app =
+  absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
           ->GetRegistration(kBorealisMainAppId);
   if (!main_app.has_value()) {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -17,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace {
@@ -34,7 +34,7 @@ class TestObserver : public mojom::MetricsReportingObserver {
   }
 
   // Public because this is test code.
-  base::Optional<bool> metrics_enabled_;
+  absl::optional<bool> metrics_enabled_;
   mojo::Receiver<mojom::MetricsReportingObserver> receiver_{this};
 };
 
@@ -49,7 +49,7 @@ class TestDelegate : public MetricsReportingAsh::Delegate {
   void SetMetricsReportingEnabled(bool enabled) override { enabled_ = enabled; }
 
   // Public because this is test code.
-  base::Optional<bool> enabled_;
+  absl::optional<bool> enabled_;
 };
 
 class MetricsReportingAshTest : public testing::Test {

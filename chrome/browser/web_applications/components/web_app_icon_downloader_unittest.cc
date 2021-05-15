@@ -111,8 +111,7 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
   std::vector<blink::mojom::FaviconURLPtr> initial_favicon_urls_;
   IconsMap favicon_map_;
   int id_counter_;
-  base::Optional<bool> downloads_succeeded_;
-
+  absl::optional<bool> downloads_succeeded_;
 };
 
 TEST_F(WebAppIconDownloaderTest, SimpleDownload) {

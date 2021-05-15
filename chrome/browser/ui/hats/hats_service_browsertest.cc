@@ -6,7 +6,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +29,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -94,7 +94,7 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
   }
 
  private:
-  base::Optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
+  absl::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

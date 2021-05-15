@@ -27,7 +27,7 @@ bool AppHandlesProtocol(
 
 }  // namespace
 
-base::Optional<GuestOsRegistryService::Registration> GetHandler(
+absl::optional<GuestOsRegistryService::Registration> GetHandler(
     Profile* profile,
     const GURL& url) {
   auto* registry_service =
@@ -35,10 +35,10 @@ base::Optional<GuestOsRegistryService::Registration> GetHandler(
   if (!registry_service) {
     // GuestOsRegistryService does not exist for incognito or guest profiles, so
     // don't try and use it.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<GuestOsRegistryService::Registration> result;
+  absl::optional<GuestOsRegistryService::Registration> result;
   for (auto& pair : registry_service->GetEnabledApps()) {
     auto& registration = pair.second;
     if (AppHandlesProtocol(registration, url.scheme()) &&
@@ -50,7 +50,7 @@ base::Optional<GuestOsRegistryService::Registration> GetHandler(
 }
 
 void Launch(Profile* profile, const GURL& url) {
-  base::Optional<GuestOsRegistryService::Registration> registration =
+  absl::optional<GuestOsRegistryService::Registration> registration =
       GetHandler(profile, url);
   if (!registration) {
     LOG(ERROR) << "No handler for " << url;

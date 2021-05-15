@@ -106,7 +106,7 @@ void FakeLoginDisplayHost::LoadSigninWallpaper() {}
 
 bool FakeLoginDisplayHost::IsUserAllowlisted(
     const AccountId& account_id,
-    const base::Optional<user_manager::UserType>& user_type) {
+    const absl::optional<user_manager::UserType>& user_type) {
   return false;
 }
 

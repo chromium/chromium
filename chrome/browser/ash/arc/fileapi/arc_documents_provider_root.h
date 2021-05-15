@@ -16,12 +16,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "components/arc/mojom/file_system.mojom-forward.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -378,7 +378,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                              ReadDirectoryInternalCallback callback);
   void ReadDirectoryInternalWithChildDocuments(
       const std::string& document_id,
-      base::Optional<std::vector<mojom::DocumentPtr>> maybe_children);
+      absl::optional<std::vector<mojom::DocumentPtr>> maybe_children);
 
   // Clears a directory cache.
   void ClearDirectoryCache(const std::string& document_id);

@@ -264,7 +264,7 @@ std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper) {
     // Handle Web App ids
     const GURL web_app_url(*policy_entry);
     if (web_app_url.is_valid()) {
-      base::Optional<web_app::AppId> web_app_id =
+      absl::optional<web_app::AppId> web_app_id =
           web_app::WebAppProvider::Get(helper->profile())
               ->registrar()
               .LookupExternalAppId(web_app_url);

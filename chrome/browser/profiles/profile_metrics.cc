@@ -80,7 +80,7 @@ profile_metrics::ProfileColorsUniqueness GetProfileColorsUniqueness(
   size_t default_colors_count = 0;
   std::set<ProfileThemeColors> used_colors;
   for (ProfileAttributesEntry* entry : entries) {
-    base::Optional<ProfileThemeColors> profile_colors =
+    absl::optional<ProfileThemeColors> profile_colors =
         entry->GetProfileThemeColorsIfSet();
     if (!profile_colors) {
       default_colors_count++;

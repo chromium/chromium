@@ -69,7 +69,7 @@ class AmbientModeHandlerTest : public testing::Test {
     return histogram_tester_;
   }
 
-  base::Optional<ash::AmbientSettings>& settings() {
+  absl::optional<ash::AmbientSettings>& settings() {
     return handler_->settings_;
   }
 
@@ -112,7 +112,7 @@ class AmbientModeHandlerTest : public testing::Test {
   }
 
   void FetchSettings() {
-    handler_->RequestSettingsAndAlbums(/*topic_source=*/base::nullopt);
+    handler_->RequestSettingsAndAlbums(/*topic_source=*/absl::nullopt);
   }
 
   void UpdateSettings() {
@@ -152,7 +152,7 @@ class AmbientModeHandlerTest : public testing::Test {
 
   void ReplyFetchSettingsAndAlbums(
       bool success,
-      base::Optional<ash::AmbientSettings> settings = base::nullopt) {
+      absl::optional<ash::AmbientSettings> settings = absl::nullopt) {
     fake_backend_controller_->ReplyFetchSettingsAndAlbums(success,
                                                           std::move(settings));
   }

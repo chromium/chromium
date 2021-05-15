@@ -98,7 +98,7 @@ std::vector<apps::IntentPickerAppInfo> AddDevices(
 // is at least one app or device to choose from.
 bool MaybeAddDevicesAndShowPicker(
     const GURL& url,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     WebContents* web_contents,
     std::vector<apps::IntentPickerAppInfo> app_info,
     bool stay_in_chrome,
@@ -596,7 +596,7 @@ void OnAppIconsReceived(
     int render_process_host_id,
     int routing_id,
     const GURL& url,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     bool safe_to_bypass_ui,
     std::vector<mojom::IntentHandlerInfoPtr> handlers,
     base::OnceCallback<void(bool)> handled_cb,
@@ -639,7 +639,7 @@ void ShowExternalProtocolDialogWithoutApps(
     int render_process_host_id,
     int routing_id,
     const GURL& url,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     base::OnceCallback<void(bool)> handled_cb) {
   // Try to show the device picker and fallback to the default dialog otherwise.
   bool handled = MaybeAddDevicesAndShowPicker(
@@ -658,7 +658,7 @@ void ShowExternalProtocolDialogWithoutApps(
 void OnUrlHandlerList(int render_process_host_id,
                       int routing_id,
                       const GURL& url,
-                      const base::Optional<url::Origin>& initiating_origin,
+                      const absl::optional<url::Origin>& initiating_origin,
                       bool safe_to_bypass_ui,
                       base::OnceCallback<void(bool)> handled_cb,
                       std::vector<mojom::IntentHandlerInfoPtr> handlers) {
@@ -726,7 +726,7 @@ void OnUrlHandlerList(int render_process_host_id,
 
 void RunArcExternalProtocolDialog(
     const GURL& url,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     int render_process_host_id,
     int routing_id,
     ui::PageTransition page_transition,

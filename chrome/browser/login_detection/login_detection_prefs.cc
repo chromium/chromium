@@ -59,7 +59,7 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   while (dict->DictSize() > GetOauthLoggedInSitesMaxSize()) {
     // Holds the pair of site name, its last login time for the site that was
     // least recently signed-in to be removed.
-    base::Optional<std::pair<std::string, base::Time>> site_entry_to_remove;
+    absl::optional<std::pair<std::string, base::Time>> site_entry_to_remove;
     for (const auto& site_entry : dict->DictItems()) {
       base::Time signin_time = *util::ValueToTime(site_entry.second);
       if (!site_entry_to_remove || signin_time < site_entry_to_remove->second) {

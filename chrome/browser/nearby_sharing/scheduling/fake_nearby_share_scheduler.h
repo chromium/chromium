@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A fake implementation of NearbyShareScheduler that allows the user to set all
 // scheduling data. It tracks the number of immediate requests and the handled
@@ -24,13 +24,13 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   void MakeImmediateRequest() override;
   void HandleResult(bool success) override;
   void Reschedule() override;
-  base::Optional<base::Time> GetLastSuccessTime() const override;
-  base::Optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
+  absl::optional<base::Time> GetLastSuccessTime() const override;
+  absl::optional<base::TimeDelta> GetTimeUntilNextRequest() const override;
   bool IsWaitingForResult() const override;
   size_t GetNumConsecutiveFailures() const override;
 
-  void SetLastSuccessTime(base::Optional<base::Time> time);
-  void SetTimeUntilNextRequest(base::Optional<base::TimeDelta> time_delta);
+  void SetLastSuccessTime(absl::optional<base::Time> time);
+  void SetTimeUntilNextRequest(absl::optional<base::TimeDelta> time_delta);
   void SetIsWaitingForResult(bool is_waiting);
   void SetNumConsecutiveFailures(size_t num_failures);
 
@@ -49,8 +49,8 @@ class FakeNearbyShareScheduler : public NearbyShareScheduler {
   size_t num_immediate_requests_ = 0;
   size_t num_reschedule_calls_ = 0;
   std::vector<bool> handled_results_;
-  base::Optional<base::Time> last_success_time_;
-  base::Optional<base::TimeDelta> time_until_next_request_;
+  absl::optional<base::Time> last_success_time_;
+  absl::optional<base::TimeDelta> time_until_next_request_;
   bool is_waiting_for_result_ = false;
   size_t num_consecutive_failures_ = 0;
 };

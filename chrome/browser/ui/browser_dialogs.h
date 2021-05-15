@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
@@ -19,6 +18,7 @@
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 

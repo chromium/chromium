@@ -50,7 +50,7 @@ TEST(PrivetConfirmApiFlowTest, Parsing) {
       base::BindOnce(&MockDelegate::Callback, base::Unretained(&delegate)));
   EXPECT_CALL(delegate, Callback(GCDApiFlow::SUCCESS)).Times(1);
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(kSampleConfirmResponse);
   ASSERT_TRUE(value);
   const base::DictionaryValue* dictionary = NULL;

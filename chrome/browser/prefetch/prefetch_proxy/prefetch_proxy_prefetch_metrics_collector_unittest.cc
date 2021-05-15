@@ -31,7 +31,7 @@ const std::vector<std::string> kAllEventMetrics{
     "ResourceType", "Status",
 };
 
-network::mojom::URLResponseHeadPtr MakeHead(base::Optional<std::string> headers,
+network::mojom::URLResponseHeadPtr MakeHead(absl::optional<std::string> headers,
                                             base::TimeDelta request_start) {
   auto head = network::mojom::URLResponseHead::New();
   head->load_timing.request_start = kNavigationStartTime + request_start;

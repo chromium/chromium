@@ -477,14 +477,14 @@ void SmartChargingManager::OnTimerFired() {
 }
 
 void SmartChargingManager::OnReceiveScreenBrightnessPercent(
-    base::Optional<double> screen_brightness_percent) {
+    absl::optional<double> screen_brightness_percent) {
   if (screen_brightness_percent.has_value()) {
     screen_brightness_percent_ = *screen_brightness_percent;
   }
 }
 
 void SmartChargingManager::OnReceiveSwitchStates(
-    const base::Optional<chromeos::PowerManagerClient::SwitchStates>
+    const absl::optional<chromeos::PowerManagerClient::SwitchStates>
         switch_states) {
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;

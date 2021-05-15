@@ -81,7 +81,7 @@ int ArcSnapshotRebootNotificationImpl::get_restart_button_id_for_testing() {
 }
 
 void ArcSnapshotRebootNotificationImpl::HandleClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   if (!button_index)
     return;
   DCHECK(button_index.value() == kRestartButtonId);

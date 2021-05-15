@@ -151,7 +151,7 @@ class ResponseWaiter : private views::ViewObserver {
   }
 
   std::string GetResponseTextRecursive(views::View* view) const {
-    base::Optional<std::string> response_maybe = GetResponseTextOfView(view);
+    absl::optional<std::string> response_maybe = GetResponseTextOfView(view);
     if (response_maybe) {
       return response_maybe.value() + "\n";
     } else {
@@ -162,7 +162,7 @@ class ResponseWaiter : private views::ViewObserver {
     }
   }
 
-  virtual base::Optional<std::string> GetResponseTextOfView(
+  virtual absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const = 0;
 
   views::View* parent_view_;
@@ -220,13 +220,13 @@ class TypedResponseWaiter : public ResponseWaiter {
 
  private:
   // ResponseWaiter overrides:
-  base::Optional<std::string> GetResponseTextOfView(
+  absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_) {
       return static_cast<ash::AssistantUiElementView*>(view)
           ->ToStringForTesting();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string class_name_;
@@ -248,13 +248,13 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
 
  private:
   // ExpectedResponseWaiter overrides:
-  base::Optional<std::string> GetResponseTextOfView(
+  absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_) {
       return static_cast<ash::AssistantUiElementView*>(view)
           ->ToStringForTesting();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string class_name_;
@@ -460,8 +460,8 @@ T AssistantTestMixin::SyncCall(
   return result;
 }
 
-template base::Optional<double> AssistantTestMixin::SyncCall(
-    base::OnceCallback<void(base::OnceCallback<void(base::Optional<double>)>)>
+template absl::optional<double> AssistantTestMixin::SyncCall(
+    base::OnceCallback<void(base::OnceCallback<void(absl::optional<double>)>)>
         func);
 
 void AssistantTestMixin::ExpectCardResponse(

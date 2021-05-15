@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_event_log/device_event_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;

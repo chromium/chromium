@@ -438,7 +438,7 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
               /*upload_save_card_callback=*/
               AutofillClient::UploadSaveCardPromptCallback(),
               /*local_save_card_callback=*/std::move(callback), GetPrefs()),
-          base::nullopt));
+          absl::nullopt));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -466,7 +466,7 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       GetPersonalDataManager()->GetSyncSigninState() ==
       autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
 
-  base::Optional<AccountInfo> account_info;
+  absl::optional<AccountInfo> account_info;
   // AccountInfo data should be passed down only if the following conditions are
   // satisfied:
   // 1) Sync is off or the
@@ -849,7 +849,7 @@ Profile* ChromeAutofillClient::GetProfile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
-base::Optional<AccountInfo> ChromeAutofillClient::GetAccountInfo() {
+absl::optional<AccountInfo> ChromeAutofillClient::GetAccountInfo() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   CoreAccountId account_id =
@@ -873,7 +873,7 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
     return std::u16string();
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return primary_account_info

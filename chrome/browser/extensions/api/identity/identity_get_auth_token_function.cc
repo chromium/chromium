@@ -730,7 +730,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
-  base::Optional<AccountInfo> account =
+  absl::optional<AccountInfo> account =
       IdentityManagerFactory::GetForProfile(GetProfile())
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id);
   if (!account) {
@@ -770,7 +770,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
 }
 
 void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
-    const base::Optional<std::string>& access_token,
+    const absl::optional<std::string>& access_token,
     base::Time expiration_time,
     const GoogleServiceAuthError& error) {
   // By the time we get here we should no longer have an outstanding access
@@ -811,7 +811,7 @@ void IdentityGetAuthTokenFunction::OnGetTokenFailure(
     const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
   device_access_token_request_.reset();
-  OnGetAccessTokenComplete(base::nullopt, base::Time(), error);
+  OnGetAccessTokenComplete(absl::nullopt, base::Time(), error);
 }
 #endif
 
@@ -824,7 +824,7 @@ void IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted(
                              access_token_info.expiration_time,
                              GoogleServiceAuthError::AuthErrorNone());
   } else {
-    OnGetAccessTokenComplete(base::nullopt, base::Time(), error);
+    OnGetAccessTokenComplete(absl::nullopt, base::Time(), error);
   }
 }
 
@@ -912,7 +912,7 @@ void IdentityGetAuthTokenFunction::StartGaiaRequest(
 }
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
-  base::Optional<AccountInfo> account =
+  absl::optional<AccountInfo> account =
       IdentityManagerFactory::GetForProfile(GetProfile())
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               token_key_.account_info.account_id);

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -122,6 +121,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -675,7 +675,7 @@ class PrefetchProxyBrowserTest
                                      url, net::LOAD_ONLY_FROM_CACHE);
   }
 
-  base::Optional<int64_t> GetUKMMetric(const GURL& url,
+  absl::optional<int64_t> GetUKMMetric(const GURL& url,
                                        const std::string& event_name,
                                        const std::string& metric_name) {
     SCOPED_TRACE(metric_name);
@@ -691,9 +691,9 @@ class PrefetchProxyBrowserTest
         ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name);
 
     if (value == nullptr) {
-      return base::nullopt;
+      return absl::nullopt;
     }
-    return base::Optional<int64_t>(*value);
+    return absl::optional<int64_t>(*value);
   }
 
   void VerifyNoUKMEvent(const std::string& event_name) {
@@ -705,7 +705,7 @@ class PrefetchProxyBrowserTest
 
   void VerifyUKMOnSRP(const GURL& url,
                       const std::string& metric_name,
-                      base::Optional<int64_t> expected) {
+                      absl::optional<int64_t> expected) {
     SCOPED_TRACE(metric_name);
     auto actual = GetUKMMetric(url, ukm::builders::PrefetchProxy::kEntryName,
                                metric_name);
@@ -714,7 +714,7 @@ class PrefetchProxyBrowserTest
 
   void VerifyUKMAfterSRP(const GURL& url,
                          const std::string& metric_name,
-                         base::Optional<int64_t> expected) {
+                         absl::optional<int64_t> expected) {
     SCOPED_TRACE(metric_name);
     auto actual = GetUKMMetric(
         url, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 6 = |kPrefetchNotEligibleUserHasServiceWorker|
-  EXPECT_EQ(base::Optional<int64_t>(6),
+  EXPECT_EQ(absl::optional<int64_t>(6),
             GetUKMMetric(prefetch_url,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), error_url);
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
-      base::make_optional(PrefetchProxyPrefetchStatus::kPrefetchFailedNetError),
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchFailedNetError),
       tab_helper->after_srp_metrics()->prefetch_status_);
 
   // Doing this prefetch again is immediately skipped because the proxy is not
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), error_url);
   ASSERT_TRUE(tab_helper->after_srp_metrics());
-  EXPECT_EQ(base::make_optional(
+  EXPECT_EQ(absl::make_optional(
                 PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable),
             tab_helper->after_srp_metrics()->prefetch_status_);
 }
@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
-      base::make_optional(
+      absl::make_optional(
           PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
       tab_helper->after_srp_metrics()->prefetch_status_);
 }
@@ -1164,7 +1164,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
-      base::make_optional(
+      absl::make_optional(
           PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
       tab_helper->after_srp_metrics()->prefetch_status_);
 }
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
-      base::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
       tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
-      base::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
+      absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchUsedNoProbe),
       tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
@@ -1509,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       0);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           eligible_link_2,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1650,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       0);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           eligible_link_204,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1725,7 +1725,7 @@ IN_PROC_BROWSER_TEST_F(
       12);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           prefetch_404_url,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1788,7 +1788,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyUKMAfterSRP(
       link_not_on_srp,
       ukm::builders::PrefetchProxy_AfterSRPClick::kClickedLinkSRPPositionName,
-      base::nullopt);
+      absl::nullopt);
   VerifyUKMAfterSRP(
       link_not_on_srp,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
@@ -1801,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(
       15);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           link_not_on_srp,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1865,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(
       7);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           ineligible_link,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -1944,7 +1944,7 @@ IN_PROC_BROWSER_TEST_F(
       3);
 
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           eligible_link_2,
           ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
@@ -2169,7 +2169,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       << ActualHumanReadableMetricsToDebugString(actual_entries);
 
   // 29 = |kPrefetchIsPrivacyDecoy|
-  EXPECT_EQ(base::Optional<int64_t>(29),
+  EXPECT_EQ(absl::optional<int64_t>(29),
             GetUKMMetric(prefetch_url,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -2183,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       0);
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           prefetch_url, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
           ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName));
@@ -2252,7 +2252,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       << ActualHumanReadableMetricsToDebugString(actual_entries);
 
   // 29 = |kPrefetchIsPrivacyDecoy|
-  EXPECT_EQ(base::Optional<int64_t>(29),
+  EXPECT_EQ(absl::optional<int64_t>(29),
             GetUKMMetric(prefetch_url,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -2266,7 +2266,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       ukm::builders::PrefetchProxy_AfterSRPClick::kSRPPrefetchEligibleCountName,
       0);
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetUKMMetric(
           prefetch_url, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
           ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName));
@@ -2580,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, static_cast<int>(
                    tab_helper->after_srp_metrics()->prefetch_status_.value()));
 
-  base::Optional<base::TimeDelta> probe_latency =
+  absl::optional<base::TimeDelta> probe_latency =
       tab_helper->after_srp_metrics()->probe_latency_;
   ASSERT_TRUE(probe_latency.has_value());
   EXPECT_GT(probe_latency.value(), base::TimeDelta());
@@ -2590,17 +2590,17 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // 1 = |kPrefetchUsedProbeSuccess|.
-  EXPECT_EQ(base::Optional<int64_t>(1),
+  EXPECT_EQ(absl::optional<int64_t>(1),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
   // The actual probe latency is hard to deterministically test for. Just make
   // sure it is set within reasonable bounds.
-  base::Optional<int64_t> probe_latency_ms = GetUKMMetric(
+  absl::optional<int64_t> probe_latency_ms = GetUKMMetric(
       eligible_link, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
       ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName);
-  EXPECT_NE(base::nullopt, probe_latency_ms);
+  EXPECT_NE(absl::nullopt, probe_latency_ms);
   EXPECT_GT(probe_latency_ms.value(), 0);
   EXPECT_LT(probe_latency_ms.value(), 1000);
 }
@@ -2651,7 +2651,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, static_cast<int>(
                    tab_helper->after_srp_metrics()->prefetch_status_.value()));
 
-  base::Optional<base::TimeDelta> probe_latency =
+  absl::optional<base::TimeDelta> probe_latency =
       tab_helper->after_srp_metrics()->probe_latency_;
   ASSERT_TRUE(probe_latency.has_value());
   EXPECT_GT(probe_latency.value(), base::TimeDelta());
@@ -2661,17 +2661,17 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // 1 = |kPrefetchNotUsedProbeFailed|.
-  EXPECT_EQ(base::Optional<int64_t>(2),
+  EXPECT_EQ(absl::optional<int64_t>(2),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
   // The actual probe latency is hard to deterministically test for. Just make
   // sure it is set within reasonable bounds.
-  base::Optional<int64_t> probe_latency_ms = GetUKMMetric(
+  absl::optional<int64_t> probe_latency_ms = GetUKMMetric(
       eligible_link, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
       ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName);
-  EXPECT_NE(base::nullopt, probe_latency_ms);
+  EXPECT_NE(absl::nullopt, probe_latency_ms);
 }
 
 class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
@@ -2739,7 +2739,7 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
               static_cast<int>(
                   tab_helper->after_srp_metrics()->prefetch_status_.value()));
 
-    base::Optional<base::TimeDelta> probe_latency =
+    absl::optional<base::TimeDelta> probe_latency =
         tab_helper->after_srp_metrics()->probe_latency_;
     if (expect_probe) {
       ASSERT_TRUE(probe_latency.has_value());
@@ -2753,19 +2753,19 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(
-        base::Optional<int64_t>(expected_status),
+        absl::optional<int64_t>(expected_status),
         GetUKMMetric(eligible_link,
                      ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                      ukm::builders::PrefetchProxy_AfterSRPClick::
                          kSRPClickPrefetchStatusName));
 
-    base::Optional<int64_t> probe_latency_ms = GetUKMMetric(
+    absl::optional<int64_t> probe_latency_ms = GetUKMMetric(
         eligible_link, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
         ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName);
     if (expect_probe) {
-      EXPECT_NE(base::nullopt, probe_latency_ms);
+      EXPECT_NE(absl::nullopt, probe_latency_ms);
     } else {
-      EXPECT_EQ(base::nullopt, probe_latency_ms);
+      EXPECT_EQ(absl::nullopt, probe_latency_ms);
     }
   }
 
@@ -3126,7 +3126,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
-  EXPECT_EQ(base::Optional<int64_t>(16),
+  EXPECT_EQ(absl::optional<int64_t>(16),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3434,7 +3434,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 19 = |kPrefetchUsedNoProbeNSPAttemptDenied|.
-  EXPECT_EQ(base::Optional<int64_t>(19),
+  EXPECT_EQ(absl::optional<int64_t>(19),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3499,7 +3499,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 22 = |kPrefetchUsedNoProbeNSPNotStarted|.
-  EXPECT_EQ(base::Optional<int64_t>(22),
+  EXPECT_EQ(absl::optional<int64_t>(22),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3641,7 +3641,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
-  EXPECT_EQ(base::Optional<int64_t>(16),
+  EXPECT_EQ(absl::optional<int64_t>(16),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3718,7 +3718,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 17 = |kPrefetchUsedProbeSuccessWithNSP|.
-  EXPECT_EQ(base::Optional<int64_t>(17),
+  EXPECT_EQ(absl::optional<int64_t>(17),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3811,7 +3811,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 20 = |kPrefetchUsedProbeSuccessNSPAttemptDenied|.
-  EXPECT_EQ(base::Optional<int64_t>(20),
+  EXPECT_EQ(absl::optional<int64_t>(20),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3876,7 +3876,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 23 = |kPrefetchUsedProbeSuccessNSPNotStarted|.
-  EXPECT_EQ(base::Optional<int64_t>(23),
+  EXPECT_EQ(absl::optional<int64_t>(23),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -3954,7 +3954,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 18 = |kPrefetchNotUsedProbeFailedWithNSP|.
-  EXPECT_EQ(base::Optional<int64_t>(18),
+  EXPECT_EQ(absl::optional<int64_t>(18),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -4054,7 +4054,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 21 =  |kPrefetchNotUsedProbeFailedNSPAttemptDenied|.
-  EXPECT_EQ(base::Optional<int64_t>(21),
+  EXPECT_EQ(absl::optional<int64_t>(21),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -4126,7 +4126,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 24 = |kPrefetchNotUsedProbeFailedNSPNotStarted|.
-  EXPECT_EQ(base::Optional<int64_t>(24),
+  EXPECT_EQ(absl::optional<int64_t>(24),
             GetUKMMetric(eligible_link_2,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
@@ -4311,7 +4311,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
-  EXPECT_EQ(base::Optional<int64_t>(16),
+  EXPECT_EQ(absl::optional<int64_t>(16),
             GetUKMMetric(eligible_link,
                          ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
                          ukm::builders::PrefetchProxy_AfterSRPClick::

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -27,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/test/widget_test.h"
 
@@ -249,7 +249,7 @@ TEST_F(FeaturePromoControllerViewsTest, ContinuedPromoDefersBackendDismissed) {
   // bubble, but doesn't yet tell the backend the promo finished.
 
   EXPECT_CALL(close_callback, Run()).Times(1);
-  base::Optional<FeaturePromoController::PromoHandle> promo_handle =
+  absl::optional<FeaturePromoController::PromoHandle> promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(
@@ -372,7 +372,7 @@ TEST_F(FeaturePromoControllerViewsTest, FirstCriticalPromoHasPrecedence) {
 }
 
 TEST_F(FeaturePromoControllerViewsTest, CloseBubbleForCriticalPromo) {
-  base::Optional<base::Token> maybe_id =
+  absl::optional<base::Token> maybe_id =
       controller_->ShowCriticalPromo(DefaultBubbleParams());
   ASSERT_TRUE(maybe_id);
   base::Token id = maybe_id.value();
@@ -385,7 +385,7 @@ TEST_F(FeaturePromoControllerViewsTest, CloseBubbleForCriticalPromo) {
 
 TEST_F(FeaturePromoControllerViewsTest,
        CloseBubbleForCriticalPromoDoesNothingAfterClose) {
-  base::Optional<base::Token> maybe_id =
+  absl::optional<base::Token> maybe_id =
       controller_->ShowCriticalPromo(DefaultBubbleParams());
   ASSERT_TRUE(maybe_id);
   base::Token id = maybe_id.value();
@@ -406,7 +406,7 @@ TEST_F(FeaturePromoControllerViewsTest,
 }
 
 TEST_F(FeaturePromoControllerViewsTest, ShowNewCriticalPromoAfterClose) {
-  base::Optional<base::Token> maybe_id =
+  absl::optional<base::Token> maybe_id =
       controller_->ShowCriticalPromo(DefaultBubbleParams());
   ASSERT_TRUE(maybe_id);
   base::Token id = maybe_id.value();

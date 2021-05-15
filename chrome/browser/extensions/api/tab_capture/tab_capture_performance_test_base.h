@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -132,7 +132,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // that would also preempt BEST_EFFORT tasks in utility processes, and
   // TabCapturePerformanceTest.Performance relies on BEST_EFFORT tasks in
   // utility process for tracing.
-  base::Optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  absl::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
       best_effort_fence_;
 
   bool is_full_performance_run_ = false;

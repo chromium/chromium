@@ -75,7 +75,7 @@ class FakeTabletMode : public ash::TabletMode {
 
   bool InTabletMode() const override { return in_tablet_mode; }
 
-  bool ForceUiTabletModeState(base::Optional<bool> enabled) override {
+  bool ForceUiTabletModeState(absl::optional<bool> enabled) override {
     return false;
   }
 

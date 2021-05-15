@@ -31,7 +31,7 @@ class EnterprisePlatformKeysInternalGenerateKeyFunction
   // Called when the key was generated. If an error occurred, |public_key_der|
   // will be empty.
   void OnGeneratedKey(const std::string& public_key_der,
-                      base::Optional<crosapi::mojom::KeystoreError> error);
+                      absl::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)

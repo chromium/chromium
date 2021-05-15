@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -34,6 +33,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -81,21 +81,21 @@ base::FilePath GetTestAppExecutablePath() {
       .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING));
 }
 
-base::Optional<base::FilePath> GetProductPath(UpdaterScope scope) {
-  base::Optional<base::FilePath> path = GetLibraryFolderPath(scope);
+absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
 
   return path->AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-base::Optional<base::FilePath> GetActiveFile(UpdaterScope scope,
+absl::optional<base::FilePath> GetActiveFile(UpdaterScope scope,
                                              const std::string& id) {
-  const base::Optional<base::FilePath> path =
+  const absl::optional<base::FilePath> path =
       GetLibraryFolderPath(UpdaterScope::kUser);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
 
   return path->AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
@@ -128,12 +128,12 @@ void EnterTestMode(const GURL& url) {
                   .Overwrite());
 }
 
-base::Optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
-  base::Optional<base::FilePath> app_path =
+absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> app_path =
       GetApplicationSupportDirectory(scope);
   if (!app_path) {
     VLOG(1) << "Failed to get Application support path.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return app_path->AppendASCII(COMPANY_SHORTNAME_STRING)
@@ -144,7 +144,7 @@ void Clean(UpdaterScope scope) {
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
-  base::Optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
@@ -176,7 +176,7 @@ void ExpectClean(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   // Files must not exist on the file system.
-  base::Optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_FALSE(base::PathExists(*path));
@@ -202,7 +202,7 @@ void ExpectInstalled(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   // Files must exist on the file system.
-  base::Optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
@@ -228,7 +228,7 @@ void ExpectActiveUpdater(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   // Files must exist on the file system.
-  base::Optional<base::FilePath> path = GetProductPath(scope);
+  absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::PathExists(*path));
@@ -247,7 +247,7 @@ void RegisterTestApp(UpdaterScope scope) {
   EXPECT_EQ(exit_code, 0);
 }
 
-base::Optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
+absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   return GetUpdaterExecutablePath(scope);
 }
 
@@ -255,7 +255,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
-  base::Optional<base::FilePath> versioned_folder_path =
+  absl::optional<base::FilePath> versioned_folder_path =
       GetVersionedUpdaterFolderPath(scope);
   EXPECT_TRUE(versioned_folder_path);
   if (versioned_folder_path)
@@ -268,7 +268,7 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  base::Optional<base::FilePath> path = GetExecutablePath();
+  absl::optional<base::FilePath> path = GetExecutablePath();
   ASSERT_TRUE(path);
   base::CommandLine command_line(*path);
   command_line.AppendSwitch(kUninstallSwitch);
@@ -277,14 +277,14 @@ void Uninstall(UpdaterScope scope) {
   EXPECT_EQ(exit_code, 0);
 }
 
-base::Optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
+absl::optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
     UpdaterScope scope,
     const base::Version& version) {
   return GetExecutableFolderPathForVersion(scope, version);
 }
 
 void SetActive(UpdaterScope scope, const std::string& app_id) {
-  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  const absl::optional<base::FilePath> path = GetActiveFile(scope, app_id);
   ASSERT_TRUE(path);
   VLOG(0) << "Actives file: " << *path;
   base::File::Error err = base::File::FILE_OK;
@@ -294,14 +294,14 @@ void SetActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 void ExpectActive(UpdaterScope scope, const std::string& app_id) {
-  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  const absl::optional<base::FilePath> path = GetActiveFile(scope, app_id);
   ASSERT_TRUE(path);
   EXPECT_TRUE(base::PathExists(*path));
   EXPECT_TRUE(base::PathIsWritable(*path));
 }
 
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
-  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  const absl::optional<base::FilePath> path = GetActiveFile(scope, app_id);
   ASSERT_TRUE(path);
   EXPECT_FALSE(base::PathExists(*path));
   EXPECT_FALSE(base::PathIsWritable(*path));

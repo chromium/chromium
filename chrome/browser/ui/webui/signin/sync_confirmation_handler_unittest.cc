@@ -165,7 +165,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
-    base::Optional<AccountInfo> primary_account =
+    absl::optional<AccountInfo> primary_account =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
             identity_manager->GetPrimaryAccountInfo(
                 signin::ConsentLevel::kSync));

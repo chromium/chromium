@@ -80,7 +80,7 @@ bool IsKerberosChromadFileSystemId(const std::string& file_system_id) {
   return components.size() >= 3 && components[2] == kKerberosSymbol;
 }
 
-base::Optional<std::string> GetUserFromFileSystemId(
+absl::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id) {
   const std::vector<std::string> components = GetComponents(file_system_id);
   if (components.size() < 3 ||

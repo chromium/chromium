@@ -125,7 +125,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Attempted to create a route with an invalid sink ID",
                       sink_id, source_id, presentation_id);
-    std::move(callback).Run(base::nullopt, nullptr,
+    std::move(callback).Run(absl::nullopt, nullptr,
                             std::string("Sink not found"),
                             RouteRequestResult::ResultCode::SINK_NOT_FOUND);
     return;
@@ -138,7 +138,7 @@ void CastMediaRouteProvider::CreateRoute(const std::string& source_id,
                       "Attempted to create a route with an invalid source",
                       sink_id, source_id, presentation_id);
     std::move(callback).Run(
-        base::nullopt, nullptr, std::string("Invalid source"),
+        absl::nullopt, nullptr, std::string("Invalid source"),
         RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
     return;
   }
@@ -158,7 +158,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
       CastMediaSource::FromMediaSourceId(media_source);
   if (!cast_source) {
     std::move(callback).Run(
-        base::nullopt, nullptr, std::string("Invalid source"),
+        absl::nullopt, nullptr, std::string("Invalid source"),
         RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Attempted to join a route with an invalid source", "",
@@ -176,7 +176,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
     // but it's initialized in the same place as |activity_manager_|, so it's
     // almost certainly not available here.
     LOG(ERROR) << "missing activity manager";
-    std::move(callback).Run(base::nullopt, nullptr,
+    std::move(callback).Run(absl::nullopt, nullptr,
                             "Internal error: missing activity manager",
                             RouteRequestResult::ResultCode::UNKNOWN_ERROR);
     return;
@@ -199,7 +199,7 @@ void CastMediaRouteProvider::ConnectRouteByRouteId(
   // the dialog.
   NOTIMPLEMENTED();
   std::move(callback).Run(
-      base::nullopt, nullptr, std::string("Not implemented"),
+      absl::nullopt, nullptr, std::string("Not implemented"),
       RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
 }
 

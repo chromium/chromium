@@ -44,8 +44,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // Checks the current policies to determine whether files must be uploaded by
   // policy. Returns the settings to apply to this analysis if it should happen
-  // or base::nullopt if no analysis should happen.
-  static base::Optional<enterprise_connectors::AnalysisSettings>
+  // or absl::nullopt if no analysis should happen.
+  static absl::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(download::DownloadItem* item);
 
   // Scan the given |item|, with the given |trigger|. The result of the scanning

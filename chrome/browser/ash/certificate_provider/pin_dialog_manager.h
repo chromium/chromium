@@ -13,12 +13,12 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -53,7 +53,7 @@ class PinDialogManager final {
   void AddSignRequestId(
       const std::string& extension_id,
       int sign_request_id,
-      const base::Optional<AccountId>& authenticating_user_account_id);
+      const absl::optional<AccountId>& authenticating_user_account_id);
 
   // Removes the specified sign request, aborting both the current and the
   // future PIN dialogs related to it.
@@ -124,13 +124,13 @@ class PinDialogManager final {
   struct SignRequestState {
     SignRequestState(
         base::Time begin_time,
-        const base::Optional<AccountId>& authenticating_user_account_id);
+        const absl::optional<AccountId>& authenticating_user_account_id);
     SignRequestState(const SignRequestState&);
     SignRequestState& operator=(const SignRequestState&);
     ~SignRequestState();
 
     base::Time begin_time;
-    base::Optional<AccountId> authenticating_user_account_id;
+    absl::optional<AccountId> authenticating_user_account_id;
   };
 
   // Holds information related to the currently opened PIN dialog.
@@ -192,7 +192,7 @@ class PinDialogManager final {
 
   // There can be only one active dialog to request the PIN at any point of
   // time.
-  base::Optional<ActiveDialogState> active_dialog_state_;
+  absl::optional<ActiveDialogState> active_dialog_state_;
 
   base::WeakPtrFactory<PinDialogManager> weak_factory_{this};
 };

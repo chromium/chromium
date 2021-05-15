@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -47,6 +46,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 #if !defined(OS_ANDROID)
@@ -1496,20 +1496,20 @@ void ChromeFileSystemAccessPermissionContext::
   }
 }
 
-base::Optional<base::Value>
+absl::optional<base::Value>
 ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
     const url::Origin& origin,
     const base::FilePath& path) {
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Don't persist permissions when the origin is allowlisted or blocked.
   auto content_setting = GetWriteGuardContentSetting(origin);
   if (content_setting == CONTENT_SETTING_ALLOW ||
       content_setting == CONTENT_SETTING_BLOCK) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // TODO(https://crbug.com/984772): If a parent directory has a persisted
@@ -1518,7 +1518,7 @@ ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
   const std::unique_ptr<Object> object =
       GetGrantedObject(origin, PathAsPermissionKey(path));
   if (!object)
-    return base::nullopt;
+    return absl::nullopt;
 
   return std::move(object->value);
 }

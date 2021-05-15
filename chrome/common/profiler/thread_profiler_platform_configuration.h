@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Encapsulates the platform-specific configuration for the ThreadProfiler.
 //
@@ -25,7 +25,7 @@
 // configured for profiling. The overall enable/disable state should be reported
 // to UMA in this case.
 //
-// The base::Optional<version_info::Channel> release_channel passed to functions
+// The absl::optional<version_info::Channel> release_channel passed to functions
 // in this interface should be the channel for released Chrome and nullopt for
 // development/CQ builds.
 class ThreadProfilerPlatformConfiguration {
@@ -61,13 +61,13 @@ class ThreadProfilerPlatformConfiguration {
 
   // True if the platform supports the StackSamplingProfiler and the profiler is
   // to be run for the released Chrome channel or development/CQ build.
-  bool IsSupported(base::Optional<version_info::Channel> release_channel) const;
+  bool IsSupported(absl::optional<version_info::Channel> release_channel) const;
 
   // Returns the current state of the runtime support module for the released
   // Chrome channel or development/CQ build on the platform. Runtime module
   // state is valid only if IsSupported().
   virtual RuntimeModuleState GetRuntimeModuleState(
-      base::Optional<version_info::Channel> release_channel) const = 0;
+      absl::optional<version_info::Channel> release_channel) const = 0;
 
   // Request install of the runtime support module. May be invoked only if
   // GetRuntimeModuleState() returns kModuleAbsentButAvailable.
@@ -77,7 +77,7 @@ class ThreadProfilerPlatformConfiguration {
   // or development/CQ build on the platform. See the documentation on
   // RelativePopulations. Enable rates are valid only if IsSupported().
   virtual RelativePopulations GetEnableRates(
-      base::Optional<version_info::Channel> release_channel) const = 0;
+      absl::optional<version_info::Channel> release_channel) const = 0;
 
   // Returns the fraction of the time that profiling should be randomly enabled
   // for the child |process|. The return value is in the range [0.0, 1.0].
@@ -95,7 +95,7 @@ class ThreadProfilerPlatformConfiguration {
   // StackSamplingProfiler is supported on the platform since that's done in
   // IsSupported().
   virtual bool IsSupportedForChannel(
-      base::Optional<version_info::Channel> release_channel) const = 0;
+      absl::optional<version_info::Channel> release_channel) const = 0;
 };
 
 #endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_PLATFORM_CONFIGURATION_H_

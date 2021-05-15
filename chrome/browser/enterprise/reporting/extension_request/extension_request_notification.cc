@@ -97,8 +97,8 @@ void ExtensionRequestNotification::CloseNotification() {
 }
 
 void ExtensionRequestNotification::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   for (const std::string& extension_id : extension_ids_) {
     NavigateParams params(profile_, GURL(kChromeWebstoreUrl + extension_id),
                           ui::PAGE_TRANSITION_LINK);

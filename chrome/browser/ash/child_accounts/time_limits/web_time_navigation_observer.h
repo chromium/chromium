@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -68,11 +68,11 @@ class WebTimeNavigationObserver
   void WebContentsDestroyed() override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
-  const base::Optional<NavigationInfo>& last_navigation_info() const {
+  const absl::optional<NavigationInfo>& last_navigation_info() const {
     return last_navigation_info_;
   }
 
-  const base::Optional<std::u16string>& previous_title() const {
+  const absl::optional<std::u16string>& previous_title() const {
     return previous_title_;
   }
 
@@ -86,9 +86,9 @@ class WebTimeNavigationObserver
 
   base::ObserverList<EventListener> listeners_;
 
-  base::Optional<NavigationInfo> last_navigation_info_ = base::nullopt;
+  absl::optional<NavigationInfo> last_navigation_info_ = absl::nullopt;
 
-  base::Optional<std::u16string> previous_title_;
+  absl::optional<std::u16string> previous_title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

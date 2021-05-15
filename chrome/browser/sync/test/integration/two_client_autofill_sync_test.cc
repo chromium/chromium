@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, DeleteAndUpdate) {
   UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
                 AutofillType(autofill::NAME_FIRST), u"Bart");
 
-  EXPECT_TRUE(AutofillProfileChecker(0, 1, base::nullopt).Wait());
+  EXPECT_TRUE(AutofillProfileChecker(0, 1, absl::nullopt).Wait());
   // The exact result is non-deterministic without a strong consistency model
   // server-side, but both clients should converge (either update or delete).
   EXPECT_EQ(GetAllAutoFillProfiles(0).size(), GetAllAutoFillProfiles(1).size());
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   // All profiles should sync same autofill profiles.
   ASSERT_TRUE(
-      AutofillProfileChecker(0, 1, /*expected_count=*/base::nullopt).Wait())
+      AutofillProfileChecker(0, 1, /*expected_count=*/absl::nullopt).Wait())
       << "Initial autofill profiles did not match for all profiles.";
 
   // For clean profiles, the autofill profiles count should be zero. We are not

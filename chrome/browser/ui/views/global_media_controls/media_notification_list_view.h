@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -28,7 +28,7 @@ class MediaNotificationListView : public views::ScrollView {
   };
 
   explicit MediaNotificationListView(
-      const base::Optional<SeparatorStyle>& separator_style);
+      const absl::optional<SeparatorStyle>& separator_style);
   MediaNotificationListView();
   MediaNotificationListView(const MediaNotificationListView&) = delete;
   MediaNotificationListView& operator=(const MediaNotificationListView&) =
@@ -62,7 +62,7 @@ class MediaNotificationListView : public views::ScrollView {
   std::map<const std::string, MediaNotificationContainerImplView*>
       notifications_;
 
-  base::Optional<SeparatorStyle> separator_style_;
+  absl::optional<SeparatorStyle> separator_style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_LIST_VIEW_H_

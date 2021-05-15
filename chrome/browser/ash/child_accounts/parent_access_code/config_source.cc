@@ -80,7 +80,7 @@ void ConfigSource::AddAuthenticator(const base::Value& dict,
   if (!dict.is_dict())
     return;
 
-  base::Optional<AccessCodeConfig> code_config =
+  absl::optional<AccessCodeConfig> code_config =
       AccessCodeConfig::FromDictionary(
           static_cast<const base::DictionaryValue&>(dict));
   if (code_config) {

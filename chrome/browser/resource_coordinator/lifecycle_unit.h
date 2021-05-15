@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace resource_coordinator {
 

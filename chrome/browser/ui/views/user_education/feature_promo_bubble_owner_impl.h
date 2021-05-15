@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_IMPL_H_
 
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_observer.h"
 
 // FeaturePromoBubbleOwner that creates a production FeaturePromoBubbleView.
@@ -24,7 +24,7 @@ class FeaturePromoBubbleOwnerImpl : public FeaturePromoBubbleOwner,
   FeaturePromoBubbleView* bubble_for_testing() { return bubble_; }
 
   // FeaturePromoBubbleOwner:
-  base::Optional<base::Token> ShowBubble(
+  absl::optional<base::Token> ShowBubble(
       FeaturePromoBubbleView::CreateParams params,
       base::OnceClosure close_callback) override;
   bool BubbleIsShowing(base::Token bubble_id) override;
@@ -43,7 +43,7 @@ class FeaturePromoBubbleOwnerImpl : public FeaturePromoBubbleOwner,
   FeaturePromoBubbleView* bubble_ = nullptr;
 
   // ID of the currently showing bubble. Must be nullopt if `bubble_` is null.
-  base::Optional<base::Token> bubble_id_;
+  absl::optional<base::Token> bubble_id_;
 
   // Called when `bubble_` closes.
   base::OnceClosure close_callback_;

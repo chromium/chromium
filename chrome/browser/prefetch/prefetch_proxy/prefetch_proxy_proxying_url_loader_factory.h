@@ -13,7 +13,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -125,7 +125,7 @@ class PrefetchProxyProxyingURLLoaderFactory
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const base::Optional<GURL>& new_url) override;
+        const absl::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override;
     void PauseReadingBodyFromNet() override;
@@ -204,7 +204,7 @@ class PrefetchProxyProxyingURLLoaderFactory
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const base::Optional<GURL>& new_url) override;
+        const absl::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override;
     void PauseReadingBodyFromNet() override;
@@ -235,7 +235,7 @@ class PrefetchProxyProxyingURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       const GURL& url,
       bool eligible,
-      base::Optional<PrefetchProxyPrefetchStatus> status);
+      absl::optional<PrefetchProxyPrefetchStatus> status);
 
   void RecordSubresourceMetricsDuringPrerender(
       const GURL& url,
@@ -265,7 +265,7 @@ class PrefetchProxyProxyingURLLoaderFactory
   // When |previously_cached_subresources_| is set,
   // |NotifyPageNavigatedToAfterSRP| has been called and the behavior there will
   // take place using this set as the resources that can be loaded from cache.
-  base::Optional<std::set<GURL>> previously_cached_subresources_;
+  absl::optional<std::set<GURL>> previously_cached_subresources_;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
 

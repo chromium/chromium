@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -71,7 +71,7 @@ class ExtensionViewViews : public views::WebView,
   // loaded.
   gfx::Size pending_preferred_size_;
 
-  base::Optional<gfx::Size> minimum_size_;
+  absl::optional<gfx::Size> minimum_size_;
 
   // The container this view is in (not necessarily its direct superview).
   // Note: the view does not own its container.

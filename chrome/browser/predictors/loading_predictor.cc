@@ -75,7 +75,7 @@ bool IsPreconnectExpensive() {
     return false;
   }
 
-  base::Optional<base::android::RadioSignalLevel> maybe_level =
+  absl::optional<base::android::RadioSignalLevel> maybe_level =
       base::android::RadioUtils::GetCellSignalLevel();
   return maybe_level.has_value() &&
          *maybe_level <= base::android::RadioSignalLevel::kModerate;
@@ -108,7 +108,7 @@ bool LoadingPredictor::PrepareForPageLoad(
     const GURL& url,
     HintOrigin origin,
     bool preconnectable,
-    base::Optional<PreconnectPrediction> preconnect_prediction) {
+    absl::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
 

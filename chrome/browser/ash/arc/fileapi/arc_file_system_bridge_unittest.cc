@@ -102,7 +102,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::string>& result) {
+             const absl::optional<std::string>& result) {
             run_loop->Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("hello.txt", result.value());
@@ -123,7 +123,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
       EncodeToChromeContentProviderUrl(url).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop, const std::string& expected,
-             const base::Optional<std::string>& result) {
+             const absl::optional<std::string>& result) {
             run_loop->Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ(expected, result.value());
@@ -142,7 +142,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameLockIcon) {
       EncodeToChromeContentProviderUrl(url).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::string>& result) {
+             const absl::optional<std::string>& result) {
             run_loop->Quit();
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ("\xF0\x9F\x94\x92", result.value());
@@ -160,7 +160,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileNameEscapedPathSeparator) {
       EncodeToChromeContentProviderUrl(url).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::string>& result) {
+             const absl::optional<std::string>& result) {
             run_loop->Quit();
             ASSERT_FALSE(result.has_value());
           },
@@ -187,7 +187,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileType) {
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop,
-             const base::Optional<std::string>& result) {
+             const absl::optional<std::string>& result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ(kTestFileType, result.value());
             run_loop->Quit();
@@ -210,8 +210,8 @@ TEST_F(ArcFileSystemBridgeTest, GetVirtualFileId) {
       EncodeToChromeContentProviderUrl(GURL(kTestUrl)).spec(),
       base::BindOnce(
           [](base::RunLoop* run_loop, const char* kId,
-             const base::Optional<std::string>& id) {
-            ASSERT_NE(base::nullopt, id);
+             const absl::optional<std::string>& id) {
+            ASSERT_NE(absl::nullopt, id);
             EXPECT_EQ(kId, id.value());
             run_loop->Quit();
           },

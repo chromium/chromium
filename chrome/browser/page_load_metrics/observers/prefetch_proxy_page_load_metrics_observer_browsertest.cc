@@ -72,7 +72,7 @@ class IsolatedPrerenderPageLoadMetricsObserverBrowserTest
   }
 
   void VerifyUKMEntry(const std::string& metric_name,
-                      base::Optional<int64_t> expected_value) {
+                      absl::optional<int64_t> expected_value) {
     auto entries = ukm_recorder_->GetEntriesByName(
         ukm::builders::PrefetchProxy::kEntryName);
     ASSERT_EQ(1U, entries.size());

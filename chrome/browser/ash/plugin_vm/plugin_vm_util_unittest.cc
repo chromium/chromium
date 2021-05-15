@@ -134,19 +134,19 @@ TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
 }
 
 TEST_F(PluginVmUtilTest, DriveUrlNonMatches) {
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             GetIdFromDriveUrl(GURL(
                 "http://192.168.0.2?id=Yxhi5BDTxsEl9onT8AunH4o_tkKviFGjY")));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             GetIdFromDriveUrl(
                 GURL("https://drive.notgoogle.com/open?id=someSortOfId123")));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             GetIdFromDriveUrl(GURL(
                 "https://site.com/a/site.com/file/d/definitelyNotDrive/view")));
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       GetIdFromDriveUrl(GURL("file:///home/chronos/user/Downloads/file.zip")));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             GetIdFromDriveUrl(GURL("http://drive.google.com/open?id=fancyId")));
 }
 

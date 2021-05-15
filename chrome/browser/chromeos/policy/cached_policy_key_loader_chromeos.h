@@ -13,10 +13,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -66,7 +66,7 @@ class CachedPolicyKeyLoaderChromeOS {
 
   // Callback for getting the sanitized username from |cryptohome_client_|.
   void OnGetSanitizedUsername(
-      base::Optional<user_data_auth::GetSanitizedUsernameReply> reply);
+      absl::optional<user_data_auth::GetSanitizedUsernameReply> reply);
 
   void NotifyAndClearCallbacks();
 

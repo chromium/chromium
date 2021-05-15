@@ -56,9 +56,9 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
 std::vector<tab_groups::TabGroupId>
 ExistingTabGroupSubMenuModel::GetOrderedTabGroupsInSubMenu() {
   std::vector<tab_groups::TabGroupId> ordered_groups;
-  base::Optional<tab_groups::TabGroupId> current_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> current_group = absl::nullopt;
   for (int i = 0; i < model()->count(); ++i) {
-    base::Optional<tab_groups::TabGroupId> new_group =
+    absl::optional<tab_groups::TabGroupId> new_group =
         model()->GetTabGroupForTab(i);
     if (new_group.has_value() && new_group != current_group &&
         ShouldShowGroup(model(), GetContextIndex(), new_group.value())) {

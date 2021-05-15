@@ -151,7 +151,7 @@ class DmServerUploadService {
     EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     RecordHandler* handler_;
 
-    base::Optional<SequencingInformation> highest_successful_sequence_;
+    absl::optional<SequencingInformation> highest_successful_sequence_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };

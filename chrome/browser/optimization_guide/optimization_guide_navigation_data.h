@@ -13,12 +13,12 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A representation of optimization guide information related to a navigation.
 // Metrics will be recorded upon this object's destruction.
@@ -71,7 +71,7 @@ class OptimizationGuideNavigationData {
   // The duration between the fetch for a hint for the navigation going out to
   // when it was received by the client if a fetch was initiated for the
   // navigation.
-  base::Optional<base::TimeDelta> hints_fetch_latency() const;
+  absl::optional<base::TimeDelta> hints_fetch_latency() const;
   void set_hints_fetch_start(base::TimeTicks hints_fetch_start) {
     hints_fetch_start_ = hints_fetch_start;
   }
@@ -81,7 +81,7 @@ class OptimizationGuideNavigationData {
 
   // The status for whether a hint for the page load was attempted to be fetched
   // from the remote Optimization Guide Service.
-  base::Optional<optimization_guide::RaceNavigationFetchAttemptStatus>
+  absl::optional<optimization_guide::RaceNavigationFetchAttemptStatus>
   hints_fetch_attempt_status() const {
     return hints_fetch_attempt_status_;
   }
@@ -118,20 +118,20 @@ class OptimizationGuideNavigationData {
       optimization_type_decisions_;
 
   // The page hint for the navigation.
-  base::Optional<std::unique_ptr<optimization_guide::proto::PageHint>>
+  absl::optional<std::unique_ptr<optimization_guide::proto::PageHint>>
       page_hint_;
 
   // The time that the hints fetch for this navigation started. Is only present
   // if a fetch was initiated for this navigation.
-  base::Optional<base::TimeTicks> hints_fetch_start_;
+  absl::optional<base::TimeTicks> hints_fetch_start_;
 
   // The time that the hints fetch for the navigation ended. Is only present if
   // a fetch was initiated and successfully completed for this navigation.
-  base::Optional<base::TimeTicks> hints_fetch_end_;
+  absl::optional<base::TimeTicks> hints_fetch_end_;
 
   // The status for whether a hint for the page load was attempted to be fetched
   // from the remote Optimization Guide Service.
-  base::Optional<optimization_guide::RaceNavigationFetchAttemptStatus>
+  absl::optional<optimization_guide::RaceNavigationFetchAttemptStatus>
       hints_fetch_attempt_status_;
 
   // Used to get |weak_ptr_| to self on the UI thread.

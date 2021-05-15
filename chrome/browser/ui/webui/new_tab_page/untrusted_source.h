@@ -81,7 +81,7 @@ class UntrustedSource : public content::URLDataSource,
   OneGoogleBarService* one_google_bar_service_;
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
-  base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
+  absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
 };
 

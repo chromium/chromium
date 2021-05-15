@@ -13,11 +13,11 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -99,7 +99,7 @@ class CrosSettings {
   bool IsUserAllowlisted(
       const std::string& username,
       bool* wildcard_match,
-      const base::Optional<user_manager::UserType>& user_type) const;
+      const absl::optional<user_manager::UserType>& user_type) const;
 
   // Helper function for the allowlist op. Implemented here because we will need
   // this in a few places. The functions searches for |email| in the pref |path|

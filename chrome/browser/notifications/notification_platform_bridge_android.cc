@@ -171,7 +171,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   std::string webapk_package =
       ConvertJavaStringToUTF8(env, java_webapk_package);
 
-  base::Optional<std::u16string> reply;
+  absl::optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
 
@@ -180,7 +180,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   regenerated_notification_infos_[notification_id] =
       RegeneratedNotificationInfo(scope_url, webapk_package);
 
-  base::Optional<int> action_index;
+  absl::optional<int> action_index;
   if (java_action_index != kNotificationInvalidButtonIndex)
     action_index = java_action_index;
 
@@ -195,7 +195,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationCommon::OPERATION_CLICK, notification_type,
                      origin, notification_id, std::move(action_index),
-                     std::move(reply), base::nullopt /* by_user */));
+                     std::move(reply), absl::nullopt /* by_user */));
 }
 
 void NotificationPlatformBridgeAndroid::
@@ -244,8 +244,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationCommon::OPERATION_CLOSE, notification_type,
                      GURL(ConvertJavaStringToUTF8(env, java_origin)),
-                     notification_id, base::nullopt /* action index */,
-                     base::nullopt /* reply */, by_user));
+                     notification_id, absl::nullopt /* action index */,
+                     absl::nullopt /* reply */, by_user));
 }
 
 void NotificationPlatformBridgeAndroid::Display(
@@ -317,7 +317,7 @@ void NotificationPlatformBridgeAndroid::Display(
       notification.silent(), actions);
 
   regenerated_notification_infos_[notification.id()] =
-      RegeneratedNotificationInfo(scope_url, base::nullopt);
+      RegeneratedNotificationInfo(scope_url, absl::nullopt);
 }
 
 void NotificationPlatformBridgeAndroid::Close(
@@ -383,7 +383,7 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     RegeneratedNotificationInfo(
         const GURL& service_worker_scope,
-        const base::Optional<std::string>& webapk_package)
+        const absl::optional<std::string>& webapk_package)
     : service_worker_scope(service_worker_scope),
       webapk_package(webapk_package) {}
 

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ThirdPartyConflictsManagerTest : public testing::Test,
                                        public ModuleDatabaseEventSource {
@@ -68,7 +68,7 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
     std::move(quit_closure).Run();
   }
 
-  const base::Optional<ThirdPartyConflictsManager::State>& final_state() {
+  const absl::optional<ThirdPartyConflictsManager::State>& final_state() {
     return final_state_;
   }
 
@@ -85,7 +85,7 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  base::Optional<ThirdPartyConflictsManager::State> final_state_;
+  absl::optional<ThirdPartyConflictsManager::State> final_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ThirdPartyConflictsManagerTest);
 };
@@ -100,7 +100,7 @@ std::pair<ModuleInfoKey, ModuleInfoData> CreateExeModuleInfo() {
       std::forward_as_tuple());
 
   module_info.second.inspection_result =
-      base::make_optional<ModuleInspectionResult>();
+      absl::make_optional<ModuleInspectionResult>();
 
   return module_info;
 }

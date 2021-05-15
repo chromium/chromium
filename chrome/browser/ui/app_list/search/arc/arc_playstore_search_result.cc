@@ -89,7 +89,7 @@ bool LaunchIntent(const std::string& intent_uri, int64_t display_id) {
 
   if (auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
           arc_bridge->app(), LaunchIntentDeprecated)) {
-    app_instance->LaunchIntentDeprecated(intent_uri, base::nullopt);
+    app_instance->LaunchIntentDeprecated(intent_uri, absl::nullopt);
     return true;
   }
 

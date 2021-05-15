@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -84,7 +84,7 @@ class StatusCollector {
 
   // Simplifies filling the boot mode for any of the relevant status report
   // requests.
-  static base::Optional<std::string> GetBootMode(
+  static absl::optional<std::string> GetBootMode(
       chromeos::system::StatisticsProvider* statistics_provider);
 
   StatusCollector(chromeos::system::StatisticsProvider* provider,

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -38,7 +38,7 @@ class EnvironmentProvider {
   // a Microsoft Active Directory account.
   // Returns a `nullopt` for Guest Sessions, Managed Guest Sessions,
   // Demo Mode, and Kiosks.
-  virtual base::Optional<account_manager::Account> GetDeviceAccount();
+  virtual absl::optional<account_manager::Account> GetDeviceAccount();
 
   // Getter and setter for device account policy data. Used to pass data from
   // Ash to Lacros. The format is serialized PolicyFetchResponse object. See

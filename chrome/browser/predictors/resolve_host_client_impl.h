@@ -7,11 +7,11 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -46,7 +46,7 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   void OnConnectionError();
 

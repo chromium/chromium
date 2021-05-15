@@ -9,8 +9,8 @@
 #include <memory>
 #include <set>
 
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct WebApplicationInfo;
 
@@ -87,8 +87,8 @@ class TestInstallFinalizer final : public InstallFinalizer {
   std::vector<FinalizeOptions> finalize_options_list_;
   std::vector<GURL> uninstall_external_web_app_urls_;
 
-  base::Optional<AppId> next_app_id_;
-  base::Optional<InstallResultCode> next_result_code_;
+  absl::optional<AppId> next_app_id_;
+  absl::optional<InstallResultCode> next_result_code_;
   std::map<GURL, bool> next_uninstall_external_web_app_results_;
   std::set<AppId> user_uninstalled_external_apps_;
 

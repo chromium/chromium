@@ -28,7 +28,7 @@ FakeNetworkContext::FakeNetworkContext() = default;
 FakeNetworkContext::~FakeNetworkContext() = default;
 
 void FakeNetworkContext::CreateHostResolver(
-    const base::Optional<net::DnsConfigOverrides>& config_overrides,
+    const absl::optional<net::DnsConfigOverrides>& config_overrides,
     mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
   DCHECK(!resolver_);
   resolver_ = std::make_unique<FakeHostResolver>(std::move(receiver));
@@ -37,7 +37,7 @@ void FakeNetworkContext::CreateHostResolver(
 }
 
 void FakeNetworkContext::CreateTCPConnectedSocket(
-    const base::Optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -80,7 +80,7 @@ void FakeNetworkContext::CreateUDPSocket(
 }
 
 void FakeNetworkContext::SetTCPConnectCode(
-    base::Optional<net::Error>& tcp_connect_code) {
+    absl::optional<net::Error>& tcp_connect_code) {
   if (tcp_connect_code.has_value()) {
     tcp_connect_code_ = tcp_connect_code.value();
     fake_tcp_connected_socket_ = std::make_unique<FakeTCPConnectedSocket>();
@@ -88,7 +88,7 @@ void FakeNetworkContext::SetTCPConnectCode(
 }
 
 void FakeNetworkContext::SetTLSUpgradeCode(
-    base::Optional<net::Error>& tls_upgrade_code) {
+    absl::optional<net::Error>& tls_upgrade_code) {
   if (tls_upgrade_code.has_value()) {
     DCHECK(fake_tcp_connected_socket_);
 

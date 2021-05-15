@@ -15,7 +15,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -24,6 +23,7 @@
 #include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/prefs/pref_member.h"
 #include "components/undo/undo_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace password_manager {
@@ -113,7 +113,7 @@ class PasswordManagerPresenter
   void RequestPlaintextPassword(
       const std::string& sort_key,
       password_manager::PlaintextReason reason,
-      base::OnceCallback<void(base::Optional<std::u16string>)> callback) const;
+      base::OnceCallback<void(absl::optional<std::u16string>)> callback) const;
 #endif
 
   // Wrapper around |PasswordStore::AddLogin| that adds the corresponding undo

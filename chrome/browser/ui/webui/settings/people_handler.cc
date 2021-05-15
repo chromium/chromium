@@ -489,7 +489,7 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   // Chrome OS), then show only the primary account, whether or not that account
   // has consented to sync.
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (primary_account_info.has_value())
@@ -508,7 +508,7 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
 
-  base::Optional<AccountInfo> maybe_account =
+  absl::optional<AccountInfo> maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               email->GetString());

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -26,7 +26,7 @@ using AllowKeyForUsageCallback = base::OnceCallback<void(Status status)>;
 // has occurred, an error |status| will be returned and |allowed| will be
 // nullopt.
 using IsKeyAllowedForUsageCallback =
-    base::OnceCallback<void(base::Optional<bool> allowed, Status status)>;
+    base::OnceCallback<void(absl::optional<bool> allowed, Status status)>;
 
 // ** KeyPermissionsManager (KPM) instances **
 // Every KPM instance is responsible for managing key permissions of keys

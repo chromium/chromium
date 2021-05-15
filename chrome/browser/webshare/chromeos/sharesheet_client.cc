@@ -165,7 +165,7 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
 
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
-    current_share_ = base::nullopt;
+    current_share_ = absl::nullopt;
     return;
   }
 
@@ -195,7 +195,7 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
     std::move(current_share_->callback).Run(error);
     PrepareDirectoryTask::ScheduleSharedFileDeletion(
         std::move(current_share_->file_paths), base::TimeDelta::FromMinutes(0));
-    current_share_ = base::nullopt;
+    current_share_ = absl::nullopt;
     return;
   }
 
@@ -214,7 +214,7 @@ void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
   PrepareDirectoryTask::ScheduleSharedFileDeletion(
       std::move(current_share_->file_paths),
       PrepareDirectoryTask::kSharedFileLifetime);
-  current_share_ = base::nullopt;
+  current_share_ = absl::nullopt;
 }
 
 // static
@@ -256,7 +256,7 @@ SharesheetClient::GetSharesheetCallback() {
 }
 
 void SharesheetClient::WebContentsDestroyed() {
-  current_share_ = base::nullopt;
+  current_share_ = absl::nullopt;
 }
 
 }  // namespace webshare

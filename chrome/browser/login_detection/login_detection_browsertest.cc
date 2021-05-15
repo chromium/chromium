@@ -43,7 +43,7 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
             browser()->profile());
     optimization_guide_decider->AddHintForTesting(
         GURL("https://www.optguideloggedin.com/page.html"),
-        optimization_guide::proto::LOGIN_DETECTION, base::nullopt);
+        optimization_guide::proto::LOGIN_DETECTION, absl::nullopt);
 
     https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(https_test_server_.Start());

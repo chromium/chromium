@@ -212,7 +212,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillNetworkProperties(const std::string& callback_id,
                                    const std::string& guid,
                                    const std::string& service_path,
-                                   base::Optional<base::Value> result) {
+                                   absl::optional<base::Value> result) {
     if (!result) {
       RunErrorCallback(callback_id, guid, kGetNetworkProperties, "Error.DBus");
       return;
@@ -321,7 +321,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillDeviceProperties(const std::string& callback_id,
                                   const std::string& type,
                                   const std::string& device_path,
-                                  base::Optional<base::Value> result) {
+                                  absl::optional<base::Value> result) {
     if (!result) {
       RunErrorCallback(callback_id, type, kGetDeviceProperties,
                        "GetDeviceProperties failed");

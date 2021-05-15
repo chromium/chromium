@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -28,6 +27,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -92,7 +92,7 @@ void KeyPermissionsServiceImpl::
         const std::string& public_key_spki_der,
         CanUserGrantPermissionForKeyCallback callback,
         const std::vector<TokenId>& key_locations,
-        base::Optional<bool> corporate_key,
+        absl::optional<bool> corporate_key,
         Status status) {
   if (status != Status::kSuccess) {
     std::move(callback).Run(/*allowed=*/false);
@@ -128,7 +128,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
-    std::move(callback).Run(/*corporate=*/base::nullopt, status);
+    std::move(callback).Run(/*corporate=*/absl::nullopt, status);
     return;
   }
 
@@ -164,7 +164,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
 
 void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
     IsCorporateKeyCallback callback,
-    base::Optional<bool> allowed,
+    absl::optional<bool> allowed,
     Status status) {
   if (allowed.has_value()) {
     std::move(callback).Run(allowed.value(), Status::kSuccess);
@@ -173,7 +173,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
 
   LOG(ERROR) << "Checking corporate flag via KeyPermissionsManager failed: "
              << StatusToString(status);
-  std::move(callback).Run(/*corporate=*/base::nullopt, status);
+  std::move(callback).Run(/*corporate=*/absl::nullopt, status);
 }
 
 void KeyPermissionsServiceImpl::SetCorporateKey(

@@ -163,7 +163,7 @@ void FullRestoreService::ShowRestoreNotification(const std::string& id) {
 }
 
 void FullRestoreService::HandleRestoreNotificationClicked(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   DCHECK(notification_);
   if (!is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(

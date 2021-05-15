@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation.h"
 
 DownloadShelf::DownloadShelf(Browser* browser, Profile* profile)
@@ -144,7 +144,7 @@ void DownloadShelf::ShowDownloadById(
 }
 
 void DownloadShelf::OnGetDownloadDoneForOfflineItem(
-    const base::Optional<offline_items_collection::OfflineItem>& item) {
+    const absl::optional<offline_items_collection::OfflineItem>& item) {
   if (item.has_value()) {
     auto* const manager =
         OfflineItemModelManagerFactory::GetForBrowserContext(profile());

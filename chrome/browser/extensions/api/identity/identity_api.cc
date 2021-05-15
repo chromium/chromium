@@ -65,12 +65,12 @@ void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,
                                         std::make_unique<base::Value>(gaia_id));
 }
 
-base::Optional<std::string> IdentityAPI::GetGaiaIdForExtension(
+absl::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
     const std::string& extension_id) {
   std::string gaia_id;
   if (!extension_prefs_->ReadPrefAsString(extension_id, kIdentityGaiaIdPref,
                                           &gaia_id)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return gaia_id;
 }
@@ -90,7 +90,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
   extensions::ExtensionIdList extensions;
   extension_prefs_->GetExtensions(&extensions);
   for (const ExtensionId& extension_id : extensions) {
-    base::Optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
+    absl::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;
     auto account_it = std::find_if(accounts.begin(), accounts.end(),

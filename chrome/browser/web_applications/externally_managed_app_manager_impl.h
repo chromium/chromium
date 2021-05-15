@@ -12,12 +12,12 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -80,7 +80,7 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
 
   void CreateWebContentsIfNecessary();
 
-  void OnInstalled(base::Optional<AppId> app_id,
+  void OnInstalled(absl::optional<AppId> app_id,
                    ExternallyManagedAppManager::InstallResult result);
 
   void MaybeEnqueueServiceWorkerRegistration(

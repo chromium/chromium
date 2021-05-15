@@ -609,8 +609,8 @@ std::string WebRtcTestBase::GetDesktopMediaStream(content::WebContents* tab) {
   return ExecuteJavascript("openDesktopMediaStream()", tab);
 }
 
-base::Optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
-  base::Optional<std::string> extension_id;
+absl::optional<std::string> WebRtcTestBase::LoadDesktopCaptureExtension() {
+  absl::optional<std::string> extension_id;
   if (!desktop_capture_extension_.get()) {
     extensions::ChromeTestExtensionLoader loader(browser()->profile());
     base::FilePath extension_path;

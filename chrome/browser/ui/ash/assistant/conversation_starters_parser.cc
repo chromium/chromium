@@ -41,20 +41,20 @@ std::unique_ptr<base::Value> Deserialize(const std::string& safe_json_response,
       .Deserialize(&error_code, error_message);
 }
 
-base::Optional<std::string> FindLabel(const base::Value& conversation_starter) {
+absl::optional<std::string> FindLabel(const base::Value& conversation_starter) {
   const std::string* label = conversation_starter.FindStringKey(kLabelKey);
-  return label ? base::Optional<std::string>(*label) : base::nullopt;
+  return label ? absl::optional<std::string>(*label) : absl::nullopt;
 }
 
-base::Optional<GURL> FindActionUrl(const base::Value& conversation_starter) {
+absl::optional<GURL> FindActionUrl(const base::Value& conversation_starter) {
   const std::string* action_url =
       conversation_starter.FindStringKey(kActionUrlKey);
-  return action_url ? base::Optional<GURL>(*action_url) : base::nullopt;
+  return action_url ? absl::optional<GURL>(*action_url) : absl::nullopt;
 }
 
-base::Optional<GURL> FindIconUrl(const base::Value& conversation_starter) {
+absl::optional<GURL> FindIconUrl(const base::Value& conversation_starter) {
   const std::string* icon_url = conversation_starter.FindStringKey(kIconUrlKey);
-  return icon_url ? base::Optional<GURL>(*icon_url) : base::nullopt;
+  return icon_url ? absl::optional<GURL>(*icon_url) : absl::nullopt;
 }
 
 uint32_t FindRequiredPermissions(const base::Value& conversation_starter) {
@@ -107,15 +107,15 @@ std::vector<ash::ConversationStarter> ConversationStartersParser::Parse(
   // Parse each |conversation_starter|.
   for (auto& conversation_starter : conversation_starters_list->GetList()) {
     // Parse |label|.
-    base::Optional<std::string> label = FindLabel(conversation_starter);
+    absl::optional<std::string> label = FindLabel(conversation_starter);
     if (!label.has_value()) {
       LOG(ERROR) << "Omitting conversation starter due to missing label.";
       continue;
     }
 
     // Parse |action_url|, |icon_url|, and |required_permissions|.
-    base::Optional<GURL> action_url = FindActionUrl(conversation_starter);
-    base::Optional<GURL> icon_url = FindIconUrl(conversation_starter);
+    absl::optional<GURL> action_url = FindActionUrl(conversation_starter);
+    absl::optional<GURL> icon_url = FindIconUrl(conversation_starter);
     uint32_t required_permissions =
         FindRequiredPermissions(conversation_starter);
 

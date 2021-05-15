@@ -136,7 +136,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   for (permissions::PermissionRequest* request : GetVisibleRequests())
     AddRequestLine(request);
 
-  base::Optional<std::u16string> extra_text = GetExtraText();
+  absl::optional<std::u16string> extra_text = GetExtraText();
   if (extra_text.has_value()) {
     auto* extra_text_label =
         AddChildView(std::make_unique<views::Label>(extra_text.value()));
@@ -336,7 +336,7 @@ bool PermissionPromptBubbleView::GetDisplayNameIsOrigin() const {
          !origin_url.SchemeIsFile();
 }
 
-base::Optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
+absl::optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
     const {
   switch (delegate_->Requests()[0]->GetRequestType()) {
     case permissions::RequestType::kStorageAccess:
@@ -349,7 +349,7 @@ base::Optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
               delegate_->GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

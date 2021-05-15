@@ -110,7 +110,7 @@ class AppArgsBuilder {
 
 void VerifyTagParseSuccess(
     base::StringPiece tag,
-    base::Optional<base::StringPiece> app_installer_data_args,
+    absl::optional<base::StringPiece> app_installer_data_args,
     const TagArgs& expected) {
   TagArgs actual;
   ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, &actual));
@@ -143,7 +143,7 @@ void VerifyTagParseSuccess(
 
 void VerifyTagParseFail(
     base::StringPiece tag,
-    base::Optional<base::StringPiece> app_installer_data_args,
+    absl::optional<base::StringPiece> app_installer_data_args,
     ErrorCode expected) {
   TagArgs args;
   ASSERT_EQ(expected, Parse(tag, app_installer_data_args, &args));
@@ -162,28 +162,28 @@ TEST(TagParserTest, InvalidValueNameIsSupersetOfValidName) {
   VerifyTagParseFail(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname1=Hello",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, AppNameSpaceForValue) {
   VerifyTagParseFail(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname= ",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, AppNameEncodedSpaceForValue) {
   VerifyTagParseFail(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname=%20",
-      base::nullopt, ErrorCode::kApp_AppNameCannotBeWhitespace);
+      absl::nullopt, ErrorCode::kApp_AppNameCannotBeWhitespace);
 }
 
 TEST(TagParserTest, AppNameValid) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname=Test",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName("Test")
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -197,7 +197,7 @@ TEST(TagParserTest, AppNameWithSpace) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname=Test App",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName("Test App")
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -210,7 +210,7 @@ TEST(TagParserTest, AppNameWithSpaceAtEnd) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname= T Ap p ",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName("T Ap p")
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -223,7 +223,7 @@ TEST(TagParserTest, AppNameWithEncodedSpacesAtEnd) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname=%20T%20Ap%20p%20",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName("T Ap p")
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -236,7 +236,7 @@ TEST(TagParserTest, AppNameWithMultipleSpaces) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname= T Ap p",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName("T Ap p")
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -250,7 +250,7 @@ TEST(TagParserTest, AppNameUnicode) {
   VerifyTagParseSuccess(
       "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&"
       "appname=%E0%A4%B0%E0%A4%B9%E0%A4%BE",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithBundleName(non_ascii_name)
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -270,7 +270,7 @@ TEST(TagParserTest, AppNameUnicode2) {
   tag << "appguid=D0324988-DA8A-49e5-BCE5-925FCD04EAB7&";
   tag << "appname=" << escaped;
   VerifyTagParseSuccess(
-      tag.str(), base::nullopt,
+      tag.str(), absl::nullopt,
       TagArgsBuilder()
           .WithBundleName(non_ascii_name)
           .WithApp(AppArgsBuilder("d0324988-da8a-49e5-bce5-925fcd04eab7")
@@ -281,7 +281,7 @@ TEST(TagParserTest, AppNameUnicode2) {
 
 TEST(TagParserTest, AppIdValid) {
   VerifyTagParseSuccess(
-      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B", base::nullopt,
+      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B", absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -289,7 +289,7 @@ TEST(TagParserTest, AppIdValid) {
 }
 
 TEST(TagParserTest, AppIdNotASCII) {
-  VerifyTagParseFail("appguid=रहा", base::nullopt,
+  VerifyTagParseFail("appguid=रहा", absl::nullopt,
                      ErrorCode::kApp_AppIdIsNotValid);
 }
 
@@ -297,13 +297,13 @@ TEST(TagParserTest, AppIdNotASCII) {
 // strings.
 TEST(TagParserTest, AppIdNotAGuid) {
   VerifyTagParseSuccess(
-      "appguid=non-guid-id", base::nullopt,
+      "appguid=non-guid-id", absl::nullopt,
       TagArgsBuilder().WithApp(AppArgsBuilder("non-guid-id").Build()).Build());
 }
 
 TEST(TagParserTest, AppIdCaseInsensitive) {
   VerifyTagParseSuccess(
-      "appguid=ShouldBeCaseInsensitive", base::nullopt,
+      "appguid=ShouldBeCaseInsensitive", absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("shouldbecaseinsensitive").Build())
           .Build());
@@ -313,21 +313,21 @@ TEST(TagParserTest, NeedsAdminInvalid) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin=Hello",
-      base::nullopt, ErrorCode::kApp_NeedsAdminValueIsInvalid);
+      absl::nullopt, ErrorCode::kApp_NeedsAdminValueIsInvalid);
 }
 
 TEST(TagParserTest, NeedsAdminSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin= ",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, NeedsAdminTrueUpperCaseT) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin=True",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithNeedsAdmin(AppArgs::NeedsAdmin::kYes)
@@ -339,7 +339,7 @@ TEST(TagParserTest, NeedsAdminTrueLowerCaseT) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin=true",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithNeedsAdmin(AppArgs::NeedsAdmin::kYes)
@@ -351,7 +351,7 @@ TEST(TagParserTest, NeedsFalseUpperCaseF) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin=False",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithNeedsAdmin(AppArgs::NeedsAdmin::kNo)
@@ -363,7 +363,7 @@ TEST(TagParserTest, NeedsAdminFalseLowerCaseF) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "needsadmin=false",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithNeedsAdmin(AppArgs::NeedsAdmin::kNo)
@@ -376,42 +376,42 @@ TEST(TagParserTest, NeedsAdminFalseLowerCaseF) {
 //
 
 TEST(TagParserTest, AssignmentOnly) {
-  VerifyTagParseFail("=", base::nullopt, ErrorCode::kUnrecognizedName);
+  VerifyTagParseFail("=", absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, ExtraAssignment1) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1=",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, ExtraAssignment2) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "=usagestats=1",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, ExtraAssignment3) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1&=",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, ExtraAssignment4) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "=&usagestats=1",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, ValueWithoutName) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "=hello",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 // Also tests ending extra arguments with '='.
@@ -419,28 +419,28 @@ TEST(TagParserTest, NameWithoutValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, NameWithoutValueBeforeNextArgument) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=&client=hello",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, NameWithoutArgumentSeparatorAfterIntValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1client=hello",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, NameWithoutArgumentSeparatorAfterStringValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=yesclient=hello",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, TagHasDoubleAmpersand) {
@@ -459,14 +459,14 @@ TEST(TagParserTest, TagHasDoubleAmpersand) {
 }
 
 TEST(TagParserTest, TagAmpersandOnly) {
-  VerifyTagParseSuccess("&", base::nullopt, TagArgsBuilder().Build());
+  VerifyTagParseSuccess("&", absl::nullopt, TagArgsBuilder().Build());
 }
 
 TEST(TagParserTest, TagBeginsInAmpersand) {
   VerifyTagParseSuccess(
       "&appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -478,7 +478,7 @@ TEST(TagParserTest, TagEndsInAmpersand) {
   VerifyTagParseSuccess(
       "&appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1&",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -488,7 +488,7 @@ TEST(TagParserTest, TagEndsInAmpersand) {
 
 TEST(TagParserTest, WhitespaceOnly) {
   for (const auto* whitespace : {"", " ", "\t", "\r", "\n", "\r\n"}) {
-    VerifyTagParseSuccess(whitespace, base::nullopt, TagArgsBuilder().Build());
+    VerifyTagParseSuccess(whitespace, absl::nullopt, TagArgsBuilder().Build());
   }
 }
 
@@ -500,7 +500,7 @@ TEST(TagParserTest, OneValidAttribute) {
   VerifyTagParseSuccess(
       "&appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -512,7 +512,7 @@ TEST(TagParserTest, TwoValidAttributes) {
   VerifyTagParseSuccess(
       "&appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1&client=hello",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -525,49 +525,49 @@ TEST(TagParserTest, TagHasSwitchInTheMiddle) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1/other_value=9",
-      base::nullopt, ErrorCode::kTagIsInvalid);
+      absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, TagHasDoubleQuoteInTheMiddle) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1\"/other_value=9",
-      base::nullopt, ErrorCode::kTagIsInvalid);
+      absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, TagHasDoubleQuoteInTheMiddleAndNoForwardSlash) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1\"other_value=9",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, TagHasSpaceAndForwardSlashBeforeQuote) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1 /other_value=9",
-      base::nullopt, ErrorCode::kTagIsInvalid);
+      absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, TagHasForwardSlashBeforeQuote) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1/other_value=9",
-      base::nullopt, ErrorCode::kTagIsInvalid);
+      absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, AttributeSpecifiedTwice) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1\" \"client=10",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, WhiteSpaceBeforeArgs1) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       " usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B").Build())
@@ -579,7 +579,7 @@ TEST(TagParserTest, WhiteSpaceBeforeArgs2) {
   VerifyTagParseSuccess(
       "\tappguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B").Build())
@@ -591,7 +591,7 @@ TEST(TagParserTest, WhiteSpaceBeforeArgs3) {
   VerifyTagParseSuccess(
       "\rappguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B").Build())
@@ -603,7 +603,7 @@ TEST(TagParserTest, WhiteSpaceBeforeArgs4) {
   VerifyTagParseSuccess(
       "\nappguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B"
       "&usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B").Build())
@@ -612,31 +612,31 @@ TEST(TagParserTest, WhiteSpaceBeforeArgs4) {
 }
 
 TEST(TagParserTest, WhiteSpaceBeforeArgs5) {
-  VerifyTagParseSuccess("\r\nusagestats=1", base::nullopt,
+  VerifyTagParseSuccess("\r\nusagestats=1", absl::nullopt,
                         TagArgsBuilder().WithUsageStatsEnable(true).Build());
 }
 
 TEST(TagParserTest, ForwardSlash1) {
-  VerifyTagParseFail("/", base::nullopt, ErrorCode::kTagIsInvalid);
+  VerifyTagParseFail("/", absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, ForwardSlash2) {
   VerifyTagParseFail("/ appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B",
-                     base::nullopt, ErrorCode::kTagIsInvalid);
+                     absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, BackwardSlash1) {
-  VerifyTagParseFail("\\", base::nullopt, ErrorCode::kUnrecognizedName);
+  VerifyTagParseFail("\\", absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, BackwardSlash2) {
   VerifyTagParseFail("\\appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B",
-                     base::nullopt, ErrorCode::kUnrecognizedName);
+                     absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, BackwardSlash3) {
   VerifyTagParseFail("\\ appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B",
-                     base::nullopt, ErrorCode::kUnrecognizedName);
+                     absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, AppArgsMustHaveValue) {
@@ -647,7 +647,7 @@ TEST(TagParserTest, AppArgsMustHaveValue) {
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&needsadmin",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&installdataindex",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&untrusteddata"}) {
-    VerifyTagParseFail(tag, base::nullopt, ErrorCode::kAttributeMustHaveValue);
+    VerifyTagParseFail(tag, absl::nullopt, ErrorCode::kAttributeMustHaveValue);
   }
 }
 
@@ -659,14 +659,14 @@ TEST(TagParserTest, UsageStatsOutsideExtraCommand) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "/usagestats",
-      base::nullopt, ErrorCode::kTagIsInvalid);
+      absl::nullopt, ErrorCode::kTagIsInvalid);
 }
 
 TEST(TagParserTest, UsageStatsOn) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=1",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -678,7 +678,7 @@ TEST(TagParserTest, UsageStatsOff) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=0",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -690,7 +690,7 @@ TEST(TagParserTest, UsageStatsNone) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=2",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -701,28 +701,28 @@ TEST(TagParserTest, UsageStatsInvalidPositiveValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=3",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, UsageStatsInvalidNegativeValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=-1",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, UsageStatsValueIsString) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "usagestats=true",
-      base::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
+      absl::nullopt, ErrorCode::kGlobal_UsageStatsValueIsInvalid);
 }
 
 TEST(TagParserTest, BundleNameValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "bundlename=Google%20Bundle",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -735,21 +735,21 @@ TEST(TagParserTest, BundleNameSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "bundlename= ",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, BundleNameEncodedSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "bundlename=%20",
-      base::nullopt, ErrorCode::kGlobal_BundleNameCannotBeWhitespace);
+      absl::nullopt, ErrorCode::kGlobal_BundleNameCannotBeWhitespace);
 }
 
 TEST(TagParserTest, BundleNameNotPresentButAppNameIs) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "appname=Google%20Chrome",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithAppName("Google Chrome")
@@ -759,7 +759,7 @@ TEST(TagParserTest, BundleNameNotPresentButAppNameIs) {
 }
 TEST(TagParserTest, BundleNameNorAppNamePresent) {
   VerifyTagParseSuccess(
-      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&", base::nullopt,
+      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&", absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -768,7 +768,7 @@ TEST(TagParserTest, BundleNameNorAppNamePresent) {
 
 TEST(TagParserTest, BundleNameNotPresentAndNoApp) {
   VerifyTagParseSuccess(
-      "browser=0", base::nullopt,
+      "browser=0", absl::nullopt,
       TagArgsBuilder().WithBrowserType(TagArgs::BrowserType::kUnknown).Build());
 }
 
@@ -776,7 +776,7 @@ TEST(TagParserTest, InstallationIdValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "iid=98CEC468-9429-4984-AEDE-4F53C6A14869",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -788,7 +788,7 @@ TEST(TagParserTest, InstallationIdContainsNonASCII) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "iid=रहा",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -800,7 +800,7 @@ TEST(TagParserTest, BrandCodeValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "brand=GOOG",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -812,7 +812,7 @@ TEST(TagParserTest, ClientIdValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "client=some_partner",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -824,7 +824,7 @@ TEST(TagParserTest, UpdaterExperimentIdValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "omahaexperiments=experiment%3DgroupA%7Cexpir",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -836,21 +836,21 @@ TEST(TagParserTest, UpdaterExperimentIdSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "omahaexperiments= ",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, UpdaterExperimentIdEncodedSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "omahaexperiments=%20",
-      base::nullopt, ErrorCode::kGlobal_ExperimentLabelsCannotBeWhitespace);
+      absl::nullopt, ErrorCode::kGlobal_ExperimentLabelsCannotBeWhitespace);
 }
 
 TEST(TagParserTest, AppExperimentIdValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "experiments=experiment%3DgroupA%7Cexpir",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithExperimentLabels("experiment=groupA|expir")
@@ -862,21 +862,21 @@ TEST(TagParserTest, AppExperimentIdSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "experiments= ",
-      base::nullopt, ErrorCode::kAttributeMustHaveValue);
+      absl::nullopt, ErrorCode::kAttributeMustHaveValue);
 }
 
 TEST(TagParserTest, AppExperimentIdEncodedSpaceForValue) {
   VerifyTagParseFail(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "experiments=%20",
-      base::nullopt, ErrorCode::kApp_ExperimentLabelsCannotBeWhitespace);
+      absl::nullopt, ErrorCode::kApp_ExperimentLabelsCannotBeWhitespace);
 }
 
 TEST(TagParserTest, ReferralIdValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "referral=ABCD123",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -888,7 +888,7 @@ TEST(TagParserTest, ApValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "ap=developer",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithAp("developer")
@@ -928,14 +928,14 @@ TEST(TagParserTest, InstallerDataNotAllowedInTag) {
       "appname=TestApp2&"
       "needsadmin=true&"
       "installerdata=Hello%20World",
-      base::nullopt, ErrorCode::kUnrecognizedName);
+      absl::nullopt, ErrorCode::kUnrecognizedName);
 }
 
 TEST(TagParserTest, InstallDataIndexValid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "installdataindex=foobar",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b")
                        .WithInstallDataIndex("foobar")
@@ -958,7 +958,7 @@ TEST(TagParserTest, BrowserTypeValid) {
     tag << "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&";
     tag << "browser=" << std::get<0>(pair);
     VerifyTagParseSuccess(
-        tag.str(), base::nullopt,
+        tag.str(), absl::nullopt,
         TagArgsBuilder()
             .WithApp(
                 AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -975,7 +975,7 @@ TEST(TagParserTest, BrowserTypeInvalid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "browser=5",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -985,7 +985,7 @@ TEST(TagParserTest, BrowserTypeInvalid) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "browser=9",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -997,7 +997,7 @@ TEST(TagParserTest, ValidLang) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "lang=en",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -1010,7 +1010,7 @@ TEST(TagParserTest, UnsupportedLang) {
   VerifyTagParseSuccess(
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "lang=foobar",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
@@ -1023,7 +1023,7 @@ TEST(TagParserTest, AppNameSpecifiedTwice) {
       "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "appname=TestApp&"
       "appname=TestApp2&",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B")
                        .WithAppName("TestApp2")
@@ -1036,7 +1036,7 @@ TEST(TagParserTest, CaseInsensitiveAttributeNames) {
   VerifyTagParseSuccess(
       "APPguID=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
       "APPNAME=TestApp&",
-      base::nullopt,
+      absl::nullopt,
       TagArgsBuilder()
           .WithApp(AppArgsBuilder("8617EE50-F91C-4DC1-B937-0969EEF59B0B")
                        .WithAppName("TestApp")
@@ -1058,7 +1058,7 @@ TEST(TagParserTestMultipleEntries, TestNotStartingWithAppId) {
       "ap=test_ap&"
       "usagestats=1&"
       "browser=2&",
-      base::nullopt, ErrorCode::kApp_AppIdNotSpecified);
+      absl::nullopt, ErrorCode::kApp_AppIdNotSpecified);
 }
 
 // This also tests that the last occurrence of a global extra arg is the one

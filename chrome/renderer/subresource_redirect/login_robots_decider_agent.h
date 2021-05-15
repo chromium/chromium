@@ -43,7 +43,7 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   void SetLoggedInState(bool is_logged_in) override;
 
   // PublicResourceDeciderAgent:
-  base::Optional<SubresourceRedirectResult> ShouldRedirectSubresource(
+  absl::optional<SubresourceRedirectResult> ShouldRedirectSubresource(
       const GURL& url,
       ShouldRedirectDecisionCallback callback) override;
   void RecordMetricsOnLoadFinished(
@@ -73,10 +73,10 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   // SetLoggedInState() mojo which is sent just before the navigation is
   // committed in the browser process, and used in ReadyToCommitNavigation()
   // when the navigation is committed in the renderer process. Value of
-  // base::nullopt means logged-in state hasn't arrived from the browser. This
+  // absl::nullopt means logged-in state hasn't arrived from the browser. This
   // value should be reset after each navigation commit, so that it won't get
   // accidentally reused for subsequent navigations.
-  base::Optional<bool> is_pending_navigation_loggged_in_;
+  absl::optional<bool> is_pending_navigation_loggged_in_;
 
   THREAD_CHECKER(thread_checker_);
 

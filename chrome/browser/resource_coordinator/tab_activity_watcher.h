@@ -9,12 +9,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/resource_coordinator/tab_ranker/tab_score_predictor.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TabMetricsLogger;
 
@@ -36,7 +36,7 @@ class TabActivityWatcher : public BrowserListObserver,
   // value indicates a higher likelihood of being reactivated.
   // Returns the score if the tab could be scored.
   // This is only used in chrome://discards and unit tests.
-  base::Optional<float> CalculateReactivationScore(
+  absl::optional<float> CalculateReactivationScore(
       content::WebContents* web_contents);
 
   // Logs TabMetrics of all |tabs|; and sorts them by descending importance,

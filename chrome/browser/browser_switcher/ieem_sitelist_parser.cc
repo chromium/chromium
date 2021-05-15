@@ -154,7 +154,7 @@ void RawXmlParsed(base::OnceCallback<void(ParsedXml)> callback,
 ParsedXml::ParsedXml() = default;
 ParsedXml::ParsedXml(ParsedXml&&) = default;
 ParsedXml::ParsedXml(std::vector<std::string>&& rules_,
-                     base::Optional<std::string>&& error_)
+                     absl::optional<std::string>&& error_)
     : rules(std::move(rules_)), error(std::move(error_)) {}
 ParsedXml::~ParsedXml() = default;
 

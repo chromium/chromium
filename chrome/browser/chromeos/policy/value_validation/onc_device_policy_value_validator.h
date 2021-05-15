@@ -21,7 +21,7 @@ class ONCDevicePolicyValueValidator
 
  protected:
   // ONCPolicyValueValidatorBase:
-  base::Optional<std::string> GetONCStringFromPayload(
+  absl::optional<std::string> GetONCStringFromPayload(
       const enterprise_management::ChromeDeviceSettingsProto& policy_payload)
       const override;
 

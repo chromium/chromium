@@ -398,7 +398,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
     std::string language_code = *language_code_ptr;
     EXPECT_FALSE(language_code.empty());
 
-    const base::Optional<bool> maybe_supports_spellcheck =
+    const absl::optional<bool> maybe_supports_spellcheck =
         language_val.FindBoolKey("supportsSpellcheck");
     const bool supports_spellcheck = maybe_supports_spellcheck.has_value()
                                          ? maybe_supports_spellcheck.value()

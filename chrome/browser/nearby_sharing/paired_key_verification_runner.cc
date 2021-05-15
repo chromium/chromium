@@ -58,7 +58,7 @@ PairedKeyVerificationRunner::PairedKeyVerificationRunner(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& token,
     NearbyConnection* connection,
-    const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate,
+    const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate,
     NearbyShareCertificateManager* certificate_manager,
     nearby_share::mojom::Visibility visibility,
     bool restrict_to_contacts,
@@ -104,7 +104,7 @@ void PairedKeyVerificationRunner::Run(
 }
 
 void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
-    base::Optional<sharing::mojom::V1FramePtr> frame) {
+    absl::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
     NS_LOG(WARNING) << __func__
                     << ": Failed to read remote paired key encrpytion";
@@ -151,7 +151,7 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
 
 void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
     std::vector<PairedKeyVerificationResult> verification_results,
-    base::Optional<sharing::mojom::V1FramePtr> frame) {
+    absl::optional<sharing::mojom::V1FramePtr> frame) {
   if (!frame) {
     NS_LOG(WARNING) << __func__ << ": Failed to read remote paired key result";
     std::move(callback_).Run(PairedKeyVerificationResult::kFail);
@@ -237,7 +237,7 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       certificate_manager_->SignWithPrivateCertificate(
           visibility_, PadPrefix(local_prefix_, raw_token_));
   if (!signature || signature->empty()) {
@@ -271,7 +271,7 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
 PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
     const sharing::mojom::V1FramePtr& frame) {
-  base::Optional<std::vector<uint8_t>> hash =
+  absl::optional<std::vector<uint8_t>> hash =
       certificate_manager_->HashAuthenticationTokenWithPrivateCertificate(
           visibility_, raw_token_);
   if (hash && *hash == frame->get_paired_key_encryption()->secret_id_hash) {

@@ -221,14 +221,14 @@ const base::Value* SafeBrowsingMetricsCollector::GetSafeBrowsingEventDictionary(
   return state_dict->FindDictKey(UserStateToPrefKey(user_state));
 }
 
-base::Optional<SafeBrowsingMetricsCollector::Event>
+absl::optional<SafeBrowsingMetricsCollector::Event>
 SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
     UserState user_state,
     EventType event_type) {
   const base::Value* event_dict = GetSafeBrowsingEventDictionary(user_state);
 
   if (!event_dict) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const base::Value* timestamps =
@@ -239,7 +239,7 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
     return Event(event_type, time);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
@@ -262,7 +262,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
         GetEventCountSince(UserState::ENHANCED_PROTECTION, event_type,
                            base::Time::Now() - base::TimeDelta::FromDays(28)));
 
-    const base::Optional<Event> latest_event =
+    const absl::optional<Event> latest_event =
         GetLatestEventFromEventType(UserState::ENHANCED_PROTECTION, event_type);
     if (latest_event) {
       bypass_events.emplace_back(latest_event.value());
@@ -284,7 +284,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
         /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
   }
 
-  const base::Optional<Event> latest_enabled_event =
+  const absl::optional<Event> latest_enabled_event =
       GetLatestEventFromEventType(UserState::ENHANCED_PROTECTION,
                                   EventType::USER_STATE_ENABLED);
   if (latest_enabled_event) {

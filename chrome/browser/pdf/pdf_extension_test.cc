@@ -2985,11 +2985,11 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
   void RunTest(const base::FilePath& test_file_path, const char* file_dir) {
     // Load the expectation file.
     content::DumpAccessibilityTestHelper test_helper("content");
-    base::Optional<base::FilePath> expected_file_path =
+    absl::optional<base::FilePath> expected_file_path =
         test_helper.GetExpectationFilePath(test_file_path);
     ASSERT_TRUE(expected_file_path) << "No expectation file present.";
 
-    base::Optional<std::vector<std::string>> expected_lines =
+    absl::optional<std::vector<std::string>> expected_lines =
         test_helper.LoadExpectationFile(*expected_file_path);
     ASSERT_TRUE(expected_lines) << "Couldn't load expectation file.";
 
@@ -3249,7 +3249,7 @@ class PDFExtensionAccessibilityTreeDumpTest
       return;
     }
 
-    base::Optional<std::vector<std::string>> expected_lines =
+    absl::optional<std::vector<std::string>> expected_lines =
         test_helper_.LoadExpectationFile(expected_file_path);
     if (!expected_lines) {
       LOG(INFO) << "Skipping this test on this platform.";

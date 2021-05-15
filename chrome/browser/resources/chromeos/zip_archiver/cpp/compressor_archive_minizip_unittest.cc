@@ -113,7 +113,7 @@ class InMemoryVolumeReader : public VolumeReader {
     return file_offset_;
   }
 
-  base::Optional<std::string> Passphrase() override { return {}; }
+  absl::optional<std::string> Passphrase() override { return {}; }
 
   int64_t offset() override { return file_offset_; }
 

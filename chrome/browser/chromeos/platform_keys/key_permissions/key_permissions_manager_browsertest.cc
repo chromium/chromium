@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -33,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -54,7 +54,7 @@ class AllowKeyForUsageExecutionWaiter : public test_util::ExecutionWaiter<> {
 
 // Supports waiting for the result of KeyPermissionsService::AllowKeyForUsage.
 class IsKeyAllowedForUsageExecutionWaiter
-    : public test_util::ExecutionWaiter<base::Optional<bool>> {
+    : public test_util::ExecutionWaiter<absl::optional<bool>> {
  public:
   IsKeyAllowedForUsageExecutionWaiter() = default;
   IsKeyAllowedForUsageExecutionWaiter(
@@ -63,7 +63,7 @@ class IsKeyAllowedForUsageExecutionWaiter
       const IsKeyAllowedForUsageExecutionWaiter& other) = delete;
   ~IsKeyAllowedForUsageExecutionWaiter() = default;
 
-  base::Optional<bool> allowed() const {
+  absl::optional<bool> allowed() const {
     return std::get<0>(result_callback_args());
   }
 };

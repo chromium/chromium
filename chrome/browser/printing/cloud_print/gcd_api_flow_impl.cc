@@ -163,7 +163,7 @@ void GCDApiFlowImpl::OnDownloadedToString(
     return;
   }
 
-  base::Optional<base::Value> value = base::JSONReader::Read(*response_body);
+  absl::optional<base::Value> value = base::JSONReader::Read(*response_body);
   const base::DictionaryValue* dictionary_value = NULL;
 
   if (!value || !value->GetAsDictionary(&dictionary_value)) {

@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -27,6 +26,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -182,7 +182,7 @@ class AvailabilityProber
   // Returns the successfulness of the last probe, if there was one. If the last
   // probe status was cached and needs to be revalidated, this may activate the
   // prober.
-  base::Optional<bool> LastProbeWasSuccessful();
+  absl::optional<bool> LastProbeWasSuccessful();
 
   // True if probes are being attempted, including retries.
   bool is_active() const { return time_when_set_active_.has_value(); }
@@ -305,7 +305,7 @@ class AvailabilityProber
   const base::Clock* clock_;
 
   // Remembers the last time the prober became active.
-  base::Optional<base::Time> time_when_set_active_;
+  absl::optional<base::Time> time_when_set_active_;
 
   // This reference is kept around for unregistering |this| as an observer on
   // any thread.

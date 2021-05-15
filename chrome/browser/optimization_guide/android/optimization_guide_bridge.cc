@@ -122,7 +122,7 @@ void OptimizationGuideBridge::CanApplyOptimization(
   optimization_guide_keyed_service_->GetHintsManager()
       ->CanApplyOptimizationAsync(
           *url::GURLAndroid::ToNativeGURL(env, java_gurl),
-          /*navigation_id=*/base::nullopt,
+          /*navigation_id=*/absl::nullopt,
           static_cast<optimization_guide::proto::OptimizationType>(
               optimization_type),
           base::BindOnce(&OnOptimizationGuideDecision,

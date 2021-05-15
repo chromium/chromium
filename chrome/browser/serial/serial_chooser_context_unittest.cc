@@ -41,7 +41,7 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
 };
 
 device::mojom::SerialPortInfoPtr CreatePersistentPort(
-    base::Optional<std::string> name,
+    absl::optional<std::string> name,
     const std::string& persistent_id) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
@@ -149,7 +149,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port);
@@ -170,7 +170,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -198,7 +198,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
   context()->GrantPortPermission(origin, *port);
@@ -219,7 +219,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -248,7 +248,7 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -279,7 +279,7 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
   device::mojom::SerialPortInfoPtr port =
-      CreatePersistentPort(/*name=*/base::nullopt, "ABC123");
+      CreatePersistentPort(/*name=*/absl::nullopt, "ABC123");
   port_manager().AddPort(port.Clone());
 
   context()->GrantPortPermission(origin, *port);
@@ -287,7 +287,7 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
@@ -325,7 +325,7 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
 
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  absl::make_optional(ContentSettingsType::SERIAL_GUARD),
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(0);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin)).Times(0);

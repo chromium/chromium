@@ -72,19 +72,19 @@ class LiteVideoHintAgent
 
   // The network downlink bandwidth target in kilobytes per second used to
   // calculate the throttling delay on media requests
-  base::Optional<int> target_downlink_bandwidth_kbps_;
+  absl::optional<int> target_downlink_bandwidth_kbps_;
 
   // The network downlink rtt target latency used to calculate the
   // throttling delay on media requests
-  base::Optional<base::TimeDelta> target_downlink_rtt_latency_;
+  absl::optional<base::TimeDelta> target_downlink_rtt_latency_;
 
   // The number of kilobytes for media to be observed before starting to
   // throttle requests.
-  base::Optional<int> kilobytes_to_buffer_before_throttle_;
+  absl::optional<int> kilobytes_to_buffer_before_throttle_;
 
   // The maximum delay a throttle can introduce for a media request in
   // milliseconds.
-  base::Optional<base::TimeDelta> max_throttling_delay_;
+  absl::optional<base::TimeDelta> max_throttling_delay_;
 
   // The number of media KB that have been left unthrottled before starting
   // to introduce a throttling delay.

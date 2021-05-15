@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/bind.h"
@@ -30,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ParseJson;
 

@@ -99,7 +99,7 @@ void NetBiosClient::SendPacket() {
 
 void NetBiosClient::OnBindComplete(
     int32_t result,
-    const base::Optional<net::IPEndPoint>& local_ip) {
+    const absl::optional<net::IPEndPoint>& local_ip) {
   if (result != net::OK) {
     LOG(ERROR) << "NetBiosClient: Binding socket failed: " << result;
     return;
@@ -137,8 +137,8 @@ void NetBiosClient::OnSendCompleted(int32_t result) {
 }
 
 void NetBiosClient::OnReceived(int32_t result,
-                               const base::Optional<net::IPEndPoint>& src_ip,
-                               base::Optional<base::span<const uint8_t>> data) {
+                               const absl::optional<net::IPEndPoint>& src_ip,
+                               absl::optional<base::span<const uint8_t>> data) {
   if (result != net::OK) {
     LOG(ERROR) << "NetBiosClient: Receive failed: " << result;
     return;

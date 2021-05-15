@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEWS_UKM_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;

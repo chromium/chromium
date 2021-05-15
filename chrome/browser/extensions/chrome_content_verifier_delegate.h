@@ -11,8 +11,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/content_verifier_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -65,7 +65,7 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   };
 
   static VerifyInfo::Mode GetDefaultMode();
-  static void SetDefaultModeForTesting(base::Optional<VerifyInfo::Mode> mode);
+  static void SetDefaultModeForTesting(absl::optional<VerifyInfo::Mode> mode);
 
   explicit ChromeContentVerifierDelegate(content::BrowserContext* context);
 

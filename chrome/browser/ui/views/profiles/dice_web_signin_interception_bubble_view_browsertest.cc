@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -64,7 +64,7 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public DialogBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::Optional<SigninInterceptionResult> callback_result_;
+  absl::optional<SigninInterceptionResult> callback_result_;
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 

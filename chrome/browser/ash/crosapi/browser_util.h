@@ -8,12 +8,12 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -126,8 +126,8 @@ bool IsLacrosPrimaryBrowser();
 bool IsLacrosPrimaryBrowser(version_info::Channel channel);
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
-// Passing base::nullopt will reset the state.
-void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value);
+// Passing absl::nullopt will reset the state.
+void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 
 // Returns true if the lacros can be used as a primary browser
 // for the current session.

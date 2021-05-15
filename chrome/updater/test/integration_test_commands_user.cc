@@ -10,13 +10,13 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -29,7 +29,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void PrintLog() const override { updater::test::PrintLog(kUpdaterScope); }
 
   void CopyLog() const override {
-    base::Optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
+    absl::optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
     EXPECT_TRUE(path);
     if (path)
       updater::test::CopyLog(*path);

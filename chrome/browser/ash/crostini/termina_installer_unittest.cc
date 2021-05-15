@@ -144,7 +144,7 @@ class TerminaInstallTest : public testing::Test {
         imageloader::kTerminaComponentName));
     EXPECT_EQ(termina_installer_.GetInstallLocation(),
               base::FilePath(component_mount_path_));
-    EXPECT_EQ(termina_installer_.GetDlcId(), base::nullopt);
+    EXPECT_EQ(termina_installer_.GetDlcId(), absl::nullopt);
   }
 
  protected:

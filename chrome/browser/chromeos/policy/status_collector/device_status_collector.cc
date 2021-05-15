@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -103,6 +102,7 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -307,20 +307,20 @@ std::vector<em::CPUTempInfo> ReadCPUTempInfo() {
 
 // If |contents| contains |prefix| followed by a hex integer, parses the hex
 // integer of specified length and returns it.
-// Otherwise, returns base::nullopt.
-base::Optional<int> ExtractHexIntegerAfterPrefix(base::StringPiece contents,
+// Otherwise, returns absl::nullopt.
+absl::optional<int> ExtractHexIntegerAfterPrefix(base::StringPiece contents,
                                                  base::StringPiece prefix,
                                                  size_t hex_number_length) {
   size_t prefix_position = contents.find(prefix);
   if (prefix_position == std::string::npos)
-    return base::nullopt;
+    return absl::nullopt;
   if (prefix_position + prefix.size() + hex_number_length >= contents.size())
-    return base::nullopt;
+    return absl::nullopt;
   int parsed_number;
   if (!base::HexStringToInt(
           contents.substr(prefix_position + prefix.size(), hex_number_length),
           &parsed_number)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return parsed_number;
 }
@@ -2380,7 +2380,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
           ->GetUpdateEngineClient()
           ->GetLastStatus();
 
-  base::Optional<base::Version> required_platform_version;
+  absl::optional<base::Version> required_platform_version;
 
   if (required_platform_version_string.empty()) {
     // If this is non-Kiosk session, the OS is considered as up-to-date if the
@@ -2537,7 +2537,7 @@ void DeviceStatusCollector::GetDeviceStatus(
     anything_reported |= GetVersionInfo(status);
 
   if (report_boot_mode_) {
-    base::Optional<std::string> boot_mode =
+    absl::optional<std::string> boot_mode =
         StatusCollector::GetBootMode(statistics_provider_);
     if (boot_mode) {
       status->set_boot_mode(*boot_mode);

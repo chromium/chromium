@@ -47,14 +47,14 @@ class FakeHostResolver : public network::mojom::HostResolver {
   struct DnsResult {
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              base::Optional<net::AddressList> resolved_addresses)
+              absl::optional<net::AddressList> resolved_addresses)
         : result(result),
           resolve_error_info(resolve_error_info),
           resolved_addresses(resolved_addresses) {}
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
-    base::Optional<net::AddressList> resolved_addresses;
+    absl::optional<net::AddressList> resolved_addresses;
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
@@ -100,7 +100,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
   // network::TestNetworkContext:
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     FakeHostResolver::DnsResult* result = fake_dns_results_.front();
     DCHECK(result);

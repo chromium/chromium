@@ -37,7 +37,7 @@ class ToolbarButtonTestApi {
   const gfx::Insets layout_inset_delta() const {
     return button_->layout_inset_delta_;
   }
-  const base::Optional<SkColor> last_border_color() const {
+  const absl::optional<SkColor> last_border_color() const {
     return button_->last_border_color_;
   }
   void SetAnimationTimingForTesting() {

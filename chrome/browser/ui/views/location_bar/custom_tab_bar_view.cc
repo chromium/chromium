@@ -321,7 +321,7 @@ void CustomTabBarView::ChildPreferredSizeChanged(views::View* child) {
 
 void CustomTabBarView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
-  base::Optional<SkColor> optional_theme_color = GetThemeColor();
+  absl::optional<SkColor> optional_theme_color = GetThemeColor();
 
   title_bar_color_ = optional_theme_color.value_or(GetDefaultFrameColor());
 
@@ -533,10 +533,10 @@ void CustomTabBarView::ShowContextMenuForViewImpl(
       views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
-base::Optional<SkColor> CustomTabBarView::GetThemeColor() const {
+absl::optional<SkColor> CustomTabBarView::GetThemeColor() const {
   web_app::AppBrowserController* application_controller = app_controller();
   return application_controller ? application_controller->GetThemeColor()
-                                : base::nullopt;
+                                : absl::nullopt;
 }
 
 bool CustomTabBarView::GetShowTitle() const {
@@ -547,6 +547,6 @@ BEGIN_METADATA(CustomTabBarView, views::AccessiblePaneView)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                DefaultFrameColor,
                                ui::metadata::SkColorConverter)
-ADD_READONLY_PROPERTY_METADATA(base::Optional<SkColor>, ThemeColor)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<SkColor>, ThemeColor)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowTitle)
 END_METADATA

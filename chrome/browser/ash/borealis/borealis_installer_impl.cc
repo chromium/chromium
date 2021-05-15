@@ -160,7 +160,7 @@ class BorealisInstallerImpl::Uninstallation
   }
 
   void OnDiskRemoved(
-      base::Optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
+      absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
     if (!response) {
       LOG(ERROR) << "Failed to destroy disk image. Empty response.";
       Fail(BorealisUninstallResult::kRemoveDiskFailed);

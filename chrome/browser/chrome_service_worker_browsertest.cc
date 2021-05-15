@@ -948,7 +948,7 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // The request that hit the "test" endpoint.
-  base::Optional<net::test_server::HttpRequest> received_request_;
+  absl::optional<net::test_server::HttpRequest> received_request_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeServiceWorkerNavigationPreloadTest);
 };

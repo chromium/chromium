@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,6 +21,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"

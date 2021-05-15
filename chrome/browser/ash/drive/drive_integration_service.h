@@ -141,9 +141,9 @@ class DriveIntegrationService : public KeyedService,
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;
-  void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) override;
+  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
-                     base::Optional<base::TimeDelta> remount_delay) override;
+                     absl::optional<base::TimeDelta> remount_delay) override;
 
   EventLogger* event_logger() { return logger_.get(); }
 
@@ -251,7 +251,7 @@ class DriveIntegrationService : public KeyedService,
   // then tries to add it back after that delay. If |remount_delay| isn't
   // specified, |failed_to_mount| is true and the user is offline, schedules a
   // retry when the user is online.
-  void MaybeRemountFileSystem(base::Optional<base::TimeDelta> remount_delay,
+  void MaybeRemountFileSystem(absl::optional<base::TimeDelta> remount_delay,
                               bool failed_to_mount);
 
   // Helper function for ClearCacheAndRemountFileSystem() that deletes the cache
@@ -282,12 +282,12 @@ class DriveIntegrationService : public KeyedService,
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
       drive::FileError error,
-      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnSearchDriveByFileName(
       SearchDriveByFileNameCallback callback,
       drive::FileError error,
-      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   friend class DriveIntegrationServiceFactory;
 

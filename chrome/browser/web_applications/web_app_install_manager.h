@@ -66,7 +66,7 @@ class WebAppInstallManager final : public InstallManager,
   void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
       ForInstallableSite for_installable_site,
-      const base::Optional<InstallParams>& install_params,
+      const absl::optional<InstallParams>& install_params,
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback) override;
   void InstallWebAppWithParams(content::WebContents* web_contents,

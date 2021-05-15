@@ -203,7 +203,7 @@ void InstalledVersionPoller::OnInstalledVersion(
   if (update_type == BuildState::UpdateType::kNone) {
     // The discovered version matches the current version, so report that no
     // update is available.
-    build_state_->SetUpdate(update_type, base::Version(), base::nullopt);
+    build_state_->SetUpdate(update_type, base::Version(), absl::nullopt);
   } else {
     // Either the installed version could not be discovered (invalid installed
     // version) or differs from the running version. Report it accordingly.

@@ -51,7 +51,7 @@ enum class CrosUsbNotificationClosed {
 struct CrosUsbDeviceInfo {
   CrosUsbDeviceInfo(std::string guid,
                     std::u16string label,
-                    base::Optional<std::string> shared_vm_name,
+                    absl::optional<std::string> shared_vm_name,
                     bool prompt_before_sharing);
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
@@ -60,7 +60,7 @@ struct CrosUsbDeviceInfo {
   std::u16string label;
   // Name of VM shared with. Unset if not shared. The device may be shared but
   // not yet attached.
-  base::Optional<std::string> shared_vm_name;
+  absl::optional<std::string> shared_vm_name;
   // Devices shared with other devices or otherwise in use by the system
   // should have a confirmation prompt shown prior to sharing.
   bool prompt_before_sharing;
@@ -142,9 +142,9 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
     bool shareable = false;
     // Name of VM shared with. Unset if not shared. The device may be shared but
     // not yet attached.
-    base::Optional<std::string> shared_vm_name;
+    absl::optional<std::string> shared_vm_name;
     // Non-empty only when device is attached to a VM.
-    base::Optional<uint8_t> guest_port;
+    absl::optional<uint8_t> guest_port;
     // Interfaces shareable with guest OSes
     uint32_t allowed_interfaces_mask = 0;
     // For a mass storage device, the mount points for active mounts.
@@ -229,13 +229,13 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
+      absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
 
   void OnUsbDeviceDetachFinished(
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
+      absl::optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
 
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const UsbDevice& device);

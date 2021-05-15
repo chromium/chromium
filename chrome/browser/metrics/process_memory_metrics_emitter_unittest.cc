@@ -80,7 +80,7 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
     }
   }
 
-  base::Optional<base::TimeDelta> GetProcessUptime(
+  absl::optional<base::TimeDelta> GetProcessUptime(
       const base::Time& now,
       base::ProcessId pid) override {
     switch (pid) {

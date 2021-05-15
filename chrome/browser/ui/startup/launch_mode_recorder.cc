@@ -40,12 +40,12 @@ LaunchMode GetLaunchModeSlow();
 #if defined(OS_WIN)
 // Returns the path to the shortcut from which Chrome was launched, or null if
 // not launched via a shortcut.
-base::Optional<const wchar_t*> GetShortcutPath() {
+absl::optional<const wchar_t*> GetShortcutPath() {
   STARTUPINFOW si = {sizeof(si)};
   GetStartupInfoW(&si);
   if (!(si.dwFlags & STARTF_TITLEISLINKNAME))
-    return base::nullopt;
-  return base::Optional<const wchar_t*>(si.lpTitle);
+    return absl::nullopt;
+  return absl::optional<const wchar_t*>(si.lpTitle);
 }
 
 LaunchMode GetLaunchModeFast() {

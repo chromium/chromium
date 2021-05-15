@@ -225,7 +225,7 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, MapSelectedLineToChangedIndices) {
   controller()->set_suggestions(createSuggestions(/*clearItemOffset=*/2));
   NotifyAboutSuggestions();
 
-  EXPECT_CALL(*controller(), SetSelectedLine(base::Optional<int>(0)));
+  EXPECT_CALL(*controller(), SetSelectedLine(absl::optional<int>(0)));
   adapter_as_controller()->SetSelectedLine(1);
 
   EXPECT_CALL(*controller(), selected_line()).WillRepeatedly(Return(0));

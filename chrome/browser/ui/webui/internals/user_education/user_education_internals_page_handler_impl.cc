@@ -31,7 +31,7 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
 
 void UserEducationInternalsPageHandlerImpl::StartTutorial(
     const std::string& tutorial_id) {
-  base::Optional<FeatureTutorial> tutorial =
+  absl::optional<FeatureTutorial> tutorial =
       GetFeatureTutorialFromStringId(tutorial_id);
   if (!tutorial)
     return;

@@ -70,7 +70,7 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   void OnComplete(
       int32_t result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   net::DnsConfigOverrides GetConfigOverridesForTesting() {
     return dns_config_overrides_;

@@ -70,7 +70,7 @@ bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
 #endif
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScriptContext* current_context =
@@ -81,10 +81,10 @@ ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
     return true;
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // All blessed extension pages could historically write to the clipboard, so
@@ -103,13 +103,13 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
     }
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
+absl::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
   if (IsPlatformApp())
     return false;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ChromeContentSettingsAgentDelegate::PassiveInsecureContentFound(

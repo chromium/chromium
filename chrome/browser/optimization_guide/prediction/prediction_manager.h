@@ -74,7 +74,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // requested by consumers of the Optimization Guide.
   void RegisterOptimizationTargets(
       const std::vector<
-          std::pair<proto::OptimizationTarget, base::Optional<proto::Any>>>&
+          std::pair<proto::OptimizationTarget, absl::optional<proto::Any>>>&
           optimization_targets_and_metadata);
 
   // Adds an observer for updates to the model for |optimization_target|.
@@ -83,7 +83,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Machine Learning Service for inference.
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer);
 
   // Removes an observer for updates to the model for |optimization_target|.
@@ -146,7 +146,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // For testing purposes only.
   void OverrideTargetModelFileForTesting(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       const base::FilePath& file_path);
 
   // PredictionModelDownloadObserver:
@@ -163,7 +163,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   const HostModelFeaturesMRUCache* GetHostModelFeaturesForTesting() const;
 
   // Returns the host model features for a host if available.
-  base::Optional<base::flat_map<std::string, float>>
+  absl::optional<base::flat_map<std::string, float>>
   GetHostModelFeaturesForHost(const std::string& host) const;
 
   // Return the set of features that each host in |host_model_features_map_|
@@ -209,7 +209,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // the response and stores them for use. The metadata entry containing the
   // time that updates should be fetched from the remote Optimization Guide
   // Service is updated, even when the response is empty.
-  void OnModelsFetched(base::Optional<std::unique_ptr<proto::GetModelsResponse>>
+  void OnModelsFetched(absl::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response_data);
 
   // Callback run after the model and host model features store is fully
@@ -313,7 +313,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // updated to |file_path|.
   void NotifyObserversOfNewModelPath(
       proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
+      const absl::optional<proto::Any>& model_metadata,
       const base::FilePath& file_path) const;
 
   // A map of optimization target to the prediction model capable of making
@@ -329,7 +329,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // The map from optimization targets to feature-provided metadata that have
   // been registered with the prediction manager.
-  base::flat_map<proto::OptimizationTarget, base::Optional<proto::Any>>
+  base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
       registered_optimization_targets_and_metadata_;
 
   // The map from optimization target to observers that have been registered to

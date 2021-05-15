@@ -12,8 +12,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -39,12 +39,12 @@ class WebApkIconHasher {
 
   using Murmur2HashCallback = base::OnceCallback<void(Icon)>;
   using Murmur2HashMultipleCallback =
-      base::OnceCallback<void(base::Optional<std::map<std::string, Icon>>)>;
+      base::OnceCallback<void(absl::optional<std::map<std::string, Icon>>)>;
 
   // Creates a self-owned WebApkIconHasher instance. The instance downloads all
   // the |icon_urls| and calls |callback| with the Murmur2 hash of the
   // downloaded images. The hash is taken over the raw image bytes (no image
-  // encoding/decoding beforehand). |callback| is called with a base::nullopt if
+  // encoding/decoding beforehand). |callback| is called with a absl::nullopt if
   // any image cannot not be downloaded in time (e.g. 404 HTTP error code).
   static void DownloadAndComputeMurmur2Hash(
       network::mojom::URLLoaderFactory* url_loader_factory,

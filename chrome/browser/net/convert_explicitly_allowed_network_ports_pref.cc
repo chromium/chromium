@@ -24,7 +24,7 @@ std::vector<uint16_t> ConvertExplicitlyAllowedNetworkPortsPref(
   }
   explicitly_allowed_network_ports.reserve(list_view.size());
   for (const base::Value& value : list_view) {
-    const base::Optional<int> optional_int = value.GetIfInt();
+    const absl::optional<int> optional_int = value.GetIfInt();
     if (!optional_int) {
       // We handle this case because prefs can be corrupt, but it shouldn't
       // happen normally.

@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using crostini::mojom::InstallerError;
 using crostini::mojom::InstallerState;

@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -24,6 +23,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -158,10 +158,10 @@ apps::ShareTarget::Enctype ToAppsShareTargetEnctype(
   NOTREACHED();
 }
 
-base::Optional<apps::ShareTarget> ToWebAppShareTarget(
-    const base::Optional<blink::Manifest::ShareTarget>& share_target) {
+absl::optional<apps::ShareTarget> ToWebAppShareTarget(
+    const absl::optional<blink::Manifest::ShareTarget>& share_target) {
   if (!share_target) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   apps::ShareTarget apps_share_target;
   apps_share_target.action = share_target->action;

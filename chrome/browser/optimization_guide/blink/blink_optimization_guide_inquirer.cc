@@ -91,7 +91,7 @@ void BlinkOptimizationGuideInquirer::PopulateHintsForDelayAsyncScriptExecution(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Give up providing the hints when the metadata is not available.
-  base::Optional<proto::DelayAsyncScriptExecutionMetadata> metadata =
+  absl::optional<proto::DelayAsyncScriptExecutionMetadata> metadata =
       optimization_metadata
           .ParsedMetadata<proto::DelayAsyncScriptExecutionMetadata>();
   if (!metadata || !metadata->delay_type())
@@ -129,7 +129,7 @@ void BlinkOptimizationGuideInquirer::
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Give up providing the hints when the metadata is not available.
-  base::Optional<proto::DelayCompetingLowPriorityRequestsMetadata> metadata =
+  absl::optional<proto::DelayCompetingLowPriorityRequestsMetadata> metadata =
       optimization_metadata
           .ParsedMetadata<proto::DelayCompetingLowPriorityRequestsMetadata>();
   if (!metadata || !metadata->delay_type() || !metadata->priority_threshold())

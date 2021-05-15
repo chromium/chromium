@@ -361,7 +361,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsAllowlist) {
         .Times(0);
     EventRouter::Get(browser_context())
         ->AddFilteredEventListener(api::mdns::OnServiceList::kEventName,
-                                   render_process_host(), kExtId, base::nullopt,
+                                   render_process_host(), kExtId, absl::nullopt,
                                    filter, false);
 
     EXPECT_CALL(*dns_sd_registry(), UnregisterDnsSdListener("_trex._tcp.local"))
@@ -369,7 +369,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsAllowlist) {
     EventRouter::Get(browser_context())
         ->RemoveFilteredEventListener(api::mdns::OnServiceList::kEventName,
                                       render_process_host(), kExtId,
-                                      base::nullopt, filter, false);
+                                      absl::nullopt, filter, false);
   }
   {
     base::DictionaryValue filter;
@@ -381,7 +381,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsAllowlist) {
                 RegisterDnsSdListener("_testing._tcp.local"));
     EventRouter::Get(browser_context())
         ->AddFilteredEventListener(api::mdns::OnServiceList::kEventName,
-                                   render_process_host(), kExtId, base::nullopt,
+                                   render_process_host(), kExtId, absl::nullopt,
                                    filter, false);
 
     EXPECT_CALL(*dns_sd_registry(),
@@ -389,7 +389,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsAllowlist) {
     EventRouter::Get(browser_context())
         ->RemoveFilteredEventListener(api::mdns::OnServiceList::kEventName,
                                       render_process_host(), kExtId,
-                                      base::nullopt, filter, false);
+                                      absl::nullopt, filter, false);
   }
 }
 
@@ -408,14 +408,14 @@ TEST_F(MDnsAPITest, PlatformAppsNotSubjectToAllowlist) {
 
   EventRouter::Get(browser_context())
       ->AddFilteredEventListener(api::mdns::OnServiceList::kEventName,
-                                 render_process_host(), kExtId, base::nullopt,
+                                 render_process_host(), kExtId, absl::nullopt,
                                  filter, false);
 
   EXPECT_CALL(*dns_sd_registry(), UnregisterDnsSdListener("_trex._tcp.local"));
   EventRouter::Get(browser_context())
       ->RemoveFilteredEventListener(api::mdns::OnServiceList::kEventName,
                                     render_process_host(), kExtId,
-                                    base::nullopt, filter, false);
+                                    absl::nullopt, filter, false);
 }
 
 }  // namespace extensions

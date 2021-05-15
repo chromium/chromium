@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -99,6 +98,7 @@
 #include "services/network/test/test_dns_util.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_MAC)

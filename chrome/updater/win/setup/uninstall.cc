@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
@@ -32,6 +31,7 @@
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -77,7 +77,7 @@ void DeleteComInterfaces(HKEY root) {
 }
 
 int RunUninstallScript(bool uninstall_all) {
-  base::Optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  absl::optional<base::FilePath> versioned_dir = GetVersionedDirectory();
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;

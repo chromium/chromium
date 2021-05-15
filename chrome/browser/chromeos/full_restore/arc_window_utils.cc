@@ -35,13 +35,13 @@ bool IsArcGhostWindowEnabled() {
          exo::WMHelper::HasInstance();
 }
 
-base::Optional<double> GetDisplayScaleFactor(int64_t display_id) {
+absl::optional<double> GetDisplayScaleFactor(int64_t display_id) {
   display::Display display;
   if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
                                                             &display)) {
     return display.device_scale_factor();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 apps::mojom::WindowInfoPtr HandleArcWindowInfo(

@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   EXPECT_EQ(view_source_url, view_source_contents->GetLastCommittedURL());
 
   // Verify the request for the view-source tab had the correct IsolationInfo.
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       loader_monitor.GetRequestInfo(url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->trusted_params);

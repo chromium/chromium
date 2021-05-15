@@ -33,8 +33,8 @@ namespace {
 
 constexpr char kServiceName[] = "NearbySharingService";
 
-base::Optional<bool>& IsSupportedTesting() {
-  static base::NoDestructor<base::Optional<bool>> is_supported;
+absl::optional<bool>& IsSupportedTesting() {
+  static base::NoDestructor<absl::optional<bool>> is_supported;
   return *is_supported;
 }
 

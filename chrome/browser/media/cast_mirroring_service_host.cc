@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +39,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/origin.h"
@@ -112,13 +112,13 @@ content::DesktopMediaID BuildMediaIdForWebContents(
   return media_id;
 }
 
-// Returns the size of the primary display in pixels, or base::nullopt if it
+// Returns the size of the primary display in pixels, or absl::nullopt if it
 // cannot be determined.
-base::Optional<gfx::Size> GetScreenResolution() {
+absl::optional<gfx::Size> GetScreenResolution() {
   display::Screen* screen = display::Screen::GetScreen();
   if (!screen) {
     DVLOG(1) << "Cannot get the Screen object.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   return screen->GetPrimaryDisplay().GetSizeInPixel();
 }
@@ -224,7 +224,7 @@ void CastMirroringServiceHost::Start(
 
 // static
 gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
-  base::Optional<gfx::Size> screen_resolution = GetScreenResolution();
+  absl::optional<gfx::Size> screen_resolution = GetScreenResolution();
   if (screen_resolution) {
     return GetClampedResolution(screen_resolution.value());
   } else {
@@ -412,7 +412,7 @@ void CastMirroringServiceHost::CreateAudioStreamForDesktop(
              mojo::PendingRemote<AudioInputStream> stream,
              mojo::PendingReceiver<AudioInputStreamClient> client,
              media::mojom::ReadOnlyAudioDataPipePtr data_pipe, bool,
-             const base::Optional<base::UnguessableToken>&) {
+             const absl::optional<base::UnguessableToken>&) {
             mojo::Remote<mojom::AudioStreamCreatorClient>(std::move(requestor))
                 ->StreamCreated(std::move(stream), std::move(client),
                                 std::move(data_pipe));

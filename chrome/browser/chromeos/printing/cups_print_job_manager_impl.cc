@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +37,7 @@
 #include "content/public/browser/notification_service.h"
 #include "printing/printed_document.h"
 #include "printing/printing_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -274,7 +274,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
       return false;
     }
 
-    base::Optional<Printer> printer = manager->GetPrinter(printer_id);
+    absl::optional<Printer> printer = manager->GetPrinter(printer_id);
     if (!printer) {
       LOG(WARNING)
           << "Printer was removed while job was in progress.  It cannot "

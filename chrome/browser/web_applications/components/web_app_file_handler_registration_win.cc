@@ -34,7 +34,7 @@ void RegisterFileHandlersWithOsTask(
     const std::wstring& app_name_extension) {
   const base::FilePath web_app_path =
       GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
-  base::Optional<base::FilePath> app_specific_launcher_path =
+  absl::optional<base::FilePath> app_specific_launcher_path =
       CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
   if (!app_specific_launcher_path.has_value())
     return;

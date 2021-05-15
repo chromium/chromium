@@ -106,7 +106,7 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       const GURL& url,
       int dialog_height,
-      base::Optional<int> dialog_width);
+      absl::optional<int> dialog_width);
 
   // Displays the modal dialog.
   void DisplayModal();

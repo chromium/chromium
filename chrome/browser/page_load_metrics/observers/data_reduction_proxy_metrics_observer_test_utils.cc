@@ -85,8 +85,8 @@ void DataReductionProxyMetricsObserverTestBase::
 // Verify that, if expected and actual are set, their values are equal.
 // Otherwise, verify that both are unset.
 void DataReductionProxyMetricsObserverTestBase::ExpectEqualOrUnset(
-    const base::Optional<base::TimeDelta>& expected,
-    const base::Optional<base::TimeDelta>& actual) {
+    const absl::optional<base::TimeDelta>& expected,
+    const absl::optional<base::TimeDelta>& actual) {
   if (expected && actual) {
     EXPECT_EQ(expected.value(), actual.value());
   } else {

@@ -47,18 +47,18 @@ void AddWebApk(Profile* profile,
                              base::Value(package_name));
 }
 
-base::Optional<std::string> GetWebApkPackageName(Profile* profile,
+absl::optional<std::string> GetWebApkPackageName(Profile* profile,
                                                  const std::string& app_id) {
   const base::Value* app_dict = profile->GetPrefs()
                                     ->GetDictionary(kGeneratedWebApksPref)
                                     ->FindDictKey(app_id);
   if (!app_dict) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* package_name = app_dict->FindStringKey(kPackageNameKey);
   if (!package_name) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return *package_name;

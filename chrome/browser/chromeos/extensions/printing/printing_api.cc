@@ -40,9 +40,9 @@ ExtensionFunction::ResponseAction PrintingSubmitJobFunction::Run() {
 }
 
 void PrintingSubmitJobFunction::OnPrintJobSubmitted(
-    base::Optional<api::printing::SubmitJobStatus> status,
+    absl::optional<api::printing::SubmitJobStatus> status,
     std::unique_ptr<std::string> job_id,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(error.value()));
     return;
@@ -60,7 +60,7 @@ ExtensionFunction::ResponseAction PrintingCancelJobFunction::Run() {
   std::unique_ptr<api::printing::CancelJob::Params> params(
       api::printing::CancelJob::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  base::Optional<std::string> error =
+  absl::optional<std::string> error =
       PrintingAPIHandler::Get(browser_context())
           ->CancelJob(extension_id(), params->job_id);
 
@@ -102,9 +102,9 @@ ExtensionFunction::ResponseAction PrintingGetPrinterInfoFunction::Run() {
 }
 
 void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
-    base::Optional<base::Value> capabilities,
-    base::Optional<api::printing::PrinterStatus> status,
-    base::Optional<std::string> error) {
+    absl::optional<base::Value> capabilities,
+    absl::optional<api::printing::PrinterStatus> status,
+    absl::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(error.value()));
     return;

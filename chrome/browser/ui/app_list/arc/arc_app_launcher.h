@@ -10,12 +10,12 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;

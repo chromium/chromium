@@ -146,7 +146,7 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
   return result;
 }
 
-base::Optional<std::string> GetDisableReason(
+absl::optional<std::string> GetDisableReason(
     const ExternalInstallOptions& options,
     Profile* profile,
     bool preinstalled_apps_enabled_in_prefs,
@@ -208,7 +208,7 @@ base::Optional<std::string> GetDisableReason(
   // Keep if any apps to replace are installed.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionInstalled(profile, app_id)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -250,7 +250,7 @@ base::Optional<std::string> GetDisableReason(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string GetExtraConfigSubdirectory() {
@@ -450,7 +450,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   size_t disabled_count = 0;
   base::EraseIf(parsed_configs.options_list,
                 [&](const ExternalInstallOptions& options) {
-                  base::Optional<std::string> disable_reason = GetDisableReason(
+                  absl::optional<std::string> disable_reason = GetDisableReason(
                       options, profile_, preinstalled_apps_enabled_in_prefs,
                       is_new_user, user_type);
                   if (disable_reason) {

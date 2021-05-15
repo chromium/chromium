@@ -4,16 +4,16 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/grit/generated_resources.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-base::Optional<std::vector<LabInfo>>& GetTestData() {
-  static base::NoDestructor<base::Optional<std::vector<LabInfo>>> test_lab_data;
+absl::optional<std::vector<LabInfo>>& GetTestData() {
+  static base::NoDestructor<absl::optional<std::vector<LabInfo>>> test_lab_data;
   return *test_lab_data;
 }
 

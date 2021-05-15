@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -34,10 +34,10 @@ class AuthToken {
 
   // An unguessable identifier that can be passed to webui to verify the token
   // instance has not changed. Returns nullopt if Reset() was called.
-  base::Optional<std::string> Identifier() const;
+  absl::optional<std::string> Identifier() const;
 
-  // Time since token was created or `base::nullopt` if Reset() was called.
-  base::Optional<base::TimeDelta> GetAge() const;
+  // Time since token was created or `absl::nullopt` if Reset() was called.
+  absl::optional<base::TimeDelta> GetAge() const;
 
   // The UserContext returned here can be null if Reset() was called.
   const chromeos::UserContext* user_context() const {

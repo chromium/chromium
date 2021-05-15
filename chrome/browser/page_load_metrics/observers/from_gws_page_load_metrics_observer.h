@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -113,7 +113,7 @@ class FromGWSPageLoadMetricsLogger {
   bool ShouldLogFailedProvisionalLoadMetrics();
   bool ShouldLogPostCommitMetrics(const GURL& url);
   bool ShouldLogForegroundEventAfterCommit(
-      const base::Optional<base::TimeDelta>& event,
+      const absl::optional<base::TimeDelta>& event,
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
 
  private:
@@ -131,7 +131,7 @@ class FromGWSPageLoadMetricsLogger {
   base::TimeTicks navigation_start_;
 
   // The time of first user interaction after paint from navigation start.
-  base::Optional<base::TimeDelta> first_user_interaction_after_paint_;
+  absl::optional<base::TimeDelta> first_user_interaction_after_paint_;
 
   DISALLOW_COPY_AND_ASSIGN(FromGWSPageLoadMetricsLogger);
 };

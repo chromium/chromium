@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -60,8 +60,8 @@ TabWidthOverride CalculateTabWidthOverride(
 std::vector<gfx::Rect> CalculateTabBounds(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
-    base::Optional<int> width,
-    base::Optional<TabWidthOverride> tab_width_override);
+    absl::optional<int> width,
+    absl::optional<TabWidthOverride> tab_width_override);
 
 std::vector<gfx::Rect> CalculatePinnedTabBounds(
     const TabLayoutConstants& layout_constants,

@@ -13,11 +13,11 @@
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The Nearby Share contacts manager interfaces with the Nearby server in the
 // following ways:

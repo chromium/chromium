@@ -52,7 +52,7 @@ constexpr SystemNotificationWarningLevel kWarningLevel =
 
 void OnClick(ClickCallback click_callback,
              const std::string& passed_principal_name,
-             base::Optional<int> /* button_idx */) {
+             absl::optional<int> /* button_idx */) {
   click_callback.Run(passed_principal_name);
 }
 

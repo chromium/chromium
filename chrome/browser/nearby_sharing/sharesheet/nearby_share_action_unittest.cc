@@ -32,7 +32,7 @@ struct IntentTestCase {
   apps::mojom::IntentPtr intent;
   bool contains_hosted_document;
   bool should_show_action;
-  base::Optional<TextAttachment::Type> text_attachment_type;
+  absl::optional<TextAttachment::Type> text_attachment_type;
   int file_count;
 };
 
@@ -82,28 +82,28 @@ class NearbyShareActionTest : public testing::Test {
     test_cases.push_back({apps_util::CreateShareIntentFromFiles(
                               {GURL(kImageFile)}, {kMimeTypeJPG}),
                           /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, base::nullopt,
+                          /*should_show_action=*/true, absl::nullopt,
                           /*file_count=*/1});
     // File share, two text files
     test_cases.push_back({apps_util::CreateShareIntentFromFiles(
                               {GURL(kTextFile1), GURL(kTextFile2)},
                               {kMimeTypeText, kMimeTypeText}),
                           /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, base::nullopt,
+                          /*should_show_action=*/true, absl::nullopt,
                           /*file_count=*/2});
     // File share, two mixed files
     test_cases.push_back({apps_util::CreateShareIntentFromFiles(
                               {GURL(kTextFile1), GURL(kImageFile)},
                               {kMimeTypeText, kMimeTypeJPG}),
                           /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, base::nullopt,
+                          /*should_show_action=*/true, absl::nullopt,
                           /*file_count=*/2});
     // File share, one file with title
     test_cases.push_back(
         {apps_util::CreateShareIntentFromFiles({GURL(kImageFile)},
                                                {kMimeTypeJPG}, kEmpty, kTitle),
          /*contains_hosted_document=*/false, /*should_show_action=*/true,
-         base::nullopt, /*file_count=*/1});
+         absl::nullopt, /*file_count=*/1});
     // Invalid: File share with text body
     test_cases.push_back({apps_util::CreateShareIntentFromFiles(
                               {GURL(kTextFile1), GURL(kTextFile2)},

@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -25,6 +24,7 @@
 #include "net/base/ip_endpoint.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;

@@ -271,7 +271,7 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
   // The QR version (i.e. size) must be >= 5 because otherwise the dino painted
   // over the middle covers too much of the code to be decodable.
   constexpr int kMinimumQRVersion = 5;
-  base::Optional<QRCodeGenerator::GeneratedCode> qr_data =
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
       qr.Generate(base::span<const uint8_t>(
                       reinterpret_cast<const uint8_t*>(request->data.data()),
                       request->data.size()),

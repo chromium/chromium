@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverFactoryBrowserTest,
   mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory> resolver_factory(
       ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver());
 
-  base::Optional<ProxyResolverProcessObserver> observer{absl::in_place};
+  absl::optional<ProxyResolverProcessObserver> observer{absl::in_place};
 
   // Create a resolver, this should create and start the service.
   std::unique_ptr<DumbProxyResolverFactoryRequestClient> resolver_client =

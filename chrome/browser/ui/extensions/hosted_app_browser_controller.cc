@@ -114,22 +114,22 @@ gfx::ImageSkia HostedAppBrowserController::GetWindowIcon() const {
   return browser()->GetCurrentPageIcon().AsImageSkia();
 }
 
-base::Optional<SkColor> HostedAppBrowserController::GetThemeColor() const {
-  base::Optional<SkColor> web_theme_color =
+absl::optional<SkColor> HostedAppBrowserController::GetThemeColor() const {
+  absl::optional<SkColor> web_theme_color =
       AppBrowserController::GetThemeColor();
   if (web_theme_color)
     return web_theme_color;
 
   const Extension* extension = GetExtension();
   if (!extension)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<SkColor> extension_theme_color =
+  absl::optional<SkColor> extension_theme_color =
       AppThemeColorInfo::GetThemeColor(extension);
   if (extension_theme_color)
     return SkColorSetA(*extension_theme_color, SK_AlphaOPAQUE);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::u16string HostedAppBrowserController::GetTitle() const {

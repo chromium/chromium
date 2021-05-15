@@ -19,12 +19,12 @@ class LoginScreenStorageExtensionFunction : public ExtensionFunction {
 
   // When passed as a callback to the 'LoginScreenStorageStore' D-Bus method,
   // returns its result to the calling extension.
-  void OnDataStored(base::Optional<std::string> error);
+  void OnDataStored(absl::optional<std::string> error);
 
   // When passed as a callback to the 'LoginScreenStorageRetrieve' D-Bus method,
   // returns its result to the calling extension.
-  void OnDataRetrieved(base::Optional<std::string> data,
-                       base::Optional<std::string> error);
+  void OnDataRetrieved(absl::optional<std::string> data,
+                       absl::optional<std::string> error);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LoginScreenStorageExtensionFunction);
@@ -48,7 +48,7 @@ class LoginScreenStorageStorePersistentDataFunction : public ExtensionFunction {
   void OnDataStored(std::vector<std::string> extension_ids,
                     const login_manager::LoginScreenStorageMetadata& metadata,
                     const std::string& data,
-                    base::Optional<std::string> error);
+                    absl::optional<std::string> error);
 
   // Asynchronously stores data for every extension from |extension_ids|.
   void StoreDataForExtensions(

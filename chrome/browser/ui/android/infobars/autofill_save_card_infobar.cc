@@ -25,7 +25,7 @@ namespace autofill {
 
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
-    base::Optional<AccountInfo> account_info) {
+    absl::optional<AccountInfo> account_info) {
   return std::make_unique<AutofillSaveCardInfoBar>(std::move(delegate),
                                                    account_info);
 }
@@ -34,7 +34,7 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
 
 AutofillSaveCardInfoBar::AutofillSaveCardInfoBar(
     std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate,
-    base::Optional<AccountInfo> account_info)
+    absl::optional<AccountInfo> account_info)
     : infobars::ConfirmInfoBar(std::move(delegate)) {
   account_info_ = account_info;
 }

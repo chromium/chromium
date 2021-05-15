@@ -45,17 +45,17 @@ std::string TimeLimitOverride::ActionToString(Action action) {
 }
 
 // static
-base::Optional<TimeLimitOverride> TimeLimitOverride::FromDictionary(
+absl::optional<TimeLimitOverride> TimeLimitOverride::FromDictionary(
     const base::Value* dict) {
   if (!dict || !dict->is_dict()) {
     DLOG(ERROR) << "Override entry is not a dictionary";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* action_string = dict->FindStringKey(kOverrideAction);
   if (!action_string || action_string->empty()) {
     DLOG(ERROR) << "Invalid override action.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* creation_time_string =
@@ -64,7 +64,7 @@ base::Optional<TimeLimitOverride> TimeLimitOverride::FromDictionary(
   if (!creation_time_string || creation_time_string->empty() ||
       !base::StringToInt64(*creation_time_string, &creation_time_millis)) {
     DLOG(ERROR) << "Invalid override creation time.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   Action action =
@@ -76,25 +76,25 @@ base::Optional<TimeLimitOverride> TimeLimitOverride::FromDictionary(
 
   const base::Value* duration_value = dict->FindPath(
       {kOverrideActionSpecificData, kOverrideActionDurationMins});
-  base::Optional<base::TimeDelta> duration =
+  absl::optional<base::TimeDelta> duration =
       duration_value ? base::TimeDelta::FromMinutes(duration_value->GetInt())
-                     : base::Optional<base::TimeDelta>();
+                     : absl::optional<base::TimeDelta>();
 
   return TimeLimitOverride(action, creation_time, duration);
 }
 
 // static
-base::Optional<TimeLimitOverride> TimeLimitOverride::MostRecentFromList(
+absl::optional<TimeLimitOverride> TimeLimitOverride::MostRecentFromList(
     const base::Value* list) {
   if (!list || !list->is_list()) {
     DLOG(ERROR) << "Override entries should be a list.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // The most recent override created.
-  base::Optional<TimeLimitOverride> last_override;
+  absl::optional<TimeLimitOverride> last_override;
   for (const base::Value& override_value : list->GetList()) {
-    base::Optional<TimeLimitOverride> current_override =
+    absl::optional<TimeLimitOverride> current_override =
         FromDictionary(&override_value);
     if (!current_override.has_value()) {
       DLOG(ERROR) << "Invalid override entry";
@@ -111,7 +111,7 @@ base::Optional<TimeLimitOverride> TimeLimitOverride::MostRecentFromList(
 
 TimeLimitOverride::TimeLimitOverride(Action action,
                                      base::Time created_at,
-                                     base::Optional<base::TimeDelta> duration)
+                                     absl::optional<base::TimeDelta> duration)
     : action_(action), created_at_(created_at), duration_(duration) {}
 
 TimeLimitOverride::~TimeLimitOverride() = default;

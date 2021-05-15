@@ -45,12 +45,12 @@ const char kDownloadNamespacePrefix[] = "LEGACY_DOWNLOAD";
 // The remaining time for a download item if it cannot be calculated.
 constexpr int64_t kUnknownRemainingTime = -1;
 
-base::Optional<OfflineItemFilter> FilterForSpecialMimeTypes(
+absl::optional<OfflineItemFilter> FilterForSpecialMimeTypes(
     const std::string& mime_type) {
   if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg"))
     return OfflineItemFilter::FILTER_AUDIO;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
@@ -351,21 +351,21 @@ RenameResult OfflineItemUtils::ConvertDownloadRenameResultToRenameResult(
 }
 
 // static
-base::Optional<DownloadSchedule> OfflineItemUtils::ToDownloadSchedule(
-    base::Optional<OfflineItemSchedule> offline_item_schedule) {
+absl::optional<DownloadSchedule> OfflineItemUtils::ToDownloadSchedule(
+    absl::optional<OfflineItemSchedule> offline_item_schedule) {
   if (!offline_item_schedule)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional<DownloadSchedule>(
+  return absl::make_optional<DownloadSchedule>(
       offline_item_schedule->only_on_wifi, offline_item_schedule->start_time);
 }
 
 // static
-base::Optional<OfflineItemSchedule> OfflineItemUtils::ToOfflineItemSchedule(
-    base::Optional<DownloadSchedule> download_schedule) {
+absl::optional<OfflineItemSchedule> OfflineItemUtils::ToOfflineItemSchedule(
+    absl::optional<DownloadSchedule> download_schedule) {
   if (!download_schedule)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional<OfflineItemSchedule>(
+  return absl::make_optional<OfflineItemSchedule>(
       download_schedule->only_on_wifi(), download_schedule->start_time());
 }

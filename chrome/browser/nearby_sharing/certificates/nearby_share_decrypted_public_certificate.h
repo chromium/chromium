@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "crypto/symmetric_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Stores decrypted metadata and crypto keys for the remote device that uploaded
 // this certificate to the Nearby Share server. Use DecryptPublicCertificate()
@@ -24,10 +24,10 @@ class NearbyShareDecryptedPublicCertificate {
  public:
   // Attempts to decrypt the encrypted metadata of the PublicCertificate proto
   // by first decrypting the |encrypted_metadata_key| using the secret key
-  // then using the decrypted key to decrypt the metadata. Returns base::nullopt
+  // then using the decrypted key to decrypt the metadata. Returns absl::nullopt
   // if the metadata was not successfully decrypted or if the proto data is
   // invalid.
-  static base::Optional<NearbyShareDecryptedPublicCertificate>
+  static absl::optional<NearbyShareDecryptedPublicCertificate>
   DecryptPublicCertificate(
       const nearbyshare::proto::PublicCertificate& public_certificate,
       const NearbyShareEncryptedMetadataKey& encrypted_metadata_key);

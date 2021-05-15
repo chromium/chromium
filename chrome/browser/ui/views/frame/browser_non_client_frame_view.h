@@ -120,7 +120,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // For non-transparent windows, returns the background tab image resource ID
   // if the image has been customized, directly or indirectly, by the theme.
-  base::Optional<int> GetCustomBackgroundId(
+  absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const;
 
   // Updates the throbber.

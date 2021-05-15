@@ -171,7 +171,7 @@ void SigninPageView::LoadProgressChanged(double progress) {
   // progress.
   if (progress >= 1) {
     // hide the progress bar
-    dialog_->GetBubbleFrameView()->SetProgress(base::nullopt);
+    dialog_->GetBubbleFrameView()->SetProgress(absl::nullopt);
     return;
   }
   dialog_->GetBubbleFrameView()->SetProgress(progress);

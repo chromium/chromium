@@ -953,7 +953,7 @@ void ArcDocumentsProviderRoot::ReadDirectoryInternal(
 
 void ArcDocumentsProviderRoot::ReadDirectoryInternalWithChildDocuments(
     const std::string& document_id,
-    base::Optional<std::vector<mojom::DocumentPtr>> maybe_children) {
+    absl::optional<std::vector<mojom::DocumentPtr>> maybe_children) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto iter = pending_callbacks_map_.find(document_id);

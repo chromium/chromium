@@ -339,7 +339,7 @@ std::u16string GetShortProfileIdentityToDisplay(
   if (core_info.IsEmpty())
     return profile_attributes_entry.GetName();
 
-  base::Optional<AccountInfo> extended_info =
+  absl::optional<AccountInfo> extended_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               core_info.account_id);

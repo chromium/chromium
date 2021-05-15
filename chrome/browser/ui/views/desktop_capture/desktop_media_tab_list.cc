@@ -162,10 +162,10 @@ int DesktopMediaTabList::GetHeightForWidth(int width) const {
   return CalculatePreferredSize().height();
 }
 
-base::Optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
+absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   int row = child_->GetFirstSelectedRow();
   if (row == -1)
-    return base::nullopt;
+    return absl::nullopt;
   return controller_->GetSource(row).id;
 }
 

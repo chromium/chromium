@@ -718,7 +718,7 @@ AuthenticatorClientPinEntrySheetModel::AuthenticatorClientPinEntrySheetModel(
           dialog_model->min_pin_length());
       break;
     case device::pin::PINEntryError::kWrongPIN:
-      base::Optional<int> attempts = dialog_model->pin_attempts();
+      absl::optional<int> attempts = dialog_model->pin_attempts();
       error_ =
           attempts && *attempts <= 3
               ? l10n_util::GetPluralStringFUTF16(

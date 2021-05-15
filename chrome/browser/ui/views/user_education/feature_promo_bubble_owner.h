@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Manages display of a user education bubble. Notifies a client when the bubble
 // is closed. Ensures only one bubble shows per instance. This is an interface
@@ -26,7 +26,7 @@ class FeaturePromoBubbleOwner {
   // identifies the bubble for CloseBubble or BubbleIsShowing calls. Fails and
   // returns nothing if a bubble is currently showing or the bubble couldn't be
   // created for other reasons.
-  virtual base::Optional<base::Token> ShowBubble(
+  virtual absl::optional<base::Token> ShowBubble(
       FeaturePromoBubbleView::CreateParams params,
       base::OnceClosure close_callback) = 0;
 

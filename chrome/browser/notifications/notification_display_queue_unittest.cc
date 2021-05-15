@@ -51,14 +51,14 @@ class FakeNotificationBlocker : public NotificationBlocker {
     NotifyBlockingStateChanged();
   }
 
-  void SetBlockedOrigin(const base::Optional<GURL>& blocked_origin) {
+  void SetBlockedOrigin(const absl::optional<GURL>& blocked_origin) {
     blocked_origin_ = blocked_origin;
     NotifyBlockingStateChanged();
   }
 
  private:
   bool should_block_ = false;
-  base::Optional<GURL> blocked_origin_;
+  absl::optional<GURL> blocked_origin_;
 };
 
 class NotificationDisplayServiceMock : public NotificationDisplayService {

@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -28,7 +28,7 @@ const base::TimeDelta kDefaultTabMinimumActiveDuration =
 const base::TimeDelta kDefaultNewTabOpenedTimeout =
     base::TimeDelta::FromSeconds(10);
 
-base::Optional<base::TimeDelta> GetTimeoutFromFieldTrialParam(
+absl::optional<base::TimeDelta> GetTimeoutFromFieldTrialParam(
     const std::string& name) {
   std::string str = base::GetFieldTrialParamValueByFeature(
       feature_engagement::kIPHReopenTabFeature, name);
@@ -39,7 +39,7 @@ base::Optional<base::TimeDelta> GetTimeoutFromFieldTrialParam(
     return base::TimeDelta::FromSeconds(timeout_seconds);
   }
 
-  return base::Optional<base::TimeDelta>();
+  return absl::optional<base::TimeDelta>();
 }
 
 }  // namespace

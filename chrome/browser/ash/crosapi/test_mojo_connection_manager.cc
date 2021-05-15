@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -43,8 +43,8 @@ class FakeEnvironmentProvider : public EnvironmentProvider {
     return paths;
   }
   std::string GetDeviceAccountGaiaId() override { return kFakeGaiaId; }
-  base::Optional<account_manager::Account> GetDeviceAccount() override {
-    return base::make_optional(account_manager::Account{
+  absl::optional<account_manager::Account> GetDeviceAccount() override {
+    return absl::make_optional(account_manager::Account{
         account_manager::AccountKey{kFakeGaiaId,
                                     account_manager::AccountType::kGaia},
         kFakeEmail});

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_HELPER_WIN_H_
 #define CHROME_BROWSER_THEMES_THEME_HELPER_WIN_H_
 
-#include "base/optional.h"
 #include "base/win/registry.h"
 #include "chrome/browser/themes/theme_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Tracks updates to the native colors on Windows 10 and calcuates the values we
 // should use (which are not always what Windows uses). None of the values here
@@ -46,14 +46,14 @@ class ThemeHelperWin : public ThemeHelper {
   std::unique_ptr<base::win::RegKey> dwm_key_;
 
   // The frame color when active. If empty the default colors should be used.
-  base::Optional<SkColor> dwm_frame_color_;
+  absl::optional<SkColor> dwm_frame_color_;
 
   // True if we took |dwm_inactive_frame_color_| from the registry (vs
   // calculating it ourselves) and thus Windows will use it too.
   bool inactive_frame_color_from_registry_ = false;
 
   // The frame color when inactive. If empty the default colors should be used.
-  base::Optional<SkColor> dwm_inactive_frame_color_;
+  absl::optional<SkColor> dwm_inactive_frame_color_;
 
   // The DWM accent border color, if available; white otherwise.
   SkColor dwm_accent_border_color_;

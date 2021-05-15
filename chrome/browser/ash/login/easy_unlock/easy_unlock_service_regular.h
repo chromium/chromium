@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -19,6 +18,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/prefs/pref_change_registrar.h"

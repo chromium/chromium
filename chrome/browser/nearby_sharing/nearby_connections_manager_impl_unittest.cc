@@ -126,7 +126,7 @@ class MockPayloadStatusListener
   MOCK_METHOD(void,
               OnStatusUpdate,
               (PayloadTransferUpdatePtr update,
-               base::Optional<Medium> upgraded_medium),
+               absl::optional<Medium> upgraded_medium),
               (override));
 };
 
@@ -260,7 +260,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     NearbyConnection* nearby_connection;
     nearby_connections_manager_.Connect(
         local_endpoint_info, kRemoteEndpointId,
-        /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+        /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
         base::BindLambdaForTesting([&](NearbyConnection* connection) {
           nearby_connection = connection;
         }));
@@ -571,7 +571,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
           });
 
   nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
-                                      /*bluetooth_mac_address=*/base::nullopt,
+                                      /*bluetooth_mac_address=*/absl::nullopt,
                                       data_usage, base::DoNothing());
 
   run_loop.Run();
@@ -596,18 +596,18 @@ INSTANTIATE_TEST_SUITE_P(
 // Begin: NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
 /******************************************************************************/
 struct ConnectionBluetoothMacAddressTestData {
-  base::Optional<std::vector<uint8_t>> bluetooth_mac_address;
-  base::Optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
+  absl::optional<std::vector<uint8_t>> bluetooth_mac_address;
+  absl::optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
 } kConnectionBluetoothMacAddressTestData[] = {
-    {base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+    {absl::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                               std::end(kBluetoothMacAddress))),
-     base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+     absl::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                               std::end(kBluetoothMacAddress)))},
-    {base::make_optional(
+    {absl::make_optional(
          std::vector<uint8_t>(std::begin(kInvalidBluetoothMacAddress),
                               std::end(kInvalidBluetoothMacAddress))),
-     base::nullopt},
-    {base::nullopt, base::nullopt}};
+     absl::nullopt},
+    {absl::nullopt, absl::nullopt}};
 
 class NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
     : public NearbyConnectionsManagerImplTest,
@@ -730,7 +730,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadBeforeAppend) {
   // Read before message is appended should also succeed.
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload, bytes);
         read_run_loop.Quit();
       }));
@@ -785,7 +785,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadAfterAppend) {
 
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload, bytes);
         read_run_loop.Quit();
       }));
@@ -793,7 +793,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadAfterAppend) {
 
   base::RunLoop read_run_loop_2;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload_2, bytes);
         read_run_loop_2.Quit();
       }));
@@ -857,7 +857,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosed) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop_3;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop_3.Quit();
       }));
@@ -901,7 +901,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByRemote) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
@@ -934,7 +934,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByClient) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
@@ -978,9 +978,9 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectSendPayload) {
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(expected_update, update);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
@@ -1018,12 +1018,12 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectCancelPayload) {
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(kPayloadId, update->payload_id);
         EXPECT_EQ(PayloadStatus::kCanceled, update->status);
         EXPECT_EQ(0u, update->total_bytes);
         EXPECT_EQ(0u, update->bytes_transferred);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
@@ -1081,12 +1081,12 @@ TEST_F(NearbyConnectionsManagerImplTest,
   EXPECT_CALL(*payload_listener, OnStatusUpdate(testing::_, testing::_))
       .Times(1)
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(kPayloadId, update->payload_id);
         EXPECT_EQ(PayloadStatus::kCanceled, update->status);
         EXPECT_EQ(0u, update->total_bytes);
         EXPECT_EQ(0u, update->bytes_transferred);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
 
         // Destroy the PayloadStatusListener after the first payload is
         // cancelled.
@@ -1142,7 +1142,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectTimeout) {
   NearbyConnection* nearby_connection = nullptr;
   nearby_connections_manager_.Connect(
       local_endpoint_info, kRemoteEndpointId,
-      /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+      /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
       base::BindLambdaForTesting([&](NearbyConnection* connection) {
         nearby_connection = connection;
         run_loop.Quit();
@@ -1192,9 +1192,9 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(expected_update, update);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
@@ -1280,12 +1280,12 @@ TEST_F(
   EXPECT_CALL(*payload_listener, OnStatusUpdate(testing::_, testing::_))
       .Times(1)
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(kPayloadId, update->payload_id);
         EXPECT_EQ(PayloadStatus::kFailure, update->status);
         EXPECT_EQ(kTotalSize, update->total_bytes);
         EXPECT_EQ(0u, update->bytes_transferred);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
 
         // Destroy the PayloadStatusListener after the first payload fails.
         payload_listener.reset();
@@ -1313,7 +1313,7 @@ TEST_F(
   // outstanding Read() callback if there are no bytes to read.
   base::RunLoop read_run_loop;
   connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
@@ -1653,7 +1653,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ShutdownDiscoveryConnectionFails) {
   NearbyConnection* nearby_connection;
   nearby_connections_manager_.Connect(
       local_endpoint_info, kRemoteEndpointId,
-      /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+      /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
       base::BindLambdaForTesting([&](NearbyConnection* connection) {
         nearby_connection = connection;
         connect_run_loop.Quit();

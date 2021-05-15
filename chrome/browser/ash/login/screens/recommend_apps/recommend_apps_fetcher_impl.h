@@ -70,7 +70,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   void Retry() override;
 
   using ArcFeaturesGetter = base::RepeatingCallback<void(
-      base::OnceCallback<void(base::Optional<arc::ArcFeatures> callback)>)>;
+      base::OnceCallback<void(absl::optional<arc::ArcFeatures> callback)>)>;
   void set_arc_features_getter_for_testing(const ArcFeaturesGetter& getter) {
     arc_features_getter_ = getter;
   }
@@ -93,7 +93,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // Callback function called when ARC features are read by the parser.
   // It will populate the device config info related to ARC features.
-  void OnArcFeaturesRead(base::Optional<arc::ArcFeatures> read_result);
+  void OnArcFeaturesRead(absl::optional<arc::ArcFeatures> read_result);
 
   // Callback function called when the proto message has been compressed and
   // encoded.
@@ -110,8 +110,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   // Callback function called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
-  // If the response is not a valid JSON, return base::nullopt.
-  // If the response contains no app, return base::nullopt;
+  // If the response is not a valid JSON, return absl::nullopt.
+  // If the response contains no app, return absl::nullopt;
   // Value output, in true, is a list containing:
   // 1. name: the title of the app.
   // 2. package_name
@@ -124,7 +124,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   //  {"title_" : "title of second app",
   //   "packageName_": "second package name.",
   //  }]
-  base::Optional<base::Value> ParseResponse(base::StringPiece response);
+  absl::optional<base::Value> ParseResponse(base::StringPiece response);
 
   device_configuration::DeviceConfigurationProto device_config_;
 

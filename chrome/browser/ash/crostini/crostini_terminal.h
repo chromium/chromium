@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 

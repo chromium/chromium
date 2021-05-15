@@ -90,7 +90,7 @@ void SignOutSecondaryAccount(
 void MakeAccountPrimary(Profile* profile, const std::string& email) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  base::Optional<AccountInfo> maybe_account =
+  absl::optional<AccountInfo> maybe_account =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               email);

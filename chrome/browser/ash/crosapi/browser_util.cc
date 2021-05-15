@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
@@ -54,6 +53,7 @@
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using user_manager::User;
 using version_info::Channel;
@@ -64,7 +64,7 @@ namespace {
 
 bool g_lacros_enabled_for_test = false;
 
-base::Optional<bool> g_lacros_primary_browser_for_test;
+absl::optional<bool> g_lacros_primary_browser_for_test;
 
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
@@ -152,16 +152,16 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
-base::Optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
+absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
     EnvironmentProvider* environment_provider) {
   if (!user_manager::UserManager::IsInitialized()) {
     LOG(ERROR) << "User not initialized.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!primary_user) {
     LOG(ERROR) << "No primary user.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string policy_data = environment_provider->GetDeviceAccountPolicy();
   return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
@@ -405,7 +405,7 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
 }
 
-void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value) {
+void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value) {
   g_lacros_primary_browser_for_test = value;
 }
 
@@ -514,7 +514,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->device_account_gaia_id =
       environment_provider->GetDeviceAccountGaiaId();
-  const base::Optional<account_manager::Account> maybe_device_account =
+  const absl::optional<account_manager::Account> maybe_device_account =
       environment_provider->GetDeviceAccount();
   if (maybe_device_account) {
     params->device_account =

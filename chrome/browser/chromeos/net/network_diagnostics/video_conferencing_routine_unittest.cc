@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_util.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -109,10 +109,10 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   void CompareVerdict(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const base::Optional<std::string>& expected_support_details,
+      const absl::optional<std::string>& expected_support_details,
       mojom::RoutineVerdict actual_verdict,
       const std::vector<mojom::VideoConferencingProblem>& actual_problems,
-      const base::Optional<std::string>& actual_support_details) {
+      const absl::optional<std::string>& actual_support_details) {
     EXPECT_EQ(expected_verdict, actual_verdict);
     EXPECT_EQ(expected_problems, actual_problems);
     EXPECT_EQ(expected_support_details.has_value(),
@@ -159,7 +159,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   void RunRoutine(
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const base::Optional<std::string>& expected_support_details) {
+      const absl::optional<std::string>& expected_support_details) {
     video_conferencing_routine_->RunRoutine(base::BindOnce(
         &VideoConferencingRoutineTest::CompareVerdict, weak_ptr(),
         expected_routine_verdict, expected_problems, expected_support_details));
@@ -195,7 +195,7 @@ class VideoConferencingRoutineTest : public ::testing::Test {
       std::deque<TlsProberReturnValue> fake_tls_probe_results,
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const base::Optional<std::string>& expected_support_details) {
+      const absl::optional<std::string>& expected_support_details) {
     SetUpRoutine(std::move(fake_udp_probe_results),
                  std::move(fake_tls_probe_results));
     RunRoutine(expected_routine_verdict, expected_problems,
@@ -258,7 +258,7 @@ TEST_F(VideoConferencingRoutineTest, TestSuccessfulPath) {
   SetUpAndRunRoutine(
       std::move(fake_udp_probe_results), std::move(fake_tls_probe_results),
       mojom::RoutineVerdict::kNoProblem,
-      /*expected_problems=*/{}, /*expected_support_problems=*/base::nullopt);
+      /*expected_problems=*/{}, /*expected_support_problems=*/absl::nullopt);
 }
 
 // Tests the scenario where:

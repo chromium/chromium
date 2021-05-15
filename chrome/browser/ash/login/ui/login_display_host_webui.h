@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -270,7 +270,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   bool need_to_play_startup_sound_ = false;
 
   // Measures OOBE WebUI load time.
-  base::Optional<base::ElapsedTimer> oobe_load_timer_;
+  absl::optional<base::ElapsedTimer> oobe_load_timer_;
 
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 

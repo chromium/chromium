@@ -28,14 +28,14 @@ ProxyLookupClientImpl::ProxyLookupClientImpl(
           {content::BrowserTaskType::kPreconnect})));
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,
-                     base::Unretained(this), net::ERR_ABORTED, base::nullopt));
+                     base::Unretained(this), net::ERR_ABORTED, absl::nullopt));
 }
 
 ProxyLookupClientImpl::~ProxyLookupClientImpl() = default;
 
 void ProxyLookupClientImpl::OnProxyLookupComplete(
     int32_t net_error,
-    const base::Optional<net::ProxyInfo>& proxy_info) {
+    const absl::optional<net::ProxyInfo>& proxy_info) {
   bool success = proxy_info.has_value() && !proxy_info->is_direct();
   std::move(callback_).Run(success);
 }

@@ -494,7 +494,7 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   void OnMountFailed(MountFailure failure,
-                     base::Optional<base::TimeDelta> remount_delay) override {
+                     absl::optional<base::TimeDelta> remount_delay) override {
     mount_observer_->OnMountFailed(failure, std::move(remount_delay));
   }
 
@@ -502,7 +502,7 @@ class DriveIntegrationService::DriveFsHolder
     mount_observer_->OnMounted(path);
   }
 
-  void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) override {
+  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override {
     mount_observer_->OnUnmounted(std::move(remount_delay));
   }
 
@@ -869,7 +869,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 }
 
 void DriveIntegrationService::MaybeRemountFileSystem(
-    base::Optional<base::TimeDelta> remount_delay,
+    absl::optional<base::TimeDelta> remount_delay,
     bool failed_to_mount) {
   DCHECK_EQ(INITIALIZED, state_);
 
@@ -933,7 +933,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 }
 
 void DriveIntegrationService::OnUnmounted(
-    base::Optional<base::TimeDelta> remount_delay) {
+    absl::optional<base::TimeDelta> remount_delay) {
   UmaEmitUnmountOutcome(remount_delay ? DriveMountStatus::kTemporaryUnavailable
                                       : DriveMountStatus::kUnknownFailure);
   MaybeRemountFileSystem(remount_delay, false);
@@ -941,7 +941,7 @@ void DriveIntegrationService::OnUnmounted(
 
 void DriveIntegrationService::OnMountFailed(
     MountFailure failure,
-    base::Optional<base::TimeDelta> remount_delay) {
+    absl::optional<base::TimeDelta> remount_delay) {
   PrefService* prefs = profile_->GetPrefs();
   DriveMountStatus status = ConvertMountFailure(failure);
   UmaEmitMountStatus(status);
@@ -1053,13 +1053,13 @@ void DriveIntegrationService::GetQuickAccessItems(
       std::move(query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          base::Optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+          absl::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
 }
 
 void DriveIntegrationService::OnGetQuickAccessItems(
     GetQuickAccessItemsCallback callback,
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK || !items.has_value()) {
     std::move(callback).Run(error, {});
     return;
@@ -1101,13 +1101,13 @@ void DriveIntegrationService::SearchDriveByFileName(
       std::move(drive_query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          base::Optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+          absl::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
 }
 
 void DriveIntegrationService::OnSearchDriveByFileName(
     SearchDriveByFileNameCallback callback,
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error != drive::FILE_ERROR_OK || !items.has_value()) {
     std::move(callback).Run(error, {});
     return;

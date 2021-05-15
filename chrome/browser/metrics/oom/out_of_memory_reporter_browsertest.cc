@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +22,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -68,7 +68,7 @@ class MAYBE_OutOfMemoryReporterBrowserTest
   }
 
  protected:
-  base::Optional<GURL> last_oom_url_;
+  absl::optional<GURL> last_oom_url_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MAYBE_OutOfMemoryReporterBrowserTest);

@@ -255,12 +255,12 @@ ColorPickerView::~ColorPickerView() {
   RemoveAllChildViews(true);
 }
 
-base::Optional<int> ColorPickerView::GetSelectedElement() const {
+absl::optional<int> ColorPickerView::GetSelectedElement() const {
   for (size_t i = 0; i < elements_.size(); ++i) {
     if (elements_[i]->GetSelected())
       return static_cast<int>(i);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 views::View* ColorPickerView::GetSelectedViewForGroup(int group) {
@@ -289,5 +289,5 @@ void ColorPickerView::OnColorSelected(ColorPickerElementView* element) {
 }
 
 BEGIN_METADATA(ColorPickerView, views::View)
-ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, SelectedElement)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<int>, SelectedElement)
 END_METADATA

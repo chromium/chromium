@@ -136,9 +136,9 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
-    const base::Optional<bool>& by_user) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
+    const absl::optional<bool>& by_user) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
   if (!handler) {
@@ -273,9 +273,9 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
-    const base::Optional<bool>& by_user,
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
+    const absl::optional<bool>& by_user,
     Profile* profile) {
   base::UmaHistogramBoolean("Notifications.LoadProfileResult",
                             profile != nullptr);

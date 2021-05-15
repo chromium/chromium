@@ -528,7 +528,7 @@ int MediaHistoryStore::GetTableRowCount(const std::string& table_name) {
 void MediaHistoryStore::SavePlaybackSession(
     const GURL& url,
     const media_session::MediaMetadata& metadata,
-    const base::Optional<media_session::MediaPosition>& position,
+    const absl::optional<media_session::MediaPosition>& position,
     const std::vector<media_session::MediaImage>& artwork) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   if (!CanAccessDatabase())
@@ -580,7 +580,7 @@ void MediaHistoryStore::SavePlaybackSession(
     // If we do not have any sizes associated with the image we should save a
     // link with a null size. Otherwise, we should save a link for each size.
     if (image.sizes.empty()) {
-      session_images_table_->LinkImage(*session_id, *image_id, base::nullopt);
+      session_images_table_->LinkImage(*session_id, *image_id, absl::nullopt);
     } else {
       for (auto& size : image.sizes) {
         session_images_table_->LinkImage(*session_id, *image_id, size);
@@ -597,8 +597,8 @@ void MediaHistoryStore::SavePlaybackSession(
 
 std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>
 MediaHistoryStore::GetPlaybackSessions(
-    base::Optional<unsigned int> num_sessions,
-    base::Optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
+    absl::optional<unsigned int> num_sessions,
+    absl::optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
 
   if (!CanAccessDatabase())

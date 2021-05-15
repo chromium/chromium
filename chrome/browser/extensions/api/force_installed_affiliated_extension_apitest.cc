@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
@@ -19,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/test/result_catcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

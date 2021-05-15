@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/color_palette.h"
@@ -128,7 +128,7 @@ class TabStrip : public views::View,
   // Returns information about tabs at given indices.
   bool IsTabCrashed(int tab_index) const;
   bool TabHasNetworkError(int tab_index) const;
-  base::Optional<TabAlertState> GetTabAlertState(int tab_index) const;
+  absl::optional<TabAlertState> GetTabAlertState(int tab_index) const;
 
   // Updates the loading animations displayed by tabs in the tabstrip to the
   // next frame. The |elapsed_time| parameter is shared between tabs and used to
@@ -168,7 +168,7 @@ class TabStrip : public views::View,
   void SetTabData(int model_index, TabRendererData data);
 
   // Sets the tab group at the specified model index.
-  void AddTabToGroup(base::Optional<tab_groups::TabGroupId> group,
+  void AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
                      int model_index);
 
   // Creates the views associated with a newly-created tab group.
@@ -270,7 +270,7 @@ class TabStrip : public views::View,
   void StopAnimating(bool layout);
 
   // Returns the index of the focused tab, if any.
-  base::Optional<int> GetFocusedTabIndex() const;
+  absl::optional<int> GetFocusedTabIndex() const;
 
   // Returns a view for anchoring an in-product help promo. |index_hint|
   // indicates at which tab the promo should be displayed, but is not
@@ -327,7 +327,7 @@ class TabStrip : public views::View,
   SkColor GetTabForegroundColor(TabActive active,
                                 SkColor background_color) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
-  base::Optional<int> GetCustomBackgroundId(
+  absl::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override;
   float GetHoverOpacityForTab(float range_parameter) const override;
@@ -354,7 +354,7 @@ class TabStrip : public views::View,
       const ui::DropTargetEvent& event) override;
   views::View* GetViewForDrop() override;
   void HandleDragUpdate(
-      const base::Optional<BrowserRootView::DropIndex>& index) override;
+      const absl::optional<BrowserRootView::DropIndex>& index) override;
   void HandleDragExited() override;
 
  private:
@@ -486,7 +486,7 @@ class TabStrip : public views::View,
   // given |tab| based on its model index when it moves. Used to reorder the
   // child views of the tabstrip so that focus order stays consistent.
   int GetViewInsertionIndex(Tab* tab,
-                            base::Optional<int> from_model_index,
+                            absl::optional<int> from_model_index,
                             int to_model_index) const;
 
   // Closes the tab at |model_index|.
@@ -548,7 +548,7 @@ class TabStrip : public views::View,
 
   // Show drop arrow with passed |tab_data_index| and |drop_before|.
   // If |tab_data_index| is negative, the arrow will disappear.
-  void SetDropArrow(const base::Optional<BrowserRootView::DropIndex>& index);
+  void SetDropArrow(const absl::optional<BrowserRootView::DropIndex>& index);
 
   // Returns the image to use for indicating a drop on a tab. If is_down is
   // true, this returns an arrow pointing down.
@@ -684,7 +684,7 @@ class TabStrip : public views::View,
   // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
   // tabs with the mouse, and is used to control which tab will end up under the
   // cursor after the close animation completes.
-  base::Optional<int> override_available_width_for_tabs_;
+  absl::optional<int> override_available_width_for_tabs_;
 
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;
@@ -728,7 +728,7 @@ class TabStrip : public views::View,
   base::TimeTicks last_mouse_move_time_;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
-  base::Optional<base::TimeTicks> mouse_entered_tabstrip_time_;
+  absl::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
 
   // Number of mouse moves.
   int mouse_move_count_ = 0;

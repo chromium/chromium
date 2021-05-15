@@ -199,14 +199,14 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kRootSecretPrefName, std::string());
 }
 
-base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
       !Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
           base::android::AttachCurrentThread())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   RegistrationState* state = GetRegistrationState();
@@ -215,7 +215,7 @@ GetSyncDataIfRegistered() {
     // |state| will signal to Sync that something changed and this
     // function will be called again.
     state->SignalSyncWhenReady();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;

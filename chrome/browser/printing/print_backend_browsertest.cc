@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -26,6 +25,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -103,8 +103,8 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   }
 
   void OnDidGetDefaultPrinterName(
-      base::Optional<std::string>& capture_printer_name,
-      const base::Optional<std::string>& printer_name) {
+      absl::optional<std::string>& capture_printer_name,
+      const absl::optional<std::string>& printer_name) {
     capture_printer_name = printer_name;
     CheckForQuit();
   }
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   // Launch the service, but without initializing to desired locale.
   LaunchUninitialized();
 
-  base::Optional<std::string> default_printer_name;
+  absl::optional<std::string> default_printer_name;
   mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
   LaunchService();
   AddDefaultPrinter();
 
-  base::Optional<std::string> default_printer_name;
+  absl::optional<std::string> default_printer_name;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.

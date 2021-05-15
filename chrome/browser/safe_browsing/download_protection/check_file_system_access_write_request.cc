@@ -98,10 +98,10 @@ void CheckFileSystemAccessWriteRequest::MaybeStorePingsForDownload(
   // TODO(https://crbug.com/996797): Integrate with DownloadFeedbackService.
 }
 
-base::Optional<enterprise_connectors::AnalysisSettings>
+absl::optional<enterprise_connectors::AnalysisSettings>
 CheckFileSystemAccessWriteRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CheckFileSystemAccessWriteRequest::UploadBinary(

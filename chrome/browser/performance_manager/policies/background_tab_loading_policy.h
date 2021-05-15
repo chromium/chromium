@@ -79,7 +79,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     // Indicates whether or not the tab communicates with the user even when it
     // is in the background (tab title changes, favicons, etc).
     // It is initialized to nullopt and set asynchronously to the proper value.
-    base::Optional<bool> used_in_bg;
+    absl::optional<bool> used_in_bg;
   };
 
   // Comparator used to sort PageNodeToLoadData.

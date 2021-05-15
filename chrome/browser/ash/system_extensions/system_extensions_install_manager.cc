@@ -77,7 +77,7 @@ void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
 
   // For now just use a hardcoded System Extension manifest. Future CLs will
   // change this to take a command line argument to a CRX.
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(kEchoSystemExtensionManifest);
   if (base::CompareCaseInsensitiveASCII("echo",
                                         *value->FindStringKey("type")) != 0) {

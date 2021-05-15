@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -23,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -201,7 +201,7 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
 
   // arc::ArcIntentHelperObserver:
   void OnIntentFiltersUpdated(
-      const base::Optional<std::string>& package_name) override;
+      const absl::optional<std::string>& package_name) override;
 
   // arc::ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;

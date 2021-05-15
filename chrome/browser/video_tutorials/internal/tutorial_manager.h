@@ -16,7 +16,7 @@ class TutorialManager {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using MultipleItemCallback = base::OnceCallback<void(std::vector<Tutorial>)>;
-  using SingleItemCallback = base::OnceCallback<void(base::Optional<Tutorial>)>;
+  using SingleItemCallback = base::OnceCallback<void(absl::optional<Tutorial>)>;
 
   // Loads video tutorials. Must be called again if the locale was changed by
   // the user.
@@ -34,7 +34,7 @@ class TutorialManager {
       FeatureType feature_type) = 0;
 
   // Returns the preferred locale for the video tutorials.
-  virtual base::Optional<std::string> GetPreferredLocale() = 0;
+  virtual absl::optional<std::string> GetPreferredLocale() = 0;
 
   // Sets the user preferred locale for watching the video tutorials. This
   // doesn't update the cached tutorials. GetTutorials must be called for the

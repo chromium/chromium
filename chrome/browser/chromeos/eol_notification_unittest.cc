@@ -63,7 +63,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
 
   void DismissNotification() {
     eol_notification_->Click(EolNotification::ButtonIndex::BUTTON_DISMISS,
-                             base::nullopt);
+                             absl::nullopt);
   }
 
   void SetCurrentTimeToUtc(const char* utc_date_string) {

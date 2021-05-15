@@ -52,9 +52,9 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
     return false;
   }
 
-  base::Optional<tab_groups::TabGroupId> target_group =
+  absl::optional<tab_groups::TabGroupId> target_group =
       tab_strip->GetTabGroupForTab(target_index);
-  base::Optional<tab_groups::TabGroupId> adjacent_group =
+  absl::optional<tab_groups::TabGroupId> adjacent_group =
       tab_strip->GetTabGroupForTab(target_index - 1);
 
   if (target_group.has_value() && target_group == adjacent_group) {

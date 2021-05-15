@@ -29,7 +29,7 @@ void MaybeRecordEnterpriseRejectionAndRunCallback(
   std::move(callback).Run(choice);
 }
 
-base::Optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
+absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
     bool enterprise_account,
     bool sync_disabled,
     LoginUIService::SyncConfirmationUIClosedResult result) {
@@ -57,7 +57,7 @@ base::Optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
       break;
     case LoginUIService::UI_CLOSED:
       // The metric is recorded elsewhere.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -263,7 +263,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
 
 void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
     LoginUIService::SyncConfirmationUIClosedResult result,
-    base::Optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome) {
+    absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome) {
   DCHECK(sync_confirmation_callback_);
   if (outcome)
     ProfileMetrics::LogProfileAddSignInFlowOutcome(*outcome);

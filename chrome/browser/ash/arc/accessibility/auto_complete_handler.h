@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXNodeData;
@@ -40,8 +40,8 @@ class AutoCompleteHandler : public AXTreeSourceArc::Hook {
 
  private:
   const int32_t anchored_node_id_;
-  base::Optional<int32_t> suggestion_window_id_;
-  base::Optional<int32_t> selected_node_id_;
+  absl::optional<int32_t> suggestion_window_id_;
+  absl::optional<int32_t> selected_node_id_;
 };
 
 }  // namespace arc

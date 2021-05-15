@@ -49,10 +49,10 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
 
   void InitializeProberNetworkContext(
       std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result,
-      base::Optional<net::Error> udp_connect_complete_code,
-      base::Optional<net::Error> udp_send_complete_code,
-      base::Optional<net::Error> udp_on_received_code,
-      base::Optional<base::span<const uint8_t>> udp_on_received_data) {
+      absl::optional<net::Error> udp_connect_complete_code,
+      absl::optional<net::Error> udp_send_complete_code,
+      absl::optional<net::Error> udp_on_received_code,
+      absl::optional<base::span<const uint8_t>> udp_on_received_data) {
     fake_network_context_ = std::make_unique<FakeNetworkContext>();
     fake_network_context_->set_fake_dns_result(std::move(fake_dns_result));
     if (udp_connect_complete_code.has_value()) {
@@ -71,9 +71,9 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
     }
   }
 
-  void SetUdpDelays(base::Optional<base::TimeDelta> connection_delay,
-                    base::Optional<base::TimeDelta> send_delay,
-                    base::Optional<base::TimeDelta> receive_delay) {
+  void SetUdpDelays(absl::optional<base::TimeDelta> connection_delay,
+                    absl::optional<base::TimeDelta> send_delay,
+                    absl::optional<base::TimeDelta> receive_delay) {
     fake_network_context_->SetTaskEnvironmentForTesting(&task_environment_);
     if (connection_delay.has_value()) {
       fake_network_context_->SetUdpConnectionDelay(connection_delay.value());
@@ -159,10 +159,10 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedDnsLookup) {
       net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList());
   // UDP connect and subsequent steps will not happen in this scenario.
   InitializeProberNetworkContext(std::move(fake_dns_result),
-                                 /*udp_connect_code=*/base::nullopt,
-                                 /*udp_send_complete_code=*/base::nullopt,
-                                 /*udp_on_received_code=*/base::nullopt,
-                                 /*udp_on_received_data=*/base::nullopt);
+                                 /*udp_connect_code=*/absl::nullopt,
+                                 /*udp_send_complete_code=*/absl::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
+                                 /*udp_on_received_data=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_NAME_NOT_RESOLVED,
                            ProbeExitEnum::kDnsFailure);
 }
@@ -170,10 +170,10 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedDnsLookup) {
 TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDnsLookup) {
   // UDP connect and subsequent steps will not happen in this scenario.
   InitializeProberNetworkContext(/*fake_dns_result=*/{},
-                                 /*udp_connect_code=*/base::nullopt,
-                                 /*udp_send_code=*/base::nullopt,
-                                 /*udp_on_received_code=*/base::nullopt,
-                                 /*udp_on_received_data=*/base::nullopt);
+                                 /*udp_connect_code=*/absl::nullopt,
+                                 /*udp_send_code=*/absl::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
+                                 /*udp_on_received_data=*/absl::nullopt);
   fake_network_context()->set_disconnect_during_host_resolution(true);
   RunProberExpectingResult(net::ERR_NAME_NOT_RESOLVED,
                            ProbeExitEnum::kDnsFailure);
@@ -186,12 +186,12 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpConnection) {
   InitializeProberNetworkContext(
       std::move(fake_dns_result),
       /*udp_connect_code=*/net::ERR_CONNECTION_FAILED,
-      /*udp_send_code=*/base::nullopt,
-      /*udp_on_received_code=*/base::nullopt,
-      /*udp_on_received_data=*/base::nullopt);
+      /*udp_send_code=*/absl::nullopt,
+      /*udp_on_received_code=*/absl::nullopt,
+      /*udp_on_received_data=*/absl::nullopt);
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::nullopt,
-               /*receive_delay=*/base::nullopt);
+               /*send_delay=*/absl::nullopt,
+               /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_CONNECTION_FAILED,
                            ProbeExitEnum::kConnectFailure);
 }
@@ -202,12 +202,12 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpConnection) {
       net::AddressList(kFakeIPAddress));
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*udp_connect_code=*/net::OK,
-                                 /*udp_send_code=*/base::nullopt,
-                                 /*udp_on_received_code=*/base::nullopt,
-                                 /*udp_on_received_data=*/base::nullopt);
+                                 /*udp_send_code=*/absl::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
+                                 /*udp_on_received_data=*/absl::nullopt);
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
-               /*send_delay=*/base::nullopt,
-               /*receive_delay=*/base::nullopt);
+               /*send_delay=*/absl::nullopt,
+               /*receive_delay=*/absl::nullopt);
   fake_network_context()->set_disconnect_during_udp_connection_attempt(true);
   RunProberExpectingResult(net::ERR_FAILED,
                            ProbeExitEnum::kMojoDisconnectFailure);
@@ -220,11 +220,11 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpSend) {
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*udp_connect_code=*/net::OK,
                                  /*udp_send_code=*/net::ERR_CONNECTION_FAILED,
-                                 /*udp_on_received_code=*/base::nullopt,
-                                 /*udp_on_received_data=*/base::nullopt);
+                                 /*udp_on_received_code=*/absl::nullopt,
+                                 /*udp_on_received_data=*/absl::nullopt);
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
                /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::nullopt);
+               /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_CONNECTION_FAILED,
                            ProbeExitEnum::kSendFailure);
 }
@@ -235,12 +235,12 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpSend) {
       net::AddressList(kFakeIPAddress));
   net::Error udp_connect_code = net::OK;
   InitializeProberNetworkContext(std::move(fake_dns_result), udp_connect_code,
-                                 /*udp_send_code=*/base::nullopt,
-                                 /*udp_on_received_code=*/base::nullopt,
-                                 /*udp_on_received_data=*/base::nullopt);
+                                 /*udp_send_code=*/absl::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
+                                 /*udp_on_received_data=*/absl::nullopt);
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
                /*send_delay=*/base::TimeDelta::FromSeconds(1),
-               /*receive_delay=*/base::nullopt);
+               /*receive_delay=*/absl::nullopt);
   fake_network_context()->SetDisconnectDuringUdpSendAttempt(true);
   RunProberExpectingResult(net::ERR_FAILED,
                            ProbeExitEnum::kMojoDisconnectFailure);
@@ -255,7 +255,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, BadUdpNetworkCodeOnReceive) {
       /*udp_connect_code=*/net::OK,
       /*udp_send_code=*/net::OK,
       /*udp_on_received_code=*/net::ERR_CONNECTION_FAILED,
-      /*udp_on_received_data=*/base::nullopt);
+      /*udp_on_received_data=*/absl::nullopt);
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
                /*send_delay=*/base::TimeDelta::FromSeconds(1),
                /*receive_delay=*/base::TimeDelta::FromSeconds(1));
@@ -302,12 +302,12 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpConnection) {
       net::AddressList(kFakeIPAddress));
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*udp_connect_code=*/net::OK,
-                                 /*udp_send_complete_code=*/base::nullopt,
-                                 /*udp_on_received_code=*/base::nullopt,
+                                 /*udp_send_complete_code=*/absl::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/{});
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(15),
-               /*send_delay=*/base::nullopt,
-               /*receive_delay=*/base::nullopt);
+               /*send_delay=*/absl::nullopt,
+               /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
 }
 
@@ -318,11 +318,11 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpSend) {
   InitializeProberNetworkContext(std::move(fake_dns_result),
                                  /*udp_connect_code=*/net::OK,
                                  /*udp_send_complete_code=*/net::OK,
-                                 /*udp_on_received_code=*/base::nullopt,
+                                 /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/{});
   SetUdpDelays(/*connection_delay=*/base::TimeDelta::FromSeconds(1),
                /*send_delay=*/base::TimeDelta::FromSeconds(15),
-               /*receive_delay=*/base::nullopt);
+               /*receive_delay=*/absl::nullopt);
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
 }
 

@@ -542,7 +542,7 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   if (!profile)
     return;
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url,
                                               /*window_only=*/true);
 
@@ -579,7 +579,7 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   if (!prefs)
     return;
 
-  base::Optional<std::string> package_name =
+  absl::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
   if (!package_name.has_value())
     return;

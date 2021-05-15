@@ -114,7 +114,7 @@ class ArcFileSystemBridge
                            GetLinuxVFSPathForPathOnFileSystemType);
 
   using GenerateVirtualFileIdCallback =
-      base::OnceCallback<void(const base::Optional<std::string>& id)>;
+      base::OnceCallback<void(const absl::optional<std::string>& id)>;
 
   // Used to implement GetFileSize().
   void GetFileSizeInternal(const GURL& url_decoded,
@@ -132,12 +132,12 @@ class ArcFileSystemBridge
   // Used to implement GetVirtualFileId().
   void OnGenerateVirtualFileId(const GURL& url_decoded,
                                GenerateVirtualFileIdCallback callback,
-                               const base::Optional<std::string>& id);
+                               const absl::optional<std::string>& id);
 
   // Used to implement OpenFileToRead().
   void OpenFileById(const GURL& url_decoded,
                     OpenFileToReadCallback callback,
-                    const base::Optional<std::string>& id);
+                    const absl::optional<std::string>& id);
 
   // Used to implement OpenFileToRead().
   void OnOpenFileById(const GURL& url_decoded,

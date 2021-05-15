@@ -39,7 +39,7 @@ constexpr base::TimeDelta kPermissionActionCutoffAge =
 // the particular permission type.
 constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
 
-base::Optional<
+absl::optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
 ParsePredictionServiceMockLikelihood(const std::string& value) {
   if (value == "very-unlikely") {
@@ -59,7 +59,7 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
         PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ShouldPredictionTriggerQuietUi(
@@ -90,7 +90,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     DecisionMadeCallback callback) {
   VLOG(1) << "[CPSS] Selector activated";
   callback_ = std::move(callback);
-  last_request_grant_likelihood_ = base::nullopt;
+  last_request_grant_likelihood_ = absl::nullopt;
 
   if (!IsAllowedToUseAssistedPrompts()) {
     VLOG(1) << "[CPSS] Configuration does not allows CPSS requests";
@@ -140,7 +140,7 @@ void PredictionBasedPermissionUiSelector::Cancel() {
   callback_.Reset();
 }
 
-base::Optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
+absl::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
 PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;
 }

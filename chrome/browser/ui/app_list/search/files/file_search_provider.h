@@ -10,11 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -46,7 +46,7 @@ class FileSearchProvider : public SearchProvider {
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;
-  base::Optional<chromeos::string_matching::TokenizedString>
+  absl::optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
 
   Profile* const profile_;

@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -26,6 +25,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
@@ -249,7 +249,7 @@ class AuthenticatorRequestDialogModel {
     return transport_availability()->is_ble_powered;
   }
 
-  const base::Optional<std::string>& selected_authenticator_id() const {
+  const absl::optional<std::string>& selected_authenticator_id() const {
     return ephemeral_state_.selected_authenticator_id_;
   }
 
@@ -443,7 +443,7 @@ class AuthenticatorRequestDialogModel {
 
   // current_mechanism returns the index into |mechanisms| of the most recently
   // activated mechanism, or nullopt if there isn't one.
-  base::Optional<size_t> current_mechanism() const;
+  absl::optional<size_t> current_mechanism() const;
 
   // ContactPhoneForTesting triggers a contact for a phone with the given name.
   // Only for unittests. UI should use |mechanisms()| to enumerate the
@@ -482,15 +482,15 @@ class AuthenticatorRequestDialogModel {
   void FinishCollectToken();
   uint32_t min_pin_length() const { return min_pin_length_; }
   device::pin::PINEntryError pin_error() const { return pin_error_; }
-  base::Optional<int> pin_attempts() const { return pin_attempts_; }
+  absl::optional<int> pin_attempts() const { return pin_attempts_; }
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
   void OnSampleCollected(int bio_samples_remaining);
   void OnBioEnrollmentDone();
-  base::Optional<int> max_bio_samples() { return max_bio_samples_; }
-  base::Optional<int> bio_samples_remaining() { return bio_samples_remaining_; }
+  absl::optional<int> max_bio_samples() { return max_bio_samples_; }
+  absl::optional<int> bio_samples_remaining() { return bio_samples_remaining_; }
 
-  base::Optional<int> uv_attempts() const { return uv_attempts_; }
+  absl::optional<int> uv_attempts() const { return uv_attempts_; }
 
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
@@ -504,10 +504,10 @@ class AuthenticatorRequestDialogModel {
   }
 
   void set_cable_transport_info(
-      base::Optional<bool> extension_is_v2,
+      absl::optional<bool> extension_is_v2,
       std::vector<PairedPhone> paired_phones,
       base::RepeatingCallback<void(size_t)> contact_phone_callback,
-      const base::Optional<std::string>& cable_qr_string);
+      const absl::optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {
     return transport_availability_.has_win_native_api_authenticator;
@@ -534,7 +534,7 @@ class AuthenticatorRequestDialogModel {
 
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
-    base::Optional<std::string> selected_authenticator_id_;
+    absl::optional<std::string> selected_authenticator_id_;
 
     // Stores a list of |AuthenticatorReference| values such that a request can
     // be dispatched dispatched after some UI interaction. This is useful for
@@ -591,12 +591,12 @@ class AuthenticatorRequestDialogModel {
   // pending_step_ holds requested steps until the UI is shown. The UI is only
   // shown once the TransportAvailabilityInfo is available, but authenticators
   // may request, e.g., PIN entry prior to that.
-  base::Optional<Step> pending_step_;
+  absl::optional<Step> pending_step_;
 
   // Determines which step to continue with once the Blueooth adapter is
   // powered. Only set while the |current_step_| is either kBlePowerOnManual,
   // kBlePowerOnAutomatic.
-  base::Optional<Step> next_step_once_ble_powered_;
+  absl::optional<Step> next_step_once_ble_powered_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -606,21 +606,21 @@ class AuthenticatorRequestDialogModel {
   RequestCallback request_callback_;
   base::RepeatingClosure bluetooth_adapter_power_on_callback_;
 
-  base::Optional<int> max_bio_samples_;
-  base::Optional<int> bio_samples_remaining_;
+  absl::optional<int> max_bio_samples_;
+  absl::optional<int> bio_samples_remaining_;
   base::OnceClosure bio_enrollment_callback_;
 
   base::OnceCallback<void(std::u16string)> pin_callback_;
   uint32_t min_pin_length_ = device::kMinPinLength;
   device::pin::PINEntryError pin_error_ = device::pin::PINEntryError::kNoError;
-  base::Optional<int> pin_attempts_;
-  base::Optional<int> uv_attempts_;
+  absl::optional<int> pin_attempts_;
+  absl::optional<int> uv_attempts_;
 
   base::OnceCallback<void(bool)> attestation_callback_;
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-  base::Optional<device::PublicKeyCredentialUserEntity> preselected_account_;
+  absl::optional<device::PublicKeyCredentialUserEntity> preselected_account_;
 
   // True if this request should use the non-modal location bar bubble UI
   // instead of the page-modal, regular UI.
@@ -641,10 +641,10 @@ class AuthenticatorRequestDialogModel {
 
   // current_mechanism_ contains the index of the most recently activated
   // mechanism.
-  base::Optional<size_t> current_mechanism_;
+  absl::optional<size_t> current_mechanism_;
 
   // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
-  base::Optional<CableUIType> cable_ui_type_;
+  absl::optional<CableUIType> cable_ui_type_;
 
   // paired_phones_ contains details of caBLEv2-paired phones from both Sync and
   // QR-based pairing. The entries are sorted by name.
@@ -658,7 +658,7 @@ class AuthenticatorRequestDialogModel {
   // to contact the indicated phone.
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
-  base::Optional<std::string> cable_qr_string_;
+  absl::optional<std::string> cable_qr_string_;
   // win_native_api_already_tried_ is true if the Windows-native UI has been
   // displayed already and the user cancelled it. In this case, we shouldn't
   // jump straight to showing it again.

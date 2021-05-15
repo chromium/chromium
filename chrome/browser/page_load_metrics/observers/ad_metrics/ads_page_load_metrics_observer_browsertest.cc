@@ -597,7 +597,7 @@ class CreativeOriginAdsPageLoadMetricsObserverBrowserTest
   void TestCreativeOriginStatus(
       std::unique_ptr<Frame> main_frame,
       page_load_metrics::OriginStatus expected_status,
-      base::Optional<page_load_metrics::OriginStatusWithThrottling>
+      absl::optional<page_load_metrics::OriginStatusWithThrottling>
           expected_status_with_throttling) {
     base::HistogramTester histogram_tester;
     bool subframe_exists = main_frame->HasChild();
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
                        CreativeOriginStatusNoCreativeDesignated) {
   TestCreativeOriginStatus(
       MakeFrame("a", MakeFrame("b", MakeFrame("c", nullptr))),
-      OriginStatus::kUnknown, base::nullopt);
+      OriginStatus::kUnknown, absl::nullopt);
 }
 
 // Test that if no iframe is created, there is no histogram set.

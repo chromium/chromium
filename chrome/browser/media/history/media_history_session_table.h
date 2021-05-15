@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_SESSION_TABLE_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_SESSION_TABLE_H_
 
-#include "base/optional.h"
 #include "chrome/browser/media/history/media_history_store.h"
 #include "chrome/browser/media/history/media_history_table_base.h"
 #include "sql/init_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -45,15 +45,15 @@ class MediaHistorySessionTable : public MediaHistoryTableBase {
   sql::InitStatus CreateTableIfNonExistent() override;
 
   // Returns the ID of the session if it was created successfully.
-  base::Optional<int64_t> SavePlaybackSession(
+  absl::optional<int64_t> SavePlaybackSession(
       const GURL& url,
       const url::Origin& origin,
       const media_session::MediaMetadata& metadata,
-      const base::Optional<media_session::MediaPosition>& position);
+      const absl::optional<media_session::MediaPosition>& position);
 
   std::vector<mojom::MediaHistoryPlaybackSessionRowPtr> GetPlaybackSessions(
-      base::Optional<unsigned int> num_sessions,
-      base::Optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter);
+      absl::optional<unsigned int> num_sessions,
+      absl::optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter);
 };
 
 }  // namespace media_history

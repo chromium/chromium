@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -32,6 +31,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
 
@@ -188,7 +188,7 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
       Browser* browser,
       AppBannerManagerTest* manager,
       const GURL& url,
-      base::Optional<InstallableStatusCode> expected_code_for_histogram) {
+      absl::optional<InstallableStatusCode> expected_code_for_histogram) {
     base::HistogramTester histograms;
 
     site_engagement::SiteEngagementService* service =
@@ -244,7 +244,7 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
                          AppBannerManagerTest* manager,
                          base::OnceClosure trigger_task,
                          bool expected_will_show,
-                         base::Optional<State> expected_state) {
+                         absl::optional<State> expected_state) {
     base::RunLoop run_loop;
     manager->clear_will_show();
     manager->PrepareDone(run_loop.QuitClosure());
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_no_type.json"),
-                base::nullopt);
+                absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_no_type_caps.json"),
-                base::nullopt);
+                absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerSvgIcon) {
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerSvgIcon) {
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_svg_icon.json"),
-                base::nullopt);
+                absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerWebPIcon) {
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerWebPIcon) {
       CreateAppBannerManager(browser()));
   RunBannerTest(browser(), manager.get(),
                 GetBannerURLWithManifest("/banners/manifest_webp_icon.json"),
-                base::nullopt);
+                absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   RunBannerTest(
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-      base::nullopt);
+      absl::nullopt);
   EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
 
   // Dynamically remove the manifest.
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   RunBannerTest(
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
-      base::nullopt);
+      absl::nullopt);
   EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
 
   // Dynamically change the manifest, which results in a
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
               browser()->tab_strip_model()->GetActiveWebContents(),
               "addManifestLinkTag('/banners/manifest_one_icon.json')"));
         }),
-        false, base::nullopt);
+        false, absl::nullopt);
     histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 1);
     histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
                                   RENDERER_CANCELLED, 1);

@@ -10,13 +10,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -44,7 +44,7 @@ class InputConnectionImpl : public mojom::InputConnection {
   void SetComposingText(
       const std::u16string& text,
       int new_cursor_pos,
-      const base::Optional<gfx::Range>& new_selection_range) override;
+      const absl::optional<gfx::Range>& new_selection_range) override;
   void RequestTextInputState(
       mojom::InputConnection::RequestTextInputStateCallback callback) override;
   void SetSelection(const gfx::Range& new_selection_range) override;

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <memory>
 #include <utility>
@@ -248,7 +248,7 @@ void RegisterSodaLanguageComponent(
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       media::IsLiveCaptionFeatureEnabled()) {
-    base::Optional<speech::SodaLanguagePackComponentConfig> config =
+    absl::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {
       RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,

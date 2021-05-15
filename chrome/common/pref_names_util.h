@@ -23,7 +23,7 @@ bool ParseFontNamePrefPath(const std::string& pref_path,
                            std::string* script);
 
 // Constructs the CaptionStyle struct from the caption-related preferences.
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs);
+absl::optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs);
 
 }  // namespace pref_names_util
 

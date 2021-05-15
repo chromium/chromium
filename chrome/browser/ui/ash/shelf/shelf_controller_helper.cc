@@ -76,7 +76,7 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
   return nullptr;
 }
 
-base::Optional<std::string> GetAppIdForTab(Profile* profile,
+absl::optional<std::string> GetAppIdForTab(Profile* profile,
                                            content::WebContents* tab) {
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
     if (web_app::WebAppProviderBase* provider =
@@ -91,7 +91,7 @@ base::Optional<std::string> GetAppIdForTab(Profile* profile,
           return browser->app_controller()->GetAppId();
       }
 
-      base::Optional<web_app::AppId> app_id =
+      absl::optional<web_app::AppId> app_id =
           provider->registrar().FindAppWithUrlInScope(tab->GetURL());
       if (app_id && provider->registrar().GetAppUserDisplayMode(*app_id) ==
                         web_app::DisplayMode::kBrowser) {
@@ -113,7 +113,7 @@ base::Optional<std::string> GetAppIdForTab(Profile* profile,
       (!extension->from_bookmark() ||
        !base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)))
     return extension->id();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 apps::mojom::LaunchSource ConvertLaunchSource(ash::ShelfLaunchSource source) {
@@ -212,7 +212,7 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
 
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
-  base::Optional<std::string> app_id = GetAppIdForTab(
+  absl::optional<std::string> app_id = GetAppIdForTab(
       Profile::FromBrowserContext(tab->GetBrowserContext()), tab);
   return app_id.value_or(std::string());
 }

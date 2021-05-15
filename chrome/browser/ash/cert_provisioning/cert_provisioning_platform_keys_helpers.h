@@ -9,8 +9,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare PlatformKeysService
 // after //chrom/browser/chromeos/platform_keys is moved to ash.
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -52,7 +52,7 @@ class CertIterator {
       std::unique_ptr<net::CertificateList> existing_certs,
       platform_keys::Status status);
   void OnGetAttributeForKeyDone(scoped_refptr<net::X509Certificate> cert,
-                                const base::Optional<std::string>& attr_value,
+                                const absl::optional<std::string>& attr_value,
                                 platform_keys::Status status);
   void StopIteration(platform_keys::Status status);
 

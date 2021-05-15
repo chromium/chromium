@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(PinMigrationTest, PRE_Migrate) {
 
   // Validate PIN is set.
   base::RunLoop run_loop;
-  base::Optional<bool> has_pin_result;
+  absl::optional<bool> has_pin_result;
   PinBackend::GetInstance()->IsSet(
       test_account, base::BindLambdaForTesting([&](bool has_pin) {
         has_pin_result = has_pin;
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(PinMigrationTest, Migrate) {
   // Since prefs-based PIN is not set, calling IsSet on PinBackend will only
   // return true if the PIN is set in cryptohome.
   base::RunLoop run_loop;
-  base::Optional<bool> has_pin_result;
+  absl::optional<bool> has_pin_result;
   PinBackend::GetInstance()->IsSet(
       test_account, base::BindLambdaForTesting([&](bool has_pin) {
         has_pin_result = has_pin;

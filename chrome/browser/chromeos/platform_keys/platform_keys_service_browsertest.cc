@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -58,6 +57,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 namespace chromeos {

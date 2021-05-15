@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -55,6 +54,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

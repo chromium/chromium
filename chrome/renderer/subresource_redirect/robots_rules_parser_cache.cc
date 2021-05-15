@@ -34,7 +34,7 @@ void RobotsRulesParserCache::CreateRobotsRulesParser(
 
 void RobotsRulesParserCache::UpdateRobotsRules(
     const url::Origin& origin,
-    const base::Optional<std::string>& rules) {
+    const absl::optional<std::string>& rules) {
   // Update the rules when cache has an entry for the origin. It may be missing
   // due to cache eviction.
   auto it = parsers_cache_.Get(origin);
@@ -42,7 +42,7 @@ void RobotsRulesParserCache::UpdateRobotsRules(
     it->second->UpdateRobotsRules(rules);
 }
 
-base::Optional<RobotsRulesParser::CheckResult>
+absl::optional<RobotsRulesParser::CheckResult>
 RobotsRulesParserCache::CheckRobotsRules(
     int routing_id,
     const GURL& url,

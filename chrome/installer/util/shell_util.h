@@ -554,7 +554,7 @@ class ShellUtil {
     std::wstring ToCommandLineArgument() const;
 
     // Parses a ProtocolAssociations instance from a string command line arg.
-    static base::Optional<ProtocolAssociations> FromCommandLineArgument(
+    static absl::optional<ProtocolAssociations> FromCommandLineArgument(
         const std::wstring& argument);
 
     base::flat_map<std::wstring, std::wstring> associations;

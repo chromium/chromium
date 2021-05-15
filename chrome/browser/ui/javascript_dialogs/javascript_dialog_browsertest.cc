@@ -251,7 +251,7 @@ class JavaScriptDialogDismissalCauseTester {
     js_helper_->CancelDialogs(tab_, reset_state);
   }
 
-  base::Optional<DismissalCause> GetLastDismissalCause() {
+  absl::optional<DismissalCause> GetLastDismissalCause() {
     return dismissal_cause_;
   }
 
@@ -262,7 +262,7 @@ class JavaScriptDialogDismissalCauseTester {
   content::RenderFrameHost* frame_;
   javascript_dialogs::TabModalDialogManager* js_helper_;
 
-  base::Optional<DismissalCause> dismissal_cause_;
+  absl::optional<DismissalCause> dismissal_cause_;
 
   base::WeakPtrFactory<JavaScriptDialogDismissalCauseTester> weak_factory_{
       this};
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, NoDismissalAlertTabHidden) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_ALERT);
   chrome::NewTab(browser());
-  EXPECT_EQ(base::nullopt, tester.GetLastDismissalCause());
+  EXPECT_EQ(absl::nullopt, tester.GetLastDismissalCause());
 }
 
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {

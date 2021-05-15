@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/certificate_provider/certificate_info.h"
 #include "chrome/browser/ash/certificate_provider/certificate_requests.h"
@@ -29,6 +28,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -192,7 +192,7 @@ class CertificateProviderService : public KeyedService {
       const std::string& subject_public_key_info,
       uint16_t algorithm,
       base::span<const uint8_t> input,
-      const base::Optional<AccountId>& authenticating_user_account_id,
+      const absl::optional<AccountId>& authenticating_user_account_id,
       net::SSLPrivateKey::SignCallback callback);
 
   // Looks up the certificate identified by |subject_public_key_info|. If any
@@ -243,7 +243,7 @@ class CertificateProviderService : public KeyedService {
       const scoped_refptr<net::X509Certificate>& certificate,
       uint16_t algorithm,
       base::span<const uint8_t> input,
-      const base::Optional<AccountId>& authenticating_user_account_id,
+      const absl::optional<AccountId>& authenticating_user_account_id,
       net::SSLPrivateKey::SignCallback callback);
 
   std::unique_ptr<Delegate> delegate_;

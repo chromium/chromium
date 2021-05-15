@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,6 +22,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -69,7 +69,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   std::unique_ptr<WizardContext> wizard_context_;
 
   // The last result reported by `enrollment_screen_`.
-  base::Optional<EnrollmentScreen::Result> last_screen_result_;
+  absl::optional<EnrollmentScreen::Result> last_screen_result_;
 
   policy::EnrollmentConfig enrollment_config_;
 

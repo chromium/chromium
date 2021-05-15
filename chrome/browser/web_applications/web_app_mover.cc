@@ -244,7 +244,7 @@ void WebAppMover::OnInstallManifestFetched(
     base::ScopedClosureRunner complete_callback_runner,
     std::unique_ptr<content::WebContents> web_contents,
     InstallManager::InstallableCheckResult result,
-    base::Optional<AppId> app_id) {
+    absl::optional<AppId> app_id) {
   switch (result) {
     case InstallManager::InstallableCheckResult::kAlreadyInstalled:
       LOG(WARNING) << "App already installed.";

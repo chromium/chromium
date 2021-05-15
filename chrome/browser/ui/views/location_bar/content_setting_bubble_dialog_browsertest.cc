@@ -58,7 +58,7 @@ class TestQuietNotificationPermissionUiSelector
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, base::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
   }
 
  private:
@@ -89,7 +89,7 @@ class ContentSettingBubbleDialogTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::Optional<permissions::MockPermissionRequest>
+  absl::optional<permissions::MockPermissionRequest>
       notification_permission_request_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleDialogTest);

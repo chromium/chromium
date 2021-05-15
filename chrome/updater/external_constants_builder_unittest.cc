@@ -11,13 +11,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -25,7 +25,7 @@ namespace updater {
 namespace {
 
 void DeleteOverridesFile() {
-  base::Optional<base::FilePath> target = GetBaseDirectory();
+  absl::optional<base::FilePath> target = GetBaseDirectory();
   if (!target) {
     LOG(ERROR) << "Could not get base directory to clean out overrides file.";
     return;

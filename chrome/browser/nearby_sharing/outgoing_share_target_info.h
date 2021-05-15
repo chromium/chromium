@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/share_target_info.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A description of the outgoing connection to a remote device.
 class OutgoingShareTargetInfo : public ShareTargetInfo {
@@ -22,7 +22,7 @@ class OutgoingShareTargetInfo : public ShareTargetInfo {
   OutgoingShareTargetInfo& operator=(OutgoingShareTargetInfo&&);
   ~OutgoingShareTargetInfo() override;
 
-  const base::Optional<std::string>& obfuscated_gaia_id() const {
+  const absl::optional<std::string>& obfuscated_gaia_id() const {
     return obfuscated_gaia_id_;
   }
 
@@ -50,7 +50,7 @@ class OutgoingShareTargetInfo : public ShareTargetInfo {
   std::vector<PayloadPtr> ExtractFilePayloads();
 
  private:
-  base::Optional<std::string> obfuscated_gaia_id_;
+  absl::optional<std::string> obfuscated_gaia_id_;
   std::vector<PayloadPtr> text_payloads_;
   std::vector<PayloadPtr> file_payloads_;
 };

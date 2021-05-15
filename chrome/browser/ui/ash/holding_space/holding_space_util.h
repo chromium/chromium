@@ -32,7 +32,7 @@ struct ValidityRequirement {
   ValidityRequirement(const ValidityRequirement& other);
   ValidityRequirement(ValidityRequirement&& other);
   bool must_exist = true;
-  base::Optional<base::TimeDelta> must_be_newer_than = base::nullopt;
+  absl::optional<base::TimeDelta> must_be_newer_than = absl::nullopt;
 };
 
 using FilePathList = std::vector<base::FilePath>;
@@ -74,7 +74,7 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
 
-void SetNowForTesting(base::Optional<base::Time> now);
+void SetNowForTesting(absl::optional<base::Time> now);
 
 }  // namespace holding_space_util
 }  // namespace ash

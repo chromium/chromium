@@ -6,9 +6,9 @@
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_PUBLIC_RESOURCE_DECIDER_H_
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/subresource_redirect/common/subresource_redirect_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace subresource_redirect {
@@ -47,9 +47,9 @@ class PublicResourceDecider {
 
   // Determine whether the subresource url should be redirected. When the
   // determination can be made immediately, the decision should be returned.
-  // Otherwise base::nullopt should be returned and the callback should be
+  // Otherwise absl::nullopt should be returned and the callback should be
   // invoked with the decision asynchronously.
-  virtual base::Optional<SubresourceRedirectResult> ShouldRedirectSubresource(
+  virtual absl::optional<SubresourceRedirectResult> ShouldRedirectSubresource(
       const GURL& url,
       ShouldRedirectDecisionCallback callback) = 0;
 

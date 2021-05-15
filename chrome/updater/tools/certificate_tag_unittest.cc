@@ -28,32 +28,32 @@ TEST(CertificateTag, RoundTrip) {
   const base::span<const uint8_t> exe_span(
       reinterpret_cast<const uint8_t*>(exe.data()), exe.size());
 
-  base::Optional<Binary> bin(Binary::Parse(exe_span));
+  absl::optional<Binary> bin(Binary::Parse(exe_span));
   ASSERT_TRUE(bin);
 
   // Binary should be untagged on disk.
-  base::Optional<base::span<const uint8_t>> orig_tag(bin->tag());
+  absl::optional<base::span<const uint8_t>> orig_tag(bin->tag());
   EXPECT_FALSE(orig_tag);
 
   static const uint8_t kTag[] = {1, 2, 3, 4, 5};
-  base::Optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
+  absl::optional<std::vector<uint8_t>> updated_exe(bin->SetTag(kTag));
   ASSERT_TRUE(updated_exe);
 
-  base::Optional<Binary> bin2(Binary::Parse(*updated_exe));
+  absl::optional<Binary> bin2(Binary::Parse(*updated_exe));
   ASSERT_TRUE(bin2);
-  base::Optional<base::span<const uint8_t>> parsed_tag(bin2->tag());
+  absl::optional<base::span<const uint8_t>> parsed_tag(bin2->tag());
   ASSERT_TRUE(parsed_tag);
   EXPECT_TRUE(parsed_tag->size() == sizeof(kTag) &&
               memcmp(kTag, parsed_tag->data(), sizeof(kTag)) == 0);
 
   // Update an existing tag.
   static const uint8_t kTag2[] = {1, 2, 3, 4, 6};
-  base::Optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
+  absl::optional<std::vector<uint8_t>> updated_again_exe(bin2->SetTag(kTag2));
   ASSERT_TRUE(updated_again_exe);
 
-  base::Optional<Binary> bin3(Binary::Parse(*updated_again_exe));
+  absl::optional<Binary> bin3(Binary::Parse(*updated_again_exe));
   ASSERT_TRUE(bin3);
-  base::Optional<base::span<const uint8_t>> parsed_tag2(bin3->tag());
+  absl::optional<base::span<const uint8_t>> parsed_tag2(bin3->tag());
   ASSERT_TRUE(parsed_tag2);
   EXPECT_TRUE(parsed_tag2->size() == sizeof(kTag2) &&
               memcmp(kTag2, parsed_tag2->data(), sizeof(kTag2)) == 0);

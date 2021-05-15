@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -25,6 +24,7 @@
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -77,7 +77,7 @@ void OnNotificationClickedCloseIt(Profile* profile,
 
 void OnCryptohomeCheckHealth(
     base::OnceClosure on_initialized_callback,
-    base::Optional<user_data_auth::CheckHealthReply> reply) {
+    absl::optional<user_data_auth::CheckHealthReply> reply) {
   if (!reply) {
     LOG(ERROR) << "Cryptohome failed to send health state";
   } else {

@@ -54,8 +54,8 @@ class CrostiniPackageNotification
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
   // GuestOsRegistryService::Observer:
   void OnRegistryUpdated(

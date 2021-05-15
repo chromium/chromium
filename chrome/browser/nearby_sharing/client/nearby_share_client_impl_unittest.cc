@@ -310,17 +310,17 @@ class NearbyShareClientImplTest : public testing::Test,
   }
 
  protected:
-  base::Optional<nearbyshare::proto::UpdateDeviceRequest>
+  absl::optional<nearbyshare::proto::UpdateDeviceRequest>
       update_device_request_from_notifier_;
-  base::Optional<nearbyshare::proto::UpdateDeviceResponse>
+  absl::optional<nearbyshare::proto::UpdateDeviceResponse>
       update_device_response_from_notifier_;
-  base::Optional<nearbyshare::proto::ListContactPeopleRequest>
+  absl::optional<nearbyshare::proto::ListContactPeopleRequest>
       list_contact_people_request_from_notifier_;
-  base::Optional<nearbyshare::proto::ListContactPeopleResponse>
+  absl::optional<nearbyshare::proto::ListContactPeopleResponse>
       list_contact_people_response_from_notifier_;
-  base::Optional<nearbyshare::proto::ListPublicCertificatesRequest>
+  absl::optional<nearbyshare::proto::ListPublicCertificatesRequest>
       list_public_certificate_request_from_notifier_;
-  base::Optional<nearbyshare::proto::ListPublicCertificatesResponse>
+  absl::optional<nearbyshare::proto::ListPublicCertificatesResponse>
       list_public_certificate_response_from_notifier_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;

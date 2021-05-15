@@ -155,7 +155,7 @@ void PairingLostNotifier::ClosePairingLostNotificationIfVisible() {
 }
 
 void PairingLostNotifier::OnPairingLostNotificationClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   PA_LOG(INFO) << "PairingLostNotifier::OnPairingLostNotificationClick(): "
                << "Pairing notification clicked; opening PWA.";
 

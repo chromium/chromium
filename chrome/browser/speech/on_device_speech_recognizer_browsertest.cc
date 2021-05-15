@@ -41,7 +41,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
       OnSpeechResult,
       void(const std::u16string& text,
            bool is_final,
-           const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
+           const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>&
                timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
@@ -79,12 +79,12 @@ class MockAudioSystem : public media::AudioSystem {
 
   void SetInputStreamParameters(
       const std::string& device_id,
-      const base::Optional<media::AudioParameters>& params) {
+      const absl::optional<media::AudioParameters>& params) {
     params_[device_id] = params;
   }
 
  private:
-  std::map<std::string, base::Optional<media::AudioParameters>> params_;
+  std::map<std::string, absl::optional<media::AudioParameters>> params_;
 };
 
 // Tests OnDeviceSpeechRecognizer plumbing with a fake SpeechRecognitionService.
@@ -148,7 +148,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
   }
 
   void StartListeningWithAudioParams(
-      const base::Optional<media::AudioParameters>& params) {
+      const absl::optional<media::AudioParameters>& params) {
     std::unique_ptr<MockAudioSystem> mock_audio_system =
         std::make_unique<MockAudioSystem>();
     mock_audio_system->SetInputStreamParameters(
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, DefaultParameters) {
   fake_service_->set_multichannel_supported(true);
   ConstructRecognizerAndWaitForReady();
-  StartListeningWithAudioParams(base::nullopt);
+  StartListeningWithAudioParams(absl::nullopt);
 
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
             fake_service_->device_id());

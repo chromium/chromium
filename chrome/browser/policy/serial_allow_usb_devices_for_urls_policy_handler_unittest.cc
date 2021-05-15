@@ -19,7 +19,7 @@ namespace policy {
 
 namespace {
 
-base::Optional<base::Value> ReadJson(base::StringPiece json) {
+absl::optional<base::Value> ReadJson(base::StringPiece json) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(json);
   EXPECT_TRUE(result.value) << result.error_message;
   return std::move(result.value);

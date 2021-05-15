@@ -141,7 +141,7 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 
 void DebugDaemonLogSource::OnGetRoutes(
     bool is_ipv6,
-    base::Optional<std::vector<std::string>> routes) {
+    absl::optional<std::vector<std::string>> routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string key = is_ipv6 ? kRoutesv6KeyName : kRoutesKeyName;
   (*response_)[key] = routes.has_value()
@@ -151,7 +151,7 @@ void DebugDaemonLogSource::OnGetRoutes(
 }
 
 void DebugDaemonLogSource::OnGetOneLog(std::string key,
-                                       base::Optional<std::string> status) {
+                                       absl::optional<std::string> status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   (*response_)[std::move(key)] = std::move(status).value_or(kNotAvailable);

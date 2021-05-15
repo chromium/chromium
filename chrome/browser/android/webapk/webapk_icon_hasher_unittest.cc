@@ -56,7 +56,7 @@ class WebApkIconHasherRunner {
     WebApkIconHasher::DownloadAndComputeMurmur2Hash(
         url_loader_factory, url::Origin::Create(*icon_urls.begin()), icon_urls,
         base::BindLambdaForTesting(
-            [&](base::Optional<std::map<std::string, WebApkIconHasher::Icon>>
+            [&](absl::optional<std::map<std::string, WebApkIconHasher::Icon>>
                     hashes) {
               ASSERT_TRUE(hashes);
               result = std::move(*hashes);

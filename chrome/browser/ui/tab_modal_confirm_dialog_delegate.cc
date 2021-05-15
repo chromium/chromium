@@ -118,12 +118,12 @@ void TabModalConfirmDialogDelegate::CloseDialog() {
     close_delegate_->CloseDialog();
 }
 
-base::Optional<int> TabModalConfirmDialogDelegate::GetDefaultDialogButton() {
+absl::optional<int> TabModalConfirmDialogDelegate::GetDefaultDialogButton() {
   // Use the default, don't override.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<int> TabModalConfirmDialogDelegate::GetInitiallyFocusedButton() {
+absl::optional<int> TabModalConfirmDialogDelegate::GetInitiallyFocusedButton() {
   // Use the default, don't override.
-  return base::nullopt;
+  return absl::nullopt;
 }

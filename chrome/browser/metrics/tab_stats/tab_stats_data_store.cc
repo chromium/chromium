@@ -177,10 +177,10 @@ void TabStatsDataStore::ResetIntervalData(
     AddTabToIntervalMap(iter.first, GetTabID(iter.first), true, interval_map);
 }
 
-base::Optional<TabStatsDataStore::TabID> TabStatsDataStore::GetTabIDForTesting(
+absl::optional<TabStatsDataStore::TabID> TabStatsDataStore::GetTabIDForTesting(
     content::WebContents* web_contents) {
   if (!base::Contains(existing_tabs_, web_contents))
-    return base::nullopt;
+    return absl::nullopt;
   return GetTabID(web_contents);
 }
 

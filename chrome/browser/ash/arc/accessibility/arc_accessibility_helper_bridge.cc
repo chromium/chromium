@@ -466,11 +466,11 @@ void ArcAccessibilityHelperBridge::OnAction(
     return;
   }
 
-  base::Optional<int32_t> window_id = tree_source->window_id();
+  absl::optional<int32_t> window_id = tree_source->window_id();
   if (!window_id)
     return;
 
-  const base::Optional<mojom::AccessibilityActionType> action =
+  const absl::optional<mojom::AccessibilityActionType> action =
       ConvertToAndroidAction(data.action);
   if (!action.has_value())
     return;
@@ -664,7 +664,7 @@ void ArcAccessibilityHelperBridge::OnActionResult(const ui::AXActionData& data,
 
 void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const base::Optional<gfx::Rect>& result_rect) const {
+    const absl::optional<gfx::Rect>& result_rect) const {
   AXTreeSourceArc* tree_source = GetFromTreeId(data.target_tree_id);
 
   if (!tree_source)
@@ -674,16 +674,16 @@ void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
       data, OnGetTextLocationDataResultInternal(result_rect));
 }
 
-base::Optional<gfx::Rect>
+absl::optional<gfx::Rect>
 ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
-    const base::Optional<gfx::Rect>& result_rect) const {
+    const absl::optional<gfx::Rect>& result_rect) const {
   if (!result_rect)
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(exo::WMHelper::HasInstance());
   aura::Window* focused_window = GetFocusedArcWindow();
   if (!focused_window)
-    return base::nullopt;
+    return absl::nullopt;
 
   const gfx::RectF& rect_f =
       ScaleAndroidPxToChromePx(result_rect.value(), focused_window);

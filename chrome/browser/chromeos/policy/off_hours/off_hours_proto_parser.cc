@@ -37,17 +37,17 @@ std::vector<int> ExtractIgnoredPolicyProtoTagsFromProto(
                           container.ignored_policy_proto_tags().end());
 }
 
-base::Optional<std::string> ExtractTimezoneFromProto(
+absl::optional<std::string> ExtractTimezoneFromProto(
     const em::DeviceOffHoursProto& container) {
   if (!container.has_timezone()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::make_optional(container.timezone());
+  return absl::make_optional(container.timezone());
 }
 
 std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
     const em::DeviceOffHoursProto& container) {
-  base::Optional<std::string> timezone = ExtractTimezoneFromProto(container);
+  absl::optional<std::string> timezone = ExtractTimezoneFromProto(container);
   if (!timezone)
     return nullptr;
   auto off_hours = std::make_unique<base::DictionaryValue>();

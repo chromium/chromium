@@ -58,7 +58,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
                     GetPublicKeyCallback callback) override;
   void ExtensionGenerateKey(mojom::KeystoreType keystore,
                             mojom::KeystoreSigningAlgorithmPtr algorithm,
-                            const base::Optional<std::string>& extension_id,
+                            const absl::optional<std::string>& extension_id,
                             ExtensionGenerateKeyCallback callback) override;
   void ExtensionSign(KeystoreType keystore,
                      const std::vector<uint8_t>& public_key,
@@ -92,7 +92,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   static void DidExtensionGenerateKey(
       ExtensionGenerateKeyCallback callback,
       const std::string& public_key,
-      base::Optional<crosapi::mojom::KeystoreError> error);
+      absl::optional<crosapi::mojom::KeystoreError> error);
   static void DidExtensionSign(ExtensionSignCallback callback,
                                const std::string& signature,
                                chromeos::platform_keys::Status status);

@@ -152,7 +152,7 @@ void CartDiscountLinkFetcher::OnLinkFetched(
     return;
   }
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
 
   if (!value || !value->is_dict()) {

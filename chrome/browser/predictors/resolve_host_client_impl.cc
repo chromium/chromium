@@ -45,7 +45,7 @@ ResolveHostClientImpl::~ResolveHostClientImpl() = default;
 void ResolveHostClientImpl::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   std::move(callback_).Run(result == net::OK);
 }
 

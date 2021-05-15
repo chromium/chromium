@@ -254,7 +254,7 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
 
 void NtpBackgroundService::FetchNextCollectionImage(
     const std::string& collection_id,
-    const base::Optional<std::string>& resume_token) {
+    const absl::optional<std::string>& resume_token) {
   next_image_error_info_.ClearError();
   if (next_image_loader_ != nullptr)
     return;

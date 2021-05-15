@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"

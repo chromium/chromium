@@ -14,7 +14,6 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_gstatic_reader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +24,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/autofill/android/save_address_profile_flow_manager.h"
@@ -190,7 +190,7 @@ class ChromeAutofillClient
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 
   Profile* GetProfile() const;
-  base::Optional<AccountInfo> GetAccountInfo();
+  absl::optional<AccountInfo> GetAccountInfo();
   bool IsMultipleAccountUser();
   std::u16string GetAccountHolderName();
 

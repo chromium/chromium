@@ -49,11 +49,11 @@ base::DictionaryValue TargetInfoToValue(
   return result;
 }
 
-base::Optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
+absl::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
     const base::Value& value) {
   const std::string* fcm_token = value.FindStringKey(kDeviceFcmToken);
   if (!fcm_token)
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* base64_p256dh = value.FindStringKey(kDeviceP256dh);
   const std::string* base64_auth_secret =
@@ -63,7 +63,7 @@ base::Optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
   if (!base64_p256dh || !base64_auth_secret ||
       !base::Base64Decode(*base64_p256dh, &p256dh) ||
       !base::Base64Decode(*base64_auth_secret, &auth_secret)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return syncer::DeviceInfo::SharingTargetInfo{*fcm_token, std::move(p256dh),
@@ -75,7 +75,7 @@ base::Optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
 using sync_pb::SharingSpecificFields;
 
 SharingSyncPreference::FCMRegistration::FCMRegistration(
-    base::Optional<std::string> authorized_entity,
+    absl::optional<std::string> authorized_entity,
     base::Time timestamp)
     : authorized_entity(std::move(authorized_entity)), timestamp(timestamp) {}
 
@@ -110,19 +110,19 @@ void SharingSyncPreference::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kSharingLocalSharingInfo);
 }
 
-base::Optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey()
+absl::optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey()
     const {
   const base::DictionaryValue* vapid_key =
       prefs_->GetDictionary(prefs::kSharingVapidKey);
   std::string base64_private_key, private_key;
   if (!vapid_key->GetString(kVapidECPrivateKey, &base64_private_key))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (base::Base64Decode(base64_private_key, &private_key)) {
     return std::vector<uint8_t>(private_key.begin(), private_key.end());
   } else {
     LOG(ERROR) << "Could not decode stored vapid keys.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 
@@ -150,7 +150,7 @@ void SharingSyncPreference::ClearVapidKeyChangeObserver() {
     pref_change_registrar_.Remove(prefs::kSharingVapidKey);
 }
 
-base::Optional<SharingSyncPreference::FCMRegistration>
+absl::optional<SharingSyncPreference::FCMRegistration>
 SharingSyncPreference::GetFCMRegistration() const {
   const base::DictionaryValue* registration =
       prefs_->GetDictionary(prefs::kSharingFCMRegistration);
@@ -159,15 +159,15 @@ SharingSyncPreference::GetFCMRegistration() const {
   const base::Value* timestamp_value =
       registration->FindKey(kRegistrationTimestamp);
   if (!timestamp_value)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<std::string> authorized_entity;
+  absl::optional<std::string> authorized_entity;
   if (authorized_entity_ptr)
     authorized_entity = *authorized_entity_ptr;
 
-  base::Optional<base::Time> timestamp = util::ValueToTime(timestamp_value);
+  absl::optional<base::Time> timestamp = util::ValueToTime(timestamp_value);
   if (!timestamp)
-    return base::nullopt;
+    return absl::nullopt;
 
   return FCMRegistration(authorized_entity, *timestamp);
 }
@@ -235,7 +235,7 @@ void SharingSyncPreference::ClearLocalSharingInfo() {
 }
 
 // static
-base::Optional<syncer::DeviceInfo::SharingInfo>
+absl::optional<syncer::DeviceInfo::SharingInfo>
 SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
   const base::DictionaryValue* registration =
       prefs->GetDictionary(prefs::kSharingLocalSharingInfo);
@@ -248,13 +248,13 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
       registration->FindListKey(kSharingInfoEnabledFeatures);
   if (!vapid_target_info_value || !sender_id_target_info_value ||
       !enabled_features_value) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto vapid_target_info = ValueToTargetInfo(*vapid_target_info_value);
   auto sender_id_target_info = ValueToTargetInfo(*sender_id_target_info_value);
   if (!vapid_target_info || !sender_id_target_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
   for (auto& value : enabled_features_value->GetList()) {

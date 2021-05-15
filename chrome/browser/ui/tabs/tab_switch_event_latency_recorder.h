@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_TABS_TAB_SWITCH_EVENT_LATENCY_RECORDER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Store the timestamps related to switching tabs, and generate UMA metrics to
 // track the latency between the input event timestamp and the time when the
@@ -38,7 +38,7 @@ class TabSwitchEventLatencyRecorder {
 
  private:
   base::TimeTicks input_event_timestamp_ = base::TimeTicks();
-  base::Optional<EventType> event_type_ = base::nullopt;
+  absl::optional<EventType> event_type_ = absl::nullopt;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_SWITCH_EVENT_LATENCY_RECORDER_H_

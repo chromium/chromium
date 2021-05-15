@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/availability/availability_prober.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -76,11 +76,11 @@ class PrefetchProxyURLLoaderInterceptor
 
   // The time when probing was started. Used to calculate probe latency which is
   // reported to the tab helper.
-  base::Optional<base::TimeTicks> probe_start_time_;
+  absl::optional<base::TimeTicks> probe_start_time_;
 
   // The time when we started waiting for cookies to be copied, delaying the
   // navigation. Used to calculate total cookie wait time.
-  base::Optional<base::TimeTicks> cookie_copy_start_time_;
+  absl::optional<base::TimeTicks> cookie_copy_start_time_;
 
   // Set in |MaybeCreateLoader| and used in |On[DoNot]InterceptRequest|.
   content::URLLoaderRequestInterceptor::LoaderCallback loader_callback_;

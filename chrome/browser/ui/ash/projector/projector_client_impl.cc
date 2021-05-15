@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "base/optional.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // On-device speech recognition is only available in US English.
@@ -60,7 +60,7 @@ void ProjectorClientImpl::StopSpeechRecognition() {
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
-    const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>& timing) {
+    const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>& timing) {
   DCHECK(timing.has_value() || ShouldUseWebSpeechFallback());
 
   if (timing.has_value()) {
@@ -70,7 +70,7 @@ void ProjectorClientImpl::OnSpeechResult(
   } else {
     // This is only used for development.
     ash::ProjectorController::Get()->OnTranscription(
-        text, base::nullopt, base::nullopt, base::nullopt, is_final);
+        text, absl::nullopt, absl::nullopt, absl::nullopt, is_final);
   }
 }
 

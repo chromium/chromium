@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_sharing {
 enum MessageType : int;
@@ -41,7 +41,7 @@ class SharingMessageSender {
    public:
     using SendMessageCallback =
         base::OnceCallback<void(SharingSendMessageResult result,
-                                base::Optional<std::string> message_id,
+                                absl::optional<std::string> message_id,
                                 SharingChannelType channel_type)>;
     virtual ~SendMessageDelegate() = default;
 
@@ -107,7 +107,7 @@ class SharingMessageSender {
 
   void OnMessageSent(const std::string& message_guid,
                      SharingSendMessageResult result,
-                     base::Optional<std::string> message_id,
+                     absl::optional<std::string> message_id,
                      SharingChannelType channel_type);
 
   void InvokeSendMessageCallback(

@@ -19,7 +19,7 @@ TEST(RewriteHandlerTest, ExtraQueryParams) {
   GURL url(
       "https://www.google.com/url?not=used&url=https://theactualurl.com/"
       "testpath?testquerytoo=true&unusedparamfromouterurl");
-  base::Optional<GURL> result = handler.HandleRewriteIfNecessary(url);
+  absl::optional<GURL> result = handler.HandleRewriteIfNecessary(url);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ("https://theactualurl.com/testpath?testquerytoo=true",
@@ -33,7 +33,7 @@ TEST(RewriteHandlerTest, EscapedCharacters) {
   GURL url(
       "https://www.google.com/url?url=https://theactualurl.com/"
       "testpath?first=param%26second=param&unusedparamfromouterurl");
-  base::Optional<GURL> result = handler.HandleRewriteIfNecessary(url);
+  absl::optional<GURL> result = handler.HandleRewriteIfNecessary(url);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ("https://theactualurl.com/testpath?first=param&second=param",
@@ -84,7 +84,7 @@ TEST(RewriteHandlerTest, HostOnly) {
       RewriteHandler::FromConfigString("www.google.com/?url");
 
   GURL url("https://www.google.com?url=https://theactualurl.com/testpath");
-  base::Optional<GURL> result = handler.HandleRewriteIfNecessary(url);
+  absl::optional<GURL> result = handler.HandleRewriteIfNecessary(url);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ("https://theactualurl.com/testpath", result.value().spec());
@@ -95,7 +95,7 @@ TEST(RewriteHandlerTest, MultipleMatchers) {
       "www.google.com/url?url,www.googleadservices.com/pagead/aclk?adurl");
 
   GURL url("https://www.google.com/url?url=https://theactualurl.com/testpath");
-  base::Optional<GURL> result = handler.HandleRewriteIfNecessary(url);
+  absl::optional<GURL> result = handler.HandleRewriteIfNecessary(url);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ("https://theactualurl.com/testpath", result.value().spec());

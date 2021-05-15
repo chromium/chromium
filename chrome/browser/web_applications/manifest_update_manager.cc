@@ -97,7 +97,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
-  base::Optional<base::Time> last_check_time = GetLastUpdateCheckTime(app_id);
+  absl::optional<base::Time> last_check_time = GetLastUpdateCheckTime(app_id);
   base::Time now = time_override_for_testing_.value_or(base::Time::Now());
   if (last_check_time.has_value() &&
       now < *last_check_time + kDelayBetweenChecks &&
@@ -134,11 +134,11 @@ bool ManifestUpdateManager::MaybeConsumeUpdateCheck(const GURL& origin,
   return true;
 }
 
-base::Optional<base::Time> ManifestUpdateManager::GetLastUpdateCheckTime(
+absl::optional<base::Time> ManifestUpdateManager::GetLastUpdateCheckTime(
     const AppId& app_id) const {
   auto it = last_update_check_.find(app_id);
-  return it != last_update_check_.end() ? base::Optional<base::Time>(it->second)
-                                        : base::nullopt;
+  return it != last_update_check_.end() ? absl::optional<base::Time>(it->second)
+                                        : absl::nullopt;
 }
 
 void ManifestUpdateManager::SetLastUpdateCheckTime(const GURL& origin,

@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -57,7 +57,7 @@ class SecurityTokenPinDialogHost {
       bool enable_user_input,
       security_token_pin::ErrorLabel error_label,
       int attempts_left,
-      const base::Optional<AccountId>& authenticating_user_account_id,
+      const absl::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) = 0;
 

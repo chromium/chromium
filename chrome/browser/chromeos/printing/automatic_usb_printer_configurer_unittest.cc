@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printers_map.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {

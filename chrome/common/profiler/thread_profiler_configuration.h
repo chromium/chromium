@@ -8,9 +8,9 @@
 #include <initializer_list>
 #include <string>
 
-#include "base/optional.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -81,7 +81,7 @@ class ThreadProfilerConfiguration {
   // The configuration state for the browser process. If !has_value() profiling
   // is disabled and no variations state is reported. Otherwise profiling is
   // enabled based on the VariationGroup and the variation state is reported.
-  using BrowserProcessConfiguration = base::Optional<VariationGroup>;
+  using BrowserProcessConfiguration = absl::optional<VariationGroup>;
 
   // The configuration state in child processes.
   enum ChildProcessConfiguration {
@@ -104,7 +104,7 @@ class ThreadProfilerConfiguration {
 
   // True if the profiler is to be enabled for |variation_group|.
   static bool EnableForVariationGroup(
-      base::Optional<VariationGroup> variation_group);
+      absl::optional<VariationGroup> variation_group);
 
   // Randomly chooses a variation from the weighted variations. Weights are
   // expected to sum to 100 as a sanity check.

@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

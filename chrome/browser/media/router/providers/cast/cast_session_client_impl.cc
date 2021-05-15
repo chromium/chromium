@@ -79,11 +79,11 @@ void CastSessionClientImpl::SendMessageToClient(
 
 void CastSessionClientImpl::SendMediaStatusToClient(
     const base::Value& media_status,
-    base::Optional<int> request_id) {
+    absl::optional<int> request_id) {
   // Look up if there is a pending request from this client associated with this
   // message. If so, send the media status message as a response by setting the
   // sequence number.
-  base::Optional<int> sequence_number;
+  absl::optional<int> sequence_number;
   if (request_id) {
     auto it = pending_media_requests_.find(*request_id);
     if (it != pending_media_requests_.end()) {
@@ -128,7 +128,7 @@ void CastSessionClientImpl::DidClose(PresentationConnectionCloseReason reason) {
 void CastSessionClientImpl::SendErrorCodeToClient(
     int sequence_number,
     CastInternalMessage::ErrorCode error_code,
-    base::Optional<std::string> description) {
+    absl::optional<std::string> description) {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetKey("code", base::Value(*cast_util::EnumToString(error_code)));
   message.SetKey("description",
@@ -222,7 +222,7 @@ void CastSessionClientImpl::HandleV2ProtocolMessage(
       cast_channel::V2MessageTypeFromString(type_str);
   if (cast_channel::IsMediaRequestMessageType(type)) {
     DVLOG(2) << "Got media command from client: " << type_str;
-    base::Optional<int> request_id =
+    absl::optional<int> request_id =
         activity_->SendMediaRequestToReceiver(cast_message);
     if (request_id) {
       DCHECK(cast_message.sequence_number());

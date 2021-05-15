@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -45,7 +45,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
       const Browser* browser,
       const tab_groups::TabGroupId& group,
       TabGroupHeader* header_view,
-      base::Optional<gfx::Rect> anchor_rect = base::nullopt,
+      absl::optional<gfx::Rect> anchor_rect = absl::nullopt,
       // If not provided, will be set to |header_view|.
       views::View* anchor_view = nullptr,
       bool stop_context_menu_propagation = false);
@@ -58,7 +58,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   TabGroupEditorBubbleView(const Browser* browser,
                            const tab_groups::TabGroupId& group,
                            views::View* anchor_view,
-                           base::Optional<gfx::Rect> anchor_rect,
+                           absl::optional<gfx::Rect> anchor_rect,
                            TabGroupHeader* header_view,
                            bool stop_context_menu_propagation);
   ~TabGroupEditorBubbleView() override;

@@ -21,7 +21,7 @@ class MockAddressAccessoryController
               RegisterFillingSourceObserver,
               (FillingSourceObserver),
               (override));
-  MOCK_METHOD(base::Optional<autofill::AccessorySheetData>,
+  MOCK_METHOD(absl::optional<autofill::AccessorySheetData>,
               GetSheetData,
               (),
               (const, override));

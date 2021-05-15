@@ -139,7 +139,7 @@ bool ListPrefMatches(const char* pref_name) {
   return true;
 }
 
-base::Optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     const std::string& pref_name,
     fake_server::FakeServer* fake_server) {
   for (const sync_pb::SyncEntity& entity :
@@ -149,7 +149,7 @@ base::Optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace preferences_helper
@@ -222,7 +222,7 @@ FakeServerPrefMatchesValueChecker::FakeServerPrefMatchesValueChecker(
 
 bool FakeServerPrefMatchesValueChecker::IsExitConditionSatisfied(
     std::ostream* os) {
-  const base::Optional<sync_pb::PreferenceSpecifics> actual_specifics =
+  const absl::optional<sync_pb::PreferenceSpecifics> actual_specifics =
       preferences_helper::GetPreferenceInFakeServer(pref_name_, fake_server());
   if (!actual_specifics.has_value()) {
     *os << "No sync entity in FakeServer for pref " << pref_name_;

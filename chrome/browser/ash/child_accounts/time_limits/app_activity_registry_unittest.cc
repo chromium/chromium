@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
@@ -26,6 +25,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
 
@@ -51,7 +51,7 @@ class AppTimeNotificationDelegateMock : public AppTimeNotificationDelegate {
 
   MOCK_METHOD3(ShowAppTimeLimitNotification,
                void(const AppId&,
-                    const base::Optional<base::TimeDelta>&,
+                    const absl::optional<base::TimeDelta>&,
                     AppNotification));
 };
 
@@ -86,7 +86,7 @@ class AppActivityRegistryTest : public ChromeViewsTestBase {
   aura::Window* GetWindowForApp(const AppId& app_id);
 
   void SetAppLimit(const AppId& app_id,
-                   const base::Optional<AppLimit>& app_limit);
+                   const absl::optional<AppLimit>& app_limit);
 
   void ReInitializeRegistry();
 
@@ -150,7 +150,7 @@ aura::Window* AppActivityRegistryTest::GetWindowForApp(const AppId& app_id) {
 
 void AppActivityRegistryTest::SetAppLimit(
     const AppId& app_id,
-    const base::Optional<AppLimit>& app_limit) {
+    const absl::optional<AppLimit>& app_limit) {
   registry().SetAppLimit(app_id, app_limit);
   task_environment()->RunUntilIdle();
 }
@@ -459,9 +459,9 @@ TEST_F(AppActivityRegistryTest, LimitChangedForActiveApp) {
 
   EXPECT_TRUE(registry().IsAppActive(kApp1));
   EXPECT_EQ(base::TimeDelta::FromMinutes(0), registry().GetActiveTime(kApp1));
-  EXPECT_EQ(base::nullopt, registry_test().GetAppLimit(kApp1));
-  EXPECT_EQ(base::nullopt, registry().GetTimeLimit(kApp1));
-  EXPECT_EQ(base::nullopt, registry_test().GetTimeLeft(kApp1));
+  EXPECT_EQ(absl::nullopt, registry_test().GetAppLimit(kApp1));
+  EXPECT_EQ(absl::nullopt, registry().GetTimeLimit(kApp1));
+  EXPECT_EQ(absl::nullopt, registry_test().GetTimeLeft(kApp1));
 
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(5));
 
@@ -1090,7 +1090,7 @@ TEST_F(AppActivityRegistryTest, WebAppInstalled) {
 }
 
 TEST_F(AppActivityRegistryTest, AppBlocked) {
-  const AppLimit app1_limit(AppRestriction::kBlocked, base::nullopt,
+  const AppLimit app1_limit(AppRestriction::kBlocked, absl::nullopt,
                             base::Time::Now());
   const std::map<AppId, AppLimit> limits{{kApp1, app1_limit}};
 

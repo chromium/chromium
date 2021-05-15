@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -13,6 +12,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const base::FilePath::CharType kDataRoot[] =
@@ -92,7 +92,7 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
   net::HttpStatusCode status_;
-  base::Optional<std::string> location_header_;
+  absl::optional<std::string> location_header_;
 
   DISALLOW_COPY_AND_ASSIGN(OriginPolicyBrowserTest);
 };

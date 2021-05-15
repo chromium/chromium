@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,10 +23,11 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
-using base::Optional;
+using absl::optional;
 using content::WebContents;
 
 namespace web_app {
@@ -62,9 +62,9 @@ void RecordUserInstalledHistogram(
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
 }
 
-Optional<int> GetLatestWebAppInstallSource(const AppId& app_id,
+optional<int> GetLatestWebAppInstallSource(const AppId& app_id,
                                            PrefService* prefs) {
-  Optional<int> value =
+  optional<int> value =
       GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
   DCHECK_GE(value.value_or(0), 0);
   DCHECK_LT(value.value_or(0),

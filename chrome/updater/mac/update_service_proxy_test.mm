@@ -18,7 +18,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -33,6 +32,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 

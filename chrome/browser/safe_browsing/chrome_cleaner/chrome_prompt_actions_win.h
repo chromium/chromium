@@ -10,8 +10,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -45,7 +45,7 @@ class ChromePromptActions {
   // called with the user's choice.
   void PromptUser(
       const std::vector<base::FilePath>& files_to_delete,
-      const base::Optional<std::vector<std::wstring>>& registry_keys,
+      const absl::optional<std::vector<std::wstring>>& registry_keys,
       PromptUserReplyCallback reply_callback);
 
  private:

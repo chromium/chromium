@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -15,6 +14,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -40,7 +40,7 @@ class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {
   // Mock method used to set the test expectations.
   MOCK_METHOD0(
       GetMemoryDump,
-      base::Optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>());
+      absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>());
 };
 using TestProcessMetricsDecorator =
     ::testing::StrictMock<LenientTestProcessMetricsDecorator>;
@@ -48,7 +48,7 @@ using TestProcessMetricsDecorator =
 void LenientTestProcessMetricsDecorator::RequestProcessesMemoryMetrics(
     memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
         callback) {
-  base::Optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>
+  absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>
       global_dump = GetMemoryDump();
 
   std::move(callback).Run(
@@ -146,7 +146,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   MockSystemNodeObserver sys_node_observer;
 
   graph()->AddSystemNodeObserver(&sys_node_observer);
-  auto memory_dump = base::make_optional(
+  auto memory_dump = absl::make_optional(
       GenerateMemoryDump({{mock_graph()->process->process_id(),
                            kFakeResidentSetKb, kFakePrivateFootprintKb},
                           {mock_graph()->other_process->process_id(),
@@ -177,7 +177,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 
 TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // Only contains the data for one of the two processes.
-  auto partial_memory_dump = base::make_optional(
+  auto partial_memory_dump = absl::make_optional(
       GenerateMemoryDump({{mock_graph()->process->process_id(),
                            kFakeResidentSetKb, kFakePrivateFootprintKb}}));
 
@@ -193,7 +193,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
 
   // Do another partial refresh but this time for the other process. The data
   // attached to |mock_graph()->process| shouldn't change.
-  auto partial_memory_dump2 = base::make_optional(GenerateMemoryDump(
+  auto partial_memory_dump2 = absl::make_optional(GenerateMemoryDump(
       {{mock_graph()->other_process->process_id(), kFakeResidentSetKb * 2,
         kFakePrivateFootprintKb * 2}}));
   EXPECT_CALL(*decorator(), GetMemoryDump())
@@ -214,7 +214,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(testing::Return(testing::ByMove(base::nullopt)));
+      .WillOnce(testing::Return(testing::ByMove(absl::nullopt)));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 

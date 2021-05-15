@@ -81,7 +81,7 @@ class MediaNotificationProviderImpl
   std::map<const std::string, MediaNotificationContainerImplView*>
       observed_containers_;
 
-  base::Optional<media_message_center::NotificationTheme> color_theme_;
+  absl::optional<media_message_center::NotificationTheme> color_theme_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_

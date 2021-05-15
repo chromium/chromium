@@ -201,7 +201,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   // If the origin is blocked, reject attestation.
   if (device::fido_filter::Evaluate(
           device::fido_filter::Operation::MAKE_CREDENTIAL, origin.Serialize(),
-          /*device=*/base::nullopt, /*id=*/base::nullopt) ==
+          /*device=*/absl::nullopt, /*id=*/absl::nullopt) ==
       device::fido_filter::Action::NO_ATTESTATION) {
     return RespondNow(OneArgument(base::Value(false)));
   }

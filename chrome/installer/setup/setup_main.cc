@@ -28,7 +28,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_storage.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
@@ -94,6 +93,7 @@
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/installer/util/google_update_util.h"
@@ -913,7 +913,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
       const std::wstring protocol_associations_value =
           cmd_line.GetSwitchValueNative(
               installer::switches::kRegisterURLProtocol);
-      base::Optional<ShellUtil::ProtocolAssociations> protocol_associations =
+      absl::optional<ShellUtil::ProtocolAssociations> protocol_associations =
           ShellUtil::ProtocolAssociations::FromCommandLineArgument(
               protocol_associations_value);
 
@@ -1050,7 +1050,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     // existing value.
     std::wstring token_switch_value =
         cmd_line.GetSwitchValueNative(installer::switches::kStoreDMToken);
-    base::Optional<std::string> token;
+    absl::optional<std::string> token;
     if (!(token = installer::DecodeDMTokenSwitchValue(token_switch_value)) ||
         !installer::StoreDMToken(*token)) {
       *exit_code = installer::STORE_DMTOKEN_FAILED;

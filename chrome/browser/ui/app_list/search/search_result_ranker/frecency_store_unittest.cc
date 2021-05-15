@@ -235,7 +235,7 @@ TEST(FrecencyStoreTest, GetIdGetsCorrectId) {
 
 TEST(FrecencyStoreTest, InvalidGetIdReturnsNullopt) {
   FrecencyStore store(100, 0.5f);
-  EXPECT_EQ(store.GetId("not found"), base::nullopt);
+  EXPECT_EQ(store.GetId("not found"), absl::nullopt);
 }
 
 TEST(FrecencyStoreTest, GetAllGetsAll) {

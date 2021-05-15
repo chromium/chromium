@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
@@ -43,6 +42,7 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 
 namespace {
@@ -65,13 +65,13 @@ class FakeBluetoothAdapter
 
   void SimulateDeviceAdvertisementReceived(
       const std::string& device_address,
-      const base::Optional<std::string>& advertisement_name =
-          base::nullopt) const {
+      const absl::optional<std::string>& advertisement_name =
+          absl::nullopt) const {
     for (auto& observer : observers_) {
       observer.DeviceAdvertisementReceived(
-          device_address, /*device_name=*/base::nullopt, advertisement_name,
-          /*rssi=*/base::nullopt, /*tx_power=*/base::nullopt,
-          /*appearance=*/base::nullopt,
+          device_address, /*device_name=*/absl::nullopt, advertisement_name,
+          /*rssi=*/absl::nullopt, /*tx_power=*/absl::nullopt,
+          /*appearance=*/absl::nullopt,
           /*advertised_uuids=*/{}, /*service_data_map=*/{},
           /*manufacturer_data_map=*/{});
     }
@@ -165,8 +165,8 @@ class FakeBluetoothDevice
       base::OnceCallback<void(std::unique_ptr<device::BluetoothGattConnection>)>
           callback,
       base::OnceCallback<void(enum ConnectErrorCode)> error_callback,
-      base::Optional<device::BluetoothUUID> service_uuid =
-          base::nullopt) override {
+      absl::optional<device::BluetoothUUID> service_uuid =
+          absl::nullopt) override {
     SetConnected(true);
     gatt_services_discovery_complete_ = true;
     std::move(callback).Run(
@@ -193,7 +193,7 @@ class FakeBluetoothDevice
 class FakeBluetoothChooser : public content::BluetoothChooser {
  public:
   FakeBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
-                       const base::Optional<std::string>& device_to_select)
+                       const absl::optional<std::string>& device_to_select)
       : event_handler_(event_handler), device_to_select_(device_to_select) {}
   ~FakeBluetoothChooser() override = default;
 
@@ -224,7 +224,7 @@ class FakeBluetoothChooser : public content::BluetoothChooser {
 
  private:
   content::BluetoothChooser::EventHandler event_handler_;
-  base::Optional<std::string> device_to_select_;
+  absl::optional<std::string> device_to_select_;
 };
 
 class TestBluetoothDelegate : public ChromeBluetoothDelegate {
@@ -266,7 +266,7 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
   }
 
  private:
-  base::Optional<std::string> device_to_select_;
+  absl::optional<std::string> device_to_select_;
   bool use_real_chooser_ = false;
 };
 

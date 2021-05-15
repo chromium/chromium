@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -183,8 +183,8 @@ WebTimeLimitNavigationThrottle::WillStartOrRedirectRequest() {
 
     app_time::WebTimeNavigationObserver* observer =
         app_time::WebTimeNavigationObserver::FromWebContents(web_contents);
-    const base::Optional<std::u16string>& prev_title =
-        observer ? observer->previous_title() : base::nullopt;
+    const absl::optional<std::u16string>& prev_title =
+        observer ? observer->previous_title() : absl::nullopt;
 
     return NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT,

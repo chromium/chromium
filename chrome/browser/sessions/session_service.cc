@@ -166,7 +166,7 @@ void SessionService::DeleteLastSession() {
 
 void SessionService::SetTabGroup(const SessionID& window_id,
                                  const SessionID& tab_id,
-                                 base::Optional<tab_groups::TabGroupId> group) {
+                                 absl::optional<tab_groups::TabGroupId> group) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -421,7 +421,7 @@ void SessionService::BuildCommandsForTab(
     const SessionID& window_id,
     WebContents* tab,
     int index_in_window,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
   SessionServiceBase::BuildCommandsForTab(window_id, tab, index_in_window,

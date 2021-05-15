@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/challenge_response_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -217,7 +217,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   bool added_as_oobe_observer_ = false;
 
   // Set if Gaia dialog is shown with prefilled email.
-  base::Optional<AccountId> gaia_reauth_account_id_;
+  absl::optional<AccountId> gaia_reauth_account_id_;
 
   // Store which screen is currently displayed.
   DisplayedScreen displayed_screen_ = DisplayedScreen::SIGN_IN_SCREEN;

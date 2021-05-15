@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #error This file shall only be used in ash.
@@ -38,7 +38,7 @@ class LacrosAvailabilityPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  base::Optional<crosapi::browser_util::LacrosLaunchSwitch> GetValue(
+  absl::optional<crosapi::browser_util::LacrosLaunchSwitch> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
 

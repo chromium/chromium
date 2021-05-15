@@ -108,7 +108,7 @@ std::u16string GetNotificationTitleFor(const std::u16string& app_name,
 std::u16string GetNotificationMessageFor(
     const std::u16string& app_name,
     AppNotification notification,
-    base::Optional<base::TimeDelta> time_limit) {
+    absl::optional<base::TimeDelta> time_limit) {
   switch (notification) {
     case AppNotification::kFiveMinutes:
       return l10n_util::GetStringFUTF16(
@@ -259,7 +259,7 @@ AppTimeController::AppTimeController(Profile* profile)
   // sessions.
   if (app_registry_->IsAppInstalled(GetChromeAppId()) &&
       app_registry_->IsAppTimeLimitReached(GetChromeAppId())) {
-    base::Optional<AppLimit> web_time_limit = app_registry_->GetWebTimeLimit();
+    absl::optional<AppLimit> web_time_limit = app_registry_->GetWebTimeLimit();
     DCHECK(web_time_limit);
     DCHECK(web_time_limit->daily_limit());
     DCHECK(web_time_enforcer_);
@@ -285,7 +285,7 @@ bool AppTimeController::IsExtensionAllowlisted(
   return true;
 }
 
-base::Optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
+absl::optional<base::TimeDelta> AppTimeController::GetTimeLimitForApp(
     const std::string& app_service_id,
     apps::mojom::AppType app_type) const {
   const app_time::AppId app_id =
@@ -317,7 +317,7 @@ bool AppTimeController::HasWebTimeLimitRestriction() const {
   if (!app_registry_->IsAppInstalled(GetChromeAppId()))
     return false;
 
-  const base::Optional<app_time::AppLimit>& time_limit =
+  const absl::optional<app_time::AppLimit>& time_limit =
       app_registry_->GetWebTimeLimit();
   if (!time_limit.has_value())
     return false;
@@ -368,7 +368,7 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   app_registry_->SetReportingEnabled(
       policy::ActivityReportingEnabledFromDict(*policy));
 
-  base::Optional<base::TimeDelta> new_reset_time =
+  absl::optional<base::TimeDelta> new_reset_time =
       policy::ResetTimeFromDict(*policy);
   // TODO(agawronska): Propagate the information about reset time change.
   if (new_reset_time && *new_reset_time != limits_reset_time_)
@@ -409,7 +409,7 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
 
 void AppTimeController::ShowAppTimeLimitNotification(
     const AppId& app_id,
-    const base::Optional<base::TimeDelta>& time_limit,
+    const absl::optional<base::TimeDelta>& time_limit,
     AppNotification notification) {
   DCHECK_NE(AppNotification::kUnknown, notification);
 
@@ -595,8 +595,8 @@ void AppTimeController::OpenFamilyLinkApp() {
 void AppTimeController::ShowNotificationForApp(
     const std::string& app_name,
     AppNotification notification,
-    base::Optional<base::TimeDelta> time_limit,
-    base::Optional<gfx::ImageSkia> icon) {
+    absl::optional<base::TimeDelta> time_limit,
+    absl::optional<gfx::ImageSkia> icon) {
   DCHECK(notification == AppNotification::kFiveMinutes ||
          notification == AppNotification::kOneMinute ||
          notification == AppNotification::kTimeLimitChanged ||

@@ -49,10 +49,10 @@ namespace extensions {
 
 namespace {
 
-base::Optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>&
+absl::optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>&
 GetModeForTesting() {
   static base::NoDestructor<
-      base::Optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>>
+      absl::optional<ChromeContentVerifierDelegate::VerifyInfo::Mode>>
       testing_mode;
   return *testing_mode;
 }
@@ -132,7 +132,7 @@ ChromeContentVerifierDelegate::GetDefaultMode() {
 
 // static
 void ChromeContentVerifierDelegate::SetDefaultModeForTesting(
-    base::Optional<VerifyInfo::Mode> mode) {
+    absl::optional<VerifyInfo::Mode> mode) {
   DCHECK(!GetModeForTesting() || !mode)
       << "Verification mode already overridden, unset it first.";
   GetModeForTesting() = mode;

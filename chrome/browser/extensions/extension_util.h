@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;

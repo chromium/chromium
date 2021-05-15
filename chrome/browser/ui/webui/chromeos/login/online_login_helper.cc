@@ -75,7 +75,7 @@ void SetCookieForPartition(
   const GURL& gaia_url = GaiaUrls::GetInstance()->gaia_url();
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
-      base::nullopt /* server_time */));
+      absl::nullopt /* server_time */));
   if (!cc)
     return;
 
@@ -111,7 +111,7 @@ bool BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
-    const base::Optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
+    const absl::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,

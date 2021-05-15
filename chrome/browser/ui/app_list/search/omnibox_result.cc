@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +28,7 @@
 #include "components/search_engines/util.h"
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -166,14 +166,14 @@ gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
       dimension / 2, gfx::kGoogleBlue600, icon);
 }
 
-base::Optional<std::u16string> GetAdditionalText(
+absl::optional<std::u16string> GetAdditionalText(
     const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto additional_text = line.additional_text()->text();
     if (!additional_text.empty())
       return additional_text;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {

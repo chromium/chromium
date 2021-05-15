@@ -8,20 +8,20 @@
 #include <string>
 
 #include "base/i18n/string_compare.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 struct ContactSortingFields {
   // Primary sorting key: person name if not empty; otherwise, email.
-  base::Optional<std::string> person_name_or_email;
+  absl::optional<std::string> person_name_or_email;
   // Secondary sorting key. Note: It is okay if email is also used as the
   // primary sorting key.
-  base::Optional<std::string> email;
+  absl::optional<std::string> email;
   // Tertiary sorting key.
-  base::Optional<std::string> phone_number;
+  absl::optional<std::string> phone_number;
   // Last resort sorting key. The contact ID should be unique for each contact
   // record, guaranteeing uniquely defined ordering.
   std::string id;
@@ -54,7 +54,7 @@ ContactSortingFields GetContactSortingFields(
   fields.person_name_or_email =
       contact.person_name().empty()
           ? fields.email
-          : base::make_optional<std::string>(contact.person_name());
+          : absl::make_optional<std::string>(contact.person_name());
 
   return fields;
 }
@@ -101,9 +101,9 @@ class ContactRecordComparator {
   }
 
  private:
-  UCollationResult CollatorCompare(const base::Optional<std::string>& a,
-                                   const base::Optional<std::string>& b) const {
-    // Sort populated strings before base::nullopt.
+  UCollationResult CollatorCompare(const absl::optional<std::string>& a,
+                                   const absl::optional<std::string>& b) const {
+    // Sort populated strings before absl::nullopt.
     if (!a && !b)
       return UCOL_EQUAL;
     if (!b)

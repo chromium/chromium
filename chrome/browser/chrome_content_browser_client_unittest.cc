@@ -164,7 +164,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   ui::PageTransition transition;
   bool is_renderer_initiated;
   content::Referrer referrer = content::Referrer();
-  base::Optional<url::Origin> initiator_origin = base::nullopt;
+  absl::optional<url::Origin> initiator_origin = absl::nullopt;
 
   scoped_refptr<content::SiteInstance> site_instance =
       content::SiteInstance::CreateForURL(browser()->profile(),
@@ -172,7 +172,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   // The origin is a placeholder to test that |initiator_origin| is set to
-  // base::nullopt and is not meant to represent what would happen in practice.
+  // absl::nullopt and is not meant to represent what would happen in practice.
   initiator_origin = url::Origin::Create(GURL("https://www.example.com"));
   client.OverrideNavigationParams(nullptr, site_instance.get(), &transition,
                                   &is_renderer_initiated, &referrer,
@@ -180,7 +180,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(base::nullopt, initiator_origin);
+  EXPECT_EQ(absl::nullopt, initiator_origin);
 
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("chrome://new-tab-page"));
@@ -193,7 +193,7 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                            transition));
   EXPECT_FALSE(is_renderer_initiated);
-  EXPECT_EQ(base::nullopt, initiator_origin);
+  EXPECT_EQ(absl::nullopt, initiator_origin);
 
   // No change for transitions that are not PAGE_TRANSITION_LINK.
   site_instance = content::SiteInstance::CreateForURL(

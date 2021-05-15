@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -56,6 +55,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -161,7 +161,7 @@ class WebAppInstallTaskTest : public WebAppTest {
                              const std::string name,
                              const std::string description,
                              const GURL& scope,
-                             base::Optional<SkColor> theme_color,
+                             absl::optional<SkColor> theme_color,
                              bool open_as_window) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
 
@@ -178,7 +178,7 @@ class WebAppInstallTaskTest : public WebAppTest {
   void CreateRendererAppInfo(const GURL& url,
                              const std::string name,
                              const std::string description) {
-    CreateRendererAppInfo(url, name, description, GURL(), base::nullopt,
+    CreateRendererAppInfo(url, name, description, GURL(), absl::nullopt,
                           /*open_as_window*/ true);
   }
 
@@ -370,7 +370,7 @@ class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {
                              const std::string name,
                              const std::string description,
                              const GURL& scope,
-                             base::Optional<SkColor> theme_color,
+                             absl::optional<SkColor> theme_color,
                              bool open_as_window,
                              bool run_on_os_login) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -397,7 +397,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   const std::string manifest_name = "Manifest Name";
   const std::string description = "Description";
   const GURL scope = GURL("https://example.com/scope");
-  const base::Optional<SkColor> theme_color = 0xFFAABBCC;
+  const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
   const AppId app_id = GenerateAppIdFromURL(url);
 
@@ -552,8 +552,8 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   const AppId app_id = GenerateAppIdFromURL(manifest_start_url);
   const std::string manifest_name = "Name from Manifest";
   const GURL manifest_scope = GURL("https://example.com/scope");
-  const base::Optional<SkColor> manifest_theme_color = 0xAABBCCDD;
-  const base::Optional<SkColor> expected_theme_color = 0xFFBBCCDD;  // Opaque.
+  const absl::optional<SkColor> manifest_theme_color = 0xAABBCCDD;
+  const absl::optional<SkColor> expected_theme_color = 0xFFBBCCDD;  // Opaque.
   const auto display_mode = DisplayMode::kMinimalUi;
 
   {
@@ -977,7 +977,7 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   const std::string name = "Name";
   const std::string description = "Description";
   const GURL scope("https://example.com/scope");
-  const base::Optional<SkColor> theme_color = 0xAABBCCDD;
+  const absl::optional<SkColor> theme_color = 0xAABBCCDD;
 
   CreateRendererAppInfo(url, name, description, /*scope*/ GURL{}, theme_color,
                         /*open_as_window*/ true);
@@ -1237,7 +1237,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   const std::string name = "Name";
   const std::string description = "Description";
   const GURL scope = GURL("https://example.com/scope");
-  const base::Optional<SkColor> theme_color = 0xFFAABBCC;
+  const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
   const AppId app_id = GenerateAppIdFromURL(url);
 
@@ -1284,7 +1284,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   const std::string name = "Name";
   const std::string description = "Description";
   const GURL scope = GURL("https://example.com/scope");
-  const base::Optional<SkColor> theme_color = 0xFFAABBCC;
+  const absl::optional<SkColor> theme_color = 0xFFAABBCC;
 
   const AppId app_id = GenerateAppIdFromURL(url);
 

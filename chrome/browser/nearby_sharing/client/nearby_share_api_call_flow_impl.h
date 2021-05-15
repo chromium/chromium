@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NearbyShareApiCallFlowImpl is a wrapper around OAuth2ApiCallFlow
 // that provides convenience methods StartGetRequest, StartPostRequest,
@@ -87,12 +87,12 @@ class NearbyShareApiCallFlowImpl : public NearbyShareApiCallFlow,
 
   // Serialized request message proto that will be sent in the request body.
   // Null if request is GET.
-  base::Optional<std::string> serialized_request_;
+  absl::optional<std::string> serialized_request_;
 
   // The request message proto represented as key-value pairs that will be sent
   // as query parameters in the API GET request. Note: A key can have multiple
   // values. Null if HTTP method is not GET.
-  base::Optional<QueryParameters> request_as_query_parameters_;
+  absl::optional<QueryParameters> request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow
   // completes successfully.

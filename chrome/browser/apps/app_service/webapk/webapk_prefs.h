@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -22,7 +22,7 @@ void AddWebApk(Profile* profile,
                const std::string& app_id,
                const std::string& package_name);
 
-base::Optional<std::string> GetWebApkPackageName(Profile* profile,
+absl::optional<std::string> GetWebApkPackageName(Profile* profile,
                                                  const std::string& app_id);
 
 // Returns the app IDs of all WebAPKs installed in the profile.

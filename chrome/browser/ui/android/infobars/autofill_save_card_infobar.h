@@ -22,7 +22,7 @@ class AutofillSaveCardInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit AutofillSaveCardInfoBar(
       std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate,
-      base::Optional<AccountInfo> account_info);
+      absl::optional<AccountInfo> account_info);
 
   ~AutofillSaveCardInfoBar() override;
 
@@ -43,7 +43,7 @@ class AutofillSaveCardInfoBar : public infobars::ConfirmInfoBar {
   // are stored in /chrome and /components cannot depend on /chrome.
   int GetGooglePayBrandingIconId();
 
-  base::Optional<AccountInfo> account_info_;
+  absl::optional<AccountInfo> account_info_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBar);
 };

@@ -103,27 +103,27 @@ TEST_F(ActiveTimeTest, MergeActiveTimesTest) {
   AppActivity::ActiveTime active_time_2(time2 + delta, time3);
   AppActivity::ActiveTime active_time_3(time2 + 3 * delta, time3);
 
-  base::Optional<AppActivity::ActiveTime> merged_time1 =
+  absl::optional<AppActivity::ActiveTime> merged_time1 =
       AppActivity::ActiveTime::Merge(active_time_1, active_time_2);
   EXPECT_TRUE(merged_time1.has_value());
   EXPECT_EQ(merged_time1->active_from(), time1);
   EXPECT_EQ(merged_time1->active_to(), time3);
 
-  base::Optional<AppActivity::ActiveTime> merged_time2 =
+  absl::optional<AppActivity::ActiveTime> merged_time2 =
       AppActivity::ActiveTime::Merge(active_time_2, active_time_1);
   EXPECT_TRUE(merged_time2.has_value());
   EXPECT_EQ(merged_time2->active_from(), time1);
   EXPECT_EQ(merged_time2->active_to(), time3);
 
-  base::Optional<AppActivity::ActiveTime> merged_time3 =
+  absl::optional<AppActivity::ActiveTime> merged_time3 =
       AppActivity::ActiveTime::Merge(active_time_1, active_time_3);
   EXPECT_FALSE(merged_time3.has_value());
 
-  base::Optional<AppActivity::ActiveTime> merged_time4 =
+  absl::optional<AppActivity::ActiveTime> merged_time4 =
       AppActivity::ActiveTime::Merge(active_time_3, active_time_1);
   EXPECT_FALSE(merged_time4.has_value());
 
-  base::Optional<AppActivity::ActiveTime> merged_time5 =
+  absl::optional<AppActivity::ActiveTime> merged_time5 =
       AppActivity::ActiveTime::Merge(active_time_2, active_time_3);
   EXPECT_TRUE(merged_time5.has_value());
   EXPECT_EQ(merged_time5->active_from(), time2 + delta);

@@ -7,9 +7,9 @@
 #import <Cocoa/Cocoa.h>
 #import <SafariServices/SafariServices.h>
 
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace apps {
@@ -39,11 +39,11 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
                              base::SysNSStringToUTF8(app_name));
 }
 
-base::Optional<IntentPickerAppInfo> AppInfoForUrl(const GURL& url) {
+absl::optional<IntentPickerAppInfo> AppInfoForUrl(const GURL& url) {
   if (@available(macOS 10.15, *)) {
     NSURL* nsurl = net::NSURLWithGURL(url);
     if (!nsurl)
-      return base::nullopt;
+      return absl::nullopt;
 
     SFUniversalLink* link =
         [[[SFUniversalLink alloc] initWithWebpageURL:nsurl] autorelease];
@@ -51,7 +51,7 @@ base::Optional<IntentPickerAppInfo> AppInfoForUrl(const GURL& url) {
       return AppInfoForAppUrl(link.applicationURL);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

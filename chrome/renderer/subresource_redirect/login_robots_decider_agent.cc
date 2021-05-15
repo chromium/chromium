@@ -53,7 +53,7 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
 
 LoginRobotsDeciderAgent::~LoginRobotsDeciderAgent() = default;
 
-base::Optional<SubresourceRedirectResult>
+absl::optional<SubresourceRedirectResult>
 LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {
@@ -83,7 +83,7 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
                                robots_rules_parser_cache.GetWeakPtr(), origin));
   }
 
-  base::Optional<RobotsRulesParser::CheckResult> result =
+  absl::optional<RobotsRulesParser::CheckResult> result =
       robots_rules_parser_cache.CheckRobotsRules(
           routing_id(), url,
           base::BindOnce(
@@ -96,7 +96,7 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     return redirect_result;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult(
@@ -124,7 +124,7 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
                            : SubresourceRedirectResult::kRedirectable;
     // Clear the logged-in state so it won't be reused for subsequent
     // navigations.
-    is_pending_navigation_loggged_in_ = base::nullopt;
+    is_pending_navigation_loggged_in_ = absl::nullopt;
   } else {
     // Logged-in state was not sent for the current navigation.
     redirect_result_ = SubresourceRedirectResult::kUnknown;

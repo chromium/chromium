@@ -151,7 +151,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       return;
     }
 
-    base::Optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
+    absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
         install_options.install_url);
 
     // If the URL is not in ExternallyInstalledWebAppPrefs, then no external
@@ -256,7 +256,7 @@ void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
 }
 
 void ExternallyManagedAppManagerImpl::OnInstalled(
-    base::Optional<AppId> app_id,
+    absl::optional<AppId> app_id,
     ExternallyManagedAppManager::InstallResult result) {
   if (app_id && IsSuccess(result.code)) {
     MaybeEnqueueServiceWorkerRegistration(

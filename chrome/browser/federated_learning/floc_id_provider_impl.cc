@@ -25,8 +25,8 @@ constexpr int kQueryHistoryWindowInDays = 7;
 
 struct StartupComputeDecision {
   bool invalidate_existing_floc = true;
-  // Will be base::nullopt if should recompute immediately.
-  base::Optional<base::TimeDelta> next_compute_delay;
+  // Will be absl::nullopt if should recompute immediately.
+  absl::optional<base::TimeDelta> next_compute_delay;
 };
 
 // Determine whether we can keep using the previous floc and/or when should the
@@ -39,7 +39,7 @@ StartupComputeDecision GetStartupComputeDecision(
   // never been ready).
   if (last_floc.compute_time().is_null()) {
     return StartupComputeDecision{.invalidate_existing_floc = true,
-                                  .next_compute_delay = base::nullopt};
+                                  .next_compute_delay = absl::nullopt};
   }
 
   // The browser started with a kFlocIdFinchConfigVersion param different from
@@ -53,7 +53,7 @@ StartupComputeDecision GetStartupComputeDecision(
   if (last_floc.finch_config_version() !=
       static_cast<uint32_t>(kFlocIdFinchConfigVersion.Get())) {
     return StartupComputeDecision{.invalidate_existing_floc = true,
-                                  .next_compute_delay = base::nullopt};
+                                  .next_compute_delay = absl::nullopt};
   }
 
   base::TimeDelta presumed_next_compute_delay =
@@ -63,7 +63,7 @@ StartupComputeDecision GetStartupComputeDecision(
   // The last floc has expired.
   if (presumed_next_compute_delay <= base::TimeDelta()) {
     return StartupComputeDecision{.invalidate_existing_floc = true,
-                                  .next_compute_delay = base::nullopt};
+                                  .next_compute_delay = absl::nullopt};
   }
 
   // This could happen if the machine time has changed since the last
@@ -71,7 +71,7 @@ StartupComputeDecision GetStartupComputeDecision(
   // rather than potentially stop computing for a very long time.
   if (presumed_next_compute_delay >= 2 * kFlocIdScheduledUpdateInterval.Get()) {
     return StartupComputeDecision{.invalidate_existing_floc = true,
-                                  .next_compute_delay = base::nullopt};
+                                  .next_compute_delay = absl::nullopt};
   }
 
   // Normally "floc_accessible_since <= last_floc.history_begin_time()" is an
@@ -132,7 +132,7 @@ FlocIdProviderImpl::~FlocIdProviderImpl() {
 
 blink::mojom::InterestCohortPtr FlocIdProviderImpl::GetInterestCohortForJsApi(
     const GURL& url,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   // Check the general floc setting.
   if (!IsFlocAllowed())
     return blink::mojom::InterestCohort::New();
@@ -381,7 +381,7 @@ void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
     uint64_t sim_hash,
     base::Time history_begin_time,
     base::Time history_end_time,
-    base::Optional<uint64_t> final_hash,
+    absl::optional<uint64_t> final_hash,
     base::Version version) {
   if (!final_hash) {
     std::move(callback).Run(ComputeFlocResult(sim_hash, FlocId()));

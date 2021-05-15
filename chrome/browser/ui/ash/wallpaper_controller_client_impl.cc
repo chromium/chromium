@@ -149,7 +149,7 @@ std::string GetDailyRefreshCollectionId(ValueStore* value_store) {
   if (!daily_refresh_info_string)
     return std::string();
 
-  const base::Optional<base::Value> daily_refresh_info =
+  const absl::optional<base::Value> daily_refresh_info =
       base::JSONReader::Read(*daily_refresh_info_string);
 
   if (!daily_refresh_info)

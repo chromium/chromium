@@ -51,7 +51,7 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
                                 content::BrowserContext* context,
                                 ui::WebDialogDelegate* delegate,
                                 bool show) {
-  return ShowWebDialogWithParams(parent, context, delegate, base::nullopt,
+  return ShowWebDialogWithParams(parent, context, delegate, absl::nullopt,
                                  show);
 }
 
@@ -59,7 +59,7 @@ gfx::NativeWindow ShowWebDialogWithParams(
     gfx::NativeView parent,
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
-    base::Optional<views::Widget::InitParams> extra_params,
+    absl::optional<views::Widget::InitParams> extra_params,
     bool show) {
   views::WebDialogView* view = new views::WebDialogView(
       context, delegate, std::make_unique<ChromeWebContentsHandler>());

@@ -944,7 +944,7 @@ void BindIndicatorTranscienceForWin(
     TransientElement* e,
     Model* model,
     UiScene* scene,
-    const base::Optional<
+    const absl::optional<
         std::tuple<bool, CapturingStateModel, CapturingStateModel>>& last_value,
     const std::tuple<bool, CapturingStateModel, CapturingStateModel>& value) {
   const bool in_web_vr_presentation = model->web_vr_enabled() &&
@@ -1014,7 +1014,7 @@ void BindIndicatorTranscience(
     TransientElement* e,
     Model* model,
     UiScene* scene,
-    const base::Optional<std::tuple<bool, bool, bool>>& last_value,
+    const absl::optional<std::tuple<bool, bool, bool>>& last_value,
     const std::tuple<bool, bool, bool>& value) {
   const bool in_web_vr_presentation = std::get<0>(value);
   const bool in_long_press = std::get<1>(value);

@@ -242,7 +242,7 @@ cloud_print::mojom::CloudPrint& CloudPrintProxyService::GetCloudPrintProxy() {
 void CloudPrintProxyService::OnReadCloudPrintSetupProxyList(
     PrintersCallback callback,
     const std::string& printers_json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(printers_json);
+  absl::optional<base::Value> value = base::JSONReader::Read(printers_json);
   std::vector<std::string> printers;
   if (value && value->is_list()) {
     for (const auto& element : value->GetList()) {

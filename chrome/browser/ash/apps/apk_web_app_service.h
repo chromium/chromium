@@ -52,12 +52,12 @@ class ApkWebAppService : public KeyedService,
 
   bool IsWebAppInstalledFromArc(const web_app::AppId& web_app_id);
 
-  base::Optional<std::string> GetPackageNameForWebApp(
+  absl::optional<std::string> GetPackageNameForWebApp(
       const web_app::AppId& app_id);
 
-  base::Optional<std::string> GetPackageNameForWebApp(const GURL& url);
+  absl::optional<std::string> GetPackageNameForWebApp(const GURL& url);
 
-  base::Optional<std::string> GetCertificateSha256Fingerprint(
+  absl::optional<std::string> GetCertificateSha256Fingerprint(
       const web_app::AppId& app_id);
 
   using WebAppCallbackForTesting =
@@ -100,7 +100,7 @@ class ApkWebAppService : public KeyedService,
   void OnDidFinishInstall(const std::string& package_name,
                           const web_app::AppId& web_app_id,
                           bool is_web_only_twa,
-                          const base::Optional<std::string> sha256_fingerprint,
+                          const absl::optional<std::string> sha256_fingerprint,
                           web_app::InstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);

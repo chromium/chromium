@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,6 +29,7 @@
 #include "components/media_router/common/media_sink.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -377,7 +377,7 @@ void CastDialogView::SinkPressed(size_t index) {
     // |sink| may get invalidated during CastDialogController::StartCasting()
     // due to a model update, so we must use a copy of its |id| field.
     const std::string sink_id = sink.id;
-    base::Optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
+    absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       // Starting local file casting may open a new tab synchronously on the UI
       // thread, which deactivates the dialog. So we must prevent it from
@@ -400,27 +400,27 @@ void CastDialogView::MaybeSizeToContents() {
     SizeToContents();
 }
 
-base::Optional<MediaCastMode> CastDialogView::GetCastModeToUse(
+absl::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
     const UIMediaSink& sink) const {
   // Go through cast modes in the order of preference to find one that is
   // supported and selected.
   switch (selected_source_) {
     case SourceType::kTab:
       if (base::Contains(sink.cast_modes, PRESENTATION))
-        return base::make_optional<MediaCastMode>(PRESENTATION);
+        return absl::make_optional<MediaCastMode>(PRESENTATION);
       if (base::Contains(sink.cast_modes, TAB_MIRROR))
-        return base::make_optional<MediaCastMode>(TAB_MIRROR);
+        return absl::make_optional<MediaCastMode>(TAB_MIRROR);
       break;
     case SourceType::kDesktop:
       if (base::Contains(sink.cast_modes, DESKTOP_MIRROR))
-        return base::make_optional<MediaCastMode>(DESKTOP_MIRROR);
+        return absl::make_optional<MediaCastMode>(DESKTOP_MIRROR);
       break;
     case SourceType::kLocalFile:
       if (base::Contains(sink.cast_modes, LOCAL_FILE))
-        return base::make_optional<MediaCastMode>(LOCAL_FILE);
+        return absl::make_optional<MediaCastMode>(LOCAL_FILE);
       break;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CastDialogView::DisableUnsupportedSinks() {

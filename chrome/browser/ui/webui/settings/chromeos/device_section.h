@@ -10,13 +10,13 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefService;
@@ -72,7 +72,7 @@ class DeviceSection : public OsSettingsSection,
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   void OnGotSwitchStates(
-      base::Optional<PowerManagerClient::SwitchStates> result);
+      absl::optional<PowerManagerClient::SwitchStates> result);
 
   void UpdateStylusSearchTags();
 

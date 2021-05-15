@@ -261,7 +261,7 @@ void TabsEventRouter::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 }
 
 void TabsEventRouter::TabGroupedStateChanged(
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
   std::set<std::string> changed_property_names;

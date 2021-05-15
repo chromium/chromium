@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "net/base/address_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class AvailabilityProber;
@@ -78,7 +78,7 @@ class PrefetchProxyOriginProber {
       OnProbeResultCallback callback,
       bool also_do_tls_connect,
       int net_error,
-      const base::Optional<net::AddressList>& resolved_addresses);
+      const absl::optional<net::AddressList>& resolved_addresses);
 
   // The current profile, not owned.
   Profile* profile_;

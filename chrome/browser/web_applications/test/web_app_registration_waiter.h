@@ -28,7 +28,7 @@ class WebAppRegistrationWaiter {
   base::RunLoop run_loop_;
   GURL install_url_;
   // If unset then check for any non failure result.
-  base::Optional<RegistrationResultCode> code_;
+  absl::optional<RegistrationResultCode> code_;
 
   base::RunLoop complete_run_loop_;
 };

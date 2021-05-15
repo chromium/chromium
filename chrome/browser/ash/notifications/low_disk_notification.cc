@@ -113,7 +113,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierLowDisk);
 
-  auto on_click = base::BindRepeating([](base::Optional<int> button_index) {
+  auto on_click = base::BindRepeating([](absl::optional<int> button_index) {
     if (button_index) {
       DCHECK_EQ(0, *button_index);
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

@@ -36,7 +36,7 @@ DialAppInfoResult::DialAppInfoResult(
     std::unique_ptr<ParsedDialAppInfo> app_info,
     DialAppInfoResultCode result_code,
     const std::string& error_message,
-    base::Optional<int> http_error_code)
+    absl::optional<int> http_error_code)
     : app_info(std::move(app_info)),
       result_code(result_code),
       error_message(error_message),
@@ -118,7 +118,7 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchComplete(
 
 void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchError(
     const std::string& error_message,
-    base::Optional<int> http_response_code) {
+    absl::optional<int> http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto result_code = DialAppInfoResultCode::kNetworkError;
   if (http_response_code) {

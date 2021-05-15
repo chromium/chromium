@@ -27,7 +27,7 @@ std::string AttestationService::JsonChallengeToProtobufChallenge(
     const std::string& challenge) {
   attestation::SignedData signed_challenge;
   // Get challenge and decode it.
-  base::Optional<base::Value> data = base::JSONReader::Read(
+  absl::optional<base::Value> data = base::JSONReader::Read(
       challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   // If json is malformed or it doesn't include the needed fields return

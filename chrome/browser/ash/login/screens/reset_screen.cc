@@ -92,7 +92,7 @@ void StartTPMFirmwareUpdate(
 // Checks if powerwash is allowed based on update modes and passes the result
 // to `callback`.
 void OnUpdateModesAvailable(
-    base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback,
     const std::set<tpm_firmware_update::Mode>& modes) {
   using tpm_firmware_update::Mode;
@@ -103,7 +103,7 @@ void OnUpdateModesAvailable(
     std::move(callback).Run(true, mode);
     return;
   }
-  std::move(callback).Run(false, base::nullopt);
+  std::move(callback).Run(false, absl::nullopt);
 }
 
 }  // namespace
@@ -116,7 +116,7 @@ void ResetScreen::SetTpmFirmwareUpdateCheckerForTesting(
 
 // static
 void ResetScreen::CheckIfPowerwashAllowed(
-    base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+    base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
         callback) {
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
@@ -128,7 +128,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
     CrosSettings::Get()->GetBoolean(kDevicePowerwashAllowed,
                                     &is_powerwash_allowed);
     if (is_powerwash_allowed) {
-      std::move(callback).Run(true, base::nullopt);
+      std::move(callback).Run(true, absl::nullopt);
       return;
     }
 
@@ -147,7 +147,7 @@ void ResetScreen::CheckIfPowerwashAllowed(
   std::move(callback).Run(
       AutoEnrollmentController::GetFRERequirement() !=
           AutoEnrollmentController::FRERequirement::kExplicitlyRequired,
-      base::nullopt);
+      absl::nullopt);
 }
 
 ResetScreen::ResetScreen(ResetView* view,

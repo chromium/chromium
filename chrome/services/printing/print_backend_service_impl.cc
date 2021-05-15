@@ -9,12 +9,12 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "base/threading/thread_restrictions.h"
@@ -58,7 +58,7 @@ void PrintBackendServiceImpl::GetDefaultPrinterName(
   if (!print_backend_) {
     DLOG(ERROR)
         << "Print backend instance has not been initialized for locale.";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(print_backend_->GetDefaultPrinterName());

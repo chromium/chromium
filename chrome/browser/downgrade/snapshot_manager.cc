@@ -47,7 +47,7 @@ enum class SnapshotOperationResult {
 // found at the source and successfully copied. Returns |false| if the item was
 // found at the source but not successfully copied. Returns no value if the file
 // was not at the source.
-base::Optional<bool> CopyItemToSnapshotDirectory(
+absl::optional<bool> CopyItemToSnapshotDirectory(
     const base::FilePath& relative_path,
     const base::FilePath& user_data_dir,
     const base::FilePath& snapshot_dir,
@@ -57,7 +57,7 @@ base::Optional<bool> CopyItemToSnapshotDirectory(
 
   // If nothing exists to be moved, do not consider it a success or a failure.
   if (!base::PathExists(source))
-    return base::nullopt;
+    return absl::nullopt;
 
   bool copy_success = is_directory ? base::CopyDirectory(source, destination,
                                                          /*recursive=*/true)
@@ -156,7 +156,7 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
   size_t success_count = 0;
   size_t error_count = 0;
   auto record_success_error = [&success_count, &error_count](
-                                  base::Optional<bool> success,
+                                  absl::optional<bool> success,
                                   SnapshotItemId id) {
     if (!success.has_value())
       return;
@@ -300,7 +300,7 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
 
 void SnapshotManager::PurgeInvalidAndOldSnapshots(
     int max_number_of_snapshots,
-    base::Optional<uint32_t> milestone) const {
+    absl::optional<uint32_t> milestone) const {
   const auto snapshot_dir = user_data_dir_.Append(kSnapshotsDir);
 
   // Move the invalid snapshots within from Snapshots/NN to Snapshots.DELETE/NN.

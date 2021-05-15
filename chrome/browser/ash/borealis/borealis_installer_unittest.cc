@@ -426,7 +426,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfDiskNotRemoved) {
 
   chromeos::FakeConciergeClient* fake_concierge_client =
       chromeos::FakeConciergeClient::Get();
-  fake_concierge_client->set_destroy_disk_image_response(base::nullopt);
+  fake_concierge_client->set_destroy_disk_image_response(absl::nullopt);
 
   installer_->Uninstall(callback_factory.BindOnce());
   task_environment_.RunUntilIdle();

@@ -22,7 +22,7 @@ SigninManager::~SigninManager() {
 }
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
-  base::Optional<CoreAccountInfo> account =
+  absl::optional<CoreAccountInfo> account =
       ComputeUnconsentedPrimaryAccountInfo();
 
   DCHECK(!account || !account->IsEmpty());
@@ -43,7 +43,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   }
 }
 
-base::Optional<CoreAccountInfo>
+absl::optional<CoreAccountInfo>
 SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // UPA is equal to the primary account with sync consent if it exists.
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
@@ -65,10 +65,10 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     // in cookies if it exists and has a refresh token.
     if (cookie_accounts.empty()) {
       // Cookies are empty, the UPA is empty.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
-    base::Optional<AccountInfo> account_info =
+    absl::optional<AccountInfo> account_info =
         identity_manager_
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
                 cookie_accounts[0].id);
@@ -79,11 +79,11 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info->account_id);
 
-    return error_state ? base::nullopt : account_info;
+    return error_state ? absl::nullopt : account_info;
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
-    return base::nullopt;
+    return absl::nullopt;
 
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
@@ -95,21 +95,21 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       !identity_manager_->HasAccountWithRefreshToken(current_account)) {
     // Tokens are loaded, but the current UPA doesn't have a refresh token.
     // Clear the current UPA.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!are_refresh_tokens_loaded &&
       unconsented_primary_account_revoked_during_load_) {
     // Tokens are not loaded, but the current UPA's refresh token has been
     // revoked. Clear the current UPA.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (cookie_info.accounts_are_fresh) {
     if (cookie_accounts.empty() || cookie_accounts[0].id != current_account) {
       // The current UPA is not the first in fresh cookies. It needs to be
       // cleared.
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 

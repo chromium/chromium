@@ -102,7 +102,7 @@ class ReportRequestQueueGeneratorTest
       std::unique_ptr<policy::PolicyService> policy_service) {
     return profile_manager_.CreateTestingProfile(
         profile_name, {}, base::UTF8ToUTF16(profile_name), 0, {},
-        TestingProfile::TestingFactories(), base::nullopt,
+        TestingProfile::TestingFactories(), absl::nullopt,
         std::move(policy_service));
   }
 

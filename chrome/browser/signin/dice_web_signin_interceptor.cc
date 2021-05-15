@@ -11,7 +11,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -46,6 +45,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -69,7 +69,7 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   if (primary_core_account_info.IsEmpty())
     return AccountInfo();
 
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           primary_core_account_info);
 
@@ -151,7 +151,7 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
 }
 
-base::Optional<SigninInterceptionHeuristicOutcome>
+absl::optional<SigninInterceptionHeuristicOutcome>
 DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
     bool is_sync_signin,
@@ -206,7 +206,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
         kAbortUserDeclinedProfileForAccount;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
@@ -253,13 +253,13 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     return;
   }
 
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);
   DCHECK(account_info) << "Intercepting unknown account.";
   const ProfileAttributesEntry* entry = nullptr;
-  base::Optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
+  absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info->email,
                           &entry);
   account_id_ = account_id;
@@ -375,7 +375,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
   if (intercepted_account_info.IsManaged())
     return true;
 
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           primary_core_account_info);
 
@@ -415,7 +415,7 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
       "Signin.Intercept.AccountInfoFetchDuration",
       base::TimeTicks::Now() - account_info_fetch_start_time_);
 
-  base::Optional<SigninInterceptionType> interception_type;
+  absl::optional<SigninInterceptionType> interception_type;
 
   if (ShouldShowEnterpriseBubble(info))
     interception_type = SigninInterceptionType::kEnterprise;
@@ -506,11 +506,11 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, account_id_, profile_path,
           base::BindOnce(&DiceWebSigninInterceptor::OnNewSignedInProfileCreated,
-                         base::Unretained(this), base::nullopt));
+                         base::Unretained(this), absl::nullopt));
 }
 
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
-    base::Optional<SkColor> profile_color,
+    absl::optional<SkColor> profile_color,
     Profile* new_profile) {
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
@@ -586,7 +586,7 @@ void DiceWebSigninInterceptor::RecordProfileCreationDeclined(
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               kProfileCreationInterceptionDeclinedPref);
   std::string key = GetPersistentEmailHash(email);
-  base::Optional<int> declined_count = update->FindIntKey(key);
+  absl::optional<int> declined_count = update->FindIntKey(key);
   update->SetIntKey(key, declined_count.value_or(0) + 1);
 }
 
@@ -594,7 +594,7 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
     const std::string& email) const {
   const base::DictionaryValue* pref_data = profile_->GetPrefs()->GetDictionary(
       kProfileCreationInterceptionDeclinedPref);
-  base::Optional<int> declined_count =
+  absl::optional<int> declined_count =
       pref_data->FindIntKey(GetPersistentEmailHash(email));
   // Check if the user declined 2 times.
   constexpr int kMaxProfileCreationDeclinedCount = 2;
@@ -607,7 +607,7 @@ void DiceWebSigninInterceptor::RecordProfileSwitchDeclined(
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               kProfileSwitchInterceptionDeclinedPref);
   std::string key = GetPersistentEmailHash(email);
-  base::Optional<int> declined_count = update->FindIntKey(key);
+  absl::optional<int> declined_count = update->FindIntKey(key);
   update->SetIntKey(key, declined_count.value_or(0) + 1);
 }
 
@@ -615,7 +615,7 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileSwitch(
     const std::string& email) const {
   const base::DictionaryValue* pref_data = profile_->GetPrefs()->GetDictionary(
       kProfileSwitchInterceptionDeclinedPref);
-  base::Optional<int> declined_count =
+  absl::optional<int> declined_count =
       pref_data->FindIntKey(GetPersistentEmailHash(email));
 
   // The limit is controlled by an experiment. Zero value completely turns off

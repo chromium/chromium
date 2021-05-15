@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/thumbnail/generator/android/stats.h"
@@ -23,6 +22,7 @@
 #include "media/base/media_log.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class GpuVideoAcceleratorFactories;
@@ -65,7 +65,7 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   void OnVideoFrameRetrieved(
       bool success,
       chrome::mojom::VideoFrameDataPtr video_frame_data,
-      const base::Optional<media::VideoDecoderConfig>& config);
+      const absl::optional<media::VideoDecoderConfig>& config);
 
   // Decodes the video frame.
   void OnGpuVideoAcceleratorFactoriesReady(

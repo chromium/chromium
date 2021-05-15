@@ -85,7 +85,7 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   RecordDeepScanMetrics(access_point(), kDuration, kTotalBytes, result(),
                         SimpleContentAnalysisResponseForTesting(
                             /*dlp_success*/ true,
-                            /*malware_success*/ base::nullopt));
+                            /*malware_success*/ absl::nullopt));
   for (const std::string& verdict : {"malware", "uws", "safe"}) {
     enterprise_connectors::ContentAnalysisResponse response;
     auto* malware_result = response.add_results();

@@ -20,18 +20,18 @@ using blink::WebElement;
 using blink::WebNode;
 using blink::WebString;
 
-base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
+absl::optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
   // Media Feeds are only discovered on the main frame.
   if (!frame->IsMainFrame())
-    return base::nullopt;
+    return absl::nullopt;
 
   WebDocument document = frame->GetWebFrame()->GetDocument();
   if (document.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   WebElement head = document.Head();
   if (head.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   url::Origin document_origin = document.GetSecurityOrigin();
 
@@ -60,7 +60,7 @@ base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
       frame->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                                  "The Media Feed URL is not a valid URL.");
 
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // If the URL is not the same origin as the document then we should throw
@@ -71,11 +71,11 @@ base::Optional<GURL> MediaFeeds::GetMediaFeedURL(content::RenderFrame* frame) {
                                  "The Media Feed URL needs to be the same "
                                  "origin as the document URL.");
 
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return url;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }

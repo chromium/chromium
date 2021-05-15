@@ -202,17 +202,17 @@ bool BookmarkAppIconManager::HasIcons(
   return true;
 }
 
-base::Optional<web_app::AppIconManager::IconSizeAndPurpose>
+absl::optional<web_app::AppIconManager::IconSizeAndPurpose>
 BookmarkAppIconManager::FindIconMatchBigger(
     const web_app::AppId& app_id,
     const std::vector<IconPurpose>& purposes,
     SquareSizePx min_size) const {
   const Extension* app = GetBookmarkApp(profile_, app_id);
   if (!app)
-    return base::nullopt;
+    return absl::nullopt;
   // Legacy bookmark apps handle IconPurpose::ANY icons only.
   if (!base::Contains(purposes, IconPurpose::ANY))
-    return base::nullopt;
+    return absl::nullopt;
 
   const ExtensionIconSet& icons = IconsInfo::GetIcons(app);
   const std::string& path = icons.Get(min_size, ExtensionIconSet::MATCH_BIGGER);
@@ -220,7 +220,7 @@ BookmarkAppIconManager::FindIconMatchBigger(
   int found_icon_size = icons.GetIconSizeFromPath(path);
 
   if (found_icon_size == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return IconSizeAndPurpose{found_icon_size, IconPurpose::ANY};
 }

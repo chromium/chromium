@@ -123,11 +123,11 @@ void BadgeManager::BindServiceWorkerReceiver(
                                 std::move(context));
 }
 
-base::Optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
+absl::optional<BadgeManager::BadgeValue> BadgeManager::GetBadgeValue(
     const web_app::AppId& app_id) {
   const auto& it = badged_apps_.find(app_id);
   if (it == badged_apps_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second;
 }
@@ -141,7 +141,7 @@ void BadgeManager::SetBadgeForTesting(const web_app::AppId& app_id,
                                       BadgeValue value,
                                       ukm::UkmRecorder* test_recorder) {
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  if (value == base::nullopt) {
+  if (value == absl::nullopt) {
     ukm::builders::Badging(source_id)
         .SetUpdateAppBadge(kSetFlagBadge)
         .Record(test_recorder);
@@ -159,7 +159,7 @@ void BadgeManager::ClearBadgeForTesting(const web_app::AppId& app_id,
   ukm::builders::Badging(source_id)
       .SetUpdateAppBadge(kClearBadge)
       .Record(test_recorder);
-  UpdateBadge(app_id, base::nullopt);
+  UpdateBadge(app_id, absl::nullopt);
 }
 
 const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
@@ -169,7 +169,7 @@ const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
 }
 
 void BadgeManager::UpdateBadge(const web_app::AppId& app_id,
-                               base::Optional<BadgeValue> value) {
+                               absl::optional<BadgeValue> value) {
   UpdateBadgingTime(clock_, profile_, app_id);
 
   if (!value)
@@ -196,8 +196,8 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
 
   // Convert the mojo badge representation into a BadgeManager::BadgeValue.
   BadgeValue value = mojo_value->is_flag()
-                         ? base::nullopt
-                         : base::make_optional(mojo_value->get_number());
+                         ? absl::nullopt
+                         : absl::make_optional(mojo_value->get_number());
 
   // ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
@@ -206,7 +206,7 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
     // The app's start_url is used to identify the app
     // for recording badging usage per app.
     ukm::SourceId source_id = ukm::AppSourceUrlRecorder::GetSourceIdForPWA(url);
-    if (value == base::nullopt) {
+    if (value == absl::nullopt) {
       ukm::builders::Badging(source_id)
           .SetUpdateAppBadge(kSetFlagBadge)
           .Record(recorder);
@@ -216,7 +216,7 @@ void BadgeManager::SetBadge(blink::mojom::BadgeValuePtr mojo_value) {
           .Record(recorder);
     }
 
-    UpdateBadge(/*app_id=*/std::get<0>(app), base::make_optional(value));
+    UpdateBadge(/*app_id=*/std::get<0>(app), absl::make_optional(value));
   }
 }
 
@@ -233,7 +233,7 @@ void BadgeManager::ClearBadge() {
     ukm::builders::Badging(source_id)
         .SetUpdateAppBadge(kClearBadge)
         .Record(recorder);
-    UpdateBadge(/*app_id=*/std::get<0>(app), base::nullopt);
+    UpdateBadge(/*app_id=*/std::get<0>(app), absl::nullopt);
   }
 }
 
@@ -256,7 +256,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
   const web_app::AppRegistrar& registrar = provider->registrar();
-  const base::Optional<web_app::AppId> app_id =
+  const absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
   if (!app_id)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
@@ -287,7 +287,7 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   return app_ids_urls;
 }
 
-std::string GetBadgeString(base::Optional<uint64_t> badge_content) {
+std::string GetBadgeString(absl::optional<uint64_t> badge_content) {
   if (!badge_content)
     return "•";
 

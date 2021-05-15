@@ -7,8 +7,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Record and report the browser sign-in status on ChromeOS during each UMA
 // session. On ChromeOS, the browser can only be at unsigned-in status when
@@ -48,7 +48,7 @@ class SigninStatusMetricsProviderChromeOS
 
   // Used only for testing.
   static void SetGuestForTesting(bool is_guest);
-  static base::Optional<bool> guest_for_testing_;
+  static absl::optional<bool> guest_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderChromeOS);
 };

@@ -50,12 +50,12 @@ SharingDeviceRegistration::SharingDeviceRegistration(
 SharingDeviceRegistration::~SharingDeviceRegistration() = default;
 
 void SharingDeviceRegistration::RegisterDevice(RegistrationCallback callback) {
-  base::Optional<std::string> authorized_entity = GetAuthorizationEntity();
+  absl::optional<std::string> authorized_entity = GetAuthorizationEntity();
   if (!authorized_entity) {
     OnVapidTargetInfoRetrieved(std::move(callback),
-                               /*authorized_entity=*/base::nullopt,
+                               /*authorized_entity=*/absl::nullopt,
                                SharingDeviceRegistrationResult::kSuccess,
-                               /*vapid_target_info=*/base::nullopt);
+                               /*vapid_target_info=*/absl::nullopt);
     return;
   }
 
@@ -97,13 +97,13 @@ void SharingDeviceRegistration::OnFCMTokenReceived(
     case InstanceID::SERVER_ERROR:
     case InstanceID::ASYNC_OPERATION_PENDING:
       std::move(callback).Run(
-          SharingDeviceRegistrationResult::kFcmTransientError, base::nullopt);
+          SharingDeviceRegistrationResult::kFcmTransientError, absl::nullopt);
       break;
     case InstanceID::INVALID_PARAMETER:
     case InstanceID::UNKNOWN_ERROR:
     case InstanceID::DISABLED:
       std::move(callback).Run(SharingDeviceRegistrationResult::kFcmFatalError,
-                              base::nullopt);
+                              absl::nullopt);
       break;
   }
 }
@@ -115,15 +115,15 @@ void SharingDeviceRegistration::OnEncryptionInfoReceived(
     std::string auth_secret) {
   std::move(callback).Run(
       SharingDeviceRegistrationResult::kSuccess,
-      base::make_optional(syncer::DeviceInfo::SharingTargetInfo{
+      absl::make_optional(syncer::DeviceInfo::SharingTargetInfo{
           fcm_token, p256dh, auth_secret}));
 }
 
 void SharingDeviceRegistration::OnVapidTargetInfoRetrieved(
     RegistrationCallback callback,
-    base::Optional<std::string> authorized_entity,
+    absl::optional<std::string> authorized_entity,
     SharingDeviceRegistrationResult result,
-    base::Optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info) {
+    absl::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info) {
   if (result != SharingDeviceRegistrationResult::kSuccess) {
     std::move(callback).Run(result);
     return;
@@ -133,7 +133,7 @@ void SharingDeviceRegistration::OnVapidTargetInfoRetrieved(
     OnSharingTargetInfoRetrieved(
         std::move(callback), std::move(authorized_entity),
         std::move(vapid_target_info), SharingDeviceRegistrationResult::kSuccess,
-        /*sharing_target_info=*/base::nullopt);
+        /*sharing_target_info=*/absl::nullopt);
     return;
   }
 
@@ -148,10 +148,10 @@ void SharingDeviceRegistration::OnVapidTargetInfoRetrieved(
 
 void SharingDeviceRegistration::OnSharingTargetInfoRetrieved(
     RegistrationCallback callback,
-    base::Optional<std::string> authorized_entity,
-    base::Optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
+    absl::optional<std::string> authorized_entity,
+    absl::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
     SharingDeviceRegistrationResult result,
-    base::Optional<syncer::DeviceInfo::SharingTargetInfo> sharing_target_info) {
+    absl::optional<syncer::DeviceInfo::SharingTargetInfo> sharing_target_info) {
   if (result != SharingDeviceRegistrationResult::kSuccess) {
     std::move(callback).Run(result);
     return;
@@ -247,22 +247,22 @@ void SharingDeviceRegistration::OnFCMTokenDeleted(RegistrationCallback callback,
   NOTREACHED();
 }
 
-base::Optional<std::string> SharingDeviceRegistration::GetAuthorizationEntity()
+absl::optional<std::string> SharingDeviceRegistration::GetAuthorizationEntity()
     const {
   // TODO(himanshujaju) : Extract a static function to convert ECPrivateKey* to
   // Base64PublicKey in library.
   crypto::ECPrivateKey* vapid_key = vapid_key_manager_->GetOrCreateKey();
   if (!vapid_key)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string public_key;
   if (!gcm::GetRawPublicKey(*vapid_key, &public_key))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string base64_public_key;
   base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &base64_public_key);
-  return base::make_optional(std::move(base64_public_key));
+  return absl::make_optional(std::move(base64_public_key));
 }
 
 std::set<SharingSpecificFields::EnabledFeatures>

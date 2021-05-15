@@ -7,7 +7,6 @@
 
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/oom_intervention/oom_intervention.mojom.h"
 
 namespace content {
@@ -88,7 +88,7 @@ class OomInterventionTabHelper
 
   bool navigation_started_ = false;
   bool load_finished_ = false;
-  base::Optional<base::TimeTicks> near_oom_detected_time_;
+  absl::optional<base::TimeTicks> near_oom_detected_time_;
   base::CallbackListSubscription subscription_;
   base::OneShotTimer renderer_detection_timer_;
 

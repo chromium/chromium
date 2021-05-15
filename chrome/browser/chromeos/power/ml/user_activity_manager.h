@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_POWER_ML_USER_ACTIVITY_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -128,10 +128,10 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // Updates lid state and tablet mode from received switch states.
   void OnReceiveSwitchStates(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   void OnReceiveInactivityDelays(
-      base::Optional<power_manager::PowerManagementPolicy::Delays> delays);
+      absl::optional<power_manager::PowerManagementPolicy::Delays> delays);
 
   // Gets properties of active tab from visible focused/topmost browser.
   TabProperty UpdateOpenTabURL();
@@ -158,7 +158,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // Time when an idle event is received and we start logging. Null if an idle
   // event hasn't been observed.
-  base::Optional<base::TimeDelta> idle_event_start_since_boot_;
+  absl::optional<base::TimeDelta> idle_event_start_since_boot_;
 
   chromeos::PowerManagerClient::LidState lid_state_ =
       chromeos::PowerManagerClient::LidState::NOT_PRESENT;
@@ -169,11 +169,11 @@ class UserActivityManager : public ui::UserActivityObserver,
   UserActivityEvent::Features::DeviceType device_type_ =
       UserActivityEvent::Features::UNKNOWN_DEVICE;
 
-  base::Optional<power_manager::PowerSupplyProperties::ExternalPower>
+  absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
 
   // Battery percent. This is in the range [0.0, 100.0].
-  base::Optional<float> battery_percent_;
+  absl::optional<float> battery_percent_;
 
   // Indicates whether the screen is locked.
   bool screen_is_locked_ = false;
@@ -239,7 +239,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // Model prediction for the current ScreenDimImminent event. Unset if
   // model prediction is disabled by an experiment.
-  base::Optional<UserActivityEvent::ModelPrediction> model_prediction_;
+  absl::optional<UserActivityEvent::ModelPrediction> model_prediction_;
 
   std::unique_ptr<PreviousIdleEventData> previous_idle_event_data_;
 

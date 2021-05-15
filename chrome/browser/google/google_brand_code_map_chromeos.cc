@@ -15,7 +15,7 @@ namespace chromeos {
 
 std::string GetRlzBrandCode(
     const std::string& static_brand_code,
-    base::Optional<policy::MarketSegment> market_segment) {
+    absl::optional<policy::MarketSegment> market_segment) {
   struct BrandCodeValueEntry {
     const char* unenrolled_brand_code;
     const char* education_enrolled_brand_code;

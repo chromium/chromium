@@ -87,7 +87,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 }
 
 // static
-base::Optional<AnalysisServiceSettings::URLPatternSettings>
+absl::optional<AnalysisServiceSettings::URLPatternSettings>
 AnalysisServiceSettings::GetPatternSettings(
     const PatternSettings& patterns,
     url_matcher::URLMatcherConditionSet::ID match) {
@@ -104,22 +104,22 @@ AnalysisServiceSettings::GetPatternSettings(
   if (next != patterns.end())
     return next->second;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
+absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     const GURL& url) const {
   if (!IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(matcher_);
   auto matches = matcher_->MatchURL(url);
   if (matches.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto tags = GetTags(matches);
   if (tags.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   AnalysisSettings settings;
 

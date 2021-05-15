@@ -84,7 +84,7 @@ class OfferNotificationBubbleControllerImpl
 
   // The related credit card for a card linked offer. This can be nullopt for
   // offer types other than card linked offers.
-  base::Optional<CreditCard> card_;
+  absl::optional<CreditCard> card_;
 
   // The bubble and icon are sticky over a given set of origins. This is
   // populated when ShowOfferNotificationIfApplicable() is called and is cleared

@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareClientFactory;
 class NearbyShareProfileInfoProvider;
@@ -89,8 +89,8 @@ class FakeNearbyShareLocalDeviceDataManager
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
   std::string GetDeviceName() const override;
-  base::Optional<std::string> GetFullName() const override;
-  base::Optional<std::string> GetIconUrl() const override;
+  absl::optional<std::string> GetFullName() const override;
+  absl::optional<std::string> GetIconUrl() const override;
   nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
       const std::string& name) override;
   nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
@@ -107,8 +107,8 @@ class FakeNearbyShareLocalDeviceDataManager
   using NearbyShareLocalDeviceDataManager::NotifyLocalDeviceDataChanged;
 
   void SetId(const std::string& id) { id_ = id; }
-  void SetFullName(const base::Optional<std::string>& full_name);
-  void SetIconUrl(const base::Optional<std::string>& icon_url);
+  void SetFullName(const absl::optional<std::string>& full_name);
+  void SetIconUrl(const absl::optional<std::string>& icon_url);
 
   size_t num_download_device_data_calls() const {
     return num_download_device_data_calls_;
@@ -134,8 +134,8 @@ class FakeNearbyShareLocalDeviceDataManager
 
   std::string id_;
   std::string device_name_;
-  base::Optional<std::string> full_name_;
-  base::Optional<std::string> icon_url_;
+  absl::optional<std::string> full_name_;
+  absl::optional<std::string> icon_url_;
   size_t num_download_device_data_calls_ = 0;
   std::vector<UploadContactsCall> upload_contacts_calls_;
   std::vector<UploadCertificatesCall> upload_certificates_calls_;

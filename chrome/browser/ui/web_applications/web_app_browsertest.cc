@@ -140,7 +140,7 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 
   bool HasMinimalUiButtons(DisplayMode display_mode,
-                           base::Optional<DisplayMode> display_override_mode,
+                           absl::optional<DisplayMode> display_override_mode,
                            bool open_as_window) {
     static int index = 0;
 
@@ -219,12 +219,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = GURL("http://example.org/2");
     web_app_info->scope = GURL("http://example.org/");
-    web_app_info->theme_color = base::Optional<SkColor>();
+    web_app_info->theme_color = absl::optional<SkColor>();
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
     EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
-    EXPECT_EQ(base::nullopt, app_browser->app_controller()->GetThemeColor());
+    EXPECT_EQ(absl::nullopt, app_browser->app_controller()->GetThemeColor());
   }
 }
 
@@ -359,26 +359,26 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithMinimalUiButtons) {
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, base::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, absl::nullopt,
                                   /*open_as_window=*/true));
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, base::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, absl::nullopt,
                                   /*open_as_window=*/true));
 
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, base::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, absl::nullopt,
                                   /*open_as_window=*/false));
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, base::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, absl::nullopt,
                                   /*open_as_window=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, base::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, absl::nullopt,
                                    /*open_as_window=*/true));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, base::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, absl::nullopt,
                                    /*open_as_window=*/true));
 
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, base::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, absl::nullopt,
                                    /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, base::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, absl::nullopt,
                                    /*open_as_window=*/false));
 }
 

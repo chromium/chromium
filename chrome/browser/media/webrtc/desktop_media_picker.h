@@ -12,10 +12,10 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 

@@ -266,7 +266,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   // TODO(xhwang): Get the version from the DLL.
   VLOG(1) << "Registering " << kMediaFoundationWidevineCdmDisplayName;
   cdms->push_back(content::CdmInfo(
-      kWidevineKeySystem, Robustness::kHardwareSecure, base::nullopt,
+      kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
       /*supports_sub_key_systems=*/false,
       kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
       base::Version(), widevine_cdm_path,

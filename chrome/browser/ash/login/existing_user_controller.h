@@ -16,10 +16,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -114,7 +114,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
                               const std::string& given_name);
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const base::Optional<user_manager::UserType>& user_type);
+      const absl::optional<user_manager::UserType>& user_type);
 
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override;

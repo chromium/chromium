@@ -51,6 +51,6 @@ void TabSwitchEventLatencyRecorder::OnWillChangeActiveTab(
     case EventType::kOther:
       break;
   }
-  event_type_ = base::nullopt;
+  event_type_ = absl::nullopt;
   input_event_timestamp_ = base::TimeTicks();
 }

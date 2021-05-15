@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -52,14 +52,14 @@ class MockIncomingFramesReader : public IncomingFramesReader {
   MOCK_METHOD(void,
               ReadFrame,
               (base::OnceCallback<
-                  void(base::Optional<sharing::mojom::V1FramePtr>)> callback),
+                  void(absl::optional<sharing::mojom::V1FramePtr>)> callback),
               (override));
 
   MOCK_METHOD(
       void,
       ReadFrame,
       (sharing::mojom::V1Frame::Tag frame_type,
-       base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+       base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
            callback,
        base::TimeDelta timeout),
       (override));
@@ -88,7 +88,7 @@ PairedKeyVerificationRunner::PairedKeyVerificationResult Merge(
 class PairedKeyVerificationRunnerTest : public testing::Test {
  public:
   enum class ReturnFrameType {
-    // Return base::nullopt for the frame.
+    // Return absl::nullopt for the frame.
     kNull,
     // Return an empty frame.
     kEmpty,
@@ -105,11 +105,11 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
                        bool restricted_to_contacts,
                        PairedKeyVerificationRunner::PairedKeyVerificationResult
                            expected_result) {
-    base::Optional<NearbyShareDecryptedPublicCertificate> public_certificate =
+    absl::optional<NearbyShareDecryptedPublicCertificate> public_certificate =
         use_valid_public_certificate
-            ? base::make_optional<NearbyShareDecryptedPublicCertificate>(
+            ? absl::make_optional<NearbyShareDecryptedPublicCertificate>(
                   GetNearbyShareTestDecryptedPublicCertificate())
-            : base::nullopt;
+            : absl::nullopt;
 
     PairedKeyVerificationRunner runner(
         share_target_, kEndpointId, kAuthToken, &connection_,
@@ -135,9 +135,9 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
         .WillOnce(testing::WithArg<1>(testing::Invoke(
             [frame_type](
                 base::OnceCallback<void(
-                    base::Optional<sharing::mojom::V1FramePtr>)> callback) {
+                    absl::optional<sharing::mojom::V1FramePtr>)> callback) {
               if (frame_type == ReturnFrameType::kNull) {
-                std::move(callback).Run(base::nullopt);
+                std::move(callback).Run(absl::nullopt);
                 return;
               }
 
@@ -168,9 +168,9 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
                   testing::_, testing::Eq(kTimeout)))
         .WillOnce(testing::WithArg<1>(testing::Invoke(
             [=](base::OnceCallback<void(
-                    base::Optional<sharing::mojom::V1FramePtr>)> callback) {
+                    absl::optional<sharing::mojom::V1FramePtr>)> callback) {
               if (frame_type == ReturnFrameType::kNull) {
-                std::move(callback).Run(base::nullopt);
+                std::move(callback).Run(absl::nullopt);
                 return;
               }
 

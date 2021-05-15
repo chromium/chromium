@@ -69,8 +69,8 @@ class MockAutofillPopupController
   MOCK_METHOD3(GetRemovalConfirmationText,
                bool(int index, std::u16string* title, std::u16string* body));
   MOCK_METHOD1(RemoveSuggestion, bool(int index));
-  MOCK_METHOD1(SetSelectedLine, void(base::Optional<int> selected_line));
-  MOCK_CONST_METHOD0(selected_line, base::Optional<int>());
+  MOCK_METHOD1(SetSelectedLine, void(absl::optional<int> selected_line));
+  MOCK_CONST_METHOD0(selected_line, absl::optional<int>());
   MOCK_CONST_METHOD0(GetPopupType, PopupType());
 
   void set_suggestions(const std::vector<int>& ids) {

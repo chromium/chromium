@@ -595,8 +595,8 @@ void AddAppProtocolClients(const AppProtocolMap& app_protocols,
 
         for (const auto& protocol_pair : app_protocols) {
           std::wstring protocol = base::UTF8ToWide(protocol_pair.first);
-          const base::Optional<std::string>& app_id = protocol_pair.second;
-          // A protocol with no app id (base::nullopt) will be handled by the
+          const absl::optional<std::string>& app_id = protocol_pair.second;
+          // A protocol with no app id (absl::nullopt) will be handled by the
           // browser for disambiguation.
           std::wstring handler_progid =
               app_id.has_value()

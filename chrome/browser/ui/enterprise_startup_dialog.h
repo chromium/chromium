@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -45,7 +45,7 @@ class EnterpriseStartupDialog {
   // re-opening it.
   virtual void DisplayErrorMessage(
       const std::u16string& error_message,
-      const base::Optional<std::u16string>& accept_button) = 0;
+      const absl::optional<std::u16string>& accept_button) = 0;
   // Return true if dialog is being displayed.
   virtual bool IsShowing() = 0;
 

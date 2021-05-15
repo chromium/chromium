@@ -10,8 +10,8 @@
 #include <set>
 #include <utility>
 
-#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace device {

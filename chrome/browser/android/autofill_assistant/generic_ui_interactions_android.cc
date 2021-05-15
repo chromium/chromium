@@ -5,12 +5,12 @@
 #include "chrome/browser/android/autofill_assistant/generic_ui_interactions_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/optional.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantViewInteractions_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/android/autofill_assistant/view_handler_android.h"
 #include "components/autofill_assistant/browser/radio_button_controller.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 namespace android_interactions {
@@ -84,7 +84,7 @@ void ShowListPopup(base::WeakPtr<UserModel> user_model,
     return;
   }
 
-  base::Optional<ValueProto> item_types;
+  absl::optional<ValueProto> item_types;
   if (proto.has_item_types()) {
     item_types = user_model->GetValue(proto.item_types());
     if (!item_types.has_value()) {

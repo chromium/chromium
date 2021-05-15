@@ -296,7 +296,7 @@ void ProcessMirrorHeader(
     // invalid, so that if/when this account is re-authenticated, we can force a
     // reconciliation for this account instead of treating it as a no-op.
     // See https://crbug.com/1012649 for details.
-    base::Optional<AccountInfo> maybe_account_info =
+    absl::optional<AccountInfo> maybe_account_info =
         identity_manager
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                 manage_accounts_params.email);
@@ -594,7 +594,7 @@ void FixAccountConsistencyRequestHeader(
     int incognito_availibility,
     AccountConsistencyMethod account_consistency,
     std::string gaia_id,
-    const base::Optional<bool>& is_child_account,
+    const absl::optional<bool>& is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif

@@ -20,7 +20,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   navigation_interception::InterceptNavigationDelegate* delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (!delegate)

@@ -2516,7 +2516,7 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
  protected:
   std::string test_page_;
   GURL policy_app_url_;
-  base::Optional<std::string> fallback_app_name_;
+  absl::optional<std::string> fallback_app_name_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
@@ -2524,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
@@ -2556,7 +2556,7 @@ IN_PROC_BROWSER_TEST_F(
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
@@ -2588,7 +2588,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
@@ -2617,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(
       web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
           ->registrar();
   web_app::WebAppInstallObserver install_observer(browser()->profile());
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();

@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -47,7 +47,7 @@ std::string GetAccountImageURL(Profile* profile) {
   // Sync shouldn't be enabled. Otherwise, the primary account and the first
   // cookie account may diverge.
   DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);

@@ -358,7 +358,7 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
       local_state_->GetString(prefs::kDnsOverHttpsTemplates);
   std::string server_method;
   std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers;
-  base::Optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
+  absl::optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
       servers_mojo;
   if (!doh_templates.empty() && secure_dns_mode != net::SecureDnsMode::kOff) {
     for (base::StringPiece server_template :
@@ -372,7 +372,7 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
                                           use_post);
 
       if (!servers_mojo.has_value()) {
-        servers_mojo = base::make_optional<
+        servers_mojo = absl::make_optional<
             std::vector<network::mojom::DnsOverHttpsServerPtr>>();
       }
 

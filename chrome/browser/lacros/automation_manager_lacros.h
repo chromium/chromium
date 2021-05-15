@@ -39,7 +39,7 @@ class AutomationManagerLacros
                             content::BrowserContext* browser_context) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) override;
+      const absl::optional<gfx::Rect>& rect) override;
 
   // AutomationClient:
   void Enable() override;

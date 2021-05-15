@@ -256,22 +256,22 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
   return cleaned_up_count;
 }
 
-const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
+const absl::optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
   if (!file_handlers)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::set<std::string> launch_file_extensions;
   for (const auto& file_path : launch_files) {
     std::string file_extension =
         base::FilePath(file_path.Extension()).AsUTF8Unsafe();
     if (file_extension.length() <= 1)
-      return base::nullopt;
+      return absl::nullopt;
     launch_file_extensions.insert(file_extension);
   }
 
@@ -290,7 +290,7 @@ const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
       return file_handler.action;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool FileHandlerManager::IsFileHandlingForceEnabled(const AppId& app_id) {

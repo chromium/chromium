@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -89,11 +89,11 @@ const std::string GetMirroringNamespace(const base::Value& message) {
 // usually ignored here, because mirroring typically only happens with a special
 // URL that includes the tab ID it needs, which should be the same as the tab ID
 // selected by the media router.
-base::Optional<MirroringActivity::MirroringType> GetMirroringType(
+absl::optional<MirroringActivity::MirroringType> GetMirroringType(
     const MediaRoute& route,
     int target_tab_id) {
   if (!route.is_local())
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto source = route.media_source();
   if (source.IsTabMirroringSource() || source.IsLocalFileSource())
@@ -118,7 +118,7 @@ base::Optional<MirroringActivity::MirroringType> GetMirroringType(
         return MirroringActivity::MirroringType::kTab;
       } else {
         NOTREACHED() << "Non-mirroring Cast app: " << source;
-        return base::nullopt;
+        return absl::nullopt;
       }
     } else if (source.url().SchemeIsHTTPOrHTTPS()) {
       return MirroringActivity::MirroringType::kOffscreenTab;
@@ -126,7 +126,7 @@ base::Optional<MirroringActivity::MirroringType> GetMirroringType(
   }
 
   NOTREACHED() << "Invalid source: " << source;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

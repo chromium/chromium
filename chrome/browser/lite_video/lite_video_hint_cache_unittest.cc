@@ -44,7 +44,7 @@ TEST_F(LiteVideoHintCacheTest, ValidHintAvailable) {
   GURL url("https://LiteVideo.com");
   ConfigHintCacheWithParams(
       {{"lite_video_origin_hints", "{\"litevideo.com\": 123}"}});
-  base::Optional<lite_video::LiteVideoHint> hint =
+  absl::optional<lite_video::LiteVideoHint> hint =
       hint_cache()->GetHintForNavigationURL(url);
   ASSERT_TRUE(hint);
   EXPECT_EQ(123, hint->target_downlink_bandwidth_kbps());

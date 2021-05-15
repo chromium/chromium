@@ -69,7 +69,7 @@ class TestParentAccessServiceObserver : public ParentAccessService::Observer {
   ~TestParentAccessServiceObserver() override = default;
 
   void OnAccessCodeValidation(ParentCodeValidationResult result,
-                              base::Optional<AccountId> account_id) override {
+                              absl::optional<AccountId> account_id) override {
     ASSERT_TRUE(account_id);
     EXPECT_EQ(account_id_, account_id.value());
     result == ParentCodeValidationResult::kValid
@@ -148,7 +148,7 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
                                           embedded_test_server(),
                                           this,
                                           true /*should_launch_browser*/,
-                                          base::nullopt /*account_id*/,
+                                          absl::nullopt /*account_id*/,
                                           true /*include_initial_user*/};
   std::unique_ptr<TestParentAccessServiceObserver> test_observer_;
 

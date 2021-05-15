@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chromeos/scanning/scanner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -71,8 +71,8 @@ class ParsedMetadata {
 };
 
 // Attempts to create a Scanner using the information in |service_description|
-// and |metadata|. Returns the Scanner on success, base::nullopt on failure.
-base::Optional<chromeos::Scanner> CreateScanner(
+// and |metadata|. Returns the Scanner on success, absl::nullopt on failure.
+absl::optional<chromeos::Scanner> CreateScanner(
     const std::string& service_type,
     const ServiceDescription& service_description,
     const ParsedMetadata& metadata) {
@@ -83,7 +83,7 @@ base::Optional<chromeos::Scanner> CreateScanner(
   if (service_description.service_name.empty() ||
       service_description.ip_address.empty() ||
       service_description.address.port() == 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return CreateSaneAirscanScanner(

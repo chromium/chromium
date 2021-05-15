@@ -146,10 +146,10 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
     // AndroidSmsAppSetupControllerImpl::PwaDelegate:
-    base::Optional<web_app::AppId> GetPwaForUrl(const GURL& install_url,
+    absl::optional<web_app::AppId> GetPwaForUrl(const GURL& install_url,
                                                 Profile* profile) override {
       if (!base::Contains(url_to_pwa_map_, install_url))
-        return base::nullopt;
+        return absl::nullopt;
 
       return url_to_pwa_map_[install_url];
     }
@@ -423,9 +423,9 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  base::Optional<bool> last_set_up_app_result_;
-  base::Optional<bool> last_delete_cookie_result_;
-  base::Optional<bool> last_remove_app_result_;
+  absl::optional<bool> last_set_up_app_result_;
+  absl::optional<bool> last_delete_cookie_result_;
+  absl::optional<bool> last_remove_app_result_;
 
   TestingProfile profile_;
   HostContentSettingsMap* host_content_settings_map_;

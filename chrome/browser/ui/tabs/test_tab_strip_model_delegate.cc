@@ -18,7 +18,7 @@ void TestTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    base::Optional<tab_groups::TabGroupId> group) {}
+    absl::optional<tab_groups::TabGroupId> group) {}
 
 Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
     std::vector<NewStripContents> contentses,
@@ -71,9 +71,9 @@ void TestTabStripModelDelegate::MoveTabsToNewWindow(
 void TestTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {}
 
-base::Optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
+absl::optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void TestTabStripModelDelegate::CreateHistoricalGroup(

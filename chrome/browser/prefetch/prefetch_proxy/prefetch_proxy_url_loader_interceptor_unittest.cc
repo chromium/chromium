@@ -114,10 +114,10 @@ class PrefetchProxyURLLoaderInterceptorTest
     }
   }
 
-  base::Optional<bool> was_intercepted() { return was_intercepted_; }
+  absl::optional<bool> was_intercepted() { return was_intercepted_; }
 
  private:
-  base::Optional<bool> was_intercepted_;
+  absl::optional<bool> was_intercepted_;
   base::OnceClosure waiting_for_callback_closure_;
 };
 

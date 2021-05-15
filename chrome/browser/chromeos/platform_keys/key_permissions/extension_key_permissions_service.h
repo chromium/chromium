@@ -195,7 +195,7 @@ class ExtensionKeyPermissionsService {
 
   void CanUseKeyForSigningWithFlags(CanUseKeyForSigningCallback callback,
                                     bool sign_unlimited_allowed,
-                                    base::Optional<bool> is_corporate_key,
+                                    absl::optional<bool> is_corporate_key,
                                     Status is_corporate_key_status);
 
   void SetUserGrantedPermissionWithFlag(

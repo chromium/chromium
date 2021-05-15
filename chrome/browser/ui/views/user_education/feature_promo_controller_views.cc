@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
@@ -72,14 +72,14 @@ bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
   return MaybeShowPromoImpl(iph_feature, params, std::move(close_callback));
 }
 
-base::Optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
+absl::optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
     const FeaturePromoBubbleParams& params) {
   if (promos_blocked_for_testing_)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Don't preempt an existing critical promo.
   if (current_critical_promo_)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If a normal bubble is showing, close it. If the promo is has
   // continued after a CloseBubbleAndContinuePromo() call, we can't stop
@@ -118,7 +118,7 @@ bool FeaturePromoControllerViews::MaybeShowPromoWithTextReplacements(
     const base::Feature& iph_feature,
     FeaturePromoTextReplacements text_replacements,
     BubbleCloseCallback close_callback) {
-  base::Optional<FeaturePromoBubbleParams> params =
+  absl::optional<FeaturePromoBubbleParams> params =
       FeaturePromoRegistry::GetInstance()->GetParamsForFeature(iph_feature,
                                                                browser_view_);
   if (!params)
@@ -165,7 +165,7 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
   DCHECK_EQ(&iph_feature, current_iph_feature_);
   DCHECK(bubble_id_);
 
-  bubble_owner_->CloseBubble(*std::exchange(bubble_id_, base::nullopt));
+  bubble_owner_->CloseBubble(*std::exchange(bubble_id_, absl::nullopt));
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
@@ -329,7 +329,7 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   DCHECK_NE(current_iph_feature_ != nullptr,
             current_critical_promo_.has_value());
 
-  bubble_id_ = base::nullopt;
+  bubble_id_ = absl::nullopt;
 
   if (anchor_view_tracker_.view())
     anchor_view_tracker_.view()->SetProperty(kHasInProductHelpPromoKey, false);
@@ -341,6 +341,6 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
     tracker_->Dismissed(*current_iph_feature_);
     current_iph_feature_ = nullptr;
   } else {
-    current_critical_promo_ = base::nullopt;
+    current_critical_promo_ = absl::nullopt;
   }
 }

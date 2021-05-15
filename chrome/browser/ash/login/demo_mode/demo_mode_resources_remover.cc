@@ -236,8 +236,8 @@ void DemoModeResourcesRemover::OverrideTimeForTesting(
     const UsageAccumulationConfig& config) {
   tick_clock_ = tick_clock;
 
-  usage_start_ = base::nullopt;
-  usage_end_ = base::nullopt;
+  usage_start_ = absl::nullopt;
+  usage_end_ = absl::nullopt;
 
   usage_accumulation_config_ = config;
 }
@@ -262,8 +262,8 @@ void DemoModeResourcesRemover::UpdateDeviceUsage(
 
   local_state_->SetInteger(kAccumulatedUsagePref, accumulated_activity);
 
-  usage_start_ = base::nullopt;
-  usage_end_ = base::nullopt;
+  usage_start_ = absl::nullopt;
+  usage_end_ = absl::nullopt;
 }
 
 bool DemoModeResourcesRemover::AttemptRemovalIfUsageOverThreshold() {
@@ -293,8 +293,8 @@ void DemoModeResourcesRemover::OnRemovalDone(RemovalReason reason,
     ChromeUserManager::Get()->RemoveSessionStateObserver(this);
 
     user_activity_observation_.Reset();
-    usage_start_ = base::nullopt;
-    usage_end_ = base::nullopt;
+    usage_start_ = absl::nullopt;
+    usage_end_ = absl::nullopt;
   }
 
   // Only report metrics when the resources were found; otherwise this is

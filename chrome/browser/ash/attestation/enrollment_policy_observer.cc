@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/notification_details.h"
 #include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

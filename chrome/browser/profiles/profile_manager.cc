@@ -1107,7 +1107,7 @@ void ProfileManager::CleanUpDeletedProfiles() {
   DCHECK(deleted_profiles);
 
   for (const base::Value& value : deleted_profiles->GetList()) {
-    base::Optional<base::FilePath> profile_path = util::ValueToFilePath(value);
+    absl::optional<base::FilePath> profile_path = util::ValueToFilePath(value);
     // Although it should never happen, make sure this is a valid path in the
     // user_data_dir, so we don't accidentally delete something else.
     if (profile_path && IsAllowedProfilePath(*profile_path)) {
@@ -1868,7 +1868,7 @@ void ProfileManager::FinishDeletingProfile(
   }
 }
 
-base::Optional<base::FilePath> ProfileManager::FindLastActiveProfile(
+absl::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
     base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate) {
   bool found_entry_loaded = false;
   ProfileAttributesEntry* found_entry = nullptr;
@@ -1887,8 +1887,8 @@ base::Optional<base::FilePath> ProfileManager::FindLastActiveProfile(
       found_entry_loaded = entry_loaded;
     }
   }
-  return found_entry ? base::Optional<base::FilePath>(found_entry->GetPath())
-                     : base::nullopt;
+  return found_entry ? absl::optional<base::FilePath>(found_entry->GetPath())
+                     : absl::nullopt;
 }
 
 // static
@@ -2263,7 +2263,7 @@ void ProfileManager::ScheduleForcedEphemeralProfileForDeletion(
   DCHECK_EQ(0u, chrome::GetBrowserCount(GetProfileByPath(profile_dir)));
   DCHECK(IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir));
 
-  base::Optional<base::FilePath> new_active_profile_dir =
+  absl::optional<base::FilePath> new_active_profile_dir =
       FindLastActiveProfile(base::BindRepeating(
           [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
             return entry->GetPath() != profile_dir;

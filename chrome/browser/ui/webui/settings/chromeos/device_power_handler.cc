@@ -296,7 +296,7 @@ void PowerHandler::HandleSetLidClosedBehavior(const base::ListValue* args) {
 }
 
 void PowerHandler::SendBatteryStatus() {
-  const base::Optional<power_manager::PowerSupplyProperties>& proto =
+  const absl::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
   bool charging = proto->battery_state() ==
@@ -339,7 +339,7 @@ void PowerHandler::SendBatteryStatus() {
 }
 
 void PowerHandler::SendPowerSources() {
-  const base::Optional<power_manager::PowerSupplyProperties>& proto =
+  const absl::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
   base::ListValue sources_list;
@@ -411,7 +411,7 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
 }
 
 void PowerHandler::OnGotSwitchStates(
-    base::Optional<PowerManagerClient::SwitchStates> result) {
+    absl::optional<PowerManagerClient::SwitchStates> result) {
   if (!result.has_value())
     return;
   lid_state_ = result->lid_state;

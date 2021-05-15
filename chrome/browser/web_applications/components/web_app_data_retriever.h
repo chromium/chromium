@@ -11,13 +11,13 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 struct WebApplicationInfo;
@@ -48,7 +48,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // If manifest is present then it is non-empty.
   // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
-      base::OnceCallback<void(base::Optional<blink::Manifest> manifest,
+      base::OnceCallback<void(absl::optional<blink::Manifest> manifest,
                               const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
                               bool is_installable)>;

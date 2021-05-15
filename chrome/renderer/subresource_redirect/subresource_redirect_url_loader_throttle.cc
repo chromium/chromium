@@ -45,7 +45,7 @@ void RecordMetricsOnLoadFinished(
     LoginRobotsCompressionMetrics* login_robots_compression_metrics,
     SubresourceRedirectResult redirect_result,
     uint64_t content_length,
-    base::Optional<float> ofcl) {
+    absl::optional<float> ofcl) {
   if (login_robots_compression_metrics) {
     login_robots_compression_metrics->RecordMetricsOnLoadFinished(
         redirect_result, content_length, ofcl);
@@ -324,7 +324,7 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
       PublicResourceDeciderRedirectState::kRedirectAttempted) {
     RecordMetricsOnLoadFinished(
         base::OptionalOrNullptr(login_robots_compression_metrics_),
-        redirect_result_, content_length, base::nullopt);
+        redirect_result_, content_length, absl::nullopt);
     return;
   }
   DCHECK(ShouldCompressRedirectSubresource());
@@ -337,7 +337,7 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
   if (response_head->headers->response_code() != 200) {
     RecordMetricsOnLoadFinished(
         base::OptionalOrNullptr(login_robots_compression_metrics_),
-        redirect_result_, content_length, base::nullopt);
+        redirect_result_, content_length, absl::nullopt);
     return;
   }
 
@@ -349,7 +349,7 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
   if (ofcl <= 0) {
     RecordMetricsOnLoadFinished(
         base::OptionalOrNullptr(login_robots_compression_metrics_),
-        redirect_result_, content_length, base::nullopt);
+        redirect_result_, content_length, absl::nullopt);
     return;
   }
 

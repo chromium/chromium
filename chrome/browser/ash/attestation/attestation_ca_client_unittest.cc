@@ -58,7 +58,7 @@ class MockNetworkContext : public network::TestNetworkContext {
         std::move(proxy_lookup_client));
     if (proxy_presence_table_.count(url) == 0) {
       client->OnProxyLookupComplete(net::ERR_FAILED,
-                                    /*proxy_info=*/base::nullopt);
+                                    /*proxy_info=*/absl::nullopt);
       return;
     }
     net::ProxyInfo proxy_info;

@@ -135,7 +135,7 @@ struct SystemAppInfo {
   WebApplicationInfoFactory app_info_factory;
 
   // Setup information to drive a background task.
-  base::Optional<SystemAppBackgroundTaskInfo> timer_info;
+  absl::optional<SystemAppBackgroundTaskInfo> timer_info;
 };
 
 // Installs, uninstalls, and updates System Web Apps.
@@ -188,10 +188,10 @@ class SystemWebAppManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the app id for the given System App |type|.
-  base::Optional<AppId> GetAppIdForSystemApp(SystemAppType type) const;
+  absl::optional<AppId> GetAppIdForSystemApp(SystemAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
-  base::Optional<SystemAppType> GetSystemAppTypeForAppId(AppId app_id) const;
+  absl::optional<SystemAppType> GetSystemAppTypeForAppId(AppId app_id) const;
 
   // Returns the App Ids for all installed System Web Apps.
   std::vector<AppId> GetAppIds() const;
@@ -236,7 +236,7 @@ class SystemWebAppManager {
   bool ShouldHaveTabStrip(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
-  base::Optional<SystemAppType> GetCapturingSystemAppForURL(
+  absl::optional<SystemAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 
   // Return the default bound of App's window.

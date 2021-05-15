@@ -11,10 +11,10 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class ArcPlayStoreAppContextMenu;
@@ -43,12 +43,12 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   void ExecuteLaunchCommand(int event_flags) override;
 
  private:
-  const base::Optional<std::string>& install_intent_uri() const {
+  const absl::optional<std::string>& install_intent_uri() const {
     return data_->install_intent_uri;
   }
-  const base::Optional<std::string>& label() const { return data_->label; }
+  const absl::optional<std::string>& label() const { return data_->label; }
   bool is_instant_app() const { return data_->is_instant_app; }
-  const base::Optional<std::string>& formatted_price() const {
+  const absl::optional<std::string>& formatted_price() const {
     return data_->formatted_price;
   }
   float review_score() const { return data_->review_score; }

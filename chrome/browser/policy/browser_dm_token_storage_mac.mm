@@ -19,7 +19,6 @@
 #include "base/mac/scoped_ioobject.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -31,6 +30,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_paths.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -121,26 +121,26 @@ bool GetEnrollmentTokenFromFile(std::string* enrollment_token) {
   return true;
 }
 
-base::Optional<bool> IsEnrollmentMandatoryByPolicy() {
+absl::optional<bool> IsEnrollmentMandatoryByPolicy() {
   base::ScopedCFTypeRef<CFPropertyListRef> value(CFPreferencesCopyAppValue(
       kEnrollmentMandatoryOptionPolicyName, kBundleId));
 
   if (!value || !CFPreferencesAppValueIsForced(
                     kEnrollmentMandatoryOptionPolicyName, kBundleId)) {
-    return base::Optional<bool>();
+    return absl::optional<bool>();
   }
 
   CFBooleanRef value_bool = base::mac::CFCast<CFBooleanRef>(value);
   if (!value_bool)
-    return base::Optional<bool>();
+    return absl::optional<bool>();
   return value_bool == kCFBooleanTrue;
 }
 
-base::Optional<bool> IsEnrollmentMandatoryByFile() {
+absl::optional<bool> IsEnrollmentMandatoryByFile() {
   std::string options;
   if (!base::ReadFileToString(base::FilePath(kEnrollmentOptionsFilePath),
                               &options)) {
-    return base::Optional<bool>();
+    return absl::optional<bool>();
   }
   return std::string(base::TrimWhitespaceASCII(options, base::TRIM_ALL)) ==
          kEnrollmentMandatoryOption;
@@ -185,7 +185,7 @@ std::string BrowserDMTokenStorageMac::InitDMToken() {
 }
 
 bool BrowserDMTokenStorageMac::InitEnrollmentErrorOption() {
-  base::Optional<bool> is_mandatory = IsEnrollmentMandatoryByPolicy();
+  absl::optional<bool> is_mandatory = IsEnrollmentMandatoryByPolicy();
   if (is_mandatory)
     return is_mandatory.value();
 

@@ -542,7 +542,7 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
 void DownloadTargetDeterminer::RequestConfirmationDone(
     DownloadConfirmationResult result,
     const base::FilePath& virtual_path,
-    base::Optional<download::DownloadSchedule> download_schedule) {
+    absl::optional<download::DownloadSchedule> download_schedule) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!download_->IsTransient());
   DVLOG(20) << "User selected path:" << virtual_path.AsUTF8Unsafe();

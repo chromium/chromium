@@ -532,7 +532,7 @@ bool PrintSystemCUPS::ValidatePrintTicket(
     const std::string& print_ticket_data,
     const std::string& print_ticket_mime_type) {
   DCHECK(initialized_);
-  base::Optional<base::Value> ticket =
+  absl::optional<base::Value> ticket =
       base::JSONReader::Read(print_ticket_data);
   return ticket.has_value() && ticket.value().is_dict();
 }
@@ -542,7 +542,7 @@ bool PrintSystemCUPS::ParsePrintTicket(
     const std::string& print_ticket,
     std::map<std::string, std::string>* options) {
   DCHECK(options);
-  base::Optional<base::Value> ticket = base::JSONReader::Read(print_ticket);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(print_ticket);
   if (!ticket.has_value() || !ticket.value().is_dict())
     return false;
 

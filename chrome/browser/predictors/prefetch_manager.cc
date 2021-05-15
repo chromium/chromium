@@ -272,7 +272,7 @@ void PrefetchManager::PrefetchUrl(
           content::GlobalRequestID::MakeBrowserInitiated().request_id, options,
           &request, client.get(), kPrefetchTrafficAnnotation,
           base::ThreadTaskRunnerHandle::Get(),
-          /*cors_exempt_header_list=*/base::nullopt);
+          /*cors_exempt_header_list=*/absl::nullopt);
 
   delegate_->PrefetchInitiated(info.url, job->url);
 

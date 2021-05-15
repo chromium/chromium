@@ -14,17 +14,17 @@ LiteVideoHintCache::LiteVideoHintCache()
 
 LiteVideoHintCache::~LiteVideoHintCache() = default;
 
-base::Optional<LiteVideoHint> LiteVideoHintCache::GetHintForNavigationURL(
+absl::optional<LiteVideoHint> LiteVideoHintCache::GetHintForNavigationURL(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!origin_hints_ || !origin_hints_->is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> target_downlink_bandwidth_kbps =
+  absl::optional<int> target_downlink_bandwidth_kbps =
       origin_hints_->FindIntKey(url.host());
 
   if (!target_downlink_bandwidth_kbps)
-    return base::nullopt;
+    return absl::nullopt;
 
   return LiteVideoHint(*target_downlink_bandwidth_kbps,
                        features::LiteVideoTargetDownlinkRTTLatency(),

@@ -5,7 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
@@ -25,6 +24,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

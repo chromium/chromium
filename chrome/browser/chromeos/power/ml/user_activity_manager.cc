@@ -307,7 +307,7 @@ void UserActivityManager::OnSessionStateChanged() {
 }
 
 void UserActivityManager::OnReceiveSwitchStates(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;
@@ -316,7 +316,7 @@ void UserActivityManager::OnReceiveSwitchStates(
 }
 
 void UserActivityManager::OnReceiveInactivityDelays(
-    base::Optional<power_manager::PowerManagementPolicy::Delays> delays) {
+    absl::optional<power_manager::PowerManagementPolicy::Delays> delays) {
   if (delays.has_value()) {
     screen_dim_delay_ =
         base::TimeDelta::FromMilliseconds(delays->screen_dim_ms());
@@ -585,9 +585,9 @@ void UserActivityManager::PopulatePreviousEventData(
 
 void UserActivityManager::ResetAfterLogging() {
   features_.Clear();
-  idle_event_start_since_boot_ = base::nullopt;
+  idle_event_start_since_boot_ = absl::nullopt;
   waiting_for_final_action_ = false;
-  model_prediction_ = base::nullopt;
+  model_prediction_ = absl::nullopt;
 
   previous_idle_event_data_.reset();
 }

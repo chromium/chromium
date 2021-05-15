@@ -103,16 +103,16 @@ PauseAppInfo::PauseAppInfo(const AppId& app,
     : app_id(app), daily_limit(limit), show_pause_dialog(show_dialog) {}
 
 AppLimit::AppLimit(AppRestriction restriction,
-                   base::Optional<base::TimeDelta> daily_limit,
+                   absl::optional<base::TimeDelta> daily_limit,
                    base::Time last_updated)
     : restriction_(restriction),
       daily_limit_(daily_limit),
       last_updated_(last_updated) {
   DCHECK_EQ(restriction_ == AppRestriction::kBlocked,
-            daily_limit_ == base::nullopt);
-  DCHECK(daily_limit_ == base::nullopt ||
+            daily_limit_ == absl::nullopt);
+  DCHECK(daily_limit_ == absl::nullopt ||
          daily_limit >= base::TimeDelta::FromHours(0));
-  DCHECK(daily_limit_ == base::nullopt ||
+  DCHECK(daily_limit_ == absl::nullopt ||
          daily_limit <= base::TimeDelta::FromHours(24));
 }
 
@@ -127,11 +127,11 @@ AppLimit& AppLimit::operator=(AppLimit&&) = default;
 AppLimit::~AppLimit() = default;
 
 // static
-base::Optional<AppActivity::ActiveTime> AppActivity::ActiveTime::Merge(
+absl::optional<AppActivity::ActiveTime> AppActivity::ActiveTime::Merge(
     const ActiveTime& t1,
     const ActiveTime& t2) {
   if (!CanMerge(t1, t2))
-    return base::nullopt;
+    return absl::nullopt;
 
   base::Time active_from = std::min(t1.active_from(), t2.active_from());
   base::Time active_to = std::max(t1.active_to(), t2.active_to());

@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -36,6 +35,7 @@
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -98,7 +98,7 @@ std::string ConvertValueToJson(const base::Value& value) {
 }
 
 base::Value ParseJsonToValue(const std::string& json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   CHECK(value);
   return std::move(*value);
 }

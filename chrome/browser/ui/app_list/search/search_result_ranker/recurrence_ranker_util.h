@@ -31,14 +31,14 @@ std::unique_ptr<RecurrencePredictor> MakePredictor(
 class JsonConfigConverter {
  public:
   using OnConfigLoadedCallback =
-      base::OnceCallback<void(base::Optional<RecurrenceRankerConfigProto>)>;
+      base::OnceCallback<void(absl::optional<RecurrenceRankerConfigProto>)>;
 
   // Creates a JsonConfigConverter and starts a conversion of |json_string|.
   // |model_identifier| is used for metrics reporting in the same way as
   // RecurrenceRanker's |model_identifier|.
   //
   // The provided |callback| will be called with the resulting proto if the
-  // conversion succeeded, or base::nullopt if the parsing or conversion failed.
+  // conversion succeeded, or absl::nullopt if the parsing or conversion failed.
   // If the returned JsonConfigConverter instance is destroyed before parsing is
   // complete, |callback| will never be called.
   //

@@ -187,7 +187,7 @@ void SavePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in,
     bool update_password) {
-  base::Optional<AccountInfo> account_info;
+  absl::optional<AccountInfo> account_info;
   if (user_signed_in) {
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;

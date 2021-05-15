@@ -36,7 +36,7 @@ class CupsProxyServiceDelegate {
 
   virtual std::vector<chromeos::Printer> GetPrinters(
       chromeos::PrinterClass printer_class) = 0;
-  virtual base::Optional<chromeos::Printer> GetPrinter(
+  virtual absl::optional<chromeos::Printer> GetPrinter(
       const std::string& id) = 0;
   virtual std::vector<std::string> GetRecentlyUsedPrinters() = 0;
   virtual bool IsPrinterInstalled(const chromeos::Printer& printer) = 0;

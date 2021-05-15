@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -55,8 +55,8 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasMinimalUiButtons() const override;
   gfx::ImageSkia GetWindowAppIcon() const override;
   gfx::ImageSkia GetWindowIcon() const override;
-  base::Optional<SkColor> GetThemeColor() const override;
-  base::Optional<SkColor> GetBackgroundColor() const override;
+  absl::optional<SkColor> GetThemeColor() const override;
+  absl::optional<SkColor> GetBackgroundColor() const override;
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
@@ -102,12 +102,12 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   WebAppProvider& provider_;
-  mutable base::Optional<gfx::ImageSkia> app_icon_;
+  mutable absl::optional<gfx::ImageSkia> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The result of digital asset link verification of the web app.
   // Only used for web-only TWAs installed through the Play Store.
-  base::Optional<bool> is_verified_;
+  absl::optional<bool> is_verified_;
 
   std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>
       asset_link_handler_;

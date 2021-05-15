@@ -33,7 +33,7 @@ std::string GetWebTimeLimitErrorPage(
     std::u16string block_message,
     base::TimeDelta time_limit,
     const std::string& app_locale,
-    const base::Optional<std::u16string>& title) {
+    const absl::optional<std::u16string>& title) {
   base::DictionaryValue strings;
 
   if (!title.has_value()) {
@@ -66,7 +66,7 @@ std::string GetWebTimeLimitErrorPage(
 
 std::string GetWebTimeLimitChromeErrorPage(
     const std::string& domain,
-    const base::Optional<std::u16string>& title,
+    const absl::optional<std::u16string>& title,
     base::TimeDelta time_limit,
     const std::string& app_locale) {
   auto block_header = l10n_util::GetStringFUTF16(

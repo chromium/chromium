@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/icon_loader.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -251,7 +251,7 @@ class DownloadItemView : public views::View,
   bool dragging_ = false;
 
   // Position that a possible drag started at.
-  base::Optional<gfx::Point> drag_start_point_;
+  absl::optional<gfx::Point> drag_start_point_;
 
   gfx::ImageSkia file_icon_;
 

@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/cast_channel/enum_table.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -76,11 +76,11 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
           cast_message.client_id(), session->transport_id()));
 }
 
-base::Optional<int> AppActivity::SendMediaRequestToReceiver(
+absl::optional<int> AppActivity::SendMediaRequestToReceiver(
     const CastInternalMessage& cast_message) {
   CastSession* session = GetSession();
   if (!session)
-    return base::nullopt;
+    return absl::nullopt;
   return message_handler_->SendMediaRequest(
       cast_channel_id(), cast_message.v2_message_body(),
       cast_message.client_id(), session->transport_id());
@@ -95,7 +95,7 @@ void AppActivity::SendSetVolumeRequestToReceiver(
 }
 
 void AppActivity::SendMediaStatusToClients(const base::Value& media_status,
-                                           base::Optional<int> request_id) {
+                                           absl::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
   if (media_controller_)
     media_controller_->SetMediaStatus(media_status);

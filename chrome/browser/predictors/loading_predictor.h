@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -58,8 +58,8 @@ class LoadingPredictor : public KeyedService,
   bool PrepareForPageLoad(const GURL& url,
                           HintOrigin origin,
                           bool preconnectable = false,
-                          base::Optional<PreconnectPrediction>
-                              preconnect_prediction = base::nullopt);
+                          absl::optional<PreconnectPrediction>
+                              preconnect_prediction = absl::nullopt);
 
   // Indicates that a page load hint is no longer active.
   void CancelPageLoadHint(const GURL& url);

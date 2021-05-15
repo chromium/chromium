@@ -31,7 +31,7 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
 
     return profile_manager()->CreateTestingProfile(
         "test_profile", std::move(prefs), std::u16string(), 0, std::string(),
-        TestingProfile::TestingFactories(), base::Optional<bool>());
+        TestingProfile::TestingFactories(), absl::optional<bool>());
   }
 
   sync_preferences::PrefServiceSyncable* pref_service() {

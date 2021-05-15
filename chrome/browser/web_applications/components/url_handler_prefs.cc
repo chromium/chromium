@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -18,6 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -103,7 +103,7 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
     const std::string* include_path = include_path_dict.FindStringKey(kPath);
     if (!include_path)
       continue;
-    const base::Optional<int> choice_opt =
+    const absl::optional<int> choice_opt =
         include_path_dict.FindIntKey(kChoice);
     if (!choice_opt)
       continue;
@@ -112,7 +112,7 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
         *choice_opt > static_cast<int>(UrlHandlerSavedChoice::kMax))
       continue;
     auto current_choice = static_cast<UrlHandlerSavedChoice>(*choice_opt);
-    base::Optional<base::Time> current_timestamp =
+    absl::optional<base::Time> current_timestamp =
         util::ValueToTime(include_path_dict.FindKey(kTimestamp));
     if (!current_timestamp)
       continue;
@@ -178,13 +178,13 @@ void FilterAndAddMatches(const base::Value& all_handlers,
     if (!app_id || app_id->empty())
       continue;
 
-    base::Optional<base::FilePath> profile_path =
+    absl::optional<base::FilePath> profile_path =
         util::ValueToFilePath(handler.FindKey(kProfilePath));
     if (!profile_path || profile_path->empty())
       continue;
 
     if (origin_trimmed) {
-      base::Optional<bool> has_wildcard =
+      absl::optional<bool> has_wildcard =
           handler.FindBoolKey(kHasOriginWildcard);
       if (!has_wildcard || !*has_wildcard)
         continue;
@@ -363,7 +363,7 @@ bool IsHandlerForApp(const AppId& app_id,
                      bool match_app_id,
                      const base::Value& handler) {
   const std::string* const handler_app_id = handler.FindStringKey(kAppId);
-  base::Optional<base::FilePath> handler_profile_path =
+  absl::optional<base::FilePath> handler_profile_path =
       util::ValueToFilePath(handler.FindKey(kProfilePath));
 
   if (!handler_app_id || !handler_profile_path)
@@ -452,7 +452,7 @@ void SaveChoiceImpl(const AppId* app_id,
       if (!handler.is_dict())
         continue;
       const std::string* const handler_app_id = handler.FindStringKey(kAppId);
-      base::Optional<base::FilePath> handler_profile_path =
+      absl::optional<base::FilePath> handler_profile_path =
           util::ValueToFilePath(handler.FindKey(kProfilePath));
       if (!handler_app_id || !handler_profile_path)
         continue;

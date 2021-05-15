@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -63,6 +62,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -173,16 +173,16 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
 
   // Returns the |header| received by |url| or nullopt if it hasn't been
   // received. Fails an EXPECT if |url| hasn't been observed.
-  base::Optional<std::string> GetReceivedHeader(
+  absl::optional<std::string> GetReceivedHeader(
       const GURL& url,
       const std::string& header) const {
     auto it = received_headers_.find(url);
     EXPECT_TRUE(it != received_headers_.end());
     if (it == received_headers_.end())
-      return base::nullopt;
+      return absl::nullopt;
     auto it2 = it->second.find(header);
     if (it2 == it->second.end())
-      return base::nullopt;
+      return absl::nullopt;
     return it2->second;
   }
 
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
 
   ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
 
-  base::Optional<std::string> header =
+  absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   // By default the user is not signed in.
   ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
 
-  base::Optional<std::string> header =
+  absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   trial->group();
 
   ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
-  base::Optional<std::string> header =
+  absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithRestrictedVisibility,
   CreateFieldTrialsWithDifferentVisibilities();
 
   ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
-  base::Optional<std::string> header =
+  absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
 

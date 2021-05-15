@@ -149,7 +149,7 @@ class ConnectionManagerTest : public testing::Test {
 
   void SetPwaState(PwaState pwa_state) {
     if (pwa_state == PwaState::kDisabled) {
-      fake_android_sms_app_manager_->SetInstalledAppUrl(base::nullopt);
+      fake_android_sms_app_manager_->SetInstalledAppUrl(absl::nullopt);
       fake_multidevice_setup_client_->SetFeatureState(
           multidevice_setup::mojom::Feature::kMessages,
           multidevice_setup::mojom::FeatureState::kDisabledByUser);

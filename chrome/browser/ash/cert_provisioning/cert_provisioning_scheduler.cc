@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
@@ -33,6 +32,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -354,7 +354,7 @@ void CertProvisioningSchedulerImpl::UpdateOneCertImpl(
 
   EraseByKey(failed_cert_profiles_, cert_profile_id);
 
-  base::Optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
+  absl::optional<CertProfile> cert_profile = GetOneCertProfile(cert_profile_id);
   if (!cert_profile) {
     return;
   }
@@ -553,7 +553,7 @@ void CertProvisioningSchedulerImpl::RemoveWorkerFromMap(
   OnVisibleStateChanged();
 }
 
-base::Optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
+absl::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -572,7 +572,7 @@ base::Optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
     return CertProfile::MakeFromValue(cur_profile);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
@@ -586,7 +586,7 @@ std::vector<CertProfile> CertProvisioningSchedulerImpl::GetCertProfiles() {
 
   std::vector<CertProfile> result_profiles;
   for (const base::Value& cur_profile : profile_list->GetList()) {
-    base::Optional<CertProfile> p = CertProfile::MakeFromValue(cur_profile);
+    absl::optional<CertProfile> p = CertProfile::MakeFromValue(cur_profile);
     if (!p) {
       LOG(WARNING) << "Failed to parse certificate profile";
       continue;

@@ -394,9 +394,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  base::Optional<std::string> manifest_id = base::nullopt;
+  absl::optional<std::string> manifest_id = absl::nullopt;
   if (sync_data.has_manifest_id())
-    manifest_id = base::Optional<std::string>(sync_data.manifest_id());
+    manifest_id = absl::optional<std::string>(sync_data.manifest_id());
 
   const AppId app_id = GenerateAppId(manifest_id, start_url);
 
@@ -470,7 +470,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_chromeos_data()) {
-    auto chromeos_data = base::make_optional<WebAppChromeOsData>();
+    auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = chromeos_data_proto.show_in_launcher();
     chromeos_data->show_in_search = chromeos_data_proto.show_in_search();
     chromeos_data->show_in_management =
@@ -536,7 +536,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetInstallTime(syncer::ProtoTimeToTime(local_data.install_time()));
   }
 
-  base::Optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
+  absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
       ParseSyncFallbackDataStruct(sync_data);
   if (!parsed_sync_fallback_data.has_value()) {
     // ParseSyncFallbackDataStruct() reports any errors.
@@ -544,7 +544,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetSyncFallbackData(std::move(parsed_sync_fallback_data.value()));
 
-  base::Optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
+  absl::optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
       ParseWebAppIconInfos("WebApp", local_data.icon_infos());
   if (!parsed_icon_infos.has_value()) {
     // ParseWebAppIconInfos() reports any errors.
@@ -764,7 +764,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
 void WebAppDatabase::OnDatabaseOpened(
     RegistryOpenedCallback callback,
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -783,7 +783,7 @@ void WebAppDatabase::OnDatabaseOpened(
 
 void WebAppDatabase::OnAllDataRead(
     RegistryOpenedCallback callback,
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -800,7 +800,7 @@ void WebAppDatabase::OnAllDataRead(
 void WebAppDatabase::OnAllMetadataRead(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
     RegistryOpenedCallback callback,
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -825,7 +825,7 @@ void WebAppDatabase::OnAllMetadataRead(
 
 void WebAppDatabase::OnDataWritten(
     CompletionCallback callback,
-    const base::Optional<syncer::ModelError>& error) {
+    const absl::optional<syncer::ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);

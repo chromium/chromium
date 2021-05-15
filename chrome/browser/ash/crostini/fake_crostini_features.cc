@@ -27,14 +27,14 @@ void FakeCrostiniFeatures::SetAll(bool flag) {
 }
 
 void FakeCrostiniFeatures::ClearAll() {
-  could_be_allowed_ = base::nullopt;
-  allowed_now_ = base::nullopt;
-  enabled_ = base::nullopt;
-  export_import_ui_allowed_ = base::nullopt;
-  root_access_allowed_ = base::nullopt;
-  container_upgrade_ui_allowed_ = base::nullopt;
-  can_change_adb_sideloading_ = base::nullopt;
-  port_forwarding_allowed_ = base::nullopt;
+  could_be_allowed_ = absl::nullopt;
+  allowed_now_ = absl::nullopt;
+  enabled_ = absl::nullopt;
+  export_import_ui_allowed_ = absl::nullopt;
+  root_access_allowed_ = absl::nullopt;
+  container_upgrade_ui_allowed_ = absl::nullopt;
+  can_change_adb_sideloading_ = absl::nullopt;
+  port_forwarding_allowed_ = absl::nullopt;
 }
 
 bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile,

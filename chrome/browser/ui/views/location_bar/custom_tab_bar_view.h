@@ -116,7 +116,7 @@ class CustomTabBarView : public views::AccessiblePaneView,
   }
 
   // Convenience method to return the theme color from |app_controller_|.
-  base::Optional<SkColor> GetThemeColor() const;
+  absl::optional<SkColor> GetThemeColor() const;
 
   // Populates child elements with page details from the current WebContents.
   void UpdateContents();

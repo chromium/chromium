@@ -225,7 +225,7 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
                                                  AccountType::GOOGLE),
           using_saml, false /* using_saml_api */, password,
           SamlPasswordAttributes::FromJs(*password_attributes),
-          /*sync_trusted_vault_keys=*/base::nullopt,
+          /*sync_trusted_vault_keys=*/absl::nullopt,
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), nullptr)) {
     pending_user_context_.reset();

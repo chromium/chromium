@@ -33,11 +33,11 @@ bool IsBrowserTestModeEnabled() {
 // Returns the channel if this is a Chrome release, otherwise returns nullopt. A
 // build is considered to be a Chrome release if it's official and has Chrome
 // branding.
-base::Optional<version_info::Channel> GetReleaseChannel() {
+absl::optional<version_info::Channel> GetReleaseChannel() {
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return chrome::GetChannel();
 #else
-  return base::nullopt;
+  return absl::nullopt;
 #endif
 }
 
@@ -71,7 +71,7 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
     return *child_process_configuration == kChildProcessProfileEnabled;
   }
 
-  const base::Optional<VariationGroup>& variation_group =
+  const absl::optional<VariationGroup>& variation_group =
       absl::get<BrowserProcessConfiguration>(configuration_);
 
   return EnableForVariationGroup(variation_group);
@@ -89,7 +89,7 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
   DCHECK(absl::holds_alternative<BrowserProcessConfiguration>(configuration_));
-  const base::Optional<VariationGroup>& variation_group =
+  const absl::optional<VariationGroup>& variation_group =
       absl::get<BrowserProcessConfiguration>(configuration_);
 
   if (!variation_group.has_value())
@@ -121,7 +121,7 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
 void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
     base::CommandLine* child_process_command_line) const {
   DCHECK(absl::holds_alternative<BrowserProcessConfiguration>(configuration_));
-  const base::Optional<VariationGroup>& variation_group =
+  const absl::optional<VariationGroup>& variation_group =
       absl::get<BrowserProcessConfiguration>(configuration_);
 
   if (!EnableForVariationGroup(variation_group))
@@ -153,7 +153,7 @@ ThreadProfilerConfiguration::ThreadProfilerConfiguration()
 
 // static
 bool ThreadProfilerConfiguration::EnableForVariationGroup(
-    base::Optional<VariationGroup> variation_group) {
+    absl::optional<VariationGroup> variation_group) {
   // Enable if assigned to a variation group, and the group is one of the groups
   // that are to be enabled.
   return variation_group.has_value() && (*variation_group == kProfileEnabled ||
@@ -189,13 +189,13 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableStackProfiler))
-    return base::nullopt;
+    return absl::nullopt;
 
-  const base::Optional<version_info::Channel> release_channel =
+  const absl::optional<version_info::Channel> release_channel =
       GetReleaseChannel();
 
   if (!platform_configuration.IsSupported(release_channel))
-    return base::nullopt;
+    return absl::nullopt;
 
   using RuntimeModuleState =
       ThreadProfilerPlatformConfiguration::RuntimeModuleState;

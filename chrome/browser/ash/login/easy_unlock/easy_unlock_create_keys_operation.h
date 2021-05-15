@@ -44,7 +44,7 @@ class EasyUnlockCreateKeysOperation {
   void OnGetSystemSalt(size_t index, const std::string& system_salt);
   void OnKeyCreated(size_t index,
                     const Key& user_key,
-                    base::Optional<::user_data_auth::AddKeyReply> reply);
+                    absl::optional<::user_data_auth::AddKeyReply> reply);
 
   UserContext user_context_;
   std::string tpm_public_key_;

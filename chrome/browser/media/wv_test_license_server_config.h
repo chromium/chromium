@@ -24,7 +24,7 @@ class WVTestLicenseServerConfig : public TestLicenseServerConfig {
 
   bool GetServerCommandLine(base::CommandLine* command_line) override;
 
-  base::Optional<base::EnvironmentMap> GetServerEnvironment() override;
+  absl::optional<base::EnvironmentMap> GetServerEnvironment() override;
 
   bool IsPlatformSupported() override;
 

@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -48,8 +48,8 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     explicit TestApi(AppActivityRegistry* registry);
     ~TestApi();
 
-    const base::Optional<AppLimit>& GetAppLimit(const AppId& app_id) const;
-    base::Optional<base::TimeDelta> GetTimeLeft(const AppId& app_id) const;
+    const absl::optional<AppLimit>& GetAppLimit(const AppId& app_id) const;
+    absl::optional<base::TimeDelta> GetTimeLeft(const AppId& app_id) const;
     void SaveAppActivity();
 
    private:
@@ -123,16 +123,16 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
   // Web time limit is the time limit set for Chrome browser. It is shared
   // between Chrome and Web apps.
-  const base::Optional<AppLimit>& GetWebTimeLimit() const;
+  const absl::optional<AppLimit>& GetWebTimeLimit() const;
 
   AppState GetAppState(const AppId& app_id) const;
 
   // Returns current time limit for the app identified by |app_id|.
   // Will return nullopt if there is no limit set.
-  base::Optional<base::TimeDelta> GetTimeLimit(const AppId& app_id) const;
+  absl::optional<base::TimeDelta> GetTimeLimit(const AppId& app_id) const;
 
   // Reporting enablement is set if |enabled| has value.
-  void SetReportingEnabled(base::Optional<bool> enabled);
+  void SetReportingEnabled(absl::optional<bool> enabled);
 
   void GenerateHiddenApps(
       enterprise_management::ChildStatusReportRequest* report);
@@ -156,7 +156,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // that app does not have limit set. Does not affect limits of any other app.
   // Returns true if a new app limit is observed.
   bool SetAppLimit(const AppId& app_id,
-                   const base::Optional<AppLimit>& app_limit);
+                   const absl::optional<AppLimit>& app_limit);
 
   // Sets the app identified with |app_id| as being always available.
   void SetAppAllowlisted(const AppId& app_id);
@@ -180,11 +180,11 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
  private:
   struct SystemNotification {
-    SystemNotification(base::Optional<base::TimeDelta> app_time_limit,
+    SystemNotification(absl::optional<base::TimeDelta> app_time_limit,
                        AppNotification app_notification);
     SystemNotification(const SystemNotification&);
     SystemNotification& operator=(const SystemNotification&);
-    base::Optional<base::TimeDelta> time_limit = base::nullopt;
+    absl::optional<base::TimeDelta> time_limit = absl::nullopt;
     AppNotification notification = AppNotification::kUnknown;
   };
 
@@ -204,7 +204,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
 
     // Checks if |limit| is equal to |another_limit| with exception for the
     // timestamp (that does not indicate that limit changed).
-    bool IsLimitEqual(const base::Optional<AppLimit>& another_limit) const;
+    bool IsLimitEqual(const absl::optional<AppLimit>& another_limit) const;
 
     // Contains information about current app state and logged activity.
     AppActivity activity{AppState::kAvailable};
@@ -217,7 +217,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     std::set<aura::Window*> paused_windows;
 
     // Contains information about restriction set for the app.
-    base::Optional<AppLimit> limit;
+    absl::optional<AppLimit> limit;
 
     // Timer set up for when the app time limit is expected to be reached and
     // preceding notifications.
@@ -258,7 +258,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   void SetAppActive(const AppId& app_id, base::Time timestamp);
   void SetAppInactive(const AppId& app_id, base::Time timestamp);
 
-  base::Optional<base::TimeDelta> GetTimeLeftForApp(const AppId& app_id) const;
+  absl::optional<base::TimeDelta> GetTimeLeftForApp(const AppId& app_id) const;
 
   // Schedules a time limit check for application when it becomes active.
   void ScheduleTimeLimitCheckForApp(const AppId& app_id);
@@ -271,8 +271,8 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // notification has been made.
   bool ShowLimitUpdatedNotificationIfNeeded(
       const AppId& app_id,
-      const base::Optional<AppLimit>& old_limit,
-      const base::Optional<AppLimit>& new_limit);
+      const absl::optional<AppLimit>& old_limit,
+      const absl::optional<AppLimit>& new_limit);
 
   base::TimeDelta GetWebActiveRunningTime() const;
 

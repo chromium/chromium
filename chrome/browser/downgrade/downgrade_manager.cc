@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -39,6 +38,7 @@
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "chrome/installer/util/install_util.h"
@@ -54,7 +54,7 @@ bool g_snapshots_enabled_for_testing = false;
 // exception of files/directories that should be left behind for a full data
 // wipe. Returns no value if the target directory could not be created, or the
 // number of items that could not be moved.
-base::Optional<int> MoveUserData(const base::FilePath& source,
+absl::optional<int> MoveUserData(const base::FilePath& source,
                                  const base::FilePath& target) {
   // Returns true to exclude a file.
   auto exclusion_predicate =
@@ -194,7 +194,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     return false;
   }
 
-  base::Optional<base::Version> last_version = GetLastVersion(user_data_dir);
+  absl::optional<base::Version> last_version = GetLastVersion(user_data_dir);
   if (!last_version)
     return false;
 
@@ -228,7 +228,7 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
   auto current_milestone = current_version.components()[0];
   int max_number_of_snapshots = g_browser_process->local_state()->GetInteger(
       prefs::kUserDataSnapshotRetentionLimit);
-  base::Optional<uint32_t> purge_milestone;
+  absl::optional<uint32_t> purge_milestone;
   if (current_milestone == last_version->components()[0]) {
     // Mid-milestone snapshots are only taken on canary installs.
     if (chrome::GetChannel() != version_info::Channel::CANARY)

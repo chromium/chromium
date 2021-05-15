@@ -103,7 +103,7 @@ class SingleClientWebAppsSyncTest : public SyncTest {
   void InjectWebAppEntityToFakeServer(
       const std::string& app_id,
       const GURL& url,
-      base::Optional<std::string> manifest_id = base::nullopt) {
+      absl::optional<std::string> manifest_id = absl::nullopt) {
     web_app::WebApp app(app_id);
     app.SetName(app_id);
     app.SetStartUrl(url);
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedSyncInstalled) {
-  const base::Optional<std::string> manifest_id("explicit_id");
+  const absl::optional<std::string> manifest_id("explicit_id");
   GURL url("https://example.com/start");
   const std::string app_id = web_app::GenerateAppId(manifest_id, url);
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedAsEmptyStringSyncInstalled) {
-  const base::Optional<std::string> manifest_id("");
+  const absl::optional<std::string> manifest_id("");
   GURL url("https://example.com/start");
   const std::string app_id = web_app::GenerateAppId(manifest_id, url);
 

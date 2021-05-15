@@ -44,7 +44,7 @@ int ScoreToProbability(float score) {
 void ExecuteCallback(const double threshold,
                      DimDecisionCallback decision_callback,
                      ExecuteResult result,
-                     base::Optional<std::vector<TensorPtr>> outputs) {
+                     absl::optional<std::vector<TensorPtr>> outputs) {
   UserActivityEvent::ModelPrediction prediction;
 
   if (result != ExecuteResult::OK) {

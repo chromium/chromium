@@ -519,7 +519,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     SystemWebAppManager& manager =
         web_app::WebAppProvider::Get(profile)->system_web_app_manager();
 
-    base::Optional<AppId> app_id =
+    absl::optional<AppId> app_id =
         manager.GetAppIdForSystemApp(installation_->GetType());
     CHECK(app_id.has_value());
     return *app_id;

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
 
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view.h"
 
@@ -116,7 +116,7 @@ class PasswordSaveUpdateWithAccountStoreView
 
   // When showing kReauthFailure IPH, |promo_controller_| gives back an
   // ID. This is used to close the bubble later.
-  base::Optional<base::Token> failed_reauth_promo_id_;
+  absl::optional<base::Token> failed_reauth_promo_id_;
 
   // Hidden view that will contain status text for immediate output by
   // screen readers when the bubble changes state between Save and Update.

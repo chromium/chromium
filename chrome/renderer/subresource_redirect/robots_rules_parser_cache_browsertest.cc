@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -19,6 +18,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace subresource_redirect {
 

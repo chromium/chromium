@@ -201,7 +201,7 @@ void ArcFileSystemBridge::GetFileName(const std::string& url,
                                            true /* fail_on_path_separators */,
                                            &unescaped_file_name)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(unescaped_file_name);
@@ -243,7 +243,7 @@ void ArcFileSystemBridge::GetFileType(const std::string& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   scoped_refptr<storage::FileSystemContext> context =
@@ -253,8 +253,8 @@ void ArcFileSystemBridge::GetFileType(const std::string& url,
   extensions::app_file_handler_util::GetMimeTypeForLocalPath(
       profile_, file_system_url_and_handle.url.path(),
       base::BindOnce([](const std::string& mime_type) {
-        return mime_type.empty() ? base::nullopt
-                                 : base::make_optional(mime_type);
+        return mime_type.empty() ? absl::nullopt
+                                 : absl::make_optional(mime_type);
       }).Then(std::move(callback)));
 }
 
@@ -278,7 +278,7 @@ void ArcFileSystemBridge::GetVirtualFileId(const std::string& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -360,7 +360,7 @@ void ArcFileSystemBridge::GenerateVirtualFileId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (size < 0) {
     LOG(ERROR) << "Failed to get file size " << url_decoded;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   chromeos::DBusThreadManager::Get()
@@ -374,7 +374,7 @@ void ArcFileSystemBridge::GenerateVirtualFileId(
 void ArcFileSystemBridge::OnGenerateVirtualFileId(
     const GURL& url_decoded,
     GenerateVirtualFileIdCallback callback,
-    const base::Optional<std::string>& id) {
+    const absl::optional<std::string>& id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(id.has_value());
   DCHECK_EQ(id_to_url_.count(id.value()), 0u);
@@ -385,7 +385,7 @@ void ArcFileSystemBridge::OnGenerateVirtualFileId(
 
 void ArcFileSystemBridge::OpenFileById(const GURL& url_decoded,
                                        OpenFileToReadCallback callback,
-                                       const base::Optional<std::string>& id) {
+                                       const absl::optional<std::string>& id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!id.has_value()) {
     LOG(ERROR) << "Missing ID";

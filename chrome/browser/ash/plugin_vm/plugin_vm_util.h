@@ -10,10 +10,10 @@
 
 #include "base/callback.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -92,7 +92,7 @@ bool FakeUserIdIsSet();
 void RemoveDriveDownloadDirectoryIfExists();
 
 // Returns nullopt if not a drive URL.
-base::Optional<std::string> GetIdFromDriveUrl(const GURL& url);
+absl::optional<std::string> GetIdFromDriveUrl(const GURL& url);
 
 // A subscription for changes to PluginVm policy that may affect
 // PluginVmFeatures::Get()->IsAllowed.

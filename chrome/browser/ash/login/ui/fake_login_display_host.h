@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace session_manager {
 class SessionManager;
@@ -53,7 +53,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void LoadSigninWallpaper() override;
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const base::Optional<user_manager::UserType>& user_type) override;
+      const absl::optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
   void SetShelfButtonsEnabled(bool enabled) override;

@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
@@ -22,6 +21,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class AccessTokenFetcher;
@@ -96,7 +96,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // Invoked on completion of the access token fetcher.
   // Exposed for testing.
-  void OnGetAccessTokenComplete(const base::Optional<std::string>& access_token,
+  void OnGetAccessTokenComplete(const absl::optional<std::string>& access_token,
                                 base::Time expiration_time,
                                 const GoogleServiceAuthError& error);
 

@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -17,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
 struct WebApplicationInfo;
@@ -146,8 +146,8 @@ class ManifestUpdateTask final
   OsIntegrationManager& os_integration_manager_;
 
   Stage stage_;
-  base::Optional<WebApplicationInfo> web_application_info_;
-  base::Optional<WebAppIconDownloader> icon_downloader_;
+  absl::optional<WebApplicationInfo> web_application_info_;
+  absl::optional<WebAppIconDownloader> icon_downloader_;
 
   const GURL url_;
   const AppId app_id_;

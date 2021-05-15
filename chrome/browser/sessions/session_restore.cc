@@ -256,7 +256,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           use_new_window ? 0 : browser->tab_strip_model()->active_index() + 1;
       web_contents = chrome::AddRestoredTab(
           browser, tab.navigations, tab_index, selected_index,
-          tab.extension_app_id, base::nullopt,
+          tab.extension_app_id, absl::nullopt,
           disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB,  // selected
           tab.pinned, base::TimeTicks(), nullptr, tab.user_agent_override,
           true /* from_session_restore */);

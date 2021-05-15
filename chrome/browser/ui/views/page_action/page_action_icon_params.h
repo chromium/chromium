@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -31,7 +31,7 @@ struct PageActionIconParams {
 
   // Leaving these params unset will leave the icon default values untouched.
   // TODO(crbug.com/1061634): Make these fields non-optional.
-  base::Optional<SkColor> icon_color;
+  absl::optional<SkColor> icon_color;
   const gfx::FontList* font_list = nullptr;
 
   int between_icon_spacing = 0;

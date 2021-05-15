@@ -7,13 +7,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/vm_starting_observer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -60,7 +60,7 @@ class LockToSingleUserManager final
 
   // Processes the response from D-Bus call.
   void OnLockToSingleUserMountUntilRebootDone(
-      base::Optional<user_data_auth::LockToSingleUserMountUntilRebootReply>
+      absl::optional<user_data_auth::LockToSingleUserMountUntilRebootReply>
           reply);
 
   // true if locking is required when DbusNotifyVmStarting() is called

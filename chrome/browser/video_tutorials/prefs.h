@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_PREFS_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_PREFS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 

@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -22,6 +21,7 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -122,35 +122,35 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
     return E_INVALIDARG;
 
   // Validates that string parameters are not longer than 16K characters.
-  base::Optional<RegistrationRequest> request =
+  absl::optional<RegistrationRequest> request =
       [app_id, brand_code, tag, version,
        existence_checker_path]() -> decltype(request) {
     for (const auto* str :
          {app_id, brand_code, tag, version, existence_checker_path}) {
       constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return base::nullopt;
+        return absl::nullopt;
       }
     }
 
     RegistrationRequest request;
     if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
                                          &request.brand_code)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!tag || !base::WideToUTF8(tag, wcslen(tag), &request.tag)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     std::string version_str;
     if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     request.version = base::Version(version_str);
     if (!request.version.IsValid()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
 

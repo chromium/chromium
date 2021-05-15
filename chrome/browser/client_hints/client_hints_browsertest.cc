@@ -2190,7 +2190,7 @@ class AcceptCHFrameObserverInterceptor {
   }
 
   content::URLLoaderInterceptor interceptor_;
-  base::Optional<std::vector<network::mojom::WebClientHintsType>>
+  absl::optional<std::vector<network::mojom::WebClientHintsType>>
       accept_ch_frame_;
 };
 

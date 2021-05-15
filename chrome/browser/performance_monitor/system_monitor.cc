@@ -257,7 +257,7 @@ SystemMonitor::MetricEvaluator::~MetricEvaluator() = default;
 template <typename T>
 SystemMonitor::MetricEvaluatorImpl<T>::MetricEvaluatorImpl(
     Type type,
-    base::OnceCallback<base::Optional<T>()> evaluate_function,
+    base::OnceCallback<absl::optional<T>()> evaluate_function,
     void (SystemObserver::*notify_function)(ObserverArgType))
     : MetricEvaluator(type),
       evaluate_function_(std::move(evaluate_function)),
@@ -287,7 +287,7 @@ void SystemMonitor::MetricEvaluatorImpl<T>::Evaluate() {
   value_ = std::move(evaluate_function_).Run();
 }
 
-base::Optional<base::SystemMetrics>
+absl::optional<base::SystemMetrics>
 MetricEvaluatorsHelper::GetSystemMetricsStruct() {
   return base::SystemMetrics::Sample();
 }

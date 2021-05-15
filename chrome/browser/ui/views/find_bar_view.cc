@@ -113,7 +113,7 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
  private:
-  base::Optional<find_in_page::FindNotificationDetails> last_result_;
+  absl::optional<find_in_page::FindNotificationDetails> last_result_;
 
   DISALLOW_COPY_AND_ASSIGN(FindBarMatchCountLabel);
 };

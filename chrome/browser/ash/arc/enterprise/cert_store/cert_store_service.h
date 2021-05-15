@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -21,6 +20,7 @@
 #include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -57,7 +57,7 @@ class CertStoreService : public KeyedService,
 
   // Returns a real nickname and chaps id for a dummy SPKI |dummy_spki|.
   // Returns nullopt if the key is unknown.
-  base::Optional<KeyInfo> GetKeyInfoForDummySpki(const std::string& dummy_spki);
+  absl::optional<KeyInfo> GetKeyInfoForDummySpki(const std::string& dummy_spki);
 
   std::vector<std::string> get_required_cert_names() const {
     return certificate_cache_.get_required_cert_names();
@@ -84,7 +84,7 @@ class CertStoreService : public KeyedService,
     void Update(const std::vector<CertDescription>& certificates);
     void Update(std::map<std::string, std::string> dummy_spki_by_name);
 
-    base::Optional<KeyInfo> GetKeyInfoForDummySpki(
+    absl::optional<KeyInfo> GetKeyInfoForDummySpki(
         const std::string& dummy_spki);
 
     bool need_policy_update() { return need_policy_update_; }

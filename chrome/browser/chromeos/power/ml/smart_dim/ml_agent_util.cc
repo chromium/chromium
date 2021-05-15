@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {
@@ -52,14 +52,14 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
 
   const std::string* metrics_model_name_value =
       root.FindStringKey("metrics_model_name");
-  const base::Optional<double> dim_threshold_value =
+  const absl::optional<double> dim_threshold_value =
       root.FindDoubleKey("threshold");
-  const base::Optional<int> expected_feature_size_value =
+  const absl::optional<int> expected_feature_size_value =
       root.FindIntKey("expected_feature_size");
 
   if (!metrics_model_name_value || *metrics_model_name_value == "" ||
-      dim_threshold_value == base::nullopt ||
-      expected_feature_size_value == base::nullopt) {
+      dim_threshold_value == absl::nullopt ||
+      expected_feature_size_value == absl::nullopt) {
     DVLOG(1) << "metadata_json missing expected field(s).";
     return false;
   }

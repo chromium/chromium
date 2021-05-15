@@ -43,8 +43,8 @@ class BackgroundFetchDelegateImpl
   // BackgroundFetchDelegate implementation:
   void MarkJobComplete(const std::string& job_id) override;
   void UpdateUI(const std::string& job_unique_id,
-                const base::Optional<std::string>& title,
-                const base::Optional<SkBitmap>& icon) override;
+                const absl::optional<std::string>& title,
+                const absl::optional<SkBitmap>& icon) override;
 
   // OfflineContentProvider implementation:
   void OpenItem(const offline_items_collection::OpenParams& open_params,
@@ -67,7 +67,7 @@ class BackgroundFetchDelegateImpl
                   RenameCallback callback) override;
   void ChangeSchedule(
       const offline_items_collection::ContentId& id,
-      base::Optional<offline_items_collection::OfflineItemSchedule> schedule)
+      absl::optional<offline_items_collection::OfflineItemSchedule> schedule)
       override;
 
  protected:
@@ -93,7 +93,7 @@ class BackgroundFetchDelegateImpl
     ~UiState();
 
     offline_items_collection::OfflineItem offline_item;
-    base::Optional<offline_items_collection::UpdateDelta> update_delta;
+    absl::optional<offline_items_collection::UpdateDelta> update_delta;
   };
 
   // Updates the entry in |ui_state_map_| based on the corresponding JobDetails
@@ -107,7 +107,7 @@ class BackgroundFetchDelegateImpl
       const url::Origin& origin,
       bool user_initiated_abort);
   void DidGetBackgroundSourceId(bool user_initiated_abort,
-                                base::Optional<ukm::SourceId> source_id);
+                                absl::optional<ukm::SourceId> source_id);
 
   // The profile this service is being created for.
   Profile* profile_;

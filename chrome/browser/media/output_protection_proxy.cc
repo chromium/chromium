@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -31,16 +31,16 @@ gfx::NativeView GetRenderFrameView(int render_process_id, int render_frame_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-base::Optional<std::string> GetWindowId(int render_process_id,
+absl::optional<std::string> GetWindowId(int render_process_id,
                                         int render_frame_id) {
   gfx::NativeView native_view =
       GetRenderFrameView(render_process_id, render_frame_id);
   if (!native_view)
-    return base::nullopt;
+    return absl::nullopt;
 
   aura::Window* root_window = native_view->GetRootWindow();
   if (!root_window)
-    return base::nullopt;
+    return absl::nullopt;
 
   aura::WindowTreeHost* window_tree_host = root_window->GetHost();
   DCHECK(window_tree_host);
@@ -80,7 +80,7 @@ void OutputProtectionProxy::QueryStatus(QueryStatusCallback callback) {
       base::BindOnce(&OutputProtectionProxy::ProcessQueryStatusResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Optional<std::string> window_id =
+  absl::optional<std::string> window_id =
       GetWindowId(render_process_id_, render_frame_id_);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (window_id &&
@@ -109,7 +109,7 @@ void OutputProtectionProxy::EnableProtection(
   output_protection_delegate_.SetProtection(desired_method_mask,
                                             std::move(callback));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Optional<std::string> window_id =
+  absl::optional<std::string> window_id =
       GetWindowId(render_process_id_, render_frame_id_);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (window_id &&

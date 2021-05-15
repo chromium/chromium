@@ -162,8 +162,8 @@ class PageInfoBubbleViewTestApi {
   Profile* profile_;
   content::WebContents* web_contents_;
   base::RunLoop run_loop_;
-  base::Optional<bool> reload_prompt_;
-  base::Optional<views::Widget::ClosedReason> closed_reason_;
+  absl::optional<bool> reload_prompt_;
+  absl::optional<views::Widget::ClosedReason> closed_reason_;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewTestApi);
 };

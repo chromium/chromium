@@ -170,12 +170,12 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
           base::BindOnce(&FileManagerPrivateInternalGetDriveThumbnailFunction::
                              GotThumbnail,
                          this),
-          base::nullopt));
+          absl::nullopt));
   return RespondLater();
 }
 
 void FileManagerPrivateInternalGetDriveThumbnailFunction::GotThumbnail(
-    const base::Optional<std::vector<uint8_t>>& data) {
+    const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
     Respond(OneArgument(base::Value("")));
     return;

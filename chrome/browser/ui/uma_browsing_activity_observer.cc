@@ -195,7 +195,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   const Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
   if (current_browser) {
     TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
-    const base::Optional<tab_groups::TabGroupId> active_group =
+    const absl::optional<tab_groups::TabGroupId> active_group =
         tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
     UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
                              active_group.has_value()

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +33,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,7 +62,7 @@ void SetJsonDevicePolicy(
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher,
     PolicyMap* policies) {
   std::string error;
-  base::Optional<base::Value> decoded_json =
+  absl::optional<base::Value> decoded_json =
       DecodeJsonStringAndNormalize(json_string, policy_name, &error);
   base::Value value_to_set = decoded_json.has_value()
                                  ? std::move(decoded_json.value())
@@ -1956,7 +1956,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
 }  // namespace
 
-base::Optional<base::Value> DecodeJsonStringAndNormalize(
+absl::optional<base::Value> DecodeJsonStringAndNormalize(
     const std::string& json_string,
     const std::string& policy_name,
     std::string* error) {
@@ -1965,7 +1965,7 @@ base::Optional<base::Value> DecodeJsonStringAndNormalize(
           json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value_with_error.value) {
     *error = "Invalid JSON string: " + value_with_error.error_message;
-    return base::nullopt;
+    return absl::nullopt;
   }
   base::Value root = std::move(value_with_error.value.value());
 
@@ -1982,7 +1982,7 @@ base::Optional<base::Value> DecodeJsonStringAndNormalize(
     msg << "Invalid policy value: " << schema_error << " (at "
         << (error_path.empty() ? "toplevel" : error_path) << ")";
     *error = msg.str();
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (changed) {
     std::ostringstream msg;

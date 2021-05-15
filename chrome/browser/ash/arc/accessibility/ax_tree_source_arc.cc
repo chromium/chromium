@@ -63,7 +63,7 @@ void AXTreeSourceArc::NotifyActionResult(const ui::AXActionData& data,
 
 void AXTreeSourceArc::NotifyGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const base::Optional<gfx::Rect>& rect) {
+    const absl::optional<gfx::Rect>& rect) {
   GetAutomationEventRouter()->DispatchGetTextLocationDataResult(data, rect);
 }
 

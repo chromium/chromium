@@ -11,11 +11,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -109,7 +109,7 @@ class Tab : public gfx::AnimationDelegate,
   bool closing() const { return closing_; }
 
   // Returns the color for the tab's group, if any.
-  base::Optional<SkColor> GetGroupColor() const;
+  absl::optional<SkColor> GetGroupColor() const;
 
   // Returns the color used for the alert indicator icon.
   SkColor GetAlertIndicatorColor(TabAlertState state) const;
@@ -171,10 +171,10 @@ class Tab : public gfx::AnimationDelegate,
   // Exposed publicly for tests.
   static std::u16string GetTooltipText(
       const std::u16string& title,
-      base::Optional<TabAlertState> alert_state);
+      absl::optional<TabAlertState> alert_state);
 
   // Returns an alert state to be shown among given alert states.
-  static base::Optional<TabAlertState> GetAlertStateToShow(
+  static absl::optional<TabAlertState> GetAlertStateToShow(
       const std::vector<TabAlertState>& alert_states);
 
   bool showing_close_button_for_testing() const {

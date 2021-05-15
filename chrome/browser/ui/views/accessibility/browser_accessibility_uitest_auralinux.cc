@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
       webview->GetViewAccessibility().GetNativeObject();
 
   // Gets the index in its parents for the WebView.
-  base::Optional<int> index =
+  absl::optional<int> index =
       static_cast<ui::AXPlatformNodeBase*>(
           ui::AXPlatformNode::FromNativeViewAccessible(accessible))
           ->GetIndexInParent();

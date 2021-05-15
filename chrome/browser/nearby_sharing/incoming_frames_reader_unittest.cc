@@ -47,13 +47,13 @@ std::vector<uint8_t> GetCancelFrame() {
 }
 
 void ExpectIntroductionFrame(
-    const base::Optional<sharing::mojom::V1FramePtr>& frame) {
+    const absl::optional<sharing::mojom::V1FramePtr>& frame) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE((*frame)->is_introduction());
 }
 
 void ExpectCancelFrame(
-    const base::Optional<sharing::mojom::V1FramePtr>& frame) {
+    const absl::optional<sharing::mojom::V1FramePtr>& frame) {
   ASSERT_TRUE(frame);
   EXPECT_TRUE((*frame)->is_cancel_frame());
 }
@@ -107,7 +107,7 @@ TEST_F(IncomingFramesReaderTest, ReadTimedOut) {
   frames_reader().ReadFrame(
       sharing::mojom::V1Frame::Tag::INTRODUCTION,
       base::BindLambdaForTesting(
-          [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+          [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             EXPECT_FALSE(frame);
             run_loop.Quit();
           }),
@@ -143,7 +143,7 @@ TEST_F(IncomingFramesReaderTest, ReadAnyFrameSuccessful) {
 
   base::RunLoop run_loop;
   frames_reader().ReadFrame(base::BindLambdaForTesting(
-      [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+      [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
         ExpectIntroductionFrame(frame);
         run_loop.Quit();
       }));
@@ -174,7 +174,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful) {
   frames_reader().ReadFrame(
       sharing::mojom::V1Frame::Tag::INTRODUCTION,
       base::BindLambdaForTesting(
-          [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+          [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
             run_loop.Quit();
           }),
@@ -222,7 +222,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
   frames_reader().ReadFrame(
       sharing::mojom::V1Frame::Tag::INTRODUCTION,
       base::BindLambdaForTesting(
-          [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+          [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
             run_loop_introduction.Quit();
           }),
@@ -270,7 +270,7 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
   frames_reader().ReadFrame(
       sharing::mojom::V1Frame::Tag::INTRODUCTION,
       base::BindLambdaForTesting(
-          [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+          [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             ExpectIntroductionFrame(frame);
             run_loop_introduction.Quit();
           }),
@@ -280,7 +280,7 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
   // Reading any frame should return CancelFrame.
   base::RunLoop run_loop_cancel;
   frames_reader().ReadFrame(base::BindLambdaForTesting(
-      [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+      [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
         ExpectCancelFrame(frame);
         run_loop_cancel.Quit();
       }));
@@ -294,7 +294,7 @@ TEST_F(IncomingFramesReaderTest, ReadAfterConnectionClosed) {
   frames_reader().ReadFrame(
       sharing::mojom::V1Frame::Tag::INTRODUCTION,
       base::BindLambdaForTesting(
-          [&](base::Optional<sharing::mojom::V1FramePtr> frame) {
+          [&](absl::optional<sharing::mojom::V1FramePtr> frame) {
             EXPECT_FALSE(frame);
             run_loop_before_close.Quit();
           }),

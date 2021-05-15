@@ -130,7 +130,7 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
     // changes.
     PA_LOG(VERBOSE) << "Smart Lock is not enabled by user; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt /* local_device */);
+                            absl::nullopt /* local_device */);
     return;
   }
 
@@ -151,7 +151,7 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
     PA_LOG(ERROR) << "Smart Lock is enabled by user, but no unlock key is "
                      "present; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt /* local_device */);
+                            absl::nullopt /* local_device */);
 
     if (pref_manager_->IsEasyUnlockEnabledStateSet()) {
       LogSmartLockEnabledState(SmartLockEnabledState::DISABLED);
@@ -180,18 +180,18 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
     PA_LOG(ERROR) << "There should only be 1 Smart Lock host, but there are: "
                   << remote_devices.size();
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt);
+                            absl::nullopt);
     NOTREACHED();
     return;
   }
 
-  base::Optional<multidevice::RemoteDeviceRef> local_device =
+  absl::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "EasyUnlockServiceRegular::" << __func__
                   << ": Local device unexpectedly null.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt);
+                            absl::nullopt);
     return;
   }
 

@@ -34,7 +34,7 @@ DownloadShelfController::~DownloadShelfController() = default;
 void DownloadShelfController::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
   for (const auto& item : items)
-    OnItemUpdated(item, base::nullopt);
+    OnItemUpdated(item, absl::nullopt);
 }
 
 void DownloadShelfController::OnItemRemoved(const ContentId& id) {
@@ -47,7 +47,7 @@ void DownloadShelfController::OnItemRemoved(const ContentId& id) {
 
 void DownloadShelfController::OnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   if (profile_->IsOffTheRecord() != item.is_off_the_record)
     return;
 

@@ -87,7 +87,7 @@ void UpdateFromListValue(const std::string& list_pref_name) {
 void OnRemoveAppCryptohomeComplete(
     const cryptohome::Identification& id,
     base::OnceClosure callback,
-    base::Optional<user_data_auth::RemoveReply> reply) {
+    absl::optional<user_data_auth::RemoveReply> reply) {
   cryptohome::MountError error = ReplyToMountError(reply);
   if (error == cryptohome::MOUNT_ERROR_NONE ||
       error == cryptohome::MOUNT_ERROR_USER_DOES_NOT_EXIST) {

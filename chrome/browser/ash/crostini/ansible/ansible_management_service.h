@@ -64,7 +64,7 @@ class AnsibleManagementService : public KeyedService,
   void OnAnsiblePlaybookRetrieved(bool success);
   void ApplyAnsiblePlaybookToDefaultContainer();
   void OnApplyAnsiblePlaybook(
-      base::Optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
+      absl::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
           response);
 
   // Helper function that runs relevant callback and notifies observers.

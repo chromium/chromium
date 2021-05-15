@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
@@ -92,7 +92,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   // AutofillPopupView:
   void Show() override;
   void Hide() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupBaseView:
   // TODO(crbug.com/831603): Remove these overrides and the corresponding
@@ -102,8 +102,8 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   AutofillPopupController* controller() { return controller_; }
 
  private:
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
 
   // Creates child views based on the suggestions given by |controller_|.

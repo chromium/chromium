@@ -755,7 +755,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
   });
   std::vector<mojom::RouteMessagePtr> messages;
   messages.emplace_back(mojom::RouteMessage::New(
-      mojom::RouteMessage::Type::TEXT, "beta", base::nullopt));
+      mojom::RouteMessage::Type::TEXT, "beta", absl::nullopt));
   proxy_message_observer->OnMessagesReceived(std::move(messages));
   base::RunLoop().RunUntilIdle();
 

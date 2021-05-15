@@ -349,7 +349,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
   UpdatePasswordLists();
-  base::MockOnceCallback<void(base::Optional<std::u16string>)>
+  base::MockOnceCallback<void(absl::optional<std::u16string>)>
       password_callback;
   EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
   std::string sort_key = password_manager::CreateSortKey(form);
@@ -370,7 +370,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
   UpdatePasswordLists();
-  base::MockOnceCallback<void(base::Optional<std::u16string>)>
+  base::MockOnceCallback<void(absl::optional<std::u16string>)>
       password_callback;
   EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
   std::string sort_key = password_manager::CreateSortKey(form);

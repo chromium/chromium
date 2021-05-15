@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareClientFactory;
 class NearbyShareContactDownloader;

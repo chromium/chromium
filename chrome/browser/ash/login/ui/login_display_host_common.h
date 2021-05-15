@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -19,6 +18,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -55,7 +55,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void LoadSigninWallpaper() final;
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const base::Optional<user_manager::UserType>& user_type) final;
+      const absl::optional<user_manager::UserType>& user_type) final;
   void CancelPasswordChangedFlow() final;
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;

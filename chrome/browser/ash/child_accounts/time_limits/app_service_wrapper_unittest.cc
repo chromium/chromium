@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -45,6 +44,7 @@
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using web_app::GenerateAppIdFromURL;
@@ -136,7 +136,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   void SimulateAppInstalled(const AppId& app_id,
                             const std::string& app_name,
-                            base::Optional<std::string> url = base::nullopt) {
+                            absl::optional<std::string> url = absl::nullopt) {
     if (app_id.app_type() == apps::mojom::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
       arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());

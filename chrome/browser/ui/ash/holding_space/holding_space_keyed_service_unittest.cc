@@ -304,7 +304,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
         new file_manager::FakeDiskMountManager);
     SetUpDownloadManager();
     BrowserWithTestWindowTest::SetUp();
-    holding_space_util::SetNowForTesting(base::nullopt);
+    holding_space_util::SetNowForTesting(absl::nullopt);
   }
 
   void TearDown() override {

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 using DownloadInProgressDialogTest = ChromeViewsTestBase;
@@ -23,7 +23,7 @@ TEST_F(DownloadInProgressDialogTest, CallbackIsRunOnClose) {
   auto parent = CreateTestWidget();
   parent->Show();
 
-  base::Optional<bool> result;
+  absl::optional<bool> result;
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
                                        "DownloadInProgressDialogView");
   DownloadInProgressDialogView::Show(

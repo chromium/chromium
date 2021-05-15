@@ -58,7 +58,7 @@ bool VapidKeyManager::UpdateCachedKey(
 }
 
 bool VapidKeyManager::InitWithPreference() {
-  base::Optional<std::vector<uint8_t>> preference_key_info =
+  absl::optional<std::vector<uint8_t>> preference_key_info =
       sharing_sync_preference_->GetVapidKey();
   if (!preference_key_info || vapid_key_info_ == *preference_key_info)
     return false;

@@ -83,14 +83,14 @@ void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
   DCHECK(!title_callback.is_null());
   GURL url = GetHomepageUrl();
   if (url.is_empty()) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfileIfExists(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (!history_service) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   // If the client is destroyed, the tracker will cancel this task automatically
@@ -106,7 +106,7 @@ void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
 void JavaHomepageClient::OnTitleEntryFound(TitleCallback title_callback,
                                            history::QueryURLResult result) {
   if (!result.success) {
-    std::move(title_callback).Run(base::nullopt);
+    std::move(title_callback).Run(absl::nullopt);
     return;
   }
   std::move(title_callback).Run(result.row.title());

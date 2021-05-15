@@ -43,7 +43,7 @@ class PowerMetricsReporterAccess : public PowerMetricsReporter {
       base::TimeDelta sampling_interval,
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
-      base::Optional<int64_t> discharge_rate_during_interval,
+      absl::optional<int64_t> discharge_rate_during_interval,
       const std::vector<const char*>& suffixes) {
     PowerMetricsReporter::ReportBatteryHistograms(
         interval_data, sampling_interval, interval_duration, discharge_mode,
@@ -388,7 +388,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // A nullopt battery value indicates that the battery level is unavailable.
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      1, 1, base::nullopt, true, base::TimeTicks::Now()});
+      1, 1, absl::nullopt, true, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin = 42;

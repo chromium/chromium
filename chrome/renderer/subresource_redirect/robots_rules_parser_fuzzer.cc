@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/fuzzers/fuzzer_utils.h"
 
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
@@ -27,7 +27,7 @@ class Environment {
 
  private:
   IcuEnvironment icu;
-  base::Optional<base::test::SingleThreadTaskEnvironment> task_env_;
+  absl::optional<base::test::SingleThreadTaskEnvironment> task_env_;
 };
 
 }  // namespace

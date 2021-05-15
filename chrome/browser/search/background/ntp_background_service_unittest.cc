@@ -265,7 +265,7 @@ TEST_F(NtpBackgroundServiceTest, MultipleRequests) {
 TEST_F(NtpBackgroundServiceTest, NextImageNetworkError) {
   SetUpResponseWithNetworkError(service()->GetNextImageURLForTesting());
 
-  service()->FetchNextCollectionImage("shapes", base::nullopt);
+  service()->FetchNextCollectionImage("shapes", absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(service()->next_image_error_info().error_type,
@@ -276,7 +276,7 @@ TEST_F(NtpBackgroundServiceTest, BadNextImageResponse) {
   SetUpResponseWithData(service()->GetNextImageURLForTesting(),
                         "bad serialized GetImageFromCollectionResponse");
 
-  service()->FetchNextCollectionImage("shapes", base::nullopt);
+  service()->FetchNextCollectionImage("shapes", absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(service()->next_image_error_info().error_type,
@@ -337,7 +337,7 @@ TEST_F(NtpBackgroundServiceTest, MultipleRequestsNextImage) {
 
   // NOTE: the effect of the resume token in the request (i.e. prevent images
   // from being repeated) cannot be verified in a unit test.
-  service()->FetchNextCollectionImage("shapes", base::nullopt);
+  service()->FetchNextCollectionImage("shapes", absl::nullopt);
   // Subsequent requests are ignored while the loader is in use.
   service()->FetchNextCollectionImage("shapes", "resume0");
   base::RunLoop().RunUntilIdle();

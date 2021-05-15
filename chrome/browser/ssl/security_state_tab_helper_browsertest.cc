@@ -448,7 +448,7 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
 
   ~SecurityStateTabHelperTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 
   void SetUpOnMainThread() override {

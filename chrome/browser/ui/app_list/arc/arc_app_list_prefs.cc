@@ -1196,7 +1196,7 @@ void ArcAppListPrefs::OnConnectionClosed() {
   app_list_refreshed_callback_.Reset();
 }
 
-void ArcAppListPrefs::HandleTaskCreated(const base::Optional<std::string>& name,
+void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
                                         const std::string& package_name,
                                         const std::string& activity) {
   DCHECK(IsArcAndroidEnabledForProfile(profile_));
@@ -1822,8 +1822,8 @@ void ArcAppListPrefs::OnIconLoaded(const std::string& app_id,
 void ArcAppListPrefs::OnTaskCreated(int32_t task_id,
                                     const std::string& package_name,
                                     const std::string& activity,
-                                    const base::Optional<std::string>& name,
-                                    const base::Optional<std::string>& intent,
+                                    const absl::optional<std::string>& name,
+                                    const absl::optional<std::string>& intent,
                                     int32_t session_id) {
   HandleTaskCreated(name, package_name, activity);
   for (auto& observer : observer_list_) {
@@ -2035,7 +2035,7 @@ void ArcAppListPrefs::OnIconInstalled(const std::string& app_id,
 }
 
 void ArcAppListPrefs::OnInstallationStarted(
-    const base::Optional<std::string>& package_name) {
+    const absl::optional<std::string>& package_name) {
   ++installing_packages_count_;
 
   if (!package_name.has_value())

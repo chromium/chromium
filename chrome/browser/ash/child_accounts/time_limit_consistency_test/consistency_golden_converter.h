@@ -8,9 +8,9 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_CONVERTER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_GOLDEN_CONVERTER_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -33,8 +33,8 @@ ConsistencyGoldenOutput ConvertProcessorOutputToGoldenOutput(
 // processor if there is a UNLOCK_USAGE_LIMIT override present. The generated
 // state simulates being locked by usage limit since one minute before the
 // override was created.
-// If the override is of another type, base::nullopt will be returned.
-base::Optional<usage_time_limit::State>
+// If the override is of another type, absl::nullopt will be returned.
+absl::optional<usage_time_limit::State>
 GenerateUnlockUsageLimitOverrideStateFromInput(
     const ConsistencyGoldenInput& input);
 

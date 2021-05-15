@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

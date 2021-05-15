@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -59,7 +59,7 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
 
   EduCoexistenceLoginScreen* GetEduCoexistenceLoginScreen();
 
-  const base::Optional<EduCoexistenceLoginScreen::Result>& result() {
+  const absl::optional<EduCoexistenceLoginScreen::Result>& result() {
     return result_;
   }
 
@@ -72,7 +72,7 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
 
   base::OnceCallback<void()> quit_closure_;
 
-  base::Optional<EduCoexistenceLoginScreen::Result> result_;
+  absl::optional<EduCoexistenceLoginScreen::Result> result_;
 
   EduCoexistenceLoginScreen::ScreenExitCallback original_callback_;
 

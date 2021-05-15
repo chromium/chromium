@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 #define CHROME_BROWSER_NET_STUB_RESOLVER_CONFIG_READER_H_
 
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/memory/weak_ptr.h"
@@ -105,7 +105,7 @@ class StubResolverConfigReader {
 #if defined(OS_ANDROID)
   // Whether or not an Android device or profile is owned.
   // A nullopt indicates this value has not been determined yet.
-  base::Optional<bool> android_has_owner_ = base::nullopt;
+  absl::optional<bool> android_has_owner_ = absl::nullopt;
   base::WeakPtrFactory<StubResolverConfigReader> weak_factory_{this};
 #endif
 };

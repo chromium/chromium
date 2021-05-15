@@ -61,12 +61,12 @@ class ItemSuggestCache {
   ItemSuggestCache& operator=(const ItemSuggestCache&) = delete;
 
   // Returns the results currently in the cache.
-  base::Optional<ItemSuggestCache::Results> GetResults();
+  absl::optional<ItemSuggestCache::Results> GetResults();
 
   // Updates the cache by calling ItemSuggest.
   void UpdateCache();
 
-  static base::Optional<ItemSuggestCache::Results> ConvertJsonForTest(
+  static absl::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);
 
   // Whether or not to override configuration of the cache with an experiment.
@@ -121,7 +121,7 @@ class ItemSuggestCache {
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);
 
-  base::Optional<Results> results_;
+  absl::optional<Results> results_;
 
   // Records the time of the last call to UpdateResults(), used to limit the
   // number of queries to the ItemSuggest backend.

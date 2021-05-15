@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
 
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -26,6 +25,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -112,7 +112,7 @@ FeaturePromoRegistry* FeaturePromoRegistry::GetInstance() {
   return instance.get();
 }
 
-base::Optional<FeaturePromoBubbleParams>
+absl::optional<FeaturePromoBubbleParams>
 FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
                                           BrowserView* browser_view) {
   auto data_it = feature_promo_data_.find(&iph_feature);
@@ -121,7 +121,7 @@ FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
   views::View* const anchor_view =
       data_it->second.get_anchor_view_callback.Run(browser_view);
   if (!anchor_view)
-    return base::nullopt;
+    return absl::nullopt;
 
   FeaturePromoBubbleParams params = data_it->second.params;
   params.anchor_view = anchor_view;

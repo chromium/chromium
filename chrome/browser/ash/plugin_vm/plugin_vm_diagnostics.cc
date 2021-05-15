@@ -190,7 +190,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
   void CheckDefaultVmExists(bool plugin_vm_is_allowed) {
     if (!plugin_vm_is_allowed) {
-      OnListVmDisks(false, base::nullopt);
+      OnListVmDisks(false, absl::nullopt);
       return;
     }
 
@@ -208,7 +208,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
   void OnListVmDisks(
       bool plugin_vm_is_allowed,
-      base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
+      absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
     EntryBuilder entry(l10n_util::GetStringFUTF8(
         IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT,
         l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));

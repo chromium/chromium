@@ -46,7 +46,7 @@ PageInfoHoverButton::PageInfoHoverButton(
     int click_target_id,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
-    base::Optional<ui::ImageModel> action_image_icon)
+    absl::optional<ui::ImageModel> action_image_icon)
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 

@@ -45,7 +45,7 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
     SystemAppType system_app_type) {
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       GetManager().GetAppIdForSystemApp(system_app_type);
 
   CHECK(app_id.has_value());

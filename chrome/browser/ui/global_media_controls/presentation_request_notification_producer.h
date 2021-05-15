@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // An object that creates and manages media notifications related to
 // presentation requests.
@@ -119,7 +119,7 @@ class PresentationRequestNotificationProducer final
       presentation_manager_ = nullptr;
 
   // The notification managed by this producer, if there is one.
-  base::Optional<PresentationRequestNotificationItem> item_;
+  absl::optional<PresentationRequestNotificationItem> item_;
 
   // True if |notification_service_| should hide |item_| because there are
   // active notifications on WebContents managed by this producer.

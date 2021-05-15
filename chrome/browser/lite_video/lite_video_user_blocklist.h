@@ -91,7 +91,7 @@ class LiteVideoUserBlocklist : public blocklist::OptOutBlocklist {
   // Update the entry within the RebufferBlocklistType for the
   // mainframe and subframe urls based on whether it was an opt-out or not.
   void AddRebufferToBlocklist(const GURL& mainframe_url,
-                              base::Optional<GURL> subframe_url,
+                              absl::optional<GURL> subframe_url,
                               bool opt_out);
 
  protected:

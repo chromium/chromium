@@ -19,7 +19,7 @@ namespace borealis {
 class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
  public:
   using OnLaunchCallback =
-      base::OnceCallback<void(base::Optional<std::string>)>;
+      base::OnceCallback<void(absl::optional<std::string>)>;
 
   BorealisLaunchWatcher(Profile* profile, std::string vm_name);
   BorealisLaunchWatcher(const BorealisLaunchWatcher&) = delete;
@@ -46,7 +46,7 @@ class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
   std::string owner_id_;
   std::string vm_name_;
   base::TimeDelta timeout_ = base::TimeDelta::FromMilliseconds(30000);
-  base::Optional<vm_tools::cicerone::ContainerStartedSignal>
+  absl::optional<vm_tools::cicerone::ContainerStartedSignal>
       container_started_signal_;
   base::queue<OnLaunchCallback> callback_queue_;
 

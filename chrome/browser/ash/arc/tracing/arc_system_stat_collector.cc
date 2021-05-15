@@ -511,7 +511,7 @@ std::string ArcSystemStatCollector::SerializeToJson() const {
 }
 
 bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
-  const base::Optional<base::Value> root = base::JSONReader::Read(json_data);
+  const absl::optional<base::Value> root = base::JSONReader::Read(json_data);
   if (!root)
     return false;
   return LoadFromValue(*root);

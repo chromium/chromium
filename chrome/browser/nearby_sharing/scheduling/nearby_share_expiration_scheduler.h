@@ -8,16 +8,16 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A NearbyShareSchedulerBase that schedules recurring tasks based on an
 // expiration time provided by the owner.
 class NearbyShareExpirationScheduler : public NearbyShareSchedulerBase {
  public:
   using ExpirationTimeFunctor =
-      base::RepeatingCallback<base::Optional<base::Time>()>;
+      base::RepeatingCallback<absl::optional<base::Time>()>;
 
   // |expiration_time_functor|: A function provided by the owner that returns
   //     the next expiration time.
@@ -33,7 +33,7 @@ class NearbyShareExpirationScheduler : public NearbyShareSchedulerBase {
   ~NearbyShareExpirationScheduler() override;
 
  protected:
-  base::Optional<base::TimeDelta> TimeUntilRecurringRequest(
+  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override;
 
   ExpirationTimeFunctor expiration_time_functor_;

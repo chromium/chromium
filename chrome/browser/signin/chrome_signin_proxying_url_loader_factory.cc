@@ -101,7 +101,7 @@ class ProxyingURLLoaderFactory::InProgressRequest
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
@@ -342,7 +342,7 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers_ext,
     const net::HttpRequestHeaders& modified_headers_ext,
     const net::HttpRequestHeaders& modified_cors_exempt_headers_ext,
-    const base::Optional<GURL>& opt_new_url) {
+    const absl::optional<GURL>& opt_new_url) {
   std::vector<std::string> removed_headers = removed_headers_ext;
   net::HttpRequestHeaders modified_headers = modified_headers_ext;
   net::HttpRequestHeaders modified_cors_exempt_headers =

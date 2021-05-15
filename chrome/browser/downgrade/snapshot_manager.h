@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace downgrade {
 
@@ -46,7 +46,7 @@ class SnapshotManager {
   // by moving invalid and older snapshots for later deletion. If |milestone| is
   // specified, limit the deletion to the snapshots from that milestone.
   void PurgeInvalidAndOldSnapshots(int max_number_of_snapshots,
-                                   base::Optional<uint32_t> milestone) const;
+                                   absl::optional<uint32_t> milestone) const;
 
   // Deletes snapshot data created after |delete_begin| for |profile_base_name|.
   // |remove_mask| (of bits from ChromeBrowsingDataRemoverDelegate::DataType)

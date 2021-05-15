@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
@@ -24,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr base::TimeDelta kStartupPowerMetricsCollectionDuration =

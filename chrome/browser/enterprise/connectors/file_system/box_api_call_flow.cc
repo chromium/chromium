@@ -431,19 +431,19 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
       std::move(read_file_task), std::move(read_file_reply));
 }
 
-base::Optional<std::string> BoxWholeFileUploadApiCallFlow::ReadFile(
+absl::optional<std::string> BoxWholeFileUploadApiCallFlow::ReadFile(
     const base::FilePath& path) {
   std::string content;
   return base::ReadFileToStringWithMaxSize(path, &content,
                                            kWholeFileUploadMaxSize)
-             ? base::Optional<std::string>(std::move(content))
-             : base::nullopt;
+             ? absl::optional<std::string>(std::move(content))
+             : absl::nullopt;
 }
 
 void BoxWholeFileUploadApiCallFlow::OnFileRead(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    base::Optional<std::string> file_read) {
+    absl::optional<std::string> file_read) {
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
     // TODO(https://crbug.com/1165972): error handling

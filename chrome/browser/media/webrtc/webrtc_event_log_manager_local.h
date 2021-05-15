@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc_event_logging {
 
@@ -88,7 +88,7 @@ class WebRtcLocalEventLogManager final {
 
   // The maximum size for local logs, in bytes.
   // If !has_value(), the value is unlimited.
-  base::Optional<size_t> max_log_file_size_bytes_;
+  absl::optional<size_t> max_log_file_size_bytes_;
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcLocalEventLogManager);
 };

@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -183,7 +183,7 @@ class LoginDisplayHost {
   // Returns true if user is allowed to log in by domain policy.
   virtual bool IsUserAllowlisted(
       const AccountId& account_id,
-      const base::Optional<user_manager::UserType>& user_type) = 0;
+      const absl::optional<user_manager::UserType>& user_type) = 0;
 
   // ----- Password change flow methods -----
   // Cancels current password changed flow.

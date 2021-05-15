@@ -84,7 +84,7 @@ views::View* DiceBubbleSyncPromoView::GetSigninButtonForTesting() {
 }
 
 void DiceBubbleSyncPromoView::EnableSync() {
-  base::Optional<AccountInfo> account = signin_button_view_->account();
+  absl::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 

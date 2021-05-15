@@ -29,7 +29,7 @@ PublicResourceDeciderAgent* GetPublicResourceDeciderAgent(int render_frame_id) {
 
 // Returns the full content length of the response, either from the range, or
 // content-length response headers, or the total body length.
-base::Optional<uint64_t> GetFullContentLength(
+absl::optional<uint64_t> GetFullContentLength(
     const network::mojom::URLResponseHead& response_head) {
   if (response_head.headers->response_code() == net::HTTP_PARTIAL_CONTENT) {
     // Parse the full length from range response.
@@ -45,7 +45,7 @@ base::Optional<uint64_t> GetFullContentLength(
     if (response_head.encoded_body_length > 0)
       return static_cast<uint64_t>(response_head.encoded_body_length);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

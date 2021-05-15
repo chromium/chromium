@@ -62,7 +62,7 @@ void SingleURLEligibilityCheckResult(
     scoped_refptr<SuccessCount> success_count,
     const GURL& url,
     bool eligible,
-    base::Optional<PrefetchProxyPrefetchStatus> not_used) {
+    absl::optional<PrefetchProxyPrefetchStatus> not_used) {
   if (eligible) {
     success_count->Increment();
   }
@@ -144,7 +144,7 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   target_loader_->FollowRedirect(removed_headers, modified_headers,
                                  modified_cors_exempt_headers, new_url);
 }
@@ -296,7 +296,7 @@ void PrefetchProxyProxyingURLLoaderFactory::AbortRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {}
+    const absl::optional<GURL>& new_url) {}
 void PrefetchProxyProxyingURLLoaderFactory::AbortRequest::SetPriority(
     net::RequestPriority priority,
     int32_t intra_priority_value) {}
@@ -452,7 +452,7 @@ void PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     const GURL& url,
     bool eligible,
-    base::Optional<PrefetchProxyPrefetchStatus> status) {
+    absl::optional<PrefetchProxyPrefetchStatus> status) {
   DCHECK_EQ(request.url, url);
   DCHECK(!previously_cached_subresources_.has_value());
   DCHECK(request.cors_exempt_headers.HasHeader(

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace notifications {

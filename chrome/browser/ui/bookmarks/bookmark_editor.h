@@ -87,7 +87,7 @@ class BookmarkEditor {
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
     // the new node at.
-    base::Optional<size_t> index;
+    absl::optional<size_t> index;
 
     // If type == NEW_URL this gives the URL/title.
     GURL url;

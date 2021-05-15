@@ -112,7 +112,7 @@ void LaunchPluginVmAppImpl(Profile* profile,
       std::move(request),
       base::BindOnce(
           [](const std::string& app_id, LaunchPluginVmAppCallback callback,
-             base::Optional<
+             absl::optional<
                  vm_tools::cicerone::LaunchContainerApplicationResponse>
                  response) {
             if (!response || !response->success()) {

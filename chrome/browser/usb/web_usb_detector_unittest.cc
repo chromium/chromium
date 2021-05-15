@@ -130,7 +130,7 @@ TEST_F(WebUsbDetectorTest, UsbDeviceAddedAndRemoved) {
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(device->guid());
   ASSERT_TRUE(notification);
   std::u16string expected_title = u"Google Product A detected";
@@ -326,7 +326,7 @@ TEST_F(WebUsbDetectorTest,
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification);
   std::u16string expected_title = u"Google Product B detected";
@@ -361,7 +361,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   std::u16string expected_title_1 = u"Google Product A detected";
@@ -376,7 +376,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_2 =
+  absl::optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
   std::u16string expected_title_2 = u"Google Product B detected";
@@ -391,7 +391,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_3);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_3 =
+  absl::optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(guid_3);
   ASSERT_TRUE(notification_3);
   std::u16string expected_title_3 = u"Google Product C detected";
@@ -426,7 +426,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   std::u16string expected_title_1 = u"Google Product A detected";
@@ -437,7 +437,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_2 =
+  absl::optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
   std::u16string expected_title_2 = u"Google Product B detected";
@@ -452,7 +452,7 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_3);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_3 =
+  absl::optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(guid_3);
   ASSERT_TRUE(notification_3);
   std::u16string expected_title_3 = u"Google Product C detected";
@@ -523,12 +523,12 @@ TEST_F(WebUsbDetectorTest,
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   EXPECT_EQ(2, tab_strip_model->count());
 
-  notification_1->delegate()->Click(base::nullopt, base::nullopt);
+  notification_1->delegate()->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(2, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
@@ -550,12 +550,12 @@ TEST_F(WebUsbDetectorTest, NotificationClickedWhileNoTabUrlIsLandingPage) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   EXPECT_EQ(0, tab_strip_model->count());
 
-  notification_1->delegate()->Click(base::nullopt, base::nullopt);
+  notification_1->delegate()->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(1, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
@@ -616,7 +616,7 @@ TEST_F(WebUsbDetectorTest, TwoDevicesSameLandingPageAddedRemovedAndAddedAgain) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   std::u16string expected_title_1 = u"Google Product A detected";
@@ -639,7 +639,7 @@ TEST_F(WebUsbDetectorTest, TwoDevicesSameLandingPageAddedRemovedAndAddedAgain) {
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_2 =
+  absl::optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
   std::u16string expected_title_2 = u"Google Product B detected";
@@ -674,12 +674,12 @@ TEST_F(
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   EXPECT_EQ(0, tab_strip_model->count());
 
-  notification_1->delegate()->Click(base::nullopt, base::nullopt);
+  notification_1->delegate()->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(1, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
@@ -713,12 +713,12 @@ TEST_F(WebUsbDetectorTest,
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
   EXPECT_EQ(2, tab_strip_model->count());
 
-  notification_1->delegate()->Click(base::nullopt, base::nullopt);
+  notification_1->delegate()->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(2, tab_strip_model->count());
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());

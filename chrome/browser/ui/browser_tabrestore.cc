@@ -123,7 +123,7 @@ WebContents* AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
     base::TimeTicks last_active_time,
@@ -145,7 +145,7 @@ WebContents* AddRestoredTab(
     add_types |= TabStripModel::ADD_PINNED;
   }
 
-  const base::Optional<tab_groups::TabGroupId> surrounding_group =
+  const absl::optional<tab_groups::TabGroupId> surrounding_group =
       tab_strip_model->GetSurroundingTabGroup(tab_index);
 
   // If inserting at |tab_index| would put the tab within a different

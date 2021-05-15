@@ -114,9 +114,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   void TearDown() override { provider_.reset(); }
 
   void ExpectRouteResult(RouteRequestResult::ResultCode expected_result_code,
-                         const base::Optional<MediaRoute>& media_route,
+                         const absl::optional<MediaRoute>& media_route,
                          mojom::RoutePresentationConnectionPtr,
-                         const base::Optional<std::string>& error_text,
+                         const absl::optional<std::string>& error_text,
                          RouteRequestResult::ResultCode result_code) {
     EXPECT_EQ(expected_result_code, result_code);
     if (result_code == RouteRequestResult::OK) {
@@ -181,10 +181,10 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
   void TestJoinRoute(
       RouteRequestResult::ResultCode expected_result,
-      base::Optional<std::string> source_to_join = base::nullopt,
-      base::Optional<std::string> presentation_to_join = base::nullopt,
-      base::Optional<url::Origin> client_origin = base::nullopt,
-      base::Optional<bool> client_incognito = base::nullopt) {
+      absl::optional<std::string> source_to_join = absl::nullopt,
+      absl::optional<std::string> presentation_to_join = absl::nullopt,
+      absl::optional<url::Origin> client_origin = absl::nullopt,
+      absl::optional<bool> client_incognito = absl::nullopt) {
     CreateRoute();
     ASSERT_TRUE(route_);
 
@@ -296,7 +296,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     const MediaRoute::Id& route_id = route_->media_route_id();
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          base::nullopt);
+                                          absl::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
                                 network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
@@ -336,7 +336,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          base::nullopt);
+                                          absl::nullopt);
     loader_factory_.AddResponse(app_instance_url_,
                                 network::mojom::URLResponseHead::New(), "",
                                 network::URLLoaderCompletionStatus());
@@ -372,7 +372,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     const MediaRoute::Id& route_id = route_->media_route_id();
     ASSERT_TRUE(app_instance_url_.is_valid());
     activity_manager_->SetExpectedRequest(app_instance_url_, "DELETE",
-                                          base::nullopt);
+                                          absl::nullopt);
     loader_factory_.AddResponse(
         app_instance_url_, network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
@@ -401,7 +401,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   }
 
   MOCK_METHOD2(OnTerminateRoute,
-               void(const base::Optional<std::string>&,
+               void(const absl::optional<std::string>&,
                     RouteRequestResult::ResultCode));
 
  protected:
@@ -622,19 +622,19 @@ TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongMediaSource) {
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongPresentationId) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, base::nullopt,
+  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
                 "wrong-presentation-id");
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForWrongOrigin) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, base::nullopt,
-                base::nullopt,
+  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
+                absl::nullopt,
                 url::Origin::Create(GURL("https://wrong-origin.com")));
 }
 
 TEST_F(DialMediaRouteProviderTest, JoinRouteFailsForIncognitoMismatch) {
-  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, base::nullopt,
-                base::nullopt, base::nullopt, true);
+  TestJoinRoute(RouteRequestResult::ROUTE_NOT_FOUND, absl::nullopt,
+                absl::nullopt, absl::nullopt, true);
 }
 
 TEST_F(DialMediaRouteProviderTest, TerminateRoute) {

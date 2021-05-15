@@ -60,7 +60,7 @@ class BackgroundSyncDelegateImpl
 #endif
 
   void GetUkmSourceId(const url::Origin& origin,
-                      base::OnceCallback<void(base::Optional<ukm::SourceId>)>
+                      base::OnceCallback<void(absl::optional<ukm::SourceId>)>
                           callback) override;
   void Shutdown() override;
   HostContentSettingsMap* GetHostContentSettingsMap() override;

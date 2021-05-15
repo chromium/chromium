@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -137,7 +137,7 @@ SkColor GetLightModeColor(int id) {
   }
 }
 
-base::Optional<SkColor> GetIncognitoColor(int id) {
+absl::optional<SkColor> GetIncognitoColor(int id) {
   switch (id) {
     case ThemeProperties::COLOR_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
@@ -183,11 +183,11 @@ base::Optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_OMNIBOX_BACKGROUND:
       return gfx::kGoogleGrey900;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<SkColor> GetDarkModeColor(int id) {
+absl::optional<SkColor> GetDarkModeColor(int id) {
   // Current UX thinking is to use the same colors for dark mode and incognito,
   // but this is very subject to change. Additionally, dark mode incognito may
   // end up having a different look. For now, just call into GetIncognitoColor
@@ -301,12 +301,12 @@ SkColor ThemeProperties::GetDefaultColor(int id,
                                          bool incognito,
                                          bool dark_mode) {
   if (incognito) {
-    base::Optional<SkColor> incognito_color = GetIncognitoColor(id);
+    absl::optional<SkColor> incognito_color = GetIncognitoColor(id);
     if (incognito_color.has_value())
       return incognito_color.value();
   }
   if (dark_mode) {
-    base::Optional<SkColor> dark_mode_color = GetDarkModeColor(id);
+    absl::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
     if (dark_mode_color.has_value())
       return dark_mode_color.value();
   }

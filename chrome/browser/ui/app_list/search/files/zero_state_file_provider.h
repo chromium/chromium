@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/chromeos/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -65,7 +65,7 @@ class ZeroStateFileProvider : public SearchProvider,
   std::unique_ptr<RecurrenceRanker> files_ranker_;
 
   // The normalizer normalizes the relevance scores of Results
-  base::Optional<ScoreNormalizer> normalizer_;
+  absl::optional<ScoreNormalizer> normalizer_;
 
   base::TimeTicks query_start_time_;
 

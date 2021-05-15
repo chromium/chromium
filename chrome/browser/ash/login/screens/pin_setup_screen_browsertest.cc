@@ -124,7 +124,7 @@ class PinSetupScreenTest
     run_loop.Run();
   }
 
-  base::Optional<PinSetupScreen::Result> screen_result_;
+  absl::optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:

@@ -59,13 +59,13 @@ AppActivityRegistry::TestApi::TestApi(AppActivityRegistry* registry)
 
 AppActivityRegistry::TestApi::~TestApi() = default;
 
-const base::Optional<AppLimit>& AppActivityRegistry::TestApi::GetAppLimit(
+const absl::optional<AppLimit>& AppActivityRegistry::TestApi::GetAppLimit(
     const AppId& app_id) const {
   DCHECK(base::Contains(registry_->activity_registry_, app_id));
   return registry_->activity_registry_.at(app_id).limit;
 }
 
-base::Optional<base::TimeDelta> AppActivityRegistry::TestApi::GetTimeLeft(
+absl::optional<base::TimeDelta> AppActivityRegistry::TestApi::GetTimeLeft(
     const AppId& app_id) const {
   return registry_->GetTimeLeftForApp(app_id);
 }
@@ -75,7 +75,7 @@ void AppActivityRegistry::TestApi::SaveAppActivity() {
 }
 
 AppActivityRegistry::SystemNotification::SystemNotification(
-    base::Optional<base::TimeDelta> app_time_limit,
+    absl::optional<base::TimeDelta> app_time_limit,
     AppNotification app_notification)
     : time_limit(app_time_limit), notification(app_notification) {}
 
@@ -114,7 +114,7 @@ bool AppActivityRegistry::AppDetails::IsLimitReached() const {
 }
 
 bool AppActivityRegistry::AppDetails::IsLimitEqual(
-    const base::Optional<AppLimit>& another_limit) const {
+    const absl::optional<AppLimit>& another_limit) const {
   if (limit.has_value() != another_limit.has_value())
     return false;
 
@@ -355,7 +355,7 @@ base::TimeDelta AppActivityRegistry::GetActiveTime(const AppId& app_id) const {
   return activity_registry_.at(app_id).activity.RunningActiveTime();
 }
 
-const base::Optional<AppLimit>& AppActivityRegistry::GetWebTimeLimit() const {
+const absl::optional<AppLimit>& AppActivityRegistry::GetWebTimeLimit() const {
   DCHECK(base::Contains(activity_registry_, GetChromeAppId()));
   return activity_registry_.at(GetChromeAppId()).limit;
 }
@@ -365,20 +365,20 @@ AppState AppActivityRegistry::GetAppState(const AppId& app_id) const {
   return activity_registry_.at(app_id).activity.app_state();
 }
 
-base::Optional<base::TimeDelta> AppActivityRegistry::GetTimeLimit(
+absl::optional<base::TimeDelta> AppActivityRegistry::GetTimeLimit(
     const AppId& app_id) const {
   if (!base::Contains(activity_registry_, app_id))
-    return base::nullopt;
+    return absl::nullopt;
 
-  const base::Optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
+  const absl::optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
   if (!limit || limit->restriction() != AppRestriction::kTimeLimit)
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(limit->daily_limit());
   return limit->daily_limit();
 }
 
-void AppActivityRegistry::SetReportingEnabled(base::Optional<bool> value) {
+void AppActivityRegistry::SetReportingEnabled(absl::optional<bool> value) {
   if (value.has_value())
     activity_reporting_enabled_ = value.value();
 }
@@ -480,7 +480,7 @@ bool AppActivityRegistry::UpdateAppLimits(
     if (app_id != GetChromeAppId() && IsWebAppOrExtension(app_id))
       continue;
 
-    base::Optional<AppLimit> new_limit = base::nullopt;
+    absl::optional<AppLimit> new_limit = absl::nullopt;
     if (base::Contains(app_limits, app_id))
       new_limit = app_limits.at(app_id);
 
@@ -502,7 +502,7 @@ bool AppActivityRegistry::UpdateAppLimits(
 
 bool AppActivityRegistry::SetAppLimit(
     const AppId& app_id,
-    const base::Optional<AppLimit>& app_limit) {
+    const absl::optional<AppLimit>& app_limit) {
   DCHECK(base::Contains(activity_registry_, app_id));
 
   // If an application is not installed but present in the registry return
@@ -526,13 +526,13 @@ bool AppActivityRegistry::SetAppLimit(
 
   // If |did_change| is false, handle the following corner case before
   // returning. The default value for app limit during construction at the
-  // beginning of the session is base::nullopt. If the application was paused in
+  // beginning of the session is absl::nullopt. If the application was paused in
   // the previous session, and its limit was removed or feature is disabled in
-  // the current session, the |app_limit| provided will be base::nullopt. Since
+  // the current session, the |app_limit| provided will be absl::nullopt. Since
   // both values(the default app limit and the |app_limit| provided as an
-  // argument for this method) are the same base::nullopt, |did_change| will be
+  // argument for this method) are the same absl::nullopt, |did_change| will be
   // false. But we still need to update the state to available as the new app
-  // limit is base::nullopt.
+  // limit is absl::nullopt.
   if (!did_change && (IsAppAvailable(app_id) || app_limit.has_value()))
     return updated;
 
@@ -542,7 +542,7 @@ bool AppActivityRegistry::SetAppLimit(
               << " which is allowlisted.";
     }
 
-    details.limit = base::nullopt;
+    details.limit = absl::nullopt;
     return false;
   }
 
@@ -612,9 +612,9 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
     if (GetAppState(app) == AppState::kAlwaysAvailable)
       continue;
 
-    base::Optional<AppLimit>& limit = activity_registry_.at(app).limit;
+    absl::optional<AppLimit>& limit = activity_registry_.at(app).limit;
     if (limit.has_value())
-      limit = base::nullopt;
+      limit = absl::nullopt;
 
     SetAppState(app, AppState::kAlwaysAvailable);
   }
@@ -629,11 +629,11 @@ void AppActivityRegistry::SaveAppActivity() {
 
     base::Value::ListView list_view = list_value->GetList();
     for (base::Value& entry : list_view) {
-      base::Optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
+      absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
       DCHECK(app_id.has_value());
 
       if (!base::Contains(activity_registry_, app_id.value())) {
-        base::Optional<AppState> state =
+        absl::optional<AppState> state =
             PersistedAppInfo::GetAppStateFromDict(&entry);
         DCHECK(state.has_value() && state.value() == AppState::kUninstalled);
         continue;
@@ -702,7 +702,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
 
   for (size_t index = 0; index < list_storage.size();) {
     base::Value& entry = list_storage[index];
-    base::Optional<PersistedAppInfo> info =
+    absl::optional<PersistedAppInfo> info =
         PersistedAppInfo::PersistedAppInfoFromDict(&entry, true);
     DCHECK(info.has_value());
     info->RemoveActiveTimeEarlierThan(timestamp);
@@ -795,7 +795,7 @@ void AppActivityRegistry::NotifyLimitReached(const AppId& app_id,
   DCHECK(base::Contains(activity_registry_, app_id));
   DCHECK_EQ(GetAppState(app_id), AppState::kLimitReached);
 
-  const base::Optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
+  const absl::optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
   DCHECK(limit->daily_limit());
   for (auto& observer : app_state_observers_) {
     observer.OnAppLimitReached(app_id, limit->daily_limit().value(),
@@ -861,7 +861,7 @@ void AppActivityRegistry::ScheduleTimeLimitCheckForApp(const AppId& app_id) {
   DCHECK(!app_details.app_limit_timer->IsRunning());
 
   // Check that the timer instance has been created.
-  base::Optional<base::TimeDelta> time_limit = GetTimeLeftForApp(app_id);
+  absl::optional<base::TimeDelta> time_limit = GetTimeLeftForApp(app_id);
   DCHECK(time_limit.has_value());
 
   if (time_limit > kFiveMinutes) {
@@ -884,26 +884,26 @@ void AppActivityRegistry::ScheduleTimeLimitCheckForApp(const AppId& app_id) {
                      base::Unretained(this), app_id));
 }
 
-base::Optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
+absl::optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
     const AppId& app_id) const {
   DCHECK(base::Contains(activity_registry_, app_id));
   const AppDetails& app_details = activity_registry_.at(app_id);
 
   // If |app_details.limit| doesn't have value, the app has no restriction.
   if (!app_details.limit.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   const AppLimit& limit = app_details.limit.value();
 
   if (limit.restriction() != AppRestriction::kTimeLimit)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If the app has kTimeLimit restriction, DCHECK that daily limit has value.
   DCHECK(limit.daily_limit().has_value());
 
   AppState state = app_details.activity.app_state();
   if (state == AppState::kAlwaysAvailable || state == AppState::kBlocked)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (state == AppState::kLimitReached)
     return kZeroMinutes;
@@ -928,7 +928,7 @@ base::Optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
 void AppActivityRegistry::CheckTimeLimitForApp(const AppId& app_id) {
   AppDetails& details = activity_registry_[app_id];
 
-  base::Optional<base::TimeDelta> time_left = GetTimeLeftForApp(app_id);
+  absl::optional<base::TimeDelta> time_left = GetTimeLeftForApp(app_id);
   AppNotification last_notification = details.activity.last_notification();
 
   if (!time_left.has_value())
@@ -970,8 +970,8 @@ void AppActivityRegistry::CheckTimeLimitForApp(const AppId& app_id) {
 
 bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
     const AppId& app_id,
-    const base::Optional<AppLimit>& old_limit,
-    const base::Optional<AppLimit>& new_limit) {
+    const absl::optional<AppLimit>& old_limit,
+    const absl::optional<AppLimit>& new_limit) {
   // Web app limit changes are covered by Chrome notification.
   if (app_id != GetChromeAppId() && IsWebAppOrExtension(app_id))
     return false;
@@ -988,7 +988,7 @@ bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
 
   if (!was_blocked && is_blocked) {
     MaybeShowSystemNotification(
-        app_id, SystemNotification(base::nullopt, AppNotification::kBlocked));
+        app_id, SystemNotification(absl::nullopt, AppNotification::kBlocked));
     return true;
   }
 
@@ -999,7 +999,7 @@ bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
 
   if (was_blocked && !is_blocked && !has_time_limit) {
     MaybeShowSystemNotification(
-        app_id, SystemNotification(base::nullopt, AppNotification::kAvailable));
+        app_id, SystemNotification(absl::nullopt, AppNotification::kAvailable));
     return true;
   }
 
@@ -1007,7 +1007,7 @@ bool AppActivityRegistry::ShowLimitUpdatedNotificationIfNeeded(
   if (!has_time_limit && had_time_limit) {
     MaybeShowSystemNotification(
         app_id,
-        SystemNotification(base::nullopt, AppNotification::kTimeLimitChanged));
+        SystemNotification(absl::nullopt, AppNotification::kTimeLimitChanged));
     return true;
   }
 

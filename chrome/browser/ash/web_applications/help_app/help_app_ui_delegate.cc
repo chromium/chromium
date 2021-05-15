@@ -38,7 +38,7 @@
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
-base::Optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
+absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   constexpr char kHelpAppFeedbackCategoryTag[] = "FromHelpApp";
   // We don't change the default description, or add extra diagnostics so those
@@ -49,7 +49,7 @@ base::Optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
                            std::string() /* description_placeholder_text */,
                            kHelpAppFeedbackCategoryTag /* category_tag */,
                            std::string() /* extra_diagnostics */);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ChromeHelpAppUIDelegate::PopulateLoadTimeData(

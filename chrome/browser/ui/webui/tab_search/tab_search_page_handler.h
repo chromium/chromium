@@ -110,7 +110,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       sessions::TabRestoreService::Tab* tab);
 
   // Returns tab details required to perform an action on the tab.
-  base::Optional<TabDetails> GetTabDetails(int32_t tab_id);
+  absl::optional<TabDetails> GetTabDetails(int32_t tab_id);
 
   // Schedule a timer to call TabsChanged() when it times out
   // in order to reduce numbers of RPC.

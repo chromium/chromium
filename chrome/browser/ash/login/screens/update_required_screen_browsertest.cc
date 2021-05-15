@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -40,6 +39,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "dbus/object_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {

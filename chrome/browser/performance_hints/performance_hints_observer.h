@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/performance_hints/rewrite_handler.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
@@ -20,6 +19,7 @@
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -106,19 +106,19 @@ class PerformanceHintsObserver
   // Attempts to retrieve a PerformanceHint for |url| from the link hints of the
   // current page.
   std::tuple<SourceLookupStatus,
-             base::Optional<optimization_guide::proto::PerformanceHint>>
+             absl::optional<optimization_guide::proto::PerformanceHint>>
   LinkHintForURL(const GURL& url);
 
   // Attempts to retrieve a PerformanceHint for |url| from the OptimizationGuide
   // metadata for that URL.
   std::tuple<SourceLookupStatus,
-             base::Optional<optimization_guide::proto::PerformanceHint>>
+             absl::optional<optimization_guide::proto::PerformanceHint>>
   PageHintForURL(const GURL& url) const;
 
   // Attempts to retrieve a PerformanceHint for |url| from the fast host bloom
   // filter.
   std::tuple<SourceLookupStatus,
-             base::Optional<optimization_guide::proto::PerformanceHint>>
+             absl::optional<optimization_guide::proto::PerformanceHint>>
   FastHostHintForURL(const GURL& url) const;
 
   // HintForURLStatus represents the overall lookup result for a given URL.
@@ -152,8 +152,8 @@ class PerformanceHintsObserver
     // True if the URL was rewritten before lookups were done. False otherwise.
     bool rewritten = false;
     // If status == kHintFound, this will contain the matching hint.
-    base::Optional<optimization_guide::proto::PerformanceHint> hint =
-        base::nullopt;
+    absl::optional<optimization_guide::proto::PerformanceHint> hint =
+        absl::nullopt;
   };
 
   // Fetches a PerformanceHint for the given |url|.
@@ -175,7 +175,7 @@ class PerformanceHintsObserver
 
   // The URL of the main frame of the associated WebContents. This is not set if
   // the current page is an error page.
-  base::Optional<GURL> page_url_;
+  absl::optional<GURL> page_url_;
 
   // Link URLs that match |first| should use the Performance hint in |second|.
   std::vector<std::pair<optimization_guide::URLPatternWithWildcards,

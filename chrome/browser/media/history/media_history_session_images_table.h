@@ -47,7 +47,7 @@ class MediaHistorySessionImagesTable : public MediaHistoryTableBase {
   // Saves the link and returns whether it was successful.
   bool LinkImage(const int64_t session_id,
                  const int64_t image_id,
-                 const base::Optional<gfx::Size> size);
+                 const absl::optional<gfx::Size> size);
 
   // Gets all the images for a session.
   std::vector<media_session::MediaImage> GetImagesForSession(

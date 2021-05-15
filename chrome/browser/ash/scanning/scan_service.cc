@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +25,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -233,7 +233,7 @@ scanning::ScanJobFailureReason GetScanJobFailureReason(
 // Records the histograms based on the scan job result.
 void RecordScanJobResult(
     bool success,
-    const base::Optional<scanning::ScanJobFailureReason>& failure_reason,
+    const absl::optional<scanning::ScanJobFailureReason>& failure_reason,
     int num_pages_scanned) {
   base::UmaHistogramBoolean("Scanning.ScanJobSuccessful", success);
   if (success) {
@@ -379,7 +379,7 @@ void ScanService::OnScannerNamesReceived(
 
 void ScanService::OnScannerCapabilitiesReceived(
     GetScannerCapabilitiesCallback callback,
-    const base::Optional<lorgnette::ScannerCapabilities>& capabilities) {
+    const absl::optional<lorgnette::ScannerCapabilities>& capabilities) {
   if (!capabilities) {
     LOG(ERROR) << "Failed to get scanner capabilities.";
     std::move(callback).Run(mojo_ipc::ScannerCapabilities::New());
@@ -488,7 +488,7 @@ void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
 }
 
 void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
-  base::Optional<scanning::ScanJobFailureReason> failure_reason = base::nullopt;
+  absl::optional<scanning::ScanJobFailureReason> failure_reason = absl::nullopt;
   if (failure_mode != lorgnette::SCAN_FAILURE_MODE_NO_FAILURE) {
     failure_reason = GetScanJobFailureReason(failure_mode);
     scanned_file_paths_.clear();

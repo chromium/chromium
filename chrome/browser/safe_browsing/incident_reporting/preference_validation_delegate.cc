@@ -61,7 +61,7 @@ PreferenceValidationDelegate::~PreferenceValidationDelegate() {
 
 void PreferenceValidationDelegate::OnAtomicPreferenceValidation(
     const std::string& pref_path,
-    base::Optional<base::Value> value,
+    absl::optional<base::Value> value,
     ValueState value_state,
     ValueState external_validation_value_state,
     bool is_personal) {

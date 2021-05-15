@@ -239,7 +239,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
-      GURL("https://another-test.com"), base::nullopt));
+      GURL("https://another-test.com"), absl::nullopt));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -274,7 +274,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
-      GURL("https://embedded.com"), base::nullopt));
+      GURL("https://embedded.com"), absl::nullopt));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -541,7 +541,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
         ContentSetting::CONTENT_SETTING_BLOCK}});
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsFlocAllowedForContext(
-      GURL("https://embedded.com"), base::nullopt));
+      GURL("https://embedded.com"), absl::nullopt));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -573,7 +573,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
       /*managed_cookie_exceptions=*/{});
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
-      GURL("https://embedded.com"), base::nullopt));
+      GURL("https://embedded.com"), absl::nullopt));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://test.com"))));
@@ -612,7 +612,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
       GURL("https://embedded.com"),
       url::Origin::Create(GURL("https://embedded.com"))));
   EXPECT_FALSE(privacy_sandbox_settings()->IsFlocAllowedForContext(
-      GURL("https://embedded.com"), base::nullopt));
+      GURL("https://embedded.com"), absl::nullopt));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsConversionMeasurementAllowed(
       url::Origin::Create(GURL("https://embedded.com")),

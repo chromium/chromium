@@ -40,7 +40,7 @@ inline std::u16string GetTitleText(base::TimeDelta time_until_expiry) {
 
 class PasswordExpiryNotificationTest : public testing::Test {
  protected:
-  base::Optional<Notification> Notification() {
+  absl::optional<Notification> Notification() {
     return NotificationDisplayServiceTester::Get()->GetNotification(
         "saml.password-expiry-notification");
   }

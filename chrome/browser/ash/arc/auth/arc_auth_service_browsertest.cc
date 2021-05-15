@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
@@ -71,6 +70,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               kSecondaryAccountEmail);

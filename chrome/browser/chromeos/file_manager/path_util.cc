@@ -428,7 +428,7 @@ bool ConvertFileSystemURLToPathInsideVM(
   } else if (id == GetCrostiniMountPointName(profile)) {
     // Crostini.
     if (map_crostini_home) {
-      base::Optional<crostini::ContainerInfo> container_info =
+      absl::optional<crostini::ContainerInfo> container_info =
           crostini::CrostiniManager::GetForProfile(profile)->GetContainerInfo(
               crostini::ContainerId::GetDefault());
       if (!container_info) {
@@ -483,7 +483,7 @@ bool ConvertPathInsideVMToFileSystemURL(
   base::FilePath relative_path;
 
   if (map_crostini_home) {
-    base::Optional<crostini::ContainerInfo> container_info =
+    absl::optional<crostini::ContainerInfo> container_info =
         crostini::CrostiniManager::GetForProfile(profile)->GetContainerInfo(
             crostini::ContainerId::GetDefault());
     if (container_info &&

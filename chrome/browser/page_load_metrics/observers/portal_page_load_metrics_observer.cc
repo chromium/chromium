@@ -139,7 +139,7 @@ void PortalPageLoadMetricsObserver::RecordTimingMetrics(
 }
 
 void PortalPageLoadMetricsObserver::ReportPortalActivatedPaint(
-    const base::Optional<base::TimeTicks>& portal_activated_paint) {
+    const absl::optional<base::TimeTicks>& portal_activated_paint) {
   portal_paint_time_ = portal_activated_paint;
 }
 

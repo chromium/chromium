@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class Profile;
@@ -20,7 +20,7 @@ class OSExchangeData;
 
 namespace tab_strip_ui {
 
-base::Optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
+absl::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
     std::string group_id_string);
 
@@ -31,7 +31,7 @@ void MoveTabAcrossWindows(
     int from_index,
     Browser* target_browser,
     int to_index,
-    base::Optional<tab_groups::TabGroupId> to_group_id = base::nullopt);
+    absl::optional<tab_groups::TabGroupId> to_group_id = absl::nullopt);
 
 // Returns whether |drop_data| is a tab drag originating from a WebUI
 // tab strip.

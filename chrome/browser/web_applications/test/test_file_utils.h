@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -41,11 +41,11 @@ class TestFileUtils : public FileUtilsWrapper {
   // Simulate "disk full" error: limit disk space for |WriteFile| operations.
   void SetRemainingDiskSpaceSize(int remaining_disk_space);
 
-  void SetNextDeleteFileRecursivelyResult(base::Optional<bool> delete_result);
+  void SetNextDeleteFileRecursivelyResult(absl::optional<bool> delete_result);
 
  private:
   std::map<base::FilePath, base::FilePath> read_file_rerouting_;
-  base::Optional<bool> delete_file_recursively_result_;
+  absl::optional<bool> delete_file_recursively_result_;
   int remaining_disk_space_ = kNoLimit;
 
   DISALLOW_ASSIGN(TestFileUtils);

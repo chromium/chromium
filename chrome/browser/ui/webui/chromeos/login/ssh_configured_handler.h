@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -36,7 +36,7 @@ class SshConfiguredHandler : public BaseWebUIHandler {
   void OnGetDebuggingFeatures(bool succeeded, int feature_mask);
   void ResolveCallbacks();
 
-  base::Optional<bool> is_ssh_configured_;
+  absl::optional<bool> is_ssh_configured_;
   std::vector<std::string> callback_ids_;
 
   base::WeakPtrFactory<SshConfiguredHandler> weak_factory_{this};

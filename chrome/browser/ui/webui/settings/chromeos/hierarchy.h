@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace settings {
@@ -77,7 +77,7 @@ class Hierarchy {
     mojom::Section section;
 
     // The parent subpage, if applicable. Only applies to nested subpages.
-    base::Optional<mojom::Subpage> parent_subpage;
+    absl::optional<mojom::Subpage> parent_subpage;
 
     // Generates a search result for this subpage, using the canonical search
     // tag as the search result text. |relevance_score| must be passed by the
@@ -109,7 +109,7 @@ class Hierarchy {
   // its subpage. Some settings are embedded directly into the section and have
   // no associated subpage.
   using SettingLocation =
-      std::pair<mojom::Section, base::Optional<mojom::Subpage>>;
+      std::pair<mojom::Section, absl::optional<mojom::Subpage>>;
 
   struct SettingMetadata {
     explicit SettingMetadata(mojom::Section primary_section);

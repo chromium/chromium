@@ -88,7 +88,7 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
       SubresourceRedirectResult::kUnknown;
 
   // Used to record the image load and compression metrics.
-  base::Optional<LoginRobotsCompressionMetrics>
+  absl::optional<LoginRobotsCompressionMetrics>
       login_robots_compression_metrics_;
 
   // Used to get a weak pointer to |this|.

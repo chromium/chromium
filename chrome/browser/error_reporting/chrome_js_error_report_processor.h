@@ -15,11 +15,11 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -104,7 +104,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   struct PlatformInfo;
   using ParameterMap = std::map<std::string, std::string>;
 
-  base::Optional<JavaScriptErrorReport> CheckConsentAndRedact(
+  absl::optional<JavaScriptErrorReport> CheckConsentAndRedact(
       JavaScriptErrorReport error_report);
 
   PlatformInfo GetPlatformInfo();
@@ -120,7 +120,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       base::TimeDelta browser_process_uptime,
       base::Time report_time,
-      base::Optional<JavaScriptErrorReport> error_report);
+      absl::optional<JavaScriptErrorReport> error_report);
 
   // To avoid spamming the error collection system, do not send duplicate
   // error reports more than once per hour. Otherwise, if we get an error
@@ -135,7 +135,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
 
   void SendReport(
       ParameterMap params,
-      base::Optional<std::string> stack_trace,
+      absl::optional<std::string> stack_trace,
       bool send_to_production_servers,
       base::ScopedClosureRunner callback_runner,
       base::Time report_time,
@@ -153,10 +153,10 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // value1:5:abcdevalue2:10:hellothere
   static std::string ParamsToCrashReporterString(
       const ParameterMap& params,
-      const base::Optional<std::string>& stack_trace);
+      const absl::optional<std::string>& stack_trace);
 
   void SendReportViaCrashReporter(ParameterMap params,
-                                  base::Optional<std::string> stack_trace);
+                                  absl::optional<std::string> stack_trace);
 
   bool force_non_memfd_for_test_ = false;
 #else

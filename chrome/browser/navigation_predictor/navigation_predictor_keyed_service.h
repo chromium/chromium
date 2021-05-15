@@ -10,10 +10,10 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,13 +36,13 @@ class NavigationPredictorKeyedService : public KeyedService {
   class Prediction {
    public:
     Prediction(content::WebContents* web_contents,
-               const base::Optional<GURL>& source_document_url,
+               const absl::optional<GURL>& source_document_url,
                PredictionSource prediction_source,
                const std::vector<GURL>& sorted_predicted_urls);
     Prediction(const Prediction& other);
     Prediction& operator=(const Prediction& other);
     ~Prediction();
-    const base::Optional<GURL>& source_document_url() const;
+    const absl::optional<GURL>& source_document_url() const;
     PredictionSource prediction_source() const { return prediction_source_; }
     const std::vector<GURL>& sorted_predicted_urls() const;
 
@@ -59,7 +59,7 @@ class NavigationPredictorKeyedService : public KeyedService {
     // required because external app predictions didn't provide this field, but
     // external predictions are no longer supported.
     // Current URL of the document from where the navigtion may happen.
-    base::Optional<GURL> source_document_url_;
+    absl::optional<GURL> source_document_url_;
 
     // |prediction_source_| indicates how the prediction was generated and
     // affects how the prediction should be consumed. If the
@@ -85,7 +85,7 @@ class NavigationPredictorKeyedService : public KeyedService {
   class Observer {
    public:
     virtual void OnPredictionUpdated(
-        const base::Optional<Prediction> prediction) = 0;
+        const absl::optional<Prediction> prediction) = 0;
 
    protected:
     Observer() {}
@@ -138,7 +138,7 @@ class NavigationPredictorKeyedService : public KeyedService {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Last known prediction.
-  base::Optional<Prediction> last_prediction_;
+  absl::optional<Prediction> last_prediction_;
 
   // Manages preconnecting to the user's default search engine.
   SearchEnginePreconnector search_engine_preconnector_;

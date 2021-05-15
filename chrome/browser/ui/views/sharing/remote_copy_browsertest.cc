@@ -8,7 +8,6 @@
 
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -96,8 +96,8 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   }
 
   gcm::IncomingMessage CreateMessage(const std::string& device_name,
-                                     base::Optional<std::string> text,
-                                     base::Optional<GURL> image_url) {
+                                     absl::optional<std::string> text,
+                                     absl::optional<GURL> image_url) {
     chrome_browser_sharing::SharingMessage sharing_message;
     sharing_message.set_sender_guid(base::GenerateGUID());
     sharing_message.set_sender_device_name(device_name);
@@ -119,7 +119,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
                        const std::string& text) {
     sharing_service_->GetFCMHandlerForTesting()->OnMessage(
         kSharingFCMAppID,
-        CreateMessage(device_name, text, /*image_url=*/base::nullopt));
+        CreateMessage(device_name, text, /*image_url=*/absl::nullopt));
   }
 
   void SendImageMessage(const std::string& device_name, const GURL& image_url) {
@@ -128,7 +128,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
     ui::ClipboardMonitor::GetInstance()->AddObserver(&observer);
     sharing_service_->GetFCMHandlerForTesting()->OnMessage(
         kSharingFCMAppID,
-        CreateMessage(device_name, /*text*/ base::nullopt, image_url));
+        CreateMessage(device_name, /*text*/ absl::nullopt, image_url));
     run_loop.Run();
     ui::ClipboardMonitor::GetInstance()->RemoveObserver(&observer);
   }

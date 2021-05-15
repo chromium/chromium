@@ -240,7 +240,7 @@ void LoadingDataCollector::RecordPrefetchInitiated(NavigationId navigation_id,
 
 void LoadingDataCollector::RecordMainFrameLoadComplete(
     NavigationId navigation_id,
-    const base::Optional<OptimizationGuidePrediction>&
+    const absl::optional<OptimizationGuidePrediction>&
         optimization_guide_prediction) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

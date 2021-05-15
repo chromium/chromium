@@ -196,7 +196,7 @@ void TerminaInstaller::OnInstallComponent(
       error == component_updater::CrOSComponentManager::Error::NONE;
 
   if (is_successful) {
-    dlc_id_ = base::nullopt;
+    dlc_id_ = absl::nullopt;
     termina_location_ = path;
     UMA_HISTOGRAM_ENUMERATION(kHistogram, InstallSource::Component);
   } else {
@@ -295,7 +295,7 @@ void TerminaInstaller::OnReinstallComponent(
 void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
   // Unset |termina_location_| now since it will become invalid at some point
   // soon.
-  termina_location_ = base::nullopt;
+  termina_location_ = absl::nullopt;
 
   // This is really a vector of bool, but std::vector<bool> has weird properties
   // that stop us from using it in this way.
@@ -423,7 +423,7 @@ base::FilePath TerminaInstaller::GetInstallLocation() {
   return *termina_location_;
 }
 
-base::Optional<std::string> TerminaInstaller::GetDlcId() {
+absl::optional<std::string> TerminaInstaller::GetDlcId() {
   CHECK(termina_location_) << "GetDlcId() called while termina not installed";
   return dlc_id_;
 }

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_LIMIT_ERROR_PAGE_WEB_TIME_LIMIT_ERROR_PAGE_H_
 
 #include <string>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -23,7 +23,7 @@ class TimeDelta;
 // |app_locale| is used to specify the locale used by the browser.
 std::string GetWebTimeLimitChromeErrorPage(
     const std::string& domain,
-    const base::Optional<std::u16string>& title,
+    const absl::optional<std::u16string>& title,
     base::TimeDelta time_limit,
     const std::string& app_locale);
 

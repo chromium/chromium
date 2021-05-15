@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -22,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -114,9 +114,9 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 
   void SetSnoozePrefs(const base::Feature& iph_feature,
                       bool is_dismissed,
-                      base::Optional<int> show_count,
+                      absl::optional<int> show_count,
                       int snooze_count,
-                      base::Optional<base::Time> last_show_time,
+                      absl::optional<base::Time> last_show_time,
                       base::Time last_snooze_time,
                       base::TimeDelta last_snooze_duration) {
     FeaturePromoSnoozeService::SnoozeData data;
@@ -357,9 +357,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   base::Time snooze_time = base::Time::Now() - snooze_duration;
   SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                  /* is_dismiss */ false,
-                 /* show_count */ base::nullopt,
+                 /* show_count */ absl::nullopt,
                  /* snooze_count */ 1,
-                 /* last_show_time */ base::nullopt,
+                 /* last_show_time */ absl::nullopt,
                  /* last_snooze_time */ snooze_time,
                  /* last_snooze_duration */ snooze_duration);
 

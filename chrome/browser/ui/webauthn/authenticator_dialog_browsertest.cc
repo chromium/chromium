@@ -92,14 +92,14 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_activate") {
       model->set_cable_transport_info(
-          /*extension_is_v2=*/base::nullopt,
+          /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_pair") {
       model->set_cable_transport_info(
-          /*extension_is_v2=*/base::nullopt,
+          /*extension_is_v2=*/absl::nullopt,
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model->SetCurrentStepForTesting(
@@ -218,7 +218,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         static const uint8_t kAppParam[32] = {0};
         static const uint8_t kSignatureCounter[4] = {0};
         device::AuthenticatorData auth_data(kAppParam, 0 /* flags */,
-                                            kSignatureCounter, base::nullopt);
+                                            kSignatureCounter, absl::nullopt);
         device::AuthenticatorGetAssertionResponse response(
             std::move(auth_data), {10, 11, 12, 13} /* signature */);
         device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});

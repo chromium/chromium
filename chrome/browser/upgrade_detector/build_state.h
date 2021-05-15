@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UPGRADE_DETECTOR_BUILD_STATE_H_
 
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BuildStateObserver;
 
@@ -49,7 +49,7 @@ class BuildState {
   // value may be numerically higher or lower than the currently running build.
   // Note: On Chrome OS, this is the system version number rather than the
   // browser version number.
-  const base::Optional<base::Version>& installed_version() const {
+  const absl::optional<base::Version>& installed_version() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return installed_version_;
   }
@@ -57,7 +57,7 @@ class BuildState {
   // If update_type() is not kNone, returns the optional critical version,
   // indicating a minimum version that must be running. A running version lower
   // than this must be updated as soon as possible. (Windows only.)
-  const base::Optional<base::Version>& critical_version() const {
+  const absl::optional<base::Version>& critical_version() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return critical_version_;
   }
@@ -66,7 +66,7 @@ class BuildState {
   // differ from the instance's previous properties.
   void SetUpdate(UpdateType update_type,
                  const base::Version& installed_version,
-                 const base::Optional<base::Version>& critical_version);
+                 const absl::optional<base::Version>& critical_version);
 
   void AddObserver(BuildStateObserver* observer);
   void RemoveObserver(const BuildStateObserver* observer);
@@ -78,8 +78,8 @@ class BuildState {
   SEQUENCE_CHECKER(sequence_checker_);
   base::ObserverList<BuildStateObserver, /*check_empty=*/true> observers_;
   UpdateType update_type_ = UpdateType::kNone;
-  base::Optional<base::Version> installed_version_;
-  base::Optional<base::Version> critical_version_;
+  absl::optional<base::Version> installed_version_;
+  absl::optional<base::Version> critical_version_;
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_BUILD_STATE_H_

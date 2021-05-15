@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_colors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -204,7 +204,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
         if (host->has_in_product_help_promo_)
           return GetFeaturePromoHighlightColorForToolbar(
               host->GetThemeProvider());
-        base::Optional<SkColor> drop_base_color =
+        absl::optional<SkColor> drop_base_color =
             host->highlight_color_animation_.GetInkDropBaseColor();
         if (drop_base_color)
           return *drop_base_color;
@@ -242,7 +242,7 @@ void ToolbarButton::UpdateFocusRingColor(views::View* host,
   const float default_contrast =
       color_utils::GetContrastRatio(default_focus_ring_color, background);
   if (default_contrast > color_utils::kMinimumVisibleContrastRatio) {
-    focus_ring->SetColor(base::nullopt);
+    focus_ring->SetColor(absl::nullopt);
     return;
   }
   const SkColor fallback_focus_ring_color = host->GetThemeProvider()->GetColor(
@@ -256,11 +256,11 @@ void ToolbarButton::UpdateFocusRingColor(views::View* host,
     focus_ring->SetColor(fallback_focus_ring_color);
     return;
   }
-  focus_ring->SetColor(base::nullopt);
+  focus_ring->SetColor(absl::nullopt);
 }
 
 void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
-                                 base::Optional<SkColor> highlight_color) {
+                                 absl::optional<SkColor> highlight_color) {
   if (highlight_text.empty() && !highlight_color.has_value()) {
     ClearHighlight();
     return;
@@ -313,7 +313,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
           (target_size.height() - GetLayoutConstant(LOCATION_BAR_HEIGHT)) / 2) +
       *GetProperty(views::kInternalPaddingKey);
 
-  base::Optional<SkColor> background_color =
+  absl::optional<SkColor> background_color =
       highlight_color_animation_.GetBackgroundColor();
   if (background_color) {
     SetBackground(views::CreateBackgroundFromPainter(
@@ -329,7 +329,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   // Apply new border with target insets.
 
-  base::Optional<SkColor> border_color =
+  absl::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
   if (!border() || target_insets != current_insets ||
       last_border_color_ != border_color ||
@@ -472,11 +472,11 @@ bool ToolbarButton::IsMenuShowing() const {
   return menu_showing_;
 }
 
-base::Optional<gfx::Insets> ToolbarButton::GetLayoutInsets() const {
+absl::optional<gfx::Insets> ToolbarButton::GetLayoutInsets() const {
   return layout_insets_;
 }
 
-void ToolbarButton::SetLayoutInsets(const base::Optional<gfx::Insets>& insets) {
+void ToolbarButton::SetLayoutInsets(const absl::optional<gfx::Insets>& insets) {
   if (layout_insets_ == insets)
     return;
   layout_insets_ = insets;
@@ -788,7 +788,7 @@ ToolbarButton::HighlightColorAnimation::HighlightColorAnimation(
 ToolbarButton::HighlightColorAnimation::~HighlightColorAnimation() = default;
 
 void ToolbarButton::HighlightColorAnimation::Show(
-    base::Optional<SkColor> highlight_color) {
+    absl::optional<SkColor> highlight_color) {
   // If the animation is showing, we will jump to a different color in the
   // middle of the animation and continue animating towards the new
   // |highlight_color_|. If the animation is fully shown, we will jump directly
@@ -806,10 +806,10 @@ void ToolbarButton::HighlightColorAnimation::Hide() {
   highlight_color_animation_.Hide();
 }
 
-base::Optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
+absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
     const {
   if (!IsShown() || !parent_->GetThemeProvider())
-    return base::nullopt;
+    return absl::nullopt;
   SkColor text_color;
   if (highlight_color_) {
     text_color = *highlight_color_;
@@ -819,10 +819,10 @@ base::Optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
   return FadeWithAnimation(text_color, highlight_color_animation_);
 }
 
-base::Optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
+absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
     const {
   if (!IsShown() || !parent_->GetThemeProvider()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SkColor border_color;
@@ -834,10 +834,10 @@ base::Optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
   return FadeWithAnimation(border_color, highlight_color_animation_);
 }
 
-base::Optional<SkColor>
+absl::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   if (!IsShown() || !parent_->GetThemeProvider())
-    return base::nullopt;
+    return absl::nullopt;
   SkColor bg_color =
       SkColorSetA(GetDefaultBackgroundColor(parent_->GetThemeProvider()),
                   kBackgroundBaseLayerAlpha);
@@ -853,10 +853,10 @@ ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   return FadeWithAnimation(bg_color, highlight_color_animation_);
 }
 
-base::Optional<SkColor>
+absl::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetInkDropBaseColor() const {
   if (!highlight_color_)
-    return base::nullopt;
+    return absl::nullopt;
   return *highlight_color_;
 }
 
@@ -885,5 +885,5 @@ void ToolbarButton::HighlightColorAnimation::ClearHighlightColor() {
 }
 
 BEGIN_METADATA(ToolbarButton, views::LabelButton)
-ADD_PROPERTY_METADATA(base::Optional<gfx::Insets>, LayoutInsets)
+ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, LayoutInsets)
 END_METADATA

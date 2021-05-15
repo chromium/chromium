@@ -23,7 +23,7 @@ namespace {
 
 constexpr int kMaxPrintersCount = 20;
 
-base::Optional<printing::PrinterSemanticCapsAndDefaults>
+absl::optional<printing::PrinterSemanticCapsAndDefaults>
 FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id) {
   scoped_refptr<printing::PrintBackend> backend(
       printing::PrintBackend::CreateInstance(
@@ -32,7 +32,7 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id) {
   if (backend->GetPrinterSemanticCapsAndDefaults(printer_id, &capabilities) !=
       printing::mojom::ResultCode::kSuccess) {
     LOG(WARNING) << "Failed to get capabilities for " << printer_id;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return capabilities;
 }
@@ -51,11 +51,11 @@ PrinterCapabilitiesProvider::~PrinterCapabilitiesProvider() = default;
 void PrinterCapabilitiesProvider::GetPrinterCapabilities(
     const std::string& printer_id,
     GetPrinterCapabilitiesCallback callback) {
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(printer_id);
   if (!printer) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -83,7 +83,7 @@ void PrinterCapabilitiesProvider::OnPrinterInstalled(
     chromeos::PrinterSetupResult result) {
   if (result != chromeos::kSuccess) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   printers_manager_->PrinterInstalled(printer, /*is_automatic=*/true);
@@ -104,7 +104,7 @@ void PrinterCapabilitiesProvider::FetchCapabilities(
 void PrinterCapabilitiesProvider::OnCapabilitiesFetched(
     const std::string& printer_id,
     GetPrinterCapabilitiesCallback callback,
-    base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
+    absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
   if (capabilities.has_value())
     printer_capabilities_cache_.Put(printer_id, capabilities.value());
   base::SequencedTaskRunnerHandle::Get()->PostTask(

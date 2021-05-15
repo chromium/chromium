@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
     EXPECT_EQ(expected_account.raw_email,
               ValueOrEmpty(account.FindStringKey("email")));
 
-    base::Optional<AccountInfo> expected_account_info =
+    absl::optional<AccountInfo> expected_account_info =
         identity_manager()
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
                 expected_account.key.id);

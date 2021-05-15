@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // BatteryLevelProvider provides an interface for querying battery state.
 // A platform specific implementation is obtained with
@@ -19,7 +19,7 @@ class BatteryLevelProvider {
   struct BatteryState {
     BatteryState(size_t interface_count,
                  size_t battery_count,
-                 base::Optional<double> charge_level,
+                 absl::optional<double> charge_level,
                  bool on_battery,
                  base::TimeTicks capture_time);
     BatteryState(const BatteryState&);
@@ -34,7 +34,7 @@ class BatteryLevelProvider {
     // [0.00, 1.00], or nullopt if no battery is present or querying charge
     // level failed. This may be nullopt even if |on_battery == true|, which
     // indicates a failure to grab the battery level.
-    base::Optional<double> charge_level = 0;
+    absl::optional<double> charge_level = 0;
 
     // True if the system is running on battery power, false if the system is
     // drawing power from an external power source.
@@ -85,7 +85,7 @@ class BatteryLevelProvider {
 
     // Detailed power state of the battery. This may be nullopt even if
     // |battery_present == true| when the details couldn't be queried.
-    const base::Optional<BatteryDetails> details;
+    const absl::optional<BatteryDetails> details;
   };
 
   static BatteryState MakeBatteryState(

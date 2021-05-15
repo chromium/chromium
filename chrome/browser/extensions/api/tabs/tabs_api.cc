@@ -20,7 +20,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/pattern.h"
@@ -102,6 +101,7 @@
 #include "net/base/escape.h"
 #include "skia/ext/image_operations.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
@@ -988,7 +988,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   if (params->query_info.window_id.get())
     window_id = *params->query_info.window_id;
 
-  base::Optional<int> group_id = base::nullopt;
+  absl::optional<int> group_id = absl::nullopt;
   if (params->query_info.group_id.get())
     group_id = *params->query_info.group_id;
 
@@ -1071,7 +1071,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       }
 
       if (group_id.has_value()) {
-        base::Optional<tab_groups::TabGroupId> group =
+        absl::optional<tab_groups::TabGroupId> group =
             tab_strip->GetTabGroupForTab(index);
         if (group_id.value() == -1) {
           if (group.has_value())

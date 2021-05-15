@@ -80,13 +80,13 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       IdentityManagerFactory::GetForProfile(profile_);
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(consent_level);
-  base::Optional<bool> is_child_account = base::nullopt;
+  absl::optional<bool> is_child_account = absl::nullopt;
   if (!account.IsEmpty()) {
-    base::Optional<AccountInfo> extended_account_info =
+    absl::optional<AccountInfo> extended_account_info =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
             account);
     if (extended_account_info.has_value()) {
-      is_child_account = base::make_optional<bool>(
+      is_child_account = absl::make_optional<bool>(
           extended_account_info.value().is_child_account);
     }
   }

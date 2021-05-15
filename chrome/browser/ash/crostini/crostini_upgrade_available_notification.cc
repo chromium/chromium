@@ -35,8 +35,8 @@ class CrostiniUpgradeAvailableNotificationDelegate
         ContainerId::GetDefault());
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     disposition_ =
         CrostiniUpgradeAvailableNotificationClosed::kNotificationBody;
     if (button_index && button_index.value() == 0) {

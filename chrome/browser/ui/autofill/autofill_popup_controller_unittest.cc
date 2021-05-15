@@ -8,7 +8,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_active_popup.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -133,10 +133,10 @@ class MockAutofillPopupView : public AutofillPopupView {
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD2(OnSelectedRowChanged,
-               void(base::Optional<int> previous_row_selection,
-                    base::Optional<int> current_row_selection));
+               void(absl::optional<int> previous_row_selection,
+                    absl::optional<int> current_row_selection));
   MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD0(GetAxUniqueId, base::Optional<int32_t>());
+  MOCK_METHOD0(GetAxUniqueId, absl::optional<int32_t>());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAutofillPopupView);
@@ -226,7 +226,7 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
   DISALLOW_COPY_AND_ASSIGN(MockAxPlatformNode);
 };
 
-static constexpr base::Optional<int> kNoSelection;
+static constexpr absl::optional<int> kNoSelection;
 
 }  // namespace
 
@@ -351,7 +351,7 @@ TEST_F(AutofillPopupControllerUnitTest, RedrawSelectedLine) {
 
   // Make sure that when a new line is selected, it is invalidated so it can
   // be updated to show it is selected.
-  base::Optional<int> selected_line = 0;
+  absl::optional<int> selected_line = 0;
   EXPECT_CALL(*autofill_popup_view_,
               OnSelectedRowChanged(kNoSelection, selected_line));
 
@@ -387,7 +387,7 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveLine) {
   EXPECT_FALSE(autofill_popup_controller_->RemoveSelectedLine());
 
   // Select the first entry.
-  base::Optional<int> selected_line(0);
+  absl::optional<int> selected_line(0);
   EXPECT_CALL(*autofill_popup_view_,
               OnSelectedRowChanged(kNoSelection, selected_line));
   autofill_popup_controller_->SetSelectedLine(selected_line);
@@ -429,7 +429,7 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveOnlyLine) {
   EXPECT_FALSE(autofill_popup_controller_->selected_line());
 
   // Select the only line.
-  base::Optional<int> selected_line(0);
+  absl::optional<int> selected_line(0);
   EXPECT_CALL(*autofill_popup_view_,
               OnSelectedRowChanged(kNoSelection, selected_line));
   autofill_popup_controller_->SetSelectedLine(selected_line);
@@ -711,7 +711,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
         .WillRepeatedly(testing::Return(test_tree_id));
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
         .Times(2)
-        .WillRepeatedly(testing::Return(base::Optional<int32_t>(123)));
+        .WillRepeatedly(testing::Return(absl::optional<int32_t>(123)));
     EXPECT_CALL(*autofill_popup_controller_,
                 GetRootAXPlatformNodeForWebContents)
         .WillRepeatedly(testing::Return(&mock_ax_platform_node));
@@ -727,7 +727,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
 
     // Fire event for popup hide and active popup ax unique id is cleared.
     autofill_popup_controller_->FireControlsChangedEvent(false);
-    EXPECT_EQ(base::nullopt, ui::GetActivePopupAxUniqueId());
+    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
   // Test for attempting to fire controls changed event when ax tree manager
@@ -737,7 +737,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     EXPECT_CALL(*autofill_driver_, GetAxTreeId())
         .WillOnce(testing::Return(test_tree_id));
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(base::Optional<int32_t>(123)));
+        .WillOnce(testing::Return(absl::optional<int32_t>(123)));
     EXPECT_CALL(*autofill_popup_controller_,
                 GetRootAXPlatformNodeForWebContents)
         .WillOnce(testing::Return(&mock_ax_platform_node));
@@ -749,7 +749,7 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     // No controls changed event is fired and active popup ax unique id is not
     // set.
     autofill_popup_controller_->FireControlsChangedEvent(true);
-    EXPECT_EQ(base::nullopt, ui::GetActivePopupAxUniqueId());
+    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
   // Test for attempting to fire controls changed event when failing to retrieve
@@ -766,12 +766,12 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
         .WillOnce(testing::Return(nullptr));
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(base::Optional<int32_t>(123)));
+        .WillOnce(testing::Return(absl::optional<int32_t>(123)));
 
     // No controls changed event is fired and active popup ax unique id is not
     // set.
     autofill_popup_controller_->FireControlsChangedEvent(true);
-    EXPECT_EQ(base::nullopt, ui::GetActivePopupAxUniqueId());
+    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
 
   // Test for attempting to fire controls changed event when failing to retrieve
@@ -788,12 +788,12 @@ TEST_F(AutofillPopupControllerAccessibilityUnitTest, FireControlsChangedEvent) {
     EXPECT_CALL(mock_ax_platform_node_delegate, GetFromTreeIDAndNodeID)
         .WillOnce(testing::Return(&mock_ax_platform_node));
     EXPECT_CALL(*autofill_popup_view_, GetAxUniqueId)
-        .WillOnce(testing::Return(base::nullopt));
+        .WillOnce(testing::Return(absl::nullopt));
 
     // No controls changed event is fired and active popup ax unique id is not
     // set.
     autofill_popup_controller_->FireControlsChangedEvent(true);
-    EXPECT_EQ(base::nullopt, ui::GetActivePopupAxUniqueId());
+    EXPECT_EQ(absl::nullopt, ui::GetActivePopupAxUniqueId());
   }
   // This needs to happen before TearDown() because having the mode set to
   // kScreenReader causes mocked functions to get called  with

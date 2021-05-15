@@ -810,7 +810,7 @@ void PrintPreviewUI::SetInitialParams(
 
 // static
 bool PrintPreviewUI::ShouldCancelRequest(
-    const base::Optional<int32_t>& preview_ui_id,
+    const absl::optional<int32_t>& preview_ui_id,
     int request_id) {
   if (!preview_ui_id)
     return true;
@@ -820,7 +820,7 @@ bool PrintPreviewUI::ShouldCancelRequest(
   return request_id != current_id;
 }
 
-base::Optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
+absl::optional<int32_t> PrintPreviewUI::GetIDForPrintPreviewUI() const {
   return id_;
 }
 

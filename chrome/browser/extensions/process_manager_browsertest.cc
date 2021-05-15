@@ -1426,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Navigate to the "extension 1" page with two iframes.
   auto url = extension1->url().Resolve("two_iframes.html");
   NavigateToURL(url);
-  auto initiator_origin = base::Optional<url::Origin>(url::Origin::Create(url));
+  auto initiator_origin = absl::optional<url::Origin>(url::Origin::Create(url));
 
   ProcessManager* pm = ProcessManager::Get(profile());
   content::WebContents* tab =

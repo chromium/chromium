@@ -126,7 +126,7 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  base::Optional<AccountInfo> updated_info =
+  absl::optional<AccountInfo> updated_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           intercepted_account());
   if (updated_info)

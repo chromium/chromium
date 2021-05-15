@@ -58,7 +58,7 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
   // |is_default_network_ping_result| is true if the ICMP result, stored in
   // |status| corresponds to that of the default network.
   void OnTestICMPCompleted(bool is_default_network_ping_result,
-                           const base::Optional<std::string> status);
+                           const absl::optional<std::string> status);
   chromeos::DebugDaemonClient* debug_daemon_client() const {
     DCHECK(debug_daemon_client_);
     return debug_daemon_client_;

@@ -71,8 +71,8 @@ class MediaHistoryKeyedService : public KeyedService,
       base::RepeatingCallback<bool(const base::TimeDelta& duration,
                                    const base::TimeDelta& position)>;
   void GetPlaybackSessions(
-      base::Optional<unsigned int> num_sessions,
-      base::Optional<GetPlaybackSessionsFilter> filter,
+      absl::optional<unsigned int> num_sessions,
+      absl::optional<GetPlaybackSessionsFilter> filter,
       base::OnceCallback<void(
           std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>)> callback);
 
@@ -80,7 +80,7 @@ class MediaHistoryKeyedService : public KeyedService,
   void SavePlaybackSession(
       const GURL& url,
       const media_session::MediaMetadata& metadata,
-      const base::Optional<media_session::MediaPosition>& position,
+      const absl::optional<media_session::MediaPosition>& position,
       const std::vector<media_session::MediaImage>& artwork);
 
   // Get origins from the origins table that have watchtime above the given

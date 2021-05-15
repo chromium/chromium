@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOGIN_AUTH_RECORDER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

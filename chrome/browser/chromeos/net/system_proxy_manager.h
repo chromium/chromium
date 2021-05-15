@@ -12,13 +12,13 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -223,7 +223,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   // available.
   void LookupProxyAuthCredentialsCallback(
       const system_proxy::ProtectionSpace& protection_space,
-      const base::Optional<net::AuthCredentials>& credentials);
+      const absl::optional<net::AuthCredentials>& credentials);
 
   void ShowAuthenticationNotification(
       const system_proxy::ProtectionSpace& protection_space,

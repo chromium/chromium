@@ -91,7 +91,7 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   // user that a new version is available.
   void NotifyOnUpgrade();
 
-  base::Optional<InstalledVersionUpdater> installed_version_updater_;
+  absl::optional<InstalledVersionUpdater> installed_version_updater_;
 
   // The time when elevated annoyance deadline is reached.
   base::Time elevated_deadline_;

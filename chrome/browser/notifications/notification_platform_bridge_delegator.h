@@ -11,12 +11,12 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;

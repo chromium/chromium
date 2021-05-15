@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/video_tutorials/internal/store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -35,7 +35,7 @@ class TutorialManagerImpl : public TutorialManager {
   const std::vector<std::string>& GetSupportedLanguages() override;
   const std::vector<std::string>& GetAvailableLanguagesForTutorial(
       FeatureType feature_type) override;
-  base::Optional<std::string> GetPreferredLocale() override;
+  absl::optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
   void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) override;
 
@@ -63,10 +63,10 @@ class TutorialManagerImpl : public TutorialManager {
   std::map<FeatureType, std::vector<std::string>> languages_for_tutorials_;
 
   // We only keep the tutorials for the preferred locale.
-  base::Optional<TutorialGroup> tutorial_group_;
+  absl::optional<TutorialGroup> tutorial_group_;
 
   // The initialization result of the database.
-  base::Optional<bool> init_success_;
+  absl::optional<bool> init_success_;
 
   // Caches the API calls in case initialization is not completed.
   std::deque<base::OnceClosure> cached_api_calls_;

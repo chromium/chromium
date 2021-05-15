@@ -18,7 +18,7 @@ class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SavePasswordInfoBar(
       std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
-      base::Optional<AccountInfo> account_info);
+      absl::optional<AccountInfo> account_info);
   ~SavePasswordInfoBar() override;
 
  private:
@@ -31,7 +31,7 @@ class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 
-  base::Optional<AccountInfo> account_info_;
+  absl::optional<AccountInfo> account_info_;
 
   DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBar);
 };

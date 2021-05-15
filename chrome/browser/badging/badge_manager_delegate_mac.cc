@@ -19,7 +19,7 @@ BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile,
     : BadgeManagerDelegate(profile, badge_manager) {}
 
 void BadgeManagerDelegateMac::OnAppBadgeUpdated(const web_app::AppId& app_id) {
-  const base::Optional<BadgeManager::BadgeValue>& badge =
+  const absl::optional<BadgeManager::BadgeValue>& badge =
       badge_manager()->GetBadgeValue(app_id);
   SetAppBadgeLabel(app_id, badge ? badging::GetBadgeString(badge.value()) : "");
 }

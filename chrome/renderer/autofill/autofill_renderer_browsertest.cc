@@ -69,7 +69,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
  private:
   // mojom::AutofillDriver:
   void SetFormToBeProbablySubmitted(
-      const base::Optional<FormData>& form) override {}
+      const absl::optional<FormData>& form) override {}
 
   void FormsSeen(const std::vector<FormData>& forms) override {
     // FormsSeen() could be called multiple times and sometimes even with empty

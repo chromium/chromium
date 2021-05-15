@@ -12,13 +12,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -100,7 +100,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   views::Widget* GetAnchoredWidgetForExtensionForTesting(
       const std::string& extension_id);
 
-  base::Optional<extensions::ExtensionId>
+  absl::optional<extensions::ExtensionId>
   GetExtensionWithOpenContextMenuForTesting() {
     return extension_with_open_context_menu_id_;
   }
@@ -252,7 +252,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // The action that triggered the current popup, if any.
   ToolbarActionViewController* popup_owner_ = nullptr;
   // Extension with an open context menu, if any.
-  base::Optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
+  absl::optional<extensions::ExtensionId> extension_with_open_context_menu_id_;
 
   // The widgets currently popped out and, for each, the extension it is
   // associated with. See AnchoredWidget.

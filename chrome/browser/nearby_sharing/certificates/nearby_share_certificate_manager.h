@@ -11,12 +11,12 @@
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The Nearby Share certificate manager maintains the local device's private
 // certificates and contacts' public certificates. The manager communicates with
@@ -44,7 +44,7 @@ class NearbyShareCertificateManager {
   };
 
   using CertDecryptedCallback = base::OnceCallback<void(
-      base::Optional<NearbyShareDecryptedPublicCertificate>)>;
+      absl::optional<NearbyShareDecryptedPublicCertificate>)>;
 
   NearbyShareCertificateManager();
   virtual ~NearbyShareCertificateManager();
@@ -58,24 +58,24 @@ class NearbyShareCertificateManager {
   bool is_running() { return is_running_; }
 
   // Encrypts the metadata encryption key of the currently valid private
-  // certificate with |visibility|. Returns base::nullopt if there is no valid
+  // certificate with |visibility|. Returns absl::nullopt if there is no valid
   // private certificate with |visibility|, if the encryption failed, or if
   // there are no remaining salts.
-  base::Optional<NearbyShareEncryptedMetadataKey>
+  absl::optional<NearbyShareEncryptedMetadataKey>
   EncryptPrivateCertificateMetadataKey(
       nearby_share::mojom::Visibility visibility);
 
   // Signs the input |payload| using the currently valid private certificate
-  // with |visibility|. Returns base::nullopt if there is no valid private
+  // with |visibility|. Returns absl::nullopt if there is no valid private
   // certificate with |visibility| or if the signing was unsuccessful.
-  base::Optional<std::vector<uint8_t>> SignWithPrivateCertificate(
+  absl::optional<std::vector<uint8_t>> SignWithPrivateCertificate(
       nearby_share::mojom::Visibility visibility,
       base::span<const uint8_t> payload) const;
 
   // Creates a hash of the |authentication_token| using the currently valid
-  // private certificate. Returns base::nullopt if there is no valid private
+  // private certificate. Returns absl::nullopt if there is no valid private
   // certificate with |visibility|.
-  base::Optional<std::vector<uint8_t>>
+  absl::optional<std::vector<uint8_t>>
   HashAuthenticationTokenWithPrivateCertificate(
       nearby_share::mojom::Visibility visibility,
       base::span<const uint8_t> authentication_token) const;
@@ -91,7 +91,7 @@ class NearbyShareCertificateManager {
       nearby_share::mojom::Visibility visibility) = 0;
 
   // Returns in |callback| the public certificate that is able to be decrypted
-  // using |encrypted_metadata_key|, and returns base::nullopt if no such public
+  // using |encrypted_metadata_key|, and returns absl::nullopt if no such public
   // certificate exists.
   virtual void GetDecryptedPublicCertificate(
       NearbyShareEncryptedMetadataKey encrypted_metadata_key,
@@ -108,8 +108,8 @@ class NearbyShareCertificateManager {
   virtual void OnStop() = 0;
 
   // Returns the currently valid private certificate with |visibility|, or
-  // returns base::nullopt if one does not exist.
-  virtual base::Optional<NearbySharePrivateCertificate>
+  // returns absl::nullopt if one does not exist.
+  virtual absl::optional<NearbySharePrivateCertificate>
   GetValidPrivateCertificate(
       nearby_share::mojom::Visibility visibility) const = 0;
 

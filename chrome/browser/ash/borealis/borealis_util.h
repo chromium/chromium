@@ -30,7 +30,7 @@ void ShowBorealisInstallerView(Profile* profile);
 // returns true if successful.
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
-base::Optional<int> GetBorealisAppId(std::string exec);
+absl::optional<int> GetBorealisAppId(std::string exec);
 
 // Shows the splash screen (borealis_splash_screen_view).
 void ShowBorealisSplashScreenView(Profile* profile);

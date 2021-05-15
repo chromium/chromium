@@ -45,7 +45,7 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
           [](GetManagedConfigurationCallback callback,
              std::unique_ptr<base::DictionaryValue> result) {
             if (!result) {
-              return std::move(callback).Run(base::nullopt);
+              return std::move(callback).Run(absl::nullopt);
             }
             std::vector<std::pair<std::string, std::string>> items;
             for (const auto& it : result->DictItems())

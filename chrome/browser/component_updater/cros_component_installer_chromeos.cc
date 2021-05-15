@@ -80,7 +80,7 @@ const ComponentConfig* FindConfig(const std::string& name) {
 }
 
 // TODO(xiaochu): add metrics for component usage (https://crbug.com/793052).
-void LogCustomUninstall(base::Optional<bool> result) {}
+void LogCustomUninstall(absl::optional<bool> result) {}
 
 void FinishCustomUninstallOnUIThread(const std::string& name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -439,7 +439,7 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
                                         const base::TimeTicks start_time,
                                         const std::string& name,
-                                        base::Optional<base::FilePath> result) {
+                                        absl::optional<base::FilePath> result) {
   // Report component image mount time.
   UMA_HISTOGRAM_LONG_TIMES("ComponentUpdater.ChromeOS.MountTime",
                            base::TimeTicks::Now() - start_time);

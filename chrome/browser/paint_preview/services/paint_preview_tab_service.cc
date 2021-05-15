@@ -264,7 +264,7 @@ void PaintPreviewTabService::InitializeCache(
 void PaintPreviewTabService::CaptureTabInternal(
     base::WeakPtr<TabServiceTask> task,
     bool accessibility_enabled,
-    const base::Optional<base::FilePath>& file_path) {
+    const absl::optional<base::FilePath>& file_path) {
   if (!task) {
     return;
   }

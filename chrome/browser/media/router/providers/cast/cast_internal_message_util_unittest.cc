@@ -20,7 +20,7 @@ namespace {
 
 static constexpr char kReceiverIdToken[] = "token";
 
-base::Optional<base::Value> ReceiverStatus() {
+absl::optional<base::Value> ReceiverStatus() {
   std::string receiver_status_str = R"({
       "applications": [{
         "appId": "ABCDEFGH",
@@ -40,7 +40,7 @@ base::Optional<base::Value> ReceiverStatus() {
 // appId: native app ID
 // universalAppId: web receiver app ID, which is appId in ReceiverStatus without
 // universalAppId or appType
-base::Optional<base::Value> ReceiverStatusWithUniversalAppId() {
+absl::optional<base::Value> ReceiverStatusWithUniversalAppId() {
   std::string receiver_status_str = R"({
       "applications": [{
         "appId": "AD9AF8E0",
@@ -369,7 +369,7 @@ TEST(CastInternalMessageUtilTest, CreateReceiverActionStopMessage) {
 TEST(CastInternalMessageUtilTest, CreateNewSessionMessage) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  base::Optional<base::Value> receiver_status = ReceiverStatus();
+  absl::optional<base::Value> receiver_status = ReceiverStatus();
   ASSERT_TRUE(receiver_status);
   auto session = CastSession::From(sink, receiver_status.value());
   ASSERT_TRUE(session);
@@ -409,7 +409,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessage) {
 TEST(CastInternalMessageUtilTest, CreateNewSessionMessageWithUniversalAppId) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  base::Optional<base::Value> receiver_status =
+  absl::optional<base::Value> receiver_status =
       ReceiverStatusWithUniversalAppId();
   ASSERT_TRUE(receiver_status);
   auto session = CastSession::From(sink, receiver_status.value());
@@ -452,7 +452,7 @@ TEST(CastInternalMessageUtilTest, CreateNewSessionMessageWithUniversalAppId) {
 TEST(CastInternalMessageUtilTest, CreateUpdateSessionMessage) {
   MediaSinkInternal sink = CreateCastSink(1);
   std::string client_id = "clientId";
-  base::Optional<base::Value> receiver_status = ReceiverStatus();
+  absl::optional<base::Value> receiver_status = ReceiverStatus();
   ASSERT_TRUE(receiver_status);
   auto session = CastSession::From(sink, receiver_status.value());
   ASSERT_TRUE(session);

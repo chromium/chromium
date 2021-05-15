@@ -80,7 +80,7 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   // When |kIntentPickerPWAPersistence| is enabled |kWebAppEnableLinkCapturing|
   // is handled by WebAppsBase::LaunchAppWithIntentImpl() instead and integrates
   // properly with App Service's intent handling system.
-  base::Optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
+  absl::optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
       content::WebContents* web_contents,
       content::NavigationHandle* handle) const;
 

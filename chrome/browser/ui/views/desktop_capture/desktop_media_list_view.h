@@ -38,7 +38,7 @@ class DesktopMediaListView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // DesktopMediaListController::ListView:
-  base::Optional<content::DesktopMediaID> GetSelection() override;
+  absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
 

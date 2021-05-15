@@ -113,7 +113,7 @@ bool ClientAndroid::Start(
     std::unique_ptr<TriggerContext> trigger_context,
     std::unique_ptr<Service> test_service_to_inject,
     const base::android::JavaRef<jobject>& joverlay_coordinator,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
+    const absl::optional<TriggerScriptProto>& trigger_script) {
   // When Start() is called, AA_START should have been measured. From now on,
   // the client is responsible for keeping track of dropouts, so that for each
   // AA_START there's a corresponding dropout.
@@ -207,7 +207,7 @@ void ClientAndroid::FetchWebsiteActions(
     const base::android::JavaParamRef<jobjectArray>& jparameter_values,
     const base::android::JavaParamRef<jobject>& jcallback) {
   if (!controller_)
-    CreateController(nullptr, base::nullopt);
+    CreateController(nullptr, absl::nullopt);
 
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   controller_->Track(
@@ -403,7 +403,7 @@ void ClientAndroid::AttachUI(
       (controller_ != nullptr &&
        !ui_controller_android_->IsAttachedTo(controller_.get()))) {
     if (!controller_)
-      CreateController(nullptr, base::nullopt);
+      CreateController(nullptr, absl::nullopt);
     ui_controller_android_->Attach(web_contents_, this, controller_.get());
   }
 }
@@ -431,11 +431,11 @@ std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
   return account_info.email;
 }
 
-base::Optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
+absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
   if (ui_controller_android_) {
     return ui_controller_android_->GetWindowSize();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ClientContextProto::ScreenOrientation ClientAndroid::GetScreenOrientation()
@@ -551,13 +551,13 @@ void ClientAndroid::InvalidateAccessToken(const std::string& access_token) {
 
 void ClientAndroid::CreateController(
     std::unique_ptr<Service> service,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
+    const absl::optional<TriggerScriptProto>& trigger_script) {
   // Persist status message and progress bar when transitioning from trigger
   // script.
   std::string status_message;
-  base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
+  absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
       progress_bar_config;
-  base::Optional<int> progress_bar_active_step;
+  absl::optional<int> progress_bar_active_step;
   if (trigger_script.has_value()) {
     status_message = trigger_script->user_interface()
                          .regular_script_loading_status_message();

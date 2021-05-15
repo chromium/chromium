@@ -15,9 +15,9 @@ std::vector<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinters(
   return {};
 }
 
-base::Optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
+absl::optional<chromeos::Printer> FakeCupsProxyServiceDelegate::GetPrinter(
     const std::string& id) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<std::string>

@@ -39,11 +39,11 @@ namespace em = enterprise_management;
 namespace {
 
 struct PolicyValue {
-  base::Optional<int> external_width;
-  base::Optional<int> external_height;
-  base::Optional<int> external_scale_percentage;
+  absl::optional<int> external_width;
+  absl::optional<int> external_height;
+  absl::optional<int> external_scale_percentage;
   bool use_native = false;
-  base::Optional<int> internal_scale_percentage;
+  absl::optional<int> internal_scale_percentage;
 
   bool operator==(const PolicyValue& rhs) const {
     return external_width == rhs.external_width &&
@@ -404,11 +404,11 @@ class DeviceDisplayResolutionRecommendedTest
       extensions::api::system_display::DisplayProperties props) {
     base::RunLoop run_loop;
     base::OnceClosure quit_closure(run_loop.QuitClosure());
-    base::Optional<std::string> operation_error;
+    absl::optional<std::string> operation_error;
     extensions::DisplayInfoProvider::Get()->SetDisplayProperties(
         std::to_string(display_id), std::move(props),
         base::BindOnce(
-            [](base::OnceClosure quit_closure, base::Optional<std::string>) {
+            [](base::OnceClosure quit_closure, absl::optional<std::string>) {
               std::move(quit_closure).Run();
             },
             std::move(quit_closure)));

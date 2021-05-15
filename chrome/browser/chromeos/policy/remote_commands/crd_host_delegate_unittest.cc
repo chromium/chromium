@@ -48,7 +48,7 @@ std::string FindStringKey(const base::Value& dictionary,
       << "Wrong value for key '" << key << "'";
 
 #define EXPECT_BOOL_KEY(dictionary, key, value)                          \
-  base::Optional<bool> value_maybe = dictionary.FindBoolKey(key);        \
+  absl::optional<bool> value_maybe = dictionary.FindBoolKey(key);        \
   EXPECT_TRUE(value_maybe.has_value()) << "Missing key '" << key << "'"; \
   EXPECT_EQ(value_maybe.value_or(false), value)                          \
       << "Wrong value for key '" << key << "'";
@@ -145,7 +145,7 @@ class FutureValue {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::Optional<Type> value_;
+  absl::optional<Type> value_;
 };
 
 // Stub implementation of the |NativeMessageHost| which allows the test to wait
@@ -197,7 +197,7 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
     // Prepare the future value for our next message.
     last_message_.Reset();
 
-    base::Optional<base::Value> message = base::JSONReader::Read(message_str);
+    absl::optional<base::Value> message = base::JSONReader::Read(message_str);
     if (!message) {
       ADD_FAILURE() << "Malformed JSON message: " << message_str;
       base::Value dummy_message(base::Value::Type::DICTIONARY);
@@ -337,9 +337,9 @@ class Response {
 
   bool HasResponse() const { return HasAccessCode() || HasError(); }
 
-  base::Optional<std::string> access_code_;
-  base::Optional<DeviceCommandStartCRDSessionJob::ResultCode> error_code_;
-  base::Optional<std::string> error_message_;
+  absl::optional<std::string> access_code_;
+  absl::optional<DeviceCommandStartCRDSessionJob::ResultCode> error_code_;
+  absl::optional<std::string> error_message_;
 
   base::RunLoop run_loop_;
   base::WeakPtrFactory<Response> weak_factory_{this};

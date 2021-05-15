@@ -17,9 +17,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class ChromeKeyboardWebContents;
@@ -188,7 +188,7 @@ class ChromeKeyboardControllerClient
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
 
   // Cached copy of the latest config provided by KeyboardController.
-  base::Optional<keyboard::KeyboardConfig> cached_keyboard_config_;
+  absl::optional<keyboard::KeyboardConfig> cached_keyboard_config_;
 
   // Cached copy of the active enabled flags provided by KeyboardController.
   std::set<keyboard::KeyboardEnableFlag> keyboard_enable_flags_;

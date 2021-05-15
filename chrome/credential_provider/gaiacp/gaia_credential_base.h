@@ -93,7 +93,7 @@ class ATL_NO_VTABLE CGaiaCredentialBase
   const CComBSTR& get_current_windows_password() const {
     return current_windows_password_;
   }
-  const base::Optional<base::Value>& get_authentication_results() const {
+  const absl::optional<base::Value>& get_authentication_results() const {
     return authentication_results_;
   }
 
@@ -325,7 +325,7 @@ class ATL_NO_VTABLE CGaiaCredentialBase
 
   // Contains the information about the Gaia account that signed in.  See the
   // kKeyXXX constants for the data that is stored here.
-  base::Optional<base::Value> authentication_results_;
+  absl::optional<base::Value> authentication_results_;
 
   // Holds information about the success or failure of the sign in.
   NTSTATUS result_status_ = STATUS_SUCCESS;

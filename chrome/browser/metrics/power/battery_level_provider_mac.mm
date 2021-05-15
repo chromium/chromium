@@ -17,7 +17,7 @@ namespace {
 // Returns the value corresponding to |key| in the dictionary |description|.
 // Returns |default_value| if the dictionary does not contain |key|, the
 // corresponding value is nullptr or it could not be converted to SInt64.
-base::Optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
+absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
                                         CFStringRef key) {
   CFNumberRef number_ref =
       base::mac::GetValueFromDictionary<CFNumberRef>(description, key);
@@ -26,15 +26,15 @@ base::Optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
   if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
     return value;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> GetValueAsBoolean(CFDictionaryRef description,
+absl::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
                                        CFStringRef key) {
   CFBooleanRef boolean =
       base::mac::GetValueFromDictionary<CFBooleanRef>(description, key);
   if (!boolean)
-    return base::nullopt;
+    return absl::nullopt;
   return CFBooleanGetValue(boolean);
 }
 
@@ -66,7 +66,7 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
 
 BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
     CFDictionaryRef description) {
-  base::Optional<bool> external_connected =
+  absl::optional<bool> external_connected =
       GetValueAsBoolean(description, CFSTR("ExternalConnected"));
   if (!external_connected.has_value())
     return BatteryInterface(true);
@@ -85,9 +85,9 @@ BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
   }
 
   // Extract the information from the dictionary.
-  base::Optional<SInt64> current_capacity =
+  absl::optional<SInt64> current_capacity =
       GetValueAsSInt64(description, capacity_key);
-  base::Optional<SInt64> max_capacity =
+  absl::optional<SInt64> max_capacity =
       GetValueAsSInt64(description, max_capacity_key);
   if (!current_capacity.has_value() || !max_capacity.has_value())
     return BatteryInterface(true);

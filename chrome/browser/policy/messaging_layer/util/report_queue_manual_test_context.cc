@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -21,6 +20,7 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 

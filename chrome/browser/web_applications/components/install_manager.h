@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 struct WebApplicationInfo;
@@ -71,7 +71,7 @@ class InstallManager {
   using WebAppManifestCheckCallback = base::OnceCallback<void(
       std::unique_ptr<content::WebContents> web_contents,
       InstallableCheckResult result,
-      base::Optional<AppId> app_id)>;
+      absl::optional<AppId> app_id)>;
 
   // Checks a WebApp installability (service worker check optional), retrieves
   // manifest and icons and then performs the actual installation.
@@ -109,10 +109,10 @@ class InstallManager {
     // // Setting this field will force the webapp to have a manifest id, which
     // will result in a different AppId than if it isn't set. Currently here
     // to support forwards compatibility with future sync entities..
-    base::Optional<std::string> override_manifest_id;
+    absl::optional<std::string> override_manifest_id;
 
     // App name to be used if manifest is unavailable.
-    base::Optional<std::u16string> fallback_app_name;
+    absl::optional<std::u16string> fallback_app_name;
 
     bool locally_installed = true;
     // These OS shortcut fields can't be true if |locally_installed| is false.
@@ -131,8 +131,8 @@ class InstallManager {
 
     std::vector<std::string> additional_search_terms;
 
-    base::Optional<std::string> launch_query_params;
-    base::Optional<SystemAppType> system_app_type;
+    absl::optional<std::string> launch_query_params;
+    absl::optional<SystemAppType> system_app_type;
 
     bool oem_installed = false;
   };
@@ -158,7 +158,7 @@ class InstallManager {
   virtual void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
       ForInstallableSite for_installable_site,
-      const base::Optional<InstallParams>& install_params,
+      const absl::optional<InstallParams>& install_params,
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback) = 0;
 

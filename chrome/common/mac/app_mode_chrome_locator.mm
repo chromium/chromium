@@ -10,10 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/mac/app_mode_common.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_mode {
 
@@ -24,7 +24,7 @@ struct PathAndStructure {
   bool is_new_app_structure;
 };
 
-base::Optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
+absl::optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
     NSString* bundle_path,
     NSString* version) {
   // NEW STYLE:
@@ -49,7 +49,7 @@ base::Optional<PathAndStructure> GetFrameworkDylibPathAndStructure(
   if ([[NSFileManager defaultManager] fileExistsAtPath:path])
     return PathAndStructure{path, false};
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -75,7 +75,7 @@ bool GetChromeBundleInfo(const base::FilePath& chrome_bundle,
     return false;
 
   // Try to get the version requested, if present.
-  base::Optional<PathAndStructure> framework_path_and_structure;
+  absl::optional<PathAndStructure> framework_path_and_structure;
   if (!version_str.empty()) {
     framework_path_and_structure = GetFrameworkDylibPathAndStructure(
         cr_bundle_path, base::SysUTF8ToNSString(version_str));

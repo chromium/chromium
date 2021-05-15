@@ -162,14 +162,14 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   // Overridden from syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -210,7 +210,7 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   // Notifies the sync service of the |dictionary_change|. Syncs up to the
   // maximum syncable words on the server. Disables syncing of this dictionary
   // if the server contains the maximum number of syncable words.
-  base::Optional<syncer::ModelError> Sync(const Change& dictionary_change);
+  absl::optional<syncer::ModelError> Sync(const Change& dictionary_change);
 
   // Notifies observers of the dictionary change if the dictionary has been
   // changed.

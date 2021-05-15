@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(OS_ANDROID)
@@ -132,9 +132,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
-          ? base::Optional<std::u16string>(
+          ? absl::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
-          : base::nullopt);
+          : absl::nullopt);
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {

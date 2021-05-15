@@ -45,7 +45,7 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
 
   ~ExpectCTBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 
   void SetUpOnMainThread() override {

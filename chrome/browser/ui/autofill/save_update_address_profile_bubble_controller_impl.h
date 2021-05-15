@@ -79,7 +79,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // Contains the details of the address profile that will be updated if the
   // user accepts the prompt.
-  base::Optional<AutofillProfile> original_profile_;
+  absl::optional<AutofillProfile> original_profile_;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address

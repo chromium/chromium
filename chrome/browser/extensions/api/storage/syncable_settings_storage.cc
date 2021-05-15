@@ -139,7 +139,7 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
     return;
 
   if (sync_processor_.get()) {
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         sync_processor_->SendChanges(result.changes());
     if (error.has_value())
       StopSyncing();
@@ -153,7 +153,7 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
 
 // Sync-related methods.
 
-base::Optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
+absl::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
     std::unique_ptr<base::DictionaryValue> sync_state,
     std::unique_ptr<SettingsSyncProcessor> sync_processor) {
   DCHECK(IsOnBackendSequence());
@@ -178,13 +178,13 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
                                               std::move(current_settings));
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SyncableSettingsStorage::SendLocalSettingsToSync(
     std::unique_ptr<base::DictionaryValue> local_state) {
   DCHECK(IsOnBackendSequence());
 
   if (local_state->DictEmpty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Transform the current settings into a list of sync changes.
   ValueStoreChangeList changes;
@@ -194,17 +194,17 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
     std::string key = base::DictionaryValue::Iterator(*local_state).key();
     std::unique_ptr<base::Value> value;
     local_state->RemoveWithoutPathExpansion(key, &value);
-    changes.push_back(ValueStoreChange(key, base::nullopt, std::move(*value)));
+    changes.push_back(ValueStoreChange(key, absl::nullopt, std::move(*value)));
   }
 
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->SendChanges(std::move(changes));
   if (error.has_value())
     StopSyncing();
   return error;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
     std::unique_ptr<base::DictionaryValue> sync_state,
     std::unique_ptr<base::DictionaryValue> local_state) {
@@ -245,7 +245,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
   }
 
   if (changes->empty())
-    return base::nullopt;
+    return absl::nullopt;
   return ProcessSyncChanges(std::move(changes));
 }
 
@@ -254,7 +254,7 @@ void SyncableSettingsStorage::StopSyncing() {
   sync_processor_.reset();
 }
 
-base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
+absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
     std::unique_ptr<SettingSyncDataList> sync_changes) {
   DCHECK(IsOnBackendSequence());
   DCHECK(!sync_changes->empty()) << "No sync changes for " << extension_id_;
@@ -341,7 +341,7 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())
-    return base::nullopt;
+    return absl::nullopt;
   return syncer::ConvertToModelError(errors[0]);
 }
 
@@ -360,7 +360,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncAdd(
         sync_processor_->type());
   }
   changes->push_back(
-      ValueStoreChange(key, base::nullopt, std::move(*new_value)));
+      ValueStoreChange(key, absl::nullopt, std::move(*new_value)));
   return syncer::SyncError();
 }
 
@@ -399,7 +399,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncDelete(
         sync_processor_->type());
   }
   changes->push_back(
-      ValueStoreChange(key, std::move(*old_value), base::nullopt));
+      ValueStoreChange(key, std::move(*old_value), absl::nullopt));
   return syncer::SyncError();
 }
 

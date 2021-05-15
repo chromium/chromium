@@ -82,12 +82,12 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-base::Optional<std::string> StatusCollector::GetBootMode(
+absl::optional<std::string> StatusCollector::GetBootMode(
     chromeos::system::StatisticsProvider* statistics_provider) {
   std::string dev_switch_mode;
   if (!statistics_provider->GetMachineStatistic(
           chromeos::system::kDevSwitchBootKey, &dev_switch_mode)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (dev_switch_mode == chromeos::system::kDevSwitchBootValueDev) {
@@ -98,7 +98,7 @@ base::Optional<std::string> StatusCollector::GetBootMode(
     return std::string("Verified");
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 StatusCollector::StatusCollector(chromeos::system::StatisticsProvider* provider,

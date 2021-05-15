@@ -13,7 +13,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,6 +40,7 @@
 #include "google_apis/drive/drive_api_error_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plugin_vm {
 
@@ -480,7 +480,7 @@ TEST_F(PluginVmInstallerDownloadServiceTest, DownloadPluginVmImageParamsTest) {
   StartAndRunUntil(InstallingState::kDownloadingImage);
 
   std::string guid = installer_->GetCurrentDownloadGuid();
-  const base::Optional<download::DownloadParams>& params =
+  const absl::optional<download::DownloadParams>& params =
       download_service_->GetDownload(guid);
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(guid, params->guid);

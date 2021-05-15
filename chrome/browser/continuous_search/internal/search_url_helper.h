@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/continuous_search/page_category.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace continuous_search {
 
-base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url);
+absl::optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url);
 
 PageCategory GetSrpPageCategoryForUrl(const GURL& url);
 

@@ -415,7 +415,7 @@ void DriveFirstRunController::ShowNotification() {
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](Profile* profile, base::Optional<int> button_index) {
+              [](Profile* profile, absl::optional<int> button_index) {
                 if (!button_index)
                   return;
 

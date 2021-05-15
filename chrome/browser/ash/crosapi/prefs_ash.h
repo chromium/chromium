@@ -10,13 +10,13 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefChangeRegistrar;
@@ -59,7 +59,7 @@ class PrefsAsh : public mojom::Prefs, public ProfileManagerObserver {
     PrefChangeRegistrar* registrar;
     std::string path;
   };
-  base::Optional<State> GetState(mojom::PrefPath path);
+  absl::optional<State> GetState(mojom::PrefPath path);
 
   void OnPrefChanged(mojom::PrefPath path);
   void OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id);

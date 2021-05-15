@@ -23,7 +23,7 @@ void FakeHierarchy::AddSubpageMetadata(
     mojom::SearchResultIcon icon,
     mojom::SearchResultDefaultRank default_rank,
     const std::string& url_path_with_parameters,
-    base::Optional<mojom::Subpage> parent_subpage) {
+    absl::optional<mojom::Subpage> parent_subpage) {
   auto pair = subpage_map_.emplace(
       std::piecewise_construct, std::forward_as_tuple(subpage),
       std::forward_as_tuple(name_message_id, section, subpage, icon,
@@ -35,7 +35,7 @@ void FakeHierarchy::AddSubpageMetadata(
 void FakeHierarchy::AddSettingMetadata(
     mojom::Section section,
     mojom::Setting setting,
-    base::Optional<mojom::Subpage> parent_subpage) {
+    absl::optional<mojom::Subpage> parent_subpage) {
   auto pair = setting_map_.emplace(setting, section);
   DCHECK(pair.second);
   pair.first->second.primary.second = parent_subpage;

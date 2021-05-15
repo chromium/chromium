@@ -9,11 +9,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class SearchTermsData;
@@ -54,7 +54,7 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   // Used to check whether notifications from TemplateURLService indicate a
   // change that affects the default search provider.
   GURL previous_google_base_url_;
-  base::Optional<TemplateURLData> previous_default_search_provider_data_;
+  absl::optional<TemplateURLData> previous_default_search_provider_data_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchEngineBaseURLTracker);
 };

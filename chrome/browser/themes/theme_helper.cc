@@ -233,7 +233,7 @@ SkColor ThemeHelper::GetColor(int id,
   if (has_custom_color)
     *has_custom_color = false;
 
-  const base::Optional<SkColor> omnibox_color =
+  const absl::optional<SkColor> omnibox_color =
       GetOmniboxColor(id, incognito, theme_supplier, has_custom_color);
   if (omnibox_color.has_value())
     return omnibox_color.value();
@@ -517,7 +517,7 @@ gfx::Image ThemeHelper::GetImageNamed(
   return image;
 }
 
-base::Optional<SkColor> ThemeHelper::GetOmniboxColor(
+absl::optional<SkColor> ThemeHelper::GetOmniboxColor(
     int id,
     bool incognito,
     const CustomThemeSupplier* theme_supplier,
@@ -525,17 +525,17 @@ base::Optional<SkColor> ThemeHelper::GetOmniboxColor(
   // Avoid infinite loop caused by GetColor(TP::COLOR_TOOLBAR) call in
   // GetOmniboxColorImpl().
   if (id == TP::COLOR_TOOLBAR)
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto color = GetOmniboxColorImpl(id, incognito, theme_supplier);
   if (!color)
-    return base::nullopt;
+    return absl::nullopt;
   if (has_custom_color)
     *has_custom_color = color.value().custom;
   return color.value().value;
 }
 
-base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
+absl::optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
     int id,
     bool incognito,
     const CustomThemeSupplier* theme_supplier) const {
@@ -580,9 +580,9 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
   };
   const auto blend_for_min_contrast =
       [&](OmniboxColor fg, OmniboxColor bg,
-          base::Optional<OmniboxColor> hc_fg = base::nullopt,
-          base::Optional<float> contrast_ratio = base::nullopt) {
-        base::Optional<SkColor> hc_fg_arg;
+          absl::optional<OmniboxColor> hc_fg = absl::nullopt,
+          absl::optional<float> contrast_ratio = absl::nullopt) {
+        absl::optional<SkColor> hc_fg_arg;
         bool custom = fg.custom || bg.custom;
         if (hc_fg) {
           hc_fg_arg = hc_fg.value().value;
@@ -605,7 +605,7 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
       const auto bg = get_color_with_max_contrast(fg);
       const auto inverted_bg = get_color_with_max_contrast(bg);
       const float contrast = color_utils::GetContrastRatio(fg.value, bg.value);
-      return blend_for_min_contrast(fg, inverted_bg, base::nullopt, contrast);
+      return blend_for_min_contrast(fg, inverted_bg, absl::nullopt, contrast);
     };
     fg = invert_color(fg);
     bg = invert_color(bg);
@@ -694,7 +694,7 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
           {dark ? gfx::kGoogleRed300 : gfx::kGoogleRed600, false},
           bg_hovered_color());
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -61,14 +61,14 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
   // FakeCrostiniFeatures is created and replaced at destruction.
   CrostiniFeatures* original_features_;
 
-  base::Optional<bool> could_be_allowed_;
-  base::Optional<bool> allowed_now_;
-  base::Optional<bool> enabled_;
-  base::Optional<bool> export_import_ui_allowed_;
-  base::Optional<bool> root_access_allowed_;
-  base::Optional<bool> container_upgrade_ui_allowed_;
-  base::Optional<bool> can_change_adb_sideloading_;
-  base::Optional<bool> port_forwarding_allowed_;
+  absl::optional<bool> could_be_allowed_;
+  absl::optional<bool> allowed_now_;
+  absl::optional<bool> enabled_;
+  absl::optional<bool> export_import_ui_allowed_;
+  absl::optional<bool> root_access_allowed_;
+  absl::optional<bool> container_upgrade_ui_allowed_;
+  absl::optional<bool> can_change_adb_sideloading_;
+  absl::optional<bool> port_forwarding_allowed_;
 };
 
 }  // namespace crostini

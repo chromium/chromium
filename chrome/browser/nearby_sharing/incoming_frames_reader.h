@@ -11,11 +11,11 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;
 
@@ -35,7 +35,7 @@ class IncomingFramesReader {
   // Note: Callers are expected wait for |callback| to be run before scheduling
   // subsequent calls to ReadFrame(..).
   virtual void ReadFrame(
-      base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+      base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
           callback);
 
   // Reads a frame of type |frame_type| from |connection|. |callback| is called
@@ -46,21 +46,21 @@ class IncomingFramesReader {
   // subsequent calls to ReadFrame(..).
   virtual void ReadFrame(
       sharing::mojom::V1Frame::Tag frame_type,
-      base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+      base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
           callback,
       base::TimeDelta timeout);
 
  private:
   void ReadNextFrame();
-  void OnDataReadFromConnection(base::Optional<std::vector<uint8_t>> bytes);
+  void OnDataReadFromConnection(absl::optional<std::vector<uint8_t>> bytes);
   void OnFrameDecoded(sharing::mojom::FramePtr mojo_frame);
   void OnTimeout();
   void OnNearbyProcessStopped(
       chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
-  void Done(base::Optional<sharing::mojom::V1FramePtr> frame);
-  base::Optional<sharing::mojom::V1FramePtr> GetCachedFrame(
-      base::Optional<sharing::mojom::V1Frame::Tag> frame_type);
+  void Done(absl::optional<sharing::mojom::V1FramePtr> frame);
+  absl::optional<sharing::mojom::V1FramePtr> GetCachedFrame(
+      absl::optional<sharing::mojom::V1Frame::Tag> frame_type);
   sharing::mojom::NearbySharingDecoder* GetOrStartNearbySharingDecoder();
 
   chromeos::nearby::NearbyProcessManager* process_manager_;
@@ -68,8 +68,8 @@ class IncomingFramesReader {
       chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyConnection* connection_;
-  base::Optional<sharing::mojom::V1Frame::Tag> frame_type_;
-  base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+  absl::optional<sharing::mojom::V1Frame::Tag> frame_type_;
+  base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
       callback_;
   base::CancelableOnceClosure timeout_callback_;
 

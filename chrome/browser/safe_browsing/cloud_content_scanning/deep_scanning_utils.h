@@ -124,8 +124,8 @@ bool FileTypeSupportedForDlp(const base::FilePath& path);
 
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse
-SimpleContentAnalysisResponseForTesting(base::Optional<bool> dlp_success,
-                                        base::Optional<bool> malware_success);
+SimpleContentAnalysisResponseForTesting(absl::optional<bool> dlp_success,
+                                        absl::optional<bool> malware_success);
 
 // Helper function to convert a EventResult to a string that.  The format of
 // string returned is processed by the sever.

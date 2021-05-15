@@ -38,7 +38,7 @@ namespace {
 // TODO(crbug.com/1131266): Track alternative type in `HoldingSpaceItem`.
 // Returns a holding space item other than the one provided which is backed by
 // the same file path in the specified `model`.
-base::Optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
+absl::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
     const HoldingSpaceModel& model,
     const HoldingSpaceItem* item) {
   for (const auto& candidate_item : model.items()) {
@@ -47,7 +47,7 @@ base::Optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
     if (candidate_item->file_path() == item->file_path())
       return candidate_item.get();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Returns the singleton profile manager for the browser process.
@@ -231,7 +231,7 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 void HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
     const base::FilePath& download_file,
-    const base::Optional<float>& progress) {
+    const absl::optional<float>& progress) {
   DCHECK(HoldingSpaceItem::IsDownload(type));
   AddItemOfType(type, download_file, progress);
 }
@@ -280,7 +280,7 @@ void HoldingSpaceKeyedService::AddItems(
 void HoldingSpaceKeyedService::AddItemOfType(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path,
-    const base::Optional<float>& progress) {
+    const absl::optional<float>& progress) {
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, file_path);
   if (file_system_url.is_empty())

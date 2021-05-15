@@ -13,11 +13,11 @@ base::WeakPtr<ViewHandlerAndroid> ViewHandlerAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-base::Optional<base::android::ScopedJavaGlobalRef<jobject>>
+absl::optional<base::android::ScopedJavaGlobalRef<jobject>>
 ViewHandlerAndroid::GetView(const std::string& view_identifier) const {
   auto it = views_.find(view_identifier);
   if (it == views_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }

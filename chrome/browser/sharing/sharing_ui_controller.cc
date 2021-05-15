@@ -128,7 +128,7 @@ void SharingUiController::ClearLastDialog() {
 }
 
 void SharingUiController::UpdateAndShowDialog(
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   ClearLastDialog();
   DoUpdateApps(base::BindOnce(&SharingUiController::OnAppsReceived,
                               weak_ptr_factory_.GetWeakPtr(), last_dialog_id_,
@@ -170,9 +170,9 @@ SharingDialogData SharingUiController::CreateDialogData(
 
 base::OnceClosure SharingUiController::SendMessageToDevice(
     const syncer::DeviceInfo& device,
-    base::Optional<base::TimeDelta> response_timeout,
+    absl::optional<base::TimeDelta> response_timeout,
     chrome_browser_sharing::SharingMessage sharing_message,
-    base::Optional<SharingMessageSender::ResponseCallback> custom_callback) {
+    absl::optional<SharingMessageSender::ResponseCallback> custom_callback) {
   last_dialog_id_++;
   is_loading_ = true;
   send_result_ = SharingSendMessageResult::kSuccessful;
@@ -230,7 +230,7 @@ std::u16string SharingUiController::GetTargetDeviceName() const {
 
 void SharingUiController::OnResponse(
     int dialog_id,
-    base::Optional<SharingMessageSender::ResponseCallback> custom_callback,
+    absl::optional<SharingMessageSender::ResponseCallback> custom_callback,
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (custom_callback)
@@ -245,7 +245,7 @@ void SharingUiController::OnResponse(
 
 void SharingUiController::OnAppsReceived(
     int dialog_id,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     std::vector<SharingApp> apps) {
   if (dialog_id != last_dialog_id_)
     return;

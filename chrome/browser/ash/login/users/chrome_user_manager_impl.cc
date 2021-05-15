@@ -151,7 +151,7 @@ std::string FullyCanonicalize(const std::string& email) {
 
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
-                          base::Optional<user_data_auth::RemoveReply> reply) {
+                          absl::optional<user_data_auth::RemoveReply> reply) {
   cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
   if (error != cryptohome::MOUNT_ERROR_NONE) {
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
@@ -259,7 +259,7 @@ bool PolicyHasWebTrustedAuthorityCertificate(
 }
 
 void CheckCryptohomeIsMounted(
-    base::Optional<user_data_auth::IsMountedReply> result) {
+    absl::optional<user_data_auth::IsMountedReply> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "IsMounted call failed.";
     return;

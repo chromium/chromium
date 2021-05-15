@@ -1419,7 +1419,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     list->Append(policy::SystemFeature::kOsSettings);
   }
   WaitForTestSystemAppInstall();
-  base::Optional<AppId> settings_id =
+  absl::optional<AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
   DCHECK(settings_id.has_value());
 
@@ -1445,7 +1445,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
                        AppSuspendedAfterInstall) {
   WaitForTestSystemAppInstall();
-  base::Optional<AppId> settings_id =
+  absl::optional<AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
   DCHECK(settings_id.has_value());
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));

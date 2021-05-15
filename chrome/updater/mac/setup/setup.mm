@@ -15,7 +15,6 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -34,6 +33,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -298,7 +298,7 @@ bool RemoveUpdateServiceInternalJobFromLaunchd(UpdaterScope scope) {
                                      CopyUpdateServiceInternalLaunchdName());
 }
 
-bool DeleteFolder(const base::Optional<base::FilePath>& installed_path) {
+bool DeleteFolder(const absl::optional<base::FilePath>& installed_path) {
   if (!installed_path)
     return false;
   if (!base::DeletePathRecursively(*installed_path)) {
@@ -323,7 +323,7 @@ bool DeleteDataFolder() {
 }  // namespace
 
 int Setup(UpdaterScope scope) {
-  const base::Optional<base::FilePath> dest_path =
+  const absl::optional<base::FilePath> dest_path =
       GetVersionedUpdaterFolderPath(scope);
 
   if (!dest_path)
@@ -353,7 +353,7 @@ int Setup(UpdaterScope scope) {
 }
 
 int PromoteCandidate(UpdaterScope scope) {
-  const base::Optional<base::FilePath> dest_path =
+  const absl::optional<base::FilePath> dest_path =
       GetVersionedUpdaterFolderPath(scope);
   if (!dest_path)
     return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
@@ -389,7 +389,7 @@ int UninstallCandidate(UpdaterScope scope) {
 }
 
 void UninstallOtherVersions(UpdaterScope scope) {
-  const base::Optional<base::FilePath> path =
+  const absl::optional<base::FilePath> path =
       GetVersionedUpdaterFolderPath(scope);
   if (!path) {
     LOG(ERROR) << "Failed to get updater folder path.";

@@ -64,11 +64,11 @@ std::map<int, TabInfo> AndroidTabFinder::FindAndroidTabs(
   return result;
 }
 
-base::Optional<TabInfo> AndroidTabFinder::FindNavigationTab(
+absl::optional<TabInfo> AndroidTabFinder::FindNavigationTab(
     content::WebContents* web_contents) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   if (!tab)
-    return base::nullopt;
+    return absl::nullopt;
   return AnroidTabInfo(*tab);
 }
 
@@ -123,11 +123,11 @@ void AutoFetchPageLoadWatcher::CreateForWebContents(
 
 namespace auto_fetch_internal {
 
-base::Optional<RequestInfo> MakeRequestInfo(const SavePageRequest& request) {
-  base::Optional<auto_fetch::ClientIdMetadata> metadata =
+absl::optional<RequestInfo> MakeRequestInfo(const SavePageRequest& request) {
+  absl::optional<auto_fetch::ClientIdMetadata> metadata =
       auto_fetch::ExtractMetadata(request.client_id());
   if (!metadata)
-    return base::nullopt;
+    return absl::nullopt;
 
   RequestInfo info;
   info.request_id = request.request_id();
@@ -286,7 +286,7 @@ void InternalImpl::NavigationFrom(const GURL& previous_url,
             SavePageRequest::AutoFetchNotificationState::kUnknown) {
       // Check that the navigation is happening on the tab from which the
       // request came.
-      base::Optional<TabInfo> tab =
+      absl::optional<TabInfo> tab =
           tab_finder_->FindNavigationTab(web_contents);
       if (tab && tab->android_tab_id == request.metadata.android_tab_id)
         SetNotificationStateToShown(request.request_id);
@@ -449,7 +449,7 @@ void AutoFetchPageLoadWatcher::SetNotificationStateToShown(int64_t request_id) {
 }
 
 void AutoFetchPageLoadWatcher::OnAdded(const SavePageRequest& request) {
-  base::Optional<RequestInfo> info = MakeRequestInfo(request);
+  absl::optional<RequestInfo> info = MakeRequestInfo(request);
   if (!info)
     return;
 
@@ -459,7 +459,7 @@ void AutoFetchPageLoadWatcher::OnAdded(const SavePageRequest& request) {
 void AutoFetchPageLoadWatcher::OnCompleted(
     const SavePageRequest& request,
     RequestNotifier::BackgroundSavePageResult status) {
-  base::Optional<RequestInfo> info = MakeRequestInfo(request);
+  absl::optional<RequestInfo> info = MakeRequestInfo(request);
   if (!info)
     return;
 
@@ -470,7 +470,7 @@ void AutoFetchPageLoadWatcher::InitializeRequestList(
     std::vector<std::unique_ptr<SavePageRequest>> requests) {
   std::vector<RequestInfo> request_infos;
   for (const auto& request : requests) {
-    base::Optional<RequestInfo> info = MakeRequestInfo(*request);
+    absl::optional<RequestInfo> info = MakeRequestInfo(*request);
     if (!info)
       continue;
     request_infos.push_back(info.value());

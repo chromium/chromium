@@ -107,7 +107,7 @@ class DialServiceImpl : public DialService {
  private:
   friend void PostSendNetworkList(
       base::WeakPtr<DialServiceImpl> impl,
-      const base::Optional<net::NetworkInterfaceList>& networks);
+      const absl::optional<net::NetworkInterfaceList>& networks);
 
   // Represents a socket binding to a single network interface.
   // DialSocket lives on the IO thread.
@@ -190,7 +190,7 @@ class DialServiceImpl : public DialService {
 
   // For each network interface in |list|, finds all unqiue IPv4 network
   // interfaces and call |DiscoverOnAddresses()| with their IP addresses.
-  void SendNetworkList(const base::Optional<net::NetworkInterfaceList>& list);
+  void SendNetworkList(const absl::optional<net::NetworkInterfaceList>& list);
 
   // Calls |BindAndAddSocket()| for each address in |ip_addresses|, calls
   // |SendOneRequest()|, and start the timer to finish discovery if needed.

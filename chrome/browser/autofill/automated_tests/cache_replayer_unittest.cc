@@ -88,7 +88,7 @@ RequestResponsePair MakeQueryRequestResponsePair(
 
 // Returns a query request URL. If |query| is not empty, the corresponding
 // query is encoded into the URL.
-bool MakeQueryRequestURL(const base::Optional<AutofillPageQueryRequest>& query,
+bool MakeQueryRequestURL(const absl::optional<AutofillPageQueryRequest>& query,
                          std::string* request_url) {
   if (!query.has_value()) {
     *request_url = CreateQueryUrl("");
@@ -118,7 +118,7 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
                            std::string* request_url) {
   // Make body and query content for URL depending on the |type|.
   std::string body;
-  base::Optional<AutofillPageQueryRequest> query_for_url;
+  absl::optional<AutofillPageQueryRequest> query_for_url;
   if (type == RequestType::kQueryProtoGET) {
     query_for_url = std::move(query);
   } else {
@@ -130,7 +130,7 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
     AutofillPageResourceQueryRequest request;
     request.set_serialized_request(encoded_query);
     request.SerializeToString(&body);
-    query_for_url = base::nullopt;
+    query_for_url = absl::nullopt;
   }
 
   // Make header according to query content for URL.

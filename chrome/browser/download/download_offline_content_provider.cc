@@ -283,9 +283,9 @@ void DownloadOfflineContentProvider::GetItemById(
   DownloadItem* item = GetDownload(id.id);
   auto offline_item =
       item && ShouldShowDownloadItem(item)
-          ? base::make_optional(
+          ? absl::make_optional(
                 OfflineItemUtils::CreateOfflineItem(name_space_, item))
-          : base::nullopt;
+          : absl::nullopt;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), offline_item));
@@ -403,7 +403,7 @@ void DownloadOfflineContentProvider::RenameItem(const ContentId& id,
 
 void DownloadOfflineContentProvider::ChangeSchedule(
     const ContentId& id,
-    base::Optional<OfflineItemSchedule> schedule) {
+    absl::optional<OfflineItemSchedule> schedule) {
   EnsureDownloadCoreServiceStarted();
   if (state_ != State::HISTORY_LOADED) {
     pending_actions_for_full_browser_.push_back(base::BindOnce(
@@ -550,7 +550,7 @@ void DownloadOfflineContentProvider::GetAllDownloads(
 
 void DownloadOfflineContentProvider::UpdateObservers(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   NotifyItemUpdated(item, update_delta);
 }
 

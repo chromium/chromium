@@ -40,8 +40,8 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
   void CallGetWebLanguageDetectionDetails() {
     // Reset result values firstly.
     detected_language_details_ = false;
-    detected_content_meta_lang_ = base::nullopt;
-    detected_html_root_lang_ = base::nullopt;
+    detected_content_meta_lang_ = absl::nullopt;
+    detected_html_root_lang_ = absl::nullopt;
     detected_has_notranslate_meta_ = false;
 
     // Will get new result values via OnWebLanguageDetectionDetails.
@@ -70,8 +70,8 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
     // Reset result values firstly.
     page_translated_ = false;
     trans_result_cancelled_ = false;
-    trans_result_source_lang_ = base::nullopt;
-    trans_result_translated_lang_ = base::nullopt;
+    trans_result_source_lang_ = absl::nullopt;
+    trans_result_translated_lang_ = absl::nullopt;
     trans_result_error_type_ = translate::TranslateErrors::NONE;
 
     // Will get new result values via OnPageTranslated.
@@ -131,14 +131,14 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
   }
 
   bool detected_language_details_;
-  base::Optional<std::string> detected_content_meta_lang_;
-  base::Optional<std::string> detected_html_root_lang_;
+  absl::optional<std::string> detected_content_meta_lang_;
+  absl::optional<std::string> detected_html_root_lang_;
   bool detected_has_notranslate_meta_;
 
   bool page_translated_;
   bool trans_result_cancelled_;
-  base::Optional<std::string> trans_result_source_lang_;
-  base::Optional<std::string> trans_result_translated_lang_;
+  absl::optional<std::string> trans_result_source_lang_;
+  absl::optional<std::string> trans_result_translated_lang_;
   translate::TranslateErrors::Type trans_result_error_type_;
 
   DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgent);

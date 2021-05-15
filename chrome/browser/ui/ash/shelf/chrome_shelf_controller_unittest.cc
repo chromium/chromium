@@ -619,7 +619,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
   }
 
   void StartPrefSyncService(const syncer::SyncDataList& init_sync_list) {
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         GetPrefSyncService()->MergeDataAndStartSyncing(
             GetPreferencesModelType(), init_sync_list,
             std::make_unique<syncer::FakeSyncChangeProcessor>(),

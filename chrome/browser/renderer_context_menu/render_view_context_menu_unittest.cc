@@ -5,7 +5,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,6 +36,7 @@
 #include "extensions/common/url_pattern.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -113,12 +113,12 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
     return nullptr;
   }
 
-  const base::Optional<content::OpenURLParams>& last_navigation_params() {
+  const absl::optional<content::OpenURLParams>& last_navigation_params() {
     return last_navigation_params_;
   }
 
  private:
-  base::Optional<content::OpenURLParams> last_navigation_params_;
+  absl::optional<content::OpenURLParams> last_navigation_params_;
 };
 
 }  // namespace

@@ -62,7 +62,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // A struct to represent the error to display on the screen.
   struct ErrorInfo {
     explicit ErrorInfo(Error error);
-    ErrorInfo(Error error, const base::Optional<int>& arg);
+    ErrorInfo(Error error, const absl::optional<int>& arg);
     ErrorInfo(const ErrorInfo&);
     ErrorInfo& operator=(const ErrorInfo&);
 
@@ -76,7 +76,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // For SIGN_IN_UNKNOWN_ERROR the arg should be specific provisioning result
     // code. For SIGN_IN_CLOUD_PROVISION_FLOW_* errors the arg should be error
     // code received from ARC.
-    base::Optional<int> arg;
+    absl::optional<int> arg;
   };
 
   // Delegate to handle authentication related events. Currently used for Active
@@ -253,7 +253,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   UIPage ui_page_ = UIPage::NO_PAGE;
 
   // These have valid values iff ui_page_ == ERROR.
-  base::Optional<ErrorInfo> error_info_;
+  absl::optional<ErrorInfo> error_info_;
   bool should_show_send_feedback_;
 
   bool is_arc_managed_ = false;

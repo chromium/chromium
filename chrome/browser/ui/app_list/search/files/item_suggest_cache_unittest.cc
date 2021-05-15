@@ -84,7 +84,7 @@ class ItemSuggestCacheTest : public testing::Test {
   }
 
   void ResultsMatch(
-      const base::Optional<ItemSuggestCache::Results>& actual,
+      const absl::optional<ItemSuggestCache::Results>& actual,
       const std::string& suggestion_id,
       const std::vector<std::pair<std::string, std::string>>& results) {
     EXPECT_TRUE(actual.has_value());

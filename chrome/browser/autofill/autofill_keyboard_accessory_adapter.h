@@ -58,10 +58,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   // AutofillPopupView implementation.
   void Show() override;
   void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupController implementation.
   // Hidden: void OnSuggestionsChanged() override;
@@ -74,8 +74,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
                                   std::u16string* title,
                                   std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
-  void SetSelectedLine(base::Optional<int> selected_line) override;
-  base::Optional<int> selected_line() const override;
+  void SetSelectedLine(absl::optional<int> selected_line) override;
+  absl::optional<int> selected_line() const override;
   PopupType GetPopupType() const override;
 
   void Hide(PopupHidingReason reason) override;
@@ -102,7 +102,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // Position that the front element has in the suggestion list returned by
   // controller_. It is used to determine the offset suggestions.
-  base::Optional<int> front_element_;
+  absl::optional<int> front_element_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};

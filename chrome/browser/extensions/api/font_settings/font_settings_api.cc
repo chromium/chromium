@@ -83,7 +83,7 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 #if defined(OS_WIN)
   // Try to get the 'us-en' font name. If it is failing, use the first name
   // available.
-  base::Optional<std::string> localized_font_name =
+  absl::optional<std::string> localized_font_name =
       gfx::win::RetrieveLocalizedFontName(*font_name, "us-en");
   if (!localized_font_name)
     localized_font_name = gfx::win::RetrieveLocalizedFontName(*font_name, "");

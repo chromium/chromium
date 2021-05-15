@@ -98,7 +98,7 @@ class Hierarchy::PerSectionHierarchyGenerator
       CHECK(alternate.first != section_ || alternate.second)
           << "Setting has multiple identical alternate locations: " << setting;
     }
-    metadata.alternates.emplace_back(section_, /*subpage=*/base::nullopt);
+    metadata.alternates.emplace_back(section_, /*subpage=*/absl::nullopt);
 
     // If a top-level setting exists, the section contains more than just a link
     // to a subpage.
@@ -215,7 +215,7 @@ mojom::SearchResultPtr Hierarchy::SubpageMetadata::ToSearchResult(
 }
 
 Hierarchy::SettingMetadata::SettingMetadata(mojom::Section primary_section)
-    : primary(primary_section, /*subpage=*/base::nullopt) {}
+    : primary(primary_section, /*subpage=*/absl::nullopt) {}
 
 Hierarchy::SettingMetadata::~SettingMetadata() = default;
 

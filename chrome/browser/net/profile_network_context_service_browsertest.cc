@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -69,6 +68,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -620,7 +620,7 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest
     : public ProfileNetworkContextServiceBrowsertest,
-      public ::testing::WithParamInterface<base::Optional<bool>> {
+      public ::testing::WithParamInterface<absl::optional<bool>> {
  public:
   ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest() = default;
   ~ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest() override =
@@ -670,5 +670,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProfileNetworkContextServiceMemoryPressureFeatureBrowsertest,
     /*disable_idle_sockets_close_on_memory_pressure=*/
-    ::testing::Values(base::nullopt, true, false));
+    ::testing::Values(absl::nullopt, true, false));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

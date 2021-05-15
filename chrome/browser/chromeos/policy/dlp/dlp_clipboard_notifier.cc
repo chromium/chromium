@@ -245,7 +245,7 @@ void DlpClipboardNotifier::ResetUserWarnSelection() {
 void DlpClipboardNotifier::ShowToast(const std::string& id,
                                      const std::u16string& text) const {
   ash::ToastData toast(id, text, kClipboardDlpBlockDurationMs,
-                       /*dismiss_text=*/base::nullopt);
+                       /*dismiss_text=*/absl::nullopt);
   toast.is_managed = true;
   ash::ToastManager::Get()->Show(toast);
 }

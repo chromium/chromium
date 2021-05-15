@@ -96,7 +96,7 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   // This property is a cached value so that we can avoid same computation.
   // mutable because once the value is computed it won't change.
-  mutable base::Optional<bool> has_important_property_cache_;
+  mutable absl::optional<bool> has_important_property_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityNodeInfoDataWrapper);
 };

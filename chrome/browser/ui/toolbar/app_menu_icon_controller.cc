@@ -122,7 +122,7 @@ AppMenuIconController::GetTypeAndSeverity() const {
 }
 
 SkColor AppMenuIconController::GetIconColor(
-    const base::Optional<SkColor>& severity_none_color) const {
+    const absl::optional<SkColor>& severity_none_color) const {
   const Severity severity = GetTypeAndSeverity().severity;
   return ((severity == AppMenuIconController::Severity::NONE) &&
           severity_none_color.has_value())

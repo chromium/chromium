@@ -231,8 +231,8 @@ void MediaHistoryKeyedService::GetMediaHistoryPlaybackRowsForDebug(
 }
 
 void MediaHistoryKeyedService::GetPlaybackSessions(
-    base::Optional<unsigned int> num_sessions,
-    base::Optional<GetPlaybackSessionsFilter> filter,
+    absl::optional<unsigned int> num_sessions,
+    absl::optional<GetPlaybackSessionsFilter> filter,
     base::OnceCallback<
         void(std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>)> callback) {
   base::PostTaskAndReplyWithResult(
@@ -245,7 +245,7 @@ void MediaHistoryKeyedService::GetPlaybackSessions(
 void MediaHistoryKeyedService::SavePlaybackSession(
     const GURL& url,
     const media_session::MediaMetadata& metadata,
-    const base::Optional<media_session::MediaPosition>& position,
+    const absl::optional<media_session::MediaPosition>& position,
     const std::vector<media_session::MediaImage>& artwork) {
   if (auto* store = store_->GetForWrite()) {
     store->db_task_runner_->PostTask(

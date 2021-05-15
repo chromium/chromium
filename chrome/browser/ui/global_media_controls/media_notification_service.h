@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -28,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class StartPresentationContext;

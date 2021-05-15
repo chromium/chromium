@@ -24,12 +24,12 @@ class HostResolver : public network::ResolveHostClientBase {
     ResolutionResult(
         int result,
         const net::ResolveErrorInfo& resolve_error_info,
-        const base::Optional<net::AddressList>& resolved_addresses);
+        const absl::optional<net::AddressList>& resolved_addresses);
     ~ResolutionResult();
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
-    base::Optional<net::AddressList> resolved_addresses;
+    absl::optional<net::AddressList> resolved_addresses;
   };
   using OnResolutionComplete = base::OnceCallback<void(ResolutionResult&)>;
 
@@ -47,7 +47,7 @@ class HostResolver : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
  private:
   // Handles Mojo connection errors during host resolution.

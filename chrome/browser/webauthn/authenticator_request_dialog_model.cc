@@ -139,7 +139,7 @@ bool AuthenticatorRequestDialogModel::PairedPhone::CompareByName(
 }
 
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
-  selected_authenticator_id_ = base::nullopt;
+  selected_authenticator_id_ = absl::nullopt;
   saved_authenticators_.RemoveAllAuthenticators();
   users_.clear();
 }
@@ -676,7 +676,7 @@ AuthenticatorRequestDialogModel::mechanisms() const {
   return mechanisms_;
 }
 
-base::Optional<size_t> AuthenticatorRequestDialogModel::current_mechanism()
+absl::optional<size_t> AuthenticatorRequestDialogModel::current_mechanism()
     const {
   return current_mechanism_;
 }
@@ -729,8 +729,8 @@ void AuthenticatorRequestDialogModel::FinishCollectToken() {
 
 void AuthenticatorRequestDialogModel::StartInlineBioEnrollment(
     base::OnceClosure next_callback) {
-  max_bio_samples_ = base::nullopt;
-  bio_samples_remaining_ = base::nullopt;
+  max_bio_samples_ = absl::nullopt;
+  bio_samples_remaining_ = absl::nullopt;
   bio_enrollment_callback_ = std::move(next_callback);
   SetCurrentStep(Step::kInlineBioEnrollment);
 }
@@ -761,10 +761,10 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 }
 
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
-    base::Optional<bool> extension_is_v2,
+    absl::optional<bool> extension_is_v2,
     std::vector<PairedPhone> paired_phones,
     base::RepeatingCallback<void(size_t)> contact_phone_callback,
-    const base::Optional<std::string>& cable_qr_string) {
+    const absl::optional<std::string>& cable_qr_string) {
   DCHECK(paired_phones.empty() || contact_phone_callback);
 
   if (extension_is_v2.has_value()) {
@@ -837,7 +837,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                                 device::FidoRequestType::kGetAssertion;
   // priority_transport contains the transport that should be activated
   // immediately, if this is a getAssertion.
-  base::Optional<AuthenticatorTransport> priority_transport;
+  absl::optional<AuthenticatorTransport> priority_transport;
 
   if (base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal) &&

@@ -312,7 +312,7 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(!shutdown_);
   network::SimpleURLLoader* loader = it->get();
-  base::Optional<int> response_code;
+  absl::optional<int> response_code;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     response_code = loader->ResponseInfo()->headers->response_code();
   }
@@ -600,7 +600,7 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
 }
 
 void WebRtcLogUploader::NotifyUploadDoneAndLogStats(
-    base::Optional<int> response_code,
+    absl::optional<int> response_code,
     int network_error_code,
     const std::string& report_id,
     WebRtcLogUploader::UploadDoneData upload_done_data) {

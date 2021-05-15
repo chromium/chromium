@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/updater/policy_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -36,23 +36,23 @@ class PolicyStatus {
       return;  // We already have enough policies.
 
     if (!effective_policy_ && is_managed) {
-      effective_policy_ = base::make_optional<Entry>(source, policy);
+      effective_policy_ = absl::make_optional<Entry>(source, policy);
     } else if (effective_policy_ &&
                policy != effective_policy_.value().policy) {
-      conflict_policy_ = base::make_optional<Entry>(source, policy);
+      conflict_policy_ = absl::make_optional<Entry>(source, policy);
     }
   }
 
-  const base::Optional<Entry>& effective_policy() const {
+  const absl::optional<Entry>& effective_policy() const {
     return effective_policy_;
   }
-  const base::Optional<Entry>& conflict_policy() const {
+  const absl::optional<Entry>& conflict_policy() const {
     return conflict_policy_;
   }
 
  private:
-  base::Optional<Entry> effective_policy_;
-  base::Optional<Entry> conflict_policy_;
+  absl::optional<Entry> effective_policy_;
+  absl::optional<Entry> conflict_policy_;
 };
 
 // The PolicyService returns policies for enterprise managed machines from the

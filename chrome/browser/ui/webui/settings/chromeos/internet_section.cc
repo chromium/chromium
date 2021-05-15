@@ -569,13 +569,13 @@ bool IsESimCapable() {
   return HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
 }
 
-base::Optional<std::string> GetCellularActiveSimIccid(
+absl::optional<std::string> GetCellularActiveSimIccid(
     const network_config::mojom::DeviceStatePropertiesPtr& device) {
   for (const auto& sim_info : *device->sim_infos) {
     if (sim_info->is_primary)
       return sim_info->iccid;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

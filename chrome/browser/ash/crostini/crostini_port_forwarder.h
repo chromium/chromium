@@ -106,7 +106,7 @@ class CrostiniPortForwarder : public KeyedService {
   base::ListValue GetActivePorts();
 
   size_t GetNumberOfForwardedPortsForTesting();
-  base::Optional<base::Value> ReadPortPreferenceForTesting(
+  absl::optional<base::Value> ReadPortPreferenceForTesting(
       const PortRuleKey& key);
   void ActiveNetworksChanged(const std::string& interface);
 
@@ -126,7 +126,7 @@ class CrostiniPortForwarder : public KeyedService {
                                 const ContainerId& container_id);
   void AddNewPortPreference(const PortRuleKey& key, const std::string& label);
   bool RemovePortPreference(const PortRuleKey& key);
-  base::Optional<base::Value> ReadPortPreference(const PortRuleKey& key);
+  absl::optional<base::Value> ReadPortPreference(const PortRuleKey& key);
 
   void OnActivatePortCompleted(ResultCallback result_callback,
                                PortRuleKey key,

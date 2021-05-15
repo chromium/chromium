@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -195,14 +195,14 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
 
   void QueryAndExpectDecisionForUrl(
       const GURL& origin,
-      base::Optional<QuietUiReason> quiet_ui_reason,
-      base::Optional<WarningReason> warning_reason) {
+      absl::optional<QuietUiReason> quiet_ui_reason,
+      absl::optional<WarningReason> warning_reason) {
     permissions::MockPermissionRequest mock_request(
         std::u16string(), permissions::RequestType::kNotifications, origin);
     base::MockCallback<
         ContextualNotificationPermissionUiSelector::DecisionMadeCallback>
         mock_callback;
-    Decision actual_decison(base::nullopt, base::nullopt);
+    Decision actual_decison(absl::nullopt, absl::nullopt);
     EXPECT_CALL(mock_callback, Run)
         .WillRepeatedly(testing::SaveArg<0>(&actual_decison));
     contextual_selector_.SelectUiToUse(&mock_request, mock_callback.Get());
@@ -268,9 +268,9 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
     const struct {
       const char* origin_string;
-      base::Optional<QuietUiReason> expected_ui_reason =
+      absl::optional<QuietUiReason> expected_ui_reason =
           Decision::UseNormalUi();
-      base::Optional<WarningReason> expected_warning_reason =
+      absl::optional<WarningReason> expected_warning_reason =
           Decision::ShowNoWarning();
     } kTestCases[] = {
         {kTestOriginNoData},
@@ -360,8 +360,8 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, OnlyCrowdDenyEnabled) {
 
   const struct {
     const char* origin_string;
-    base::Optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
-    base::Optional<WarningReason> expected_warning_reason =
+    absl::optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
+    absl::optional<WarningReason> expected_warning_reason =
         Decision::ShowNoWarning();
   } kTestCases[] = {
       {kTestOriginSpammy, QuietUiReason::kTriggeredByCrowdDeny},
@@ -400,8 +400,8 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
   const struct {
     const char* origin_string;
-    base::Optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
-    base::Optional<WarningReason> expected_warning_reason =
+    absl::optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
+    absl::optional<WarningReason> expected_warning_reason =
         Decision::ShowNoWarning();
   } kTestCases[] = {
       {kTestOriginSpammy},
@@ -440,8 +440,8 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
   const struct {
     const char* origin_string;
-    base::Optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
-    base::Optional<WarningReason> expected_warning_reason =
+    absl::optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
+    absl::optional<WarningReason> expected_warning_reason =
         Decision::ShowNoWarning();
   } kTestCases[] = {
       {kTestOriginSpammy},
@@ -481,8 +481,8 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
   const struct {
     const char* origin_string;
-    base::Optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
-    base::Optional<WarningReason> expected_warning_reason =
+    absl::optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
+    absl::optional<WarningReason> expected_warning_reason =
         Decision::ShowNoWarning();
   } kTestCases[] = {
       {kTestOriginSpammy},
@@ -523,8 +523,8 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 
   const struct {
     const char* origin_string;
-    base::Optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
-    base::Optional<WarningReason> expected_warning_reason =
+    absl::optional<QuietUiReason> expected_ui_reason = Decision::UseNormalUi();
+    absl::optional<WarningReason> expected_warning_reason =
         Decision::ShowNoWarning();
   } kTestCases[] = {
       {kTestOriginSpammy},
@@ -549,7 +549,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        CrowdDenyHoldbackChance) {
   const struct {
     std::string holdback_chance;
-    base::Optional<QuietUiReason> expected_ui_reason;
+    absl::optional<QuietUiReason> expected_ui_reason;
     bool expected_histogram_bucket;
   } kTestCases[] = {
       // 100% chance to holdback, the UI used should be the normal UI.

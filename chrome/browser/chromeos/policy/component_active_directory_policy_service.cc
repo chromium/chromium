@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
@@ -18,6 +17,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/registry_dict.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -72,20 +72,20 @@ std::string GetPolicyValue(const std::string& policy_fetch_response_blob) {
 
 // Parses |json| to a base::Value. Returns nullptr and prints errors
 // on failure.
-base::Optional<base::Value> ParseJsonToDict(const std::string& json) {
+absl::optional<base::Value> ParseJsonToDict(const std::string& json) {
   base::JSONReader::ValueWithError value_with_error =
       base::JSONReader::ReadAndReturnValueWithError(
           json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value_with_error.value) {
     LOG(ERROR) << "Could not parse policy value as JSON: "
                << value_with_error.error_message;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::Value value = std::move(value_with_error.value.value());
   if (!value.is_dict()) {
     LOG(ERROR) << "The JSON policy value is not a dictionary.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return value;
@@ -112,7 +112,7 @@ bool ParsePolicy(const std::string& policy_fetch_response_blob,
   //   { "Name1": { "Value":Value1 },
   //     "Name2": { "Value":Value2, "Level":"Recommended" } }
   // (see ParsePolicy in ComponentCloudPolicyStore).
-  base::Optional<base::Value> dict = ParseJsonToDict(policy_value);
+  absl::optional<base::Value> dict = ParseJsonToDict(policy_value);
 
   if (!dict.has_value())
     return false;
@@ -132,7 +132,7 @@ bool ParsePolicy(const std::string& policy_fetch_response_blob,
     // be converted to the types specified in the schema:
     //   string -> double for 'number'  type policies
     //   int    -> bool   for 'boolean' type policies
-    base::Optional<base::Value> converted_value =
+    absl::optional<base::Value> converted_value =
         ConvertRegistryValue(it.second, schema);
     if (!converted_value.has_value() || !converted_value.value().is_dict()) {
       LOG(ERROR) << "Failed to filter JSON policy at level " << level->json_key;

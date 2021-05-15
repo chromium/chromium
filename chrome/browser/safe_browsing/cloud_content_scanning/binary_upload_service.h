@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
@@ -25,6 +24,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace app_time {
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyUpdates) {
   // Block the app.
   AppTimeLimitsPolicyBuilder block_policy;
   const AppLimit block_limit =
-      AppLimit(AppRestriction::kBlocked, base::nullopt, base::Time::Now());
+      AppLimit(AppRestriction::kBlocked, absl::nullopt, base::Time::Now());
   block_policy.AddAppLimit(app1, block_limit);
   block_policy.SetResetTime(6, 0);
 
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   // Send policy.
   AppTimeLimitsPolicyBuilder policy;
   policy.SetResetTime(6, 0);
-  policy.AddAppLimit(app2, AppLimit(AppRestriction::kBlocked, base::nullopt,
+  policy.AddAppLimit(app2, AppLimit(AppRestriction::kBlocked, absl::nullopt,
                                     base::Time::Now()));
   policy.AddAppLimit(
       app3, AppLimit(AppRestriction::kTimeLimit,

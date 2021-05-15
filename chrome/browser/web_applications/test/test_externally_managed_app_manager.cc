@@ -86,7 +86,7 @@ void TestExternallyManagedAppManager::UninstallApps(
         FROM_HERE,
         base::BindLambdaForTesting([this, weak_ptr, url, callback]() {
           if (weak_ptr) {
-            base::Optional<AppId> app_id = registrar_->LookupExternalAppId(url);
+            absl::optional<AppId> app_id = registrar_->LookupExternalAppId(url);
             if (app_id) {
               registrar_->RemoveExternalApp(*app_id);
               deduped_uninstall_count_++;

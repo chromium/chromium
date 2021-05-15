@@ -41,11 +41,11 @@ const char kContactMessageNumUnreachableContactsKey[] =
 // dictionaries corresponding to each contact-manager observer functions. This
 // will require changes at the javascript layer as well.
 base::Value ContactMessageToDictionary(
-    base::Optional<bool> did_contacts_change_since_last_upload,
-    const base::Optional<std::set<std::string>>& allowed_contact_ids,
-    const base::Optional<std::vector<nearbyshare::proto::ContactRecord>>&
+    absl::optional<bool> did_contacts_change_since_last_upload,
+    const absl::optional<std::set<std::string>>& allowed_contact_ids,
+    const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
         contacts,
-    base::Optional<uint32_t> num_unreachable_contacts_filtered_out) {
+    absl::optional<uint32_t> num_unreachable_contacts_filtered_out) {
   base::Value dictionary(base::Value::Type::DICTIONARY);
 
   dictionary.SetKey(kContactMessageTimeKey, GetJavascriptTimestamp());
@@ -136,7 +136,7 @@ void NearbyInternalsContactHandler::OnContactsDownloaded(
     uint32_t num_unreachable_contacts_filtered_out) {
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(
-                        /*did_contacts_change_since_last_upload=*/base::nullopt,
+                        /*did_contacts_change_since_last_upload=*/absl::nullopt,
                         allowed_contact_ids, contacts,
                         num_unreachable_contacts_filtered_out));
 }
@@ -147,7 +147,7 @@ void NearbyInternalsContactHandler::OnContactsUploaded(
       "contacts-updated",
       ContactMessageToDictionary(
           did_contacts_change_since_last_upload,
-          /*allowed_contact_ids=*/base::nullopt,
-          /*contacts=*/base::nullopt,
-          /*num_unreachable_contacts_filtered_out=*/base::nullopt));
+          /*allowed_contact_ids=*/absl::nullopt,
+          /*contacts=*/absl::nullopt,
+          /*num_unreachable_contacts_filtered_out=*/absl::nullopt));
 }

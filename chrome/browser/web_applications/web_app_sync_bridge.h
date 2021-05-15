@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -17,6 +16,7 @@
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 namespace base {
@@ -99,10 +99,10 @@ class WebAppSyncBridge : public AppRegistryController,
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

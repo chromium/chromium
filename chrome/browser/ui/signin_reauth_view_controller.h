@@ -8,13 +8,13 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 
@@ -201,9 +201,9 @@ class SigninReauthViewController
 
   // The state of the reauth flow.
   bool user_confirmed_reauth_ = false;
-  base::Optional<sync_pb::UserConsentTypes::AccountPasswordsConsent> consent_;
+  absl::optional<sync_pb::UserConsentTypes::AccountPasswordsConsent> consent_;
   GaiaReauthPageState gaia_reauth_page_state_ = GaiaReauthPageState::kStarted;
-  base::Optional<signin::ReauthResult> gaia_reauth_page_result_;
+  absl::optional<signin::ReauthResult> gaia_reauth_page_result_;
 
   base::ObserverList<Observer, true> observer_list_;
 

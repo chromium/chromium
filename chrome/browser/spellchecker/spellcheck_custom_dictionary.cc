@@ -324,7 +324,7 @@ void SpellcheckCustomDictionary::WaitUntilReadyToSync(base::OnceClosure done) {
     wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -383,7 +383,7 @@ syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
   return data;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
@@ -414,7 +414,7 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
   Notify(*dictionary_change);
   Save(std::move(dictionary_change));
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
@@ -510,11 +510,11 @@ void SpellcheckCustomDictionary::Save(
                      std::move(dictionary_change), custom_dictionary_path_));
 }
 
-base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
+absl::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
     const Change& dictionary_change) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsSyncing() || dictionary_change.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // The number of words on the sync server should not exceed the limits.
   int server_size = static_cast<int>(words_.size()) -
@@ -549,7 +549,7 @@ base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   }
 
   // Send the changes to the sync processor.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_change_list);
   if (error.has_value())
     return error;
@@ -559,7 +559,7 @@ base::Optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   if (words_.size() > spellcheck::kMaxSyncableDictionaryWords)
     StopSyncing(syncer::DICTIONARY);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SpellcheckCustomDictionary::Notify(const Change& dictionary_change) {

@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
@@ -38,7 +38,7 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   bool HasMinimalUiButtons() const override;
   gfx::ImageSkia GetWindowAppIcon() const override;
   gfx::ImageSkia GetWindowIcon() const override;
-  base::Optional<SkColor> GetThemeColor() const override;
+  absl::optional<SkColor> GetThemeColor() const override;
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;

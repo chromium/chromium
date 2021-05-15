@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
@@ -11,6 +10,7 @@
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/xr_test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace vr {
 
@@ -19,7 +19,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestDeviceServiceDisconnect) {
   // Ensure that any time the XR Device Service is started, we have installed
   // a new local hook before the IsolatedDeviceProvider has a chance to issue
   // any enumeration requests.
-  base::Optional<MockXRDeviceHookBase> device_hook(absl::in_place);
+  absl::optional<MockXRDeviceHookBase> device_hook(absl::in_place);
   content::SetXRDeviceServiceStartupCallbackForTesting(
       base::BindLambdaForTesting([&] { device_hook.emplace(); }));
 

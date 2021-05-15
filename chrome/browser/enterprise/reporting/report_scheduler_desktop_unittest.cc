@@ -495,7 +495,7 @@ TEST_P(ReportSchedulerFeatureTest, OnUpdate) {
   CreateScheduler();
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -518,7 +518,7 @@ TEST_P(ReportSchedulerFeatureTest, OnUpdateAndPersistentError) {
   CreateScheduler();
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -530,7 +530,7 @@ TEST_P(ReportSchedulerFeatureTest, OnUpdateAndPersistentError) {
   // The report should be stopped in case of persistent error.
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("2" + version_info::GetVersionNumber()), base::nullopt);
+      base::Version("2" + version_info::GetVersionNumber()), absl::nullopt);
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
 }
 
@@ -554,7 +554,7 @@ TEST_P(ReportSchedulerFeatureTest, DeferredTimer) {
 
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
   task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(generator_);
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
@@ -727,7 +727,7 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
 
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), base::nullopt);
+      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
   TriggerExtensionRequestReport();
 
   task_environment_.RunUntilIdle();

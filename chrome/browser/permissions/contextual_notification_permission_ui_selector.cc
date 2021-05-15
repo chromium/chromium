@@ -48,14 +48,14 @@ void RecordWarningOnlyState(bool value) {
 }
 
 // Attempts to decide which UI to use based on preloaded site reputation data,
-// or returns base::nullopt if not possible. |site_reputation| can be nullptr.
-base::Optional<Decision> GetDecisionBasedOnSiteReputation(
+// or returns absl::nullopt if not possible. |site_reputation| can be nullptr.
+absl::optional<Decision> GetDecisionBasedOnSiteReputation(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
   using Config = QuietNotificationPermissionUiConfig;
   if (!site_reputation) {
     RecordNotificationUserExperienceQuality(
         CrowdDenyPreloadData::SiteReputation::UNKNOWN);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   RecordNotificationUserExperienceQuality(
@@ -70,7 +70,7 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
       if (site_reputation->warning_only())
         return Decision::UseNormalUiAndShowNoWarning();
       if (!Config::IsCrowdDenyTriggeringEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredByCrowdDeny,
                       Decision::ShowNoWarning());
     }
@@ -82,7 +82,7 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveRequests);
       }
       if (!Config::IsAbusiveRequestBlockingEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveRequests,
                       Decision::ShowNoWarning());
     }
@@ -94,17 +94,17 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveContent);
       }
       if (!Config::IsAbusiveContentTriggeredRequestBlockingEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       Decision::ShowNoWarning());
     }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Roll the dice to decide whether to use the normal UI even when the preload
@@ -170,7 +170,7 @@ void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
 void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
     const url::Origin& origin,
     const CrowdDenyPreloadData::SiteReputation* reputation) {
-  base::Optional<Decision> decision =
+  absl::optional<Decision> decision =
       GetDecisionBasedOnSiteReputation(reputation);
 
   // If the PreloadData suggests this is an unacceptable site, ping Safe

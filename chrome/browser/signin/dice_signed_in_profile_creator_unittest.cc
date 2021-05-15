@@ -215,7 +215,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), absl::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
@@ -251,7 +251,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), absl::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), base::OnceClosure()));
@@ -271,7 +271,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), absl::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));

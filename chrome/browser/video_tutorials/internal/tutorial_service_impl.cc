@@ -78,7 +78,7 @@ TutorialServiceImpl::GetAvailableLanguagesForTutorial(
   return tutorial_manager_->GetAvailableLanguagesForTutorial(feature_type);
 }
 
-base::Optional<std::string> TutorialServiceImpl::GetPreferredLocale() {
+absl::optional<std::string> TutorialServiceImpl::GetPreferredLocale() {
   return tutorial_manager_->GetPreferredLocale();
 }
 

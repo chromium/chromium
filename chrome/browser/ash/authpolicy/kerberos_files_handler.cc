@@ -35,7 +35,7 @@ base::FilePath GetKerberosDir() {
 
 // Writes |blob| into file <UserPath>/kerberos/|file_name|. First writes into
 // temporary file and then replaces existing one. Prints an error or failure.
-void WriteFile(const base::FilePath& path, base::Optional<std::string> blob) {
+void WriteFile(const base::FilePath& path, absl::optional<std::string> blob) {
   if (!blob.has_value())
     return;
   if (!base::ImportantFileWriter::WriteFileAtomically(path, blob.value()))
@@ -50,8 +50,8 @@ void RemoveFile(const base::FilePath& path) {
 
 // Writes |krb5cc| to <DIR_HOME>/kerberos/krb5cc and |krb5config| to
 // <DIR_HOME>/kerberos/krb5.conf if set. Creates directories if necessary.
-void WriteFiles(base::Optional<std::string> krb5cc,
-                base::Optional<std::string> krb5config) {
+void WriteFiles(absl::optional<std::string> krb5cc,
+                absl::optional<std::string> krb5config) {
   base::FilePath dir = GetKerberosDir();
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(dir, &error)) {
@@ -74,11 +74,11 @@ void RemoveFiles() {
 // If |config| has a value, puts canonicalization settings first depending on
 // user policy. Whatever setting comes first wins, so even if krb5.conf sets
 // rdns or dns_canonicalize_hostname below, it would get overridden.
-base::Optional<std::string> MaybeAdjustConfig(
-    base::Optional<std::string> config,
+absl::optional<std::string> MaybeAdjustConfig(
+    absl::optional<std::string> config,
     bool is_dns_cname_enabled) {
   if (!config.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   std::string adjusted_config = base::StringPrintf(
       kKrb5CnameSettings, is_dns_cname_enabled ? "true" : "false");
   adjusted_config.append(config.value());
@@ -134,8 +134,8 @@ KerberosFilesHandler::KerberosFilesHandler(
 
 KerberosFilesHandler::~KerberosFilesHandler() = default;
 
-void KerberosFilesHandler::SetFiles(base::Optional<std::string> krb5cc,
-                                    base::Optional<std::string> krb5conf) {
+void KerberosFilesHandler::SetFiles(absl::optional<std::string> krb5cc,
+                                    absl::optional<std::string> krb5conf) {
   krb5conf =
       MaybeAdjustConfig(krb5conf, !negotiate_disable_cname_lookup_.GetValue());
   base::ThreadPool::PostTaskAndReply(

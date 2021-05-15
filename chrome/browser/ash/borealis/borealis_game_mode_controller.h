@@ -46,7 +46,7 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
     ~GameModeEnabler();
 
    private:
-    static void OnSetGameMode(base::Optional<bool> dbus_response);
+    static void OnSetGameMode(absl::optional<bool> dbus_response);
   };
 
   class WindowTracker : public ash::WindowStateObserver,

@@ -10,13 +10,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -66,7 +66,7 @@ class PinSetupScreen : public BaseScreen {
   // Inticates whether the device supports usage of PIN for login.
   // This information is retrived in an async way and will not be available
   // immediately.
-  base::Optional<bool> has_login_support_;
+  absl::optional<bool> has_login_support_;
 
   PinSetupScreenView* const view_;
   ScreenExitCallback exit_callback_;

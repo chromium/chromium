@@ -174,7 +174,7 @@ class TermsOfServiceScreenTest : public OobeBaseTest {
     return chromeos::FakeSessionManagerClient::Get();
   }
 
-  base::Optional<TermsOfServiceScreen::Result> result_;
+  absl::optional<TermsOfServiceScreen::Result> result_;
   base::HistogramTester histogram_tester_;
 
  private:

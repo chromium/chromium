@@ -51,7 +51,7 @@ void CrosvmMetrics::Start() {
 
 void CrosvmMetrics::CollectCycleStartData() {
   previous_pid_stat_map_ = GetCrosvmPidStatMap();
-  base::Optional<int64_t> total_cpu_time = ash::system::GetCpuTimeJiffies();
+  absl::optional<int64_t> total_cpu_time = ash::system::GetCpuTimeJiffies();
   if (!total_cpu_time.has_value()) {
     cycle_start_data_collected_ = false;
     return;
@@ -104,13 +104,13 @@ void CrosvmMetrics::MetricsCycle() {
   }
 
   PidStatMap pid_stat_map = GetCrosvmPidStatMap();
-  base::Optional<int64_t> total_cpu_time = ash::system::GetCpuTimeJiffies();
+  absl::optional<int64_t> total_cpu_time = ash::system::GetCpuTimeJiffies();
   if (!total_cpu_time.has_value()) {
     cycle_start_data_collected_ = false;
     return;
   }
   int64_t cycle_cpu_time = total_cpu_time.value() - previous_total_cpu_time_;
-  base::Optional<int64_t> mem_used = ash::system::GetUsedMemTotalKB();
+  absl::optional<int64_t> mem_used = ash::system::GetUsedMemTotalKB();
   if (!mem_used.has_value()) {
     cycle_start_data_collected_ = false;
     return;

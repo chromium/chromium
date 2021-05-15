@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/optional.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lite_video/lite_video_features.h"
 #include "chrome/browser/lite_video/lite_video_hint.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace {
@@ -130,7 +130,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
   if (!IsLiteVideoAllowedForUser(Profile::FromBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext()))) {
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -149,7 +149,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
   if (!CanApplyOnCurrentNetworkConditions(is_cellular_network_,
                                           current_effective_connection_type_)) {
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -158,7 +158,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
 
   if (!url.SchemeIsHTTPOrHTTPS()) {
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -168,7 +168,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
     ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
         blocklist_reason, navigation_handle->IsInMainFrame());
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -187,7 +187,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
     ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
         blocklist_reason, navigation_handle->IsInMainFrame());
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -212,7 +212,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
     // For subframes, check if a hint is cached that can be used
     // immediately. Otherwise, the callback from the optimization guide
     // will trigger subframes to get the supplied hint.
-    base::Optional<LiteVideoHint> hint;
+    absl::optional<LiteVideoHint> hint;
     optimization_guide::OptimizationGuideDecision opt_guide_decision =
         optimization_guide::OptimizationGuideDecision::kUnknown;
     GURL mainframe_url =
@@ -238,7 +238,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
     return;
   }
 
-  base::Optional<LiteVideoHint> hint =
+  absl::optional<LiteVideoHint> hint =
       hint_cache_->GetHintForNavigationURL(url);
   ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
       blocklist_reason, navigation_handle->IsInMainFrame());
@@ -248,7 +248,7 @@ void LiteVideoDecider::CanApplyLiteVideo(
 
   if (blocklist_reason != LiteVideoBlocklistReason::kAllowed || !hint) {
     std::move(callback).Run(
-        base::nullopt, blocklist_reason,
+        absl::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
     return;
   }
@@ -271,7 +271,7 @@ void LiteVideoDecider::UpdateBlocklists(
   user_blocklist_->AddNavigationToBlocklist(navigation_handle, false);
 
   navigation_handle->IsInMainFrame()
-      ? DidMediaRebuffer(navigation_handle->GetURL(), base::nullopt, false)
+      ? DidMediaRebuffer(navigation_handle->GetURL(), absl::nullopt, false)
       : DidMediaRebuffer(
             navigation_handle->GetWebContents()->GetLastCommittedURL(),
             navigation_handle->GetURL(), false);
@@ -296,14 +296,14 @@ void LiteVideoDecider::OnOptimizationGuideHintAvailable(
   // If the decision is false, then add an empty entry into the hint cache
   // so that subframes with this mainframe host will return false.
   if (decision == optimization_guide::OptimizationGuideDecision::kFalse) {
-    cached_opt_guide_hints_.Put(mainframe_url.host(), base::nullopt);
+    cached_opt_guide_hints_.Put(mainframe_url.host(), absl::nullopt);
     UMA_HISTOGRAM_COUNTS_100("LiteVideo.LiteVideoDecider.OptGuideHintCacheSize",
                              cached_opt_guide_hints_.size());
   }
 
   if (blocklist_reason != LiteVideoBlocklistReason::kAllowed ||
       decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    std::move(callback).Run(base::nullopt, blocklist_reason, decision);
+    std::move(callback).Run(absl::nullopt, blocklist_reason, decision);
     return;
   }
 
@@ -313,7 +313,7 @@ void LiteVideoDecider::OnOptimizationGuideHintAvailable(
                     features::LiteVideoKilobytesToBufferBeforeThrottle(),
                     features::LiteVideoMaxThrottlingDelay());
 
-  base::Optional<optimization_guide::proto::LiteVideoMetadata>
+  absl::optional<optimization_guide::proto::LiteVideoMetadata>
       lite_video_metadata =
           metadata
               .ParsedMetadata<optimization_guide::proto::LiteVideoMetadata>();
@@ -369,7 +369,7 @@ bool LiteVideoDecider::IsHostPermanentlyBlockedlisted(
 }
 
 void LiteVideoDecider::DidMediaRebuffer(const GURL& mainframe_url,
-                                        base::Optional<GURL> subframe_url,
+                                        absl::optional<GURL> subframe_url,
                                         bool opt_out) {
   if (user_blocklist_) {
     user_blocklist_->AddRebufferToBlocklist(mainframe_url, subframe_url,

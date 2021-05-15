@@ -24,7 +24,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -54,6 +53,7 @@
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_characteristic_bluez.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using device::BluetoothAdapter;
 using device::BluetoothAdapterFactory;
@@ -77,13 +77,13 @@ using device::BluetoothUUID;
 
 namespace {
 
-base::Optional<int> SdkVersion() {
+absl::optional<int> SdkVersion() {
   constexpr char kVersionKey[] = "CHROMEOS_ARC_ANDROID_SDK_VERSION";
   int sdk_version;
   std::string sdk_str;
   if (!base::SysInfo::GetLsbReleaseValue(kVersionKey, &sdk_str) ||
       !base::StringToInt(sdk_str, &sdk_version))
-    return base::nullopt;
+    return absl::nullopt;
   return sdk_version;
 }
 
@@ -249,12 +249,12 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Example of identifier: /org/bluez/hci0/dev_E0_CF_65_8C_86_1A/service001a
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
-base::Optional<uint16_t> ConvertGattIdentifierToId(
+absl::optional<uint16_t> ConvertGattIdentifierToId(
     const std::string identifier) {
   uint32_t result;
   if (identifier.size() < 4 ||
       !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -264,7 +264,7 @@ template <class RemoteGattAttribute>
 arc::mojom::BluetoothGattDBElementPtr CreateGattDBElement(
     const arc::mojom::BluetoothGattDBAttributeType type,
     const RemoteGattAttribute* attribute) {
-  base::Optional<int16_t> id =
+  absl::optional<int16_t> id =
       ConvertGattIdentifierToId(attribute->GetIdentifier());
   if (!id)
     return nullptr;
@@ -307,7 +307,7 @@ void OnGattOperationError(arc::ArcBluetoothBridge::GattStatusCallback callback,
 // ReadGattDescriptor.
 void OnGattRead(
     GattReadCallback callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& result) {
   arc::mojom::BluetoothGattValuePtr gattValue =
       arc::mojom::BluetoothGattValue::New();
@@ -328,7 +328,7 @@ void OnGattServerRead(
     arc::mojom::BluetoothGattStatus status,
     const std::vector<uint8_t>& value) {
   if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS) {
-    std::move(callback).Run(/*error_code=*/base::nullopt, value);
+    std::move(callback).Run(/*error_code=*/absl::nullopt, value);
   } else {
     std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
                             /*value=*/std::vector<uint8_t>());
@@ -352,12 +352,12 @@ bool IsGattOffsetValid(int offset) {
 
 // This is needed because Android only support UUID 16 bits in service data
 // section in advertising data
-base::Optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
+absl::optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
   // Convert xxxxyyyy-xxxx-xxxx-xxxx-xxxxxxxxxxxx to int16 yyyy
   uint32_t result;
   if (uuid.canonical_value().size() < 8 ||
       !base::HexStringToUInt(uuid.canonical_value().substr(4, 4), &result))
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -681,7 +681,7 @@ void ArcBluetoothBridge::DeviceAdvertisementReceived(
     return;
 
   constexpr int kAndroidPSdkVersion = 28;
-  base::Optional<int> sdk_version = SdkVersion();
+  absl::optional<int> sdk_version = SdkVersion();
   mojom::BluetoothAddressPtr addr =
       mojom::BluetoothAddress::From(device->GetAddress());
   if (!sdk_version)
@@ -835,13 +835,13 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
   if (!btle_instance)
     return;
 
-  const base::Optional<int16_t> char_inst_id =
+  const absl::optional<int16_t> char_inst_id =
       ConvertGattIdentifierToId(characteristic->GetIdentifier());
   if (!char_inst_id)
     return;
 
   BluetoothRemoteGattService* service = characteristic->GetService();
-  const base::Optional<int16_t> service_inst_id =
+  const absl::optional<int16_t> service_inst_id =
       ConvertGattIdentifierToId(service->GetIdentifier());
   if (!service_inst_id)
     return;
@@ -1616,12 +1616,12 @@ void ArcBluetoothBridge::GetGattDB(mojom::BluetoothAddressPtr remote_addr) {
     const auto& characteristics = service->GetCharacteristics();
     if (characteristics.size() > 0) {
       const auto& descriptors = characteristics.back()->GetDescriptors();
-      const base::Optional<int16_t> start_handle =
+      const absl::optional<int16_t> start_handle =
           ConvertGattIdentifierToId(characteristics.front()->GetIdentifier());
       if (!start_handle)
         continue;
 
-      const base::Optional<int16_t> end_handle = ConvertGattIdentifierToId(
+      const absl::optional<int16_t> end_handle = ConvertGattIdentifierToId(
           descriptors.size() > 0 ? descriptors.back()->GetIdentifier()
                                  : characteristics.back()->GetIdentifier());
       if (!end_handle)
@@ -2687,7 +2687,7 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::REMOTE_RSSI) {
-    base::Optional<int8_t> rssi = device->GetInquiryRSSI();
+    absl::optional<int8_t> rssi = device->GetInquiryRSSI();
     if (rssi.has_value()) {
       mojom::BluetoothPropertyPtr btp = mojom::BluetoothProperty::New();
       btp->set_remote_rssi(rssi.value());
@@ -2845,7 +2845,7 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
 
   // Service Data
   for (const BluetoothUUID& uuid : device->GetServiceDataUUIDs()) {
-    base::Optional<uint16_t> uuid16 = GetUUID16(uuid);
+    absl::optional<uint16_t> uuid16 = GetUUID16(uuid);
     if (!uuid16)
       continue;
 

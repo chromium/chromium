@@ -13,7 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -140,7 +140,7 @@ class MenuItemBuilder {
 
   bool is_removed_ = false;
 
-  base::Optional<std::vector<MenuItemBuilder>> submenu_;
+  absl::optional<std::vector<MenuItemBuilder>> submenu_;
 
   // Copy and assign allowed.
 };

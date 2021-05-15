@@ -10,8 +10,8 @@
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
+using absl::optional;
 using base::Bucket;
-using base::Optional;
 using base::Value;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -67,7 +67,7 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
 
   size_t i = 0;
   for (const Value& expectation : expectations.GetList()) {
-    Optional<double> score = expectation.FindDoubleKey("score");
+    optional<double> score = expectation.FindDoubleKey("score");
     if (score && *score == 0.0) {
       // {score:0} expects no layout shift.
       continue;

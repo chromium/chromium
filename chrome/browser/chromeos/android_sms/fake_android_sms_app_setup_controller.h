@@ -12,9 +12,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_setup_controller.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -43,7 +43,7 @@ class FakeAndroidSmsAppSetupController : public AndroidSmsAppSetupController {
   // ID at |install_url|. Otherwise, this function removes any existing app at
   // that URL.
   void SetAppAtUrl(const GURL& install_url,
-                   const base::Optional<web_app::AppId>& id_for_app);
+                   const absl::optional<web_app::AppId>& id_for_app);
 
   // Completes a pending setup request (i.e., a previous call to SetUpApp()).
   // If |id_for_app| is set, the request is successful and the installed app
@@ -51,7 +51,7 @@ class FakeAndroidSmsAppSetupController : public AndroidSmsAppSetupController {
   void CompletePendingSetUpAppRequest(
       const GURL& expected_app_url,
       const GURL& expected_install_url,
-      const base::Optional<web_app::AppId>& id_for_app);
+      const absl::optional<web_app::AppId>& id_for_app);
 
   // Completes a pending cookie deletion request (i.e., a previous call to
   // DeleteRememberDeviceByDefaultCookie()).
@@ -71,7 +71,7 @@ class FakeAndroidSmsAppSetupController : public AndroidSmsAppSetupController {
   void SetUpApp(const GURL& app_url,
                 const GURL& install_url,
                 SuccessCallback callback) override;
-  base::Optional<web_app::AppId> GetPwa(const GURL& install_url) override;
+  absl::optional<web_app::AppId> GetPwa(const GURL& install_url) override;
   void DeleteRememberDeviceByDefaultCookie(const GURL& app_url,
                                            SuccessCallback callback) override;
   void RemoveApp(const GURL& app_url,

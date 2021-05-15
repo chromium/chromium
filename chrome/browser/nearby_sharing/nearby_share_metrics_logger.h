@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -39,10 +39,10 @@ void RecordNearbySharePayloadTextAttachmentTypeMetric(
 
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,
-    base::Optional<location::nearby::connections::mojom::Medium> medium);
+    absl::optional<location::nearby::connections::mojom::Medium> medium);
 
 void RecordNearbySharePayloadMediumMetric(
-    base::Optional<location::nearby::connections::mojom::Medium> medium,
+    absl::optional<location::nearby::connections::mojom::Medium> medium,
     nearby_share::mojom::ShareTargetType type,
     uint64_t num_bytes_transferred);
 
@@ -52,7 +52,7 @@ void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
 void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes);
@@ -60,7 +60,7 @@ void RecordNearbySharePayloadSizeMetric(
 void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,

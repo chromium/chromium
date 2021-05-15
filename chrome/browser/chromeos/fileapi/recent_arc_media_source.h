@@ -12,9 +12,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -49,7 +49,7 @@ class RecentArcMediaSource : public RecentSource {
   Profile* const profile_;
   std::vector<std::unique_ptr<MediaRoot>> roots_;
 
-  base::Optional<Params> params_;
+  absl::optional<Params> params_;
 
   // Time when the build started.
   base::TimeTicks build_start_time_;

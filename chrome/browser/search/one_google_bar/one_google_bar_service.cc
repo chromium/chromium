@@ -82,14 +82,14 @@ bool OneGoogleBarService::SetAdditionalQueryParams(const std::string& value) {
 void OneGoogleBarService::SigninStatusChanged() {
   // If we have cached data, clear it and notify observers.
   if (one_google_bar_data_.has_value()) {
-    one_google_bar_data_ = base::nullopt;
+    one_google_bar_data_ = absl::nullopt;
     NotifyObservers();
   }
 }
 
 void OneGoogleBarService::OneGoogleBarDataLoaded(
     OneGoogleBarLoader::Status status,
-    const base::Optional<OneGoogleBarData>& data) {
+    const absl::optional<OneGoogleBarData>& data) {
   // In case of transient errors, keep our cached data (if any), but still
   // notify observers of the finished load (attempt).
   if (status != OneGoogleBarLoader::Status::TRANSIENT_ERROR) {

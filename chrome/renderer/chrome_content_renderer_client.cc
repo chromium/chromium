@@ -1633,7 +1633,7 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
       return false;
     // TODO(solomonkinard): Use initiator_origin and add tests.
     return extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-        extension, url.path(), base::Optional<url::Origin>());
+        extension, url.path(), absl::optional<url::Origin>());
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return true;

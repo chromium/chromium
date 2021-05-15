@@ -212,7 +212,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
       local_state_->GetDictionary(prefs::kServerBackedDeviceState);
   std::string device_state_mode;
   std::string device_state_management_domain;
-  base::Optional<bool> is_license_packaged_with_device;
+  absl::optional<bool> is_license_packaged_with_device;
 
   if (device_state) {
     device_state->GetString(kDeviceStateMode, &device_state_mode);

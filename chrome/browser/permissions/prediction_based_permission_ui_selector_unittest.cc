@@ -49,7 +49,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
 
   Decision SelectUiToUseAndGetDecision(
       PredictionBasedPermissionUiSelector* selector) {
-    base::Optional<Decision> actual_decision;
+    absl::optional<Decision> actual_decision;
     base::RunLoop run_loop;
 
     permissions::MockPermissionRequest request(

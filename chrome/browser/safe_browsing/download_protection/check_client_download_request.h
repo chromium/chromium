@@ -65,9 +65,9 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   // Uploads the binary for deep scanning if the reason and policies indicate
   // it should be. ShouldUploadBinary will returns the settings to apply for
-  // deep scanning if it should occur, or base::nullopt if no scan should be
+  // deep scanning if it should occur, or absl::nullopt if no scan should be
   // done.
-  base::Optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
+  absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
   void UploadBinary(DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;

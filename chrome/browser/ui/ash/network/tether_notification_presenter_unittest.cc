@@ -205,7 +205,7 @@ TEST_F(TetherNotificationPresenterTest,
       display_service_->GetNotification(GetActiveHostNotificationId()));
   notification_presenter_->NotifyConnectionToHostFailed();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetActiveHostNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetActiveHostNotificationId(), notification->id());
@@ -223,14 +223,14 @@ TEST_F(TetherNotificationPresenterTest,
       display_service_->GetNotification(GetActiveHostNotificationId()));
   notification_presenter_->NotifyConnectionToHostFailed();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetActiveHostNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetActiveHostNotificationId(), notification->id());
 
   // Tap the notification.
   ASSERT_TRUE(notification->delegate());
-  notification->delegate()->Click(base::nullopt, base::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
   VerifySettingsOpened(kTetherSettingsSubpage);
   EXPECT_FALSE(
       display_service_->GetNotification(GetActiveHostNotificationId()));
@@ -250,7 +250,7 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifySetupRequired(test_device_.name(),
                                                kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetSetupRequiredNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetSetupRequiredNotificationId(), notification->id());
@@ -269,14 +269,14 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifySetupRequired(test_device_.name(),
                                                kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetSetupRequiredNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetSetupRequiredNotificationId(), notification->id());
 
   // Tap the notification.
   ASSERT_TRUE(notification->delegate());
-  notification->delegate()->Click(base::nullopt, base::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
   VerifySettingsOpened(kTetherSettingsSubpage);
   EXPECT_FALSE(
       display_service_->GetNotification(GetSetupRequiredNotificationId()));
@@ -296,7 +296,7 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifyPotentialHotspotNearby(
       test_device_, kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
@@ -315,14 +315,14 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifyPotentialHotspotNearby(
       test_device_, kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
 
   // Tap the notification.
   ASSERT_TRUE(notification->delegate());
-  notification->delegate()->Click(base::nullopt, base::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
   VerifySettingsOpened(kTetherSettingsSubpage);
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
@@ -341,14 +341,14 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifyPotentialHotspotNearby(
       test_device_, kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
 
   // Tap the notification's button.
   ASSERT_TRUE(notification->delegate());
-  notification->delegate()->Click(0, base::nullopt);
+  notification->delegate()->Click(0, absl::nullopt);
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
 
@@ -369,7 +369,7 @@ TEST_F(TetherNotificationPresenterTest,
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyMultiplePotentialHotspotsNearby();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
@@ -387,14 +387,14 @@ TEST_F(TetherNotificationPresenterTest,
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyMultiplePotentialHotspotsNearby();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
 
   // Tap the notification.
   ASSERT_TRUE(notification->delegate());
-  notification->delegate()->Click(base::nullopt, base::nullopt);
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
   VerifySettingsOpened(kTetherSettingsSubpage);
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
@@ -414,7 +414,7 @@ TEST_F(TetherNotificationPresenterTest,
   notification_presenter_->NotifyPotentialHotspotNearby(
       test_device_, kTestNetworkSignalStrength);
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
   ASSERT_TRUE(notification);
   EXPECT_EQ(GetPotentialHotspotNotificationId(), notification->id());
@@ -462,7 +462,7 @@ TEST_F(TetherNotificationPresenterTest,
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
   display_service_->GetNotification(GetPotentialHotspotNotificationId())
       ->delegate()
-      ->Click(base::nullopt, base::nullopt);
+      ->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 NO_HOTSPOT_NOTIFICATION_SHOWN);
@@ -475,7 +475,7 @@ TEST_F(TetherNotificationPresenterTest,
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
   display_service_->GetNotification(GetPotentialHotspotNotificationId())
       ->delegate()
-      ->Click(0, base::nullopt);
+      ->Click(0, absl::nullopt);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 NO_HOTSPOT_NOTIFICATION_SHOWN);
@@ -508,7 +508,7 @@ TEST_F(TetherNotificationPresenterTest,
                 MULTIPLE_HOTSPOTS_NEARBY_SHOWN);
   display_service_->GetNotification(GetPotentialHotspotNotificationId())
       ->delegate()
-      ->Click(base::nullopt, base::nullopt);
+      ->Click(absl::nullopt, absl::nullopt);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 NO_HOTSPOT_NOTIFICATION_SHOWN);

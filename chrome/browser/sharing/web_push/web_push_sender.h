@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -34,7 +34,7 @@ class WebPushSender {
   // |vapid_key|: Private key to sign VAPID header.
   // |message|: WebPushMessage to be sent.
   // |callback|: To be invoked with message_id if asynchronous operation
-  // succeeded, or base::nullopt if operation failed.
+  // succeeded, or absl::nullopt if operation failed.
   virtual void SendMessage(const std::string& fcm_token,
                            crypto::ECPrivateKey* vapid_key,
                            WebPushMessage message,

@@ -85,7 +85,7 @@ sql::InitStatus MediaHistorySessionImagesTable::CreateTableIfNonExistent() {
 bool MediaHistorySessionImagesTable::LinkImage(
     const int64_t session_id,
     const int64_t image_id,
-    const base::Optional<gfx::Size> size) {
+    const absl::optional<gfx::Size> size) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
     return false;
@@ -131,7 +131,7 @@ MediaHistorySessionImagesTable::GetImagesForSession(const int64_t session_id) {
           .c_str()));
   statement.BindInt64(0, session_id);
 
-  base::Optional<media_session::MediaImage> current;
+  absl::optional<media_session::MediaImage> current;
   while (statement.Step()) {
     GURL url(statement.ColumnString(2));
 

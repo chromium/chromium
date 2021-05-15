@@ -47,19 +47,19 @@ int TabStripModelOrderController::DetermineInsertionIndex(
   return model_->count();
 }
 
-base::Optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
+absl::optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
     int removing_index) const {
   DCHECK(model_->ContainsIndex(removing_index));
 
   // The case where the closed tab is inactive is handled directly in
   // TabStripModel.
   if (removing_index != model_->active_index())
-    return base::nullopt;
+    return absl::nullopt;
 
   // The case where multiple tabs are selected is handled directly in
   // TabStripModel.
   if (model_->selection_model().size() > 1)
-    return base::nullopt;
+    return absl::nullopt;
 
   content::WebContents* parent_opener =
       model_->GetOpenerOfWebContentsAt(removing_index);
@@ -91,16 +91,16 @@ base::Optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
   }
 
   // If closing a grouped tab, return a tab that is still in the group, if any.
-  const base::Optional<tab_groups::TabGroupId> current_group =
+  const absl::optional<tab_groups::TabGroupId> current_group =
       model_->GetTabGroupForTab(removing_index);
   if (current_group.has_value()) {
     // Match the default behavior below: prefer the tab to the right.
-    const base::Optional<tab_groups::TabGroupId> right_group =
+    const absl::optional<tab_groups::TabGroupId> right_group =
         model_->GetTabGroupForTab(removing_index + 1);
     if (current_group == right_group)
       return removing_index;
 
-    const base::Optional<tab_groups::TabGroupId> left_group =
+    const absl::optional<tab_groups::TabGroupId> left_group =
         model_->GetTabGroupForTab(removing_index - 1);
     if (current_group == left_group)
       return removing_index - 1;
@@ -109,8 +109,8 @@ base::Optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
   // At this point, the tab detaching is either not inside a group, or the last
   // tab in the group. If there are any tabs in a not collapsed group,
   // |GetNextExpandedActiveTab()| will return the index of that tab.
-  base::Optional<int> next_available =
-      model_->GetNextExpandedActiveTab(removing_index, base::nullopt);
+  absl::optional<int> next_available =
+      model_->GetNextExpandedActiveTab(removing_index, absl::nullopt);
   if (next_available.has_value())
     return GetValidIndex(next_available.value(), removing_index);
 

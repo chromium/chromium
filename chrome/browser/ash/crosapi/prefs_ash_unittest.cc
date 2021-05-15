@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace {
@@ -35,7 +35,7 @@ class TestObserver : public mojom::PrefObserver {
   // crosapi::mojom::PrefObserver:
   void OnPrefChanged(base::Value value) override { value_ = std::move(value); }
 
-  base::Optional<base::Value> value_;
+  absl::optional<base::Value> value_;
   mojo::Receiver<mojom::PrefObserver> receiver_{this};
 };
 
@@ -79,7 +79,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   // Get returns value.
   base::Value get_value;
   prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](base::Optional<base::Value> value) {
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
         get_value = std::move(*value);
       }));
   prefs_remote.FlushForTesting();
@@ -143,7 +143,7 @@ TEST_F(PrefsAshTest, ProfilePrefs) {
   // Get returns value.
   base::Value get_value;
   prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](base::Optional<base::Value> value) {
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
         get_value = std::move(*value);
       }));
   prefs_remote.FlushForTesting();
@@ -170,10 +170,10 @@ TEST_F(PrefsAshTest, GetUnknown) {
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kUnknown;
 
-  // Get for an unknown value returns base::nullopt.
+  // Get for an unknown value returns absl::nullopt.
   bool has_value = true;
   prefs_remote->GetPref(
-      path, base::BindLambdaForTesting([&](base::Optional<base::Value> value) {
+      path, base::BindLambdaForTesting([&](absl::optional<base::Value> value) {
         has_value = value.has_value();
       }));
   prefs_remote.FlushForTesting();

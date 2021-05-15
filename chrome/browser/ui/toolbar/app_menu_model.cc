@@ -128,15 +128,15 @@ std::u16string GetUpgradeDialogMenuItemName() {
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
-base::Optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
+absl::optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
-    return base::nullopt;
+    return absl::nullopt;
   std::u16string app_name =
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
   if (app_name.empty())
-    return base::nullopt;
+    return absl::nullopt;
   return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
                                     ui::EscapeMenuLabelAmpersands(app_name));
 }
@@ -347,7 +347,7 @@ ui::ImageModel AppMenuModel::GetIconForCommandId(int command_id) const {
     DCHECK(app_menu_icon_controller_);
     return ui::ImageModel::FromVectorIcon(
         kBrowserToolsUpdateIcon,
-        app_menu_icon_controller_->GetIconColor(base::nullopt));
+        app_menu_icon_controller_->GetIconColor(absl::nullopt));
   }
   return ui::ImageModel();
 }
@@ -823,10 +823,10 @@ void AppMenuModel::Build() {
 
   AddItemWithStringId(IDC_FIND, IDS_FIND);
 
-  if (base::Optional<std::u16string> name =
+  if (absl::optional<std::u16string> name =
           GetInstallPWAAppMenuItemName(browser_)) {
     AddItem(IDC_INSTALL_PWA, *name);
-  } else if (base::Optional<web_app::AppId> app_id =
+  } else if (absl::optional<web_app::AppId> app_id =
                  web_app::GetWebAppForActiveTab(browser_)) {
     auto* provider = web_app::WebAppProvider::Get(browser_->profile());
     const std::u16string short_name =
@@ -850,7 +850,7 @@ void AppMenuModel::Build() {
     } else if (dom_distiller::ShowReaderModeOption(
                    browser_->profile()->GetPrefs())) {
       // Show the menu option if the page is distillable.
-      base::Optional<dom_distiller::DistillabilityResult> distillability =
+      absl::optional<dom_distiller::DistillabilityResult> distillability =
           dom_distiller::GetLatestResult(
               browser()->tab_strip_model()->GetActiveWebContents());
       if (distillability && distillability.value().is_distillable)

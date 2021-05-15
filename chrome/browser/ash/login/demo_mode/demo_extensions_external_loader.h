@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
@@ -62,7 +62,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // Called when the external extensions prefs are read from the disk.
   // `prefs` - demo extensions prefs.
-  void DemoExternalExtensionsPrefsLoaded(base::Optional<base::Value> prefs);
+  void DemoExternalExtensionsPrefsLoaded(absl::optional<base::Value> prefs);
 
   std::unique_ptr<ExternalCache> external_cache_;
 

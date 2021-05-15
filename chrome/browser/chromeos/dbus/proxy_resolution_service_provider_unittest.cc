@@ -68,7 +68,7 @@ class MockNetworkContext : public network::TestNetworkContext {
       proxy_lookup_client_remote->OnProxyLookupComplete(net::OK, proxy_info);
     } else {
       proxy_lookup_client_remote->OnProxyLookupComplete(
-          lookup_proxy_result_.error, base::nullopt);
+          lookup_proxy_result_.error, absl::nullopt);
     }
   }
 

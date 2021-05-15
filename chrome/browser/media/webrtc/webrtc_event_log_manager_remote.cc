@@ -1063,7 +1063,7 @@ void WebRtcRemoteEventLogManager::MaybeStopRemoteLogging(
 }
 
 void WebRtcRemoteEventLogManager::PrunePendingLogs(
-    base::Optional<BrowserContextId> browser_context_id) {
+    absl::optional<BrowserContextId> browser_context_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   MaybeRemovePendingLogs(
       base::Time::Min(),
@@ -1130,7 +1130,7 @@ void WebRtcRemoteEventLogManager::MaybeCancelActiveLogs(
 void WebRtcRemoteEventLogManager::MaybeRemovePendingLogs(
     const base::Time& delete_begin,
     const base::Time& delete_end,
-    base::Optional<BrowserContextId> browser_context_id,
+    absl::optional<BrowserContextId> browser_context_id,
     bool is_cache_clear) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -1197,7 +1197,7 @@ void WebRtcRemoteEventLogManager::MaybeCancelUpload(
 bool WebRtcRemoteEventLogManager::MatchesFilter(
     BrowserContextId log_browser_context_id,
     const base::Time& log_last_modification,
-    base::Optional<BrowserContextId> filter_browser_context_id,
+    absl::optional<BrowserContextId> filter_browser_context_id,
     const base::Time& filter_range_begin,
     const base::Time& filter_range_end) const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

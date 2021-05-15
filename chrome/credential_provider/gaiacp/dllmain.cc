@@ -197,7 +197,7 @@ void CALLBACK PerformPostSigninActionsW(HWND /*hwnd*/,
   // Don't log |buffer| since it contains sensitive info like password.
 
   HRESULT hr = S_OK;
-  base::Optional<base::Value> properties =
+  absl::optional<base::Value> properties =
       base::JSONReader::Read(buffer.data(), base::JSON_ALLOW_TRAILING_COMMAS);
 
   credential_provider::SecurelyClearBuffer(buffer.data(), buffer.size());

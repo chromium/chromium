@@ -289,7 +289,7 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
     g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
         dummy_sim_hash,
         base::BindLambdaForTesting(
-            [&](base::Optional<uint64_t>, base::Version) { run_loop.Quit(); }));
+            [&](absl::optional<uint64_t>, base::Version) { run_loop.Quit(); }));
     run_loop.Run();
   }
 

@@ -13,12 +13,12 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -135,21 +135,21 @@ em::RemoteCommand_Type DeviceCommandGetRoutineUpdateJob::GetType() const {
 
 bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root.has_value())
     return false;
   if (!root->is_dict())
     return false;
 
   // Make sure the command payload specified a valid integer for the routine ID.
-  base::Optional<int> id = root->FindIntKey(kIdFieldName);
+  absl::optional<int> id = root->FindIntKey(kIdFieldName);
   if (!id.has_value())
     return false;
   routine_id_ = id.value();
 
   // Make sure the command payload specified a valid
   // DiagnosticRoutineCommandEnum.
-  base::Optional<int> command_enum = root->FindIntKey(kCommandFieldName);
+  absl::optional<int> command_enum = root->FindIntKey(kCommandFieldName);
   if (!command_enum.has_value())
     return false;
   if (!PopulateMojoEnumValueIfValid(command_enum.value(), &command_)) {
@@ -159,7 +159,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
   }
 
   // Make sure the command payload specified a boolean for include_output.
-  base::Optional<bool> include_output =
+  absl::optional<bool> include_output =
       root->FindBoolKey(kIncludeOutputFieldName);
   if (!include_output.has_value())
     return false;

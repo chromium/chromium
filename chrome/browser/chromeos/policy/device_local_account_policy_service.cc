@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,6 +44,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace em = enterprise_management;
@@ -241,7 +241,7 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
     CloudPolicyClient* client) {
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
       component_policy_cache_path_, resource_cache_task_runner_,
-      /* max_cache_size */ base::nullopt));
+      /* max_cache_size */ absl::nullopt));
 
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD, this,

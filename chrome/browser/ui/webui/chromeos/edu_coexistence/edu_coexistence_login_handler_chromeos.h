@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;
@@ -64,8 +64,8 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
 
   base::RepeatingClosure close_dialog_closure_;
 
-  base::Optional<signin::AccessTokenInfo> oauth_access_token_;
-  base::Optional<std::string> initialize_edu_args_callback_;
+  absl::optional<signin::AccessTokenInfo> oauth_access_token_;
+  absl::optional<std::string> initialize_edu_args_callback_;
 
   std::string edu_account_email_;
 

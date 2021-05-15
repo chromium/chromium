@@ -83,7 +83,7 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   views::ScrollView* scroll_view_ = nullptr;
 
   // The device that the user has selected to share tab to.
-  base::Optional<size_t> selected_device_index_;
+  absl::optional<size_t> selected_device_index_;
 
   base::WeakPtrFactory<SendTabToSelfBubbleViewImpl> weak_factory_{this};
 

@@ -474,7 +474,7 @@ void IconLabelBubbleView::SetUpForInOutAnimation() {
   open_state_fraction_ = 0.2;
 }
 
-void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
+void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
   if (!label()->GetVisible()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.

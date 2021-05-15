@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +31,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -76,7 +76,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   bool was_called() const { return was_called_; }
 
-  base::Optional<PageTextDumpResult> result() {
+  absl::optional<PageTextDumpResult> result() {
     return base::OptionalFromPtr(result_.get());
   }
 

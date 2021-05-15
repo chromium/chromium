@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -69,7 +69,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   void SkipToParentalHandoffScreen();
 
-  const base::Optional<ParentalHandoffScreen::Result>& result() const {
+  const absl::optional<ParentalHandoffScreen::Result>& result() const {
     return result_;
   }
 
@@ -82,7 +82,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   base::OnceCallback<void()> quit_closure_;
 
-  base::Optional<ParentalHandoffScreen::Result> result_;
+  absl::optional<ParentalHandoffScreen::Result> result_;
 
   ParentalHandoffScreen::ScreenExitCallback original_callback_;
 

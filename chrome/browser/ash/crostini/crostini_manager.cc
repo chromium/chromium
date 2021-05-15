@@ -581,7 +581,7 @@ class CrostiniManager::CrostiniRestarter
 
     auto* scheduler_configuration_manager =
         g_browser_process->platform_part()->scheduler_configuration_manager();
-    base::Optional<std::pair<bool, size_t>> scheduler_configuration =
+    absl::optional<std::pair<bool, size_t>> scheduler_configuration =
         scheduler_configuration_manager->GetLastReply();
     if (!scheduler_configuration) {
       // Wait for the configuration to become available.
@@ -666,7 +666,7 @@ class CrostiniManager::CrostiniRestarter
   }
 
   void GetTerminaVmKernelVersionFinished(
-      const base::Optional<std::string>& maybe_kernel_version) {
+      const absl::optional<std::string>& maybe_kernel_version) {
     // In the error case, Crostini should still start, so we do not propagate
     // errors any further here. Also, any error would already have been logged
     // by CrostiniManager, so here we just (re)set the kernel version pref to
@@ -773,11 +773,11 @@ bool CrostiniManager::IsVmRunning(std::string vm_name) {
   return false;
 }
 
-base::Optional<VmInfo> CrostiniManager::GetVmInfo(std::string vm_name) {
+absl::optional<VmInfo> CrostiniManager::GetVmInfo(std::string vm_name) {
   auto it = running_vms_.find(std::move(vm_name));
   if (it != running_vms_.end())
     return it->second;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CrostiniManager::AddRunningVmForTesting(std::string vm_name) {
@@ -841,7 +841,7 @@ void CrostiniManager::SetContainerOsRelease(
   UpdateContainerPref(profile_, container_id, prefs::kContainerOsVersionKey,
                       base::Value(static_cast<int>(version)));
 
-  base::Optional<ContainerOsVersion> old_version;
+  absl::optional<ContainerOsVersion> old_version;
   auto it = container_os_releases_.find(container_id);
   if (it != container_os_releases_.end()) {
     old_version = VersionFromOsRelease(it->second);
@@ -888,7 +888,7 @@ void CrostiniManager::ConfigureForArcSideload() {
         GetCiceroneClient()->ConfigureForArcSideload(
             request,
             base::BindOnce(
-                [](base::Optional<
+                [](absl::optional<
                     vm_tools::cicerone::ConfigureForArcSideloadResponse>
                        response) {
                   if (!response) {
@@ -962,10 +962,10 @@ void CrostiniManager::SetUncleanStartupForTesting(bool is_unclean_startup) {
   is_unclean_startup_ = is_unclean_startup;
 }
 
-base::Optional<ContainerInfo> CrostiniManager::GetContainerInfo(
+absl::optional<ContainerInfo> CrostiniManager::GetContainerInfo(
     const ContainerId& container_id) {
   if (!IsVmRunning(container_id.vm_name)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto range = running_containers_.equal_range(container_id.vm_name);
   for (auto it = range.first; it != range.second; ++it) {
@@ -973,7 +973,7 @@ base::Optional<ContainerInfo> CrostiniManager::GetContainerInfo(
       return it->second;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
@@ -1068,7 +1068,7 @@ void CrostiniManager::MaybeUpdateCrostini() {
         std::move(concierge_request),
         base::BindOnce(
             [](base::WeakPtr<CrostiniManager> weak_this,
-               base::Optional<vm_tools::concierge::GetVmInfoResponse> reply) {
+               absl::optional<vm_tools::concierge::GetVmInfoResponse> reply) {
               if (weak_this) {
                 VLOG(1) << "Exit type: "
                         << static_cast<int>(Profile::EXIT_CRASHED);
@@ -1251,7 +1251,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
   }
 
   vm_tools::concierge::StartVmRequest request;
-  base::Optional<std::string> dlc_id = termina_installer_.GetDlcId();
+  absl::optional<std::string> dlc_id = termina_installer_.GetDlcId();
   if (dlc_id.has_value()) {
     request.mutable_vm()->set_dlc_id(*dlc_id);
   }
@@ -1418,7 +1418,7 @@ void CrostiniManager::DeleteLxdContainer(ContainerId container_id,
 void CrostiniManager::OnDeleteLxdContainer(
     const ContainerId& container_id,
     BoolCallback callback,
-    base::Optional<vm_tools::cicerone::DeleteLxdContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::DeleteLxdContainerResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to delete lxd container in vm. Empty response.";
     std::move(callback).Run(/*success=*/false);
@@ -1967,7 +1967,7 @@ void CrostiniManager::AddFileWatch(const ContainerId& container_id,
       request,
       base::BindOnce(
           [](BoolCallback callback,
-             base::Optional<vm_tools::cicerone::AddFileWatchResponse>
+             absl::optional<vm_tools::cicerone::AddFileWatchResponse>
                  response) {
             std::move(callback).Run(
                 response &&
@@ -2018,7 +2018,7 @@ void CrostiniManager::GetVshSession(const ContainerId& container_id,
   GetCiceroneClient()->GetVshSession(
       request, base::BindOnce(
                    [](VshSessionCallback callback,
-                      base::Optional<vm_tools::cicerone::GetVshSessionResponse>
+                      absl::optional<vm_tools::cicerone::GetVshSessionResponse>
                           response) {
                      if (!response) {
                        std::move(callback).Run(false, "Empty response", 0);
@@ -2224,7 +2224,7 @@ void CrostiniManager::RemoveVmStartingObserver(
 
 void CrostiniManager::OnCreateDiskImage(
     CreateDiskImageCallback callback,
-    base::Optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to create disk image. Empty response.";
     std::move(callback).Run(/*success=*/false,
@@ -2247,7 +2247,7 @@ void CrostiniManager::OnCreateDiskImage(
 
 void CrostiniManager::OnDestroyDiskImage(
     BoolCallback callback,
-    base::Optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
+    absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to destroy disk image. Empty response.";
     std::move(callback).Run(/*success=*/false);
@@ -2267,7 +2267,7 @@ void CrostiniManager::OnDestroyDiskImage(
 
 void CrostiniManager::OnListVmDisks(
     ListVmDisksCallback callback,
-    base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
+    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get list of VM disks. Empty response.";
     std::move(callback).Run(
@@ -2292,7 +2292,7 @@ void CrostiniManager::OnListVmDisks(
 void CrostiniManager::OnStartTerminaVm(
     std::string vm_name,
     BoolCallback callback,
-    base::Optional<vm_tools::concierge::StartVmResponse> response) {
+    absl::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to start termina vm. Empty response.";
     std::move(callback).Run(/*success=*/false);
@@ -2406,7 +2406,7 @@ void CrostiniManager::OnStartLxdProgress(
 void CrostiniManager::OnStopVm(
     std::string vm_name,
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::concierge::StopVmResponse> response) {
+    absl::optional<vm_tools::concierge::StopVmResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to stop termina vm. Empty response.";
     std::move(callback).Run(CrostiniResult::VM_STOP_FAILED);
@@ -2469,18 +2469,18 @@ void CrostiniManager::OnVmStoppedCleanup(const std::string& vm_name) {
 
 void CrostiniManager::OnGetTerminaVmKernelVersion(
     GetTerminaVmKernelVersionCallback callback,
-    base::Optional<vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
+    absl::optional<vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
         response) {
   if (!response) {
     LOG(ERROR) << "No reply to GetVmEnterpriseReportingInfo";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   if (!response->success()) {
     LOG(ERROR) << "Error response for GetVmEnterpriseReportingInfo: "
                << response->failure_reason();
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -2731,7 +2731,7 @@ void CrostiniManager::OnUpgradeContainerProgress(
 
 void CrostiniManager::OnUninstallPackageOwningFile(
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::UninstallPackageOwningFileResponse>
+    absl::optional<vm_tools::cicerone::UninstallPackageOwningFileResponse>
         response) {
   if (!response) {
     LOG(ERROR) << "Failed to uninstall Linux package. Empty response.";
@@ -2762,7 +2762,7 @@ void CrostiniManager::OnUninstallPackageOwningFile(
 void CrostiniManager::OnStartLxd(
     std::string vm_name,
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::StartLxdResponse> response) {
+    absl::optional<vm_tools::cicerone::StartLxdResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to start lxd in vm. Empty response.";
     std::move(callback).Run(CrostiniResult::START_LXD_FAILED);
@@ -2789,7 +2789,7 @@ void CrostiniManager::OnStartLxd(
 void CrostiniManager::OnCreateLxdContainer(
     const ContainerId& container_id,
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::CreateLxdContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::CreateLxdContainerResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to create lxd container in vm. Empty response.";
     std::move(callback).Run(CrostiniResult::CONTAINER_CREATE_FAILED);
@@ -2817,7 +2817,7 @@ void CrostiniManager::OnCreateLxdContainer(
 void CrostiniManager::OnStartLxdContainer(
     const ContainerId& container_id,
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::StartLxdContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::StartLxdContainerResponse> response) {
   if (!response) {
     VLOG(1) << "Failed to start lxd container in vm. Empty response.";
     std::move(callback).Run(CrostiniResult::CONTAINER_START_FAILED);
@@ -2864,7 +2864,7 @@ void CrostiniManager::OnStartLxdContainer(
 void CrostiniManager::OnSetUpLxdContainerUser(
     const ContainerId& container_id,
     BoolCallback callback,
-    base::Optional<vm_tools::cicerone::SetUpLxdContainerUserResponse>
+    absl::optional<vm_tools::cicerone::SetUpLxdContainerUserResponse>
         response) {
   if (!response) {
     LOG(ERROR) << "Failed to set up lxd container user. Empty response.";
@@ -3014,7 +3014,7 @@ void CrostiniManager::OnLxdContainerStarting(
 
 void CrostiniManager::OnLaunchContainerApplication(
     CrostiniSuccessCallback callback,
-    base::Optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
+    absl::optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
         response) {
   if (!response) {
     LOG(ERROR) << "Failed to launch application. Empty response.";
@@ -3028,7 +3028,7 @@ void CrostiniManager::OnLaunchContainerApplication(
 
 void CrostiniManager::OnGetContainerAppIcons(
     GetContainerAppIconsCallback callback,
-    base::Optional<vm_tools::cicerone::ContainerAppIconResponse> response) {
+    absl::optional<vm_tools::cicerone::ContainerAppIconResponse> response) {
   std::vector<Icon> icons;
   if (!response) {
     LOG(ERROR) << "Failed to get container application icons. Empty response.";
@@ -3046,7 +3046,7 @@ void CrostiniManager::OnGetContainerAppIcons(
 
 void CrostiniManager::OnGetLinuxPackageInfo(
     GetLinuxPackageInfoCallback callback,
-    base::Optional<vm_tools::cicerone::LinuxPackageInfoResponse> response) {
+    absl::optional<vm_tools::cicerone::LinuxPackageInfoResponse> response) {
   LinuxPackageInfo result;
   if (!response) {
     LOG(ERROR) << "Failed to get Linux package info. Empty response.";
@@ -3092,7 +3092,7 @@ void CrostiniManager::OnGetLinuxPackageInfo(
 
 void CrostiniManager::OnInstallLinuxPackage(
     InstallLinuxPackageCallback callback,
-    base::Optional<vm_tools::cicerone::InstallLinuxPackageResponse> response) {
+    absl::optional<vm_tools::cicerone::InstallLinuxPackageResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to install Linux package. Empty response.";
     std::move(callback).Run(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED);
@@ -3119,7 +3119,7 @@ void CrostiniManager::OnInstallLinuxPackage(
 
 void CrostiniManager::OnGetContainerSshKeys(
     GetContainerSshKeysCallback callback,
-    base::Optional<vm_tools::concierge::ContainerSshKeysResponse> response) {
+    absl::optional<vm_tools::concierge::ContainerSshKeysResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get ssh keys. Empty response.";
     std::move(callback).Run(/*success=*/false, "", "", "");
@@ -3179,7 +3179,7 @@ void CrostiniManager::FinishRestart(CrostiniRestarter* restarter,
 
 void CrostiniManager::OnExportLxdContainer(
     const ContainerId& container_id,
-    base::Optional<vm_tools::cicerone::ExportLxdContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::ExportLxdContainerResponse> response) {
   auto it = export_lxd_container_callbacks_.find(container_id);
   if (it == export_lxd_container_callbacks_.end()) {
     LOG(ERROR) << "No export callback for " << container_id;
@@ -3269,7 +3269,7 @@ void CrostiniManager::OnExportLxdContainerProgress(
 
 void CrostiniManager::OnImportLxdContainer(
     const ContainerId& container_id,
-    base::Optional<vm_tools::cicerone::ImportLxdContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::ImportLxdContainerResponse> response) {
   auto it = import_lxd_container_callbacks_.find(container_id);
   if (it == import_lxd_container_callbacks_.end()) {
     LOG(ERROR) << "No import callback for " << container_id;
@@ -3366,7 +3366,7 @@ void CrostiniManager::OnImportLxdContainerProgress(
 
 void CrostiniManager::OnCancelExportLxdContainer(
     const ContainerId& key,
-    base::Optional<vm_tools::cicerone::CancelExportLxdContainerResponse>
+    absl::optional<vm_tools::cicerone::CancelExportLxdContainerResponse>
         response) {
   auto it = export_lxd_container_callbacks_.find(key);
   if (it == export_lxd_container_callbacks_.end()) {
@@ -3389,7 +3389,7 @@ void CrostiniManager::OnCancelExportLxdContainer(
 
 void CrostiniManager::OnCancelImportLxdContainer(
     const ContainerId& key,
-    base::Optional<vm_tools::cicerone::CancelImportLxdContainerResponse>
+    absl::optional<vm_tools::cicerone::CancelImportLxdContainerResponse>
         response) {
   auto it = import_lxd_container_callbacks_.find(key);
   if (it == import_lxd_container_callbacks_.end()) {
@@ -3412,7 +3412,7 @@ void CrostiniManager::OnCancelImportLxdContainer(
 
 void CrostiniManager::OnUpgradeContainer(
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::UpgradeContainerResponse> response) {
+    absl::optional<vm_tools::cicerone::UpgradeContainerResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to start upgrading container. Empty response";
     std::move(callback).Run(CrostiniResult::UPGRADE_CONTAINER_FAILED);
@@ -3446,7 +3446,7 @@ void CrostiniManager::OnUpgradeContainer(
 
 void CrostiniManager::OnCancelUpgradeContainer(
     CrostiniResultCallback callback,
-    base::Optional<vm_tools::cicerone::CancelUpgradeContainerResponse>
+    absl::optional<vm_tools::cicerone::CancelUpgradeContainerResponse>
         response) {
   if (!response) {
     LOG(ERROR) << "Failed to cancel upgrading container. Empty response";
@@ -3570,7 +3570,7 @@ void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
   request.set_vm_name(vm_name);
   GetConciergeClient()->ListVmDisks(
       std::move(request),
-      base::BindOnce([](base::Optional<vm_tools::concierge::ListVmDisksResponse>
+      base::BindOnce([](absl::optional<vm_tools::concierge::ListVmDisksResponse>
                             response) {
         if (response) {
           if (response.value().images().size() != 1) {

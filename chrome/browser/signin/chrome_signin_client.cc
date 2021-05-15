@@ -56,12 +56,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/optional.h"
 #include "chrome/browser/lacros/account_manager_util.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if !defined(OS_ANDROID)
@@ -288,18 +288,18 @@ bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
 // Also note that this will be null for Secondary / non-Main Profiles in
 // Lacros, because they do not start with the Chrome OS Device Account
 // signed-in by default.
-base::Optional<account_manager::Account>
+absl::optional<account_manager::Account>
 ChromeSigninClient::GetInitialPrimaryAccount() {
   if (!IsAccountManagerAvailable(profile_)) {
     // Secondary Profiles in Lacros do not start with the Device Account signed
     // in.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const crosapi::mojom::AccountPtr& device_account =
       chromeos::LacrosChromeServiceImpl::Get()->init_params()->device_account;
   if (!device_account)
-    return base::nullopt;
+    return absl::nullopt;
 
   return account_manager::FromMojoAccount(device_account);
 }

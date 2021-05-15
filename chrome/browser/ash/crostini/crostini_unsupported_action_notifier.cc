@@ -12,11 +12,11 @@
 #include "ash/public/cpp/toast_manager.h"
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/wm_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -116,7 +116,7 @@ void CrostiniUnsupportedActionNotifier::
         /*text=*/
         l10n_util::GetStringUTF16(IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD),
         /*timeout_ms=*/delegate_->ToastTimeoutMs(),
-        /*dismiss_text=*/base::nullopt};
+        /*dismiss_text=*/absl::nullopt};
     delegate_->ShowToast(data);
     virtual_keyboard_unsupported_message_shown_ = true;
     EmitMetricReasonShown(reason);
@@ -139,7 +139,7 @@ void CrostiniUnsupportedActionNotifier::
         /*text=*/
         l10n_util::GetStringFUTF16(IDS_CROSTINI_UNSUPPORTED_IME, ime_name),
         /*timeout_ms=*/delegate_->ToastTimeoutMs(),
-        /*dismiss_text=*/base::nullopt};
+        /*dismiss_text=*/absl::nullopt};
     delegate_->ShowToast(data);
     ime_unsupported_message_shown_ = true;
     EmitMetricReasonShown(NotificationReason::kUnsupportedIME);

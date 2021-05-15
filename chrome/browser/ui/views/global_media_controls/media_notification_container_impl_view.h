@@ -55,8 +55,8 @@ class MediaNotificationContainerImplView
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaNotificationService* service,
       GlobalMediaControlsEntryPoint entry_point,
-      base::Optional<media_message_center::NotificationTheme> theme =
-          base::nullopt);
+      absl::optional<media_message_center::NotificationTheme> theme =
+          absl::nullopt);
   MediaNotificationContainerImplView(
       const MediaNotificationContainerImplView&) = delete;
   MediaNotificationContainerImplView& operator=(

@@ -159,12 +159,12 @@ int TabMetricsLogger::GetSiteEngagementScore(
 }
 
 // static
-base::Optional<tab_ranker::TabFeatures> TabMetricsLogger::GetTabFeatures(
+absl::optional<tab_ranker::TabFeatures> TabMetricsLogger::GetTabFeatures(
     const PageMetrics& page_metrics,
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
-    return base::nullopt;
+    return absl::nullopt;
 
   tab_ranker::TabFeatures tab;
   PopulateTabFeaturesFromWebContents(web_contents, &tab);

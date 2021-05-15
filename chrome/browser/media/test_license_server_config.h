@@ -10,7 +10,7 @@
 
 #include "base/environment.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -31,9 +31,9 @@ class TestLicenseServerConfig {
   // server with needed args and switches.
   virtual bool GetServerCommandLine(base::CommandLine* command_line) = 0;
 
-  // Returns the environment map to apply to the server, or base::nullopt on
+  // Returns the environment map to apply to the server, or absl::nullopt on
   // error.
-  virtual base::Optional<base::EnvironmentMap> GetServerEnvironment() = 0;
+  virtual absl::optional<base::EnvironmentMap> GetServerEnvironment() = 0;
 
   // Returns true if the server is supported on current platform.
   virtual bool IsPlatformSupported() = 0;

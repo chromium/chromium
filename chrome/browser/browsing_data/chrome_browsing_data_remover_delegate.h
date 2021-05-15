@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
@@ -26,6 +25,7 @@
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class ScopedProfileKeepAlive;

@@ -69,7 +69,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // Handles clicks on the Secondary Account reauth notification. See
   // `message_center::HandleNotificationClickDelegate`.
   void HandleSecondaryAccountReauthNotificationClick(
-      base::Optional<int> button_index);
+      absl::optional<int> button_index);
 
   std::u16string GetMessageBody(bool is_secondary_account_error) const;
 

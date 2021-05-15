@@ -58,7 +58,7 @@ JNI_EXPORT void JNI_PrefetchTestBridge_InsertIntoCachedImageFetcher(
   base::android::JavaByteArrayToString(env, j_image_data, &image_data);
 
   cache->SaveImage(url, image_data, false /* needs_transcoding */,
-                   base::nullopt /* expiration_interval */);
+                   absl::nullopt /* expiration_interval */);
 }
 
 JNI_EXPORT void JNI_PrefetchTestBridge_AddCandidatePrefetchURL(

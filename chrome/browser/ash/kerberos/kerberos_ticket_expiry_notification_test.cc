@@ -41,7 +41,7 @@ class KerberosTicketExpiryNotificationTest : public testing::Test {
   }
 
  protected:
-  base::Optional<Notification> Notification() {
+  absl::optional<Notification> Notification() {
     return display_service_tester_->GetNotification(kNotificationId);
   }
 
@@ -81,7 +81,7 @@ TEST_F(KerberosTicketExpiryNotificationTest, Click) {
   EXPECT_EQ(0, notification_click_count_[kUser]);
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationId,
-      base::nullopt /* action_index */, base::nullopt /* reply */);
+      absl::nullopt /* action_index */, absl::nullopt /* reply */);
   EXPECT_EQ(1, notification_click_count_[kUser]);
 }
 

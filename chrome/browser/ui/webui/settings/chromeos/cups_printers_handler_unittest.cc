@@ -61,7 +61,7 @@ void RemovedPrinter(base::OnceClosure quit_closure,
 
 class TestCupsPrintersManager : public StubCupsPrintersManager {
  public:
-  base::Optional<Printer> GetPrinter(const std::string& id) const override {
+  absl::optional<Printer> GetPrinter(const std::string& id) const override {
     return Printer();
   }
 };

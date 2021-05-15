@@ -70,8 +70,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void Update();
 
   // Set the color of the button icon. Based on the text color by default.
-  void SetIconColor(base::Optional<SkColor> color);
-  base::Optional<SkColor> GetIconColor() const;
+  void SetIconColor(absl::optional<SkColor> color);
+  absl::optional<SkColor> GetIconColor() const;
 
   void disable_animation() { can_animate_ = false; }
 
@@ -98,7 +98,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   Delegate* delegate_;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
   views::BubbleDialogDelegateView* bubble_view_;
-  base::Optional<SkColor> icon_color_;
+  absl::optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{

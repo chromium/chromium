@@ -29,7 +29,7 @@ class ProtocolHandlerManager {
   // for the app indicated by |app_id|, this method will translate the protocol
   // to a full app URL.
   // If no matching handler is installed, no URL is returned.
-  base::Optional<GURL> TranslateProtocolUrl(const AppId& app_id,
+  absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                             const GURL& protocol_url) const;
 
   // Get the list of handlers for the given protocol.

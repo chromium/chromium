@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PairedKeyVerificationRunner {
  public:
@@ -38,7 +38,7 @@ class PairedKeyVerificationRunner {
       const std::string& endpoint_id,
       const std::vector<uint8_t>& token,
       NearbyConnection* connection,
-      const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate,
+      const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate,
       NearbyShareCertificateManager* certificate_manager,
       nearby_share::mojom::Visibility visibility,
       bool restrict_to_contacts,
@@ -52,10 +52,10 @@ class PairedKeyVerificationRunner {
  private:
   void SendPairedKeyEncryptionFrame();
   void OnReadPairedKeyEncryptionFrame(
-      base::Optional<sharing::mojom::V1FramePtr> frame);
+      absl::optional<sharing::mojom::V1FramePtr> frame);
   void OnReadPairedKeyResultFrame(
       std::vector<PairedKeyVerificationResult> verification_results,
-      base::Optional<sharing::mojom::V1FramePtr> frame);
+      absl::optional<sharing::mojom::V1FramePtr> frame);
   void SendPairedKeyResultFrame(PairedKeyVerificationResult result);
   PairedKeyVerificationResult VerifyRemotePublicCertificate(
       const sharing::mojom::V1FramePtr& frame);
@@ -69,7 +69,7 @@ class PairedKeyVerificationRunner {
   std::string endpoint_id_;
   std::vector<uint8_t> raw_token_;
   NearbyConnection* connection_;
-  base::Optional<NearbyShareDecryptedPublicCertificate> certificate_;
+  absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
   NearbyShareCertificateManager* certificate_manager_;
   nearby_share::mojom::Visibility visibility_;
   bool restrict_to_contacts_;

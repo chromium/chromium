@@ -830,7 +830,7 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
 }
 
 void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
-    base::Optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+    absl::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
         reply) {
   if (!reply.has_value() ||
       reply->error() !=

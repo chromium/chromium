@@ -43,7 +43,7 @@ class PasswordAccessoryControllerImpl
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  base::Optional<autofill::AccessorySheetData> GetSheetData() const override;
+  absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(autofill::FieldGlobalId focused_field_id,
                           const autofill::UserInfo::Field& selection) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
@@ -168,9 +168,9 @@ class PasswordAccessoryControllerImpl
 
   // Information about the currently focused field. This is the only place
   // allowed to store frame-specific data. If a new field is focused or focus is
-  // lost, this data needs to be reset to base::nullopt to make sure that data
+  // lost, this data needs to be reset to absl::nullopt to make sure that data
   // related to a former frame isn't displayed incorrectly in a different one.
-  base::Optional<LastFocusedFieldInfo> last_focused_field_info_ = base::nullopt;
+  absl::optional<LastFocusedFieldInfo> last_focused_field_info_ = absl::nullopt;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;

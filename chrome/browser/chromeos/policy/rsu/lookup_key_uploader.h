@@ -10,12 +10,12 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -52,7 +52,7 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   void Start();
   void GetDataFromCryptohome(bool available);
   void OnRsuDeviceIdReceived(
-      base::Optional<user_data_auth::GetRsuDeviceIdReply> result);
+      absl::optional<user_data_auth::GetRsuDeviceIdReply> result);
   void HandleRsuDeviceId(const std::string& rsu_device_id);
 
   void OnEnrollmentCertificateUploaded(

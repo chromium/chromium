@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -18,6 +17,7 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefRegistrySimple;
@@ -80,7 +80,7 @@ class AppTimeController : public SystemClockClient::Observer,
   // Returns current time limit for the app identified by |app_service_id| and
   // |app_type|.Will return nullopt if there is no limit set or app is not
   // tracked.
-  base::Optional<base::TimeDelta> GetTimeLimitForApp(
+  absl::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
       apps::mojom::AppType app_type) const;
 
@@ -96,7 +96,7 @@ class AppTimeController : public SystemClockClient::Observer,
   // AppTimeNotificationDelegate:
   void ShowAppTimeLimitNotification(
       const AppId& app_id,
-      const base::Optional<base::TimeDelta>& time_limit,
+      const absl::optional<base::TimeDelta>& time_limit,
       AppNotification notification) override;
 
   // AppActivityRegistry::AppStateObserver:
@@ -152,8 +152,8 @@ class AppTimeController : public SystemClockClient::Observer,
 
   void ShowNotificationForApp(const std::string& app_name,
                               AppNotification notification,
-                              base::Optional<base::TimeDelta> time_limit,
-                              base::Optional<gfx::ImageSkia> icon);
+                              absl::optional<base::TimeDelta> time_limit,
+                              absl::optional<gfx::ImageSkia> icon);
   // Profile
   Profile* const profile_;
 

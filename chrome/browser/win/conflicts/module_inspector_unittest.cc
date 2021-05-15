@@ -14,13 +14,13 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/services/util_win/util_win_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -93,7 +93,7 @@ class ModuleInspectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   // Holds a working UtilWin service implementation.
-  base::Optional<UtilWinImpl> util_win_impl_;
+  absl::optional<UtilWinImpl> util_win_impl_;
 
  private:
   std::vector<ModuleInspectionResult> inspected_modules_;

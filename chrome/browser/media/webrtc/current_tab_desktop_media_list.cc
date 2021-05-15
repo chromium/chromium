@@ -54,14 +54,14 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
 }
 
 void HandleCapturedBitmap(
-    base::OnceCallback<void(uint32_t, const base::Optional<gfx::ImageSkia>&)>
+    base::OnceCallback<void(uint32_t, const absl::optional<gfx::ImageSkia>&)>
         reply,
-    base::Optional<uint32_t> last_hash,
+    absl::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
     const SkBitmap& bitmap) {
   DCHECK(!thumbnail_size.IsEmpty());
 
-  base::Optional<gfx::ImageSkia> image;
+  absl::optional<gfx::ImageSkia> image;
 
   // Only scale and update if the frame appears to be new.
   const uint32_t hash = base::FastHash(base::make_span(
@@ -140,7 +140,7 @@ void CurrentTabDesktopMediaList::Refresh(bool update_thumbnails) {
 
 void CurrentTabDesktopMediaList::OnCaptureHandled(
     uint32_t hash,
-    const base::Optional<gfx::ImageSkia>& image) {
+    const absl::optional<gfx::ImageSkia>& image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
 

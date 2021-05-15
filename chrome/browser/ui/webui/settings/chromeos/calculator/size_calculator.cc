@@ -74,7 +74,7 @@ void SizeCalculator::RemoveObserver(SizeCalculator::Observer* observer) {
 
 void SizeCalculator::NotifySizeCalculated(
     int64_t total_bytes,
-    const base::Optional<int64_t>& available_bytes) {
+    const absl::optional<int64_t>& available_bytes) {
   calculating_ = false;
   for (SizeCalculator::Observer& observer : observers_) {
     observer.OnSizeCalculated(calculation_type_, total_bytes, available_bytes);
@@ -378,7 +378,7 @@ void OtherUsersSizeCalculator::PerformCalculation() {
 }
 
 void OtherUsersSizeCalculator::OnGetOtherUserSize(
-    base::Optional<user_data_auth::GetAccountDiskUsageReply> reply) {
+    absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
   user_sizes_.push_back(
       user_data_auth::AccountDiskUsageReplyToUsageSize(reply));
   if (user_sizes_.size() != other_users_.size())

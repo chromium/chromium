@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -21,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/origin.h"
 
@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> BuildDlpRulesManager(
   return std::make_unique<::testing::StrictMock<MockDlpRulesManager>>();
 }
 
-base::Optional<ui::DataTransferEndpoint> CreateEndpoint(
+absl::optional<ui::DataTransferEndpoint> CreateEndpoint(
     ui::EndpointType* type,
     bool notify_if_restricted) {
   if (type && *type == ui::EndpointType::kUrl) {
@@ -75,7 +75,7 @@ base::Optional<ui::DataTransferEndpoint> CreateEndpoint(
         *type,
         /*notify_if_restricted=*/notify_if_restricted);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<content::WebContents> CreateTestWebContents(
@@ -89,7 +89,7 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
 
 class DataTransferDlpControllerTest
     : public ::testing::TestWithParam<
-          std::tuple<base::Optional<ui::EndpointType>, bool>> {
+          std::tuple<absl::optional<ui::EndpointType>, bool>> {
  protected:
   DataTransferDlpControllerTest()
       : rules_manager_(), dlp_controller_(rules_manager_) {}
@@ -222,7 +222,7 @@ using DlpControllerTest = DataTransferDlpControllerTest;
 INSTANTIATE_TEST_SUITE_P(
     DlpClipboard,
     DlpControllerTest,
-    ::testing::Combine(::testing::Values(base::nullopt,
+    ::testing::Combine(::testing::Values(absl::nullopt,
                                          ui::EndpointType::kDefault,
                                          ui::EndpointType::kUnknownVm,
                                          ui::EndpointType::kBorealis,
@@ -231,10 +231,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DlpControllerTest, Allow) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
-  base::Optional<ui::DataTransferEndpoint> data_dst =
+  absl::optional<ui::DataTransferEndpoint> data_dst =
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
@@ -260,10 +260,10 @@ TEST_P(DlpControllerTest, Allow) {
 
 TEST_P(DlpControllerTest, Block) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
-  base::Optional<ui::DataTransferEndpoint> data_dst =
+  absl::optional<ui::DataTransferEndpoint> data_dst =
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
@@ -296,10 +296,10 @@ TEST_P(DlpControllerTest, Block) {
 
 TEST_P(DlpControllerTest, Warn) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
-  base::Optional<ui::DataTransferEndpoint> data_dst =
+  absl::optional<ui::DataTransferEndpoint> data_dst =
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
@@ -337,10 +337,10 @@ TEST_P(DlpControllerTest, Warn) {
 
 TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
-  base::Optional<ui::DataTransferEndpoint> data_dst =
+  absl::optional<ui::DataTransferEndpoint> data_dst =
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
@@ -369,7 +369,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DlpControllerVMsTest, Allow) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
@@ -397,7 +397,7 @@ TEST_P(DlpControllerVMsTest, Allow) {
 
 TEST_P(DlpControllerVMsTest, Block) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
@@ -433,7 +433,7 @@ TEST_P(DlpControllerVMsTest, Block) {
 
 TEST_P(DlpControllerVMsTest, Warn) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  base::Optional<ui::EndpointType> endpoint_type;
+  absl::optional<ui::EndpointType> endpoint_type;
   bool do_notify;
   std::tie(endpoint_type, do_notify) = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());

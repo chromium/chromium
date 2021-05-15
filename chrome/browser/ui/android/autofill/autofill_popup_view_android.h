@@ -45,10 +45,10 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // AutofillPopupView implementation.
   void Show() override;
   void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
  private:
   friend class AutofillPopupView;

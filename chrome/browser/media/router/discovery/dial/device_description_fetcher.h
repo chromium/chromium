@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -46,7 +46,7 @@ class DeviceDescriptionFetcher {
 
   // Runs |error_cb_| with |message| and clears it.
   void ReportError(const std::string& message,
-                   base::Optional<int> response_code = base::nullopt);
+                   absl::optional<int> response_code = absl::nullopt);
 
   const GURL device_description_url_;
 

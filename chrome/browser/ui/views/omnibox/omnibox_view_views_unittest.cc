@@ -105,8 +105,8 @@ class TestingOmniboxView : public OmniboxViewViews {
   bool base_text_emphasis() const { return base_text_emphasis_; }
 
   // Returns the latest color applied to |range| via ApplyColor(), or
-  // base::nullopt if no color has been applied to |range|.
-  base::Optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
+  // absl::nullopt if no color has been applied to |range|.
+  absl::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
 
   // OmniboxViewViews:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {}
@@ -201,7 +201,7 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
   EXPECT_EQ(update_popup_call_count_, 0U);
 }
 
-base::Optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
+absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
   for (auto range_color = range_colors_.rbegin();
@@ -209,7 +209,7 @@ base::Optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     if (range == range_color->second)
       return range_color->first;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void TestingOmniboxView::OnThemeChanged() {

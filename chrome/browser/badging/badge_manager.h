@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "url/gurl.h"
 
@@ -69,9 +69,9 @@ constexpr base::TimeDelta kBadgingMinimumUpdateInterval =
 class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
  public:
   // The badge being applied to a document URL or service worker scope. If the
-  // optional is |base::nullopt| then the badge is "flag". Otherwise the badge
+  // optional is |absl::nullopt| then the badge is "flag". Otherwise the badge
   // is a non-zero integer.
-  using BadgeValue = base::Optional<uint64_t>;
+  using BadgeValue = absl::optional<uint64_t>;
 
   explicit BadgeManager(Profile* profile);
   ~BadgeManager() override;
@@ -91,9 +91,9 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
       const GURL& service_worker_scope,
       mojo::PendingReceiver<blink::mojom::BadgeService> receiver);
 
-  // Gets the badge for |app_id|. This will be base::nullopt if the app is not
+  // Gets the badge for |app_id|. This will be absl::nullopt if the app is not
   // badged.
-  base::Optional<BadgeValue> GetBadgeValue(const web_app::AppId& app_id);
+  absl::optional<BadgeValue> GetBadgeValue(const web_app::AppId& app_id);
 
   bool HasRecentApiUsage(const web_app::AppId& app_id) const;
 
@@ -154,10 +154,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
     GURL scope_;
   };
 
-  // Updates the badge for |app_id| to be |value|, if it is not base::nullopt.
-  // If value is |base::nullopt| then this clears the badge.
+  // Updates the badge for |app_id| to be |value|, if it is not absl::nullopt.
+  // If value is |absl::nullopt| then this clears the badge.
   void UpdateBadge(const web_app::AppId& app_id,
-                   base::Optional<BadgeValue> value);
+                   absl::optional<BadgeValue> value);
 
   // blink::mojom::BadgeService:
   // Note: These are private to stop them being called outside of mojo as they

@@ -46,7 +46,7 @@ TEST_F(AdaptiveQuietNotificationPermissionUiEnablerTest,
        BackfillEnablingMethodIfMissing) {
   struct {
     bool enable_quiet_ui_pref;
-    base::Optional<QuietUiEnablingMethod> quiet_ui_method_pref;
+    absl::optional<QuietUiEnablingMethod> quiet_ui_method_pref;
     bool should_show_promo_pref;
     QuietUiEnablingMethod expected_quiet_ui_method_pref;
   } kTests[] = {
@@ -68,9 +68,9 @@ TEST_F(AdaptiveQuietNotificationPermissionUiEnablerTest,
       {true, QuietUiEnablingMethod::kUnspecified, false,
        QuietUiEnablingMethod::kManual},
       // If the method is unset, it should be treated as kUnspecified.
-      {false, base::nullopt, false, QuietUiEnablingMethod::kUnspecified},
-      {true, base::nullopt, true, QuietUiEnablingMethod::kAdaptive},
-      {true, base::nullopt, false, QuietUiEnablingMethod::kManual},
+      {false, absl::nullopt, false, QuietUiEnablingMethod::kUnspecified},
+      {true, absl::nullopt, true, QuietUiEnablingMethod::kAdaptive},
+      {true, absl::nullopt, false, QuietUiEnablingMethod::kManual},
   };
 
   base::test::ScopedFeatureList feature_list;

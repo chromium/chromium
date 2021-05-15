@@ -332,13 +332,13 @@ std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #endif
 }
 
-base::Optional<base::FilePath> GetCommandFilePath() {
+absl::optional<base::FilePath> GetCommandFilePath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line && command_line->HasSwitch(kCommandFileFlag)) {
-    return base::make_optional(
+    return absl::make_optional(
         command_line->GetSwitchValuePath(kCommandFileFlag));
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void PrintInstructions(const char* test_file_name) {
@@ -494,7 +494,7 @@ TestRecipeReplayer::~TestRecipeReplayer() {}
 bool TestRecipeReplayer::ReplayTest(
     const base::FilePath& capture_file_path,
     const base::FilePath& recipe_file_path,
-    const base::Optional<base::FilePath>& command_file_path) {
+    const absl::optional<base::FilePath>& command_file_path) {
   if (!StartWebPageReplayServer(capture_file_path))
     return false;
   if (OverrideAutofillClock(capture_file_path))
@@ -526,7 +526,7 @@ bool TestRecipeReplayer::OverrideAutofillClock(
     return false;
   }
   // Convert the file text into a json object.
-  base::Optional<base::Value> parsed_json =
+  absl::optional<base::Value> parsed_json =
       base::JSONReader::Read(decompressed_json_text);
   if (!parsed_json) {
     VLOG(1) << kClockNotSetMessage << "Failed to deserialize json";
@@ -862,7 +862,7 @@ const std::string* FindPopulateString(
 
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
-    const base::Optional<base::FilePath>& command_file_path) {
+    const absl::optional<base::FilePath>& command_file_path) {
   // Read the text of the recipe file.
   base::ScopedAllowBlockingForTesting for_testing;
   std::string json_text;
@@ -872,7 +872,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   // Convert the file text into a json object.
-  base::Optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
   if (!parsed_json) {
     ADD_FAILURE() << "Failed to deserialize json text!";
     return false;
@@ -1295,7 +1295,7 @@ bool TestRecipeReplayer::ExecuteSavePasswordAction(
 
 bool TestRecipeReplayer::ExecuteSelectDropdownAction(
     const base::DictionaryValue& action) {
-  base::Optional<int> index = action.FindIntKey("index");
+  absl::optional<int> index = action.FindIntKey("index");
   if (!index) {
     ADD_FAILURE() << "Failed to extract Selection Index from action";
     return false;
@@ -1533,7 +1533,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
     return false;
   }
 
-  base::Optional<bool> is_iframe_container = iframe->FindBoolKey("isIframe");
+  absl::optional<bool> is_iframe_container = iframe->FindBoolKey("isIframe");
   if (!is_iframe_container) {
     ADD_FAILURE() << "Failed to extract isIframe from the iframe context! ";
     return false;

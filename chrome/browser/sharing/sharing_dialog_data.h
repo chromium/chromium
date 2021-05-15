@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -47,9 +47,9 @@ struct SharingDialogData {
   std::u16string error_text;
   int help_text_id = 0;
   int help_text_origin_id = 0;
-  base::Optional<HeaderIcons> header_icons;
+  absl::optional<HeaderIcons> header_icons;
   int origin_text_id = 0;
-  base::Optional<url::Origin> initiating_origin;
+  absl::optional<url::Origin> initiating_origin;
 
   base::OnceCallback<void(const syncer::DeviceInfo&)> device_callback;
   base::OnceCallback<void(const SharingApp&)> app_callback;

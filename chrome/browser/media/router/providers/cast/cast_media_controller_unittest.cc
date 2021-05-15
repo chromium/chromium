@@ -125,7 +125,7 @@ mojom::MediaStatusPtr CreateSampleMediaStatus() {
 std::unique_ptr<CastSession> CreateSampleSession() {
   MediaSinkInternal sink(MediaSink("sinkId123", "name", SinkIconType::CAST),
                          CastSinkExtraData());
-  base::Optional<Value> receiver_status = base::JSONReader::Read(R"({
+  absl::optional<Value> receiver_status = base::JSONReader::Read(R"({
     "applications": [{
       "appId": "ABCD1234",
       "displayName": "My App",
@@ -347,7 +347,7 @@ TEST_F(CastMediaControllerTest, UpdateMediaImages) {
         EXPECT_EQ(image1.size->width(), status->images.at(0)->size->width());
         EXPECT_EQ(image1.size->height(), status->images.at(0)->size->height());
         EXPECT_EQ(image2.url.spec(), status->images.at(1)->url.spec());
-        EXPECT_EQ(base::nullopt, status->images.at(1)->size);
+        EXPECT_EQ(absl::nullopt, status->images.at(1)->size);
       });
   SetMediaStatus(*expected_status);
   VerifyAndClearExpectations();

@@ -67,8 +67,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     int avatar_id,
     const std::string& supervised_user_id,
     TestingProfile::TestingFactories testing_factories,
-    base::Optional<bool> is_new_profile,
-    base::Optional<std::unique_ptr<policy::PolicyService>> policy_service) {
+    absl::optional<bool> is_new_profile,
+    absl::optional<std::unique_ptr<policy::PolicyService>> policy_service) {
   DCHECK(called_set_up_);
 
   // Create a path for the profile based on the name.

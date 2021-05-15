@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +32,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -49,7 +49,7 @@ void RegisterProtocolHandlersWithOSInBackground(
       web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id,
                                                         GURL());
 
-  base::Optional<base::FilePath> app_specific_launcher_path =
+  absl::optional<base::FilePath> app_specific_launcher_path =
       web_app::CreateAppLauncherFile(app_name, app_name_extension,
                                      web_app_path);
   if (!app_specific_launcher_path.has_value())

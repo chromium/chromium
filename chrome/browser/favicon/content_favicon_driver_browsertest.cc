@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +45,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/url_request/url_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -184,7 +184,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
 
   base::RepeatingClosure quit_closure_;
   GURL required_url_;
-  base::Optional<std::u16string> required_title_;
+  absl::optional<std::u16string> required_title_;
   base::WeakPtrFactory<PendingTaskWaiter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PendingTaskWaiter);

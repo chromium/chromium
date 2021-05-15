@@ -92,8 +92,8 @@ TEST_F(ParserImplTest, ParseJson) {
   sandboxed_json_parser_.Parse(
       kTestJsonText,
       base::BindOnce(
-          [](WaitableEvent* done, base::Optional<base::Value> value,
-             const base::Optional<std::string>& error) {
+          [](WaitableEvent* done, absl::optional<base::Value> value,
+             const absl::optional<std::string>& error) {
             ASSERT_FALSE(error.has_value());
             ASSERT_TRUE(value.has_value());
             ASSERT_TRUE(value->is_dict());
@@ -115,8 +115,8 @@ TEST_F(ParserImplTest, ParseJsonError) {
   sandboxed_json_parser_.Parse(
       kInvalidJsonText,
       base::BindOnce(
-          [](WaitableEvent* done, base::Optional<base::Value> value,
-             const base::Optional<std::string>& error) {
+          [](WaitableEvent* done, absl::optional<base::Value> value,
+             const absl::optional<std::string>& error) {
             ASSERT_TRUE(error.has_value());
             EXPECT_FALSE(error->empty());
             done->Signal();

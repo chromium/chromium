@@ -143,7 +143,7 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);
   }
 
-  base::Optional<SkColor> color;
+  absl::optional<SkColor> color;
   switch (type_and_severity_.severity) {
     case AppMenuIconController::Severity::NONE:
       break;

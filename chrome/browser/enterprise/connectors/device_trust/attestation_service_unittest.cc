@@ -69,7 +69,7 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(result.challenge_response(), std::string());
 
-  base::Optional<base::Value> challenge_response = base::JSONReader::Read(
+  absl::optional<base::Value> challenge_response = base::JSONReader::Read(
       attestation_service_.ProtobufChallengeToJsonChallenge(
           result.challenge_response()),
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);

@@ -2366,7 +2366,7 @@ std::wstring ShellUtil::ProtocolAssociations::ToCommandLineArgument() const {
   return cmd_arg;
 }
 
-base::Optional<ShellUtil::ProtocolAssociations>
+absl::optional<ShellUtil::ProtocolAssociations>
 ShellUtil::ProtocolAssociations::FromCommandLineArgument(
     const std::wstring& argument) {
   // Given that protocol associations are stored in a string in the following
@@ -2378,7 +2378,7 @@ ShellUtil::ProtocolAssociations::FromCommandLineArgument(
                                      &protocol_association_string_pairs);
 
   if (protocol_association_string_pairs.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<std::pair<std::wstring, std::wstring>> protocol_association_pairs;
   protocol_association_pairs.reserve(protocol_association_string_pairs.size());

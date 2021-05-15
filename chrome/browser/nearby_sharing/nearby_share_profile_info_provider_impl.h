@@ -22,8 +22,8 @@ class NearbyShareProfileInfoProviderImpl
   ~NearbyShareProfileInfoProviderImpl() override;
 
   // NearbyShareProfileInfoProvider:
-  base::Optional<std::u16string> GetGivenName() const override;
-  base::Optional<std::string> GetProfileUserName() const override;
+  absl::optional<std::u16string> GetGivenName() const override;
+  absl::optional<std::string> GetProfileUserName() const override;
 
  private:
   Profile* profile_;

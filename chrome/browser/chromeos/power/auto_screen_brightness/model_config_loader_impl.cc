@@ -144,8 +144,8 @@ void ModelConfigLoaderImpl::AddObserver(ModelConfigLoader::Observer* observer) {
   observers_.AddObserver(observer);
   if (is_initialized_) {
     observer->OnModelConfigLoaded(
-        is_model_config_valid_ ? base::Optional<ModelConfig>(model_config_)
-                               : base::nullopt);
+        is_model_config_valid_ ? absl::optional<ModelConfig>(model_config_)
+                               : absl::nullopt);
   }
 }
 
@@ -247,7 +247,7 @@ void ModelConfigLoaderImpl::OnModelParamsLoadedFromDisk(
     return;
   }
 
-  base::Optional<base::Value> value = base::JSONReader::Read(content);
+  absl::optional<base::Value> value = base::JSONReader::Read(content);
   if (!value) {
     InitFromParams();
     return;
@@ -291,8 +291,8 @@ void ModelConfigLoaderImpl::OnInitializationComplete() {
   is_initialized_ = true;
   for (auto& observer : observers_) {
     observer.OnModelConfigLoaded(
-        is_model_config_valid_ ? base::Optional<ModelConfig>(model_config_)
-                               : base::nullopt);
+        is_model_config_valid_ ? absl::optional<ModelConfig>(model_config_)
+                               : absl::nullopt);
   }
 }
 

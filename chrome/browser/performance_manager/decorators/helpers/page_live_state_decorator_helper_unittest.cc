@@ -52,7 +52,7 @@ class PageLiveStateDecoratorHelperTest
 
   void EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType stream_type,
-      base::Optional<media::mojom::DisplayMediaInformationPtr>
+      absl::optional<media::mojom::DisplayMediaInformationPtr>
           display_media_info,
       bool (PageLiveStateDecorator::Data::*pm_getter)() const);
 
@@ -67,7 +67,7 @@ class PageLiveStateDecoratorHelperTest
 
 void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
     blink::mojom::MediaStreamType stream_type,
-    base::Optional<media::mojom::DisplayMediaInformationPtr> display_media_info,
+    absl::optional<media::mojom::DisplayMediaInformationPtr> display_media_info,
     bool (PageLiveStateDecorator::Data::*pm_getter)() const) {
   // By default all properties are set to false.
   testing::TestPageNodePropertyOnPMSequence(
@@ -100,28 +100,28 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingVideoChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      /*display_media_info=*/base::nullopt,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingVideo);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingAudioChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-      /*display_media_info=*/base::nullopt,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingAudio);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsBeingMirroredChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
-      /*display_media_info=*/base::nullopt,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsBeingMirrored);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingWindowChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*display_media_info=*/base::nullopt,
+      /*display_media_info=*/absl::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingWindow);
 }
 

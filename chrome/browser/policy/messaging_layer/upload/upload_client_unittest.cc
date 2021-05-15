@@ -62,7 +62,7 @@ MATCHER_P(EqualsProto,
 // Helper function composes JSON represented as base::Value from Sequencing
 // information in request.
 base::Value ValueFromSucceededSequencingInfo(
-    const base::Optional<base::Value> request,
+    const absl::optional<base::Value> request,
     bool force_confirm_flag) {
   EXPECT_TRUE(request.has_value());
   EXPECT_TRUE(request.value().is_dict());

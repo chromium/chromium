@@ -30,7 +30,7 @@ namespace {
 const int kMessageWidth = 400;
 
 void OnArcHandled(const GURL& url,
-                  const base::Optional<url::Origin>& initiating_origin,
+                  const absl::optional<url::Origin>& initiating_origin,
                   int render_process_host_id,
                   int routing_id,
                   bool handled) {
@@ -42,7 +42,7 @@ void OnArcHandled(const GURL& url,
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
   if (web_contents) {
-    base::Optional<guest_os::GuestOsRegistryService::Registration>
+    absl::optional<guest_os::GuestOsRegistryService::Registration>
         registration = guest_os::GetHandler(
             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
             url);
@@ -67,7 +67,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
   // TODO(ellyjones): Refactor arc::RunArcExternalProtocolDialog() to take a

@@ -15,12 +15,12 @@ const char kBorealisDlcName[] = "borealis-dlc";
 // are updated.
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
 
-base::Optional<int> GetBorealisAppId(std::string exec) {
+absl::optional<int> GetBorealisAppId(std::string exec) {
   int app_id;
   if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
     return app_id;
   } else {
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 

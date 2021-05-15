@@ -191,7 +191,7 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   // to match the system display density, but others are density-unaware and
   // look better when scaled to match the display density.
   if (ShouldShowDisplayDensityMenuItem(app_id, menu_type, display_id)) {
-    base::Optional<guest_os::GuestOsRegistryService::Registration>
+    absl::optional<guest_os::GuestOsRegistryService::Registration>
         registration = registry_->GetRegistration(app_id);
     if (registration) {
       if (registration->IsScaled()) {

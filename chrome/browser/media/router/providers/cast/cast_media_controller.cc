@@ -55,17 +55,17 @@ void SetIfValid(base::TimeDelta* out, const base::Value* value) {
 }
 
 // If |value| has "width" and "height" fields with positive values, it gets
-// converted into gfx::Size. Otherwise base::nullopt is returned.
-base::Optional<gfx::Size> GetValidSize(const base::Value* value) {
+// converted into gfx::Size. Otherwise absl::nullopt is returned.
+absl::optional<gfx::Size> GetValidSize(const base::Value* value) {
   if (!value || !value->is_dict())
-    return base::nullopt;
+    return absl::nullopt;
   int width = 0;
   int height = 0;
   SetIfValid(&width, value->FindPath("width"));
   SetIfValid(&height, value->FindPath("height"));
   if (width <= 0 || height <= 0)
-    return base::nullopt;
-  return base::make_optional<gfx::Size>(width, height);
+    return absl::nullopt;
+  return absl::make_optional<gfx::Size>(width, height);
 }
 
 }  // namespace

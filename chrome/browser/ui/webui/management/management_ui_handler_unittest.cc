@@ -341,7 +341,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
-    base::Optional<bool> showProxyDisclosure =
+    absl::optional<bool> showProxyDisclosure =
         data.FindBoolPath("showProxyServerPrivacyDisclosure");
     extracted_.show_proxy_server_privacy_disclosure =
         showProxyDisclosure.has_value() && showProxyDisclosure.value();
@@ -349,7 +349,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     extracted_.browser_management_notice =
         ExtractPathFromDict(data, "browserManagementNotice");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    base::Optional<bool> managed = data.FindBoolPath("managed");
+    absl::optional<bool> managed = data.FindBoolPath("managed");
     extracted_.managed = managed.has_value() && managed.value();
   }
 

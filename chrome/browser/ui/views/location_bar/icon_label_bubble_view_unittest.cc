@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -13,6 +12,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -392,12 +392,12 @@ TEST_F(IconLabelBubbleViewTest, GestureInkDropState) {
 #endif
 
 TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimation) {
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   view()->AnimateOut();
   EXPECT_FALSE(view()->IsLabelVisible());
   // Label should reappear if animated in after being animated out.
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 
@@ -407,7 +407,7 @@ TEST_F(IconLabelBubbleViewTest, LabelVisibilityAfterAnimationReset) {
   view()->ResetSlideAnimation(false);
   EXPECT_FALSE(view()->IsLabelVisible());
   // Label should reappear if animated in after being reset out.
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
 }
 

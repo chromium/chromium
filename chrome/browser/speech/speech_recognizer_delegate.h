@@ -58,7 +58,7 @@ class SpeechRecognizerDelegate {
   virtual void OnSpeechResult(
       const std::u16string& text,
       bool is_final,
-      const base::Optional<TranscriptTiming>& timing) = 0;
+      const absl::optional<TranscriptTiming>& timing) = 0;
 
   // Invoked regularly to indicate the average sound volume.
   virtual void OnSpeechSoundLevelChanged(int16_t level) = 0;

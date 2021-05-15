@@ -167,7 +167,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
                           int id,
                           bool incognito) const {
     bool has_custom_color;
-    base::Optional<SkColor> color =
+    absl::optional<SkColor> color =
         theme_service->theme_helper_.GetOmniboxColor(
             id, incognito, theme_service->GetThemeSupplier(),
             &has_custom_color);

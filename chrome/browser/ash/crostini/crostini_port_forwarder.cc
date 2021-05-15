@@ -77,8 +77,8 @@ void CrostiniPortForwarder::SignalActivePortsChanged() {
 
 bool CrostiniPortForwarder::MatchPortRuleDict(const base::Value& dict,
                                               const PortRuleKey& key) {
-  base::Optional<int> port_number = dict.FindIntKey(kPortNumberKey);
-  base::Optional<int> protocol_type = dict.FindIntKey(kPortProtocolKey);
+  absl::optional<int> port_number = dict.FindIntKey(kPortNumberKey);
+  absl::optional<int> protocol_type = dict.FindIntKey(kPortProtocolKey);
   const std::string* vm_name = dict.FindStringKey(kPortVmNameKey);
   const std::string* container_name = dict.FindStringKey(kPortContainerNameKey);
   return (port_number && port_number.value() == key.port_number) &&
@@ -125,7 +125,7 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   return all_ports->EraseListIter(it);
 }
 
-base::Optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
+absl::optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
     const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
   const base::Value* all_ports =
@@ -134,9 +134,9 @@ base::Optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
       all_ports->GetList().begin(), all_ports->GetList().end(),
       [&key, this](const auto& dict) { return MatchPortRuleDict(dict, key); });
   if (it == all_ports->GetList().end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::Optional<base::Value>(it->Clone());
+  return absl::optional<base::Value>(it->Clone());
 }
 
 void CrostiniPortForwarder::OnActivatePortCompleted(
@@ -384,7 +384,7 @@ size_t CrostiniPortForwarder::GetNumberOfForwardedPortsForTesting() {
   return forwarded_ports_.size();
 }
 
-base::Optional<base::Value> CrostiniPortForwarder::ReadPortPreferenceForTesting(
+absl::optional<base::Value> CrostiniPortForwarder::ReadPortPreferenceForTesting(
     const PortRuleKey& key) {
   return ReadPortPreference(key);
 }

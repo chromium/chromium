@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace downgrade {
 
@@ -33,7 +33,7 @@ using ExclusionPredicate = base::RepeatingCallback<bool(const base::FilePath&)>;
 // |source| to determine whether or not they should be skipped. Returns the
 // number of items within |source| or its subdirectories that could not be
 // moved, or no value if |target| could not be created.
-base::Optional<int> MoveContents(const base::FilePath& source,
+absl::optional<int> MoveContents(const base::FilePath& source,
                                  const base::FilePath& target,
                                  ExclusionPredicate exclusion_predicate);
 

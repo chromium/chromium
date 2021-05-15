@@ -8,9 +8,9 @@
 #include <iosfwd>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -32,7 +32,7 @@ class FileResult : public ChromeSearchResult {
              const base::FilePath& filepath,
              ResultType result_type,
              const std::u16string& query,
-             const base::Optional<chromeos::string_matching::TokenizedString>&
+             const absl::optional<chromeos::string_matching::TokenizedString>&
                  tokenized_query,
              Type type,
              Profile* profile);

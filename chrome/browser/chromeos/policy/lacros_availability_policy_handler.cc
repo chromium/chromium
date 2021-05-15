@@ -50,20 +50,20 @@ void LacrosAvailabilityPolicyHandler::ApplyPolicySettings(
   }
 }
 
-base::Optional<crosapi::browser_util::LacrosLaunchSwitch>
+absl::optional<crosapi::browser_util::LacrosLaunchSwitch>
 LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
                                           PolicyErrorMap* errors) {
   const base::Value* value;
   const bool value_found = CheckAndGetValue(policies, errors, &value) && value;
   if (!value_found) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const auto value_it = policy_value_to_enum_.find(value->GetString());
   if (value_it == policy_value_to_enum_.end()) {
     if (errors)
       errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return value_it->second;

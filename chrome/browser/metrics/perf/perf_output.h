@@ -11,11 +11,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/pipe_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class DebugDaemonClient;
@@ -50,8 +50,8 @@ class PerfOutputCall {
 
  private:
   // Internal callbacks.
-  void OnIOComplete(base::Optional<std::string> data);
-  void OnGetPerfOutput(base::Optional<uint64_t> result);
+  void OnIOComplete(absl::optional<std::string> data);
+  void OnGetPerfOutput(absl::optional<uint64_t> result);
 
   void StopImpl();
 
@@ -71,7 +71,7 @@ class PerfOutputCall {
   // output), the stop request will be sent out after we have the session ID to
   // stop the perf session.
   bool pending_stop_;
-  base::Optional<uint64_t> perf_session_id_;
+  absl::optional<uint64_t> perf_session_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

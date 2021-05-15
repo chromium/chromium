@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -41,6 +40,7 @@
 #include "services/media_session/public/cpp/media_position.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_history {
 
@@ -384,10 +384,10 @@ TEST_P(MediaHistoryStoreUnitTest, UrlShouldBeUniqueForSessions) {
 
   // Save a couple of sessions on different URLs.
   service()->SavePlaybackSession(url_a, media_session::MediaMetadata(),
-                                 base::nullopt,
+                                 absl::nullopt,
                                  std::vector<media_session::MediaImage>());
   service()->SavePlaybackSession(url_b, media_session::MediaMetadata(),
-                                 base::nullopt,
+                                 absl::nullopt,
                                  std::vector<media_session::MediaImage>());
 
   // Wait until the sessions have finished saving.
@@ -413,7 +413,7 @@ TEST_P(MediaHistoryStoreUnitTest, UrlShouldBeUniqueForSessions) {
 
   // Save a session on the first URL.
   service()->SavePlaybackSession(url_a, media_session::MediaMetadata(),
-                                 base::nullopt,
+                                 absl::nullopt,
                                  std::vector<media_session::MediaImage>());
 
   // Wait until the sessions have finished saving.

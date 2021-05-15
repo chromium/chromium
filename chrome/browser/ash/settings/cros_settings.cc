@@ -187,7 +187,7 @@ bool CrosSettings::GetDictionary(
 bool CrosSettings::IsUserAllowlisted(
     const std::string& username,
     bool* wildcard_match,
-    const base::Optional<user_manager::UserType>& user_type) const {
+    const absl::optional<user_manager::UserType>& user_type) const {
   // Skip allowlist check for tests.
   if (chromeos::switches::ShouldSkipOobePostLogin()) {
     return true;

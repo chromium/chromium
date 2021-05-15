@@ -17,7 +17,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
@@ -25,6 +24,7 @@
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "printing/mojom/print.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -141,11 +141,11 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Determines whether to cancel a print preview request based on the request
   // id.
   // Can be called from any thread.
-  static bool ShouldCancelRequest(const base::Optional<int32_t>& preview_ui_id,
+  static bool ShouldCancelRequest(const absl::optional<int32_t>& preview_ui_id,
                                   int request_id);
 
   // Returns an id to uniquely identify this PrintPreviewUI.
-  base::Optional<int32_t> GetIDForPrintPreviewUI() const;
+  absl::optional<int32_t> GetIDForPrintPreviewUI() const;
 
   // Notifies the Web UI of a print preview request with |request_id|.
   virtual void OnPrintPreviewRequest(int request_id);
@@ -273,7 +273,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // The unique ID for this class instance. Stored here to avoid calling
   // GetIDForPrintPreviewUI() everywhere.
-  base::Optional<int32_t> id_;
+  absl::optional<int32_t> id_;
 
   // Weak pointer to the WebUI handler.
   PrintPreviewHandler* const handler_;

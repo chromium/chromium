@@ -17,10 +17,10 @@ RewriteHandler::RewriteHandler() = default;
 RewriteHandler::RewriteHandler(const RewriteHandler&) = default;
 RewriteHandler::~RewriteHandler() = default;
 
-base::Optional<GURL> RewriteHandler::HandleRewriteIfNecessary(
+absl::optional<GURL> RewriteHandler::HandleRewriteIfNecessary(
     const GURL& url) const {
   if (!url.is_valid()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::StringPiece host = url.host_piece();
@@ -42,10 +42,10 @@ base::Optional<GURL> RewriteHandler::HandleRewriteIfNecessary(
           return GURL(unescaped);
         }
       }
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 RewriteHandler RewriteHandler::FromConfigString(const std::string& config) {

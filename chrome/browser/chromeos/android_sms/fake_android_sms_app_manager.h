@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_CHROMEOS_ANDROID_SMS_FAKE_ANDROID_SMS_APP_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_app_helper_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -27,13 +27,13 @@ class FakeAndroidSmsAppManager
   FakeAndroidSmsAppManager();
   ~FakeAndroidSmsAppManager() override;
 
-  void SetInstalledAppUrl(const base::Optional<GURL>& url);
+  void SetInstalledAppUrl(const absl::optional<GURL>& url);
 
  private:
   // AndroidSmsAppManager:
-  base::Optional<GURL> GetCurrentAppUrl() override;
+  absl::optional<GURL> GetCurrentAppUrl() override;
 
-  base::Optional<GURL> url_;
+  absl::optional<GURL> url_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsAppManager);
 };

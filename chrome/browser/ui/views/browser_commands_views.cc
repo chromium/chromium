@@ -44,11 +44,11 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
 
 namespace chrome {
 
-base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
+absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
   if (view && view->tabstrip())
     return view->tabstrip()->GetFocusedTabIndex();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ExecuteUIDebugCommand(int id, const Browser* browser) {

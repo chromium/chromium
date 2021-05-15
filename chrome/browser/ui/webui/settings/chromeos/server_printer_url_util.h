@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -18,10 +18,10 @@ namespace settings {
 // IPPS. Returns false for an empty or any other scheme.
 bool HasValidServerPrinterScheme(const GURL& gurl);
 
-// Returns a GURL from the input |url|. Returns base::nullopt if
+// Returns a GURL from the input |url|. Returns absl::nullopt if
 // either |url| is invalid or constructing the GURL failed. This will also
 // default the server printer URI to use HTTPS if it detects a missing scheme.
-base::Optional<GURL> GenerateServerPrinterUrlWithValidScheme(
+absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
     const std::string& url);
 
 }  // namespace settings

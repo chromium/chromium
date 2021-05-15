@@ -18,7 +18,7 @@ namespace google_brand {
 
 // Returns in |brand| the brand code or distribution tag that has been
 // assigned to a partner. Returns false if the information is not available.
-// TODO(asvitkine): These APIs should return base::Optional<std::string>.
+// TODO(asvitkine): These APIs should return absl::optional<std::string>.
 bool GetBrand(std::string* brand);
 
 // Returns in |brand| the reactivation brand code or distribution tag

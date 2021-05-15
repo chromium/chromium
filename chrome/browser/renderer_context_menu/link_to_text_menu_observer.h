@@ -76,8 +76,8 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // True when the context menu was opened with text selected.
   bool link_needs_generation_ = false;
 
-  base::Optional<std::string> generated_link_;
-  base::Optional<std::string> generated_selector_for_testing_;
+  absl::optional<std::string> generated_link_;
+  absl::optional<std::string> generated_selector_for_testing_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };

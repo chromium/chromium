@@ -181,7 +181,7 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
   flags.setAntiAlias(true);
 
   const float scale = canvas->image_scale();
-  const base::Optional<int> bg_id =
+  const absl::optional<int> bg_id =
       tab_strip_->GetCustomBackgroundId(BrowserFrameActiveState::kUseCurrent);
   if (bg_id.has_value()) {
     float x_scale = scale;

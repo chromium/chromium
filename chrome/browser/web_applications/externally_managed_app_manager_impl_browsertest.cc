@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -76,7 +76,7 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  base::Optional<InstallResultCode> result_code_;
+  absl::optional<InstallResultCode> result_code_;
 
  private:
   ScopedOsHooksSuppress os_hooks_suppress_;
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
   InstallApp(CreateInstallOptions(url));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(url);
   EXPECT_TRUE(app_id.has_value());
@@ -107,14 +107,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       embedded_test_server()->GetURL("/server-redirect?" + start_url.spec());
   InstallApp(CreateInstallOptions(install_url));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(install_url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
   // Same AppID should be in the registrar using start_url from the manifest.
   EXPECT_TRUE(registrar().IsLocallyInstalled(start_url));
-  base::Optional<AppId> opt_app_id =
+  absl::optional<AppId> opt_app_id =
       registrar().FindAppWithUrlInScope(start_url);
   EXPECT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec());
   InstallApp(CreateInstallOptions(install_url));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(install_url);
   EXPECT_TRUE(app_id.has_value());
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
             registrar().GetAppShortName(app_id.value()));
   // Same AppID should be in the registrar using install_url.
   EXPECT_TRUE(registrar().IsLocallyInstalled(install_url));
-  base::Optional<AppId> opt_app_id =
+  absl::optional<AppId> opt_app_id =
       registrar().FindAppWithUrlInScope(install_url);
   ASSERT_TRUE(opt_app_id.has_value());
   EXPECT_EQ(*opt_app_id, app_id);
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(options);
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(url);
   ASSERT_TRUE(app_id.has_value());
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   ExternalInstallOptions install_options = CreateInstallOptions(url);
   install_options.bypass_service_worker_check = true;
   InstallApp(std::move(install_options));
-  base::Optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
+  absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_TRUE(registrar().GetAppScopeInternal(*app_id).has_value());
   EXPECT_EQ("Manifest test app", registrar().GetAppShortName(*app_id));
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       "/banners/manifest_no_service_worker.html"));
   ExternalInstallOptions install_options = CreateInstallOptions(url);
   InstallApp(std::move(install_options));
-  base::Optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
+  absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
   EXPECT_TRUE(app_id.has_value());
   EXPECT_TRUE(registrar().GetAppScopeInternal(app_id.value()).has_value());
 }
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    base::Optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
+    absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
     EXPECT_TRUE(app_id.has_value());
     EXPECT_EQ("Manifest", registrar().GetAppShortName(app_id.value()));
   }
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     install_options.force_reinstall = true;
     InstallApp(std::move(install_options));
 
-    base::Optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
+    absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(url);
     EXPECT_TRUE(app_id.has_value());
     EXPECT_EQ("Manifest test app", registrar().GetAppShortName(app_id.value()));
   }
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       "/banners/manifest_test_page.html?manifest=manifest_chrome_url.json"));
   InstallApp(CreateInstallOptions(url));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(url);
   ASSERT_TRUE(app_id.has_value());
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
   EXPECT_EQ(InstallResultCode::kNotValidManifestForWebApp,
             result_code_.value());
-  base::Optional<AppId> id =
+  absl::optional<AppId> id =
       ExternallyInstalledWebAppPrefs(browser()->profile()->GetPrefs())
           .LookupAppId(url);
   ASSERT_FALSE(id.has_value());
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
           }));
   run_loop.Run();
 
-  base::Optional<AppId> app_id = registrar().FindAppWithUrlInScope(app_url);
+  absl::optional<AppId> app_id = registrar().FindAppWithUrlInScope(app_url);
   DCHECK(app_id.has_value());
   EXPECT_EQ(registrar().GetAppDisplayMode(*app_id), DisplayMode::kBrowser);
   EXPECT_EQ(registrar().GetAppUserDisplayMode(*app_id),

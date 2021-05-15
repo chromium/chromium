@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -36,6 +35,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -73,9 +73,9 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
     DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
     return;
   }
-  base::Optional<std::string> manifest_id = base::nullopt;
+  absl::optional<std::string> manifest_id = absl::nullopt;
   if (sync_data.has_manifest_id())
-    manifest_id = base::Optional<std::string>(sync_data.manifest_id());
+    manifest_id = absl::optional<std::string>(sync_data.manifest_id());
 
   if (app->app_id() != GenerateAppId(manifest_id, start_url)) {
     DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match id generated "
@@ -105,7 +105,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   app->SetUserLaunchOrdinal(
       syncer::StringOrdinal(sync_data.user_launch_ordinal()));
 
-  base::Optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
+  absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
       ParseSyncFallbackDataStruct(sync_data);
   if (!parsed_sync_fallback_data.has_value()) {
     // ParseSyncFallbackDataStruct() reports any errors.
@@ -234,7 +234,7 @@ void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
     if (!web_app)
       return;
 
-    base::Optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
+    absl::optional<WebAppChromeOsData> cros_data = web_app->chromeos_data();
     DCHECK(cros_data.has_value());
 
     if (cros_data->is_disabled != is_disabled) {
@@ -613,7 +613,7 @@ WebAppSyncBridge::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-base::Optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   CHECK(change_processor()->IsTrackingMetadata());
@@ -631,10 +631,10 @@ base::Optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
                    base::DoNothing());
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
   CHECK(change_processor()->IsTrackingMetadata());
@@ -648,7 +648,7 @@ base::Optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
                    base::DoNothing());
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void WebAppSyncBridge::GetData(StorageKeyList storage_keys,
@@ -684,9 +684,9 @@ std::string WebAppSyncBridge::GetClientTag(
   DCHECK(!start_url.is_empty());
   DCHECK(start_url.is_valid());
 
-  base::Optional<std::string> manifest_id = base::nullopt;
+  absl::optional<std::string> manifest_id = absl::nullopt;
   if (specifics.has_manifest_id())
-    manifest_id = base::Optional<std::string>(specifics.manifest_id());
+    manifest_id = absl::optional<std::string>(specifics.manifest_id());
   return GenerateAppId(manifest_id, start_url);
 }
 

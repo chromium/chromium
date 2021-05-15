@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -58,6 +57,7 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {

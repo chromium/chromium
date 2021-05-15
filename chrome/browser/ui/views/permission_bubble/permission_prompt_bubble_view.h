@@ -66,7 +66,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   bool GetDisplayNameIsOrigin() const;
 
   // Get extra information to display for the permission, if any.
-  base::Optional<std::u16string> GetExtraText() const;
+  absl::optional<std::u16string> GetExtraText() const;
 
   // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
   // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,

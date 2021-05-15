@@ -18,7 +18,7 @@ void WaitForPrimaryUserSessionStart() {
 }  // namespace test
 
 SessionStateWaiter::SessionStateWaiter(
-    base::Optional<session_manager::SessionState> target_state)
+    absl::optional<session_manager::SessionState> target_state)
     : target_state_(target_state) {}
 
 SessionStateWaiter::~SessionStateWaiter() = default;

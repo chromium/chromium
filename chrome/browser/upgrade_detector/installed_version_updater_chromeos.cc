@@ -71,5 +71,5 @@ void InstalledVersionUpdater::UpdateStatusChanged(
     }
   }
   build_state_->SetUpdate(update_type, base::Version(status.new_version()),
-                          base::nullopt);
+                          absl::nullopt);
 }

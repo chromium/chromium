@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,6 +55,7 @@
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -337,7 +337,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitUntilStatusChangesTo(std::u16string search_terms,
-                                base::Optional<SearchPrefetchStatus> status) {
+                                absl::optional<SearchPrefetchStatus> status) {
     auto* search_prefetch_service =
         SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
     while (search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -374,7 +374,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   void set_phi_is_one(bool phi_is_one) { phi_is_one_ = phi_is_one; }
 
-  void ClearBrowsingCacheData(base::Optional<GURL> url_origin) {
+  void ClearBrowsingCacheData(absl::optional<GURL> url_origin) {
     auto filter = content::BrowsingDataFilterBuilder::Create(
         url_origin ? content::BrowsingDataFilterBuilder::Mode::kDelete
                    : content::BrowsingDataFilterBuilder::Mode::kPreserve);
@@ -1779,7 +1779,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
 
-  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), base::nullopt);
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), absl::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
   ASSERT_FALSE(prefetch_status.has_value());
@@ -1847,7 +1847,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
           base::ASCIIToUTF16(search_terms));
   EXPECT_TRUE(prefetch_status.has_value());
 
-  ClearBrowsingCacheData(base::nullopt);
+  ClearBrowsingCacheData(absl::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
   EXPECT_FALSE(prefetch_status.has_value());
@@ -2562,7 +2562,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
           base::ASCIIToUTF16(search_terms));
   EXPECT_TRUE(prefetch_status.has_value());
 
-  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), base::nullopt);
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), absl::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
 
@@ -2590,7 +2590,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_4")));
 
-  WaitUntilStatusChangesTo(u"prefetch_1", base::nullopt);
+  WaitUntilStatusChangesTo(u"prefetch_1", absl::nullopt);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_4")));

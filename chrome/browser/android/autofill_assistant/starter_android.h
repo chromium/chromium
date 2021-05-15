@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/starter.h"
@@ -20,6 +19,7 @@
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -51,7 +51,7 @@ class StarterAndroid : public StarterPlatformDelegate,
   void StartRegularScript(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,
-      const base::Optional<TriggerScriptProto>& trigger_script) override;
+      const absl::optional<TriggerScriptProto>& trigger_script) override;
   bool IsRegularScriptRunning() const override;
   bool IsRegularScriptVisible() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;

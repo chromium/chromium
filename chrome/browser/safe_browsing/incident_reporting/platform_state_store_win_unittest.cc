@@ -57,7 +57,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
     profile_ = profile_manager_.CreateTestingProfile(
         kProfileName_, std::move(prefs), base::UTF8ToUTF16(kProfileName_), 0,
         std::string(), TestingProfile::TestingFactories(),
-        base::Optional<bool>(new_profile));
+        absl::optional<bool>(new_profile));
     if (new_profile)
       ASSERT_TRUE(profile_->IsNewProfile());
     else

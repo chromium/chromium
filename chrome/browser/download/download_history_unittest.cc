@@ -15,7 +15,6 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,6 +32,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -85,11 +85,11 @@ class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(expect_query_downloads_.has_value());
 
-    // Use swap to reset the base::Optional<...> to a known state before
-    // moving the value (moving the value out of a base::Optional<...>
-    // does not reset it to base::nullopt).
+    // Use swap to reset the absl::optional<...> to a known state before
+    // moving the value (moving the value out of a absl::optional<...>
+    // does not reset it to absl::nullopt).
     using std::swap;
-    base::Optional<std::vector<history::DownloadRow>> rows;
+    absl::optional<std::vector<history::DownloadRow>> rows;
     swap(rows, expect_query_downloads_);
 
     std::move(callback).Run(std::move(*rows));
@@ -195,7 +195,7 @@ class FakeHistoryAdapter : public DownloadHistory::HistoryAdapter {
   bool should_commit_immediately_ = false;
   base::OnceClosure create_download_callback_;
   history::DownloadRow update_download_;
-  base::Optional<std::vector<history::DownloadRow>> expect_query_downloads_;
+  absl::optional<std::vector<history::DownloadRow>> expect_query_downloads_;
   IdSet remove_downloads_;
   history::DownloadRow create_download_row_;
 
@@ -235,7 +235,7 @@ class DownloadHistoryTest : public testing::Test {
     return content::MockDownloadManager::CreateDownloadItemAdapter(
         row.guid, history::ToContentDownloadId(row.id), row.current_path,
         row.target_path, row.url_chain, row.referrer_url, row.site_url,
-        row.tab_url, row.tab_referrer_url, base::nullopt, row.mime_type,
+        row.tab_url, row.tab_referrer_url, absl::nullopt, row.mime_type,
         row.original_mime_type, row.start_time, row.end_time, row.etag,
         row.last_modified, row.received_bytes, row.total_bytes, std::string(),
         history::ToContentDownloadState(row.state),

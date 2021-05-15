@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
-#include "base/optional.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -11,6 +10,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -22,7 +22,7 @@ struct NavigationThrottleOptions {
   GURL url;
   content::RenderFrameHost* rfh = nullptr;
   ui::PageTransition page_transition = ui::PAGE_TRANSITION_FROM_API;
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 };
 
 }  // namespace

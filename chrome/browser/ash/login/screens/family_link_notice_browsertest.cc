@@ -71,7 +71,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
     run_loop.Run();
   }
 
-  base::Optional<FamilyLinkNoticeScreen::Result> screen_result_;
+  absl::optional<FamilyLinkNoticeScreen::Result> screen_result_;
 
  protected:
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
@@ -95,7 +95,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   }
 
   bool screen_exited_ = false;
-  base::Optional<bool> help_app_pref_fal_;
+  absl::optional<bool> help_app_pref_fal_;
   base::RepeatingClosure screen_exit_callback_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 

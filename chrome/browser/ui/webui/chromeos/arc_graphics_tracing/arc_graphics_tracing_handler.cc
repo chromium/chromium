@@ -109,7 +109,7 @@ std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
   if (!base::ReadFileToString(last_model_path, &json_content))
     return std::make_pair(base::Value(), std::string());
 
-  base::Optional<base::Value> model = base::JSONReader::Read(json_content);
+  absl::optional<base::Value> model = base::JSONReader::Read(json_content);
   if (!model || !model->is_dict())
     return std::make_pair(base::Value(), "Failed to read last tracing model");
 

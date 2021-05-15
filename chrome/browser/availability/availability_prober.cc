@@ -135,30 +135,30 @@ std::string GenerateNetworkID(
   return id;
 }
 
-base::Optional<base::Value> EncodeCacheEntryValue(
+absl::optional<base::Value> EncodeCacheEntryValue(
     const AvailabilityProberCacheEntry& entry) {
   std::string serialized_entry;
   bool serialize_to_string_ok = entry.SerializeToString(&serialized_entry);
   if (!serialize_to_string_ok)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string base64_encoded;
   base::Base64Encode(serialized_entry, &base64_encoded);
   return base::Value(base64_encoded);
 }
 
-base::Optional<AvailabilityProberCacheEntry> DecodeCacheEntryValue(
+absl::optional<AvailabilityProberCacheEntry> DecodeCacheEntryValue(
     const base::Value& value) {
   if (!value.is_string())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string base64_decoded;
   if (!base::Base64Decode(value.GetString(), &base64_decoded))
-    return base::nullopt;
+    return absl::nullopt;
 
   AvailabilityProberCacheEntry entry;
   if (!entry.ParseFromString(base64_decoded))
-    return base::nullopt;
+    return absl::nullopt;
 
   return entry;
 }
@@ -175,7 +175,7 @@ void RemoveOldestDictionaryEntry(base::DictionaryValue* dict) {
   std::string oldest_key;
   base::Time oldest_mod_time = base::Time::Max();
   for (const auto& iter : dict->DictItems()) {
-    base::Optional<AvailabilityProberCacheEntry> entry =
+    absl::optional<AvailabilityProberCacheEntry> entry =
         DecodeCacheEntryValue(iter.second);
     if (!entry.has_value()) {
       // Also remove anything that can't be decoded.
@@ -359,7 +359,7 @@ void AvailabilityProber::OnProbingEnd() {
   base::Value* cache_entry =
       cached_probe_results_->FindKey(GetCacheKeyForCurrentNetwork());
   if (cache_entry) {
-    base::Optional<AvailabilityProberCacheEntry> entry =
+    absl::optional<AvailabilityProberCacheEntry> entry =
         DecodeCacheEntryValue(*cache_entry);
     if (entry.has_value()) {
       base::BooleanHistogram::FactoryGet(
@@ -373,7 +373,7 @@ void AvailabilityProber::OnProbingEnd() {
 }
 
 void AvailabilityProber::ResetState() {
-  time_when_set_active_ = base::nullopt;
+  time_when_set_active_ = absl::nullopt;
   successive_retry_count_ = 0;
   successive_timeout_count_ = 0;
   retry_timer_.reset();
@@ -606,18 +606,18 @@ void AvailabilityProber::ProcessProbeSuccess() {
   OnProbingEnd();
 }
 
-base::Optional<bool> AvailabilityProber::LastProbeWasSuccessful() {
+absl::optional<bool> AvailabilityProber::LastProbeWasSuccessful() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::Value* cache_entry =
       cached_probe_results_->FindKey(GetCacheKeyForCurrentNetwork());
   if (!cache_entry)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AvailabilityProberCacheEntry> entry =
+  absl::optional<AvailabilityProberCacheEntry> entry =
       DecodeCacheEntryValue(*cache_entry);
   if (!entry.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta cache_entry_age =
       clock_->Now() - LastModifiedTimeFromCacheEntry(entry.value());
@@ -660,7 +660,7 @@ void AvailabilityProber::RecordProbeResult(bool success) {
   entry.set_last_modified(
       clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-  base::Optional<base::Value> encoded = EncodeCacheEntryValue(entry);
+  absl::optional<base::Value> encoded = EncodeCacheEntryValue(entry);
   if (!encoded.has_value()) {
     NOTREACHED();
     return;

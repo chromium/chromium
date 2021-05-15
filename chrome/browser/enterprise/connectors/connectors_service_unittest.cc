@@ -111,7 +111,7 @@ TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
   for (const char* url :
        {kDlpAndMalwareUrl, kOnlyDlpUrl, kOnlyMalwareUrl, kNoTagsUrl}) {
-    // Only base::nullopt should be returned when the feature is disabled,
+    // Only absl::nullopt should be returned when the feature is disabled,
     // regardless of what Connector or URL is used.
     auto settings = service->GetAnalysisSettings(GURL(url), connector());
     ASSERT_FALSE(settings.has_value());

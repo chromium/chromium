@@ -75,9 +75,9 @@ class TestPrinterQuery : public PrinterQuery {
   void StopWorker() override;
 
  private:
-  base::Optional<gfx::Point> offsets_;
+  absl::optional<gfx::Point> offsets_;
 #if defined(OS_WIN)
-  base::Optional<PrintSettings::PrinterType> printer_type_;
+  absl::optional<PrintSettings::PrinterType> printer_type_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(TestPrinterQuery);

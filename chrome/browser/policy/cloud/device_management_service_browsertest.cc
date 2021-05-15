@@ -131,7 +131,7 @@ class DeviceManagementServiceIntegrationTest
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
       DMAuth auth_data,
-      base::Optional<std::string> oauth_token,
+      absl::optional<std::string> oauth_token,
       const em::DeviceManagementRequest request) {
     std::string payload;
     request.SerializeToString(&payload);

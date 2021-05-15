@@ -198,7 +198,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 }
 
 void TabStripModelObserver::TabGroupedStateChanged(
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {}
 

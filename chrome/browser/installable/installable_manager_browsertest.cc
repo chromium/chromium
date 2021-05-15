@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace webapps {
@@ -1892,7 +1892,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                                    "/banners/manifest_test_page.html");
   // Simulate a manifest URL update by just calling the observer function.
   static_cast<content::WebContentsObserver*>(manager)->DidUpdateWebManifestURL(
-      nullptr, base::nullopt);
+      nullptr, absl::nullopt);
   run_loop.Run();
 
   ASSERT_EQ(tester->errors().size(), 1u);

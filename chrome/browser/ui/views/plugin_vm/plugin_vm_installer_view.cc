@@ -10,7 +10,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
@@ -24,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -604,7 +604,7 @@ void PluginVmInstallerView::StartInstallation() {
   OnStateUpdated();
 
   plugin_vm_installer_->SetObserver(this);
-  base::Optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
+  absl::optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
       plugin_vm_installer_->Start();
   if (failure_reason)
     OnError(failure_reason.value());

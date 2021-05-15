@@ -10,10 +10,10 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -78,7 +78,7 @@ void CertIterator::OnGetCertificatesDone(
 
 void CertIterator::OnGetAttributeForKeyDone(
     scoped_refptr<net::X509Certificate> cert,
-    const base::Optional<std::string>& attr_value,
+    const absl::optional<std::string>& attr_value,
     platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(wait_counter_ > 0);

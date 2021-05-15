@@ -239,8 +239,8 @@ void ProtectedMediaIdentifierPermissionContext::
         {permission_request.get()}, web_contents, permission_action,
         base::Time::Now() - dialog_show_time,
         permissions::PermissionPromptDisposition::CUSTOM_MODAL_DIALOG,
-        /*ui_reason=*/base::nullopt,
-        /*predicted_grant_likelihood=*/base::nullopt);
+        /*ui_reason=*/absl::nullopt,
+        /*predicted_grant_likelihood=*/absl::nullopt);
   };
 
   // The request may have been canceled. Drop the callback in that case.

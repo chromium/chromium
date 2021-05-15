@@ -10,10 +10,10 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
@@ -96,10 +96,10 @@ class EncryptionMigrationScreen : public BaseScreen,
   void OnGetAvailableStorage(int64_t size);
   void WaitBatteryAndMigrate();
   void StartMigration();
-  void OnMountExistingVault(base::Optional<user_data_auth::MountReply> reply);
+  void OnMountExistingVault(absl::optional<user_data_auth::MountReply> reply);
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
-  void OnRemoveCryptohome(base::Optional<user_data_auth::RemoveReply> reply);
+  void OnRemoveCryptohome(absl::optional<user_data_auth::RemoveReply> reply);
 
   // Creates authorization request for MountEx method using |user_context_|.
   cryptohome::AuthorizationRequest CreateAuthorizationRequest();
@@ -109,7 +109,7 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   // Handlers for cryptohome API callbacks.
   void OnMigrationRequested(
-      base::Optional<user_data_auth::StartMigrateToDircryptoReply> reply);
+      absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply);
 
   // Records UMA about visible screen after delay.
   void OnDelayedRecordVisibleScreen(
@@ -142,7 +142,7 @@ class EncryptionMigrationScreen : public BaseScreen,
   EncryptionMigrationMode mode_ = EncryptionMigrationMode::ASK_USER;
 
   // The current battery level.
-  base::Optional<double> current_battery_percent_;
+  absl::optional<double> current_battery_percent_;
 
   // True if the migration should start immediately once the battery level gets
   // sufficient.

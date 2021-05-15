@@ -7,10 +7,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,8 +27,8 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
  public:
   // If `target_state` is null, SessionStateWaiter will simply wait until a
   // session starts.
-  explicit SessionStateWaiter(base::Optional<session_manager::SessionState>
-                                  target_state = base::nullopt);
+  explicit SessionStateWaiter(absl::optional<session_manager::SessionState>
+                                  target_state = absl::nullopt);
   ~SessionStateWaiter() override;
 
   void Wait();
@@ -38,7 +38,7 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   void OnUserSessionStarted(bool is_primary_user) override;
 
  private:
-  base::Optional<session_manager::SessionState> target_state_;
+  absl::optional<session_manager::SessionState> target_state_;
   base::OnceClosure session_state_callback_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

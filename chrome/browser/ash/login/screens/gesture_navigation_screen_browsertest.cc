@@ -104,7 +104,7 @@ class GestureNavigationScreenTest
     run_loop.Run();
   }
 
-  base::Optional<GestureNavigationScreen::Result> screen_result_;
+  absl::optional<GestureNavigationScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:

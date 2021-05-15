@@ -532,7 +532,7 @@ void SaveCardBubbleControllerImpl::FetchAccountInfo() {
       PersonalDataManagerFactory::GetForProfile(profile);
   if (!personal_data_manager)
     return;
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           personal_data_manager->GetAccountInfoForPaymentsServer());
   account_info_ = account_info.value_or(AccountInfo{});

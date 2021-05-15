@@ -36,7 +36,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnSpeechResult(
       const std::u16string& text,
       bool is_final,
-      const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>& timing)
+      const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>& timing)
       override;
   // This class is not utilizing the information about sound level.
   void OnSpeechSoundLevelChanged(int16_t level) override {}

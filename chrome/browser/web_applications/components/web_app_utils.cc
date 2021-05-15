@@ -146,7 +146,7 @@ const apps::FileHandlers GetFileHandlersForWebApp(Profile* profile,
     return {};
 
   const AppRegistrar& registrar = provider->registrar();
-  base::Optional<AppId> app_id = registrar.FindAppWithUrlInScope(url);
+  absl::optional<AppId> app_id = registrar.FindAppWithUrlInScope(url);
   if (!app_id)
     return {};
 

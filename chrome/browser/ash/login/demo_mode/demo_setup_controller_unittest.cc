@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -31,6 +30,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -97,9 +97,9 @@ class DemoSetupControllerTestHelper {
   }
 
  private:
-  base::Optional<bool> succeeded_;
-  base::Optional<DemoSetupController::DemoSetupStep> setup_step_;
-  base::Optional<DemoSetupController::DemoSetupError> error_;
+  absl::optional<bool> succeeded_;
+  absl::optional<DemoSetupController::DemoSetupStep> setup_step_;
+  absl::optional<DemoSetupController::DemoSetupError> error_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(DemoSetupControllerTestHelper);

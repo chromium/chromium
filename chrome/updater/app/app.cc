@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -24,20 +24,20 @@ constexpr base::StringPiece App::kThreadPoolName;
 
 App::App()
     : process_scope_(GetProcessScope()),
-      tag_args_([]() -> base::Optional<tagging::TagArgs> {
+      tag_args_([]() -> absl::optional<tagging::TagArgs> {
         base::CommandLine* command_line =
             base::CommandLine::ForCurrentProcess();
         const std::string tag = command_line->GetSwitchValueASCII(kTagSwitch);
         if (tag.empty())
-          return base::nullopt;
+          return absl::nullopt;
         tagging::TagArgs tag_args;
         const tagging::ErrorCode error =
-            tagging::Parse(tag, base::nullopt, &tag_args);
+            tagging::Parse(tag, absl::nullopt, &tag_args);
         VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
             << "Tag parsing returned " << error << ".";
         return error == tagging::ErrorCode::kSuccess
-                   ? base::make_optional(tag_args)
-                   : base::nullopt;
+                   ? absl::make_optional(tag_args)
+                   : absl::nullopt;
       }()) {}
 
 App::~App() = default;
@@ -91,7 +91,7 @@ UpdaterScope App::updater_scope() const {
   return process_scope_;
 }
 
-base::Optional<tagging::TagArgs> App::tag_args() const {
+absl::optional<tagging::TagArgs> App::tag_args() const {
   return tag_args_;
 }
 

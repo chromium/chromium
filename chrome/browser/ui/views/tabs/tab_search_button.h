@@ -57,7 +57,7 @@ class TabSearchButton : public NewTabButton,
   WebUIBubbleManager* webui_bubble_manager_for_testing() {
     return &webui_bubble_manager_;
   }
-  const base::Optional<base::TimeTicks>& bubble_created_time_for_testing()
+  const absl::optional<base::TimeTicks>& bubble_created_time_for_testing()
       const {
     return bubble_created_time_;
   }
@@ -74,7 +74,7 @@ class TabSearchButton : public NewTabButton,
   views::WidgetOpenTimer widget_open_timer_;
 
   // Timestamp for when the current bubble was created.
-  base::Optional<base::TimeTicks> bubble_created_time_;
+  absl::optional<base::TimeTicks> bubble_created_time_;
 
   views::MenuButtonController* menu_button_controller_ = nullptr;
 

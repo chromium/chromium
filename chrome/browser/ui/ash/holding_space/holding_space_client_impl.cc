@@ -36,10 +36,10 @@ HoldingSpaceKeyedService* GetHoldingSpaceKeyedService(Profile* profile) {
   return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
 }
 
-// Returns file info for the specified `file_path` or `base::nullopt` in the
+// Returns file info for the specified `file_path` or `absl::nullopt` in the
 // event that file info cannot be obtained.
 using GetFileInfoCallback =
-    base::OnceCallback<void(const base::Optional<base::File::Info>&)>;
+    base::OnceCallback<void(const absl::optional<base::File::Info>&)>;
 void GetFileInfo(Profile* profile,
                  const base::FilePath& file_path,
                  GetFileInfoCallback callback) {
@@ -52,8 +52,8 @@ void GetFileInfo(Profile* profile,
           [](GetFileInfoCallback callback, base::File::Error error,
              const base::File::Info& info) {
             std::move(callback).Run(error == base::File::FILE_OK
-                                        ? base::make_optional<>(info)
-                                        : base::nullopt);
+                                        ? absl::make_optional<>(info)
+                                        : absl::nullopt);
           },
           std::move(callback)));
 }
@@ -166,7 +166,7 @@ void HoldingSpaceClientImpl::OpenItems(
             [](const base::WeakPtr<HoldingSpaceClientImpl>& weak_ptr,
                base::RepeatingClosure barrier_closure, bool* complete_success,
                const base::FilePath& file_path, HoldingSpaceItem::Type type,
-               const base::Optional<base::File::Info>& info) {
+               const absl::optional<base::File::Info>& info) {
               if (!weak_ptr || !info.has_value()) {
                 holding_space_metrics::RecordItemFailureToLaunch(type,
                                                                  file_path);

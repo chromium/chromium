@@ -94,7 +94,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // the webstore.
   if (is_policy_installed &&
       !extension_urls::IsWebstoreUpdateUrl(GURL(update_url))) {
-    const base::Optional<bool> is_update_url_overridden =
+    const absl::optional<bool> is_update_url_overridden =
         dict->FindBoolKey(schema_constants::kOverrideUpdateUrl);
     if (is_update_url_overridden)
       override_update_url = is_update_url_overridden.value();

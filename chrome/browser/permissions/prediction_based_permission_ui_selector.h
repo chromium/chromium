@@ -42,7 +42,7 @@ class PredictionBasedPermissionUiSelector
 
   void Cancel() override;
 
-  base::Optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
+  absl::optional<PredictionGrantLikelihood> PredictedGrantLikelihoodForUKM()
       override;
 
  private:
@@ -63,9 +63,9 @@ class PredictionBasedPermissionUiSelector
 
   Profile* profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
-  base::Optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
+  absl::optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
 
-  base::Optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
+  absl::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
 
   DecisionMadeCallback callback_;
 };

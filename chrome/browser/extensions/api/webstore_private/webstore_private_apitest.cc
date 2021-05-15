@@ -473,7 +473,7 @@ class ExtensionWebstorePrivateApiTestChild
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
   chromeos::LoggedInUserMixin logged_in_user_mixin_;
-  base::Optional<NextDialogAction> next_dialog_action_;
+  absl::optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests install for a child when parent permission is granted.

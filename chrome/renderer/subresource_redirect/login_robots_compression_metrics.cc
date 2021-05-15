@@ -28,7 +28,7 @@ void LoginRobotsCompressionMetrics::NotifyRequestSent() {
 void LoginRobotsCompressionMetrics::RecordMetricsOnLoadFinished(
     SubresourceRedirectResult redirect_result,
     size_t content_length,
-    base::Optional<size_t> ofcl) {
+    absl::optional<size_t> ofcl) {
   base::TimeTicks response_received_time = base::TimeTicks::Now();
 
   ukm::builders::PublicImageCompressionImageLoad

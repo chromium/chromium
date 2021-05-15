@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionEnableFlow;
 class PrefChangeRegistrar;
@@ -269,7 +269,7 @@ class AppLauncherHandler
 
   // When populated, we have attempted to install a bookmark app, and are still
   // waiting to hear about success or failure from the extensions system.
-  base::Optional<syncer::StringOrdinal>
+  absl::optional<syncer::StringOrdinal>
       attempting_web_app_install_page_ordinal_;
 
   // True if we have executed HandleGetApps() at least once.

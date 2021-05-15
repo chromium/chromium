@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/thread_pool.h"
@@ -83,6 +82,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/common/switches.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -469,7 +469,7 @@ bool MaybeLaunchProtocolHandlerWebApp(
               ->BrowserAppLauncher()
               ->LaunchAppWithCallback(
                   app_id, command_line, cur_dir,
-                  /*url_handler_launch_url=*/base::nullopt, protocol_url,
+                  /*url_handler_launch_url=*/absl::nullopt, protocol_url,
                   base::BindOnce(&FinalizeWebAppLaunch,
                                  std::move(launch_mode_recorder)));
         }  // else allow the process to exit without opening a browser.
@@ -524,8 +524,8 @@ bool MaybeLaunchApplication(
         ->BrowserAppLauncher()
         ->LaunchAppWithCallback(
             app_id, command_line, cur_dir,
-            /*url_handler_launch_url=*/base::nullopt,
-            /*protocol_handler_launch_url=*/base::nullopt,
+            /*url_handler_launch_url=*/absl::nullopt,
+            /*protocol_handler_launch_url=*/absl::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;
@@ -591,7 +591,7 @@ bool MaybeLaunchUrlHandlerWebApp(
         ->BrowserAppLauncher()
         ->LaunchAppWithCallback(
             match.app_id, command_line, cur_dir, match.url,
-            /*protocol_handler_launch_url=*/base::nullopt,
+            /*protocol_handler_launch_url=*/absl::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;

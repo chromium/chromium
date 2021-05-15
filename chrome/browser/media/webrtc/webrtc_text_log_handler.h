@@ -113,10 +113,10 @@ class WebRtcTextLogHandler {
 
   void OnGetNetworkInterfaceList(
       GenericDoneCallback callback,
-      const base::Optional<net::NetworkInterfaceList>& networks);
+      const absl::optional<net::NetworkInterfaceList>& networks);
   void OnGetNetworkInterfaceListFinish(
       GenericDoneCallback callback,
-      const base::Optional<net::NetworkInterfaceList>& networks,
+      const absl::optional<net::NetworkInterfaceList>& networks,
       const std::string& linux_distro);
 
   SEQUENCE_CHECKER(sequence_checker_);

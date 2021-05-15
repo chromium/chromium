@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,6 +41,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -342,7 +342,7 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
   }
 
  private:
-  base::Optional<crosapi::mojom::Policies> policies_;
+  absl::optional<crosapi::mojom::Policies> policies_;
 };
 #endif
 
@@ -577,7 +577,7 @@ class PrintPreviewHandlerTest : public testing::Test {
   void ValidateInitialSettingsValuePolicy(
       const content::TestWebUI::CallData& data,
       const std::string& policy_name,
-      base::Optional<base::Value> expected_policy_value) {
+      absl::optional<base::Value> expected_policy_value) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
     const base::Value* settings = data.arg3();
 
@@ -598,8 +598,8 @@ class PrintPreviewHandlerTest : public testing::Test {
   void ValidateInitialSettingsAllowedDefaultModePolicy(
       const content::TestWebUI::CallData& data,
       const std::string& policy_name,
-      base::Optional<base::Value> expected_allowed_mode,
-      base::Optional<base::Value> expected_default_mode) {
+      absl::optional<base::Value> expected_allowed_mode,
+      absl::optional<base::Value> expected_default_mode) {
     CheckWebUIResponse(data, "test-callback-id-0", true);
     const base::Value* settings = data.arg3();
 
@@ -730,15 +730,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRuLocale) {
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", base::nullopt,
-                                                  base::nullopt);
+                                                  "headerFooter", absl::nullopt,
+                                                  absl::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
                                                   "cssBackground",
-                                                  base::nullopt, base::nullopt);
+                                                  absl::nullopt, absl::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", base::nullopt, base::nullopt);
+      *web_ui()->call_data().back(), "mediaSize", absl::nullopt, absl::nullopt);
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
-                                     base::nullopt);
+                                     absl::nullopt);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -750,15 +750,15 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
                           kDummyInitiatorName);
   // Verify policy settings are empty.
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", base::nullopt,
-                                                  base::nullopt);
+                                                  "headerFooter", absl::nullopt,
+                                                  absl::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
                                                   "cssBackground",
-                                                  base::nullopt, base::nullopt);
+                                                  absl::nullopt, absl::nullopt);
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", base::nullopt, base::nullopt);
+      *web_ui()->call_data().back(), "mediaSize", absl::nullopt, absl::nullopt);
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
-                                     base::nullopt);
+                                     absl::nullopt);
 }
 #endif
 
@@ -776,7 +776,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterEnabled) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(true),
-      base::nullopt);
+      absl::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
@@ -793,7 +793,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictHeaderFooterDisabled) {
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "headerFooter", base::Value(false),
-      base::nullopt);
+      absl::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
@@ -808,7 +808,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableHeaderFooter) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", base::nullopt,
+                                                  "headerFooter", absl::nullopt,
                                                   base::Value(true));
 }
 
@@ -824,7 +824,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableHeaderFooter) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(*web_ui()->call_data().back(),
-                                                  "headerFooter", base::nullopt,
+                                                  "headerFooter", absl::nullopt,
                                                   base::Value(false));
 }
 
@@ -842,7 +842,7 @@ TEST_F(PrintPreviewHandlerTest,
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::Value(1),
-      base::nullopt);
+      absl::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest,
@@ -859,7 +859,7 @@ TEST_F(PrintPreviewHandlerTest,
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "cssBackground", base::Value(2),
-      base::nullopt);
+      absl::nullopt);
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
@@ -874,7 +874,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableBackgroundGraphics) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", base::nullopt,
+      *web_ui()->call_data().back(), "cssBackground", absl::nullopt,
       base::Value(1));
 }
 
@@ -890,7 +890,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableBackgroundGraphics) {
 #endif
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "cssBackground", base::nullopt,
+      *web_ui()->call_data().back(), "cssBackground", absl::nullopt,
       base::Value(2));
 }
 
@@ -905,7 +905,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
       "height": 210000
     })";
 
-  base::Optional<base::Value> default_paper_size =
+  absl::optional<base::Value> default_paper_size =
       base::JSONReader::Read(kPrintingPaperSizeDefaultName);
   ASSERT_TRUE(default_paper_size.has_value());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -918,12 +918,12 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
 #endif
   Initialize();
 
-  base::Optional<base::Value> expected_initial_settings_policy =
+  absl::optional<base::Value> expected_initial_settings_policy =
       base::JSONReader::Read(kExpectedInitialSettingsPolicy);
   ASSERT_TRUE(expected_initial_settings_policy.has_value());
 
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", base::nullopt,
+      *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
       std::move(expected_initial_settings_policy));
 }
 
@@ -942,7 +942,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
       "height": 210000
     })";
 
-  base::Optional<base::Value> default_paper_size =
+  absl::optional<base::Value> default_paper_size =
       base::JSONReader::Read(kPrintingPaperSizeDefaultCustomSize);
   ASSERT_TRUE(default_paper_size.has_value());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -955,12 +955,12 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
 #endif
   Initialize();
 
-  base::Optional<base::Value> expected_initial_settings_policy =
+  absl::optional<base::Value> expected_initial_settings_policy =
       base::JSONReader::Read(kExpectedInitialSettingsPolicy);
   ASSERT_TRUE(expected_initial_settings_policy.has_value());
 
   ValidateInitialSettingsAllowedDefaultModePolicy(
-      *web_ui()->call_data().back(), "mediaSize", base::nullopt,
+      *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
       std::move(expected_initial_settings_policy));
 }
 
@@ -1223,12 +1223,12 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   const base::Value& preview_params = print_render_frame.GetSettings();
 
   // Read the preview UI ID and request ID
-  base::Optional<int> request_value =
+  absl::optional<int> request_value =
       preview_params.FindIntKey(kPreviewRequestID);
   ASSERT_TRUE(request_value.has_value());
   int preview_request_id = request_value.value();
 
-  base::Optional<int> ui_value = preview_params.FindIntKey(kPreviewUIID);
+  absl::optional<int> ui_value = preview_params.FindIntKey(kPreviewUIID);
   ASSERT_TRUE(ui_value.has_value());
   int preview_ui_id = ui_value.value();
 

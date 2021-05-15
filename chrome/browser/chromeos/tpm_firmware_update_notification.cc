@@ -47,8 +47,8 @@ class TPMFirmwareUpdateNotificationDelegate
           prefs::kTPMFirmwareUpdateCleanupDismissed, true);
     }
   }
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     // Show the about page which contains the line item allowing the user to
     // trigger TPM firmware update installation.
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

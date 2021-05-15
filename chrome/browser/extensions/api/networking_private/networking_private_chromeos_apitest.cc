@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -70,6 +69,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 // This tests the Chrome OS implementation of the networkingPrivate API
@@ -196,7 +196,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
         request,
         base::BindOnce(
             [](std::string* out,
-               base::Optional<::user_data_auth::GetSanitizedUsernameReply>
+               absl::optional<::user_data_auth::GetSanitizedUsernameReply>
                    result) {
               CHECK(result.has_value());
               *out = result->sanitized_username();

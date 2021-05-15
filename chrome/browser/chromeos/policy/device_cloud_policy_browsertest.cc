@@ -13,7 +13,6 @@
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
@@ -59,6 +58,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {

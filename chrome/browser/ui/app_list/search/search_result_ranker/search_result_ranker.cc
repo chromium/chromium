@@ -177,7 +177,7 @@ void SearchResultRanker::InitializeRankers(
         base::BindOnce(
             [](SearchResultRanker* ranker,
                const RecurrenceRankerConfigProto& default_config,
-               base::Optional<RecurrenceRankerConfigProto> parsed_config) {
+               absl::optional<RecurrenceRankerConfigProto> parsed_config) {
               ranker->zero_state_config_converter_.reset();
               if (ranker->json_config_parsed_for_testing_)
                 std::move(ranker->json_config_parsed_for_testing_).Run();

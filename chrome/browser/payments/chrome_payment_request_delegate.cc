@@ -284,7 +284,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
   if (!apk_web_app_service)
     return "";
 
-  base::Optional<std::string> twa_package_name =
+  absl::optional<std::string> twa_package_name =
       apk_web_app_service->GetPackageNameForWebApp(
           web_contents->GetLastCommittedURL());
 

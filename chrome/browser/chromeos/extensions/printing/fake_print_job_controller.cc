@@ -33,7 +33,7 @@ void FakePrintJobController::StartPrintJob(
     std::unique_ptr<printing::MetafileSkia> metafile,
     std::unique_ptr<printing::PrintSettings> settings,
     StartPrintJobCallback callback) {
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(base::UTF16ToUTF8(settings->device_name()));
   if (!printer) {
     std::move(callback).Run(nullptr);

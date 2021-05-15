@@ -14,7 +14,7 @@ OtherTransportsMenuModel::OtherTransportsMenuModel(
     : ui::SimpleMenuModel(this), dialog_model_(dialog_model) {
   base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms =
       dialog_model->mechanisms();
-  const base::Optional<size_t> current_mechanism =
+  const absl::optional<size_t> current_mechanism =
       dialog_model->current_mechanism();
 
   constexpr int kTransportIconSize = 16;

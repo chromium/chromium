@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -28,6 +27,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;

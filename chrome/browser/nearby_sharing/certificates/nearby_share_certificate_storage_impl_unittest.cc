@@ -551,7 +551,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
   auto certs = CreatePrivateCertificates(
       3, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs);
-  base::Optional<base::Time> next_expiration =
+  absl::optional<base::Time> next_expiration =
       cert_store_->NextPrivateCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());
@@ -568,7 +568,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
        NextPublicCertificateExpirationTime) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  base::Optional<base::Time> next_expiration =
+  absl::optional<base::Time> next_expiration =
       cert_store_->NextPublicCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());

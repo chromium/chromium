@@ -56,8 +56,8 @@ class LightProviderMojoTest : public testing::Test {
   }
 
   void AddDevice(int32_t iio_device_id,
-                 const base::Optional<std::string> name,
-                 const base::Optional<std::string> location) {
+                 const absl::optional<std::string> name,
+                 const absl::optional<std::string> location) {
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
         1);
     channels_data[0].id = chromeos::sensors::mojom::kLightChannel;
@@ -116,7 +116,7 @@ class LightProviderMojoTest : public testing::Test {
 
 TEST_F(LightProviderMojoTest, GetSamplesWithOneSensor) {
   SetProvider(/*has_several_light_sensors=*/false);
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
 
   StartConnection();
 
@@ -128,7 +128,7 @@ TEST_F(LightProviderMojoTest, GetSamplesWithOneSensor) {
 
 TEST_F(LightProviderMojoTest, AssumingAcpiAlsWithoutDeviceNameWithOneSensor) {
   SetProvider(/*has_several_light_sensors=*/false);
-  AddDevice(kFakeAcpiAlsId, base::nullopt, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, absl::nullopt, absl::nullopt);
 
   StartConnection();
 
@@ -140,8 +140,8 @@ TEST_F(LightProviderMojoTest, AssumingAcpiAlsWithoutDeviceNameWithOneSensor) {
 
 TEST_F(LightProviderMojoTest, PreferCrosECLightWithOneSensor) {
   SetProvider(/*has_several_light_sensors=*/false);
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, base::nullopt);
-  AddDevice(kFakeLidLightId, kCrosECLightName, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
+  AddDevice(kFakeLidLightId, kCrosECLightName, absl::nullopt);
 
   StartConnection();
 
@@ -173,7 +173,7 @@ TEST_F(LightProviderMojoTest, InvalidLocationWithSeveralLightSensors) {
 
 TEST_F(LightProviderMojoTest, GetSamplesFromLidLightsSeveralLightSensors) {
   SetProvider(/*has_several_light_sensors=*/true);
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
   AddDevice(kFakeBaseLightId, kCrosECLightName,
             chromeos::sensors::mojom::kLocationBase);
   AddDevice(kFakeLidLightId, kCrosECLightName,
@@ -221,7 +221,7 @@ TEST_F(LightProviderMojoTest, PreferLateCrosECLightWithOneSensor) {
 
   EXPECT_FALSE(fake_observer_.has_status());
 
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
 
   // Wait until all tasks are done.
   base::RunLoop().RunUntilIdle();
@@ -229,7 +229,7 @@ TEST_F(LightProviderMojoTest, PreferLateCrosECLightWithOneSensor) {
   // Acpi-als is used.
   CheckValues(kFakeAcpiAlsId);
 
-  AddDevice(kFakeLidLightId, kCrosECLightName, base::nullopt);
+  AddDevice(kFakeLidLightId, kCrosECLightName, absl::nullopt);
 
   // Wait until all tasks are done.
   base::RunLoop().RunUntilIdle();
@@ -254,7 +254,7 @@ TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLightsWithTwoSensors) {
 
   EXPECT_FALSE(fake_observer_.has_status());
 
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, base::nullopt);
+  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
   AddDevice(kFakeBaseLightId, kCrosECLightName,
             chromeos::sensors::mojom::kLocationBase);
 

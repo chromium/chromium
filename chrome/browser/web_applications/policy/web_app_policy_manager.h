@@ -75,7 +75,7 @@ class WebAppPolicyManager {
   // Checks if UI mode of disabled web apps is hidden.
   bool IsDisabledAppsModeHidden() const;
 
-  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(base::Optional<GURL> url) const;
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(absl::optional<GURL> url) const;
 
   void AddObserver(WebAppPolicyManagerObserver* observer);
   void RemoveObserver(WebAppPolicyManagerObserver* observer);

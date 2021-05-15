@@ -106,7 +106,7 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 
 base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
     PrefService* prefs) {
-  base::Optional<speech::SodaLanguagePackComponentConfig> language_config =
+  absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfig(
           prefs->GetString(prefs::kLiveCaptionLanguageCode));
 

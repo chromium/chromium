@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +39,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 namespace {
@@ -90,11 +90,11 @@ std::string ResultToString(BinaryUploadService::Result result) {
 
 constexpr char kBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
 
-base::Optional<GURL> GetUrlOverride() {
+absl::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
                                  ->IsCommandLineSwitchSupported()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -107,7 +107,7 @@ base::Optional<GURL> GetUrlOverride() {
       LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {

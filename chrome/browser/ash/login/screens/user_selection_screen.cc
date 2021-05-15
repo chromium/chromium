@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -64,6 +63,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -290,7 +290,7 @@ class UserSelectionScreen::DircryptoMigrationChecker {
   // Callback invoked when NeedsDircryptoMigration call is finished.
   void OnCryptohomeNeedsDircryptoMigrationCallback(
       const AccountId& account_id,
-      base::Optional<user_data_auth::NeedsDircryptoMigrationReply> reply) {
+      absl::optional<user_data_auth::NeedsDircryptoMigrationReply> reply) {
     if (!reply.has_value()) {
       LOG(ERROR) << "Failed to call cryptohome NeedsDircryptoMigration.";
       // Hide the banner to avoid confusion in http://crbug.com/721948.
@@ -509,7 +509,7 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
     return true;
   }
 
-  const base::Optional<base::TimeDelta> offline_signin_time_limit =
+  const absl::optional<base::TimeDelta> offline_signin_time_limit =
       user_manager::known_user::GetOfflineSigninLimit(user->GetAccountId());
   if (!offline_signin_time_limit)
     return false;

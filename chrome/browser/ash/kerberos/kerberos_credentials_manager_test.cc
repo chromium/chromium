@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -31,6 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -448,7 +448,7 @@ TEST_F(KerberosCredentialsManagerTest,
   EXPECT_EQ(calls, "AddAccount,SetConfig,AcquireKerberosTgt,GetKerberosFiles");
 
   // Specifying no password excludes AcquireKerberosTgt() call.
-  const base::Optional<std::string> kNoPassword;
+  const absl::optional<std::string> kNoPassword;
   client_test_interface()->StartRecordingFunctionCalls();
   mgr_->AddAccountAndAuthenticate(kPrincipal, kManaged, kNoPassword,
                                   kDontRememberPassword, kConfig,

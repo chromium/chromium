@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -49,6 +48,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::AtLeast;
 using ::testing::Return;
@@ -317,7 +317,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     user_policy_signin_service_->set_account(account_id_, kEnterpriseEmail);
 
     // Update the account info to have a consistent hosted domain field.
-    base::Optional<AccountInfo> account_info =
+    absl::optional<AccountInfo> account_info =
         identity_manager()->FindExtendedAccountInfoForAccountWithRefreshToken(
             core_account_info);
     EXPECT_TRUE(account_info);
@@ -492,7 +492,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   bool run_delegate_callbacks_ = true;
 
   // Expected delegate calls.
-  base::Optional<SigninUIError> expected_login_error_;
+  absl::optional<SigninUIError> expected_login_error_;
   std::string expected_enterprise_confirmation_email_;
   std::string expected_merge_data_previous_email_;
   std::string expected_merge_data_new_email_;
@@ -520,7 +520,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
 
   // State of the delegate calls.
   int delegate_destroyed_ = 0;
-  base::Optional<SigninUIError> login_error_;
+  absl::optional<SigninUIError> login_error_;
   std::string enterprise_confirmation_email_;
   std::string merge_data_previous_email_;
   std::string merge_data_new_email_;

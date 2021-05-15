@@ -283,7 +283,7 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
 
 void PolicyComplianceObserver::ProcessInitialComplianceReport(
     std::string last_report) {
-  base::Optional<base::Value> last_report_value =
+  absl::optional<base::Value> last_report_value =
       base::JSONReader::Read(last_report);
   if (!last_report_value.has_value())
     return;

@@ -73,9 +73,9 @@ class CastMediaRouteProviderTest : public testing::Test {
   }
 
   void ExpectCreateRouteSuccessAndSetRoute(
-      const base::Optional<MediaRoute>& route,
+      const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
-      const base::Optional<std::string>& error,
+      const absl::optional<std::string>& error,
       RouteRequestResult::ResultCode result) {
     EXPECT_TRUE(route);
     EXPECT_TRUE(presentation_connections);
@@ -86,9 +86,9 @@ class CastMediaRouteProviderTest : public testing::Test {
 
   void ExpectCreateRouteFailure(
       RouteRequestResult::ResultCode expected_result,
-      const base::Optional<MediaRoute>& route,
+      const absl::optional<MediaRoute>& route,
       mojom::RoutePresentationConnectionPtr presentation_connections,
-      const base::Optional<std::string>& error,
+      const absl::optional<std::string>& error,
       RouteRequestResult::ResultCode result) {
     EXPECT_FALSE(route);
     EXPECT_FALSE(presentation_connections);
@@ -96,7 +96,7 @@ class CastMediaRouteProviderTest : public testing::Test {
     EXPECT_EQ(expected_result, result);
   }
 
-  void ExpectTerminateRouteSuccess(const base::Optional<std::string>& error,
+  void ExpectTerminateRouteSuccess(const absl::optional<std::string>& error,
                                    RouteRequestResult::ResultCode result) {
     EXPECT_FALSE(error);
     EXPECT_EQ(RouteRequestResult::ResultCode::OK, result);

@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,6 +28,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/cookies/cookie_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -213,7 +213,7 @@ class TestingProfile : public Profile {
     std::unique_ptr<policy::PolicyService> policy_service_;
     TestingFactories testing_factories_;
     std::string profile_name_{kDefaultProfileUserName};
-    base::Optional<bool> override_policy_connector_is_managed_;
+    absl::optional<bool> override_policy_connector_is_managed_;
   };
 
   // Multi-profile aware constructor that takes the path to a directory managed
@@ -251,8 +251,8 @@ class TestingProfile : public Profile {
       std::unique_ptr<policy::PolicyService> policy_service,
       TestingFactories testing_factories,
       const std::string& profile_name,
-      base::Optional<bool> override_policy_connector_is_managed,
-      base::Optional<OTRProfileID> otr_profile_id);
+      absl::optional<bool> override_policy_connector_is_managed,
+      absl::optional<OTRProfileID> otr_profile_id);
 
   ~TestingProfile() override;
 
@@ -381,7 +381,7 @@ class TestingProfile : public Profile {
   void InitChromeOSPreferences() override {}
   ash::ScopedCrosSettingsTestHelper* ScopedCrosSettingsTestHelper();
 
-  base::Optional<std::string> requested_locale() { return requested_locale_; }
+  absl::optional<std::string> requested_locale() { return requested_locale_; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Schedules a task on the history backend and runs a nested loop until the
@@ -505,14 +505,14 @@ class TestingProfile : public Profile {
 
   std::string profile_name_{kDefaultProfileUserName};
 
-  base::Optional<bool> override_policy_connector_is_managed_;
-  base::Optional<OTRProfileID> otr_profile_id_;
+  absl::optional<bool> override_policy_connector_is_managed_;
+  absl::optional<OTRProfileID> otr_profile_id_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 
-  base::Optional<std::string> requested_locale_;
+  absl::optional<std::string> requested_locale_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

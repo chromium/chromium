@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -27,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -97,7 +97,7 @@ class ContentIndexTest : public InProcessBrowserTest,
 
   void OnItemUpdated(
       const OfflineItem& item,
-      const base::Optional<offline_items_collection::UpdateDelta>& update_delta)
+      const absl::optional<offline_items_collection::UpdateDelta>& update_delta)
       override {
     NOTREACHED();
   }
@@ -116,12 +116,12 @@ class ContentIndexTest : public InProcessBrowserTest,
     wait_for_tab_change_ = std::move(closure);
   }
 
-  base::Optional<OfflineItem> GetItem(const ContentId& id) {
-    base::Optional<OfflineItem> out_item;
+  absl::optional<OfflineItem> GetItem(const ContentId& id) {
+    absl::optional<OfflineItem> out_item;
     base::RunLoop run_loop;
     provider_->GetItemById(id,
                            base::BindLambdaForTesting(
-                               [&](const base::Optional<OfflineItem>& item) {
+                               [&](const absl::optional<OfflineItem>& item) {
                                  out_item = item;
                                  run_loop.Quit();
                                }));

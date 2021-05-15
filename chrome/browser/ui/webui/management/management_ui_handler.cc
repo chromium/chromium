@@ -346,7 +346,7 @@ void AddThreatProtectionPermission(const char* title,
 }  // namespace
 
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
-  base::Optional<std::string> account_manager =
+  absl::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
   return account_manager ? *account_manager : std::string();
 }

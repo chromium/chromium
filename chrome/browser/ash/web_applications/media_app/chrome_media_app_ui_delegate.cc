@@ -17,7 +17,7 @@
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
-base::Optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
+absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   constexpr char kMediaAppFeedbackCategoryTag[] = "FromMediaApp";
 
@@ -34,5 +34,5 @@ base::Optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 
   // TODO(crbug/1048368): Showing the feedback dialog can fail, communicate this
   // back to the client with an error string. For now assume dialog opened.
-  return base::nullopt;
+  return absl::nullopt;
 }

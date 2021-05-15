@@ -286,7 +286,7 @@ TEST_F(LoadingDataCollectorTest, SimpleNavigation) {
   EXPECT_CALL(*mock_predictor_,
               RecordPageRequestSummaryProxy(testing::Pointee(summary)));
 
-  collector_->RecordMainFrameLoadComplete(navigation_id, base::nullopt);
+  collector_->RecordMainFrameLoadComplete(navigation_id, absl::nullopt);
 }
 
 TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
@@ -315,7 +315,7 @@ TEST_F(LoadingDataCollectorTest, SimpleRedirect) {
       RecordPageRequestSummaryProxy(testing::Pointee(CreatePageRequestSummary(
           "https://facebook.com/google", "http://fb.com/google", resources))));
 
-  collector_->RecordMainFrameLoadComplete(navigation_id, base::nullopt);
+  collector_->RecordMainFrameLoadComplete(navigation_id, absl::nullopt);
 }
 
 // Tests that RecordNavigationFinish without the corresponding

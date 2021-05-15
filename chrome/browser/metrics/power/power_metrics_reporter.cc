@@ -110,7 +110,7 @@ void PowerMetricsReporter::ReportBatteryHistograms(
     base::TimeDelta sampling_interval,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
-    base::Optional<int64_t> discharge_rate_during_interval,
+    absl::optional<int64_t> discharge_rate_during_interval,
     const std::vector<const char*>& suffixes) {
   // Ratio by which the time elapsed can deviate from |recording_interval|
   // without invalidating this sample.
@@ -181,7 +181,7 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
-    base::Optional<int64_t> discharge_rate_during_interval) const {
+    absl::optional<int64_t> discharge_rate_during_interval) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
 
@@ -223,7 +223,7 @@ void PowerMetricsReporter::ReportUKMs(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
-    base::Optional<int64_t> discharge_rate_during_interval) const {
+    absl::optional<int64_t> discharge_rate_during_interval) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
 
@@ -287,7 +287,7 @@ void PowerMetricsReporter::ReportUKMs(
   builder.Record(ukm_recorder);
 }
 
-std::pair<PowerMetricsReporter::BatteryDischargeMode, base::Optional<int64_t>>
+std::pair<PowerMetricsReporter::BatteryDischargeMode, absl::optional<int64_t>>
 PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
     const BatteryLevelProvider::BatteryState& new_battery_state,
     base::TimeDelta interval_duration) {
@@ -296,17 +296,17 @@ PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
 
   if (previous_battery_state.battery_count == 0 ||
       battery_state_.battery_count == 0) {
-    return {BatteryDischargeMode::kNoBattery, base::nullopt};
+    return {BatteryDischargeMode::kNoBattery, absl::nullopt};
   }
   if (!previous_battery_state.on_battery && !battery_state_.on_battery) {
-    return {BatteryDischargeMode::kPluggedIn, base::nullopt};
+    return {BatteryDischargeMode::kPluggedIn, absl::nullopt};
   }
   if (previous_battery_state.on_battery != battery_state_.on_battery) {
-    return {BatteryDischargeMode::kStateChanged, base::nullopt};
+    return {BatteryDischargeMode::kStateChanged, absl::nullopt};
   }
   if (!previous_battery_state.charge_level.has_value() ||
       !battery_state_.charge_level.has_value()) {
-    return {BatteryDischargeMode::kChargeLevelUnavailable, base::nullopt};
+    return {BatteryDischargeMode::kChargeLevelUnavailable, absl::nullopt};
   }
 
   // The battery discharge rate is reported per minute with 1/10000 of full
@@ -318,6 +318,6 @@ PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
                          battery_state_.charge_level.value()) *
                         kDischargeRateFactor / interval_duration.InSeconds();
   if (discharge_rate < 0)
-    return {BatteryDischargeMode::kInvalidDischargeRate, base::nullopt};
+    return {BatteryDischargeMode::kInvalidDischargeRate, absl::nullopt};
   return {BatteryDischargeMode::kDischarging, discharge_rate};
 }

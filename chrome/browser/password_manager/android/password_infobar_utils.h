@@ -11,10 +11,10 @@ class Profile;
 
 namespace password_manager {
 
-base::Optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
+absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                                                               bool is_syncing);
 
-base::Optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
+absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
                                                               bool is_syncing);
 
 }  // namespace password_manager

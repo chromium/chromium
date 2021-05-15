@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -22,6 +21,7 @@
 #include "components/paint_preview/browser/paint_preview_policy.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(os_android)
 #include "base/android/jni_android.h"
@@ -172,7 +172,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // The FTN ID is to look-up the content::WebContents.
   void CaptureTabInternal(base::WeakPtr<TabServiceTask> task,
                           bool accessibility_enabled,
-                          const base::Optional<base::FilePath>& file_path);
+                          const absl::optional<base::FilePath>& file_path);
 
   void OnAXTreeWritten(base::WeakPtr<TabServiceTask> task, bool result);
 

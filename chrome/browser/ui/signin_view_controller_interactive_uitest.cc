@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
@@ -53,7 +53,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
   }
 
   base::RunLoop run_loop_;
-  base::Optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
+  absl::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
 };
 
 class SigninDialogClosedObserver

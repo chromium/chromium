@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,6 +48,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 typedef sessions::TabRestoreService::Entry Entry;
@@ -160,9 +160,9 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   // |group_visual_data| is also present, sets |group|'s visual data.
   void AddWindowWithOneTabToSessionService(
       bool pinned,
-      base::Optional<tab_groups::TabGroupId> group = base::nullopt,
-      base::Optional<tab_groups::TabGroupVisualData> group_visual_data =
-          base::nullopt) {
+      absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
+      absl::optional<tab_groups::TabGroupVisualData> group_visual_data =
+          absl::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -270,7 +270,7 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
   EXPECT_EQ(url3_, tab->navigations[2].virtual_url());
   EXPECT_EQ(user_agent_override_.ua_string_override,
             tab->user_agent_override.ua_string_override);
-  base::Optional<blink::UserAgentMetadata> client_hints_override =
+  absl::optional<blink::UserAgentMetadata> client_hints_override =
       blink::UserAgentMetadata::Demarshal(
           tab->user_agent_override.opaque_ua_metadata_override);
   EXPECT_EQ(user_agent_override_.ua_metadata_override, client_hints_override);

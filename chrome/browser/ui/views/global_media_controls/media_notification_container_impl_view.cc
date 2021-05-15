@@ -99,7 +99,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     MediaNotificationService* service,
     GlobalMediaControlsEntryPoint entry_point,
-    base::Optional<media_message_center::NotificationTheme> theme)
+    absl::optional<media_message_center::NotificationTheme> theme)
     : views::Button(base::BindRepeating(
           [](MediaNotificationContainerImplView* view) {
             // If |is_dragging_| is set, this click should be treated as a drag

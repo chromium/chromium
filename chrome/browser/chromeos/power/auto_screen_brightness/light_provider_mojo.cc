@@ -227,7 +227,7 @@ void LightProviderMojo::RegisterLightWithId(int32_t id) {
 
 void LightProviderMojo::GetNameLocationCallback(
     int32_t id,
-    const std::vector<base::Optional<std::string>>& values) {
+    const std::vector<absl::optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(light_device_id_.value_or(-1), id);
 
@@ -276,7 +276,7 @@ void LightProviderMojo::GetNameLocationCallback(
 
 void LightProviderMojo::GetNameCallback(
     int32_t id,
-    const std::vector<base::Optional<std::string>>& values) {
+    const std::vector<absl::optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(light_device_id_.value_or(-1), id);
 

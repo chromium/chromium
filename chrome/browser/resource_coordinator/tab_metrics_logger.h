@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 class Browser;
@@ -81,7 +81,7 @@ class TabMetricsLogger {
   // A common function for populating these features ensures that the same
   // values are used for logging training examples to UKM and for locally
   // scoring tabs.
-  static base::Optional<tab_ranker::TabFeatures> GetTabFeatures(
+  static absl::optional<tab_ranker::TabFeatures> GetTabFeatures(
       const PageMetrics& page_metrics,
       content::WebContents* web_contents);
 

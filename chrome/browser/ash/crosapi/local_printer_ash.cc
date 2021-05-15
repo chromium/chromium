@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -41,6 +40,7 @@
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace crosapi {
@@ -148,7 +148,7 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
     std::unique_ptr<chromeos::PrinterConfigurer>,
     PrefService* prefs,
     const chromeos::Printer& printer,
-    const base::Optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
+    const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   return mojom::CapabilitiesResponse::New(
       PrinterToMojom(printer), printer.HasSecureProtocol(), caps,
       prefs->GetInteger(prefs::kPrintingAllowedColorModes),
@@ -197,7 +197,7 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer(
       chromeos::PrinterConfigurer::Create(profile));
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
     // If the printer was removed, the lookup will fail.
@@ -217,7 +217,7 @@ void LocalPrinterAsh::GetEulaUrl(const std::string& printer_id,
   Profile* profile = ProfileManager::GetActiveUserProfile();
   chromeos::CupsPrintersManager* printers_manager =
       chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
     // If the printer does not exist, fetching for the license will fail.

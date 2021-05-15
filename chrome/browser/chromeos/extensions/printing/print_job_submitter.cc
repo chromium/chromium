@@ -130,7 +130,7 @@ bool PrintJobSubmitter::CheckPrintTicket() {
 }
 
 void PrintJobSubmitter::CheckPrinter() {
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(request_.job.printer_id);
   if (!printer) {
     FireErrorCallback(kInvalidPrinterId);
@@ -144,7 +144,7 @@ void PrintJobSubmitter::CheckPrinter() {
 }
 
 void PrintJobSubmitter::CheckCapabilitiesCompatibility(
-    base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
+    absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
   if (!capabilities) {
     FireErrorCallback(kPrinterUnavailable);
     return;
@@ -266,7 +266,7 @@ void PrintJobSubmitter::OnPrintJobRejected() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_),
                                 api::printing::SUBMIT_JOB_STATUS_USER_REJECTED,
-                                nullptr, base::nullopt));
+                                nullptr, absl::nullopt));
 }
 
 void PrintJobSubmitter::OnPrintJobSubmitted(
@@ -276,14 +276,14 @@ void PrintJobSubmitter::OnPrintJobSubmitted(
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), api::printing::SUBMIT_JOB_STATUS_OK,
-                     std::move(job_id), base::nullopt));
+                     std::move(job_id), absl::nullopt));
 }
 
 void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
   DCHECK(callback_);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback_), base::nullopt, nullptr, error));
+      base::BindOnce(std::move(callback_), absl::nullopt, nullptr, error));
 }
 
 // static

@@ -118,7 +118,7 @@ bool CanPreProvision(base::Value* origin_id_dict) {
   if (!token_value)
     return false;
 
-  base::Optional<base::Time> expiration_time = util::ValueToTime(token_value);
+  absl::optional<base::Time> expiration_time = util::ValueToTime(token_value);
   if (!expiration_time) {
     RemoveExpirableToken(origin_id_dict);
     return false;
@@ -163,7 +163,7 @@ base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
     return base::UnguessableToken::Null();
 
   auto first_entry = origin_ids->GetList().begin();
-  base::Optional<base::UnguessableToken> result =
+  absl::optional<base::UnguessableToken> result =
       util::ValueToUnguessableToken(*first_entry);
   if (!result)
     return base::UnguessableToken::Null();
@@ -207,7 +207,7 @@ class MediaDrmProvisionHelper {
       // system_network_context_manager() returns nullptr in unit tests.
       DLOG(WARNING) << "Failed to provision origin ID as no "
                        "system_network_context_manager";
-      std::move(callback).Run(false, base::nullopt);
+      std::move(callback).Run(false, absl::nullopt);
       return;
     }
 
@@ -271,7 +271,7 @@ class MediaDrmProvisionHelper {
     LOG_IF(WARNING, !success) << "Failed to provision origin ID";
     std::move(complete_callback_)
         .Run(success,
-             success ? base::make_optional(origin_id_) : base::nullopt);
+             success ? absl::make_optional(origin_id_) : absl::nullopt);
     delete this;
   }
 
@@ -367,7 +367,7 @@ MediaDrmOriginIdManager::~MediaDrmOriginIdManager() {
   // Reject any pending requests.
   while (!pending_provisioned_origin_id_cbs_.empty()) {
     std::move(pending_provisioned_origin_id_cbs_.front())
-        .Run(GetOriginIdStatus::kFailure, base::nullopt);
+        .Run(GetOriginIdStatus::kFailure, absl::nullopt);
     pending_provisioned_origin_id_cbs_.pop();
   }
 }
@@ -491,7 +491,7 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
       pending_requests.swap(pending_provisioned_origin_id_cbs_);
       while (!pending_requests.empty()) {
         std::move(pending_requests.front())
-            .Run(GetOriginIdStatus::kFailure, base::nullopt);
+            .Run(GetOriginIdStatus::kFailure, absl::nullopt);
         pending_requests.pop();
       }
     }

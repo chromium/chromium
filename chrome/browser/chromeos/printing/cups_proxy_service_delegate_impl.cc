@@ -36,7 +36,7 @@ bool CupsProxyServiceDelegateImpl::IsPrinterAccessAllowed() const {
          prefs->GetBoolean(plugin_vm::prefs::kPluginVmPrintersAllowed);
 }
 
-base::Optional<Printer> CupsProxyServiceDelegateImpl::GetPrinter(
+absl::optional<Printer> CupsProxyServiceDelegateImpl::GetPrinter(
     const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return printers_manager_->GetPrinter(id);

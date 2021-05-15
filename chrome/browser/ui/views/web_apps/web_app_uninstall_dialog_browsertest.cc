@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using web_app::AppId;
 

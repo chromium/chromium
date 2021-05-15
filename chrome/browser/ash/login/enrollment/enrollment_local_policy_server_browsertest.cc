@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
           INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED;
   policy_server_.SetDeviceInitialEnrollmentResponse(
       test::kTestRlzBrandCodeKey, test::kTestSerialNumber, initial_enrollment,
-      test::kTestDomain, base::nullopt /* is_license_packaged_with_device */);
+      test::kTestDomain, absl::nullopt /* is_license_packaged_with_device */);
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, ZeroTouchForcedAttestationFail) {
           INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED;
   policy_server_.SetDeviceInitialEnrollmentResponse(
       test::kTestRlzBrandCodeKey, test::kTestSerialNumber, initial_enrollment,
-      test::kTestDomain, base::nullopt /* is_license_packaged_with_device */);
+      test::kTestDomain, absl::nullopt /* is_license_packaged_with_device */);
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();

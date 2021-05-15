@@ -11,13 +11,13 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // Collects metrics on every prefetched resource (mainframes and subresources),
@@ -87,10 +87,10 @@ class PrefetchProxyPrefetchMetricsCollector
                                  const GURL& subresource_url);
 
   // Helper method that gets the link position of the given mainframe |url|.
-  base::Optional<size_t> GetLinkPositionOfMainframe(const GURL& url) const;
+  absl::optional<size_t> GetLinkPositionOfMainframe(const GURL& url) const;
 
   // Helper method that gets the status of the given mainframe |url|.
-  base::Optional<PrefetchProxyPrefetchStatus> GetStatusOfMainframe(
+  absl::optional<PrefetchProxyPrefetchStatus> GetStatusOfMainframe(
       const GURL& url) const;
 
   // Represents a single resource that was prefetched.
@@ -107,23 +107,23 @@ class PrefetchProxyPrefetchMetricsCollector
 
     // The position in the navigation prediction of this resource's mainframe
     // url.
-    base::Optional<size_t> link_position;
+    absl::optional<size_t> link_position;
 
     // The amount of data that transited the network for the resource.
-    base::Optional<int64_t> data_length;
+    absl::optional<int64_t> data_length;
 
     // The time between the start of the navigation and the start of the
     // resource fetch.
-    base::Optional<base::TimeDelta> navigation_start_to_fetch_start;
+    absl::optional<base::TimeDelta> navigation_start_to_fetch_start;
 
     // The time duration that it took to fetch the resource.
-    base::Optional<base::TimeDelta> fetch_duration;
+    absl::optional<base::TimeDelta> fetch_duration;
 
     // Set if the mainframe link was clicked.
-    base::Optional<bool> was_clicked;
+    absl::optional<bool> was_clicked;
 
     // How this resource's page was filtered on navigation, if at all.
-    base::Optional<PrefetchProxyProbeResult> filtering_result;
+    absl::optional<PrefetchProxyProbeResult> filtering_result;
   };
 
   const base::TimeTicks navigation_start_time_;

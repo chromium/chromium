@@ -10,14 +10,14 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A socket-like wrapper around Nearby Connections that allows for asynchronous
 // reads and writes.
 class NearbyConnection {
  public:
   using ReadCallback =
-      base::OnceCallback<void(base::Optional<std::vector<uint8_t>> bytes)>;
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>> bytes)>;
 
   virtual ~NearbyConnection() = default;
 

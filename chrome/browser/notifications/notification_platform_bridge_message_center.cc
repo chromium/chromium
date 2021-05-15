@@ -38,8 +38,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_SETTINGS, notification_type_,
-            notification_.origin_url(), notification_.id(), base::nullopt,
-            base::nullopt, base::nullopt /* by_user */);
+            notification_.origin_url(), notification_.id(), absl::nullopt,
+            absl::nullopt, absl::nullopt /* by_user */);
   }
 
   void DisableNotification() override {
@@ -47,8 +47,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_DISABLE_PERMISSION,
             notification_type_, notification_.origin_url(), notification_.id(),
-            base::nullopt /* action_index */, base::nullopt /* reply */,
-            base::nullopt /* by_user */);
+            absl::nullopt /* action_index */, absl::nullopt /* reply */,
+            absl::nullopt /* by_user */);
   }
 
   void Close(bool by_user) override {
@@ -56,17 +56,17 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_CLOSE, notification_type_,
             notification_.origin_url(), notification_.id(),
-            base::nullopt /* action_index */, base::nullopt /* reply */,
+            absl::nullopt /* action_index */, absl::nullopt /* reply */,
             by_user);
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_CLICK, notification_type_,
             notification_.origin_url(), notification_.id(), button_index, reply,
-            base::nullopt /* by_user */);
+            absl::nullopt /* by_user */);
   }
 
  protected:

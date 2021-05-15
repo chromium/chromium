@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -27,6 +26,7 @@
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -207,7 +207,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
     return scanner_names_;
   }
 
-  base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities() const {
+  absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities() const {
     return scanner_capabilities_;
   }
 
@@ -223,7 +223,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   }
 
   void GetScannerCapabilitiesCallback(
-      const base::Optional<lorgnette::ScannerCapabilities>&
+      const absl::optional<lorgnette::ScannerCapabilities>&
           scanner_capabilities) {
     scanner_capabilities_ = scanner_capabilities;
     run_loop_->Quit();
@@ -255,7 +255,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   std::unique_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;
 
   std::vector<std::string> scanner_names_;
-  base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
+  absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   lorgnette::ScanFailureMode failure_mode_ =
       lorgnette::SCAN_FAILURE_MODE_NO_FAILURE;
   bool cancel_scan_success_ = false;
@@ -414,7 +414,7 @@ TEST_F(LorgnetteScannerManagerTest, GetCapsFail) {
   CompleteTasks();
   GetScannerNames();
   WaitForResult();
-  GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(base::nullopt);
+  GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(absl::nullopt);
   GetScannerCapabilities(scanner.display_name);
   WaitForResult();
   EXPECT_FALSE(scanner_capabilities());

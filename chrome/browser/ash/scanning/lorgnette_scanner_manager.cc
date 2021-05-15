@@ -95,7 +95,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::string device_name;
     chromeos::ScanProtocol protocol;
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -140,7 +140,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // Handles the result of calling LorgnetteManagerClient::ListScanners().
   void OnListScannersResponse(
       GetScannerNamesCallback callback,
-      base::Optional<lorgnette::ListScannersResponse> response) {
+      absl::optional<lorgnette::ListScannersResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     RebuildDedupedScanners(response);
     std::vector<std::string> scanner_names;
@@ -163,7 +163,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       const std::string& scanner_name,
       const std::string& device_name,
       const chromeos::ScanProtocol protocol,
-      base::Optional<lorgnette::ScannerCapabilities> capabilities) {
+      absl::optional<lorgnette::ScannerCapabilities> capabilities) {
     if (!capabilities) {
       LOG(WARNING) << "Failed to get scanner capabilities using device name: "
                    << device_name;
@@ -177,7 +177,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
 
   // Uses |response| and zeroconf_scanners_ to rebuild deduped_scanners_.
   void RebuildDedupedScanners(
-      base::Optional<lorgnette::ListScannersResponse> response) {
+      absl::optional<lorgnette::ListScannersResponse> response) {
     ResetDedupedScanners();
     if (!response || response->scanners_size() == 0)
       return;

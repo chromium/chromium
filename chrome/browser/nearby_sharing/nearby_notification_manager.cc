@@ -218,7 +218,7 @@ std::u16string GetFailureNotificationTitle(const ShareTarget& share_target) {
       /*use_capitalized_attachments=*/false);
 }
 
-base::Optional<std::u16string> GetFailureNotificationMessage(
+absl::optional<std::u16string> GetFailureNotificationMessage(
     TransferMetadata::Status status) {
   switch (status) {
     case TransferMetadata::Status::kTimedOut:
@@ -228,7 +228,7 @@ base::Optional<std::u16string> GetFailureNotificationMessage(
     case TransferMetadata::Status::kUnsupportedAttachmentType:
       return l10n_util::GetStringUTF16(IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE);
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -293,7 +293,7 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
 
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
-               const base::Optional<int>& action_index) override {
+               const absl::optional<int>& action_index) override {
     // Clicking on the notification is a noop.
     if (!action_index)
       return;
@@ -333,7 +333,7 @@ class ConnectionRequestNotificationDelegate
 
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
-               const base::Optional<int>& action_index) override {
+               const absl::optional<int>& action_index) override {
     // Clicking on the notification is a noop.
     if (!action_index)
       return;
@@ -367,7 +367,7 @@ class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
       : callback_(std::move(callback)) {}
   ~ReceivedImageDecoder() override = default;
 
-  void DecodeImage(const base::Optional<base::FilePath>& image_path) {
+  void DecodeImage(const absl::optional<base::FilePath>& image_path) {
     if (!image_path) {
       OnDecodeImageFailed();
       return;
@@ -431,7 +431,7 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
 
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
-               const base::Optional<int>& action_index) override {
+               const absl::optional<int>& action_index) override {
     switch (type_) {
       case NearbyNotificationManager::ReceivedContentType::kText:
         if (action_index.has_value() && action_index.value() == 0) {
@@ -537,7 +537,7 @@ class OnboardingNotificationDelegate : public NearbyNotificationDelegate {
 
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
-               const base::Optional<int>& action_index) override {
+               const absl::optional<int>& action_index) override {
     manager_->OnOnboardingClicked();
   }
 
@@ -572,7 +572,7 @@ void UpdateOnboardingDismissedTime(PrefService* pref_service) {
 }
 
 bool ShouldClearNotification(
-    base::Optional<TransferMetadata::Status> last_status,
+    absl::optional<TransferMetadata::Status> last_status,
     TransferMetadata::Status new_status) {
   if (!last_status)
     return true;
@@ -713,8 +713,8 @@ void NearbyNotificationManager::OnNearbyProcessStopped() {
         *share_target_,
         TransferMetadataBuilder().set_status(*last_transfer_status_).build());
   }
-  share_target_ = base::nullopt;
-  last_transfer_status_ = base::nullopt;
+  share_target_ = absl::nullopt;
+  last_transfer_status_ = absl::nullopt;
 }
 
 void NearbyNotificationManager::ShowProgress(
@@ -900,7 +900,7 @@ void NearbyNotificationManager::ShowFailure(
       CreateNearbyNotification(kNearbyNotificationId);
   notification.set_title(GetFailureNotificationTitle(share_target));
 
-  base::Optional<std::u16string> message =
+  absl::optional<std::u16string> message =
       GetFailureNotificationMessage(transfer_metadata.status());
   if (message) {
     notification.set_message(*message);

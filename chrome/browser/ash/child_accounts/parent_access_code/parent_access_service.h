@@ -38,7 +38,7 @@ class ParentAccessService {
     // specifically to the account identified by the parameter.
     virtual void OnAccessCodeValidation(
         ParentCodeValidationResult result,
-        base::Optional<AccountId> account_id) = 0;
+        absl::optional<AccountId> account_id) = 0;
   };
 
   // Registers preferences.

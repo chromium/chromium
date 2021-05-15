@@ -42,7 +42,7 @@ std::string ReadAppLocale() {
   if (!base::ReadFileToString(cache_file, &input))
     return std::string();
 
-  base::Optional<base::Value> settings = base::JSONReader::Read(input);
+  absl::optional<base::Value> settings = base::JSONReader::Read(input);
   if (!settings.has_value())
     return std::string();
 

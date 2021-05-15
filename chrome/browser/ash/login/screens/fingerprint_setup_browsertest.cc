@@ -129,7 +129,7 @@ class FingerprintSetupTest : public OobeBaseTest {
 
  private:
   bool screen_exit_ = false;
-  base::Optional<Result> screen_result_;
+  absl::optional<Result> screen_result_;
   base::HistogramTester histogram_tester_;
   FingerprintSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;

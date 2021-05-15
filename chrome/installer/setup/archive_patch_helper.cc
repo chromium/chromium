@@ -8,12 +8,12 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "chrome/installer/setup/buildflags.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "components/zucchini/zucchini.h"
 #include "components/zucchini/zucchini_integration.h"
 #include "courgette/courgette.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/bspatch/mbspatch.h"
 
 namespace installer {

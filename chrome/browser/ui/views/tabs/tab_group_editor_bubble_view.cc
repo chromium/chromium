@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -35,6 +34,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -58,7 +58,7 @@ views::Widget* TabGroupEditorBubbleView::Show(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     TabGroupHeader* header_view,
-    base::Optional<gfx::Rect> anchor_rect,
+    absl::optional<gfx::Rect> anchor_rect,
     views::View* anchor_view,
     bool stop_context_menu_propagation) {
   // If |header_view| is not null, use |header_view| as the |anchor_view|.
@@ -96,7 +96,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
-    base::Optional<gfx::Rect> anchor_rect,
+    absl::optional<gfx::Rect> anchor_rect,
     TabGroupHeader* header_view,
     bool stop_context_menu_propagation)
     : browser_(browser),
@@ -270,7 +270,7 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 }
 
 void TabGroupEditorBubbleView::UpdateGroup() {
-  base::Optional<int> selected_element = color_selector_->GetSelectedElement();
+  absl::optional<int> selected_element = color_selector_->GetSelectedElement();
   TabGroup* tab_group =
       browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
 

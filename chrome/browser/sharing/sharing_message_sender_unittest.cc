@@ -206,7 +206,7 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
           SharingFCMSender::SendMessageCallback callback) {
         // FCM message not sent successfully.
         std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                                base::nullopt, SharingChannelType::kUnknown);
+                                absl::nullopt, SharingChannelType::kUnknown);
 
         // Callback already run with result timeout, ack received for same
         // message id is ignored.

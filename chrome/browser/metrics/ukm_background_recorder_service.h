@@ -9,11 +9,11 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class UkmBackgroundRecorderBrowserTest;
@@ -40,7 +40,7 @@ namespace ukm {
 class UkmBackgroundRecorderService : public KeyedService {
  public:
   using GetBackgroundSourceIdCallback =
-      base::OnceCallback<void(base::Optional<ukm::SourceId>)>;
+      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
 
   // |profile| is needed to access the appropriate services |this| depends on.
   explicit UkmBackgroundRecorderService(Profile* profile);

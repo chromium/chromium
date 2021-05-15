@@ -109,8 +109,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
   void PrinterIsNotAutoconfigurable(const Printer& printer) override = 0;
 
   // Look for a printer with the given id in any class.  Returns a copy of the
-  // printer if found, base::nullopt if not found.
-  virtual base::Optional<Printer> GetPrinter(const std::string& id) const = 0;
+  // printer if found, absl::nullopt if not found.
+  virtual absl::optional<Printer> GetPrinter(const std::string& id) const = 0;
 
   // Log an event that the user started trying to set up the given printer,
   // but setup was not completed for some reason.

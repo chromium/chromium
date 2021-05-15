@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The maximum length in bytes allowed for a device name, as encoded in UTF-8 in
 // a std::string, which will not contain a null terminator.
@@ -55,13 +55,13 @@ class NearbyShareLocalDeviceDataManager {
   virtual std::string GetDeviceName() const = 0;
 
   // Returns the user's full name, for example, "Barack Obama". Returns
-  // base::nullopt if the name has not yet been set from an UpdateDevice RPC
+  // absl::nullopt if the name has not yet been set from an UpdateDevice RPC
   // response.
-  virtual base::Optional<std::string> GetFullName() const = 0;
+  virtual absl::optional<std::string> GetFullName() const = 0;
 
-  // Returns the URL of the user's image. Returns base::nullopt if the URL has
+  // Returns the URL of the user's image. Returns absl::nullopt if the URL has
   // not yet been set from an UpdateDevice RPC response.
-  virtual base::Optional<std::string> GetIconUrl() const = 0;
+  virtual absl::optional<std::string> GetIconUrl() const = 0;
 
   // Validates the provided device name and returns an error if validation
   // fails. This is just a check and the device name is not persisted.

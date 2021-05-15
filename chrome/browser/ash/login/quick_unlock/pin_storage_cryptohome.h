@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/login/auth/user_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -29,7 +29,7 @@ class PinStorageCryptohome {
 
   // Transforms `key` for usage in PIN. Returns nullopt if the key could not be
   // transformed.
-  static base::Optional<Key> TransformKey(const AccountId& account_id,
+  static absl::optional<Key> TransformKey(const AccountId& account_id,
                                           const Key& key);
 
   PinStorageCryptohome();
@@ -41,7 +41,7 @@ class PinStorageCryptohome {
   // plain-text. If `pin_salt` contains a value, `pin` will not be hashed.
   void SetPin(const UserContext& user_context,
               const std::string& pin,
-              const base::Optional<std::string>& pin_salt,
+              const absl::optional<std::string>& pin_salt,
               BoolCallback did_set);
   void RemovePin(const UserContext& user_context, BoolCallback did_remove);
   void CanAuthenticate(const AccountId& account_id, BoolCallback result) const;

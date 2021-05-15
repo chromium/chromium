@@ -104,7 +104,7 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
   MockSyncChangeProcessor() : fail_all_requests_(false) {}
 
   // syncer::SyncChangeProcessor implementation.
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override {
     if (fail_all_requests_) {
@@ -114,7 +114,7 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
     for (auto it = change_list.cbegin(); it != change_list.cend(); ++it) {
       changes_.push_back(std::make_unique<SettingSyncData>(*it));
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override {

@@ -23,30 +23,30 @@ constexpr char kActiveTimesKey[] = "active_times";
 constexpr char kActiveFromKey[] = "active_from";
 constexpr char kActiveToKey[] = "active_to";
 
-base::Optional<AppActivity::ActiveTime> AppActivityFromDict(
+absl::optional<AppActivity::ActiveTime> AppActivityFromDict(
     const base::Value& value) {
   if (!value.is_dict()) {
     VLOG(1) << "Value is not a dictionary";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* active_from = value.FindStringKey(kActiveFromKey);
   if (!active_from) {
     VLOG(1) << "Invalid |active_from| entry in dictionary";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* active_to = value.FindStringKey(kActiveToKey);
   if (!active_to) {
     VLOG(1) << "Invalid |active_to| entry in dictionary.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int64_t active_from_microseconds;
   int64_t active_to_microseconds;
   if (!base::StringToInt64(*active_from, &active_from_microseconds) ||
       !base::StringToInt64(*active_to, &active_to_microseconds)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::Time active_from_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -83,7 +83,7 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
   base::Value::ConstListView list_view = list->GetList();
 
   for (const auto& value : list_view) {
-    base::Optional<AppActivity::ActiveTime> entry = AppActivityFromDict(value);
+    absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(value);
     if (!entry)
       continue;
     active_times.push_back(entry.value());
@@ -95,35 +95,35 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
 }  // namespace
 
 // static
-base::Optional<PersistedAppInfo> PersistedAppInfo::PersistedAppInfoFromDict(
+absl::optional<PersistedAppInfo> PersistedAppInfo::PersistedAppInfoFromDict(
     const base::Value* dict,
     bool include_app_activity_array) {
   if (!dict || !dict->is_dict()) {
     VLOG(1) << "Invalid application information.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<AppId> app_id = policy::AppIdFromAppInfoDict(*dict);
+  absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(*dict);
   if (!app_id)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AppState> state = GetAppStateFromDict(dict);
+  absl::optional<AppState> state = GetAppStateFromDict(dict);
   if (!state) {
     VLOG(1) << "Invalid application state.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const std::string* running_active_time =
       dict->FindStringKey(kRunningActiveTimeKey);
   if (!running_active_time) {
     VLOG(1) << "Invalid running active time.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int64_t running_active_time_int;
   if (!base::StringToInt64(*running_active_time, &running_active_time_int)) {
     VLOG(1) << "Invalid running active time.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<AppActivity::ActiveTime> active_times;
@@ -149,7 +149,7 @@ std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
   base::Value::ConstListView list_view = value->GetList();
 
   for (const auto& per_app_info : list_view) {
-    base::Optional<PersistedAppInfo> info =
+    absl::optional<PersistedAppInfo> info =
         PersistedAppInfoFromDict(&per_app_info, include_app_activity_array);
     if (!info.has_value())
       continue;
@@ -161,14 +161,14 @@ std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
 }
 
 // static
-base::Optional<AppState> PersistedAppInfo::GetAppStateFromDict(
+absl::optional<AppState> PersistedAppInfo::GetAppStateFromDict(
     const base::Value* value) {
   if (!value || !value->is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> state = value->FindIntKey(kAppStateKey);
+  absl::optional<int> state = value->FindIntKey(kAppStateKey);
   if (!state.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   return static_cast<AppState>(state.value());
 }
@@ -251,11 +251,11 @@ void PersistedAppInfo::UpdateAppActivityPreference(
   base::Value::ListView list_view = value->GetList();
   if (list_view.size() > 0) {
     base::Value& mergeable_entry = list_view[list_view.size() - 1];
-    base::Optional<AppActivity::ActiveTime> active_time =
+    absl::optional<AppActivity::ActiveTime> active_time =
         AppActivityFromDict(mergeable_entry);
     DCHECK(active_time.has_value());
 
-    base::Optional<AppActivity::ActiveTime> merged =
+    absl::optional<AppActivity::ActiveTime> merged =
         AppActivity::ActiveTime::Merge(active_time.value(), active_times_[0]);
     if (merged.has_value()) {
       mergeable_entry = AppActivityToDict(merged.value());

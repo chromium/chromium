@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -26,6 +25,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/content_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"

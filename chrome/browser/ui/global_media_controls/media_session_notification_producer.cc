@@ -178,7 +178,7 @@ void MediaSessionNotificationProducer::Session::MediaSessionActionsChanged(
 }
 
 void MediaSessionNotificationProducer::Session::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   OnSessionInteractedWith();
 }
 

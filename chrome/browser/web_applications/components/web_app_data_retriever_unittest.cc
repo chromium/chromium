@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
@@ -143,7 +143,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
 
  private:
   FakeWebPageMetadataAgent fake_chrome_render_frame_;
-  base::Optional<std::unique_ptr<WebApplicationInfo>> web_app_info_;
+  absl::optional<std::unique_ptr<WebApplicationInfo>> web_app_info_;
   std::vector<WebApplicationIconInfo> icons_;
 };
 
@@ -307,7 +307,7 @@ TEST_F(WebAppDataRetrieverTest,
   WebAppDataRetriever retriever;
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
-      base::BindLambdaForTesting([&](base::Optional<blink::Manifest> manifest,
+      base::BindLambdaForTesting([&](absl::optional<blink::Manifest> manifest,
                                      const GURL& manifest_url,
                                      bool valid_manifest_for_web_app,
                                      bool is_installable) {
@@ -369,7 +369,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   const std::u16string manifest_short_name = u"Short Name from Manifest";
   const std::u16string manifest_name = u"Name from Manifest";
   const GURL manifest_scope = GURL("https://example.com/scope");
-  const base::Optional<SkColor> manifest_theme_color = 0xAABBCCDD;
+  const absl::optional<SkColor> manifest_theme_color = 0xAABBCCDD;
 
   {
     auto manifest = std::make_unique<blink::Manifest>();
@@ -392,7 +392,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
-          [&](base::Optional<blink::Manifest> result, const GURL& manifest_url,
+          [&](absl::optional<blink::Manifest> result, const GURL& manifest_url,
               bool valid_manifest_for_web_app, bool is_installable) {
             EXPECT_TRUE(is_installable);
 
@@ -429,7 +429,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting(
-          [&](base::Optional<blink::Manifest> result, const GURL& manifest_url,
+          [&](absl::optional<blink::Manifest> result, const GURL& manifest_url,
               bool valid_manifest_for_web_app, bool is_installable) {
             EXPECT_FALSE(is_installable);
             EXPECT_FALSE(valid_manifest_for_web_app);

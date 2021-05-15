@@ -162,7 +162,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   void CheckCanCloseWindow(const extensions::Extension* extension) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
     EXPECT_CALL(callback,
-                Run(true, base::Optional<std::string>(base::nullopt)));
+                Run(true, absl::optional<std::string>(absl::nullopt)));
     ui_handler_->Close(extension, callback.Get());
     // Invoke close callback from dialog delegate because UiHandler::Close() is
     // synchronous and will invoke its callback after that.
@@ -184,7 +184,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
                               const std::string& expected_error) {
     base::MockCallback<UiHandler::WindowClosedCallback> callback;
     EXPECT_CALL(callback,
-                Run(false, base::Optional<std::string>(expected_error)));
+                Run(false, absl::optional<std::string>(expected_error)));
     ui_handler_->Close(extension, callback.Get());
     // No need to invoke the close callback here since in case of no open window
     // we directly invoke the callback with an error.

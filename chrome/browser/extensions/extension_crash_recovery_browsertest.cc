@@ -128,7 +128,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
     display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                     "app.background.crashed." + extension_id,
-                                    base::nullopt, base::nullopt);
+                                    absl::nullopt, absl::nullopt);
     scoped_refptr<const Extension> extension =
         observer.WaitForExtensionLoaded();
     extensions::BackgroundPageWatcher(GetProcessManager(), extension.get())

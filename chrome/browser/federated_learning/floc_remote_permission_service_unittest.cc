@@ -67,8 +67,8 @@ class TestingFlocRemotePermissionService : public FlocRemotePermissionService {
  private:
   GURL expected_url_;
   bool expected_floc_permission_;
-  base::Optional<int> response_code_override_;
-  base::Optional<std::string> response_body_override_;
+  absl::optional<int> response_code_override_;
+  absl::optional<std::string> response_body_override_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingFlocRemotePermissionService);
 };

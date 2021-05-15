@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -129,7 +129,7 @@ enum class Scheme {
 // true if the protocol has been handled by ARC.
 void RunArcExternalProtocolDialog(
     const GURL& url,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     int render_process_host_id,
     int routing_id,
     ui::PageTransition page_transition,

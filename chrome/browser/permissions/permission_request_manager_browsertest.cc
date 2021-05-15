@@ -651,8 +651,8 @@ class PermissionRequestManagerQuietUiBrowserTest
   using WarningReason =
       permissions::NotificationPermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(base::Optional<QuietUiReason> quiet_ui_reason,
-                           base::Optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
+                           absl::optional<WarningReason> warning_reason) {
     GetPermissionRequestManager()
         ->set_notification_permission_ui_selector_for_testing(
             std::make_unique<TestQuietNotificationPermissionUiSelector>(
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   bubble_factory()->WaitForPermissionBubble();
   auto* manager = GetPermissionRequestManager();
 
-  base::Optional<permissions::PermissionPromptDisposition> disposition =
+  absl::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
   auto disposition_from_prompt_bubble =
       manager->view_for_testing()->GetPromptDisposition();
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // HIDDEN.
   manager->OnVisibilityChanged(content::Visibility::HIDDEN);
 
-  base::Optional<permissions::PermissionPromptDisposition> disposition =
+  absl::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
 
   EXPECT_TRUE(disposition.has_value());
@@ -757,8 +757,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                        ConsoleMessages) {
   const struct {
-    base::Optional<QuietUiReason> simulated_quiet_ui_reason;
-    base::Optional<WarningReason> simulated_warning_reason;
+    absl::optional<QuietUiReason> simulated_quiet_ui_reason;
+    absl::optional<WarningReason> simulated_warning_reason;
     const char* expected_message;
   } kTestCases[] = {
       {UiDecision::UseNormalUi(), UiDecision::ShowNoWarning(), nullptr},

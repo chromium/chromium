@@ -366,7 +366,7 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       "type": "OFFER"
     })";
 
-  base::Optional<base::Value> message_json = base::JSONReader::Read(message);
+  absl::optional<base::Value> message_json = base::JSONReader::Read(message);
   EXPECT_TRUE(message_json);
   EXPECT_THAT(scrubbed_message,
               base::test::IsJson(MirroringActivity::GetScrubbedLogMessage(

@@ -102,10 +102,10 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
   return observer;
 }
 
-base::Optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
+absl::optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
   blink::WebDocument doc = render_frame->GetWebFrame()->GetDocument();
 
-  base::Optional<GURL> best;
+  absl::optional<GURL> best;
   blink::WebVector<WebElement> elements =
       doc.QuerySelectorAll(WebString("a[href]"));
   for (WebElement element : elements) {
@@ -585,7 +585,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   starting_url_ = url;

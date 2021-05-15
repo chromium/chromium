@@ -128,7 +128,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 }
 
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
-    base::Optional<std::u16string> password) {
+    absl::optional<std::u16string> password) {
   if (password) {
     Respond(OneArgument(base::Value(std::move(*password))));
     return;
@@ -296,7 +296,7 @@ ResponseAction PasswordsPrivateGetPlaintextInsecurePasswordFunction::Run() {
 }
 
 void PasswordsPrivateGetPlaintextInsecurePasswordFunction::GotCredential(
-    base::Optional<api::passwords_private::InsecureCredential> credential) {
+    absl::optional<api::passwords_private::InsecureCredential> credential) {
   if (!credential) {
     Respond(
         Error("Could not obtain plaintext insecure password. Either the user "

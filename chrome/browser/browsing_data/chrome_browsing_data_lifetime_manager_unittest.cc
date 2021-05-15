@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   base::test::ScopedFeatureList feature_list;

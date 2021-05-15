@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -41,7 +41,7 @@ bool HasNonNativeMimeTypeProvider(Profile* profile, const base::FilePath& path);
 void GetNonNativeLocalPathMimeType(
     Profile* profile,
     const base::FilePath& path,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
 // Checks whether the |path| points to a directory, and asynchronously sends
 // the result to |callback|.

@@ -94,13 +94,13 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
   return true;
 }
 
-base::Optional<base::EnvironmentMap>
+absl::optional<base::EnvironmentMap>
 WVTestLicenseServerConfig::GetServerEnvironment() {
   // Add the Python protocol buffers files directory to Python path.
   base::FilePath pyproto_dir;
   if (!GetPyProtoPath(&pyproto_dir)) {
     LOG(WARNING) << "Cannot find pyproto directory required by license server.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::EnvironmentMap map;

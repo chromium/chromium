@@ -134,10 +134,10 @@ bool GetBlockdevmodeFromPolicy(
 // A utility funciton of base::ReadFileToString which returns an optional
 // string.
 // TODO(mukai): move this to base/files.
-base::Optional<std::string> ReadFileToOptionalString(
+absl::optional<std::string> ReadFileToOptionalString(
     const base::FilePath& file_path) {
   std::string content;
-  base::Optional<std::string> result;
+  absl::optional<std::string> result;
   if (base::ReadFileToString(file_path, &content))
     result = std::move(content);
   return result;
@@ -455,7 +455,7 @@ void EnrollmentHandlerChromeOS::StartOfflineDemoEnrollmentFlow() {
 }
 
 void EnrollmentHandlerChromeOS::OnOfflinePolicyBlobLoaded(
-    base::Optional<std::string> blob) {
+    absl::optional<std::string> blob) {
   DCHECK_EQ(EnrollmentConfig::MODE_OFFLINE_DEMO, enrollment_config_.mode);
   DCHECK_EQ(STEP_POLICY_FETCH, enrollment_step_);
 
@@ -601,7 +601,7 @@ void EnrollmentHandlerChromeOS::SetFirmwareManagementParametersData() {
 }
 
 void EnrollmentHandlerChromeOS::OnFirmwareManagementParametersDataSet(
-    base::Optional<user_data_auth::SetFirmwareManagementParametersReply>
+    absl::optional<user_data_auth::SetFirmwareManagementParametersReply>
         reply) {
   DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
   if (!reply.has_value()) {

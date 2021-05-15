@@ -73,7 +73,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   void StartSyncing(const syncer::SyncDataList& initial_sync_data) {
     std::unique_ptr<syncer::SyncErrorFactory> error_handler(
         new MockSyncErrorFactory(syncer::SUPERVISED_USER_SETTINGS));
-    base::Optional<syncer::ModelError> error =
+    absl::optional<syncer::ModelError> error =
         settings_service_.MergeDataAndStartSyncing(
             syncer::SUPERVISED_USER_SETTINGS, initial_sync_data,
             CreateSyncProcessor(), std::move(error_handler));
@@ -159,7 +159,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   syncer::SyncChangeList change_list;
   change_list.push_back(
       syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
@@ -191,7 +191,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
     change_list.push_back(
         syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
   }
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);

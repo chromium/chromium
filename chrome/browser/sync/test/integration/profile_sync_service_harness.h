@@ -11,11 +11,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -187,7 +187,7 @@ class ProfileSyncServiceHarness {
   // has to have a value which will be used to properly setup sync.
   bool SetupSyncImpl(syncer::UserSelectableTypeSet selected_types,
                      EncryptionSetupMode encryption_mode,
-                     const base::Optional<std::string>& encryption_passphrase);
+                     const absl::optional<std::string>& encryption_passphrase);
 
   // Gets detailed status from |service_| in pretty-printable form.
   std::string GetServiceStatus();

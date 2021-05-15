@@ -120,7 +120,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  base::Optional<NavigationPredictorKeyedService::Prediction> last_prediction()
+  absl::optional<NavigationPredictorKeyedService::Prediction> last_prediction()
       const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return last_prediction_;
@@ -148,7 +148,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
 
  private:
   void OnPredictionUpdated(
-      const base::Optional<NavigationPredictorKeyedService::Prediction>
+      const absl::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ++count_predictions_;
@@ -162,12 +162,12 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
   size_t count_predictions_ = 0u;
 
   // last prediction received.
-  base::Optional<NavigationPredictorKeyedService::Prediction> last_prediction_;
+  absl::optional<NavigationPredictorKeyedService::Prediction> last_prediction_;
 
   // If |wait_loop_| is non-null, then it quits as soon as count of received
   // notifications are at least |expected_notifications_count_|.
   std::unique_ptr<base::RunLoop> wait_loop_;
-  base::Optional<size_t> expected_notifications_count_;
+  absl::optional<size_t> expected_notifications_count_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

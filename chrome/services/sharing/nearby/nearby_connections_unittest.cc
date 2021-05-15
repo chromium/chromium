@@ -65,7 +65,7 @@ mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
 }
 
 mojom::ConnectionOptionsPtr CreateConnectionOptions(
-    base::Optional<std::vector<uint8_t>> bluetooth_mac_address) {
+    absl::optional<std::vector<uint8_t>> bluetooth_mac_address) {
   auto allowed_mediums = mojom::MediumSelection::New(/*bluetooth=*/true,
                                                      /*ble=*/false,
                                                      /*web_rtc=*/false,
@@ -308,7 +308,7 @@ class NearbyConnectionsTest : public testing::Test {
   ClientProxy* RequestConnection(
       FakeConnectionLifecycleListener& fake_connection_life_cycle_listener,
       const EndpointData& endpoint_data,
-      base::Optional<std::vector<uint8_t>> bluetooth_mac_address =
+      absl::optional<std::vector<uint8_t>> bluetooth_mac_address =
           std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                std::end(kBluetoothMacAddress))) {
     ClientProxy* client_proxy;
@@ -561,7 +561,7 @@ TEST_F(NearbyConnectionsTest,
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
 
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data,
-                    /*bluetooth_mac_address=*/base::nullopt);
+                    /*bluetooth_mac_address=*/absl::nullopt);
 }
 
 TEST_F(NearbyConnectionsTest, RequestConnectionAccept) {

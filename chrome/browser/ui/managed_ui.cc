@@ -53,12 +53,12 @@ const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-base::Optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
+absl::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
   const std::string domain =
       enterprise_util::GetDomainFromEmail(profile->GetProfileUserName());
   // Heuristic for most common consumer Google domains -- these are not managed.
   if (domain.empty() || domain == "gmail.com" || domain == "googlemail.com")
-    return base::nullopt;
+    return absl::nullopt;
   return domain;
 }
 
@@ -79,7 +79,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 }
 
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
-  base::Optional<std::string> account_manager =
+  absl::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
 
   int string_id = IDS_MANAGED;
@@ -93,7 +93,7 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
 }
 
 std::u16string GetManagedUiWebUILabel(Profile* profile) {
-  base::Optional<std::string> account_manager =
+  absl::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
 
   int string_id = IDS_MANAGED_WITH_HYPERLINK;
@@ -114,7 +114,7 @@ std::u16string GetDeviceManagedUiWebUILabel() {
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   replacements.push_back(ui::GetChromeOSDeviceName());
 
-  const base::Optional<std::string> device_manager = GetDeviceManagerIdentity();
+  const absl::optional<std::string> device_manager = GetDeviceManagerIdentity();
   if (device_manager && !device_manager->empty()) {
     string_id = IDS_DEVICE_MANAGED_BY_WITH_HYPERLINK;
     replacements.push_back(base::UTF8ToUTF16(*device_manager));
@@ -124,9 +124,9 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 }
 #endif
 
-base::Optional<std::string> GetDeviceManagerIdentity() {
+absl::optional<std::string> GetDeviceManagerIdentity() {
   if (!policy::PlatformManagementService::GetInstance().IsManaged())
-    return base::nullopt;
+    return absl::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
@@ -140,12 +140,12 @@ base::Optional<std::string> GetDeviceManagerIdentity() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-base::Optional<std::string> GetAccountManagerIdentity(Profile* profile) {
+absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   // TODO(crbug.com/1188594): Replace the check with
   // !policy::BrowserManagementService(profile).IsManaged() once this bug is
   // fixed (it still needs a lot of test fixture changes).
   if (!profile->GetProfilePolicyConnector()->IsManaged())
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string managed_by =
       GetManagedBy(GetUserCloudPolicyManager(profile));

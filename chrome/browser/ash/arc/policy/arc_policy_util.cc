@@ -44,7 +44,7 @@ bool IsArcDisabledForEnterprise() {
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
     const std::string& arc_policy) {
-  base::Optional<base::Value> dict = base::JSONReader::Read(
+  absl::optional<base::Value> dict = base::JSONReader::Read(
       arc_policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!dict.has_value() || !dict.value().is_dict())
     return {};

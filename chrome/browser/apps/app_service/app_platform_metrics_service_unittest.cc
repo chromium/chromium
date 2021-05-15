@@ -227,7 +227,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     DictionaryPrefUpdate update(GetPrefService(), kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
-    base::Optional<base::TimeDelta> unreported_duration =
+    absl::optional<base::TimeDelta> unreported_duration =
         util::ValueToTimeDelta(update->FindPath(key));
     if (time_delta.is_zero()) {
       EXPECT_FALSE(unreported_duration.has_value());
@@ -278,7 +278,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     DictionaryPrefUpdate update(GetPrefService(), kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
-    base::Optional<int> activated_count = update->FindIntPath(key);
+    absl::optional<int> activated_count = update->FindIntPath(key);
     if (count == 0) {
       EXPECT_FALSE(activated_count.has_value());
       return;

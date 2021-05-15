@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -17,6 +16,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 
@@ -108,10 +108,10 @@ class AppBrowserController : public TabStripModelObserver,
   virtual gfx::ImageSkia GetWindowIcon() const = 0;
 
   // Returns the color of the title bar.
-  virtual base::Optional<SkColor> GetThemeColor() const;
+  virtual absl::optional<SkColor> GetThemeColor() const;
 
   // Returns the background color of the page.
-  virtual base::Optional<SkColor> GetBackgroundColor() const;
+  virtual absl::optional<SkColor> GetBackgroundColor() const;
 
   // Returns the title to be displayed in the window title bar.
   virtual std::u16string GetTitle() const;
@@ -157,7 +157,7 @@ class AppBrowserController : public TabStripModelObserver,
   bool is_for_system_web_app() const { return system_app_type_.has_value(); }
 
   // Returns the SystemAppType for this controller.
-  const base::Optional<SystemAppType>& system_app_type() const {
+  const absl::optional<SystemAppType>& system_app_type() const {
     return system_app_type_;
   }
 
@@ -196,7 +196,7 @@ class AppBrowserController : public TabStripModelObserver,
   CustomThemeSupplier* GetThemeSupplier() const override;
 
   void UpdateDraggableRegion(const SkRegion& region);
-  const base::Optional<SkRegion>& draggable_region() const {
+  const absl::optional<SkRegion>& draggable_region() const {
     return draggable_region_;
   }
 
@@ -204,7 +204,7 @@ class AppBrowserController : public TabStripModelObserver,
 
  protected:
   explicit AppBrowserController(Browser* browser,
-                                base::Optional<web_app::AppId> app_id);
+                                absl::optional<web_app::AppId> app_id);
 
   // Called once the app browser controller has determined its initial url.
   virtual void OnReceivedInitialURL();
@@ -222,20 +222,20 @@ class AppBrowserController : public TabStripModelObserver,
 
   void UpdateThemePack();
 
-  const base::Optional<AppId> app_id_;
+  const absl::optional<AppId> app_id_;
   Browser* const browser_;
   GURL initial_url_;
 
   scoped_refptr<BrowserThemePack> theme_pack_;
   std::unique_ptr<ui::ThemeProvider> theme_provider_;
-  base::Optional<SkColor> last_theme_color_;
-  base::Optional<SkColor> last_background_color_;
+  absl::optional<SkColor> last_theme_color_;
+  absl::optional<SkColor> last_background_color_;
 
-  base::Optional<SystemAppType> system_app_type_;
+  absl::optional<SystemAppType> system_app_type_;
 
   const bool has_tab_strip_;
 
-  base::Optional<SkRegion> draggable_region_ = base::nullopt;
+  absl::optional<SkRegion> draggable_region_ = absl::nullopt;
 
   base::OnceClosure on_draggable_region_set_for_testing_;
 };

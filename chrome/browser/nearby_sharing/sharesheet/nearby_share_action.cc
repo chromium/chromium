@@ -50,7 +50,7 @@ std::vector<base::FilePath> ResolveFileUrls(
 
 std::string GetFirstFilenameFromFileUrls(
     Profile* profile,
-    base::Optional<std::vector<GURL>> file_urls) {
+    absl::optional<std::vector<GURL>> file_urls) {
   if (!file_urls) {
     return std::string();
   }

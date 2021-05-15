@@ -204,7 +204,7 @@ const char kIsDriveMounted[] = "isDriveMounted";
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
 base::Value GetSettingsDictionary(const std::string& json_str) {
-  base::Optional<base::Value> settings = base::JSONReader::Read(json_str);
+  absl::optional<base::Value> settings = base::JSONReader::Read(json_str);
   if (!settings || !settings->is_dict()) {
     NOTREACHED() << "Print job settings must be a dictionary.";
     return base::Value();
@@ -289,7 +289,7 @@ base::Value PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
     policies.SetKey(kCssBackground, std::move(background_graphics_policy));
 
   base::Value paper_size_policy(base::Value::Type::DICTIONARY);
-  const base::Optional<gfx::Size>& default_paper_size = ptr->paper_size_default;
+  const absl::optional<gfx::Size>& default_paper_size = ptr->paper_size_default;
   if (default_paper_size.has_value()) {
     base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
     default_paper_size_value.SetIntKey(kPaperSizeWidth,
@@ -342,7 +342,7 @@ base::Value GetPolicies(const PrefService& prefs) {
     policies.SetKey(kCssBackground, std::move(background_graphics_policy));
 
   base::Value paper_size_policy(base::Value::Type::DICTIONARY);
-  base::Optional<gfx::Size> default_paper_size = ParsePaperSizeDefault(prefs);
+  absl::optional<gfx::Size> default_paper_size = ParsePaperSizeDefault(prefs);
   if (default_paper_size.has_value()) {
     base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
     default_paper_size_value.SetIntKey(kPaperSizeWidth,
@@ -627,7 +627,7 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
 
   // Retrieve the page title and url and send it to the renderer process if
   // headers and footers are to be displayed.
-  base::Optional<bool> display_header_footer_opt =
+  absl::optional<bool> display_header_footer_opt =
       settings.FindBoolKey(kSettingHeaderFooterEnabled);
   DCHECK(display_header_footer_opt);
   if (display_header_footer_opt.value_or(false)) {

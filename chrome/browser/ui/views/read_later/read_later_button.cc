@@ -242,7 +242,7 @@ void ReadLaterButton::UpdateColors() {
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
           kReadLaterIcon, highlight_color_animation_->GetIconColor()));
-  base::Optional<SkColor> background_color =
+  absl::optional<SkColor> background_color =
       highlight_color_animation_->GetBackgroundColor();
   if (background_color) {
     SetBackground(views::CreateBackgroundFromPainter(
@@ -299,10 +299,10 @@ SkColor ReadLaterButton::HighlightColorAnimation::GetTextColor() const {
   return FadeWithAnimation(highlight_color_, original_text_color);
 }
 
-base::Optional<SkColor>
+absl::optional<SkColor>
 ReadLaterButton::HighlightColorAnimation::GetBackgroundColor() const {
   if (!highlight_color_animation_.is_animating())
-    return base::nullopt;
+    return absl::nullopt;
   SkColor original_bg_color = SkColorSetA(
       ToolbarButton::GetDefaultBackgroundColor(parent_->GetThemeProvider()),
       kBackgroundBaseLayerAlpha);

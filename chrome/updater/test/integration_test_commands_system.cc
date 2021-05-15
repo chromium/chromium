@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -25,6 +24,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -41,7 +41,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void PrintLog() const override { RunCommand("print_log"); }
 
   void CopyLog() const override {
-    const base::Optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
+    const absl::optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
     ASSERT_TRUE(path);
     if (path)
       updater::test::CopyLog(*path);

@@ -257,7 +257,7 @@ void StarterAndroid::Start(
 void StarterAndroid::StartRegularScript(
     GURL url,
     std::unique_ptr<TriggerContext> trigger_context,
-    const base::Optional<TriggerScriptProto>& trigger_script) {
+    const absl::optional<TriggerScriptProto>& trigger_script) {
   ClientAndroid::CreateForWebContents(web_contents_);
   auto* client_android = ClientAndroid::FromWebContents(web_contents_);
   DCHECK(client_android);

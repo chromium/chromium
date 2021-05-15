@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/account_manager_facade_factory.h"
@@ -49,6 +48,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -110,7 +110,7 @@ mojom::AccountInfoPtr CreateAccountInfo(bool is_enforced,
     account_info->enrollment_token = auth_info;
   } else {
     if (!is_enforced)
-      account_info->auth_code = base::nullopt;
+      account_info->auth_code = absl::nullopt;
     else
       account_info->auth_code = auth_info;
   }
@@ -143,7 +143,7 @@ bool IsPrimaryOrDeviceLocalAccount(
   if (user->IsDeviceLocalAccount())
     return true;
 
-  const base::Optional<AccountInfo> account_info =
+  const absl::optional<AccountInfo> account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               account_name);
@@ -166,7 +166,7 @@ void TriggerAccountManagerMigrationsIfRequired(Profile* profile) {
     // since there are no accounts to be migrated in that case.
     return;
   }
-  const base::Optional<ash::AccountMigrationRunner::MigrationResult>
+  const absl::optional<ash::AccountMigrationRunner::MigrationResult>
       last_migration_run_result = migrator->GetLastMigrationRunResult();
 
   if (!last_migration_run_result)
@@ -665,7 +665,7 @@ void ArcAuthService::FetchSecondaryAccountInfo(
     const std::string& account_name,
     RequestAccountInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               account_name);
@@ -722,7 +722,7 @@ void ArcAuthService::OnSecondaryAccountAuthCodeFetched(
     return;
   }
 
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
               account_name);
@@ -779,7 +779,7 @@ std::unique_ptr<ArcBackgroundAuthCodeFetcher>
 ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
     const CoreAccountId& account_id,
     bool initial_signin) {
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);

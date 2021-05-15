@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -46,6 +45,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
@@ -392,9 +392,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
-            base::Optional<AppId> id =
+            absl::optional<AppId> id =
                 ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                     .LookupAppId(kWebAppUrl);
 
@@ -437,9 +437,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
 
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](base::Optional<AppId> app_id,
+                    [&](absl::optional<AppId> app_id,
                         ExternallyManagedAppManager::InstallResult result) {
-                      base::Optional<AppId> id =
+                      absl::optional<AppId> id =
                           ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                               .LookupAppId(kWebAppUrl);
 
@@ -470,7 +470,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoDesktopShortcut) {
 
   task->Install(
       web_contents(),
-      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
                                      ExternallyManagedAppManager::InstallResult
                                          result) {
         EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
@@ -505,7 +505,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
@@ -540,7 +540,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
   base::RunLoop run_loop;
   task->Install(
       web_contents(),
-      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
                                      ExternallyManagedAppManager::InstallResult
                                          result) {
         EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
@@ -573,7 +573,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](base::Optional<AppId> app_id,
+                    [&](absl::optional<AppId> app_id,
                         ExternallyManagedAppManager::InstallResult result) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
@@ -598,7 +598,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](base::Optional<AppId> app_id,
+                    [&](absl::optional<AppId> app_id,
                         ExternallyManagedAppManager::InstallResult result) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
@@ -623,7 +623,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](base::Optional<AppId> app_id,
+                    [&](absl::optional<AppId> app_id,
                         ExternallyManagedAppManager::InstallResult result) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
@@ -650,7 +650,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](base::Optional<AppId> app_id,
+                    [&](absl::optional<AppId> app_id,
                         ExternallyManagedAppManager::InstallResult result) {
                       EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
                                 result.code);
@@ -678,7 +678,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
@@ -722,7 +722,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
@@ -766,7 +766,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> app_id,
+            [&](absl::optional<AppId> app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
               placeholder_app_id = app_id.value();
@@ -787,7 +787,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_EQ(placeholder_app_id, app_id.value());
@@ -818,7 +818,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> app_id,
+            [&](absl::optional<AppId> app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
               placeholder_app_id = app_id.value();
@@ -841,7 +841,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
@@ -875,7 +875,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> app_id,
+            [&](absl::optional<AppId> app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
               placeholder_app_id = app_id.value();
@@ -900,7 +900,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId> app_id,
+          [&](absl::optional<AppId> app_id,
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kFailedPlaceholderUninstall,
                       result.code);
@@ -938,7 +938,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> installed_app_id,
+            [&](absl::optional<AppId> installed_app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               app_id = *installed_app_id;
 
@@ -967,7 +967,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> installed_app_id,
+            [&](absl::optional<AppId> installed_app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
               EXPECT_EQ(app_id, *installed_app_id);
@@ -1006,7 +1006,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
     install_task.Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](base::Optional<AppId> app_id,
+            [&](absl::optional<AppId> app_id,
                 ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(result.code, result_pair.install_result);
               run_loop.Quit();
@@ -1030,7 +1030,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   install_task.Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](base::Optional<AppId>,
+          [&](absl::optional<AppId>,
               ExternallyManagedAppManager::InstallResult) { NOTREACHED(); }));
 
   base::RunLoop().RunUntilIdle();
@@ -1059,10 +1059,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
   base::RunLoop run_loop;
   task.Install(
       /*web_contents=*/nullptr,
-      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
                                      ExternallyManagedAppManager::InstallResult
                                          result) {
-        base::Optional<AppId> id =
+        absl::optional<AppId> id =
             ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                 .LookupAppId(kWebAppUrl);
         EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
@@ -1112,9 +1112,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
 
   task.Install(web_contents(),
                base::BindLambdaForTesting(
-                   [&](base::Optional<AppId> app_id,
+                   [&](absl::optional<AppId> app_id,
                        ExternallyManagedAppManager::InstallResult result) {
-                     base::Optional<AppId> id =
+                     absl::optional<AppId> id =
                          ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                              .LookupAppId(kWebAppUrl);
 
@@ -1147,7 +1147,7 @@ TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
 
   task->Install(
       web_contents(),
-      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
                                      ExternallyManagedAppManager::InstallResult
                                          result) {
         EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
@@ -1186,7 +1186,7 @@ TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
 
   task->Install(
       web_contents(),
-      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
                                      ExternallyManagedAppManager::InstallResult
                                          result) {
         EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);

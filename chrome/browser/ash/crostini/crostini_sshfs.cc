@@ -95,7 +95,7 @@ void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
   }
 
   auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  base::Optional<ContainerInfo> info = manager->GetContainerInfo(container_id);
+  absl::optional<ContainerInfo> info = manager->GetContainerInfo(container_id);
   if (!info) {
     LOG(ERROR) << "Unable to mount files for a container that's not running";
     Finish(false);
@@ -120,7 +120,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   }
 
   auto* manager = CrostiniManagerFactory::GetForProfile(profile_);
-  base::Optional<ContainerInfo> info =
+  absl::optional<ContainerInfo> info =
       manager->GetContainerInfo(in_progress_mount_->container_id);
   if (!info) {
     LOG(ERROR) << "Got ssh keys for a container that's not running. Aborting.";

@@ -142,7 +142,7 @@ class KerberosAddAccountRunner {
   KerberosAddAccountRunner(KerberosCredentialsManager* manager,
                            std::string normalized_principal,
                            bool is_managed,
-                           const base::Optional<std::string>& password,
+                           const absl::optional<std::string>& password,
                            bool remember_password,
                            const std::string& krb5_conf,
                            bool allow_existing,
@@ -274,7 +274,7 @@ class KerberosAddAccountRunner {
   KerberosCredentialsManager* const manager_ = nullptr;
   std::string normalized_principal_;
   bool is_managed_ = false;
-  base::Optional<std::string> password_;
+  absl::optional<std::string> password_;
   bool remember_password_ = false;
   std::string krb5_conf_;
   bool allow_existing_ = false;
@@ -433,7 +433,7 @@ void KerberosCredentialsManager::RemoveObserver(Observer* observer) {
 void KerberosCredentialsManager::AddAccountAndAuthenticate(
     std::string principal_name,
     bool is_managed,
-    const base::Optional<std::string>& password,
+    const absl::optional<std::string>& password,
     bool remember_password,
     const std::string& krb5_conf,
     bool allow_existing,
@@ -867,7 +867,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
 
     // Get the password, default to not set.
     const std::string* password_str = account.FindStringKey(kPassword);
-    base::Optional<std::string> password;
+    absl::optional<std::string> password;
     if (password_str)
       password = std::move(*password_str);
 

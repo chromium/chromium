@@ -222,7 +222,7 @@ void NearbyConnectionsManagerImpl::StopDiscovery() {
 void NearbyConnectionsManagerImpl::Connect(
     std::vector<uint8_t> endpoint_info,
     const std::string& endpoint_id,
-    base::Optional<std::vector<uint8_t>> bluetooth_mac_address,
+    absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
     DataUsage data_usage,
     NearbyConnectionCallback callback) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
@@ -397,7 +397,7 @@ void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
           PayloadTransferUpdate::New(payload_id, PayloadStatus::kCanceled,
                                      /*total_bytes=*/0,
                                      /*bytes_transferred=*/0),
-          /*upgraded_medium=*/base::nullopt);
+          /*upgraded_medium=*/absl::nullopt);
     }
   }
 
@@ -425,12 +425,12 @@ void NearbyConnectionsManagerImpl::ClearIncomingPayloads() {
   incoming_payloads_.clear();
 }
 
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
   if (it == connection_info_map_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second->raw_authentication_token;
 }
@@ -744,12 +744,12 @@ void NearbyConnectionsManagerImpl::Reset() {
   pending_outgoing_connections_.clear();
 }
 
-base::Optional<location::nearby::connections::mojom::Medium>
+absl::optional<location::nearby::connections::mojom::Medium>
 NearbyConnectionsManagerImpl::GetUpgradedMedium(
     const std::string& endpoint_id) const {
   const auto it = current_upgraded_mediums_.find(endpoint_id);
   if (it == current_upgraded_mediums_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second;
 }

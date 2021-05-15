@@ -75,7 +75,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
     return true;
   }
 
-  base::Optional<SkColor> theme_color_ = SK_ColorBLUE;
+  absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
   Browser* app_browser_ = nullptr;
   BrowserView* browser_view_ = nullptr;
   GlassBrowserFrameView* glass_frame_view_ = nullptr;
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, NoThemeColor) {
-  theme_color_ = base::nullopt;
+  theme_color_ = absl::nullopt;
   if (!InstallAndLaunchWebApp())
     return;
 

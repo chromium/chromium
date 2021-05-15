@@ -557,7 +557,7 @@ void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  base::Optional<int64_t> rounded_site_engagement_score =
+  absl::optional<int64_t> rounded_site_engagement_score =
       GetRoundedSiteEngagementScore();
   if (rounded_site_engagement_score) {
     builder.SetSiteEngagementScore(rounded_site_engagement_score.value());
@@ -798,7 +798,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     base::TimeTicks app_background_time) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  base::Optional<bool> third_party_cookie_blocking_enabled =
+  absl::optional<bool> third_party_cookie_blocking_enabled =
       GetThirdPartyCookieBlockingEnabled();
   if (third_party_cookie_blocking_enabled) {
     builder.SetThirdPartyCookieBlockingEnabledForSite(
@@ -807,7 +807,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
                           third_party_cookie_blocking_enabled.value());
   }
 
-  base::Optional<base::TimeDelta> foreground_duration =
+  absl::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
   if (foreground_duration) {
@@ -1243,10 +1243,10 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-base::Optional<int64_t>
+absl::optional<int64_t>
 UkmPageLoadMetricsObserver::GetRoundedSiteEngagementScore() const {
   if (!browser_context_)
-    return base::nullopt;
+    return absl::nullopt;
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   site_engagement::SiteEngagementService* engagement_service =
@@ -1266,15 +1266,15 @@ UkmPageLoadMetricsObserver::GetRoundedSiteEngagementScore() const {
   return rounded_document_engagement_score;
 }
 
-base::Optional<bool>
+absl::optional<bool>
 UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
   if (!browser_context_)
-    return base::nullopt;
+    return absl::nullopt;
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
   if (!cookie_settings->ShouldBlockThirdPartyCookies())
-    return base::nullopt;
+    return absl::nullopt;
 
   return !cookie_settings->IsThirdPartyAccessAllowed(GetDelegate().GetUrl(),
                                                      nullptr /* source */);

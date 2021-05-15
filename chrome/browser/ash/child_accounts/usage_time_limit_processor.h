@@ -14,10 +14,10 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/family_user_parental_control_metrics.h"
 #include "chromeos/settings/timezone_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -75,7 +75,7 @@ class TimeWindowLimit {
   bool operator==(const TimeWindowLimit&) const;
   bool operator!=(const TimeWindowLimit& rhs) const { return !(*this == rhs); }
 
-  std::unordered_map<Weekday, base::Optional<TimeWindowLimitEntry>> entries;
+  std::unordered_map<Weekday, absl::optional<TimeWindowLimitEntry>> entries;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TimeWindowLimit);
@@ -101,7 +101,7 @@ class TimeUsageLimit {
   bool operator==(const TimeUsageLimit&) const;
   bool operator!=(const TimeUsageLimit& rhs) const { return !(*this == rhs); }
 
-  std::unordered_map<Weekday, base::Optional<TimeUsageLimitEntry>> entries;
+  std::unordered_map<Weekday, absl::optional<TimeUsageLimitEntry>> entries;
   base::TimeDelta resets_at;
 
  private:
@@ -167,7 +167,7 @@ State GetState(const base::Value& time_limit,
                const base::Time& usage_timestamp,
                const base::Time& current_time,
                const icu::TimeZone* const time_zone,
-               const base::Optional<State>& previous_state);
+               const absl::optional<State>& previous_state);
 
 // Returns the expected time that the used time stored should be reset.
 // |time_limit| dictionary with UsageTimeLimit policy data.
@@ -183,7 +183,7 @@ base::Time GetExpectedResetTime(const base::Value& time_limit,
 // |local_override| dictionary with data of the last local override (authorized
 //                  by parent access code).
 // |used_time| time used in the current day.
-base::Optional<base::TimeDelta> GetRemainingTimeUsage(
+absl::optional<base::TimeDelta> GetRemainingTimeUsage(
     const base::Value& time_limit,
     const base::Value* local_override,
     const base::Time current_time,

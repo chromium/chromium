@@ -11,9 +11,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -57,7 +57,7 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
 
   // Whether the initialization is successful. No value if initialization is not
   // finished.
-  base::Optional<bool> init_success_;
+  absl::optional<bool> init_success_;
 
   // Cached calls.
   std::vector<base::OnceClosure> cached_closures_;

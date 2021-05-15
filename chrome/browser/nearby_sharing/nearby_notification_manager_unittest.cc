@@ -70,13 +70,13 @@ MATCHER_P(MatchesTarget, target, "") {
 }
 
 TextAttachment CreateTextAttachment(TextAttachment::Type type) {
-  return TextAttachment(type, kTextBody, /*title=*/base::nullopt,
-                        /*mime_type=*/base::nullopt);
+  return TextAttachment(type, kTextBody, /*title=*/absl::nullopt,
+                        /*mime_type=*/absl::nullopt);
 }
 
 TextAttachment CreateUrlAttachment() {
   return TextAttachment(TextAttachment::Type::kUrl, kTextUrl,
-                        /*title=*/base::nullopt, /*mime_type=*/base::nullopt);
+                        /*title=*/absl::nullopt, /*mime_type=*/absl::nullopt);
 }
 
 FileAttachment CreateFileAttachment(FileAttachment::Type type) {
@@ -525,8 +525,8 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
   for (FileAttachment::Type type : param.file_attachments)
     share_target.file_attachments.push_back(CreateFileAttachment(type));
 
-  for (base::Optional<std::pair<TransferMetadata::Status, int>> error :
-       std::vector<base::Optional<std::pair<TransferMetadata::Status, int>>>{
+  for (absl::optional<std::pair<TransferMetadata::Status, int>> error :
+       std::vector<absl::optional<std::pair<TransferMetadata::Status, int>>>{
            std::make_pair(TransferMetadata::Status::kNotEnoughSpace,
                           IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE),
            std::make_pair(TransferMetadata::Status::kTimedOut,
@@ -534,7 +534,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
            std::make_pair(TransferMetadata::Status::kUnsupportedAttachmentType,
                           IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE),
            std::make_pair(TransferMetadata::Status::kFailed, 0),
-           base::nullopt,
+           absl::nullopt,
        }) {
     if (error) {
       manager()->ShowFailure(
@@ -831,7 +831,7 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Cancel) {
               Cancel(MatchesTarget(share_target), testing::_));
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -910,7 +910,7 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Accept) {
               Accept(MatchesTarget(share_target), testing::_));
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   // Notification should still be present as it will soon be replaced.
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
@@ -940,7 +940,7 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Reject_Local) {
               Reject(MatchesTarget(share_target), testing::_));
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(), /*action_index=*/1,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -970,7 +970,7 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Reject_Remote) {
               Reject(MatchesTarget(share_target), testing::_));
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1009,8 +1009,8 @@ TEST_F(NearbyNotificationManagerTest, Onboarding_Click) {
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
-                                      /*reply=*/base::nullopt);
+                                      /*action_index=*/absl::nullopt,
+                                      /*reply=*/absl::nullopt);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1078,7 +1078,7 @@ TEST_F(NearbyNotificationManagerTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1125,7 +1125,7 @@ TEST_F(NearbyNotificationManagerTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/1,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1167,7 +1167,7 @@ TEST_F(NearbyNotificationManagerTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1202,7 +1202,7 @@ TEST_F(NearbyNotificationManagerTest, SuccessNotificationClicked_TextReceived) {
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
   EXPECT_EQ(kTextBody, GetClipboardText());
@@ -1238,7 +1238,7 @@ TEST_F(NearbyNotificationManagerTest, SuccessNotificationClicked_UrlReceived) {
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1274,7 +1274,7 @@ TEST_F(NearbyNotificationManagerTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1310,7 +1310,7 @@ TEST_F(NearbyNotificationManagerTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notification.id(),
                                       /*action_index=*/0,
-                                      /*reply=*/base::nullopt);
+                                      /*reply=*/absl::nullopt);
 
   run_loop.Run();
 
@@ -1402,8 +1402,8 @@ TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Text) {
   share_target.is_incoming = true;
 
   TextAttachment attachment(TextAttachment::Type::kText, "Sample Text",
-                            /*title=*/base::nullopt,
-                            /*mime_type=*/base::nullopt);
+                            /*title=*/absl::nullopt,
+                            /*mime_type=*/absl::nullopt);
   share_target.text_attachments.push_back(std::move(attachment));
 
   manager()->ShowSuccess(share_target);

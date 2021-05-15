@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/common/webplugininfo.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
@@ -148,7 +148,7 @@ std::unique_ptr<base::DictionaryValue> PluginFinder::LoadBuiltInPluginList() {
   base::StringPiece json_resource(
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           IDR_PLUGIN_DB_JSON));
-  base::Optional<base::Value> value = base::JSONReader::Read(json_resource);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_resource);
   if (!value)
     return nullptr;
 

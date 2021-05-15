@@ -38,7 +38,7 @@ struct DialAppInfoResult {
   DialAppInfoResult(std::unique_ptr<ParsedDialAppInfo> app_info,
                     DialAppInfoResultCode result_code,
                     const std::string& error_message = "",
-                    base::Optional<int> http_error_code = base::nullopt);
+                    absl::optional<int> http_error_code = absl::nullopt);
   DialAppInfoResult(DialAppInfoResult&& other);
   ~DialAppInfoResult();
 
@@ -50,7 +50,7 @@ struct DialAppInfoResult {
   // Optionally set to provide additional information for an error.
   std::string error_message;
   // Set when |result_code| is |kHttpError|.
-  base::Optional<int> http_error_code;
+  absl::optional<int> http_error_code;
 };
 
 // This class provides an API to fetch DIAL app info XML from an app URL and
@@ -105,7 +105,7 @@ class DialAppDiscoveryService {
 
     // Invoked when HTTP GET request fails.
     void OnDialAppInfoFetchError(const std::string& error_message,
-                                 base::Optional<int> http_response_code);
+                                 absl::optional<int> http_response_code);
 
     // Invoked when SafeDialAppInfoParser finishes parsing app info XML.
     // |app_info|: Parsed app info from utility process, or nullptr if parsing

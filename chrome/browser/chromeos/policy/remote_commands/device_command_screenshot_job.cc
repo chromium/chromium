@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -22,6 +21,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_request_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -130,7 +130,7 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
 
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root)
     return false;
   base::DictionaryValue* payload = nullptr;

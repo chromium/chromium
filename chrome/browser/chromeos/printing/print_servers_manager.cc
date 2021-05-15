@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/printing/cups_printer_status_creator.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
@@ -42,6 +41,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/printer_query_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -166,7 +166,7 @@ class PrintServersManagerImpl : public PrintServersManager {
 
   ServerPrintersFetchingMode fetching_mode_;
 
-  base::Optional<std::map<std::string, PrintServer>> print_servers_;
+  absl::optional<std::map<std::string, PrintServer>> print_servers_;
 
   PrintServersConfig config_;
 

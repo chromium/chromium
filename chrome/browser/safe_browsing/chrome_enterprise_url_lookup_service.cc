@@ -84,7 +84,7 @@ void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
   NOTREACHED() << "URL lookup with token is disabled for enterprise users.";
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
   DCHECK(connectors_service_);
   return connectors_service_->GetDMTokenForRealTimeUrlCheck();

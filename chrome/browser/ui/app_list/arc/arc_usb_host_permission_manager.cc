@@ -61,8 +61,8 @@ bool GetUint16FromDict(const base::Value& dict,
 ArcUsbHostPermissionManager::UsbPermissionRequest::UsbPermissionRequest(
     const std::string& package_name,
     bool is_scan_request,
-    base::Optional<UsbDeviceEntry> usb_device_entry,
-    base::Optional<ArcUsbHostUiDelegate::RequestPermissionCallback> callback)
+    absl::optional<UsbDeviceEntry> usb_device_entry,
+    absl::optional<ArcUsbHostUiDelegate::RequestPermissionCallback> callback)
     : package_name_(package_name),
       is_scan_request_(is_scan_request),
       usb_device_entry_(std::move(usb_device_entry)),
@@ -226,7 +226,7 @@ void ArcUsbHostPermissionManager::RequestUsbScanDeviceListPermission(
   pending_requests_.emplace_back(
       ArcUsbHostPermissionManager::UsbPermissionRequest(
           package_name, true /*is_scan_request*/,
-          base::nullopt /*usb_device_entry*/, base::nullopt /*callback*/));
+          absl::nullopt /*usb_device_entry*/, absl::nullopt /*callback*/));
   MaybeProcessNextPermissionRequest();
 }
 

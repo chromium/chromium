@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
@@ -35,6 +34,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -54,7 +54,7 @@ MATCHER_P(CrxComponentWithName, name, "") {
 
 // Used as a callback to CrOSComponentManager::Load callback - it records the
 // callback params to |result_out| and |mount_path_out|.
-void RecordLoadResult(base::Optional<CrOSComponentManager::Error>* result_out,
+void RecordLoadResult(absl::optional<CrOSComponentManager::Error>* result_out,
                       base::FilePath* mount_path_out,
                       CrOSComponentManager::Error reported_result,
                       const base::FilePath& reported_mount_path) {
@@ -228,7 +228,7 @@ class CrOSComponentInstallerTest : public testing::Test {
   // Creates a fake "user" installed component.
   // On success, it returns the path at which the component was created, nullopt
   // otherwise.
-  base::Optional<base::FilePath> CreateInstalledComponent(
+  absl::optional<base::FilePath> CreateInstalledComponent(
       const std::string& name,
       const std::string& version,
       const std::string& min_env_version) {
@@ -239,7 +239,7 @@ class CrOSComponentInstallerTest : public testing::Test {
   // Creates a fake component at a pre-installed component path.
   // On success, it returns the path at which the component was created, nullopt
   // otherwise.
-  base::Optional<base::FilePath> CreatePreinstalledComponent(
+  absl::optional<base::FilePath> CreatePreinstalledComponent(
       const std::string& name,
       const std::string& version,
       const std::string& min_env_version) {
@@ -252,7 +252,7 @@ class CrOSComponentInstallerTest : public testing::Test {
   // be installed as a user-installed component by the test OnDemandUpdater.
   // On success, it returns the path at which the component was created, nullopt
   // otherwise.
-  base::Optional<base::FilePath> CreateUnpackedComponent(
+  absl::optional<base::FilePath> CreateUnpackedComponent(
       const std::string& name,
       const std::string& version,
       const std::string& min_env_version) {
@@ -303,7 +303,7 @@ class CrOSComponentInstallerTest : public testing::Test {
   void VerifyComponentLoaded(
       scoped_refptr<CrOSComponentManager> cros_component_manager,
       const std::string& component_name,
-      base::Optional<CrOSComponentManager::Error> load_result,
+      absl::optional<CrOSComponentManager::Error> load_result,
       const base::FilePath& component_install_path) {
     ASSERT_TRUE(load_result.has_value());
     ASSERT_EQ(CrOSComponentManager::Error::NONE, load_result.value());
@@ -318,13 +318,13 @@ class CrOSComponentInstallerTest : public testing::Test {
  private:
   // Creates a fake component at the specified path. Returns the target path on
   // success, nullopt otherwise.
-  base::Optional<base::FilePath> CreateComponentAtPath(
+  absl::optional<base::FilePath> CreateComponentAtPath(
       const base::FilePath& path,
       const std::string& name,
       const std::string& version,
       const std::string& min_env_version) {
     if (!base::CreateDirectory(path))
-      return base::nullopt;
+      return absl::nullopt;
 
     const std::string manifest_template = R"({
         "name": "%s",
@@ -335,9 +335,9 @@ class CrOSComponentInstallerTest : public testing::Test {
         base::StringPrintf(manifest_template.c_str(), name.c_str(),
                            version.c_str(), min_env_version.c_str());
     if (!base::WriteFile(path.AppendASCII("manifest.json"), manifest))
-      return base::nullopt;
+      return absl::nullopt;
 
-    return base::make_optional(path);
+    return absl::make_optional(path);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -464,7 +464,7 @@ TEST_F(CrOSComponentInstallerTest, RegisterComponent) {
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadPreinstalledComponent_Skip_Mount) {
-  base::Optional<base::FilePath> install_path = CreatePreinstalledComponent(
+  absl::optional<base::FilePath> install_path = CreatePreinstalledComponent(
       kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -478,7 +478,7 @@ TEST_F(CrOSComponentInstallerTest, LoadPreinstalledComponent_Skip_Mount) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -495,12 +495,12 @@ TEST_F(CrOSComponentInstallerTest, LoadPreinstalledComponent_Skip_Mount) {
 
 TEST_F(CrOSComponentInstallerTest,
        LoadInstalledComponentWhenOlderPreinstalledVersionExists_Skip_Mount) {
-  base::Optional<base::FilePath> preinstalled_path =
+  absl::optional<base::FilePath> preinstalled_path =
       CreatePreinstalledComponent(kTestComponentName, "1.0",
                                   kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(preinstalled_path.has_value());
 
-  base::Optional<base::FilePath> install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
       kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -514,7 +514,7 @@ TEST_F(CrOSComponentInstallerTest,
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -530,7 +530,7 @@ TEST_F(CrOSComponentInstallerTest,
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadInstalledComponent) {
-  base::Optional<base::FilePath> install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
       kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -544,7 +544,7 @@ TEST_F(CrOSComponentInstallerTest, LoadInstalledComponent) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -570,7 +570,7 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_Skip_Mount) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -591,10 +591,10 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_Skip_Mount) {
 }
 
 TEST_F(CrOSComponentInstallerTest, LoadObsoleteInstalledComponent_Skip_Mount) {
-  base::Optional<base::FilePath> old_install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> old_install_path = CreateInstalledComponent(
       kTestComponentName, "0.5", kTestComponentInvalidMinEnvVersion);
   ASSERT_TRUE(old_install_path.has_value());
-  base::Optional<base::FilePath> old_preinstall_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> old_preinstall_path = CreateInstalledComponent(
       kTestComponentName, "0.5", kTestComponentInvalidMinEnvVersion);
   ASSERT_TRUE(old_preinstall_path.has_value());
 
@@ -608,7 +608,7 @@ TEST_F(CrOSComponentInstallerTest, LoadObsoleteInstalledComponent_Skip_Mount) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -639,7 +639,7 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_DontForce_Mount) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -647,7 +647,7 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_DontForce_Mount) {
       base::BindOnce(&RecordLoadResult, &load_result, &mount_path));
   RunUntilIdle();
 
-  base::Optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
+  absl::optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
       kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(unpacked_path.has_value());
   ASSERT_TRUE(updater.FinishForegroundUpdate(
@@ -672,14 +672,14 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_ForceTwice) {
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result1;
+  absl::optional<CrOSComponentManager::Error> load_result1;
   base::FilePath mount_path1;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
       CrOSComponentManager::UpdatePolicy::kForce,
       base::BindOnce(&RecordLoadResult, &load_result1, &mount_path1));
 
-  base::Optional<CrOSComponentManager::Error> load_result2;
+  absl::optional<CrOSComponentManager::Error> load_result2;
   base::FilePath mount_path2;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -687,7 +687,7 @@ TEST_F(CrOSComponentInstallerTest, LoadNonInstalledComponent_ForceTwice) {
       base::BindOnce(&RecordLoadResult, &load_result2, &mount_path2));
   RunUntilIdle();
 
-  base::Optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
+  absl::optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
       kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(unpacked_path.has_value());
   ASSERT_TRUE(updater.FinishForegroundUpdate(
@@ -732,7 +732,7 @@ TEST_F(CrOSComponentInstallerTest,
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -759,10 +759,10 @@ TEST_F(CrOSComponentInstallerTest,
 
 TEST_F(CrOSComponentInstallerTest,
        LoadWithObsoleteInstalledComponent_DontForce_Mount) {
-  base::Optional<base::FilePath> old_install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> old_install_path = CreateInstalledComponent(
       kTestComponentName, "0.5", kTestComponentInvalidMinEnvVersion);
   ASSERT_TRUE(old_install_path.has_value());
-  base::Optional<base::FilePath> old_preinstall_path =
+  absl::optional<base::FilePath> old_preinstall_path =
       CreatePreinstalledComponent(kTestComponentName, "0.5",
                                   kTestComponentInvalidMinEnvVersion);
   ASSERT_TRUE(old_preinstall_path.has_value());
@@ -777,7 +777,7 @@ TEST_F(CrOSComponentInstallerTest,
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr,
                                                    update_service.get());
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -785,7 +785,7 @@ TEST_F(CrOSComponentInstallerTest,
       base::BindOnce(&RecordLoadResult, &load_result, &mount_path));
   RunUntilIdle();
 
-  base::Optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
+  absl::optional<base::FilePath> unpacked_path = CreateUnpackedComponent(
       kTestComponentName, "2.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(unpacked_path.has_value());
   ASSERT_TRUE(updater.FinishForegroundUpdate(
@@ -800,7 +800,7 @@ TEST_F(CrOSComponentInstallerTest,
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterAllRegistersInstalledComponent) {
-  base::Optional<base::FilePath> install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
       kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -824,7 +824,7 @@ TEST_F(CrOSComponentInstallerTest, RegisterAllRegistersInstalledComponent) {
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterAllIgnoresPrenstalledComponent) {
-  base::Optional<base::FilePath> preinstall_path = CreatePreinstalledComponent(
+  absl::optional<base::FilePath> preinstall_path = CreatePreinstalledComponent(
       kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(preinstall_path.has_value());
 
@@ -844,7 +844,7 @@ TEST_F(CrOSComponentInstallerTest, RegisterAllIgnoresPrenstalledComponent) {
 
 TEST_F(CrOSComponentInstallerTest,
        LoadInstalledComponentAfterRegisterInstalled) {
-  base::Optional<base::FilePath> install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
       kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -864,7 +864,7 @@ TEST_F(CrOSComponentInstallerTest,
   EXPECT_EQ(install_path.value(),
             cros_component_manager->GetCompatiblePath(kTestComponentName));
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,
@@ -881,7 +881,7 @@ TEST_F(CrOSComponentInstallerTest,
 
 TEST_F(CrOSComponentInstallerTest,
        LoadInstalledComponentConcurrentWithRegisterInstalled) {
-  base::Optional<base::FilePath> install_path = CreateInstalledComponent(
+  absl::optional<base::FilePath> install_path = CreateInstalledComponent(
       kTestComponentName, "1.0", kTestComponentValidMinEnvVersion);
   ASSERT_TRUE(install_path.has_value());
 
@@ -905,7 +905,7 @@ TEST_F(CrOSComponentInstallerTest,
   cros_component_manager->RegisterInstalled();
   EXPECT_FALSE(updater.HasPendingUpdate(kTestComponentName));
 
-  base::Optional<CrOSComponentManager::Error> load_result;
+  absl::optional<CrOSComponentManager::Error> load_result;
   base::FilePath mount_path;
   cros_component_manager->Load(
       kTestComponentName, CrOSComponentManager::MountPolicy::kMount,

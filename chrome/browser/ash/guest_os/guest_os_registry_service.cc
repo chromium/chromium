@@ -354,7 +354,7 @@ std::string GuestOsRegistryService::Registration::DesktopFileId() const {
 
 GuestOsRegistryService::VmType GuestOsRegistryService::Registration::VmType()
     const {
-  base::Optional<int> vm_type =
+  absl::optional<int> vm_type =
       pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey);
   // The VmType field is new, existing Apps that do not include it must be
   // TERMINA Apps, as Plugin VM apps are not yet in production.
@@ -622,7 +622,7 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
   return apps;
 }
 
-base::Optional<GuestOsRegistryService::Registration>
+absl::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
   const base::DictionaryValue* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
@@ -635,8 +635,8 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
   const base::Value* pref_registration =
       apps->FindKeyOfType(app_id, base::Value::Type::DICTIONARY);
   if (!pref_registration)
-    return base::nullopt;
-  return base::make_optional<Registration>(app_id, pref_registration->Clone());
+    return absl::nullopt;
+  return absl::make_optional<Registration>(app_id, pref_registration->Clone());
 }
 
 void GuestOsRegistryService::RecordStartupMetrics() {
@@ -660,12 +660,12 @@ void GuestOsRegistryService::RecordStartupMetrics() {
     if (item.first == crostini::kCrostiniTerminalSystemAppId)
       continue;
 
-    base::Optional<bool> no_display =
+    absl::optional<bool> no_display =
         item.second.FindBoolKey(guest_os::prefs::kAppNoDisplayKey);
     if (no_display && no_display.value())
       continue;
 
-    base::Optional<int> vm_type =
+    absl::optional<int> vm_type =
         item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey);
     if (!vm_type ||
         vm_type ==
@@ -1060,7 +1060,7 @@ void GuestOsRegistryService::RequestContainerAppIcon(
     const std::string& app_id,
     ui::ScaleFactor scale_factor) {
   // Ignore requests for app_id that isn't registered.
-  base::Optional<GuestOsRegistryService::Registration> registration =
+  absl::optional<GuestOsRegistryService::Registration> registration =
       GetRegistration(app_id);
   DCHECK(registration);
   if (!registration) {

@@ -100,7 +100,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
   mojo::Remote<media::mojom::AudioInputStreamClient> client_;
   mojo::Receiver<media::mojom::AudioInputStream> stream_receiver_;
   std::string device_id_;
-  base::Optional<media::AudioParameters> params_;
+  absl::optional<media::AudioParameters> params_;
 
  private:
   void OnTimer() {

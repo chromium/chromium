@@ -225,7 +225,7 @@ WebTimeActivityProvider::CalculateChromeAppActivityState() const {
       continue;
     }
 
-    const base::Optional<WebTimeNavigationObserver::NavigationInfo>& info =
+    const absl::optional<WebTimeNavigationObserver::NavigationInfo>& info =
         observer->last_navigation_info();
 
     // The first navigation has not occurred yet.

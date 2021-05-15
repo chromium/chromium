@@ -64,7 +64,7 @@ class CommerceHintAgent
   void WillSendRequest(const blink::WebURLRequest& request) override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFinishLoad() override;
   void WillSubmitForm(const blink::WebFormElement& form) override;

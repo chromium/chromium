@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
@@ -134,7 +134,7 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
     // Handles web app link capturing that has not yet integrated with the
     // intent handling system.
     // TODO(crbug.com/1163398): Remove this code path.
-    base::Optional<ThrottleCheckResult> web_app_capture =
+    absl::optional<ThrottleCheckResult> web_app_capture =
         CaptureWebAppScopeNavigations(web_contents, handle);
     if (web_app_capture.has_value())
       return web_app_capture.value();
@@ -157,25 +157,25 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   return content::NavigationThrottle::PROCEED;
 }
 
-base::Optional<ThrottleCheckResult>
+absl::optional<ThrottleCheckResult>
 AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     content::WebContents* web_contents,
     content::NavigationHandle* handle) const {
   if (!navigate_from_link())
-    return base::nullopt;
+    return absl::nullopt;
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   web_app::WebAppProviderBase* provider =
       web_app::WebAppProviderBase::GetProviderBase(profile);
   if (!provider)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       provider->registrar().FindInstalledAppWithUrlInScope(
           handle->GetURL(), /*window_only=*/true);
   if (!app_id)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Experimental tabbed web app link capturing behaves like new-client.
   // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
@@ -192,14 +192,14 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   // yet integrated with app service's intent handling system.
   if ((!app_in_tabbed_mode || !tabbed_link_capturing) &&
       web_apps_integrated_into_intent_handling) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto* tab_helper =
       web_app::WebAppTabHelperBase::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
     // Already in app scope, do not alter window state while using the app.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   blink::mojom::CaptureLinks capture_links = provider->registrar()
@@ -215,19 +215,19 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   switch (capture_links) {
     case blink::mojom::CaptureLinks::kUndefined:
     case blink::mojom::CaptureLinks::kNone:
-      return base::nullopt;
+      return absl::nullopt;
 
     case blink::mojom::CaptureLinks::kExistingClientNavigate:
     case blink::mojom::CaptureLinks::kNewClient: {
       Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
       if (!browser) {
         // This is a middle click open in new tab action; do not capture.
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
         // Already in the app window; navigation already captured.
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       if (capture_links ==

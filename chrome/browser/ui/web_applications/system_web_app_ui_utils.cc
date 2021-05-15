@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -76,30 +76,30 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 namespace web_app {
 
-base::Optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
+absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
                                                           AppId app_id) {
   auto* provider = WebAppProvider::Get(profile);
   return provider ? provider->system_web_app_manager().GetSystemAppTypeForAppId(
                         app_id)
-                  : base::Optional<SystemAppType>();
+                  : absl::optional<SystemAppType>();
 }
 
-base::Optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
+absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
                                               SystemAppType app_type) {
   auto* provider = WebAppProvider::Get(profile);
   return provider
              ? provider->system_web_app_manager().GetAppIdForSystemApp(app_type)
-             : base::Optional<AppId>();
+             : absl::optional<AppId>();
 }
 
-base::Optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
+absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
     SystemAppType app_type,
     int64_t display_id) {
-  base::Optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
+  absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
   if (!app_id)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto* provider = WebAppProvider::Get(profile);
   DCHECK(provider);
@@ -170,7 +170,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
     return;
   }
 
-  const base::Optional<AppId> app_id =
+  const absl::optional<AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
   if (!app_id)
     return;
@@ -301,7 +301,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
                                  Browser::Type browser_type) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
-  base::Optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
+  absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
   if (!app_id)
     return nullptr;
 
@@ -334,12 +334,12 @@ bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {
          browser->app_controller()->system_app_type() == type;
 }
 
-base::Optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
+absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
                                                           const GURL& url) {
   auto* provider = WebAppProvider::Get(profile);
 
   if (!provider)
-    return base::nullopt;
+    return absl::nullopt;
 
   return provider->system_web_app_manager().GetCapturingSystemAppForURL(url);
 }

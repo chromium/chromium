@@ -477,8 +477,8 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
 
   std::vector<std::unique_ptr<Attachment>> attachments;
   attachments.push_back(std::make_unique<TextAttachment>(
-      TextAttachment::Type::kText, kPayloadExample, /*title=*/base::nullopt,
-      /*mime_type=*/base::nullopt));
+      TextAttachment::Type::kText, kPayloadExample, /*title=*/absl::nullopt,
+      /*mime_type=*/absl::nullopt));
 
   const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(

@@ -305,7 +305,7 @@ void MacNotificationServiceNS::CloseAllNotifications() {
       GetNotificationOperationFromNotification(notification);
   int buttonIndex = GetActionButtonIndexFromNotification(notification);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/base::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -322,7 +322,7 @@ void MacNotificationServiceNS::CloseAllNotifications() {
   auto operation = NotificationOperation::NOTIFICATION_CLOSE;
   int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/base::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
 }
 
@@ -339,7 +339,7 @@ void MacNotificationServiceNS::CloseAllNotifications() {
     auto operation = NotificationOperation::NOTIFICATION_CLOSE;
     int buttonIndex = notification_constants::kNotificationInvalidButtonIndex;
     auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-        std::move(meta), operation, buttonIndex, /*reply=*/base::nullopt);
+        std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
     _handler->OnNotificationAction(std::move(actionInfo));
   }
 }

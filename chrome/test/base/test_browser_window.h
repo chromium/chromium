@@ -146,7 +146,7 @@ class TestBrowserWindow : public BrowserWindow {
       bool show_stay_in_chrome,
       bool show_remember_selection,
       PageActionIconType icon_type,
-      const base::Optional<url::Origin>& initiating_origin,
+      const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
   send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(

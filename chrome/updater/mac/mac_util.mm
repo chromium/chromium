@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -22,6 +21,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -41,7 +41,7 @@ base::FilePath ExecutableFolderPath() {
 
 }  // namespace
 
-base::Optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
+absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
       return base::mac::GetUserLibraryPath();
@@ -50,14 +50,14 @@ base::Optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
       if (!base::mac::GetLocalDirectory(NSLibraryDirectory,
                                         &local_library_path)) {
         VLOG(1) << "Could not get local library path";
-        return base::nullopt;
+        return absl::nullopt;
       }
       return local_library_path;
     }
   }
 }
 
-base::Optional<base::FilePath> GetApplicationSupportDirectory(
+absl::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope) {
   base::FilePath path;
   switch (scope) {
@@ -72,47 +72,47 @@ base::Optional<base::FilePath> GetApplicationSupportDirectory(
   }
 
   VLOG(1) << "Could not get applications support path";
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
-  base::Optional<base::FilePath> path = GetLibraryFolderPath(scope);
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->Append(GetUpdateFolderName());
 }
 
-base::Optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version) {
-  base::Optional<base::FilePath> path = GetUpdaterFolderPath(scope);
+  absl::optional<base::FilePath> path = GetUpdaterFolderPath(scope);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->AppendASCII(version.GetString());
 }
 
-base::Optional<base::FilePath> GetVersionedUpdaterFolderPath(
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
     UpdaterScope scope) {
-  base::Optional<base::FilePath> path = GetUpdaterFolderPath(scope);
+  absl::optional<base::FilePath> path = GetUpdaterFolderPath(scope);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->AppendASCII(kUpdaterVersion);
 }
 
-base::Optional<base::FilePath> GetExecutableFolderPathForVersion(
+absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version) {
-  base::Optional<base::FilePath> path =
+  absl::optional<base::FilePath> path =
       GetVersionedUpdaterFolderPathForVersion(scope, version);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->Append(ExecutableFolderPath());
 }
 
-base::Optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
-  base::Optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->Append(ExecutableFolderPath())
       .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
 }

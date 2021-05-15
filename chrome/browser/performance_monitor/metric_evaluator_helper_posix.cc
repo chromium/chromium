@@ -11,9 +11,9 @@ namespace performance_monitor {
 MetricEvaluatorsHelperPosix::MetricEvaluatorsHelperPosix() = default;
 MetricEvaluatorsHelperPosix::~MetricEvaluatorsHelperPosix() = default;
 
-base::Optional<int> MetricEvaluatorsHelperPosix::GetFreePhysicalMemoryMb() {
+absl::optional<int> MetricEvaluatorsHelperPosix::GetFreePhysicalMemoryMb() {
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace performance_monitor

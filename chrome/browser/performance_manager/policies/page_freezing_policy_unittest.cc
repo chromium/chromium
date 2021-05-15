@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
@@ -17,6 +16,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace policies {
@@ -213,7 +213,7 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
-  page_node()->set_freezing_vote(base::nullopt);
+  page_node()->set_freezing_vote(absl::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   // Sending a kCannotFreezeVote shouldn't unfreeze the page as it's already
@@ -222,7 +222,7 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   // Same for removing a kCannotFreezeVote.
-  page_node()->set_freezing_vote(base::nullopt);
+  page_node()->set_freezing_vote(absl::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 }
 

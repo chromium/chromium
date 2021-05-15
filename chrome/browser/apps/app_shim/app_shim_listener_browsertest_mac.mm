@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -39,6 +38,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A test version of the AppShimController mojo client in chrome_main_app_mode.
 class TestShimClient : public chrome::mojom::AppShim {
@@ -135,7 +135,7 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
 
   std::unique_ptr<TestShimClient> test_client_;
   std::vector<base::FilePath> last_launch_files_;
-  base::Optional<chrome::mojom::AppShimLaunchType> last_launch_type_;
+  absl::optional<chrome::mojom::AppShimLaunchType> last_launch_type_;
 
  private:
   // chrome::mojom::AppShimHost.

@@ -439,14 +439,14 @@ class ParameterizedShowActionDeclarativeContentApiTest
   ParameterizedShowActionDeclarativeContentApiTest() {}
   ~ParameterizedShowActionDeclarativeContentApiTest() override {}
 
-  void TestShowAction(base::Optional<ActionInfo::Type> action_type);
+  void TestShowAction(absl::optional<ActionInfo::Type> action_type);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ParameterizedShowActionDeclarativeContentApiTest);
 };
 
 void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
-    base::Optional<ActionInfo::Type> action_type) {
+    absl::optional<ActionInfo::Type> action_type) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Declarative Content Show Action",
@@ -526,7 +526,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        NoActionInManifest) {
-  TestShowAction(base::nullopt);
+  TestShowAction(absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,

@@ -20,7 +20,7 @@ namespace extensions {
 namespace {
 
 void DidGetBackgroundSourceIdForCastExtensionMetric(
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   if (!source_id.has_value())
     return;  // Can't record as it wasn't found in the history.
 

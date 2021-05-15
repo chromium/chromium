@@ -111,8 +111,8 @@ TEST_F(ConversationStartersParserTest, HandlesRecognizedSafeJsonResponse) {
   EXPECT_EQ(3u, conversation_starters.size());
 
   ExpectEqual(conversation_starters.at(0),
-              ash::ConversationStarter("Label", /*action_url=*/base::nullopt,
-                                       /*icon_url=*/base::nullopt,
+              ash::ConversationStarter("Label", /*action_url=*/absl::nullopt,
+                                       /*icon_url=*/absl::nullopt,
                                        /*required_permissions=*/0u));
 
   ExpectEqual(
@@ -171,8 +171,8 @@ TEST_F(ConversationStartersParserTest, HandlesUnknownPermission) {
   ExpectEqual(conversation_starters.at(0),
               ash::ConversationStarter(
                   /*label=*/"Unrecognized Required Permission",
-                  /*action_url=*/base::nullopt,
-                  /*icon_url=*/base::nullopt,
+                  /*action_url=*/absl::nullopt,
+                  /*icon_url=*/absl::nullopt,
                   /*required_permissions=*/
                   ash::ConversationStarter::Permission::kRelatedInfo |
                       ash::ConversationStarter::Permission::kUnknown));

@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -31,6 +30,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefetchProxyPageLoadMetricsObserver;
@@ -117,7 +117,7 @@ class PrefetchProxyTabHelper
     size_t prefetch_total_redirect_count_ = 0;
 
     // The duration between navigation start and the start of prefetching.
-    base::Optional<base::TimeDelta> navigation_to_prefetch_start_;
+    absl::optional<base::TimeDelta> navigation_to_prefetch_start_;
 
    private:
     friend class base::RefCounted<PrefetchMetrics>;
@@ -140,14 +140,14 @@ class PrefetchProxyTabHelper
 
     // The position of the link on the SRP that was navigated to. Not set if the
     // navigated page wasn't in the SRP.
-    base::Optional<size_t> clicked_link_srp_position_;
+    absl::optional<size_t> clicked_link_srp_position_;
 
     // The status of a prefetch done on the SRP that may have been used here.
-    base::Optional<PrefetchProxyPrefetchStatus> prefetch_status_;
+    absl::optional<PrefetchProxyPrefetchStatus> prefetch_status_;
 
     // The amount of time it took the probe to complete. Set only when a
     // prefetch is used and a probe was required.
-    base::Optional<base::TimeDelta> probe_latency_;
+    absl::optional<base::TimeDelta> probe_latency_;
   };
 
   // Checks if a |service_worker_context_for_test_| is available, and if not,
@@ -162,7 +162,7 @@ class PrefetchProxyTabHelper
   using OnEligibilityResultCallback = base::OnceCallback<void(
       const GURL& url,
       bool eligible,
-      base::Optional<PrefetchProxyPrefetchStatus> status)>;
+      absl::optional<PrefetchProxyPrefetchStatus> status)>;
   static void CheckEligibilityOfURL(
       Profile* profile,
       const GURL& url,
@@ -172,7 +172,7 @@ class PrefetchProxyTabHelper
 
   // Returns nullopt unless the previous page load was a Google SRP where |this|
   // got parsed SRP links from NavigationPredictor.
-  base::Optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics()
+  absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics()
       const;
 
   // Fetches |private_prefetches| (up to a limit) and upon completion of each
@@ -303,7 +303,7 @@ class PrefetchProxyTabHelper
 
     // The amount of time that the probe took to complete. Kept in this class
     // until commit in order to be plumbed into |AfterSRPMetrics|.
-    base::Optional<base::TimeDelta> probe_latency_;
+    absl::optional<base::TimeDelta> probe_latency_;
 
     // All prefetched responses by URL. This is cleared every time a mainframe
     // navigation commits.
@@ -360,7 +360,7 @@ class PrefetchProxyTabHelper
   // Returns whether the |url| is eligible, possibly with a status, without
   // considering any user data like service workers or cookies. Used to
   // determine eligibility and whether to send decoy requests.
-  static std::pair<bool, base::Optional<PrefetchProxyPrefetchStatus>>
+  static std::pair<bool, absl::optional<PrefetchProxyPrefetchStatus>>
   CheckEligibilityOfURLSansUserData(Profile* profile, const GURL& url);
 
   // Computes the AfterSRPMetrics that would be returned for the next
@@ -429,7 +429,7 @@ class PrefetchProxyTabHelper
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
-      const base::Optional<NavigationPredictorKeyedService::Prediction>
+      const absl::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
 
   // Fetches the |prefetch_targets|, and considers fetching subresources for
@@ -442,14 +442,14 @@ class PrefetchProxyTabHelper
   void OnGotEligibilityResult(
       const GURL& url,
       bool eligible,
-      base::Optional<PrefetchProxyPrefetchStatus> status);
+      absl::optional<PrefetchProxyPrefetchStatus> status);
 
   // Creates a new URL Loader Factory on |page_|'s isolated network context.
   // |isolation_info| may be passed if the factory will be used in the renderer
   // for subresources.
   void CreateNewURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      base::Optional<net::IsolationInfo> isolation_info);
+      absl::optional<net::IsolationInfo> isolation_info);
 
   // Starts a query for all cookies on |url| in the isolated cookie jar so that
   // they can be copied to the normal profile. After this method is called,

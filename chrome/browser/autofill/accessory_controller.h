@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_AUTOFILL_ACCESSORY_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Interface for the portions of type-specific manual filling controllers (e.g.,
 // password, credit card) which interact with the generic
@@ -29,12 +29,12 @@ class AccessoryController {
   virtual void RegisterFillingSourceObserver(
       FillingSourceObserver observer) = 0;
 
-  // Reurns a base::nullopt if the accessory controller can't provide any data.
+  // Reurns a absl::nullopt if the accessory controller can't provide any data.
   // If the controller can provide data, it returns a non-empty sheet that *can*
   // be in a loading state while the data is being fetched.
   // Use |RegisterFillingSourceObserver()| to repeatedly be notified about
   // changes in the sheet data.
-  virtual base::Optional<autofill::AccessorySheetData> GetSheetData() const = 0;
+  virtual absl::optional<autofill::AccessorySheetData> GetSheetData() const = 0;
 
   // Triggered when a user selects an item for filling. This handler is
   // responsible for propagating it so that it ultimately ends up in the form

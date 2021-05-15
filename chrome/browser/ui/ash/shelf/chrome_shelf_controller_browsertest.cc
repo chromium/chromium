@@ -605,7 +605,7 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
   UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
       delete;
   ~UnpinnedBrowserShortcutTest() override {
-    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(base::nullopt);
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(absl::nullopt);
   }
 
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }

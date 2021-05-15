@@ -9,13 +9,13 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -53,7 +53,7 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
     image_writer_utility_client_->OperationProgress(progress);
   }
 
-  void Complete(const base::Optional<std::string>& error) override {
+  void Complete(const absl::optional<std::string>& error) override {
     if (error) {
       image_writer_utility_client_->OperationFailed(error.value());
     } else {

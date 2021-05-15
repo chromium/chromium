@@ -33,7 +33,7 @@ class ArcSnapshotRebootNotificationImpl : public ArcSnapshotRebootNotification {
   static int get_restart_button_id_for_testing();
 
  private:
-  void HandleClick(base::Optional<int> button_index);
+  void HandleClick(absl::optional<int> button_index);
 
   base::RepeatingClosure user_consent_callback_;
   bool shown_ = false;

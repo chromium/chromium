@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
                                       FILE_ATTACHED, kBlockingScansForDlp);
   SetStatusCallbackResponse(
       safe_browsing::SimpleContentAnalysisResponseForTesting(
-          /*dlp=*/true, /*malware=*/base::nullopt));
+          /*dlp=*/true, /*malware=*/absl::nullopt));
 
   // Set up delegate test values. An unresponsive delegate is set up to avoid
   // a race between the file responses and the "Cancel" button being clicked.

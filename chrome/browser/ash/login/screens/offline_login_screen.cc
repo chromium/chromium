@@ -180,7 +180,7 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   const AccountId account_id = user_manager::known_user::GetAccountId(
       sanitized_email, std::string(), AccountType::UNKNOWN);
-  const base::Optional<base::TimeDelta> offline_signin_interval =
+  const absl::optional<base::TimeDelta> offline_signin_interval =
       user_manager::known_user::GetOfflineSigninLimit(account_id);
 
   // Further checks only if the limit is set.

@@ -118,7 +118,7 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   // Metadata for an ongoing connection attempt. If this field is set, it means
   // that the entry in |id_to_brokers_map_| with the given ID is currently
   // attempting a connection. If null, there is no pending connection attempt.
-  base::Optional<ActiveConnectionAttempt> active_connection_attempt_;
+  absl::optional<ActiveConnectionAttempt> active_connection_attempt_;
 
   base::WeakPtrFactory<NearbyConnectorImpl> weak_ptr_factory_{this};
 };

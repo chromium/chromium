@@ -52,7 +52,7 @@ SodaLanguagePackComponentInstallerPolicy::
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
-  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+  absl::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
 
   if (config) {
@@ -158,7 +158,7 @@ void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
                                           PrefService* prefs,
                                           const base::FilePath& install_dir) {
 #if !defined(OS_ANDROID)
-  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+  absl::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
   if (config) {
     prefs->SetFilePath(

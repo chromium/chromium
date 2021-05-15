@@ -9,7 +9,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -29,6 +28,7 @@
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

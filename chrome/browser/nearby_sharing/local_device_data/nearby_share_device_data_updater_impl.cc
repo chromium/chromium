@@ -100,11 +100,11 @@ void NearbyShareDeviceDataUpdaterImpl::OnRpcFailure(
   timer_.Stop();
   client_.reset();
   RecordResultMetrics(NearbyShareHttpErrorToResult(error));
-  FinishAttempt(/*response=*/base::nullopt);
+  FinishAttempt(/*response=*/absl::nullopt);
 }
 
 void NearbyShareDeviceDataUpdaterImpl::OnTimeout() {
   client_.reset();
   RecordResultMetrics(NearbyShareHttpResult::kTimeout);
-  FinishAttempt(/*response=*/base::nullopt);
+  FinishAttempt(/*response=*/absl::nullopt);
 }

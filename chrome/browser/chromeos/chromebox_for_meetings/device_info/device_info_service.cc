@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace cfm {

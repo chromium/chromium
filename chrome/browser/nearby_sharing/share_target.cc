@@ -14,9 +14,9 @@ ShareTarget::ShareTarget(std::string device_name,
                          std::vector<TextAttachment> text_attachments,
                          std::vector<FileAttachment> file_attachments,
                          bool is_incoming,
-                         base::Optional<std::string> full_name,
+                         absl::optional<std::string> full_name,
                          bool is_known,
-                         base::Optional<std::string> device_id)
+                         absl::optional<std::string> device_id)
     : device_name(std::move(device_name)),
       image_url(std::move(image_url)),
       type(type),

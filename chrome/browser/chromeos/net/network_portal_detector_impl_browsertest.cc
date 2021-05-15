@@ -223,7 +223,7 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   display_service_->GetNotification(kNotificationId)
       ->delegate()
-      ->Click(base::nullopt, base::nullopt);
+      ->Click(absl::nullopt, absl::nullopt);
 
   content::RunAllPendingInMessageLoop();
 

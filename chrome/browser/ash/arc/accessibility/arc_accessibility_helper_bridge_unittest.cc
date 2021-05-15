@@ -489,7 +489,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, AnnouncementEvent) {
   auto event = arc::mojom::AccessibilityEventData::New();
   event->event_type = arc::mojom::AccessibilityEventType::ANNOUNCEMENT;
   event->event_text =
-      base::make_optional<std::vector<std::string>>(std::move(text));
+      absl::make_optional<std::vector<std::string>>(std::move(text));
 
   helper_bridge->OnAccessibilityEvent(event.Clone());
 
@@ -513,7 +513,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationStateChangedEvent) {
   event->event_type =
       arc::mojom::AccessibilityEventType::NOTIFICATION_STATE_CHANGED;
   event->event_text =
-      base::make_optional<std::vector<std::string>>(std::move(text));
+      absl::make_optional<std::vector<std::string>>(std::move(text));
   event->string_properties =
       base::flat_map<arc::mojom::AccessibilityEventStringProperty,
                      std::string>();
@@ -621,7 +621,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
       arc::mojom::AccessibilityNotificationStateType::SURFACE_CREATED);
   auto event1 = arc::mojom::AccessibilityEventData::New();
   event1->event_type = arc::mojom::AccessibilityEventType::WINDOW_STATE_CHANGED;
-  event1->notification_key = base::make_optional<std::string>(kNotificationKey);
+  event1->notification_key = absl::make_optional<std::string>(kNotificationKey);
   event1->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event1->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();
@@ -661,7 +661,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
       arc::mojom::AccessibilityNotificationStateType::SURFACE_CREATED);
   auto event3 = arc::mojom::AccessibilityEventData::New();
   event3->event_type = arc::mojom::AccessibilityEventType::WINDOW_STATE_CHANGED;
-  event3->notification_key = base::make_optional<std::string>(kNotificationKey);
+  event3->notification_key = absl::make_optional<std::string>(kNotificationKey);
   event3->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event3->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();
@@ -730,7 +730,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationSurfaceArriveFirst) {
       arc::mojom::AccessibilityNotificationStateType::SURFACE_CREATED);
   auto event1 = arc::mojom::AccessibilityEventData::New();
   event1->event_type = arc::mojom::AccessibilityEventType::WINDOW_STATE_CHANGED;
-  event1->notification_key = base::make_optional<std::string>(kNotificationKey);
+  event1->notification_key = absl::make_optional<std::string>(kNotificationKey);
   event1->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event1->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();
@@ -782,7 +782,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest,
   auto event = arc::mojom::AccessibilityEventData::New();
   event->event_type =
       arc::mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED;
-  event->notification_key = base::make_optional<std::string>(kNotificationKey);
+  event->notification_key = absl::make_optional<std::string>(kNotificationKey);
   event->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();
@@ -846,7 +846,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, TextSelectionChangedFocusContentView) {
   auto event = arc::mojom::AccessibilityEventData::New();
   event->event_type =
       arc::mojom::AccessibilityEventType::VIEW_TEXT_SELECTION_CHANGED;
-  event->notification_key = base::make_optional<std::string>(kNotificationKey);
+  event->notification_key = absl::make_optional<std::string>(kNotificationKey);
   event->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();

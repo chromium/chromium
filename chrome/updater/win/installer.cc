@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,39 +23,40 @@
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/installer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
 
 // Opens the registry ClientState subkey for the `app_id`.
-base::Optional<base::win::RegKey> ClientStateAppKeyOpen(
+absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
     const std::string& app_id,
     REGSAM regsam) {
   std::wstring subkey;
   if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
-    return base::nullopt;
+    return absl::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
   base::win::RegKey key(HKEY_CURRENT_USER,
                         base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
   if (key.OpenKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
-    return base::nullopt;
+    return absl::nullopt;
   return key;
 }
 
 // Creates or opens the registry ClientState subkey for the `app_id`. `regsam`
 // must contain the KEY_WRITE access right for the creation of the subkey to
 // succeed.
-base::Optional<base::win::RegKey> ClientStateAppKeyCreate(
+absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
     const std::string& app_id,
     REGSAM regsam) {
   std::wstring subkey;
   if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
-    return base::nullopt;
+    return absl::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
   base::win::RegKey key(HKEY_CURRENT_USER,
                         base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
   if (key.CreateKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
-    return base::nullopt;
+    return absl::nullopt;
   return key;
 }
 
@@ -79,7 +79,7 @@ bool ClientStateAppKeyDelete(const std::string& app_id) {
 // Reads the installer progress from the registry value at:
 // {HKLM|HKCU}\Software\Google\Update\ClientState\<appid>\InstallerProgress.
 int GetInstallerProgress(const std::string& app_id) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(app_id, KEY_READ);
   DWORD progress = 0;
   if (!key || key->ReadValueDW(kRegValueInstallerProgress, &progress) !=
@@ -90,20 +90,20 @@ int GetInstallerProgress(const std::string& app_id) {
 }
 
 bool SetInstallerProgressForTesting(const std::string& app_id, int value) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyCreate(app_id, KEY_WRITE);
   return key && key->WriteValue(kRegValueInstallerProgress, DWORD{value}) ==
                     ERROR_SUCCESS;
 }
 
 bool DeleteInstallerProgress(const std::string& app_id) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(app_id, KEY_SET_VALUE);
   return key && key->DeleteValue(kRegValueInstallerProgress) == ERROR_SUCCESS;
 }
 
 bool DeleteInstallerOutput(const std::string& app_id) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(app_id, KEY_SET_VALUE | KEY_QUERY_VALUE);
   if (!key)
     return false;
@@ -123,12 +123,12 @@ bool DeleteInstallerOutput(const std::string& app_id) {
                      [](auto result) { return result; });
 }
 
-base::Optional<InstallerOutcome> GetInstallerOutcome(
+absl::optional<InstallerOutcome> GetInstallerOutcome(
     const std::string& app_id) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(app_id, KEY_READ);
   if (!key)
-    return base::nullopt;
+    return absl::nullopt;
   InstallerOutcome installer_outcome;
   {
     DWORD val = 0;
@@ -166,7 +166,7 @@ base::Optional<InstallerOutcome> GetInstallerOutcome(
 
 bool SetInstallerOutcomeForTesting(const std::string& app_id,
                                    const InstallerOutcome& installer_outcome) {
-  base::Optional<base::win::RegKey> key =
+  absl::optional<base::win::RegKey> key =
       ClientStateAppKeyCreate(app_id, KEY_WRITE);
   if (!key)
     return false;
@@ -230,7 +230,7 @@ std::string GetTextForSystemError(int error) {
 // TODO(crbug.com/1172866): remove the hardcoded assumption that error must
 // be zero to indicate success.
 Installer::Result MakeInstallerResult(
-    base::Optional<InstallerOutcome> installer_outcome,
+    absl::optional<InstallerOutcome> installer_outcome,
     int exit_code) {
   if (installer_outcome && installer_outcome->installer_result) {
     Installer::Result result;

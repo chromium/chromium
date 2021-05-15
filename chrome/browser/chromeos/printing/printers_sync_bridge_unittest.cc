@@ -56,7 +56,7 @@ TEST_F(PrintersSyncBridgeTest, AddPrinterOverwrites) {
   overwrite->set_description(kLazerDescription);
   bridge_->AddPrinter(std::move(overwrite));
 
-  base::Optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
+  absl::optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
   ASSERT_TRUE(printer.has_value());
   EXPECT_EQ("0", printer->id());
   EXPECT_EQ(kLazerDescription, printer->description());
@@ -76,7 +76,7 @@ TEST_F(PrintersSyncBridgeTest, UpdatePrinterMerge) {
   bool is_new = bridge_->UpdatePrinter(std::move(overwrite));
   EXPECT_FALSE(is_new);
 
-  base::Optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
+  absl::optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
   ASSERT_TRUE(printer.has_value());
   EXPECT_EQ("0", printer->id());
   // Description is overwritten.
@@ -93,7 +93,7 @@ TEST_F(PrintersSyncBridgeTest, UpdatePrinterNewPrinter) {
   bool is_new = bridge_->UpdatePrinter(std::move(first));
   EXPECT_TRUE(is_new);
 
-  base::Optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
+  absl::optional<PrinterSpecifics> printer = bridge_->GetPrinter("0");
   ASSERT_TRUE(printer.has_value());
   EXPECT_EQ("0", printer->id());
   EXPECT_EQ(kInkyDescription, printer->description());

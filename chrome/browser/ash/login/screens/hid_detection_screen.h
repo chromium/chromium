@@ -16,9 +16,9 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -69,7 +69,7 @@ class HIDDetectionScreen : public BaseScreen,
       InputDeviceManagerBinder binder);
 
   void InputDeviceAddedForTesting(InputDeviceInfoPtr info);
-  const base::Optional<Result>& get_exit_result_for_testing() const {
+  const absl::optional<Result>& get_exit_result_for_testing() const {
     return exit_result_for_testing_;
   }
 
@@ -231,7 +231,7 @@ class HIDDetectionScreen : public BaseScreen,
   HIDDetectionView* view_;
 
   const ScreenExitCallback exit_callback_;
-  base::Optional<Result> exit_result_for_testing_;
+  absl::optional<Result> exit_result_for_testing_;
 
   std::unique_ptr<DemoModeDetector> demo_mode_detector_;
 

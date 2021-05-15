@@ -119,13 +119,13 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   }
 }
 
-base::Optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
+absl::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
   bool is_system_info_enforced = false;
   if (cros_settings_->GetBoolean(chromeos::kDeviceLoginScreenSystemInfoEnforced,
                                  &is_system_info_enforced)) {
     return is_system_info_enforced;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void VersionInfoUpdater::UpdateVersionLabel() {

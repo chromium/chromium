@@ -128,7 +128,7 @@ class GetCurrentBrowsingContextMediaDialogTest
     BrowserWithTestWindowTest::TearDown();
   }
 
-  base::Optional<content::DesktopMediaID> WaitForDialogDone() {
+  absl::optional<content::DesktopMediaID> WaitForDialogDone() {
     run_loop_.Run();
     return dialog_id_;
   }
@@ -152,7 +152,7 @@ class GetCurrentBrowsingContextMediaDialogTest
   }
 
  protected:
-  base::Optional<content::DesktopMediaID> dialog_id_;
+  absl::optional<content::DesktopMediaID> dialog_id_;
   int render_process_id_ = MSG_ROUTING_NONE;
   int render_frame_id_ = MSG_ROUTING_NONE;
   std::unique_ptr<content::WebContents> web_contents_;

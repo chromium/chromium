@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -35,6 +34,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -212,7 +212,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
         ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
   }
 
-  void ReportInstallationStarted(base::Optional<base::TimeDelta> install_time) {
+  void ReportInstallationStarted(absl::optional<base::TimeDelta> install_time) {
     install_stage_tracker()->ReportDownloadingStage(
         kExtensionId1, ExtensionDownloaderDelegate::Stage::MANIFEST_LOADED);
     install_stage_tracker()->ReportDownloadingStage(
@@ -374,7 +374,7 @@ TEST_F(ForceInstalledMetricsTest,
 TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   SetupForceList(/*is_from_store=*/true);
   ReportDownloadingManifestStage();
-  ReportInstallationStarted(base::nullopt);
+  ReportInstallationStarted(absl::nullopt);
   install_stage_tracker()->ReportCRXInstallationStage(
       kExtensionId1, InstallationStage::kVerification);
 

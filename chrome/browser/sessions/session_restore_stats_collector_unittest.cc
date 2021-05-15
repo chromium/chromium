@@ -186,7 +186,7 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
     content::WebContentsTester::For(contents)->SetLastActiveTime(
         base::TimeTicks::Now() - base::TimeDelta::FromMinutes(1));
     restored_tabs_.push_back(
-        RestoredTab(contents, is_active, false, false, base::nullopt));
+        RestoredTab(contents, is_active, false, false, absl::nullopt));
     if (is_active)
       Show(restored_tabs_.size() - 1);
   }

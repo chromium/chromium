@@ -7,7 +7,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -32,6 +31,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace chromeos {
@@ -157,7 +157,7 @@ class EncryptionMigrationTest : public OobeBaseTest {
 
   // Updates the battery percent info reported by the power manager client.
   void SetBatteryPercent(int battery_percent) {
-    base::Optional<power_manager::PowerSupplyProperties> properties =
+    absl::optional<power_manager::PowerSupplyProperties> properties =
         FakePowerManagerClient::Get()->GetLastStatus();
     ASSERT_TRUE(properties.has_value());
     properties->set_battery_percent(battery_percent);

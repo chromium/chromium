@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
@@ -21,6 +20,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using extensions::api::cookies::Cookie;
@@ -195,7 +195,7 @@ TEST_F(ExtensionCookiesTest, DecodeUTF8WithErrorHandling) {
   std::unique_ptr<net::CanonicalCookie> canonical_cookie(
       net::CanonicalCookie::Create(
           GURL("http://test.com"), "=011Q255bNX_1!yd\203e+;path=/path\203",
-          base::Time::Now(), base::nullopt /* server_time */));
+          base::Time::Now(), absl::nullopt /* server_time */));
   ASSERT_NE(nullptr, canonical_cookie.get());
   Cookie cookie =
       cookies_helpers::CreateCookie(*canonical_cookie, "some cookie store");

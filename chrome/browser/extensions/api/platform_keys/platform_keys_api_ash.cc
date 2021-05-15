@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -28,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using PublicKeyInfo = chromeos::platform_keys::PublicKeyInfo;
 
@@ -65,7 +65,7 @@ const char kErrorInvalidX509Cert[] =
 const char kTokenIdUser[] = "user";
 const char kTokenIdSystem[] = "system";
 
-base::Optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
+absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
     const std::string& token_id) {
   if (token_id == kTokenIdUser)
     return chromeos::platform_keys::TokenId::kUser;
@@ -73,7 +73,7 @@ base::Optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
   if (token_id == kTokenIdSystem)
     return chromeos::platform_keys::TokenId::kSystem;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string PlatformKeysTokenIdToApiId(
@@ -282,7 +282,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
       api_pki::Sign::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Optional<chromeos::platform_keys::TokenId> platform_keys_token_id;
+  absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id;
   // If |params->token_id| is not specified (empty string), the key will be
   // searched for in all available tokens.
   if (!params->token_id.empty()) {

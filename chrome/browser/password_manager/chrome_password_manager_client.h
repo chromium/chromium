@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
@@ -41,6 +40,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -326,7 +326,7 @@ class ChromePasswordManagerClient
   void GenerationResultAvailable(
       autofill::password_generation::PasswordGenerationType type,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
-      const base::Optional<
+      const absl::optional<
           autofill::password_generation::PasswordGenerationUIData>& ui_data);
 
   void ShowPasswordGenerationPopup(
@@ -405,7 +405,7 @@ class ChromePasswordManagerClient
   // Recorder of metrics that is associated with the last committed navigation
   // of the WebContents owning this ChromePasswordManagerClient. May be unset at
   // times. Sends statistics on destruction.
-  base::Optional<password_manager::PasswordManagerMetricsRecorder>
+  absl::optional<password_manager::PasswordManagerMetricsRecorder>
       metrics_recorder_;
 
   // Whether navigator.credentials.store() was ever called from this

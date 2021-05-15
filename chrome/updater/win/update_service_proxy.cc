@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -30,6 +29,7 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -267,7 +267,7 @@ UpdateService::UpdateState UpdaterObserver::QueryUpdateState(
     HRESULT hr = update_state->get_state(&val_state);
     if (SUCCEEDED(hr)) {
       using State = UpdateService::UpdateState::State;
-      base::Optional<State> state = CheckedCastToEnum<State>(val_state);
+      absl::optional<State> state = CheckedCastToEnum<State>(val_state);
       if (state)
         update_service_state.state = *state;
     }
@@ -309,7 +309,7 @@ UpdateService::UpdateState UpdaterObserver::QueryUpdateState(
     HRESULT hr = update_state->get_errorCategory(&val_error_category);
     if (SUCCEEDED(hr)) {
       using ErrorCategory = UpdateService::ErrorCategory;
-      base::Optional<ErrorCategory> error_category =
+      absl::optional<ErrorCategory> error_category =
           CheckedCastToEnum<ErrorCategory>(val_error_category);
       if (error_category)
         update_service_state.error_category = *error_category;

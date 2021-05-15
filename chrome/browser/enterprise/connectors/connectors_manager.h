@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_MANAGER_H_
 
-#include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -38,20 +38,20 @@ class ConnectorsManager {
   // Validates which settings should be applied to a reporting event
   // against cached policies. Cache the policy value the first time this is
   // called for every different connector.
-  base::Optional<ReportingSettings> GetReportingSettings(
+  absl::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
 
   // Validates which settings should be applied to an analysis connector event
   // against cached policies. This function will prioritize new connector
   // policies over legacy ones if they are set.
-  base::Optional<AnalysisSettings> GetAnalysisSettings(
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
 
   // Validates which settings should be applied to a file system connector
   // against cached policies. Cache the policy value the first time this is
   // called for every different connector.
-  base::Optional<FileSystemSettings> GetFileSystemSettings(
+  absl::optional<FileSystemSettings> GetFileSystemSettings(
       const GURL& url,
       FileSystemConnector connector);
 
@@ -79,7 +79,7 @@ class ConnectorsManager {
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
-  base::Optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
+  absl::optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
       const GURL& url,
       AnalysisConnector connector);
 
@@ -98,7 +98,7 @@ class ConnectorsManager {
   // Validates which settings should be applied to an analysis connector event
   // against connector policies. Cache the policy value the first time this is
   // called for every different connector.
-  base::Optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
+  absl::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
       ReportingConnector connector);
 
   // Cached values of available service providers. This information validates

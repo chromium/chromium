@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -31,6 +30,7 @@
 #include "components/sqlite_proto/key_value_data.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -119,7 +119,7 @@ struct OptimizationGuidePrediction {
   optimization_guide::OptimizationGuideDecision decision;
   PreconnectPrediction preconnect_prediction;
   std::vector<GURL> predicted_subresources;
-  base::Optional<base::TimeTicks> optimization_guide_prediction_arrived;
+  absl::optional<base::TimeTicks> optimization_guide_prediction_arrived;
 };
 
 // Contains logic for learning what can be prefetched and for kicking off

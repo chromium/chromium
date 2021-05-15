@@ -147,7 +147,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, LoadStateAfterPendingNavigation) {
 
   std::unique_ptr<content::NavigationEntry> entry =
       content::NavigationController::CreateNavigationEntry(
-          GURL(), content::Referrer(), base::nullopt,
+          GURL(), content::Referrer(), absl::nullopt,
           ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(), profile(),
           nullptr /* blob_url_loader_factory */);
 
@@ -190,7 +190,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
                                             match, AutocompleteMatch());
     auto navigation_entry =
         content::NavigationController::CreateNavigationEntry(
-            GURL(), content::Referrer(), base::nullopt,
+            GURL(), content::Referrer(), absl::nullopt,
             ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(),
             profile(), nullptr /* blob_url_loader_factory */);
     content::LoadCommittedDetails details;
@@ -209,7 +209,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
                                           AutocompleteMatch(),
                                           AutocompleteMatch());
   auto navigation_entry = content::NavigationController::CreateNavigationEntry(
-      GURL(), content::Referrer(), base::nullopt,
+      GURL(), content::Referrer(), absl::nullopt,
       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(), profile(),
       nullptr /* blob_url_loader_factory */);
   content::LoadCommittedDetails details;
@@ -334,7 +334,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
     // Send the observer NAV_ENTRY_PENDING to get the URL fetcher to start.
     auto navigation_entry =
         content::NavigationController::CreateNavigationEntry(
-            GURL(), content::Referrer(), base::nullopt,
+            GURL(), content::Referrer(), absl::nullopt,
             ui::PAGE_TRANSITION_FROM_ADDRESS_BAR, false, std::string(),
             profile(), nullptr /* blob_url_loader_factory */);
     content::NotificationService::current()->Notify(

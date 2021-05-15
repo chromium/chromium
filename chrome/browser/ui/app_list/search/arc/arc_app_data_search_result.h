@@ -11,9 +11,9 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 
@@ -38,7 +38,7 @@ class ArcAppDataSearchResult : public ChromeSearchResult {
   const std::string& launch_intent_uri() const {
     return data_->launch_intent_uri;
   }
-  const base::Optional<std::vector<uint8_t>>& icon_png_data() const {
+  const absl::optional<std::vector<uint8_t>>& icon_png_data() const {
     // TODO(crbug.com/1083331): Remove the checking, when the ARC change is
     // rolled in Chrome OS.
     if (!data_->icon || !data_->icon->icon_png_data ||

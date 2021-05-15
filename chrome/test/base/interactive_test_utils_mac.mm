@@ -50,7 +50,7 @@ class SendGlobalKeyEventsHelper {
   base::RunLoop run_loop_;
   // First key code pressed in the event sequence. This is also the last key
   // code to be released and so it will be waited for.
-  base::Optional<int> first_key_down_code_;
+  absl::optional<int> first_key_down_code_;
 };
 
 SendGlobalKeyEventsHelper* g_global_key_events_helper = nullptr;

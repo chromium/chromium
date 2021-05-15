@@ -91,18 +91,18 @@ std::string Base64(base::span<const uint8_t> in) {
   return ret;
 }
 
-base::Optional<std::string> GetString(const base::Value& dict,
+absl::optional<std::string> GetString(const base::Value& dict,
                                       const char* key) {
   const base::Value* v = dict.FindKey(key);
   if (!v || !v->is_string()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return v->GetString();
 }
 
 template <size_t N>
 bool CopyBytestring(std::array<uint8_t, N>* out,
-                    base::Optional<std::string> value) {
+                    absl::optional<std::string> value) {
   if (!value) {
     return false;
   }
@@ -117,7 +117,7 @@ bool CopyBytestring(std::array<uint8_t, N>* out,
 }
 
 bool CopyBytestring(std::vector<uint8_t>* out,
-                    base::Optional<std::string> value) {
+                    absl::optional<std::string> value) {
   if (!value) {
     return false;
   }
@@ -132,7 +132,7 @@ bool CopyBytestring(std::vector<uint8_t>* out,
   return true;
 }
 
-bool CopyString(std::string* out, base::Optional<std::string> value) {
+bool CopyString(std::string* out, absl::optional<std::string> value) {
   if (!value) {
     return false;
   }
@@ -179,7 +179,7 @@ void DeleteCablePairingByPublicKey(base::ListValue* list,
 
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
-base::Optional<std::string>
+absl::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
@@ -187,7 +187,7 @@ ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
   constexpr char kCryptotokenOrigin[] =
       "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
   if (caller_origin == url::Origin::Create(GURL(kCryptotokenOrigin))) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Otherwise, allow extensions to use WebAuthn and map their origins
@@ -197,12 +197,12 @@ ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     // identifier because no flexibility is permitted. If a caller doesn't
     // specify an RP ID then Blink defaults the value to the origin's host.
     if (claimed_relying_party_id != caller_origin.host()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     return caller_origin.Serialize();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
@@ -250,7 +250,7 @@ ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
                                     std::move(metadata_secret)};
 }
 
-base::Optional<ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+absl::optional<ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 ChromeWebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
     content::BrowserContext* browser_context) {
   return TouchIdAuthenticatorConfigForProfile(
@@ -269,11 +269,11 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-base::Optional<bool> ChromeWebAuthenticationDelegate::
+absl::optional<bool> ChromeWebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         content::RenderFrameHost* render_frame_host) {
   // If the testing API is active, its override takes precedence.
-  base::Optional<bool> testing_api_override =
+  absl::optional<bool> testing_api_override =
       content::WebAuthenticationDelegate::
           IsUserVerifyingPlatformAuthenticatorAvailableOverride(
               render_frame_host);
@@ -297,7 +297,7 @@ base::Optional<bool> ChromeWebAuthenticationDelegate::
     return false;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // ---------------------------------------------------------------------
@@ -515,9 +515,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
       (!cable_extension_permitted &&
        base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor));
 
-  base::Optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
+  absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
-  base::Optional<std::string> qr_string;
+  absl::optional<std::string> qr_string;
   if (non_extension_cablev2_enabled ||
       (cablev2_extension_provided &&
        base::FeatureList::IsEnabled(device::kWebAuthCableServerLink))) {
@@ -544,7 +544,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
   }
 
   if (cable_extension_provided || non_extension_cablev2_enabled) {
-    base::Optional<bool> extension_is_v2;
+    absl::optional<bool> extension_is_v2;
     if (cable_extension_provided) {
       extension_is_v2 = cablev2_extension_provided;
     }
@@ -783,7 +783,7 @@ static std::string NameForDisplay(base::StringPiece raw_name) {
 // DeviceInfo (if any) into a caBLEv2 pairing. It may return nullptr.
 static std::unique_ptr<device::cablev2::Pairing> PairingFromSyncedDevice(
     syncer::DeviceInfo* device) {
-  const base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
+  const absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>&
       maybe_paask_info = device->paask_info();
   if (!maybe_paask_info) {
     return nullptr;

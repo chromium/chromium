@@ -26,7 +26,7 @@
 DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,
     bool prominent)
-    : account_(base::nullopt) {
+    : account_(absl::nullopt) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   // Regular MD text button when there is no account.
   auto button = std::make_unique<views::MdTextButton>(

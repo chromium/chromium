@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -25,6 +24,7 @@
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::AnyNumber;

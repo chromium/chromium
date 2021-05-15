@@ -11,12 +11,12 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -94,7 +94,7 @@ class Installer final : public update_client::CrxInstaller {
   void DeleteOlderInstallPaths();
 
   // Returns an install directory matching the |pv_| version.
-  base::Optional<base::FilePath> GetCurrentInstallDir() const;
+  absl::optional<base::FilePath> GetCurrentInstallDir() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -22,7 +22,7 @@ NearbyShareOnDemandScheduler::NearbyShareOnDemandScheduler(
 
 NearbyShareOnDemandScheduler::~NearbyShareOnDemandScheduler() = default;
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 NearbyShareOnDemandScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  return base::nullopt;
+  return absl::nullopt;
 }

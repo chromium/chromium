@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,15 +30,16 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
 
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
-base::Optional<Priority> GetPriorityProtoFromSequencingInformationValue(
+absl::optional<Priority> GetPriorityProtoFromSequencingInformationValue(
     const base::Value& sequencing_information) {
-  const base::Optional<int> int_priority_result =
+  const absl::optional<int> int_priority_result =
       sequencing_information.FindIntKey("priority");
   if (int_priority_result.has_value()) {
     return Priority(int_priority_result.value());
@@ -50,14 +50,14 @@ base::Optional<Priority> GetPriorityProtoFromSequencingInformationValue(
   if (!str_priority_result) {
     LOG(ERROR) << "Field priority is missing from SequencingInformation: "
                << sequencing_information;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   Priority priority;
   if (!Priority_Parse(*str_priority_result, &priority)) {
     LOG(ERROR) << "Unable to parse field priority in SequencingInformation: "
                << sequencing_information;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return priority;
 }
@@ -83,7 +83,7 @@ class RecordHandlerImpl::ReportUploader
   void OnStart() override;
 
   void StartUpload();
-  void OnUploadComplete(base::Optional<base::Value> response);
+  void OnUploadComplete(absl::optional<base::Value> response);
   void HandleFailedUpload();
   void HandleSuccessfulUpload();
   void Complete(DmServerUploadService::CompletionResponse result);
@@ -95,7 +95,7 @@ class RecordHandlerImpl::ReportUploader
   //   "generationId": 4321
   //   "priority": 3
   // }
-  base::Optional<EncryptedRecord> HandleFailedUploadedSequencingInformation(
+  absl::optional<EncryptedRecord> HandleFailedUploadedSequencingInformation(
       const base::Value& sequencing_information);
 
   // Helper function for converting a base::Value representation of
@@ -123,7 +123,7 @@ class RecordHandlerImpl::ReportUploader
   EncryptedRecord gap_record_;
 
   // Set for the highest record being uploaded.
-  base::Optional<SequencingInformation> highest_sequencing_information_;
+  absl::optional<SequencingInformation> highest_sequencing_information_;
 
   // Set to |true| if force_confirm flag is present. |false| by default.
   bool force_confirm_{false};
@@ -184,7 +184,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   }
   auto request_result = request_builder.Build();
   if (!request_result.has_value()) {
-    std::move(response_cb).Run(base::nullopt);
+    std::move(response_cb).Run(absl::nullopt);
     return;
   }
 
@@ -197,7 +197,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
       FROM_HERE,
       base::BindOnce(
           [](policy::CloudPolicyClient* client, base::Value request,
-             base::OnceCallback<void(base::Optional<base::Value>)>
+             base::OnceCallback<void(absl::optional<base::Value>)>
                  response_cb) {
             client->UploadEncryptedReport(
                 std::move(request),
@@ -208,7 +208,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
-    base::Optional<base::Value> response) {
+    absl::optional<base::Value> response) {
   if (!response.has_value()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
              base::Unretained(this));
@@ -331,12 +331,12 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   Complete(Status(error::INTERNAL, "Unable to upload any records"));
 }
 
-base::Optional<EncryptedRecord>
+absl::optional<EncryptedRecord>
 RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequencingInformation(
     const base::Value& sequencing_information) {
   if (!highest_sequencing_information_.has_value()) {
     LOG(ERROR) << "highest_sequencing_information_ has no value.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto seq_info_result =
@@ -345,7 +345,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequencingInformation(
     LOG(ERROR) << "Server responded with an invalid SequencingInformation for "
                   "firstFailedUploadedRecord.failedUploadedRecord:"
                << sequencing_information;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SequencingInformation& seq_info = seq_info_result.ValueOrDie();
@@ -357,7 +357,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequencingInformation(
       seq_info.priority() != highest_sequencing_information_->priority() ||
       seq_info.sequencing_id() !=
           highest_sequencing_information_->sequencing_id() + 1) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Build a gap record and return it.

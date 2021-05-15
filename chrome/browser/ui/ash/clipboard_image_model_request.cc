@@ -204,7 +204,7 @@ bool ClipboardImageModelRequest::IsModifyingClipboard() const {
 }
 
 bool ClipboardImageModelRequest::IsRunningRequest(
-    base::Optional<base::UnguessableToken> request_id) const {
+    absl::optional<base::UnguessableToken> request_id) const {
   return request_id.has_value() ? *request_id == request_id_
                                 : !request_id_.is_empty();
 }

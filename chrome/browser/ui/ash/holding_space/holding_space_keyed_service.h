@@ -90,7 +90,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   void AddDownload(HoldingSpaceItem::Type type,
                    const base::FilePath& download_path,
-                   const base::Optional<float>& progress = 1.f);
+                   const absl::optional<float>& progress = 1.f);
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
@@ -112,7 +112,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // NOTE: If present, `progress` must be >= `0.f` and <= `1.f`.
   void AddItemOfType(HoldingSpaceItem::Type type,
                      const base::FilePath& file_path,
-                     const base::Optional<float>& progress = 1.f);
+                     const absl::optional<float>& progress = 1.f);
 
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }

@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
@@ -38,6 +37,7 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -364,7 +364,7 @@ PlatformNotificationServiceImpl::GetNotificationTriggerScheduler() {
 void PlatformNotificationServiceImpl::DidGetBackgroundSourceId(
     base::OnceClosure recorded_closure,
     const content::NotificationDatabaseData& data,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   // This background event did not meet the requirements for the UKM service.
   if (!source_id)
     return;

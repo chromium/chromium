@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -75,7 +75,7 @@ class SearchHandler : public mojom::SearchHandler,
       uint32_t max_num_results,
       mojom::ParentResultBehavior parent_result_behavior,
       local_search_service::ResponseStatus response_status,
-      const base::Optional<std::vector<local_search_service::Result>>&
+      const absl::optional<std::vector<local_search_service::Result>>&
           local_search_service_results);
 
   void AddParentResults(

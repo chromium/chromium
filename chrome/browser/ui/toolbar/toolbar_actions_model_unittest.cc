@@ -1009,7 +1009,7 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
         }
       })",
       extension_id.c_str());
-  base::Optional<base::Value> parsed = base::JSONReader::Read(json);
+  absl::optional<base::Value> parsed = base::JSONReader::Read(json);
   policy::PolicyMap map;
   map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
           policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,

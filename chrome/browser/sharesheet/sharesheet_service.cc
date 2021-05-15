@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -22,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/view.h"
@@ -310,9 +310,9 @@ void SharesheetService::ShowBubbleWithDelegate(
   auto iter = actions.begin();
   while (iter != actions.end()) {
     if ((*iter)->ShouldShowAction(intent, contains_hosted_document)) {
-      targets.emplace_back(TargetType::kAction, base::nullopt,
+      targets.emplace_back(TargetType::kAction, absl::nullopt,
                            (*iter)->GetActionName(), (*iter)->GetActionName(),
-                           base::nullopt, base::nullopt);
+                           absl::nullopt, absl::nullopt);
     }
     ++iter;
   }

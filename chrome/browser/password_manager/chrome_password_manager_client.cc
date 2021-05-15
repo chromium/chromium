@@ -1422,7 +1422,7 @@ bool ChromePasswordManagerClient::ShouldAnnotateNavigationEntries(
 void ChromePasswordManagerClient::GenerationResultAvailable(
     PasswordGenerationType type,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
-    const base::Optional<
+    const absl::optional<
         autofill::password_generation::PasswordGenerationUIData>& ui_data) {
   if (!ui_data || !driver)
     return;

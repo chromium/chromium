@@ -68,11 +68,11 @@ class OfflineSigninLimiter : public KeyedService,
   // Convenience method to get the time limit for SAML and no-SAML flows
   // taking into consideration a possible override from the command line.
   // Returns nullopt if it is an invalid time.
-  base::Optional<base::TimeDelta> GetGaiaSamlTimeLimit();
-  base::Optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
-  base::Optional<base::TimeDelta> GetGaiaNoSamlLockScreenTimeLimit();
-  base::Optional<base::TimeDelta> GetGaiaSamlLockScreenTimeLimit();
-  base::Optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
+  absl::optional<base::TimeDelta> GetGaiaSamlTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaNoSamlLockScreenTimeLimit();
+  absl::optional<base::TimeDelta> GetGaiaSamlLockScreenTimeLimit();
+  absl::optional<base::TimeDelta> GetTimeLimitOverrideForTesting();
 
   // Sets the flag enforcing online login. This will cause the user's next login
   // to use online authentication against GAIA.
@@ -83,7 +83,7 @@ class OfflineSigninLimiter : public KeyedService,
 
   // Stores the last online login time and offline login time limit
   void UpdateOnlineSigninData(base::Time time,
-                              base::Optional<base::TimeDelta> limit);
+                              absl::optional<base::TimeDelta> limit);
 
   Profile* profile_;
   const base::Clock* clock_;

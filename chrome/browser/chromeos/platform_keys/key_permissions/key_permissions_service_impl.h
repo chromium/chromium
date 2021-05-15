@@ -68,7 +68,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
       const std::string& public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
       const std::vector<TokenId>& key_locations,
-      base::Optional<bool> corporate_key,
+      absl::optional<bool> corporate_key,
       Status status);
 
   void IsCorporateKeyWithLocations(const std::string& public_key_spki_der,
@@ -76,7 +76,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
                                    const std::vector<TokenId>& key_locations,
                                    Status key_locations_retrieval_status);
   void IsCorporateKeyWithKpmResponse(IsCorporateKeyCallback callback,
-                                     base::Optional<bool> allowed,
+                                     absl::optional<bool> allowed,
                                      Status status);
 
   void SetCorporateKeyWithLocations(const std::string& public_key_spki_der,

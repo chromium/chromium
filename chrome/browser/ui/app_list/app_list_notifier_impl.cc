@@ -23,7 +23,7 @@ AppListNotifierImpl::AppListNotifierImpl(
     : app_list_controller_(app_list_controller) {
   DCHECK(app_list_controller_);
   app_list_controller_->AddObserver(this);
-  OnAppListVisibilityWillChange(app_list_controller_->IsVisible(base::nullopt),
+  OnAppListVisibilityWillChange(app_list_controller_->IsVisible(absl::nullopt),
                                 display::kInvalidDisplayId);
 }
 

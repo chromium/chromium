@@ -28,7 +28,7 @@ class TestObserver : public BrightnessMonitor::Observer {
 
   // BrightnessMonitor::Observer overrides:
   void OnBrightnessMonitorInitialized(bool success) override {
-    status_ = base::Optional<BrightnessMonitor::Status>(
+    status_ = absl::optional<BrightnessMonitor::Status>(
         success ? BrightnessMonitor::Status::kSuccess
                 : BrightnessMonitor::Status::kDisabled);
   }
@@ -61,7 +61,7 @@ class TestObserver : public BrightnessMonitor::Observer {
   double new_brightness_percent_ = -1;
   int num_brightness_changes_ = 0;
   int num_user_brightness_change_requested_ = 0;
-  base::Optional<BrightnessMonitor::Status> status_;
+  absl::optional<BrightnessMonitor::Status> status_;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };

@@ -522,7 +522,7 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 bool DesktopMediaPickerDialogView::Accept() {
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   // Ok button should only be enabled when a source is selected.
-  base::Optional<DesktopMediaID> source_optional =
+  absl::optional<DesktopMediaID> source_optional =
       accepted_source_.has_value() ? accepted_source_
                                    : GetSelectedController()->GetSelection();
   DesktopMediaID source = source_optional.value();
@@ -592,7 +592,7 @@ void DesktopMediaPickerDialogView::AcceptSource() {
 }
 
 void DesktopMediaPickerDialogView::AcceptSpecificSource(DesktopMediaID source) {
-  accepted_source_ = base::Optional<DesktopMediaID>(source);
+  accepted_source_ = absl::optional<DesktopMediaID>(source);
   AcceptSource();
 }
 

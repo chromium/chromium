@@ -307,7 +307,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
 
  private:
   // The average ARGB color of the current wallpaper.
-  base::Optional<SkColor> average_color_;
+  absl::optional<SkColor> average_color_;
 
   base::WeakPtrFactory<WallpaperPolicyTest> weak_ptr_factory_{this};
 

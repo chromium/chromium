@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/extension_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -32,11 +32,11 @@ namespace {
 // Arbitrary, but reasonable size limit in bytes for prefs file.
 constexpr size_t kPrefsSizeLimit = 1024 * 1024;
 
-base::Optional<base::Value> LoadPrefsFromDisk(
+absl::optional<base::Value> LoadPrefsFromDisk(
     const base::FilePath& prefs_path) {
   if (!base::PathExists(prefs_path)) {
     LOG(WARNING) << "Demo extensions prefs not found " << prefs_path.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string prefs_str;
@@ -44,19 +44,19 @@ base::Optional<base::Value> LoadPrefsFromDisk(
                                          kPrefsSizeLimit)) {
     LOG(ERROR) << "Failed to read prefs " << prefs_path.value() << "; "
                << "failed after reading " << prefs_str.size() << " bytes";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::unique_ptr<base::Value> prefs_value =
       base::JSONReader::ReadDeprecated(prefs_str);
   if (!prefs_value) {
     LOG(ERROR) << "Unable to parse demo extensions prefs.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!prefs_value->is_dict()) {
     LOG(ERROR) << "Demo extensions prefs not a dictionary.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::Value::FromUniquePtrValue(std::move(prefs_value));
@@ -142,7 +142,7 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
 }
 
 void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
-    base::Optional<base::Value> prefs) {
+    absl::optional<base::Value> prefs) {
   if (!prefs.has_value()) {
     LoadFinished(std::make_unique<base::DictionaryValue>());
     return;

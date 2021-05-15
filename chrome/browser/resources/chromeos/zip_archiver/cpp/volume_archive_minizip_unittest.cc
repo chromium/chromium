@@ -18,12 +18,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_archive.h"
 #include "chrome/browser/resources/chromeos/zip_archiver/cpp/volume_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -73,20 +73,20 @@ class TestVolumeReader : public VolumeReader {
     return file_.Seek(whence, offset);
   }
 
-  base::Optional<std::string> Passphrase() override { return passphrase_; }
+  absl::optional<std::string> Passphrase() override { return passphrase_; }
 
   int64_t offset() override { return Seek(0, base::File::FROM_CURRENT); }
 
   int64_t archive_size() override { return file_.GetLength(); }
 
-  void set_passphrase(base::Optional<std::string> passphrase) {
+  void set_passphrase(absl::optional<std::string> passphrase) {
     passphrase_ = std::move(passphrase);
   }
 
  private:
   base::File file_;
   std::vector<char> buffer_;
-  base::Optional<std::string> passphrase_;
+  absl::optional<std::string> passphrase_;
 };
 
 class VolumeArchiveMinizipTest : public testing::Test {
@@ -248,7 +248,7 @@ TEST_F(VolumeArchiveMinizipTest, Encrypted_PkCrypt) {
   std::unique_ptr<TestVolumeReader> reader =
       std::make_unique<TestVolumeReader>(GetTestZipPath("encrypted.zip"));
   reader->set_passphrase(
-      base::make_optional<std::string>(kEncryptedZipPassphrase));
+      absl::make_optional<std::string>(kEncryptedZipPassphrase));
   VolumeArchiveMinizip archive(std::move(reader));
   ASSERT_TRUE(archive.Init(""));
 
@@ -267,7 +267,7 @@ TEST_F(VolumeArchiveMinizipTest, Encrypted_AES) {
   std::unique_ptr<TestVolumeReader> reader =
       std::make_unique<TestVolumeReader>(GetTestZipPath("encrypted_aes.zip"));
   reader->set_passphrase(
-      base::make_optional<std::string>(kEncryptedZipPassphrase));
+      absl::make_optional<std::string>(kEncryptedZipPassphrase));
   VolumeArchiveMinizip archive(std::move(reader));
   ASSERT_TRUE(archive.Init(""));
 

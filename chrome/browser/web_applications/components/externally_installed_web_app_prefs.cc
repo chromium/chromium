@@ -161,7 +161,7 @@ void ExternallyInstalledWebAppPrefs::Insert(
   update->SetKey(url.spec(), std::move(dict));
 }
 
-base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
+absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -171,10 +171,10 @@ base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
   if (v && v->is_dict()) {
     v = v->FindKey(kExtensionId);
     if (v && v->is_string()) {
-      return base::make_optional(v->GetString());
+      return absl::make_optional(v->GetString());
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
@@ -185,7 +185,7 @@ bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
   return dict->DictEmpty();
 }
 
-base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
+absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
     const GURL& url) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -193,11 +193,11 @@ base::Optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
       pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
           ->FindKey(url.spec());
   if (!entry)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<bool> is_placeholder = entry->FindBoolKey(kIsPlaceholder);
+  absl::optional<bool> is_placeholder = entry->FindBoolKey(kIsPlaceholder);
   if (!is_placeholder.has_value() || !is_placeholder.value())
-    return base::nullopt;
+    return absl::nullopt;
 
   return *entry->FindStringKey(kExtensionId);
 }

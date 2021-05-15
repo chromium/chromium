@@ -12,12 +12,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -87,7 +87,7 @@ class SessionService : public SessionServiceBase {
   // multiple windows.
   void SetTabGroup(const SessionID& window_id,
                    const SessionID& tab_id,
-                   base::Optional<tab_groups::TabGroupId> group);
+                   absl::optional<tab_groups::TabGroupId> group);
 
   // Updates the metadata associated with a tab group. |window_id| should be
   // the window where the group currently resides. Note that a group can't be
@@ -164,7 +164,7 @@ class SessionService : public SessionServiceBase {
   void BuildCommandsForTab(const SessionID& window_id,
                            content::WebContents* tab,
                            int index_in_window,
-                           base::Optional<tab_groups::TabGroupId> group,
+                           absl::optional<tab_groups::TabGroupId> group,
                            bool is_pinned,
                            IdToRange* tab_to_available_range) override;
 

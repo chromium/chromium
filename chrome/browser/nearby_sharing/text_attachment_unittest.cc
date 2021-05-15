@@ -68,8 +68,8 @@ using TextAttachmentTextTitleTest =
 
 TEST_P(TextAttachmentTextTitleTest, TextTitleMatches) {
   TextAttachment attachment(GetParam().type, GetParam().text_body,
-                            /*title=*/base::nullopt,
-                            /*mime_type=*/base::nullopt);
+                            /*title=*/absl::nullopt,
+                            /*mime_type=*/absl::nullopt);
   EXPECT_EQ(GetParam().expected_text_title, attachment.text_title());
 }
 

@@ -67,16 +67,16 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           })");
 
-base::Optional<NearbyShareHttpStatus> HttpStatusFromUrlLoader(
+absl::optional<NearbyShareHttpStatus> HttpStatusFromUrlLoader(
     const network::SimpleURLLoader* loader) {
   if (!loader)
-    return base::nullopt;
+    return absl::nullopt;
 
   return NearbyShareHttpStatus(loader->NetError(), loader->ResponseInfo());
 }
 
 void LogReceiveResult(bool success,
-                      const base::Optional<NearbyShareHttpStatus>& http_status,
+                      const absl::optional<NearbyShareHttpStatus>& http_status,
                       const std::string& request_id) {
   std::stringstream ss;
   ss << "Instant messaging receive express "
@@ -270,7 +270,7 @@ void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
 void ReceiveMessagesExpress::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fast_path_ready_timeout_timer_.Stop();
-  base::Optional<NearbyShareHttpStatus> http_status =
+  absl::optional<NearbyShareHttpStatus> http_status =
       HttpStatusFromUrlLoader(url_loader_.get());
 
   NS_LOG(VERBOSE) << __func__ << ": success? " << (success ? "yes" : "no")
@@ -302,7 +302,7 @@ void ReceiveMessagesExpress::OnFastPathReady() {
   NS_LOG(VERBOSE) << __func__;
   fast_path_ready_timeout_timer_.Stop();
   if (start_receiving_messages_callback_) {
-    LogReceiveResult(/*success=*/true, /*http_status=*/base::nullopt,
+    LogReceiveResult(/*success=*/true, /*http_status=*/absl::nullopt,
                      request_id_);
     std::move(start_receiving_messages_callback_)
         .Run(true, std::move(self_pending_remote_));

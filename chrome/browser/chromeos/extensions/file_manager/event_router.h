@@ -15,7 +15,6 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
@@ -33,6 +32,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class Profile;
@@ -64,7 +64,7 @@ class EventRouter
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
-      const base::Optional<std::string>& package_name) override;
+      const absl::optional<std::string>& package_name) override;
 
   // KeyedService overrides.
   void Shutdown() override;

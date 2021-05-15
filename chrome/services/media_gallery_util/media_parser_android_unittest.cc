@@ -26,7 +26,7 @@ namespace {
 struct ExtractVideoFrameResult {
   bool success = false;
   chrome::mojom::VideoFrameDataPtr video_frame_data;
-  base::Optional<media::VideoDecoderConfig> config;
+  absl::optional<media::VideoDecoderConfig> config;
 };
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -114,7 +114,7 @@ class MediaParserAndroidTest : public testing::Test {
         mime_type, size, std::move(remote_data_source),
         base::BindLambdaForTesting(
             [&](bool success, chrome::mojom::VideoFrameDataPtr video_frame_data,
-                const base::Optional<media::VideoDecoderConfig>& config) {
+                const absl::optional<media::VideoDecoderConfig>& config) {
               result.success = success;
               result.video_frame_data = std::move(video_frame_data);
               result.config = config;

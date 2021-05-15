@@ -75,7 +75,7 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
       policy::DMAuth::FromDMToken(chromeos::DeviceSettingsService::Get()
                                       ->policy_data()
                                       ->request_token()),
-      /*oauth_token=*/base::nullopt,
+      /*oauth_token=*/absl::nullopt,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       base::BindOnce(&PublicSamlUrlFetcher::OnPublicSamlUrlReceived,

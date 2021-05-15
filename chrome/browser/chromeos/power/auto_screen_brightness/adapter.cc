@@ -169,8 +169,8 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
   const auto decision_at_first_recent_user_brightness_request =
       decision_at_first_recent_user_brightness_request_;
 
-  first_recent_user_brightness_request_time_ = base::nullopt;
-  decision_at_first_recent_user_brightness_request_ = base::nullopt;
+  first_recent_user_brightness_request_time_ = absl::nullopt;
+  decision_at_first_recent_user_brightness_request_ = absl::nullopt;
 
   // We skip this notification if adapter hasn't been initialised because its
   // |params_| may change. We need to log even if adapter is initialized to
@@ -194,7 +194,7 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
                        *decision_at_first_recent_user_brightness_request,
                        old_brightness_percent, new_brightness_percent);
 
-    const base::Optional<AlsAvgStdDev> log_als_avg_stddev =
+    const absl::optional<AlsAvgStdDev> log_als_avg_stddev =
         decision_at_first_recent_user_brightness_request->log_als_avg_stddev;
 
     const std::string log_als =
@@ -202,8 +202,8 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
                            : "";
     OnBrightnessChanged(
         *first_recent_user_brightness_request_time, new_brightness_percent,
-        log_als_avg_stddev ? base::Optional<double>(log_als_avg_stddev->avg)
-                           : base::nullopt);
+        log_als_avg_stddev ? absl::optional<double>(log_als_avg_stddev->avg)
+                           : absl::nullopt);
   }
 
   if (!metrics_reporter_)
@@ -269,7 +269,7 @@ void Adapter::OnModelInitialized(const Model& model) {
   UpdateStatus();
 }
 
-void Adapter::OnModelConfigLoaded(base::Optional<ModelConfig> model_config) {
+void Adapter::OnModelConfigLoaded(absl::optional<ModelConfig> model_config) {
   DCHECK(!enabled_by_model_configs_.has_value());
 
   enabled_by_model_configs_ = model_config.has_value();
@@ -320,16 +320,16 @@ bool Adapter::IsAppliedForTesting() const {
           !adapter_disabled_by_user_adjustment_);
 }
 
-base::Optional<MonotoneCubicSpline> Adapter::GetGlobalCurveForTesting() const {
+absl::optional<MonotoneCubicSpline> Adapter::GetGlobalCurveForTesting() const {
   return model_.global_curve;
 }
 
-base::Optional<MonotoneCubicSpline> Adapter::GetPersonalCurveForTesting()
+absl::optional<MonotoneCubicSpline> Adapter::GetPersonalCurveForTesting()
     const {
   return model_.personal_curve;
 }
 
-base::Optional<AlsAvgStdDev> Adapter::GetAverageAmbientWithStdDevForTesting(
+absl::optional<AlsAvgStdDev> Adapter::GetAverageAmbientWithStdDevForTesting(
     base::TimeTicks now) {
   DCHECK(log_als_values_);
   return log_als_values_->AverageAmbientWithStdDev(now);
@@ -343,7 +343,7 @@ double Adapter::GetDarkeningThresholdForTesting() const {
   return *darkening_threshold_;
 }
 
-base::Optional<double> Adapter::GetCurrentAvgLogAlsForTesting() const {
+absl::optional<double> Adapter::GetCurrentAvgLogAlsForTesting() const {
   return average_log_ambient_lux_;
 }
 
@@ -536,7 +536,7 @@ Adapter::AdapterDecision Adapter::CanAdjustBrightness(base::TimeTicks now) {
   DCHECK(!als_init_time_.is_null());
 
   AdapterDecision decision;
-  const base::Optional<AlsAvgStdDev> log_als_avg_stddev =
+  const absl::optional<AlsAvgStdDev> log_als_avg_stddev =
       log_als_values_->AverageAmbientWithStdDev(now);
   decision.log_als_avg_stddev = log_als_avg_stddev;
 
@@ -701,7 +701,7 @@ double Adapter::GetBrightnessBasedOnAmbientLogLux(
 
 void Adapter::OnBrightnessChanged(base::TimeTicks now,
                                   double new_brightness_percent,
-                                  base::Optional<double> new_log_als) {
+                                  absl::optional<double> new_log_als) {
   DCHECK_NE(adapter_status_, Status::kInitializing);
 
   current_brightness_ = new_brightness_percent;

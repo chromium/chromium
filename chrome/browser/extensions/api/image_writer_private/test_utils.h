@@ -136,8 +136,8 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
   ErrorCallback error_callback_;
   CancelCallback cancel_callback_;
 
-  base::Optional<SimulateProgressInfo> simulate_on_write_;
-  base::Optional<SimulateProgressInfo> simulate_on_verify_;
+  absl::optional<SimulateProgressInfo> simulate_on_write_;
+  absl::optional<SimulateProgressInfo> simulate_on_verify_;
 };
 
 class ImageWriterTestUtils {

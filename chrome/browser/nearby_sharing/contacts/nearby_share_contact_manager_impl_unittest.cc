@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
@@ -32,6 +31,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

@@ -193,7 +193,7 @@ void PinBackend::Set(const AccountId& account_id,
     // There may be a pref value if resetting PIN and the device now supports
     // cryptohome-based PIN.
     storage->pin_storage_prefs()->RemovePin();
-    cryptohome_backend_->SetPin(*user_context, pin, base::nullopt,
+    cryptohome_backend_->SetPin(*user_context, pin, absl::nullopt,
                                 std::move(did_set));
     UpdatePinAutosubmitOnSet(account_id, pin.length());
   } else {

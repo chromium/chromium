@@ -60,7 +60,7 @@ class PageInfoHoverButton : public HoverButton {
       int click_target_id,
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
-      base::Optional<ui::ImageModel> action_image_icon = base::nullopt);
+      absl::optional<ui::ImageModel> action_image_icon = absl::nullopt);
   ~PageInfoHoverButton() override = default;
 
   // Updates the title text, and applies the secondary style to the secondary

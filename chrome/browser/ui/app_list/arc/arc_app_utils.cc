@@ -128,7 +128,7 @@ void NotifyAppLaunchObservers(content::BrowserContext* context,
 
 bool Launch(content::BrowserContext* context,
             const std::string& app_id,
-            const base::Optional<std::string>& intent,
+            const absl::optional<std::string>& intent,
             int event_flags,
             arc::mojom::WindowInfoPtr window_info) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context);
@@ -268,7 +268,7 @@ bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                arc::UserInteractionType user_action) {
-  return LaunchAppWithIntent(context, app_id, base::nullopt /* launch_intent */,
+  return LaunchAppWithIntent(context, app_id, absl::nullopt /* launch_intent */,
                              event_flags, user_action,
                              MakeWindowInfo(display::kInvalidDisplayId));
 }
@@ -278,13 +278,13 @@ bool LaunchApp(content::BrowserContext* context,
                int event_flags,
                arc::UserInteractionType user_action,
                arc::mojom::WindowInfoPtr window_info) {
-  return LaunchAppWithIntent(context, app_id, base::nullopt /* launch_intent */,
+  return LaunchAppWithIntent(context, app_id, absl::nullopt /* launch_intent */,
                              event_flags, user_action, std::move(window_info));
 }
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,
-                         const base::Optional<std::string>& launch_intent,
+                         const absl::optional<std::string>& launch_intent,
                          int event_flags,
                          arc::UserInteractionType user_action,
                          arc::mojom::WindowInfoPtr window_info) {
@@ -334,7 +334,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  base::Optional<std::string> launch_intent_to_send = std::move(launch_intent);
+  absl::optional<std::string> launch_intent_to_send = std::move(launch_intent);
   if (app_info && !app_info->ready) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -175,7 +175,7 @@ TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  base::Optional<int> install_source =
+  absl::optional<int> install_source =
       GetIntWebAppPref(profile()->GetPrefs(), result.installed_app_id,
                        kLatestWebAppInstallSource);
   EXPECT_TRUE(install_source.has_value());

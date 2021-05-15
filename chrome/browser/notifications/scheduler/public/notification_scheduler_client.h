@@ -11,10 +11,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/throttle_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace notifications {

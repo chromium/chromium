@@ -27,13 +27,13 @@ LoginScreenStorageExtensionFunction::~LoginScreenStorageExtensionFunction() =
     default;
 
 void LoginScreenStorageExtensionFunction::OnDataStored(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : NoArguments());
 }
 
 void LoginScreenStorageExtensionFunction::OnDataRetrieved(
-    base::Optional<std::string> data,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> data,
+    absl::optional<std::string> error) {
   if (error) {
     Respond(Error(*error));
     return;
@@ -62,7 +62,7 @@ void LoginScreenStorageStorePersistentDataFunction::OnDataStored(
     std::vector<std::string> extension_ids,
     const login_manager::LoginScreenStorageMetadata& metadata,
     const std::string& data,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   if (error) {
     Respond(Error(*error));
     return;

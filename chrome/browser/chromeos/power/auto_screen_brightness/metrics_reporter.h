@@ -93,7 +93,7 @@ class MetricsReporter : public PowerManagerClient::Observer {
 
   // Used as an index into |daily_counts_| for counting adjustments.
   // Set once and then never changed during the Chrome session.
-  base::Optional<DeviceClass> device_class_;
+  absl::optional<DeviceClass> device_class_;
 
   base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
       power_manager_client_observation_{this};

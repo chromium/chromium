@@ -120,7 +120,7 @@ void DemoResources::InstalledComponentLoaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
   component_error_ = error;
-  OnDemoResourcesLoaded(base::make_optional(path));
+  OnDemoResourcesLoaded(absl::make_optional(path));
 }
 
 void DemoResources::LoadPreinstalledOfflineResources() {
@@ -133,7 +133,7 @@ void DemoResources::LoadPreinstalledOfflineResources() {
 }
 
 void DemoResources::OnDemoResourcesLoaded(
-    base::Optional<base::FilePath> mounted_path) {
+    absl::optional<base::FilePath> mounted_path) {
   loaded_ = true;
 
   if (mounted_path.has_value())

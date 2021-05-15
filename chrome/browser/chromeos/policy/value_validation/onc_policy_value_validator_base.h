@@ -29,7 +29,7 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   bool ValidateValues(
       const PayloadProto& policy_payload,
       std::vector<ValueValidationIssue>* out_validation_issues) const override {
-    base::Optional<std::string> onc_string =
+    absl::optional<std::string> onc_string =
         GetONCStringFromPayload(policy_payload);
 
     if (!onc_string.has_value())
@@ -69,7 +69,7 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   }
 
  protected:
-  virtual base::Optional<std::string> GetONCStringFromPayload(
+  virtual absl::optional<std::string> GetONCStringFromPayload(
       const PayloadProto& policy_payload) const = 0;
 
  private:

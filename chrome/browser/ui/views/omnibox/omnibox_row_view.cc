@@ -274,7 +274,7 @@ struct ui::metadata::TypeConverter<OmniboxPopupModel::Selection>
     : public ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
       ui::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
-  static base::Optional<OmniboxPopupModel::Selection> FromString(
+  static absl::optional<OmniboxPopupModel::Selection> FromString(
       const std::u16string& source_value);
   static ui::metadata::ValidStrings GetValidStrings() { return {}; }
 };
@@ -290,23 +290,23 @@ ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
 }
 
 // static
-base::Optional<OmniboxPopupModel::Selection>
+absl::optional<OmniboxPopupModel::Selection>
 ui::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
     const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (values.size() != 2)
-    return base::nullopt;
+    return absl::nullopt;
   // TODO(pkasting): This should be size_t, but for some reason that won't link
   // on Mac.
-  const base::Optional<uint32_t> line =
+  const absl::optional<uint32_t> line =
       TypeConverter<uint32_t>::FromString(values[0]);
-  const base::Optional<OmniboxPopupModel::LineState> state =
+  const absl::optional<OmniboxPopupModel::LineState> state =
       TypeConverter<OmniboxPopupModel::LineState>::FromString(values[1]);
   return (line.has_value() && state.has_value())
-             ? base::make_optional<OmniboxPopupModel::Selection>(line.value(),
+             ? absl::make_optional<OmniboxPopupModel::Selection>(line.value(),
                                                                  state.value())
-             : base::nullopt;
+             : absl::nullopt;
 }
 
 BEGIN_METADATA(OmniboxRowView, HeaderView, views::View)

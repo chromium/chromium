@@ -98,7 +98,7 @@ class MockNetworkContext : public network::TestNetworkContext {
             .second);
     if (!enabled_proxy_testing_) {
       // We don't want to test proxy, return that the proxy is disabled.
-      CompleteProxyLookup(url, base::nullopt);
+      CompleteProxyLookup(url, absl::nullopt);
     }
   }
 
@@ -113,14 +113,14 @@ class MockNetworkContext : public network::TestNetworkContext {
       return;
     }
     it->second->OnComplete(result, net::ResolveErrorInfo(result),
-                           base::nullopt);
+                           absl::nullopt);
     resolve_host_clients_.erase(it);
     // Wait for OnComplete() to be executed on the UI thread.
     base::RunLoop().RunUntilIdle();
   }
 
   void CompleteProxyLookup(const GURL& url,
-                           const base::Optional<net::ProxyInfo>& result) {
+                           const absl::optional<net::ProxyInfo>& result) {
     if (IsHangingHost(url))
       return;
 
@@ -943,7 +943,7 @@ TEST_F(PreconnectManagerTest, TestSuccessfulHostLookupAfterProxyLookupFailure) {
                                              GetDirectProxyInfo());
   // Second URL proxy lookup failed.
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect2.GetURL(),
-                                             base::nullopt);
+                                             absl::nullopt);
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
 
   EXPECT_CALL(
@@ -980,7 +980,7 @@ TEST_F(PreconnectManagerTest, TestBothProxyAndHostLookupFailed) {
   EXPECT_CALL(*mock_network_context_,
               ResolveHostProxy(origin_to_preconnect.host()));
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect.GetURL(),
-                                             base::nullopt);
+                                             absl::nullopt);
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
 
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));

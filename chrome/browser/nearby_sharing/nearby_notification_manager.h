@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NotificationDisplayService;
 class PrefService;
@@ -143,11 +143,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
       delegate_map_;
 
   // ShareTarget of the current transfer.
-  base::Optional<ShareTarget> share_target_;
+  absl::optional<ShareTarget> share_target_;
 
   // Last transfer status reported to OnTransferUpdate(). Null when no transfer
   // is in progress.
-  base::Optional<TransferMetadata::Status> last_transfer_status_;
+  absl::optional<TransferMetadata::Status> last_transfer_status_;
 
   base::OnceCallback<void(SuccessNotificationAction)>
       success_action_test_callback_;

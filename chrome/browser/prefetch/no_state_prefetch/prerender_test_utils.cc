@@ -76,7 +76,7 @@ class NeverRunsExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin) override {
     NOTREACHED();
   }
 
@@ -96,7 +96,7 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     Origin origin,
     FinalStatus expected_final_status,
     bool ignore_final_status)
@@ -343,7 +343,7 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
     content::BrowserContext* browser_context,
     const GURL& url,
     const content::Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     Origin origin) {
   ExpectedContents expected;
   if (!expected_contents_queue_.empty()) {

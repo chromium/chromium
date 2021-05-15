@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -67,9 +67,9 @@ const nearbyshare::proto::UpdateDeviceResponse& TestResponse() {
 }
 
 void VerifyRequest(
-    const base::Optional<std::vector<nearbyshare::proto::Contact>>&
+    const absl::optional<std::vector<nearbyshare::proto::Contact>>&
         expected_contacts,
-    const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+    const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
         expected_certificates,
     const nearbyshare::proto::UpdateDeviceRequest& request) {
   std::vector<std::string> field_mask{request.update_mask().paths().begin(),
@@ -111,9 +111,9 @@ void VerifyRequest(
 }
 
 void VerifyResponse(
-    const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
+    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
         expected_response,
-    const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
   if (expected_response) {
     ASSERT_TRUE(response);
     EXPECT_EQ(expected_response->SerializeAsString(),
@@ -138,8 +138,8 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   void CallUpdateDeviceData(
-      const base::Optional<std::vector<nearbyshare::proto::Contact>>& contacts,
-      const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+      const absl::optional<std::vector<nearbyshare::proto::Contact>>& contacts,
+      const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
           certificates) {
     updater_->UpdateDeviceData(
         contacts, certificates,
@@ -148,9 +148,9 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   void ProcessNextUpdateDeviceDataRequest(
-      const base::Optional<std::vector<nearbyshare::proto::Contact>>&
+      const absl::optional<std::vector<nearbyshare::proto::Contact>>&
           expected_contacts,
-      const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
+      const absl::optional<std::vector<nearbyshare::proto::PublicCertificate>>&
           expected_certificates,
       UpdateDeviceRequestResult result) {
     // Verify the next request.
@@ -178,8 +178,8 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
     EXPECT_EQ(num_responses + 1, responses_.size());
 
     VerifyResponse(result == UpdateDeviceRequestResult::kSuccess
-                       ? base::make_optional(TestResponse())
-                       : base::nullopt,
+                       ? absl::make_optional(TestResponse())
+                       : absl::nullopt,
                    responses_.back());
   }
 
@@ -190,25 +190,25 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   // The callback passed into UpdateDeviceData().
-  void OnResult(const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
+  void OnResult(const absl::optional<nearbyshare::proto::UpdateDeviceResponse>&
                     response) {
     responses_.push_back(response);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::vector<base::Optional<nearbyshare::proto::UpdateDeviceResponse>>
+  std::vector<absl::optional<nearbyshare::proto::UpdateDeviceResponse>>
       responses_;
   FakeNearbyShareClientFactory fake_client_factory_;
   std::unique_ptr<NearbyShareDeviceDataUpdater> updater_;
 };
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_NoParameters) {
-  CallUpdateDeviceData(/*contacts=*/base::nullopt,
-                       /*certificates=*/base::nullopt);
+  CallUpdateDeviceData(/*contacts=*/absl::nullopt,
+                       /*certificates=*/absl::nullopt);
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_contacts=*/base::nullopt,
-      /*expected_certificates=*/base::nullopt,
+      /*expected_contacts=*/absl::nullopt,
+      /*expected_certificates=*/absl::nullopt,
       UpdateDeviceRequestResult::kSuccess);
 }
 
@@ -220,9 +220,9 @@ TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_AllParameters) {
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_OneParameter) {
   CallUpdateDeviceData(TestContactList(),
-                       /*certificates=*/base::nullopt);
+                       /*certificates=*/absl::nullopt);
   ProcessNextUpdateDeviceDataRequest(TestContactList(),
-                                     /*expected_certificates=*/base::nullopt,
+                                     /*expected_certificates=*/absl::nullopt,
                                      UpdateDeviceRequestResult::kSuccess);
 }
 
@@ -240,19 +240,19 @@ TEST_F(NearbyShareDeviceDataUpdaterImplTest, Failure_HttpError) {
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, QueuedRequests) {
   // Queue requests while waiting to process.
-  CallUpdateDeviceData(/*contacts=*/base::nullopt,
-                       /*certificates=*/base::nullopt);
+  CallUpdateDeviceData(/*contacts=*/absl::nullopt,
+                       /*certificates=*/absl::nullopt);
   CallUpdateDeviceData(TestContactList(), TestCertificateList());
-  CallUpdateDeviceData(/*contacts=*/base::nullopt, TestCertificateList());
+  CallUpdateDeviceData(/*contacts=*/absl::nullopt, TestCertificateList());
 
   // Requests are processed in the order they are received.
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_contacts=*/base::nullopt,
-      /*expected_certificates=*/base::nullopt,
+      /*expected_contacts=*/absl::nullopt,
+      /*expected_certificates=*/absl::nullopt,
       UpdateDeviceRequestResult::kSuccess);
   ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kTimeout);
-  ProcessNextUpdateDeviceDataRequest(/*expected_contacts=*/base::nullopt,
+  ProcessNextUpdateDeviceDataRequest(/*expected_contacts=*/absl::nullopt,
                                      TestCertificateList(),
                                      UpdateDeviceRequestResult::kHttpFailure);
 }

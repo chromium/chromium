@@ -44,7 +44,7 @@ ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaTutorials(
 
 ScopedJavaLocalRef<jobject> TutorialConversionBridge::CreateJavaTutorial(
     JNIEnv* env,
-    base::Optional<Tutorial> tutorial) {
+    absl::optional<Tutorial> tutorial) {
   ScopedJavaLocalRef<jobject> jobj;
   if (tutorial.has_value()) {
     jobj = CreateJavaTutorialAndMaybeAddToList(

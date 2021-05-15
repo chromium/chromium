@@ -72,8 +72,8 @@ void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
 
 void BackgroundFetchDelegateImpl::UpdateUI(
     const std::string& job_id,
-    const base::Optional<std::string>& title,
-    const base::Optional<SkBitmap>& icon) {
+    const absl::optional<std::string>& title,
+    const absl::optional<SkBitmap>& icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(title || icon);             // One of the UI options must be updatable.
   DCHECK(!icon || !icon->isNull());  // The |icon|, if provided, is not null.
@@ -148,7 +148,7 @@ void BackgroundFetchDelegateImpl::GetItemById(
     const offline_items_collection::ContentId& id,
     SingleItemCallback callback) {
   auto iter = ui_state_map_.find(id.id);
-  base::Optional<offline_items_collection::OfflineItem> offline_item;
+  absl::optional<offline_items_collection::OfflineItem> offline_item;
   if (iter != ui_state_map_.end())
     offline_item = iter->second.offline_item;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -210,7 +210,7 @@ void BackgroundFetchDelegateImpl::RenameItem(
 
 void BackgroundFetchDelegateImpl::ChangeSchedule(
     const offline_items_collection::ContentId& id,
-    base::Optional<offline_items_collection::OfflineItemSchedule> schedule) {
+    absl::optional<offline_items_collection::OfflineItemSchedule> schedule) {
   NOTIMPLEMENTED();
 }
 
@@ -337,7 +337,7 @@ void BackgroundFetchDelegateImpl::
 
 void BackgroundFetchDelegateImpl::DidGetBackgroundSourceId(
     bool user_initiated_abort,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   // This background event did not meet the requirements for the UKM service.
   if (!source_id)
     return;

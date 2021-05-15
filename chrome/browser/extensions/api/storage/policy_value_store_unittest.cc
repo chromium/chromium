@@ -193,7 +193,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   const base::Value value("111");
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("aaa", base::nullopt, value.Clone()));
+    changes.push_back(ValueStoreChange("aaa", absl::nullopt, value.Clone()));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
                                kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
@@ -208,7 +208,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   // Notify when new policies are added.
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("bbb", base::nullopt, value.Clone()));
+    changes.push_back(ValueStoreChange("bbb", absl::nullopt, value.Clone()));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
                                kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));
@@ -239,7 +239,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange("bbb", new_value.Clone(), base::nullopt));
+        ValueStoreChange("bbb", new_value.Clone(), absl::nullopt));
     EXPECT_CALL(observer_, OnSettingsChangedJSON(
                                kTestExtensionId, StorageAreaNamespace::kManaged,
                                ValueStoreChangeToJson(std::move(changes))));

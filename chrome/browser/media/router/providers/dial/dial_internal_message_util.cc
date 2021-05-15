@@ -143,7 +143,7 @@ std::unique_ptr<DialInternalMessage> DialInternalMessage::From(
     return nullptr;
   }
 
-  base::Optional<base::Value> message_body;
+  absl::optional<base::Value> message_body;
   base::Value* message_body_value = message.FindKey("message");
   if (message_body_value)
     message_body = std::move(*message_body_value);
@@ -160,7 +160,7 @@ std::unique_ptr<DialInternalMessage> DialInternalMessage::From(
 }
 
 DialInternalMessage::DialInternalMessage(DialInternalMessageType type,
-                                         base::Optional<base::Value> body,
+                                         absl::optional<base::Value> body,
                                          const std::string& client_id,
                                          int sequence_number)
     : type(type),
@@ -174,7 +174,7 @@ CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
     const DialInternalMessage& message) {
   DCHECK(message.type == DialInternalMessageType::kCustomDialLaunch);
 
-  const base::Optional<base::Value>& body = message.body;
+  const absl::optional<base::Value>& body = message.body;
   if (!body || !body->is_dict())
     return CustomDialLaunchMessageBody();
 
@@ -185,7 +185,7 @@ CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
 
   bool do_launch = do_launch_value->GetBool();
 
-  base::Optional<std::string> launch_parameter;
+  absl::optional<std::string> launch_parameter;
   const base::Value* launch_parameter_value =
       body->FindKeyOfType("launchParameter", base::Value::Type::STRING);
   if (launch_parameter_value)
@@ -197,7 +197,7 @@ CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
 CustomDialLaunchMessageBody::CustomDialLaunchMessageBody() = default;
 CustomDialLaunchMessageBody::CustomDialLaunchMessageBody(
     bool do_launch,
-    const base::Optional<std::string>& launch_parameter)
+    const absl::optional<std::string>& launch_parameter)
     : do_launch(do_launch), launch_parameter(launch_parameter) {}
 CustomDialLaunchMessageBody::CustomDialLaunchMessageBody(
     const CustomDialLaunchMessageBody& other) = default;
@@ -213,7 +213,7 @@ bool DialInternalMessageUtil::IsStopSessionMessage(
   if (message.type != DialInternalMessageType::kV2Message)
     return false;
 
-  const base::Optional<base::Value>& body = message.body;
+  const absl::optional<base::Value>& body = message.body;
   if (!body || !body->is_dict())
     return false;
 
@@ -279,7 +279,7 @@ mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoErrorMessage(
     const std::string& client_id,
     int sequence_number,
     const std::string& error_message,
-    base::Optional<int> http_error_code) const {
+    absl::optional<int> http_error_code) const {
   // The structure of an error message body is defined as chrome.cast.Error in
   // the Cast SDK.
   base::Value body(base::Value::Type::DICTIONARY);

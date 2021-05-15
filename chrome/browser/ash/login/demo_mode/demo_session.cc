@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -52,6 +51,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/constants.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -66,7 +66,7 @@ constexpr base::TimeDelta kRemoveSplashScreenTimeout =
 DemoSession* g_demo_session = nullptr;
 
 // Type of demo config forced on for tests.
-base::Optional<DemoSession::DemoModeConfig> g_force_demo_config;
+absl::optional<DemoSession::DemoModeConfig> g_force_demo_config;
 
 // Path relative to the path at which offline demo resources are loaded that
 // contains the highlights app.
@@ -283,7 +283,7 @@ void DemoSession::SetDemoConfigForTesting(DemoModeConfig demo_config) {
 
 // static
 void DemoSession::ResetDemoConfigForTesting() {
-  g_force_demo_config = base::nullopt;
+  g_force_demo_config = absl::nullopt;
 }
 
 // static

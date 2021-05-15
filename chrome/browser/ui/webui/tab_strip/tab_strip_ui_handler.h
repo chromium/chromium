@@ -33,7 +33,7 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
 
   // TabStripModelObserver:
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabGroupedStateChanged(base::Optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
   void OnTabStripModelChanged(

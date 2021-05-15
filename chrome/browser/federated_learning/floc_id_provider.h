@@ -25,7 +25,7 @@ class FlocIdProvider : public KeyedService {
   // access permission check.
   virtual blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
-      const base::Optional<url::Origin>& top_frame_origin) const = 0;
+      const absl::optional<url::Origin>& top_frame_origin) const = 0;
 
   // Record the floc id to UKM if this is the first recording attempt after each
   // time the floc is (re-)computed. No-op if the existing floc was already

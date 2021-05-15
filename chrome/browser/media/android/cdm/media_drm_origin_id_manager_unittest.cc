@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -27,6 +26,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {

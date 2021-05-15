@@ -195,7 +195,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   void AttachDeviceToVm(const std::string& vm_name,
                         const std::string& guid,
                         bool success = true) {
-    base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response;
+    absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response;
     response.emplace();
     response->set_success(success);
     response->set_guest_port(0);
@@ -228,7 +228,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     return devices.front();
   }
 
-  base::Optional<uint8_t> GetSingleGuestPort() const {
+  absl::optional<uint8_t> GetSingleGuestPort() const {
     EXPECT_EQ(1U, cros_usb_detector_->usb_devices_.size());
     return cros_usb_detector_->usb_devices_.begin()->second.guest_port;
   }
@@ -306,7 +306,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceAddedAndRemoved) {
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
 
@@ -335,7 +335,7 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id);
   EXPECT_FALSE(notification);
   device_manager_.RemoveDevice(device);
@@ -373,11 +373,11 @@ TEST_F(CrosUsbDetectorTest, UsbNotificationClicked) {
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
 
-  notification->delegate()->Click(0, base::nullopt);
+  notification->delegate()->Click(0, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_GE(fake_concierge_client_->attach_usb_device_call_count(), 1);
@@ -453,7 +453,7 @@ TEST_F(CrosUsbDetectorTest, UsbDeviceWithoutProductNameAddedAndRemoved) {
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
 
@@ -483,7 +483,7 @@ TEST_F(CrosUsbDetectorTest,
   std::string notification_id =
       chromeos::CrosUsbDetector::MakeNotificationId(device->guid());
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_EQ(expected_title(), notification->title());
@@ -651,7 +651,7 @@ TEST_F(CrosUsbDetectorTest,
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(notification_id_2);
   ASSERT_TRUE(notification);
 
@@ -685,7 +685,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(notification_id_1);
   ASSERT_TRUE(notification_1);
 
@@ -699,7 +699,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_2 =
+  absl::optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(notification_id_2);
   ASSERT_TRUE(notification_2);
 
@@ -713,7 +713,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
 
   device_manager_.AddDevice(device_3);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_3 =
+  absl::optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(notification_id_3);
   ASSERT_TRUE(notification_3);
 
@@ -747,7 +747,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_1);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_1 =
+  absl::optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(notification_id_1);
   ASSERT_TRUE(notification_1);
 
@@ -757,7 +757,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_2);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_2 =
+  absl::optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(notification_id_2);
   ASSERT_TRUE(notification_2);
 
@@ -771,7 +771,7 @@ TEST_F(CrosUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
 
   device_manager_.AddDevice(device_3);
   base::RunLoop().RunUntilIdle();
-  base::Optional<message_center::Notification> notification_3 =
+  absl::optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(notification_id_3);
   ASSERT_TRUE(notification_3);
 

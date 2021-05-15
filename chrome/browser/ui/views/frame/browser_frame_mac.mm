@@ -197,7 +197,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // or if the page is distillable.
       content::WebContents* web_contents =
           browser->tab_strip_model()->GetActiveWebContents();
-      base::Optional<dom_distiller::DistillabilityResult> distillability =
+      absl::optional<dom_distiller::DistillabilityResult> distillability =
           dom_distiller::GetLatestResult(web_contents);
       bool distillable =
           distillability && distillability.value().is_distillable;

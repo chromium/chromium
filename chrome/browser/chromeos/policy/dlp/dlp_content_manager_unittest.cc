@@ -9,7 +9,6 @@
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -30,6 +29,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Mock;

@@ -49,12 +49,12 @@ class ConnectorsService : public KeyedService {
 
   // Accessors that check kEnterpriseConnectorsEnabled is enabled, and then call
   // the corresponding method in ConnectorsManager.
-  base::Optional<ReportingSettings> GetReportingSettings(
+  absl::optional<ReportingSettings> GetReportingSettings(
       ReportingConnector connector);
-  base::Optional<AnalysisSettings> GetAnalysisSettings(
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-  base::Optional<FileSystemSettings> GetFileSystemSettings(
+  absl::optional<FileSystemSettings> GetFileSystemSettings(
       const GURL& url,
       FileSystemConnector connector);
 
@@ -70,9 +70,9 @@ class ConnectorsService : public KeyedService {
       ReportingConnector connector);
 
   // DM token accessor function for real-time URL checks. Returns a profile or
-  // browser DM token depending on the policy scope, and base::nullopt if there
+  // browser DM token depending on the policy scope, and absl::nullopt if there
   // is no token to use.
-  base::Optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+  absl::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
 
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
@@ -100,10 +100,10 @@ class ConnectorsService : public KeyedService {
 
   // Returns the DM token to use with the given |scope_pref|. That pref should
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
-  base::Optional<DmToken> GetDmToken(const char* scope_pref) const;
-  base::Optional<DmToken> GetBrowserDmToken() const;
+  absl::optional<DmToken> GetDmToken(const char* scope_pref) const;
+  absl::optional<DmToken> GetBrowserDmToken() const;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<DmToken> GetProfileDmToken() const;
+  absl::optional<DmToken> GetProfileDmToken() const;
 
   // Returns true if the browser isn't managed by CBCM, otherwise this checks if
   // the affiliations IDs from the profile and browser policy fetching responses

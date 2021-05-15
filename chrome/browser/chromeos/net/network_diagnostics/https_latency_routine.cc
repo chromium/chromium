@@ -75,7 +75,7 @@ class HttpsLatencyRoutine::HostResolver
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   // Performs the DNS resolution.
   void Run(const GURL& url);
@@ -107,7 +107,7 @@ HttpsLatencyRoutine::HostResolver::~HostResolver() = default;
 void HttpsLatencyRoutine::HostResolver::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   receiver_.reset();
   host_resolver_.reset();
 
@@ -143,7 +143,7 @@ void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
 
 void HttpsLatencyRoutine::HostResolver::OnMojoConnectionError() {
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
+             absl::nullopt);
 }
 
 HttpsLatencyRoutine::HttpsLatencyRoutine()
@@ -212,7 +212,7 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   bool success = result == net::OK && !resolved_addresses->empty() &&
                  resolved_addresses.has_value();
   if (!success) {

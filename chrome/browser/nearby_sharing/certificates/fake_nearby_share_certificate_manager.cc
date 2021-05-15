@@ -72,7 +72,7 @@ void FakeNearbyShareCertificateManager::OnStart() {}
 
 void FakeNearbyShareCertificateManager::OnStop() {}
 
-base::Optional<NearbySharePrivateCertificate>
+absl::optional<NearbySharePrivateCertificate>
 FakeNearbyShareCertificateManager::GetValidPrivateCertificate(
     nearby_share::mojom::Visibility visibility) const {
   auto cert = GetNearbyShareTestPrivateCertificate(visibility);

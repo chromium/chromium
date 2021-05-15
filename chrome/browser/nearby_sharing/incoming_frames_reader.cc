@@ -33,17 +33,17 @@ IncomingFramesReader::IncomingFramesReader(
 IncomingFramesReader::~IncomingFramesReader() = default;
 
 void IncomingFramesReader::ReadFrame(
-    base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+    base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_);
   DCHECK(!is_process_stopped_);
 
   callback_ = std::move(callback);
-  frame_type_ = base::nullopt;
+  frame_type_ = absl::nullopt;
 
   // Check in cache for frame.
-  base::Optional<sharing::mojom::V1FramePtr> cached_frame =
+  absl::optional<sharing::mojom::V1FramePtr> cached_frame =
       GetCachedFrame(frame_type_);
   if (cached_frame) {
     Done(std::move(cached_frame));
@@ -55,14 +55,14 @@ void IncomingFramesReader::ReadFrame(
 
 void IncomingFramesReader::ReadFrame(
     sharing::mojom::V1Frame::Tag frame_type,
-    base::OnceCallback<void(base::Optional<sharing::mojom::V1FramePtr>)>
+    base::OnceCallback<void(absl::optional<sharing::mojom::V1FramePtr>)>
         callback,
     base::TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_);
   DCHECK(!is_process_stopped_);
   if (!connection_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -75,7 +75,7 @@ void IncomingFramesReader::ReadFrame(
       FROM_HERE, base::BindOnce(timeout_callback_.callback()), timeout);
 
   // Check in cache for frame.
-  base::Optional<sharing::mojom::V1FramePtr> cached_frame =
+  absl::optional<sharing::mojom::V1FramePtr> cached_frame =
       GetCachedFrame(frame_type_);
   if (cached_frame) {
     Done(std::move(cached_frame));
@@ -88,7 +88,7 @@ void IncomingFramesReader::ReadFrame(
 void IncomingFramesReader::OnNearbyProcessStopped(
     chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   is_process_stopped_ = true;
-  Done(base::nullopt);
+  Done(absl::nullopt);
 }
 
 void IncomingFramesReader::ReadNextFrame() {
@@ -102,11 +102,11 @@ void IncomingFramesReader::OnTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NS_LOG(WARNING) << __func__ << ": Timed out reading from NearbyConnection.";
-  Done(base::nullopt);
+  Done(absl::nullopt);
 }
 
 void IncomingFramesReader::OnDataReadFromConnection(
-    base::Optional<std::vector<uint8_t>> bytes) {
+    absl::optional<std::vector<uint8_t>> bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!callback_) {
@@ -115,7 +115,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
 
   if (!bytes) {
     NS_LOG(WARNING) << __func__ << ": Failed to read frame";
-    Done(base::nullopt);
+    Done(absl::nullopt);
     return;
   }
 
@@ -126,7 +126,7 @@ void IncomingFramesReader::OnDataReadFromConnection(
     NS_LOG(WARNING)
         << __func__
         << ": Cannot decode frame. Not currently bound to nearby process";
-    Done(base::nullopt);
+    Done(absl::nullopt);
     return;
   }
 
@@ -164,18 +164,18 @@ void IncomingFramesReader::OnFrameDecoded(sharing::mojom::FramePtr frame) {
 }
 
 void IncomingFramesReader::Done(
-    base::Optional<sharing::mojom::V1FramePtr> frame) {
+    absl::optional<sharing::mojom::V1FramePtr> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  frame_type_ = base::nullopt;
+  frame_type_ = absl::nullopt;
   timeout_callback_.Cancel();
   if (callback_) {
     std::move(callback_).Run(std::move(frame));
   }
 }
 
-base::Optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
-    base::Optional<sharing::mojom::V1Frame::Tag> frame_type) {
+absl::optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
+    absl::optional<sharing::mojom::V1Frame::Tag> frame_type) {
   NS_LOG(VERBOSE) << __func__ << ": Fetching cached frame";
   if (frame_type)
     NS_LOG(VERBOSE) << __func__ << ": Requested frame type - " << *frame_type;
@@ -184,7 +184,7 @@ base::Optional<sharing::mojom::V1FramePtr> IncomingFramesReader::GetCachedFrame(
       frame_type ? cached_frames_.find(*frame_type) : cached_frames_.begin();
 
   if (iter == cached_frames_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   NS_LOG(VERBOSE) << __func__ << ": Successfully read cached frame";
   sharing::mojom::V1FramePtr frame = std::move(iter->second);

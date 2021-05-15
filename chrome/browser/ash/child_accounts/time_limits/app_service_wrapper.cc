@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -167,7 +167,7 @@ std::string AppServiceWrapper::GetAppName(const AppId& app_id) const {
 void AppServiceWrapper::GetAppIcon(
     const AppId& app_id,
     int size_hint_in_dp,
-    base::OnceCallback<void(base::Optional<gfx::ImageSkia>)> on_icon_ready)
+    base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> on_icon_ready)
     const {
   apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
@@ -183,14 +183,14 @@ void AppServiceWrapper::GetAppIcon(
       size_hint_in_dp,
       /* allow_placeholder_icon */ false,
       base::BindOnce(
-          [](base::OnceCallback<void(base::Optional<gfx::ImageSkia>)> callback,
+          [](base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> callback,
              apps::mojom::IconValuePtr icon_value) {
             auto icon_type = (base::FeatureList::IsEnabled(
                                  features::kAppServiceAdaptiveIcon))
                                  ? apps::mojom::IconType::kStandard
                                  : apps::mojom::IconType::kUncompressed;
             if (!icon_value || icon_value->icon_type != icon_type) {
-              std::move(callback).Run(base::nullopt);
+              std::move(callback).Run(absl::nullopt);
             } else {
               std::move(callback).Run(icon_value->uncompressed);
             }
@@ -209,7 +209,7 @@ bool AppServiceWrapper::IsAppInstalled(const std::string& app_id) {
 AppId AppServiceWrapper::AppIdFromAppServiceId(
     const std::string& app_service_id,
     apps::mojom::AppType app_type) const {
-  base::Optional<AppId> app_id;
+  absl::optional<AppId> app_id;
   GetAppCache().ForOneApp(app_service_id,
                           [&app_id](const apps::AppUpdate& update) {
                             app_id = AppIdFromAppUpdate(update);

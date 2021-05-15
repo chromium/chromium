@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Ties associated information to an Attachment.
 struct AttachmentInfo {
@@ -19,7 +19,7 @@ struct AttachmentInfo {
   AttachmentInfo(AttachmentInfo&&);
   AttachmentInfo& operator=(AttachmentInfo&&);
 
-  base::Optional<int64_t> payload_id;
+  absl::optional<int64_t> payload_id;
   std::string text_body;
   base::FilePath file_path;
 };

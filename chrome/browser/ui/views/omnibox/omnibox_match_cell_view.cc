@@ -8,7 +8,6 @@
 
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,6 +17,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/common/image_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

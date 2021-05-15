@@ -662,7 +662,7 @@ void NewTabPageHandler::OnPromoDataUpdated() {
       UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
                                  duration);
     }
-    promo_load_start_time_ = base::nullopt;
+    promo_load_start_time_ = absl::nullopt;
   }
 
   const auto& data = promo_service_->promo_data();
@@ -704,7 +704,7 @@ void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
 }
 
 void NewTabPageHandler::OnPromoRendered(double time,
-                                        const base::Optional<GURL>& log_url) {
+                                        const absl::optional<GURL>& log_url) {
   logger_.LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
   if (log_url.has_value() && log_url->is_valid()) {
@@ -799,7 +799,7 @@ void NewTabPageHandler::OnCustomizeDialogAction(
 
 void NewTabPageHandler::OnDoodleImageClicked(
     new_tab_page::mojom::DoodleImageType type,
-    const base::Optional<::GURL>& log_url) {
+    const absl::optional<::GURL>& log_url) {
   NTPLoggingEventType event;
   switch (type) {
     case new_tab_page::mojom::DoodleImageType::kAnimation:
@@ -844,7 +844,7 @@ void NewTabPageHandler::OnDoodleImageRendered(
 void NewTabPageHandler::OnDoodleShared(
     new_tab_page::mojom::DoodleShareChannel channel,
     const std::string& doodle_id,
-    const base::Optional<std::string>& share_id) {
+    const absl::optional<std::string>& share_id) {
   int channel_id;
   switch (channel) {
     case new_tab_page::mojom::DoodleShareChannel::kFacebook:
@@ -1028,7 +1028,7 @@ void NewTabPageHandler::FileSelectionCanceled(void* params) {
 void NewTabPageHandler::OnLogoAvailable(
     GetDoodleCallback callback,
     search_provider_logos::LogoCallbackReason type,
-    const base::Optional<search_provider_logos::EncodedLogo>& logo) {
+    const absl::optional<search_provider_logos::EncodedLogo>& logo) {
   if (!logo) {
     std::move(callback).Run(nullptr);
     return;
@@ -1141,12 +1141,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
                                          bool success,
                                          std::unique_ptr<std::string> body) {
   if (!success || body->size() < 4 || body->substr(0, 4) != ")]}'") {
-    std::move(callback).Run("", base::nullopt, "");
+    std::move(callback).Run("", absl::nullopt, "");
     return;
   }
   auto value = base::JSONReader::Read(body->substr(4));
   if (!value.has_value()) {
-    std::move(callback).Run("", base::nullopt, "");
+    std::move(callback).Run("", absl::nullopt, "");
     return;
   }
 
@@ -1159,12 +1159,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
       value->FindPath("ddllog.interaction_log_url");
   auto interaction_log_url =
       interaction_log_url_value && interaction_log_url_value->is_string()
-          ? base::Optional<GURL>(
+          ? absl::optional<GURL>(
                 GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                          ->search_terms_data()
                          .GoogleBaseURLValue())
                     .Resolve(interaction_log_url_value->GetString()))
-          : base::nullopt;
+          : absl::nullopt;
   auto* encoded_ei_value = value->FindPath("ddllog.encoded_ei");
   auto encoded_ei = encoded_ei_value && encoded_ei_value->is_string()
                         ? encoded_ei_value->GetString()

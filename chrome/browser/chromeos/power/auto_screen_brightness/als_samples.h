@@ -8,8 +8,8 @@
 #include <deque>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {
@@ -44,7 +44,7 @@ class AmbientLightSampleBuffer {
   // Returns average and std-dev of ambient lux from the buffer (discarding
   // samples that are now too old). |now| must be no earlier than any previously
   // added sample. If there are no valid samples, returns nullopt.
-  base::Optional<AlsAvgStdDev> AverageAmbientWithStdDev(base::TimeTicks now);
+  absl::optional<AlsAvgStdDev> AverageAmbientWithStdDev(base::TimeTicks now);
 
   // Returns the number of recorded samples within |horizon| of the last
   // observed time point. |now| must be no earlier than any previously added

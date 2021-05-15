@@ -64,7 +64,7 @@ class StarView : public PageActionIconView,
 
   BooleanPrefMember edit_bookmarks_enabled_;
 
-  base::Optional<FeaturePromoController::PromoHandle>
+  absl::optional<FeaturePromoController::PromoHandle>
       reading_list_entry_point_promo_handle_;
 };
 

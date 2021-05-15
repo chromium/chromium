@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -29,9 +29,9 @@ class PrintingSubmitJobFunction : public ExtensionFunction {
 
  private:
   void OnPrintJobSubmitted(
-      base::Optional<api::printing::SubmitJobStatus> status,
+      absl::optional<api::printing::SubmitJobStatus> status,
       std::unique_ptr<std::string> job_id,
-      base::Optional<std::string> error);
+      absl::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("printing.submitJob", PRINTING_SUBMITJOB)
 };
 
@@ -67,9 +67,9 @@ class PrintingGetPrinterInfoFunction : public ExtensionFunction {
 
  private:
   void OnPrinterInfoRetrieved(
-      base::Optional<base::Value> capabilities,
-      base::Optional<api::printing::PrinterStatus> status,
-      base::Optional<std::string> error);
+      absl::optional<base::Value> capabilities,
+      absl::optional<api::printing::PrinterStatus> status,
+      absl::optional<std::string> error);
   DECLARE_EXTENSION_FUNCTION("printing.getPrinterInfo", PRINTING_GETPRINTERINFO)
 };
 

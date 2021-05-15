@@ -118,7 +118,7 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
     return false;
   }
 
-  base::Optional<base::Time> last_checked = util::ValueToTime(value);
+  absl::optional<base::Time> last_checked = util::ValueToTime(value);
   if (!last_checked.has_value()) {
     return false;
   }

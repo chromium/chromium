@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/util.h"
@@ -19,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -72,7 +72,7 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
   if (!lock)
     return nullptr;
 
-  base::Optional<base::FilePath> global_prefs_dir = GetBaseDirectory();
+  absl::optional<base::FilePath> global_prefs_dir = GetBaseDirectory();
   if (!global_prefs_dir)
     return nullptr;
   VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
@@ -92,7 +92,7 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs() {
 }
 
 std::unique_ptr<LocalPrefs> CreateLocalPrefs() {
-  base::Optional<base::FilePath> local_prefs_dir = GetVersionedDirectory();
+  absl::optional<base::FilePath> local_prefs_dir = GetVersionedDirectory();
   if (!local_prefs_dir)
     return nullptr;
 

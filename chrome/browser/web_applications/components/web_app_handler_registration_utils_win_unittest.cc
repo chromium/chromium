@@ -59,7 +59,7 @@ class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
                    const std::wstring& app_name,
                    const std::wstring& app_name_extension,
                    const base::FilePath& profile_path) {
-    base::Optional<base::FilePath> launcher_path = CreateAppLauncherFile(
+    absl::optional<base::FilePath> launcher_path = CreateAppLauncherFile(
         app_name, app_name_extension,
         GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
     ASSERT_TRUE(launcher_path.has_value());
@@ -229,7 +229,7 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
   std::wstring app_name_extension = L" extension";
-  base::Optional<base::FilePath> launcher_path =
+  absl::optional<base::FilePath> launcher_path =
       CreateAppLauncherFile(app_name(), app_name_extension,
                             GetOsIntegrationResourcesDirectoryForApp(
                                 profile()->GetPath(), app_id(), GURL()));

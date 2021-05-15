@@ -103,7 +103,7 @@ class TestSystemWebAppInstallation {
       SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
   std::unique_ptr<TestWebAppProviderCreator> test_web_app_provider_creator_;
   // nullopt if SetUpWithoutApps() was used.
-  const base::Optional<SystemAppType> type_;
+  const absl::optional<SystemAppType> type_;
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>
       web_ui_controller_factories_;
   std::set<ContentSettingsType> auto_granted_permissions_;

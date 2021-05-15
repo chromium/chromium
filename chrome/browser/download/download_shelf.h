@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class Profile;
@@ -93,7 +93,7 @@ class DownloadShelf {
   // Callback used by ShowDownloadById() to trigger ShowDownload() once |item|
   // has been fetched.
   void OnGetDownloadDoneForOfflineItem(
-      const base::Optional<offline_items_collection::OfflineItem>& item);
+      const absl::optional<offline_items_collection::OfflineItem>& item);
 
   Browser* const browser_;
   Profile* const profile_;

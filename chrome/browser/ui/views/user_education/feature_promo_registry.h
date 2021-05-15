@@ -8,8 +8,8 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserView;
 
@@ -42,7 +42,7 @@ class FeaturePromoRegistry {
   // The params must be used immediately since it contains a View
   // pointer that may become stale. This may return nothing in which
   // case the promo shouldn't show.
-  base::Optional<FeaturePromoBubbleParams> GetParamsForFeature(
+  absl::optional<FeaturePromoBubbleParams> GetParamsForFeature(
       const base::Feature& iph_feature,
       BrowserView* browser_view);
 

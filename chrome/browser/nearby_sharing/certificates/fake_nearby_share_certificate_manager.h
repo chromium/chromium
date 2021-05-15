@@ -103,7 +103,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   // NearbyShareCertificateManager:
   void OnStart() override;
   void OnStop() override;
-  base::Optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
+  absl::optional<NearbySharePrivateCertificate> GetValidPrivateCertificate(
       nearby_share::mojom::Visibility visibility) const override;
   void UpdatePrivateCertificateInStorage(
       const NearbySharePrivateCertificate& private_certificate) override;

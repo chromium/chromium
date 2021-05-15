@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_PMF_DISCARD_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_HIGH_PMF_DISCARD_POLICY_H_
 
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -58,7 +58,7 @@ class HighPMFDiscardPolicy : public GraphOwned,
     int total_pmf_kb_before_intervention = 0;
     bool a_tab_has_been_discarded = false;
   };
-  base::Optional<InterventionDetails> intervention_details_;
+  absl::optional<InterventionDetails> intervention_details_;
 
   size_t discard_attempts_count_while_pmf_is_high_ = 0;
   size_t successful_discards_count_while_pmf_is_high_ = 0;

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
@@ -39,13 +39,13 @@ class DiceSigninButtonView : public views::View {
   ~DiceSigninButtonView() override;
 
   views::LabelButton* signin_button() const { return signin_button_; }
-  base::Optional<AccountInfo> account() const { return account_; }
+  absl::optional<AccountInfo> account() const { return account_; }
 
  private:
 
   views::LabelButton* signin_button_ = nullptr;
 
-  const base::Optional<AccountInfo> account_;
+  const absl::optional<AccountInfo> account_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_

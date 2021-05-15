@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/proto/test.pb.h"
@@ -26,6 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::Eq;
@@ -120,7 +120,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
 
-  base::Optional<base::Value> value_result =
+  absl::optional<base::Value> value_result =
       base::JSONReader::Read(test_storage_module()->record().data());
   ASSERT_TRUE(value_result);
   EXPECT_EQ(value_result.value(), test_dict);

@@ -154,7 +154,7 @@ bool SetTimeBasedOnPolicy(
 
 namespace update_checker_internal {
 
-base::Optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
+absl::optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
 ParseScheduledUpdate(const base::Value& value) {
   DeviceScheduledUpdateChecker::ScheduledUpdateCheckData result;
   // Parse mandatory values first i.e. hour, minute and frequency of update
@@ -190,7 +190,7 @@ ParseScheduledUpdate(const base::Value& value) {
       const std::string* day_of_week = value.FindStringKey({"day_of_week"});
       if (!day_of_week) {
         LOG(ERROR) << "Day of week missing";
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       // Validated by schema validation at higher layers.
@@ -199,10 +199,10 @@ ParseScheduledUpdate(const base::Value& value) {
     }
 
     case DeviceScheduledUpdateChecker::Frequency::kMonthly: {
-      base::Optional<int> day_of_month = value.FindIntKey({"day_of_month"});
+      absl::optional<int> day_of_month = value.FindIntKey({"day_of_month"});
       if (!day_of_month) {
         LOG(ERROR) << "Day of month missing";
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       // Validated by schema validation at higher layers.
@@ -354,7 +354,7 @@ void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
 
   // Keep any old policy timers running if a new policy is ill-formed and can't
   // be used to set a new timer.
-  base::Optional<ScheduledUpdateCheckData> scheduled_update_check_data =
+  absl::optional<ScheduledUpdateCheckData> scheduled_update_check_data =
       update_checker_internal::ParseScheduledUpdate(*value);
   if (!scheduled_update_check_data) {
     LOG(ERROR) << "Failed to parse policy";
@@ -536,7 +536,7 @@ void DeviceScheduledUpdateChecker::OnUpdateCheckCompletion(
 
 void DeviceScheduledUpdateChecker::ResetState() {
   update_check_timer_.reset();
-  scheduled_update_check_data_ = base::nullopt;
+  scheduled_update_check_data_ = absl::nullopt;
   os_and_policies_update_checker_.Stop();
   start_update_check_timer_task_executor_.Stop();
 }

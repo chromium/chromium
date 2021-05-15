@@ -45,7 +45,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   // Initializing the WebUIDataSource in the constructor is needed for polymer
   // tests.
-  Initialize(/*profile_creation_flow_color=*/base::nullopt);
+  Initialize(/*profile_creation_flow_color=*/absl::nullopt);
 }
 
 SyncConfirmationUI::~SyncConfirmationUI() = default;
@@ -62,7 +62,7 @@ void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow(
 }
 
 void SyncConfirmationUI::Initialize(
-    base::Optional<SkColor> profile_creation_flow_color) {
+    absl::optional<SkColor> profile_creation_flow_color) {
   const bool is_sync_allowed =
       ProfileSyncServiceFactory::IsSyncAllowed(profile_);
 
@@ -108,7 +108,7 @@ void SyncConfirmationUI::InitializeMessageHandler(Browser* browser) {
 
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
-    base::Optional<SkColor> profile_creation_flow_color) {
+    absl::optional<SkColor> profile_creation_flow_color) {
   // Resources for testing.
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",

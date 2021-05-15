@@ -295,7 +295,7 @@ std::string GetPayloadStatusSubcategoryName(
 }
 
 std::string GetUpgradedMediumSubcategoryName(
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return ".NoMediumUpgrade";
@@ -318,7 +318,7 @@ std::string GetUpgradedMediumSubcategoryName(
 }
 
 UpgradedMedium GetUpgradedMediumForMetrics(
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium) {
   if (!last_upgraded_medium) {
     return UpgradedMedium::kNoUpgrade;
@@ -438,7 +438,7 @@ void RecordNearbySharePayloadTextAttachmentTypeMetric(
 
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,
-    base::Optional<location::nearby::connections::mojom::Medium> medium) {
+    absl::optional<location::nearby::connections::mojom::Medium> medium) {
   DCHECK_NE(status,
             location::nearby::connections::mojom::PayloadStatus::kInProgress);
   base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus",
@@ -449,7 +449,7 @@ void RecordNearbySharePayloadFinalStatusMetric(
 }
 
 void RecordNearbySharePayloadMediumMetric(
-    base::Optional<location::nearby::connections::mojom::Medium> medium,
+    absl::optional<location::nearby::connections::mojom::Medium> medium,
     nearby_share::mojom::ShareTargetType type,
     uint64_t num_bytes_transferred) {
   base::UmaHistogramEnumeration("Nearby.Share.Payload.Medium",
@@ -478,7 +478,7 @@ void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
 void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes) {
@@ -504,7 +504,7 @@ void RecordNearbySharePayloadSizeMetric(
 void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
+    absl::optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
@@ -582,7 +582,7 @@ void RecordNearbyShareTransferFinalStatusMetric(
   // Log the transfer success/failure for high-level success and Critical User
   // Journey (CUJ) metrics.
   {
-    base::Optional<bool> success;
+    absl::optional<bool> success;
     switch (TransferMetadata::ToResult(status)) {
       case TransferMetadata::Result::kSuccess:
         success = true;

@@ -114,8 +114,8 @@ void SaveDataToFile(const std::string& data, base::FilePath path) {
 }
 
 // URL to fetch the IEEM sitelist from. Only used for testing.
-base::Optional<std::string>* IeemSitelistUrlForTesting() {
-  static base::NoDestructor<base::Optional<std::string>>
+absl::optional<std::string>* IeemSitelistUrlForTesting() {
+  static base::NoDestructor<absl::optional<std::string>>
       ieem_sitelist_url_for_testing;
   return ieem_sitelist_url_for_testing.get();
 }
@@ -173,7 +173,7 @@ void BrowserSwitcherServiceWin::LoadRulesFromPrefs() {
   BrowserSwitcherService::LoadRulesFromPrefs();
   if (prefs().UseIeSitelist())
     sitelist()->SetIeemSitelist(
-        ParsedXml(prefs().GetCachedIeemSitelist(), base::nullopt));
+        ParsedXml(prefs().GetCachedIeemSitelist(), absl::nullopt));
 }
 
 base::FilePath BrowserSwitcherServiceWin::GetCacheDir() {
@@ -204,7 +204,7 @@ GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
   if (!prefs().UseIeSitelist())
     return GURL();
 
-  if (*IeemSitelistUrlForTesting() != base::nullopt)
+  if (*IeemSitelistUrlForTesting() != absl::nullopt)
     return GURL((*IeemSitelistUrlForTesting()).value());
 
   base::win::RegKey key;

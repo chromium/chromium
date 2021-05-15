@@ -224,7 +224,7 @@ using CanDownloadCallback =
 void CheckCanDownload(const content::WebContents::Getter& web_contents_getter,
                       const GURL& url,
                       const std::string& request_method,
-                      base::Optional<url::Origin> request_initiator,
+                      absl::optional<url::Origin> request_initiator,
                       bool from_download_cross_origin_redirect,
                       CanDownloadCallback can_download_cb) {
   DownloadRequestLimiter* limiter =
@@ -244,7 +244,7 @@ void OnDownloadAcquireFileAccessPermissionDone(
     const content::WebContents::Getter& web_contents_getter,
     const GURL& url,
     const std::string& request_method,
-    base::Optional<url::Origin> request_initiator,
+    absl::optional<url::Origin> request_initiator,
     CanDownloadCallback can_download_cb,
     bool granted) {
   if (granted) {
@@ -269,7 +269,7 @@ void OnDownloadDialogClosed(
       break;
     case DownloadLocationDialogResult::USER_CANCELED:
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                              base::FilePath(), base::nullopt);
+                              base::FilePath(), absl::nullopt);
       break;
     case DownloadLocationDialogResult::DUPLICATE_DIALOG:
       // TODO(xingliu): Figure out the dialog behavior on multiple downloads.
@@ -959,7 +959,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       // If this is a 'Save As' download, just run without confirmation.
       std::move(callback).Run(
           DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-          suggested_path, base::nullopt /*download_schedule*/);
+          suggested_path, absl::nullopt /*download_schedule*/);
       return;
     }
 
@@ -970,7 +970,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       if (reason == DownloadConfirmationReason::PREFERENCE) {
         std::move(callback).Run(
             DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-            suggested_path, base::nullopt /*download_schedule*/);
+            suggested_path, absl::nullopt /*download_schedule*/);
         return;
       }
 
@@ -978,7 +978,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         OnDownloadCanceled(download, true /* has_no_external_storage */);
         std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                                 base::FilePath(),
-                                base::nullopt /*download_schedule*/);
+                                absl::nullopt /*download_schedule*/);
         return;
       }
 
@@ -989,7 +989,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       OnDownloadCanceled(download, false /* has_no_external_storage */);
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                               base::FilePath(),
-                              base::nullopt /*download_schedule*/);
+                              absl::nullopt /*download_schedule*/);
       return;
     }
 
@@ -1001,7 +1001,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       if (!base::android::GetDownloadsDirectory(&download_dir)) {
         std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                                 base::FilePath(),
-                                base::nullopt /*download_schedule*/);
+                                absl::nullopt /*download_schedule*/);
         return;
       }
 
@@ -1065,7 +1065,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       OnDownloadCanceled(download, true /* has_no_external_storage */);
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                               base::FilePath(),
-                              base::nullopt /*download_schedule*/);
+                              absl::nullopt /*download_schedule*/);
       return;
 
     case DownloadConfirmationReason::PREFERENCE:
@@ -1082,7 +1082,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     case DownloadConfirmationReason::SAVE_AS:
       std::move(callback).Run(
           DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-          suggested_path, base::nullopt /*download_schedule*/);
+          suggested_path, absl::nullopt /*download_schedule*/);
       return;
 
     case DownloadConfirmationReason::TARGET_CONFLICT:
@@ -1103,7 +1103,7 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       OnDownloadCanceled(download, false /* has_no_external_storage */);
       std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                               base::FilePath(),
-                              base::nullopt /*download_schedule*/);
+                              absl::nullopt /*download_schedule*/);
       return;
   }
 
@@ -1127,7 +1127,7 @@ void ChromeDownloadManagerDelegate::OnConfirmationCallbackComplete(
     DownloadConfirmationResult result,
     const base::FilePath& virtual_path) {
   std::move(callback).Run(result, virtual_path,
-                          base::nullopt /*download_schedule*/);
+                          absl::nullopt /*download_schedule*/);
   if (!file_picker_callbacks_.empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(file_picker_callbacks_.front()));
@@ -1187,12 +1187,12 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     // target path.
     std::move(callback).Run(
         DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION, target_path,
-        base::nullopt /*download_schedule*/);
+        absl::nullopt /*download_schedule*/);
   } else {
     // If the name generation failed, fail the download.
     std::move(callback).Run(DownloadConfirmationResult::FAILED,
                             base::FilePath(),
-                            base::nullopt /*download_schedule*/);
+                            absl::nullopt /*download_schedule*/);
   }
 }
 
@@ -1582,7 +1582,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     const content::WebContents::Getter& web_contents_getter,
     const GURL& url,
     const std::string& request_method,
-    base::Optional<url::Origin> request_initiator,
+    absl::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     bool content_initiated,
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {

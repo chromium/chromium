@@ -158,11 +158,11 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   std::unique_ptr<base::OneShotTimer> login_screen_idle_timer_;
 
   // The time at which the device was booted, in |clock_| ticks.
-  base::Optional<base::TimeTicks> boot_time_;
+  absl::optional<base::TimeTicks> boot_time_;
 
   // The time at which an update was applied and a reboot became necessary to
   // complete the update process, in |clock_| ticks.
-  base::Optional<base::TimeTicks> update_reboot_needed_time_;
+  absl::optional<base::TimeTicks> update_reboot_needed_time_;
 
   // The reason for the reboot request. Updated whenever a reboot is scheduled.
   AutomaticRebootManagerObserver::Reason reboot_reason_ =

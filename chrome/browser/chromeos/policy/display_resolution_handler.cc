@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -60,7 +60,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   bool use_native = false;
   int width = 0;
   int height = 0;
-  base::Optional<int> scale_percentage = base::nullopt;
+  absl::optional<int> scale_percentage = absl::nullopt;
 
   bool operator==(const ExternalDisplaySettings& rhs) const {
     return use_native == rhs.use_native && width == rhs.width &&

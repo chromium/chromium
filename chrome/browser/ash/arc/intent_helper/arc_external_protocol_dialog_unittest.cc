@@ -1047,7 +1047,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
 
   bool handled = false;
   arc::RunArcExternalProtocolDialog(
-      GURL("tel:12341234"), /*initiating_origin=*/base::nullopt,
+      GURL("tel:12341234"), /*initiating_origin=*/absl::nullopt,
       rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
       /*has_user_gesture=*/true,
       base::BindOnce([](bool* handled, bool result) { *handled = result; },

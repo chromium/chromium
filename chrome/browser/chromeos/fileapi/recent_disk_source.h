@@ -15,12 +15,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/chromeos/fileapi/recent_model.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 #include "storage/browser/file_system/file_system_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -67,7 +67,7 @@ class RecentDiskSource : public RecentSource {
   const std::string uma_histogram_name_;
 
   // Parameters given to GetRecentFiles().
-  base::Optional<Params> params_;
+  absl::optional<Params> params_;
 
   // Time when the build started.
   base::TimeTicks build_start_time_;

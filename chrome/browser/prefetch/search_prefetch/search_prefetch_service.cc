@@ -236,11 +236,11 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   prefetches_[match_search_terms]->MarkPrefetchAsClicked();
 }
 
-base::Optional<SearchPrefetchStatus>
+absl::optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
     std::u16string search_terms) {
   if (prefetches_.find(search_terms) == prefetches_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return prefetches_[search_terms]->current_status();
 }
 
@@ -458,7 +458,7 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);
 
-  base::Optional<TemplateURLData> template_url_service_data;
+  absl::optional<TemplateURLData> template_url_service_data;
 
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
@@ -582,7 +582,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
       continue;
     }
 
-    base::Optional<base::Time> last_update =
+    absl::optional<base::Time> last_update =
         util::ValueToTime(prefetch_url_and_time[1]);
     if (!last_update) {
       continue;

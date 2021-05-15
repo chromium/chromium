@@ -108,7 +108,7 @@ void VerifyPendingList(
 
 void SetExtensionSettings(const std::string& settings_string,
                           TestingProfile* profile) {
-  base::Optional<base::Value> settings =
+  absl::optional<base::Value> settings =
       base::JSONReader::Read(settings_string);
   ASSERT_TRUE(settings.has_value());
   profile->GetTestingPrefService()->SetManagedPref(
@@ -339,7 +339,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    base::Optional<base::Value> settings =
+    absl::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings);
     profile()->GetTestingPrefService()->SetManagedPref(

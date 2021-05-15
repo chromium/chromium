@@ -174,7 +174,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   void TerminatePresentationsOnDisplay(const display::Display& display);
 
   // Returns a display associated with |sink_id|, or a nullopt if not found.
-  base::Optional<display::Display> GetDisplayBySinkId(
+  absl::optional<display::Display> GetDisplayBySinkId(
       const std::string& sink_id) const;
 
   // Returns a list of available sinks.

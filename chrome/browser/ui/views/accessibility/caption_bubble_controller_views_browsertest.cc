@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   int error_icon_height = 20;
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Hamsters' teeth never stop growing");
   EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
   EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Koalas aren't bears: they are marsupials.");
   EXPECT_EQ(default_font,
             GetLabel()->font_list().GetPrimaryFont().GetFontName());
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   SkColor default_color = SK_ColorWHITE;
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription(
       "Marsupials first evolved in South America about 100 million years ago.");
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   SkColor default_color = SkColorSetA(gfx::kGoogleGrey900, 230);
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Most marsupials are nocturnal.");
   EXPECT_EQ(default_color, GetBubble()->color());
 

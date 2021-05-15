@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -121,6 +120,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -296,7 +296,7 @@ void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
   prefs->CommitPendingWrite();
 }
 
-base::Optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
+absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     const UserContext& user_context,
     bool has_incomplete_migration) {
   if (has_incomplete_migration) {
@@ -307,7 +307,7 @@ base::Optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
   if (user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
     // TODO(https://crbug.com/1147009): Remove child user special case or
     // implement finch experiment for child user migration mode.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const bool profile_has_policy =
@@ -663,7 +663,7 @@ void ExistingUserController::PerformLogin(
   }
 
   if (new_user_context.IsUsingPin()) {
-    base::Optional<Key> key = quick_unlock::PinStorageCryptohome::TransformKey(
+    absl::optional<Key> key = quick_unlock::PinStorageCryptohome::TransformKey(
         new_user_context.GetAccountId(), *new_user_context.GetKey());
     if (key) {
       new_user_context.SetKey(*key);
@@ -749,7 +749,7 @@ void ExistingUserController::SetDisplayAndGivenName(
 
 bool ExistingUserController::IsUserAllowlisted(
     const AccountId& account_id,
-    const base::Optional<user_manager::UserType>& user_type) {
+    const absl::optional<user_manager::UserType>& user_type) {
   bool wildcard_match = false;
   if (login_performer_.get()) {
     return login_performer_->IsUserAllowlisted(account_id, &wildcard_match,
@@ -1042,7 +1042,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
       base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()));
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](base::Optional<int> button_index) {
+          base::BindRepeating([](absl::optional<int> button_index) {
             DCHECK(button_index);
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
@@ -1126,7 +1126,7 @@ void ExistingUserController::OnPasswordChangeDetected(
 void ExistingUserController::OnOldEncryptionDetected(
     const UserContext& user_context,
     bool has_incomplete_migration) {
-  base::Optional<EncryptionMigrationMode> encryption_migration_mode =
+  absl::optional<EncryptionMigrationMode> encryption_migration_mode =
       GetEncryptionMigrationMode(user_context, has_incomplete_migration);
   if (!encryption_migration_mode.has_value()) {
     ContinuePerformLoginWithoutMigration(login_performer_->auth_mode(),

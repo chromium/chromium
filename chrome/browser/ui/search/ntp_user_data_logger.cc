@@ -478,7 +478,7 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time) {
 
   bool has_server_side_suggestions = false;
   int tiles_count = 0;
-  for (const base::Optional<ntp_tiles::NTPTileImpression>& impression :
+  for (const absl::optional<ntp_tiles::NTPTileImpression>& impression :
        logged_impressions_) {
     if (!impression.has_value()) {
       break;

@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +41,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -115,7 +115,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   }
 
   void InitServiceWithExternalProviders(
-      const base::Optional<bool> block_external = base::nullopt) {
+      const absl::optional<bool> block_external = absl::nullopt) {
     InitService();
 
     if (block_external.has_value())

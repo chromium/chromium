@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/installer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -91,11 +91,11 @@ struct InstallerOutcome {
   InstallerOutcome(const InstallerOutcome&);
   ~InstallerOutcome();
 
-  base::Optional<InstallerResult> installer_result;
-  base::Optional<int> installer_error;
-  base::Optional<int> installer_extracode1;
-  base::Optional<std::string> installer_text;
-  base::Optional<std::string> installer_cmd_line;
+  absl::optional<InstallerResult> installer_result;
+  absl::optional<int> installer_error;
+  absl::optional<int> installer_extracode1;
+  absl::optional<std::string> installer_text;
+  absl::optional<std::string> installer_cmd_line;
 };
 
 // Deletes the `app_id` registry sub key under the `ClientState`.
@@ -111,7 +111,7 @@ bool SetInstallerProgressForTesting(const std::string& app_id, int value);
 bool DeleteInstallerOutput(const std::string& app_id);
 
 // Returns the Instaler API outcome, best-effort.
-base::Optional<InstallerOutcome> GetInstallerOutcome(const std::string& app_id);
+absl::optional<InstallerOutcome> GetInstallerOutcome(const std::string& app_id);
 bool SetInstallerOutcomeForTesting(const std::string& app_id,
                                    const InstallerOutcome& installer_outcome);
 
@@ -119,7 +119,7 @@ bool SetInstallerOutcomeForTesting(const std::string& app_id,
 // `exit_code` is the exit code of the installer process, which may be used
 // in some cases, depending on the installer outcome.
 Installer::Result MakeInstallerResult(
-    base::Optional<InstallerOutcome> installer_outcome,
+    absl::optional<InstallerOutcome> installer_outcome,
     int exit_code);
 
 // Returns the textual description of a system `error` as provided

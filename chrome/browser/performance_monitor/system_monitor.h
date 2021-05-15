@@ -13,11 +13,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
@@ -158,7 +158,7 @@ class SystemMonitor {
 
     MetricEvaluatorImpl<T>(
         Type type,
-        base::OnceCallback<base::Optional<T>()> evaluate_function,
+        base::OnceCallback<absl::optional<T>()> evaluate_function,
         void (SystemObserver::*notify_function)(ObserverArgType));
     virtual ~MetricEvaluatorImpl();
 
@@ -167,7 +167,7 @@ class SystemMonitor {
 
     bool has_value() const override { return value_.has_value(); }
 
-    base::Optional<T> value() { return value_; }
+    absl::optional<T> value() { return value_; }
 
     void set_value_for_testing(T value) { value_ = value; }
 
@@ -175,14 +175,14 @@ class SystemMonitor {
     void NotifyObserver(SystemObserver* observer) override;
 
     // The callback that should be run to evaluate the metric value.
-    base::OnceCallback<base::Optional<T>()> evaluate_function_;
+    base::OnceCallback<absl::optional<T>()> evaluate_function_;
 
     // A function pointer to the SystemObserver function that should be called
     // to notify of a value refresh.
     void (SystemObserver::*notify_function_)(ObserverArgType);
 
     // The value, initialized in |Evaluate|.
-    base::Optional<T> value_;
+    absl::optional<T> value_;
 
     DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorImpl);
   };
@@ -306,13 +306,13 @@ class MetricEvaluatorsHelper {
   virtual ~MetricEvaluatorsHelper() = default;
 
   // Returns the free physical memory, in megabytes.
-  virtual base::Optional<int> GetFreePhysicalMemoryMb() = 0;
+  virtual absl::optional<int> GetFreePhysicalMemoryMb() = 0;
 
   // Return a |base::SystemMetrics| snapshot.
   //
   // NOTE: This function doesn't have to be virtual, the base::SystemMetrics
   // struct is an abstraction that already has a per-platform definition.
-  base::Optional<base::SystemMetrics> GetSystemMetricsStruct();
+  absl::optional<base::SystemMetrics> GetSystemMetricsStruct();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelper);

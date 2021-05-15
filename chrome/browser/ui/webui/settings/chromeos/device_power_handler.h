@@ -11,11 +11,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -142,7 +142,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback used to receive switch states from PowerManagerClient.
   void OnGotSwitchStates(
-      base::Optional<PowerManagerClient::SwitchStates> result);
+      absl::optional<PowerManagerClient::SwitchStates> result);
 
   // Returns all possible idle behaviors (that a user can choose from) and
   // current idle behavior based on enterprise policy and other factors when on

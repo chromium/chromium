@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
@@ -23,6 +22,7 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 

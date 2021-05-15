@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Message to be delivered to the other party via Web Push.
 struct WebPushMessage {
@@ -54,7 +54,7 @@ enum class SendWebPushMessageResult {
 };
 
 using WebPushCallback = base::OnceCallback<void(SendWebPushMessageResult,
-                                                base::Optional<std::string>)>;
+                                                absl::optional<std::string>)>;
 
 // Invoke |callback| with |result| and logs the |result| to UMA. This should be
 // called when after a web push message is sent. If |result| is
@@ -62,7 +62,7 @@ using WebPushCallback = base::OnceCallback<void(SendWebPushMessageResult,
 void InvokeWebPushCallback(
     WebPushCallback callback,
     SendWebPushMessageResult result,
-    base::Optional<std::string> message_id = base::nullopt);
+    absl::optional<std::string> message_id = absl::nullopt);
 
 // Logs the size of message payload to UMA. This should be called right before a
 // web push message is sent.

@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -22,7 +22,7 @@ class TestClickToCallMessageHandler : public ClickToCallMessageHandler {
   TestClickToCallMessageHandler() = default;
   ~TestClickToCallMessageHandler() override = default;
 
-  base::Optional<std::string> last_phone_number() { return last_phone_number_; }
+  absl::optional<std::string> last_phone_number() { return last_phone_number_; }
 
  protected:
   void HandlePhoneNumber(const std::string& phone_number) override {
@@ -30,7 +30,7 @@ class TestClickToCallMessageHandler : public ClickToCallMessageHandler {
   }
 
  private:
-  base::Optional<std::string> last_phone_number_;
+  absl::optional<std::string> last_phone_number_;
 };
 
 }  // namespace

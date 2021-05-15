@@ -40,9 +40,9 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     });
   }
 
-  base::Optional<ExternalInstallOptions> ParseConfig(
+  absl::optional<ExternalInstallOptions> ParseConfig(
       const char* app_config_string) {
-    base::Optional<base::Value> app_config =
+    absl::optional<base::Value> app_config =
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
     FileUtilsWrapper file_utils;
@@ -53,12 +53,12 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
             absl::get_if<ExternalInstallOptions>(&result)) {
       return std::move(*options);
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<WebApplicationInfoFactory> ParseOfflineManifest(
+  absl::optional<WebApplicationInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
-    base::Optional<base::Value> offline_manifest =
+    absl::optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
     DCHECK(offline_manifest);
     WebApplicationInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
@@ -69,7 +69,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
             absl::get_if<WebApplicationInfoFactory>(&result)) {
       return std::move(*factory);
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  protected:
@@ -108,7 +108,7 @@ class PreinstalledWebAppUtilsTabletTest
 };
 
 TEST_P(PreinstalledWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
-  base::Optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -118,7 +118,7 @@ TEST_P(PreinstalledWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
   )");
   EXPECT_TRUE(disable_true_options->disable_if_tablet_form_factor);
 
-  base::Optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -150,7 +150,7 @@ class PreinstalledWebAppUtilsArcTest
 };
 
 TEST_P(PreinstalledWebAppUtilsArcTest, DisableIfArcSupported) {
-  base::Optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> disable_true_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -160,7 +160,7 @@ TEST_P(PreinstalledWebAppUtilsArcTest, DisableIfArcSupported) {
   )");
   EXPECT_TRUE(disable_true_options->disable_if_arc_supported);
 
-  base::Optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> disable_false_options = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -445,7 +445,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, ForceReinstallForMilestone) {
-  base::Optional<ExternalInstallOptions> non_number = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> non_number = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -455,7 +455,7 @@ TEST_F(PreinstalledWebAppUtilsTest, ForceReinstallForMilestone) {
   )");
   EXPECT_FALSE(non_number.has_value());
 
-  base::Optional<ExternalInstallOptions> number = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> number = ParseConfig(R"(
     {
       "app_url": "https://test.org",
       "launch_container": "window",
@@ -492,7 +492,7 @@ TEST_F(PreinstalledWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
-  base::Optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -502,7 +502,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
     )");
   EXPECT_FALSE(non_bool.has_value());
 
-  base::Optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",
@@ -511,7 +511,7 @@ TEST_F(PreinstalledWebAppUtilsTest, OemInstalled) {
     )");
   EXPECT_FALSE(no_oem->oem_installed);
 
-  base::Optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
+  absl::optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
         {
           "app_url": "https://www.test.org",
           "launch_container": "window",

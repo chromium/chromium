@@ -18,7 +18,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -126,6 +125,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace extensions {
@@ -467,7 +467,7 @@ class DeclarativeNetRequestBrowserTest
   // and ties are resolved by the tabId (in ascending order.)
   // E.g. "<rule_1>,<tab_1>|<rule_2>,<tab_2>|<rule_3>,<tab_3>"
   std::string GetRuleAndTabIdsMatched(const ExtensionId& extension_id,
-                                      base::Optional<int> tab_id) {
+                                      absl::optional<int> tab_id) {
     const char kGetMatchedRulesScript[] = R"(
       chrome.declarativeNetRequest.getMatchedRules({%s}, (rules) => {
         // |ruleAndTabIds| is a list of `${ruleId},${tabId}`
@@ -500,8 +500,8 @@ class DeclarativeNetRequestBrowserTest
   // error if the call fails.
   std::string GetMatchedRuleCount(
       const ExtensionId& extension_id,
-      base::Optional<int> tab_id,
-      base::Optional<base::Time> timestamp,
+      absl::optional<int> tab_id,
+      absl::optional<base::Time> timestamp,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate) {
     const char kGetMatchedRulesScript[] = R"(
@@ -579,8 +579,8 @@ class DeclarativeNetRequestBrowserTest
       int id,
       int priority,
       const std::string& url_filter,
-      base::Optional<std::vector<TestHeaderInfo>> request_headers,
-      base::Optional<std::vector<TestHeaderInfo>> response_headers) {
+      absl::optional<std::vector<TestHeaderInfo>> request_headers,
+      absl::optional<std::vector<TestHeaderInfo>> response_headers) {
     TestRule rule = CreateGenericRule();
     rule.id = id;
     rule.priority = priority;
@@ -1098,11 +1098,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   struct {
     std::string url_filter;
     size_t id;
-    base::Optional<std::string> domain_type;
+    absl::optional<std::string> domain_type;
   } rules_data[] = {
       {"child_frame.html?case=1", 1, std::string("firstParty")},
       {"child_frame.html?case=2", 2, std::string("thirdParty")},
-      {"child_frame.html?case=3", 3, base::nullopt},
+      {"child_frame.html?case=3", 3, absl::nullopt},
   };
 
   std::vector<TestRule> rules;
@@ -1218,12 +1218,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
     int id;
     int priority;
     std::string action_type;
-    base::Optional<std::string> redirect_url;
+    absl::optional<std::string> redirect_url;
   } rules_data[] = {
       {"google.com", 1, 1, "redirect", static_redirect_url.spec()},
-      {"num=1|", 2, 3, "allow", base::nullopt},
+      {"num=1|", 2, 3, "allow", absl::nullopt},
       {"1|", 3, 4, "redirect", dynamic_redirect_url.spec()},
-      {"num=3|", 4, 2, "allow", base::nullopt},
+      {"num=3|", 4, 2, "allow", absl::nullopt},
   };
 
   std::vector<TestRule> rules;
@@ -1501,12 +1501,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, BlockAndRedirect) {
     int id;
     int priority;
     std::string action_type;
-    base::Optional<std::string> redirect_url;
+    absl::optional<std::string> redirect_url;
   } rules_data[] = {
       {"example.com", 1, 1, "redirect", get_url_for_host("yahoo.com")},
       {"yahoo.com", 2, 1, "redirect", get_url_for_host("google.com")},
       {"abc.com", 3, 1, "redirect", get_url_for_host("def.com")},
-      {"def.com", 4, 2, "block", base::nullopt},
+      {"def.com", 4, 2, "block", absl::nullopt},
       {"def.com", 5, 1, "redirect", get_url_for_host("xyz.com")},
       {"ghi*", 6, 1, "redirect", get_url_for_host("ghijk.com")},
   };
@@ -1530,8 +1530,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, BlockAndRedirect) {
   struct {
     std::string hostname;
     bool expected_main_frame_loaded;
-    base::Optional<GURL> expected_final_url;
-    base::Optional<size_t> expected_redirect_chain_length;
+    absl::optional<GURL> expected_final_url;
+    absl::optional<size_t> expected_redirect_chain_length;
   } test_cases[] = {
       // example.com -> yahoo.com -> google.com.
       {"example.com", true, GURL(get_url_for_host("google.com")), 3},
@@ -1540,9 +1540,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, BlockAndRedirect) {
       // abc.com -> def.com (blocked).
       // Note def.com won't be redirected since blocking rules are given
       // priority over redirect rules.
-      {"abc.com", false, base::nullopt, base::nullopt},
+      {"abc.com", false, absl::nullopt, absl::nullopt},
       // def.com (blocked).
-      {"def.com", false, base::nullopt, base::nullopt},
+      {"def.com", false, absl::nullopt, absl::nullopt},
       // ghi.com -> ghijk.com.
       // Though ghijk.com still matches the redirect rule for |ghi*|, it will
       // not redirect to itself.
@@ -1657,16 +1657,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
     int id;
     int priority;
     std::string action_type;
-    base::Optional<std::string> redirect_url;
+    absl::optional<std::string> redirect_url;
   } rules_data[] = {
-      {"exa*", 1, 4, "upgradeScheme", base::nullopt},
+      {"exa*", 1, 4, "upgradeScheme", absl::nullopt},
       {"|http:*yahoo", 2, 100, "redirect", "http://other.com"},
       // Since the test server can only display http requests, redirect all
       // https requests to google.com in the end.
       // TODO(crbug.com/985104): Add a https test server to display https pages
       // so this redirect rule can be removed.
       {"|https*", 3, 6, "redirect", google_url.spec()},
-      {"exact.com", 4, 5, "block", base::nullopt},
+      {"exact.com", 4, 5, "block", absl::nullopt},
   };
 
   // Load the extension.
@@ -1703,9 +1703,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
     std::string hostname;
     const char* scheme;
     // |expected_final_url| is null if the request is expected to be blocked.
-    base::Optional<GURL> expected_final_url;
+    absl::optional<GURL> expected_final_url;
   } test_cases[] = {
-      {"exact.com", url::kHttpScheme, base::nullopt},
+      {"exact.com", url::kHttpScheme, absl::nullopt},
       // http://example.com -> https://example.com/ -> http://google.com
       {"example.com", url::kHttpScheme, google_url},
       // test_extension_2 should upgrade the scheme for http://yahoo.com
@@ -2929,16 +2929,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     int id;
     int priority;
     std::string action_type;
-    base::Optional<std::string> redirect_url;
-    base::Optional<std::vector<TestHeaderInfo>> request_headers;
+    absl::optional<std::string> redirect_url;
+    absl::optional<std::vector<TestHeaderInfo>> request_headers;
   } rules_data[] = {
-      {"abc.com", 1, 1, "block", base::nullopt, base::nullopt},
-      {"def.com", 2, 1, "redirect", "http://zzz.com", base::nullopt},
-      {"jkl.com", 3, 1, "modifyHeaders", base::nullopt,
+      {"abc.com", 1, 1, "block", absl::nullopt, absl::nullopt},
+      {"def.com", 2, 1, "redirect", "http://zzz.com", absl::nullopt},
+      {"jkl.com", 3, 1, "modifyHeaders", absl::nullopt,
        std::vector<TestHeaderInfo>(
-           {TestHeaderInfo("referer", "remove", base::nullopt)})},
-      {"abcd.com", 4, 1, "block", base::nullopt, base::nullopt},
-      {"abcd", 5, 1, "allow", base::nullopt, base::nullopt},
+           {TestHeaderInfo("referer", "remove", absl::nullopt)})},
+      {"abcd.com", 4, 1, "block", absl::nullopt, absl::nullopt},
+      {"abcd", 5, 1, "allow", absl::nullopt, absl::nullopt},
   };
 
   // Load the extension.
@@ -3229,7 +3229,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
   TestRule rule3 = create_redirect_rule(rule_id++, "rule3.com");
   rule3.condition->excluded_tab_ids =
       std::vector<int>({first_tab_id, second_tab_id, -1});
-  rule3.condition->url_filter = base::nullopt;
+  rule3.condition->url_filter = absl::nullopt;
   rule3.condition->regex_filter = std::string(kHost);
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
@@ -3577,25 +3577,25 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     int priority;
     std::string action_type;
     std::vector<std::string> resource_types;
-    base::Optional<std::string> redirect_url;
-    base::Optional<std::vector<TestHeaderInfo>> response_headers;
+    absl::optional<std::string> redirect_url;
+    absl::optional<std::vector<TestHeaderInfo>> response_headers;
   } rules_data[] = {
       {"abc.com", 1, 1, "block", std::vector<std::string>({"script"}),
-       base::nullopt, base::nullopt},
+       absl::nullopt, absl::nullopt},
       {"||def.com", 2, 1, "redirect", std::vector<std::string>({"main_frame"}),
-       get_url_for_host("abc.com").spec(), base::nullopt},
+       get_url_for_host("abc.com").spec(), absl::nullopt},
       {"gotodef.com", 3, 1, "redirect",
        std::vector<std::string>({"main_frame"}),
-       get_url_for_host("def.com").spec(), base::nullopt},
+       get_url_for_host("def.com").spec(), absl::nullopt},
       {"ghi.com", 4, 1, "block", std::vector<std::string>({"main_frame"}),
-       base::nullopt, base::nullopt},
+       absl::nullopt, absl::nullopt},
       {"gotosetcookie.com", 5, 1, "redirect",
        std::vector<std::string>({"main_frame"}),
-       get_set_cookie_url("setcookie.com").spec(), base::nullopt},
+       get_set_cookie_url("setcookie.com").spec(), absl::nullopt},
       {"setcookie.com", 6, 1, "modifyHeaders",
-       std::vector<std::string>({"main_frame"}), base::nullopt,
+       std::vector<std::string>({"main_frame"}), absl::nullopt,
        std::vector<TestHeaderInfo>(
-           {TestHeaderInfo("set-cookie", "remove", base::nullopt)})},
+           {TestHeaderInfo("set-cookie", "remove", absl::nullopt)})},
   };
 
   // Load the extension.
@@ -3681,35 +3681,35 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Create an extension with rules and get the ExtensionAction for it.
   TestRule example_set_cookie_rule = CreateModifyHeadersRule(
-      kMinValidID, kMinValidPriority, "example.com", base::nullopt,
+      kMinValidID, kMinValidPriority, "example.com", absl::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "remove", base::nullopt)}));
+          {TestHeaderInfo("set-cookie", "remove", absl::nullopt)}));
 
   TestRule both_headers_rule = CreateModifyHeadersRule(
       kMinValidID + 1, kMinValidPriority, "google.com",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("referer", "remove", base::nullopt)}),
+          {TestHeaderInfo("referer", "remove", absl::nullopt)}),
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "remove", base::nullopt)}));
+          {TestHeaderInfo("set-cookie", "remove", absl::nullopt)}));
 
   TestRule abc_set_cookie_rule = CreateModifyHeadersRule(
-      kMinValidID + 2, kMinValidPriority, "abc.com", base::nullopt,
+      kMinValidID + 2, kMinValidPriority, "abc.com", absl::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "remove", base::nullopt)}));
+          {TestHeaderInfo("set-cookie", "remove", absl::nullopt)}));
 
   TestRule abc_referer_rule = CreateModifyHeadersRule(
       kMinValidID + 3, kMinValidPriority, "abc.com",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("referer", "remove", base::nullopt)}),
-      base::nullopt);
+          {TestHeaderInfo("referer", "remove", absl::nullopt)}),
+      absl::nullopt);
 
   TestRule ext1_set_custom_request_header_rule = CreateModifyHeadersRule(
       kMinValidID + 4, kMinValidPriority, "def.com",
       std::vector<TestHeaderInfo>({TestHeaderInfo("header1", "set", "ext_1")}),
-      base::nullopt);
+      absl::nullopt);
 
   TestRule ext1_add_custom_response_header_rule = CreateModifyHeadersRule(
-      kMinValidID + 5, kMinValidPriority, "ghi.com", base::nullopt,
+      kMinValidID + 5, kMinValidPriority, "ghi.com", absl::nullopt,
       std::vector<TestHeaderInfo>(
           {TestHeaderInfo("header2", "append", "ext_1")}));
 
@@ -3733,16 +3733,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   TestRule example_referer_rule = CreateModifyHeadersRule(
       kMinValidID, kMinValidPriority, "example.com",
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("referer", "remove", base::nullopt)}),
-      base::nullopt);
+          {TestHeaderInfo("referer", "remove", absl::nullopt)}),
+      absl::nullopt);
 
   TestRule ext2_set_custom_request_header_rule = CreateModifyHeadersRule(
       kMinValidID + 4, kMinValidPriority, "def.com",
       std::vector<TestHeaderInfo>({TestHeaderInfo("header1", "set", "ext_2")}),
-      base::nullopt);
+      absl::nullopt);
 
   TestRule ext2_add_custom_response_header_rule = CreateModifyHeadersRule(
-      kMinValidID + 5, kMinValidPriority, "ghi.com", base::nullopt,
+      kMinValidID + 5, kMinValidPriority, "ghi.com", absl::nullopt,
       std::vector<TestHeaderInfo>(
           {TestHeaderInfo("header2", "append", "ext_2")}));
 
@@ -3984,13 +3984,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Unpacked,
   TestRule abc_referer_rule = CreateModifyHeadersRule(
       kMinValidID, kMinValidPriority, sub_frame_host,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("referer", "remove", base::nullopt)}),
-      base::nullopt);
+          {TestHeaderInfo("referer", "remove", absl::nullopt)}),
+      absl::nullopt);
 
   TestRule abc_set_cookie_rule = CreateModifyHeadersRule(
-      kMinValidID + 1, kMinValidPriority, sub_frame_host, base::nullopt,
+      kMinValidID + 1, kMinValidPriority, sub_frame_host, absl::nullopt,
       std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "remove", base::nullopt)}));
+          {TestHeaderInfo("set-cookie", "remove", absl::nullopt)}));
 
   // Load an extension with removeHeaders rules for the Referer and Set-Cookie
   // headers.
@@ -4115,7 +4115,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   struct {
     ExtensionId extension_id;
-    base::Optional<int> tab_id;
+    absl::optional<int> tab_id;
     std::string expected_rule_and_tab_ids;
   } test_cases[] = {
       // No rules should be matched for |extension_1| and the unknown tab ID.
@@ -4124,7 +4124,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       // No filter is specified for |extension_1|, therefore two MatchedRuleInfo
       // should be returned:
       // (abc_id, first_tab_id) and (abc_id, second_tab_id)
-      {extension_1_id, base::nullopt,
+      {extension_1_id, absl::nullopt,
        base::StringPrintf("%d,%d|%d,%d", abc_id, first_tab_id, abc_id,
                           second_tab_id)},
 
@@ -4170,7 +4170,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(0));
 
   std::string actual_rule_and_tab_ids =
-      GetRuleAndTabIdsMatched(extension_1_id, base::nullopt);
+      GetRuleAndTabIdsMatched(extension_1_id, absl::nullopt);
 
   // The matched rule info for the second tab should have its tab ID changed to
   // the unknown tab ID after the second tab has been closed.
@@ -4208,7 +4208,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Navigate to abc.com.
   ui_test_utils::NavigateToURL(browser(), page_url);
   std::string actual_rule_and_tab_ids =
-      GetRuleAndTabIdsMatched(last_loaded_extension_id(), base::nullopt);
+      GetRuleAndTabIdsMatched(last_loaded_extension_id(), absl::nullopt);
 
   // Since the block rule for abc.com is matched for the main-frame navigation
   // request, it should be attributed to the current tab.
@@ -4221,7 +4221,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Navigate to abc.com again.
   ui_test_utils::NavigateToURL(browser(), page_url);
   actual_rule_and_tab_ids =
-      GetRuleAndTabIdsMatched(last_loaded_extension_id(), base::nullopt);
+      GetRuleAndTabIdsMatched(last_loaded_extension_id(), absl::nullopt);
 
   // The same block rule is matched for this navigation request, and should be
   // attributed to the current tab. Since the main-frame for which the older
@@ -4327,7 +4327,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Two rules should be matched on |first_tab_id|.
   std::string rule_count = GetMatchedRuleCount(extension_id, first_tab_id,
-                                               base::nullopt /* timestamp */);
+                                               absl::nullopt /* timestamp */);
   EXPECT_EQ("2", rule_count);
 
   // Only one rule should be matched on |first_tab_id| after |timestamp_1|.
@@ -4398,19 +4398,19 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // Calling getMatchedRules with no tab ID specified should result in an error
   // since the extension does not have the feedback permission.
   EXPECT_EQ(declarative_net_request::kErrorGetMatchedRulesMissingPermissions,
-            GetMatchedRuleCount(extension_id, base::nullopt /* tab_id */,
-                                base::nullopt /* timestamp */));
+            GetMatchedRuleCount(extension_id, absl::nullopt /* tab_id */,
+                                absl::nullopt /* timestamp */));
 
   // Calling getMatchedRules for a tab without the activeTab permission granted
   // should result in an error.
   EXPECT_EQ(declarative_net_request::kErrorGetMatchedRulesMissingPermissions,
             GetMatchedRuleCount(extension_id, first_tab_id,
-                                base::nullopt /* timestamp */));
+                                absl::nullopt /* timestamp */));
 
   // Calling getMatchedRules for a tab with the activeTab permission granted
   // should return the rules matched for that tab.
   EXPECT_EQ("1", GetMatchedRuleCount(extension_id, second_tab_id,
-                                     base::nullopt /* timestamp */));
+                                     absl::nullopt /* timestamp */));
 }
 
 // Test that getMatchedRules will not be throttled if the call is associated
@@ -4435,8 +4435,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         user_gesture ? browsertest_util::ScriptUserActivation::kActivate
                      : browsertest_util::ScriptUserActivation::kDontActivate;
 
-    return GetMatchedRuleCount(extension_id, base::nullopt /* tab_id */,
-                               base::nullopt /* timestamp */,
+    return GetMatchedRuleCount(extension_id, absl::nullopt /* tab_id */,
+                               absl::nullopt /* timestamp */,
                                user_gesture_setting);
   };
 
@@ -4517,7 +4517,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       &checksum));
   EXPECT_TRUE(
       prefs->GetDNRDynamicRulesetChecksum(extension_id, &dynamic_checksum_1));
-  base::Optional<std::set<RulesetID>> enabled_static_rulesets =
+  absl::optional<std::set<RulesetID>> enabled_static_rulesets =
       prefs->GetDNREnabledStaticRulesets(extension_id);
   ASSERT_TRUE(enabled_static_rulesets);
   EXPECT_THAT(
@@ -4630,8 +4630,8 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
     std::string action_type;
     std::string url_filter;
     bool is_regex_rule;
-    base::Optional<std::vector<std::string>> resource_types;
-    base::Optional<std::vector<std::string>> request_methods;
+    absl::optional<std::vector<std::string>> resource_types;
+    absl::optional<std::vector<std::string>> request_methods;
   };
 
   DeclarativeNetRequestAllowAllRequestsBrowserTest() = default;
@@ -5128,7 +5128,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       // should not be an empty list. It should either be omitted or be a non-
       // empty list.
       if (rule_data.resource_types.empty())
-        rule.condition->resource_types = base::nullopt;
+        rule.condition->resource_types = absl::nullopt;
       else
         rule.condition->resource_types = rule_data.resource_types;
 
@@ -5137,7 +5137,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       rule.id = rule_data.id;
       rule.condition->domains = std::vector<std::string>({rule_data.domain});
       // Don't specify the urlFilter, which should behaves the same as "*".
-      rule.condition->url_filter = base::nullopt;
+      rule.condition->url_filter = absl::nullopt;
       rules.push_back(rule);
     }
     LoadExtensionWithRules(rules);
@@ -5541,7 +5541,7 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
  protected:
   void VerifyExtensionAllocationInPrefs(
       const ExtensionId& extension_id,
-      const base::Optional<size_t>& expected_rules_count) {
+      const absl::optional<size_t>& expected_rules_count) {
     size_t actual_rules_count = 0;
 
     const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -5618,7 +5618,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   // the global limit is reached.
   VerifyExtensionAllocationInPrefs(first_extension_id, 1);
   VerifyExtensionAllocationInPrefs(second_extension_id, 1);
-  VerifyExtensionAllocationInPrefs(third_extension->id(), base::nullopt);
+  VerifyExtensionAllocationInPrefs(third_extension->id(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
@@ -5785,7 +5785,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(
       UpdateEnabledRulesets(last_loaded_extension_id(), {"big_ruleset"}, {}));
   VerifyPublicRulesetIds(last_loaded_extension(), {});
-  VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), base::nullopt);
+  VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), absl::nullopt);
   VerifyKeepExcessAllocation(last_loaded_extension_id(), false);
 }
 
@@ -5979,10 +5979,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
       // request_headers
       std::vector<TestHeaderInfo>(
           {TestHeaderInfo(kAddedHeaderName, "set", kAddedHeaderValue)}),
-      base::nullopt);
+      absl::nullopt);
   // CreateModifyHeadersRule() applies to subframes only by default, so clear
   // that.
-  custom_response_header_rule.condition->resource_types = base::nullopt;
+  custom_response_header_rule.condition->resource_types = absl::nullopt;
 
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithRules({custom_response_header_rule}, "test_extension",

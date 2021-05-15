@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 class PasswordStore;
@@ -30,7 +30,7 @@ void EditSavedPasswords(
     base::span<const std::unique_ptr<password_manager::PasswordForm>>
         forms_to_change,
     const std::u16string& new_username,
-    const base::Optional<std::u16string>& new_password);
+    const absl::optional<std::u16string>& new_password);
 
 // Returns the password store associated with the currently active profile.
 scoped_refptr<password_manager::PasswordStore> GetPasswordStore(

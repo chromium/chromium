@@ -498,7 +498,7 @@ void EncryptionMigrationScreen::StartMigration() {
 }
 
 void EncryptionMigrationScreen::OnMountExistingVault(
-    base::Optional<user_data_auth::MountReply> reply) {
+    absl::optional<user_data_auth::MountReply> reply) {
   cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
   if (return_code != cryptohome::MOUNT_ERROR_NONE) {
     RecordMigrationResultMountFailure(IsResumingIncompleteMigration(),
@@ -557,7 +557,7 @@ void EncryptionMigrationScreen::RemoveCryptohome() {
 }
 
 void EncryptionMigrationScreen::OnRemoveCryptohome(
-    base::Optional<user_data_auth::RemoveReply> reply) {
+    absl::optional<user_data_auth::RemoveReply> reply) {
   cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
   if (error == cryptohome::MOUNT_ERROR_NONE) {
     RecordRemoveCryptohomeResultSuccess(IsResumingIncompleteMigration(),
@@ -640,7 +640,7 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
 }
 
 void EncryptionMigrationScreen::OnMigrationRequested(
-    base::Optional<user_data_auth::StartMigrateToDircryptoReply> reply) {
+    absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply) {
   if (!reply.has_value() ||
       reply->error() !=
           user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {

@@ -79,19 +79,19 @@ FileSystemServiceSettings::FileSystemServiceSettings(
     FileSystemServiceSettings&&) = default;
 FileSystemServiceSettings::~FileSystemServiceSettings() = default;
 
-base::Optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
+absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
     const GURL& url) const {
   if (!IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(matcher_);
   auto matches = matcher_->MatchURL(url);
   if (matches.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto mime_types = GetMimeTypes(matches);
   if (mime_types.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   FileSystemSettings settings;
   settings.service_provider = service_provider_name_;
@@ -111,7 +111,7 @@ base::Optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
 }
 
 // static
-base::Optional<FileSystemServiceSettings::URLPatternSettings>
+absl::optional<FileSystemServiceSettings::URLPatternSettings>
 FileSystemServiceSettings::GetPatternSettings(
     const PatternSettings& patterns,
     url_matcher::URLMatcherConditionSet::ID match) {
@@ -128,7 +128,7 @@ FileSystemServiceSettings::GetPatternSettings(
   if (next != patterns.end())
     return next->second;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool FileSystemServiceSettings::IsValid() const {

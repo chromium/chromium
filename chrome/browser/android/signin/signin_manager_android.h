@@ -91,7 +91,7 @@ class SigninManagerAndroid : public KeyedService {
   };
 
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
-      const base::Optional<ManagementCredentials>& credentials)>;
+      const absl::optional<ManagementCredentials>& credentials)>;
 
   // If required registers for policy with given account. callback will be
   // called with credentials if the account is managed.
@@ -101,7 +101,7 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDone(
       const CoreAccountInfo& account_id,
       base::OnceCallback<void()> policy_callback,
-      const base::Optional<ManagementCredentials>& credentials);
+      const absl::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,

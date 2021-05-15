@@ -104,7 +104,7 @@ class CaptionController : public KeyedService,
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
-  base::Optional<ui::CaptionStyle> caption_style_;
+  absl::optional<ui::CaptionStyle> caption_style_;
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;

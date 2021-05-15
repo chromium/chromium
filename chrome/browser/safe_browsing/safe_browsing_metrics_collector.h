@@ -118,7 +118,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
-  base::Optional<SafeBrowsingMetricsCollector::Event>
+  absl::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventType(UserState user_state, EventType event_type);
   const base::Value* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,

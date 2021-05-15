@@ -730,11 +730,11 @@ base::Time GetConsoleSessionStartTime() {
   return base::Time::FromFileTime(filetime);
 }
 
-base::Optional<std::string> DecodeDMTokenSwitchValue(
+absl::optional<std::string> DecodeDMTokenSwitchValue(
     const std::wstring& encoded_token) {
   if (encoded_token.empty()) {
     LOG(ERROR) << "Empty DMToken specified on the command line";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // The token passed on the command line is base64-encoded, but since this is
@@ -743,7 +743,7 @@ base::Optional<std::string> DecodeDMTokenSwitchValue(
   if (!base::IsStringASCII(encoded_token) ||
       !base::Base64Decode(base::WideToASCII(encoded_token), &token)) {
     LOG(ERROR) << "DMToken passed on the command line is not correctly encoded";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return token;

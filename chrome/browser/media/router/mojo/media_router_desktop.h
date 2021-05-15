@@ -65,7 +65,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
 
  protected:
   // MediaRouterMojoImpl override:
-  base::Optional<MediaRouteProviderId> GetProviderIdForPresentation(
+  absl::optional<MediaRouteProviderId> GetProviderIdForPresentation(
       const std::string& presentation_id) override;
 
  private:

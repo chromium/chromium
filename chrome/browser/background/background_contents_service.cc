@@ -92,8 +92,8 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
         is_platform_app_(extension->is_platform_app()),
         extension_id_(extension->id()) {}
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     // Pass arguments by value as HandleClick() might destroy *this.
     HandleClick(is_hosted_app_, is_platform_app_, extension_id_, profile_);
     // *this might be destroyed now, do not access any members anymore!

@@ -163,7 +163,7 @@ void AnsibleManagementService::ApplyAnsiblePlaybookToDefaultContainer() {
 }
 
 void AnsibleManagementService::OnApplyAnsiblePlaybook(
-    base::Optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse> response) {
+    absl::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to apply Ansible playbook. Empty response.";
     OnConfigurationFinished(false);

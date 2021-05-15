@@ -76,11 +76,11 @@ class FakeIncomingMessagesListener
     return messages_received_;
   }
 
-  base::Optional<bool> on_complete_result() { return on_complete_result_; }
+  absl::optional<bool> on_complete_result() { return on_complete_result_; }
 
  private:
   std::vector<std::string> messages_received_;
-  base::Optional<bool> on_complete_result_;
+  absl::optional<bool> on_complete_result_;
 };
 
 class ReceiveMessagesExpressTest : public testing::Test {
@@ -116,7 +116,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
     return message_listener_.messages_received();
   }
 
-  base::Optional<bool> OnCompleteResult() {
+  absl::optional<bool> OnCompleteResult() {
     return message_listener_.on_complete_result();
   }
 
@@ -158,7 +158,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  base::Optional<bool> start_receive_success_;
+  absl::optional<bool> start_receive_success_;
   FakeIncomingMessagesListener message_listener_;
   mojo::Receiver<sharing::mojom::IncomingMessagesListener> listener_receiver_{
       &message_listener_};

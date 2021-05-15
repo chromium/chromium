@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/test/mock_callback.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -976,7 +976,7 @@ class RelaunchNotificationControllerPlatformImplTest
   RelaunchNotificationControllerPlatformImpl& platform_impl() { return *impl_; }
 
  private:
-  base::Optional<RelaunchNotificationControllerPlatformImpl> impl_;
+  absl::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
 TEST_F(RelaunchNotificationControllerPlatformImplTest,

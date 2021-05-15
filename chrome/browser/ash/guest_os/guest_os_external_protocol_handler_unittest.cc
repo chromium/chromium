@@ -65,7 +65,7 @@ TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
   AddApp("id2", "x-scheme-handler/testscheme", base::Time::FromTimeT(2));
   GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
 
-  base::Optional<GuestOsRegistryService::Registration> registration =
+  absl::optional<GuestOsRegistryService::Registration> registration =
       GetHandler(profile(), GURL("testscheme:12341234"));
   EXPECT_TRUE(registration);
   EXPECT_EQ("id2", registration->DesktopFileId());

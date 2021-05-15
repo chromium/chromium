@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
@@ -60,8 +60,8 @@ class NearbyShareLocalDeviceDataManagerImpl
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
   std::string GetDeviceName() const override;
-  base::Optional<std::string> GetFullName() const override;
-  base::Optional<std::string> GetIconUrl() const override;
+  absl::optional<std::string> GetFullName() const override;
+  absl::optional<std::string> GetIconUrl() const override;
   nearby_share::mojom::DeviceNameValidationResult ValidateDeviceName(
       const std::string& name) override;
   nearby_share::mojom::DeviceNameValidationResult SetDeviceName(
@@ -83,15 +83,15 @@ class NearbyShareLocalDeviceDataManagerImpl
 
   void OnDownloadDeviceDataRequested();
   void OnDownloadDeviceDataFinished(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
   void OnUploadContactsFinished(
       UploadCompleteCallback callback,
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
   void OnUploadCertificatesFinished(
       UploadCompleteCallback callback,
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
   void HandleUpdateDeviceResponse(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
+      const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
 
   PrefService* pref_service_ = nullptr;
   NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;

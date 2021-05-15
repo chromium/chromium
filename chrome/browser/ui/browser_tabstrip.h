@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TABSTRIP_H_
 #define CHROME_BROWSER_UI_BROWSER_TABSTRIP_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -29,7 +29,7 @@ void AddTabAt(Browser* browser,
               const GURL& url,
               int index,
               bool foreground,
-              base::Optional<tab_groups::TabGroupId> group = base::nullopt);
+              absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
 
 // Adds a selected tab with the specified URL and transition, returns the
 // created WebContents.

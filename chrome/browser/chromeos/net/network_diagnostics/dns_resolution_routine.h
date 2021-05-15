@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -45,7 +45,7 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   // Run the core logic of this routine. Set |callback| to
   // |routine_completed_callback_|, which is to be executed in

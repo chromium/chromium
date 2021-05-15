@@ -9,7 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace time_limit_test_utils {
@@ -162,7 +162,7 @@ void AddOverride(base::Value* policy,
   }
 
   usage_time_limit::TimeLimitOverride new_override(action, created_at,
-                                                   base::nullopt);
+                                                   absl::nullopt);
   overrides->Append(new_override.ToDictionary());
 }
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +28,7 @@
 #include "components/policy/core/common/cloud/policy_builder.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -39,21 +39,21 @@ using testing::InvokeWithoutArgs;
 const char kAccountId1[] = "dla1@example.com";
 const char kDisplayName1[] = "display name 1";
 
-base::Optional<em::PolicyData::MarketSegment> GetMarketSegment(
+absl::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     policy::MarketSegment device_segment) {
   switch (device_segment) {
     case policy::MarketSegment::UNKNOWN:
-      return base::nullopt;
+      return absl::nullopt;
     case policy::MarketSegment::EDUCATION:
       return em::PolicyData::ENROLLED_EDUCATION;
     case policy::MarketSegment::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
+absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     UserSegment user_segment) {
   switch (user_segment) {
     case UserSegment::kK12:
@@ -66,13 +66,13 @@ base::Optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
       return em::PolicyData::ENTERPRISE;
     case UserSegment::kUnmanaged:
     case UserSegment::kManagedGuestSession:
-      return base::nullopt;
+      return absl::nullopt;
   }
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<AccountId> GetPrimaryAccountId() {
+absl::optional<AccountId> GetPrimaryAccountId() {
   return AccountId::FromUserEmailGaiaId(
       chromeos::FakeGaiaMixin::kEnterpriseUser1,
       chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId);
@@ -151,12 +151,12 @@ class TestCase {
 
   policy::MarketSegment GetDeviceSegment() const { return device_segment_; }
 
-  base::Optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
+  absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment()
       const {
     return ::GetMetricsLogSegment(user_segment_);
   }
 
-  base::Optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
+  absl::optional<em::PolicyData::MarketSegment> GetMarketSegment() const {
     return ::GetMarketSegment(device_segment_);
   }
 
@@ -247,7 +247,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
     // Add an account with DeviceLocalAccount::Type::TYPE_PUBLIC_SESSION.
     AddPublicSessionToDevicePolicy(kAccountId1);
 
-    base::Optional<em::PolicyData::MarketSegment> market_segment =
+    absl::optional<em::PolicyData::MarketSegment> market_segment =
         GetParam().GetMarketSegment();
     if (market_segment) {
       device_policy()->policy_data().set_market_segment(market_segment.value());
@@ -285,7 +285,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
   }
 
   void LogInUser() {
-    base::Optional<em::PolicyData::MetricsLogSegment> log_segment =
+    absl::optional<em::PolicyData::MetricsLogSegment> log_segment =
         GetParam().GetMetricsLogSegment();
     if (log_segment) {
       logged_in_user_mixin_.GetUserPolicyMixin()

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -299,7 +299,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossWindows) {
   ASSERT_EQ(moved_contents1, browser()->tab_strip_model()->GetWebContentsAt(1));
   ASSERT_EQ(moved_contents2, browser()->tab_strip_model()->GetWebContentsAt(2));
 
-  base::Optional<tab_groups::TabGroupId> new_group_id =
+  absl::optional<tab_groups::TabGroupId> new_group_id =
       browser()->tab_strip_model()->GetTabGroupForTab(1);
   ASSERT_TRUE(new_group_id.has_value());
   ASSERT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(1),

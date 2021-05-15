@@ -317,7 +317,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     CartDiscountFetcherCallback callback,
     std::unique_ptr<EndpointResponse> responses) {
   CartDiscountMap cart_discount_map;
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
   if (!value || !value.has_value() || !value->is_dict()) {
     NOTREACHED() << "Response is not valid or does not have value or it is "

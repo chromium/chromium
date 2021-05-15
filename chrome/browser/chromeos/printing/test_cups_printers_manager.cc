@@ -19,7 +19,7 @@ bool TestCupsPrintersManager::IsPrinterInstalled(const Printer& printer) const {
   return installed_.contains(printer.id());
 }
 
-base::Optional<Printer> TestCupsPrintersManager::GetPrinter(
+absl::optional<Printer> TestCupsPrintersManager::GetPrinter(
     const std::string& id) const {
   return printers_.Get(id);
 }

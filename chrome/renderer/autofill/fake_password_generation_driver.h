@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakePasswordGenerationDriver
     : public autofill::mojom::PasswordGenerationDriver {

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +17,7 @@
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -78,7 +78,7 @@ void RemoteAppsImpl::AddFolder(const std::string& name,
                                bool add_to_front,
                                AddFolderCallback callback) {
   const std::string& folder_id = manager_->AddFolder(name, add_to_front);
-  std::move(callback).Run(folder_id, base::nullopt);
+  std::move(callback).Run(folder_id, absl::nullopt);
 }
 
 void RemoteAppsImpl::AddApp(const std::string& name,
@@ -104,14 +104,14 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
                                 RemoteAppsError error) {
   switch (error) {
     case RemoteAppsError::kNotReady:
-      std::move(callback).Run(base::nullopt, kErrNotReady);
+      std::move(callback).Run(absl::nullopt, kErrNotReady);
       return;
     case RemoteAppsError::kFolderIdDoesNotExist:
-      std::move(callback).Run(base::nullopt, kErrFolderIdDoesNotExist);
+      std::move(callback).Run(absl::nullopt, kErrFolderIdDoesNotExist);
       return;
     case RemoteAppsError::kNone:
       app_ids_.insert(id);
-      std::move(callback).Run(id, base::nullopt);
+      std::move(callback).Run(id, absl::nullopt);
       return;
     case RemoteAppsError::kAppIdDoesNotExist:
       // Only occurs when deleting an app, which is not yet implemented in the

@@ -111,7 +111,7 @@ void RecordIgnore(base::DictionaryValue* dict) {
 
 // If we should suppress the item with the given dictionary ignored record.
 bool ShouldSuppressItem(base::Value* dict) {
-  base::Optional<double> last_ignored_time =
+  absl::optional<double> last_ignored_time =
       dict->FindDoubleKey(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
@@ -123,7 +123,7 @@ bool ShouldSuppressItem(base::Value* dict) {
     }
   }
 
-  base::Optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
+  absl::optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
   return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
@@ -153,7 +153,7 @@ void MaybePopulateImportantInfoForReason(
     const GURL& origin,
     std::set<GURL>* visited_origins,
     ImportantReason reason,
-    base::Optional<std::string> app_name,
+    absl::optional<std::string> app_name,
     std::map<std::string, ImportantDomainInfo>* output) {
   if (!origin.is_valid() || !visited_origins->insert(origin).second)
     return;
@@ -254,7 +254,7 @@ void PopulateInfoMapWithEngagement(
     if (detail.installed_bonus > 0) {
       MaybePopulateImportantInfoForReason(detail.origin, &content_origins,
                                           ImportantReason::HOME_SCREEN,
-                                          base::nullopt, output);
+                                          absl::nullopt, output);
     }
 
     (*engagement_map)[detail.origin] = detail.total_score;
@@ -306,7 +306,7 @@ void PopulateInfoMapWithContentTypeAllowed(
 #endif
 
     MaybePopulateImportantInfoForReason(url, &content_origins, reason,
-                                        base::nullopt, output);
+                                        absl::nullopt, output);
   }
 }
 
@@ -354,7 +354,7 @@ void PopulateInfoMapWithBookmarks(
   for (const UrlAndTitle& bookmark : result_bookmarks) {
     MaybePopulateImportantInfoForReason(bookmark.url, &content_origins,
                                         ImportantReason::BOOKMARKS,
-                                        base::nullopt, output);
+                                        absl::nullopt, output);
   }
 }
 

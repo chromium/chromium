@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
@@ -20,6 +19,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -42,9 +42,9 @@ constexpr base::FilePath::CharType kFirstPartySetsRelativeInstallDir[] =
 
 // Reads the sets as raw JSON from their storage file, returning the raw sets on
 // success and nullopt on failure.
-base::Optional<std::string> LoadSetsFromDisk(const base::FilePath& pb_path) {
+absl::optional<std::string> LoadSetsFromDisk(const base::FilePath& pb_path) {
   if (pb_path.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   VLOG(1) << "Reading First-Party Sets from file: " << pb_path.value();
   std::string result;
@@ -52,7 +52,7 @@ base::Optional<std::string> LoadSetsFromDisk(const base::FilePath& pb_path) {
     // The file won't exist on new installations, so this is not always an
     // error.
     VLOG(1) << "Failed reading from " << pb_path.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
   return result;
 }
@@ -72,7 +72,7 @@ void SetFirstPartySetsConfig(
       base::BindOnce(&LoadSetsFromDisk, GetConfigPathInstance()),
       base::BindOnce(
           [](base::RepeatingCallback<void(const std::string&)> on_sets_ready,
-             base::Optional<std::string> raw_sets) {
+             absl::optional<std::string> raw_sets) {
             if (raw_sets.has_value())
               on_sets_ready.Run(*raw_sets);
           },

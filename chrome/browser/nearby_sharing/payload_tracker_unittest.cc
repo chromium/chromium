@@ -50,7 +50,7 @@ class PayloadTrackerTest : public testing::Test {
 
     for (int i = kAttachmentCount / 2; i < kAttachmentCount; i++) {
       TextAttachment text(TextAttachment::Type::kText, "text body.",
-                          /*title=*/base::nullopt, /*mime_type=*/base::nullopt);
+                          /*title=*/absl::nullopt, /*mime_type=*/absl::nullopt);
 
       AttachmentInfo info;
       info.payload_id = i;
@@ -61,7 +61,7 @@ class PayloadTrackerTest : public testing::Test {
 
     // This attachment is not added to |attachment_info_map_|.
     TextAttachment text(TextAttachment::Type::kText, "text body.",
-                        /*title=*/base::nullopt, /*mime_type=*/base::nullopt);
+                        /*title=*/absl::nullopt, /*mime_type=*/absl::nullopt);
     share_target_.text_attachments.push_back(std::move(text));
 
     payload_tracker_ = std::make_unique<PayloadTracker>(

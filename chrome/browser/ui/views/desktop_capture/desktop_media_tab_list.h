@@ -50,7 +50,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   int GetHeightForWidth(int width) const override;
 
   // DesktopMediaListController::ListView:
-  base::Optional<content::DesktopMediaID> GetSelection() override;
+  absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
 

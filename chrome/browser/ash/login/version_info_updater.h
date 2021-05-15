@@ -57,7 +57,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   void StartUpdate(bool is_chrome_branded);
 
   // Determine whether the system information will be displayed forcedly.
-  base::Optional<bool> IsSystemInfoEnforced() const;
+  absl::optional<bool> IsSystemInfoEnforced() const;
 
  private:
   // policy::CloudPolicyStore::Observer interface:

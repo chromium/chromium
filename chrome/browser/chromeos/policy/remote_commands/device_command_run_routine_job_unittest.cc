@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -20,6 +19,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -87,9 +87,9 @@ em::RemoteCommand GenerateCommandProto(
     base::TimeDelta age_of_command,
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
-    base::Optional<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
+    absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineEnum>
         routine,
-    base::Optional<base::Value> params) {
+    absl::optional<base::Value> params) {
   em::RemoteCommand command_proto;
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_RUN_DIAGNOSTIC_ROUTINE);
   command_proto.set_command_id(unique_id);
@@ -239,7 +239,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingRoutine) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::TimeDelta::FromSeconds(30),
                            /*terminate_upon_input=*/false,
-                           /*routine=*/base::nullopt, std::move(params_dict)),
+                           /*routine=*/absl::nullopt, std::move(params_dict)),
       nullptr));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
@@ -257,7 +257,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingParamDict) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::TimeDelta::FromSeconds(30),
                            /*terminate_upon_input=*/false, kValidRoutineEnum,
-                           /*params=*/base::nullopt),
+                           /*params=*/absl::nullopt),
       nullptr));
 
   EXPECT_EQ(kUniqueID, job->unique_id());

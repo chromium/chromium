@@ -79,7 +79,7 @@ class UserCreationScreenTest : public OobeBaseTest {
     run_loop.Run();
   }
 
-  base::Optional<UserCreationScreen::Result> screen_result_;
+  absl::optional<UserCreationScreen::Result> screen_result_;
 
  protected:
   chromeos::DeviceStateMixin device_state_{

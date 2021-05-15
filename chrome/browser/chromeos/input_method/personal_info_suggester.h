@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
 #include "chrome/browser/chromeos/input_method/suggester.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class PersonalDataManager;

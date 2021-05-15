@@ -124,7 +124,7 @@ void RemoveDriveDownloadDirectoryIfExists() {
       base::BindOnce(std::move(log_file_deletion_if_failed)));
 }
 
-base::Optional<std::string> GetIdFromDriveUrl(const GURL& url) {
+absl::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
   const std::string& spec = url.spec();
 
   const std::string kOpenUrlBase = "https://drive.google.com/open?";
@@ -133,7 +133,7 @@ base::Optional<std::string> GetIdFromDriveUrl(const GURL& url) {
     // e.g. https://drive.google.com/open?id=[ID]
     std::string id;
     if (!net::GetValueForKeyInQuery(url, "id", &id))
-      return base::nullopt;
+      return absl::nullopt;
     return id;
   }
 
@@ -151,7 +151,7 @@ base::Optional<std::string> GetIdFromDriveUrl(const GURL& url) {
     return spec.substr(id_start, id_end - id_start);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 PluginVmPolicySubscription::PluginVmPolicySubscription(

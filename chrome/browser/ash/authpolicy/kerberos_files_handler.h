@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/prefs/pref_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -41,8 +41,8 @@ class KerberosFilesHandler {
   virtual ~KerberosFilesHandler();
 
   // Writes the Kerberos credentials to disk asynchronously.
-  void SetFiles(base::Optional<std::string> krb5cc,
-                base::Optional<std::string> krb5conf);
+  void SetFiles(absl::optional<std::string> krb5cc,
+                absl::optional<std::string> krb5conf);
 
   // Deletes the Kerberos credentials from disk asynchronously.
   virtual void DeleteFiles();

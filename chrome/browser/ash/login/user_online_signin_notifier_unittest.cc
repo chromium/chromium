@@ -170,7 +170,7 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlPolicyNotSet) {
   const base::Time now = base::DefaultClock::GetInstance()->Now();
   user_manager::known_user::SetLastOnlineSignin(saml_login_account1_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
-                                                  base::nullopt);
+                                                  absl::nullopt);
 
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
@@ -286,12 +286,12 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthGaiaPolicyNotSet) {
   // No `LastOnlineSignin` value, case where devices didn't store that value in
   // the first Gaia login.
   user_manager::known_user::SetOfflineSigninLimit(gaia_login_account1_id_,
-                                                  base::nullopt);
+                                                  absl::nullopt);
 
   // Case where the user has already stored last online signin.
   user_manager::known_user::SetLastOnlineSignin(gaia_login_account2_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(gaia_login_account2_id_,
-                                                  base::nullopt);
+                                                  absl::nullopt);
 
   mock_user_manager()->AddUser(gaia_login_account1_id_);
   mock_user_manager()->AddUser(gaia_login_account2_id_);

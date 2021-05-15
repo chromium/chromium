@@ -11,13 +11,13 @@
 
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -35,13 +35,13 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
   return std::string(v.begin(), v.end());
 }
 
-base::Optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
+absl::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
     const std::string& input) {
   if (input == "user")
     return crosapi::mojom::KeystoreType::kUser;
   if (input == "system")
     return crosapi::mojom::KeystoreType::kDevice;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const char kLacrosNotImplementedError[] = "Not implemented.";
@@ -81,7 +81,7 @@ std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
 // extension termination.
 std::string ValidateInput(const std::string& token_id,
                           crosapi::mojom::KeystoreType* keystore) {
-  base::Optional<crosapi::mojom::KeystoreType> keystore_type =
+  absl::optional<crosapi::mojom::KeystoreType> keystore_type =
       KeystoreTypeFromString(token_id);
   if (!keystore_type)
     return kInvalidKeystoreType;

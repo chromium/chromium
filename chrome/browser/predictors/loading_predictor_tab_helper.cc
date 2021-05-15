@@ -390,7 +390,7 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
   resource_load_info.request_priority =
       GetRequestPriority(resource_load_info.request_destination);
   resource_load_info.network_info =
-      blink::mojom::CommonNetworkInfo::New(false, false, base::nullopt);
+      blink::mojom::CommonNetworkInfo::New(false, false, absl::nullopt);
   predictor_->loading_data_collector()->RecordResourceLoadComplete(
       page_data->navigation_id_, resource_load_info);
 }
@@ -410,7 +410,7 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInMainFrame(
       page_data->last_optimization_guide_prediction_);
 
   // Clear out Optimization Guide Prediction, as it is no longer needed.
-  page_data->last_optimization_guide_prediction_ = base::nullopt;
+  page_data->last_optimization_guide_prediction_ = absl::nullopt;
 }
 
 void LoadingPredictorTabHelper::RecordFirstContentfulPaint(

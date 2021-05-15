@@ -264,7 +264,7 @@ void ExecuteGuestOsTask(
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
 
-  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
+  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(task.app_id);
   if (!registration) {
     std::move(done).Run(

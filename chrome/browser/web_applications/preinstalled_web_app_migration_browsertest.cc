@@ -172,7 +172,7 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
                            bool pass_config = true) {
     base::RunLoop run_loop;
 
-    base::Optional<InstallResultCode> code;
+    absl::optional<InstallResultCode> code;
 
     auto callback = base::BindLambdaForTesting(
         [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -231,7 +231,7 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList features_;
-  base::Optional<base::AutoReset<bool>> disable_external_extensions_scope_;
+  absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };

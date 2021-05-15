@@ -41,7 +41,7 @@ LoggedInUserMixin::LoggedInUserMixin(
     net::EmbeddedTestServer* embedded_test_server,
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
-    base::Optional<AccountId> account_id,
+    absl::optional<AccountId> account_id,
     bool include_initial_user,
     bool use_local_policy_server)
     : InProcessBrowserTestMixin(mixin_host),

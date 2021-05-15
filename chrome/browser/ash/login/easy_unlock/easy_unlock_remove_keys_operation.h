@@ -32,7 +32,7 @@ class EasyUnlockRemoveKeysOperation {
   void OnGetSystemSalt(const std::string& system_salt);
 
   void RemoveKey();
-  void OnKeyRemoved(base::Optional<::user_data_auth::RemoveKeyReply> reply);
+  void OnKeyRemoved(absl::optional<::user_data_auth::RemoveKeyReply> reply);
 
   UserContext user_context_;
   RemoveKeysCallback callback_;

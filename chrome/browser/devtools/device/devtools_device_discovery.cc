@@ -457,7 +457,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
   if (result < 0)
     return;
   // Parse version, append to package name if available,
-  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (value && value->is_dict()) {
     const std::string* browser_name = value->FindStringKey("Browser");
     if (browser_name) {
@@ -487,7 +487,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (result < 0)
     return;
-  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (value && value->is_list()) {
     for (base::Value& page_value : value->GetList()) {
       if (page_value.is_dict())

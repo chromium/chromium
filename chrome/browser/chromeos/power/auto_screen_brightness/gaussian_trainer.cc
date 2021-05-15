@@ -49,7 +49,7 @@ enum class BoundedBrightnessChange {
 // |is_lower_bound_exceeded| is nullopt if the new brightness is within the
 // bounds.
 BoundedBrightnessChange GetBoundedBrightnessChange(
-    base::Optional<bool> is_lower_bound_exceeded,
+    absl::optional<bool> is_lower_bound_exceeded,
     bool is_user) {
   if (!is_lower_bound_exceeded.has_value()) {
     if (is_user) {
@@ -130,8 +130,8 @@ double BoundedBrightnessAdjustment(double brightness_old,
   const bool exceeded_lower = brightness_new < lower_bound;
 
   const BoundedBrightnessChange change = GetBoundedBrightnessChange(
-      exceeded_lower || exceeded_upper ? base::Optional<bool>(exceeded_lower)
-                                       : base::nullopt,
+      exceeded_lower || exceeded_upper ? absl::optional<bool>(exceeded_lower)
+                                       : absl::nullopt,
       is_user);
   UMA_HISTOGRAM_ENUMERATION(
       "AutoScreenBrightness.ModelTraining.BrightnessChange", change);
@@ -203,7 +203,7 @@ void LogModelCurveError(double error, bool model_updated) {
 
 TrainingResult::TrainingResult() = default;
 TrainingResult::TrainingResult(
-    const base::Optional<MonotoneCubicSpline>& new_curve,
+    const absl::optional<MonotoneCubicSpline>& new_curve,
     double error)
     : new_curve(new_curve), error(error) {}
 
@@ -413,7 +413,7 @@ TrainingResult GaussianTrainer::Train(
   if (!need_to_update_curve_) {
     const double error = CalculateCurveError(data);
     LogModelCurveError(error, false /* model_updated */);
-    return TrainingResult(base::nullopt, error);
+    return TrainingResult(absl::nullopt, error);
   }
 
   need_to_update_curve_ = false;
@@ -421,7 +421,7 @@ TrainingResult GaussianTrainer::Train(
   const auto new_curve = MonotoneCubicSpline::CreateMonotoneCubicSpline(
       ambient_log_lux_, brightness_);
   if (!new_curve) {
-    return TrainingResult(base::nullopt, 0 /* error */);
+    return TrainingResult(absl::nullopt, 0 /* error */);
   }
 
   current_curve_ = new_curve;

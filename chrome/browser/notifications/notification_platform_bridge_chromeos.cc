@@ -124,7 +124,7 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationClosed(
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_CLOSE, notification->type(),
             notification->notification().origin_url(),
-            notification->original_id(), base::nullopt, base::nullopt, by_user);
+            notification->original_id(), absl::nullopt, absl::nullopt, by_user);
   }
   active_notifications_.erase(iter);
 }
@@ -136,22 +136,22 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationClicked(
     return;
 
   if (notification->type() == NotificationHandler::Type::TRANSIENT) {
-    notification->notification().delegate()->Click(base::nullopt,
-                                                   base::nullopt);
+    notification->notification().delegate()->Click(absl::nullopt,
+                                                   absl::nullopt);
   } else {
     NotificationDisplayServiceImpl::GetForProfile(notification->profile())
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_CLICK, notification->type(),
             notification->notification().origin_url(),
-            notification->original_id(), base::nullopt, base::nullopt,
-            base::nullopt);
+            notification->original_id(), absl::nullopt, absl::nullopt,
+            absl::nullopt);
   }
 }
 
 void NotificationPlatformBridgeChromeOs::HandleNotificationButtonClicked(
     const std::string& id,
     int button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<std::u16string>& reply) {
   ProfileNotification* notification = GetProfileNotification(id);
   if (!notification)
     return;
@@ -163,7 +163,7 @@ void NotificationPlatformBridgeChromeOs::HandleNotificationButtonClicked(
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_CLICK, notification->type(),
             notification->notification().origin_url(),
-            notification->original_id(), button_index, reply, base::nullopt);
+            notification->original_id(), button_index, reply, absl::nullopt);
   }
 }
 
@@ -180,8 +180,8 @@ void NotificationPlatformBridgeChromeOs::
         ->ProcessNotificationOperation(
             NotificationCommon::OPERATION_SETTINGS, notification->type(),
             notification->notification().origin_url(),
-            notification->original_id(), base::nullopt, base::nullopt,
-            base::nullopt);
+            notification->original_id(), absl::nullopt, absl::nullopt,
+            absl::nullopt);
   }
 }
 
@@ -196,8 +196,8 @@ void NotificationPlatformBridgeChromeOs::DisableNotification(
       ->ProcessNotificationOperation(
           NotificationCommon::OPERATION_DISABLE_PERMISSION,
           notification->type(), notification->notification().origin_url(),
-          notification->original_id(), base::nullopt, base::nullopt,
-          base::nullopt);
+          notification->original_id(), absl::nullopt, absl::nullopt,
+          absl::nullopt);
 }
 
 ProfileNotification* NotificationPlatformBridgeChromeOs::GetProfileNotification(

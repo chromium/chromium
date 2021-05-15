@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
@@ -23,12 +22,13 @@
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
 
 namespace {
-base::Optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
+absl::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {
     case CertScope::kDevice: {
       return EmptyAccountId();
@@ -37,7 +37,7 @@ base::Optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
       user_manager::User* user =
           ProfileHelper::Get()->GetUserByProfile(profile);
       if (!user) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       return user->GetAccountId();
@@ -107,7 +107,7 @@ CertProfile::CertProfile(const CertProfile& other) = default;
 CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 
-base::Optional<CertProfile> CertProfile::MakeFromValue(
+absl::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value& value) {
   static_assert(kVersion == 5, "This function should be updated");
 
@@ -115,13 +115,13 @@ base::Optional<CertProfile> CertProfile::MakeFromValue(
   const std::string* name = value.FindStringKey(kCertProfileNameKey);
   const std::string* policy_version =
       value.FindStringKey(kCertProfilePolicyVersionKey);
-  base::Optional<bool> is_va_enabled =
+  absl::optional<bool> is_va_enabled =
       value.FindBoolKey(kCertProfileIsVaEnabledKey);
-  base::Optional<int> renewal_period_sec =
+  absl::optional<int> renewal_period_sec =
       value.FindIntKey(kCertProfileRenewalPeroidSec);
 
   if (!id || !policy_version) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   CertProfile result;

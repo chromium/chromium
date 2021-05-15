@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
     drive_service->LocateFilesByItemIds(
         {"qwertyqwerty", "foobar"},
         base::BindLambdaForTesting(
-            [=](base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>>
+            [=](absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>>
                     result) {
               ASSERT_EQ(2u, result->size());
               EXPECT_EQ(some_other_file,

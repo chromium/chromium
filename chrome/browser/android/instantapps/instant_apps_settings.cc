@@ -86,7 +86,7 @@ static jboolean JNI_InstantAppsSettings_GetInstantAppDefault(
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
-  base::Optional<base::Time> added_time =
+  absl::optional<base::Time> added_time =
       webapps::AppBannerSettingsHelper::GetSingleBannerEvent(
           web_contents, *url::GURLAndroid::ToNativeGURL(env, jurl),
           webapps::AppBannerSettingsHelper::kInstantAppsKey,

@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "url/gurl.h"
 
@@ -156,9 +156,9 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
   // Parsed fields of DeviceManagementResponse.
   struct ParsedResponse {
     std::string restore_mode;
-    base::Optional<std::string> management_domain;
-    base::Optional<std::string> disabled_message;
-    base::Optional<bool> is_license_packaged_with_device;
+    absl::optional<std::string> management_domain;
+    absl::optional<std::string> disabled_message;
+    absl::optional<bool> is_license_packaged_with_device;
   };
 
   // Returns the request job type. This must match the request filled in
@@ -172,7 +172,7 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
 
   // Parses the |response|. If it is valid, returns a ParsedResponse struct
   // instance. If it is invalid, returns nullopt.
-  virtual base::Optional<ParsedResponse> ParseResponse(
+  virtual absl::optional<ParsedResponse> ParseResponse(
       const enterprise_management::DeviceManagementResponse& response) = 0;
 };
 
@@ -265,14 +265,14 @@ class PsmHelper {
   // Tries to load the result of a previous execution of the PSM protocol from
   // local state. Returns decision value if it has been made and is valid,
   // otherwise nullopt.
-  base::Optional<bool> GetPsmCachedDecision() const {
+  absl::optional<bool> GetPsmCachedDecision() const {
     const PrefService::Preference* has_psm_server_state_pref =
         local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
 
     if (!has_psm_server_state_pref ||
         has_psm_server_state_pref->IsDefaultValue() ||
         !has_psm_server_state_pref->GetValue()->is_bool()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return has_psm_server_state_pref->GetValue()->GetBool();
@@ -521,7 +521,7 @@ class PsmHelper {
             TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
         random_device_id_,
         /*critical=*/true, DMAuth::NoAuth(),
-        /*oauth_token=*/base::nullopt, url_loader_factory_,
+        /*oauth_token=*/absl::nullopt, url_loader_factory_,
         std::move(callback));
   }
 
@@ -664,18 +664,18 @@ class StateDownloadMessageProcessorInitialEnrollment
     inner_request->set_serial_number(device_serial_number_);
   }
 
-  base::Optional<ParsedResponse> ParseResponse(
+  absl::optional<ParsedResponse> ParseResponse(
       const em::DeviceManagementResponse& response) override {
     if (!response.has_device_initial_enrollment_state_response()) {
       LOG(ERROR) << "Server failed to provide initial enrollment response.";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return ParseInitialEnrollmentStateResponse(
         response.device_initial_enrollment_state_response());
   }
 
-  static base::Optional<ParsedResponse> ParseInitialEnrollmentStateResponse(
+  static absl::optional<ParsedResponse> ParseInitialEnrollmentStateResponse(
       const em::DeviceInitialEnrollmentStateResponse& state_response) {
     StateDownloadMessageProcessor::ParsedResponse parsed_response;
 
@@ -738,11 +738,11 @@ class StateDownloadMessageProcessorFRE
         ->set_server_backed_state_key(server_backed_state_key_);
   }
 
-  base::Optional<ParsedResponse> ParseResponse(
+  absl::optional<ParsedResponse> ParseResponse(
       const em::DeviceManagementResponse& response) override {
     if (!response.has_device_state_retrieval_response()) {
       LOG(ERROR) << "Server failed to provide auto-enrollment response.";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     const em::DeviceStateRetrievalResponse& state_response =
@@ -809,7 +809,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
       std::make_unique<StateDownloadMessageProcessorFRE>(
           server_backed_state_key),
       power_initial, power_limit,
-      /*power_outdated_server_detect=*/base::nullopt, kUMAHashDanceSuffixFRE,
+      /*power_outdated_server_detect=*/absl::nullopt, kUMAHashDanceSuffixFRE,
       /*private_set_membership_helper=*/nullptr));
 }
 
@@ -832,7 +832,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
       std::make_unique<StateDownloadMessageProcessorInitialEnrollment>(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
-      base::make_optional(power_outdated_server_detect),
+      absl::make_optional(power_outdated_server_detect),
       kUMAHashDanceSuffixInitialEnrollment,
       ash::AutoEnrollmentController::IsPsmEnabled()
           ? std::make_unique<PsmHelper>(
@@ -913,7 +913,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
         state_download_message_processor,
     int power_initial,
     int power_limit,
-    base::Optional<int> power_outdated_server_detect,
+    absl::optional<int> power_outdated_server_detect,
     std::string uma_suffix,
     std::unique_ptr<PsmHelper> private_set_membership_helper)
     : progress_callback_(callback),
@@ -995,7 +995,7 @@ bool AutoEnrollmentClientImpl::PsmRetryStep() {
   if (psm_helper_->IsCheckMembershipInProgress())
     return true;
 
-  const base::Optional<bool> private_set_membership_server_state =
+  const absl::optional<bool> private_set_membership_server_state =
       psm_helper_->GetPsmCachedDecision();
 
   if (private_set_membership_server_state.has_value()) {
@@ -1097,7 +1097,7 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
       policy::DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
       device_id_,
       /*critical=*/false, DMAuth::NoAuth(),
-      /*oauth_token=*/base::nullopt, url_loader_factory_,
+      /*oauth_token=*/absl::nullopt, url_loader_factory_,
       base::BindOnce(
           &AutoEnrollmentClientImpl::HandleRequestCompletion,
           base::Unretained(this),
@@ -1121,7 +1121,7 @@ void AutoEnrollmentClientImpl::SendDeviceStateRequest() {
           device_management_service_,
           state_download_message_processor_->GetJobType(), device_id_,
           /*critical=*/false, DMAuth::NoAuth(),
-          /*oauth_token=*/base::nullopt, url_loader_factory_,
+          /*oauth_token=*/absl::nullopt, url_loader_factory_,
           base::BindRepeating(
               &AutoEnrollmentClientImpl::HandleRequestCompletion,
               base::Unretained(this),
@@ -1247,7 +1247,7 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
-  base::Optional<StateDownloadMessageProcessor::ParsedResponse>
+  absl::optional<StateDownloadMessageProcessor::ParsedResponse>
       parsed_response_opt;
 
   parsed_response_opt =
@@ -1373,7 +1373,7 @@ void AutoEnrollmentClientImpl::RecordPsmHashDanceComparison() {
 
   auto comparison = PsmHashDanceComparison::kEqualResults;
   if (!hash_dance_error && !psm_error) {
-    base::Optional<bool> psm_decision = psm_helper_->GetPsmCachedDecision();
+    absl::optional<bool> psm_decision = psm_helper_->GetPsmCachedDecision();
 
     // There was no error and this function is only invoked after PSM has been
     // performed, so there must be a decision.

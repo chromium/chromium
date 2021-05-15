@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UPGRADER_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -74,7 +74,7 @@ class CrostiniUpgrader : public KeyedService,
   // is different from if |result|==SUCCESS) the |backup_path| will contain a
   // path to the backup tarball.
   void OnBackup(CrostiniResult result,
-                base::Optional<base::FilePath> backup_path);
+                absl::optional<base::FilePath> backup_path);
   void OnCancel(CrostiniResult result);
   void OnBackupProgress(int progress_percent);
   void OnUpgrade(CrostiniResult result);
@@ -124,7 +124,7 @@ class CrostiniUpgrader : public KeyedService,
   // When restoring after a failed upgrade, if the user successfully completed a
   // backup, we will auto-restore from that (if the file still exists),
   // otherwise |backup_path_|==nullopt and restore will bring up a file-chooser.
-  base::Optional<base::FilePath> backup_path_;
+  absl::optional<base::FilePath> backup_path_;
 
   base::WeakPtrFactory<CrostiniUpgrader> weak_ptr_factory_{this};
 };

@@ -108,7 +108,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     int expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username,
-    const base::Optional<std::string>& expected_scan_id) {
+    const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -196,7 +196,7 @@ void EventReportValidator::
                     base::Value& report,
                     base::OnceCallback<void(bool)>& callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
-        threat_type_ = base::nullopt;
+        threat_type_ = absl::nullopt;
         dlp_verdict_ = expected_dlp_verdict;
         ValidateReport(&report);
         if (!done_closure_.is_null())
@@ -240,8 +240,8 @@ void EventReportValidator::
                     base::OnceCallback<void(bool)>& callback) {
         event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
         threat_type_ = expected_threat_type;
-        dlp_verdict_ = base::nullopt;
-        scan_id_ = base::nullopt;
+        dlp_verdict_ = absl::nullopt;
+        scan_id_ = absl::nullopt;
         ValidateReport(&report);
         if (!done_closure_.is_null())
           done_closure_.Run();
@@ -258,7 +258,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     int expected_content_size,
     const std::string& expected_result,
     const std::string& expected_username,
-    const base::Optional<std::string>& expected_scan_id) {
+    const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -366,7 +366,7 @@ void EventReportValidator::ValidateFilenameAndHash(base::Value* value) {
 void EventReportValidator::ValidateField(
     base::Value* value,
     const std::string& field_key,
-    const base::Optional<std::string>& expected_value) {
+    const absl::optional<std::string>& expected_value) {
   if (expected_value.has_value()) {
     ASSERT_EQ(*value->FindStringKey(field_key), expected_value.value())
         << "Mismatch in field " << field_key;
@@ -379,7 +379,7 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     base::Value* value,
     const std::string& field_key,
-    const base::Optional<int>& expected_value) {
+    const absl::optional<int>& expected_value) {
   ASSERT_EQ(value->FindIntKey(field_key), expected_value)
       << "Mismatch in field " << field_key;
 }
@@ -387,7 +387,7 @@ void EventReportValidator::ValidateField(
 void EventReportValidator::ValidateField(
     base::Value* value,
     const std::string& field_key,
-    const base::Optional<bool>& expected_value) {
+    const absl::optional<bool>& expected_value) {
   ASSERT_EQ(value->FindBoolKey(field_key), expected_value)
       << "Mismatch in field " << field_key;
 }

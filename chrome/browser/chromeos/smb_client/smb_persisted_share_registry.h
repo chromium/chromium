@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/chromeos/smb_client/smb_share_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -44,7 +44,7 @@ class SmbPersistedShareRegistry {
 
   // Return the saved share with URL |share_url|, or the empty Optional<> if no
   // share is found.
-  base::Optional<SmbShareInfo> Get(const SmbUrl& share_url) const;
+  absl::optional<SmbShareInfo> Get(const SmbUrl& share_url) const;
 
   // Return a list of all saved shares.
   std::vector<SmbShareInfo> GetAll() const;

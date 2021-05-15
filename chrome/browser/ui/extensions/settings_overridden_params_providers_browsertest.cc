@@ -95,21 +95,21 @@ class SettingsOverriddenParamsProvidersBrowserTest
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                        GetExtensionControllingSearch) {
   // With no extensions installed, there should be no controlling extension.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             settings_overridden_params::GetSearchOverriddenParams(profile()));
 
   // Install an extension, but not one that overrides the default search engine.
   // There should still be no controlling extension.
   InstallExtensionWithPermissionsGranted(
       test_data_dir_.AppendASCII("simple_with_icon"), 1);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             settings_overridden_params::GetSearchOverriddenParams(profile()));
 
   // Finally, install an extension that overrides the default search engine.
   // It should be the controlling extension.
   const extensions::Extension* search_extension =
       AddExtensionControllingSearch();
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(base::StringPrintf("Change back to %s?", new_search_name.c_str()),
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ("Did you mean to change your search provider?",
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(
       AddExtensionControllingSearch("search_provider_override2");
   ASSERT_TRUE(second);
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ("Did you mean to change your search provider?",
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   EXPECT_EQ(extension,
             extensions::GetExtensionOverridingSearchEngine(profile()));
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
 }
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   EXPECT_EQ(extension,
             extensions::GetExtensionOverridingSearchEngine(profile()));
 
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
 }
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 
   // The dialog should be the generic version, rather than prompting to go back
   // to the default.
-  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+  absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(extension->id(), params->controlling_extension_id);

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ABI::Windows::ApplicationModel::DataTransfer::DataRequestedEventArgs;
 using ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager;
@@ -101,7 +101,7 @@ class FakeDataTransferManagerTest : public ::testing::Test {
         Microsoft::WRL::Make<FakeDataTransferManager>();
   }
 
-  base::Optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
+  absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   ComPtr<FakeDataTransferManager> fake_data_transfer_manager_;
 };
 

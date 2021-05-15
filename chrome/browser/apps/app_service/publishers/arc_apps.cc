@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -53,6 +52,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -164,13 +164,13 @@ void UpdateAppPermissions(
   }
 }
 
-base::Optional<arc::UserInteractionType> GetUserInterationType(
+absl::optional<arc::UserInteractionType> GetUserInterationType(
     apps::mojom::LaunchSource launch_source) {
   auto user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
   switch (launch_source) {
     // kUnknown is not set anywhere, this case is not valid.
     case apps::mojom::LaunchSource::kUnknown:
-      return base::nullopt;
+      return absl::nullopt;
     case apps::mojom::LaunchSource::kFromChromeInternal:
       user_interaction_type = arc::UserInteractionType::NOT_USER_INITIATED;
       break;
@@ -226,7 +226,7 @@ base::Optional<arc::UserInteractionType> GetUserInterationType(
       break;
     default:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
   return user_interaction_type;
 }
@@ -1102,7 +1102,7 @@ void ArcApps::OnTaskDestroyed(int32_t task_id) {
 }
 
 void ArcApps::OnIntentFiltersUpdated(
-    const base::Optional<std::string>& package_name) {
+    const absl::optional<std::string>& package_name) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
@@ -1122,7 +1122,7 @@ void ArcApps::OnIntentFiltersUpdated(
   // Note: Cannot combine the two for-loops because the return type of
   // GetAppIds() is std::vector<std::string> and the return type of
   // GetAppsForPackage() is std::unordered_set<std::string>.
-  if (package_name == base::nullopt) {
+  if (package_name == absl::nullopt) {
     for (const auto& app_id : prefs->GetAppIds()) {
       GetAppInfoAndPublish(app_id);
     }

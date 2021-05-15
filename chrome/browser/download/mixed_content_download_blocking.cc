@@ -8,7 +8,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +20,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -144,7 +144,7 @@ std::string GetDownloadBlockingExtensionMetricName(
 // for histogram reporting. |dl_secure| signifies whether the download was
 // a secure source. |inferred| is whether the initiator value is our best guess.
 InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
-    base::Optional<url::Origin> initiator,
+    absl::optional<url::Origin> initiator,
     bool dl_secure,
     bool inferred) {
   if (inferred) {
@@ -278,7 +278,7 @@ struct MixedContentDownloadData {
     }
   }
 
-  base::Optional<url::Origin> initiator_;
+  absl::optional<url::Origin> initiator_;
   std::string extension_;
   const download::DownloadItem* item_;
   bool is_redirect_chain_secure_;
@@ -335,7 +335,7 @@ void PrintConsoleMessage(const MixedContentDownloadData& data,
 
 bool IsDownloadPermittedByContentSettings(
     Profile* profile,
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
 #if !defined(OS_ANDROID)

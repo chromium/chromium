@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/task/single_thread_task_executor.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
@@ -24,6 +23,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "chrome/updater/app/server/win/server.h"
@@ -54,7 +54,7 @@ namespace {
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
 void InitLogging(const base::CommandLine& command_line) {
   logging::LoggingSettings settings;
-  base::Optional<base::FilePath> log_dir = GetBaseDirectory();
+  absl::optional<base::FilePath> log_dir = GetBaseDirectory();
   if (!log_dir) {
     LOG(ERROR) << "Error getting base dir.";
     return;

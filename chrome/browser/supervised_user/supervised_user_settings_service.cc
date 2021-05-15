@@ -151,7 +151,7 @@ void SupervisedUserSettingsService::PushItemToSync(
         dict->HasKey(key_suffix) ? SyncChange::ACTION_UPDATE
                                  : SyncChange::ACTION_ADD;
     change_list.push_back(SyncChange(FROM_HERE, change_type, data));
-    base::Optional<ModelError> error =
+    absl::optional<ModelError> error =
         sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
     DCHECK(!error.has_value()) << error.value().ToString();
   } else {
@@ -202,7 +202,7 @@ void SupervisedUserSettingsService::WaitUntilReadyToSync(
   }
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SupervisedUserSettingsService::MergeDataAndStartSyncing(
     ModelType type,
     const SyncDataList& initial_sync_data,
@@ -287,7 +287,7 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     return sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SupervisedUserSettingsService::StopSyncing(ModelType type) {
@@ -318,7 +318,7 @@ SyncDataList SupervisedUserSettingsService::GetAllSyncDataForTesting(
   return data;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SupervisedUserSettingsService::ProcessSyncChanges(
     const base::Location& from_here,
     const SyncChangeList& change_list) {
@@ -359,7 +359,7 @@ SupervisedUserSettingsService::ProcessSyncChanges(
                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   InformSubscribers();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SupervisedUserSettingsService::OnPrefValueChanged(const std::string& key) {

@@ -5,7 +5,6 @@
 #include "chrome/browser/media/history/media_history_store.h"
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,6 +35,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace media_history {

@@ -16,7 +16,7 @@ namespace {
 
 std::string WebAppToPlatformAgnosticString(std::unique_ptr<WebApp> web_app) {
   // Force this to be nullopt to avoid platform specific differences.
-  web_app->SetWebAppChromeOsData(base::nullopt);
+  web_app->SetWebAppChromeOsData(absl::nullopt);
   std::stringstream ss;
   ss << *web_app;
   return ss.str();

@@ -165,7 +165,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
           .WillOnce(WithArgs<0, 2>(Invoke(
               [this](base::Value payload,
                      policy::CloudPolicyClient::ResponseCallback done_cb) {
-                base::Optional<bool> const attach_encryption_settings =
+                absl::optional<bool> const attach_encryption_settings =
                     payload.FindBoolKey("attachEncryptionSettings");
                 ASSERT_TRUE(attach_encryption_settings.has_value());
                 ASSERT_TRUE(attach_encryption_settings

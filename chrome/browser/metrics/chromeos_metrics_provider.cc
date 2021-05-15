@@ -325,7 +325,7 @@ void ChromeOSMetricsProvider::SetFullHardwareClass(
 
 void ChromeOSMetricsProvider::OnArcFeaturesParsed(
     base::OnceClosure callback,
-    base::Optional<arc::ArcFeatures> features) {
+    absl::optional<arc::ArcFeatures> features) {
   base::ScopedClosureRunner runner(std::move(callback));
   if (!features) {
     LOG(WARNING) << "ArcFeatures not available on this build";

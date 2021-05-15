@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/messages/android/message_enums.h"
@@ -16,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -59,7 +59,7 @@ class SavePasswordMessageDelegate {
   void DisplaySavePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-      base::Optional<AccountInfo> account_info,
+      absl::optional<AccountInfo> account_info,
       bool update_password);
   void CreateMessage(bool update_password);
 

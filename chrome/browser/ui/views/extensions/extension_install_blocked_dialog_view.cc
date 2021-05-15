@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -20,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"

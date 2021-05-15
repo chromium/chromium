@@ -62,7 +62,7 @@ class OnDeviceSpeechRecognizer
   void OnRecognizerBound(bool success);
   void OnRecognizerDisconnected();
   void StartFetchingOnInputDeviceInfo(
-      const base::Optional<media::AudioParameters>& params);
+      const absl::optional<media::AudioParameters>& params);
 
   // Helper function to send the delegate updates to SpeechRecognizerStatus
   // only when the status has changed.

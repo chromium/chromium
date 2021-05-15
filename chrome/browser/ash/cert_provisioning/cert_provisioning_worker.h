@@ -143,8 +143,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 
   void StartCsr();
   void OnStartCsrDone(policy::DeviceManagementStatus status,
-                      base::Optional<CertProvisioningResponseErrorType> error,
-                      base::Optional<int64_t> try_later,
+                      absl::optional<CertProvisioningResponseErrorType> error,
+                      absl::optional<int64_t> try_later,
                       const std::string& invalidation_topic,
                       const std::string& va_challenge,
                       enterprise_management::HashingAlgorithm hashing_algorithm,
@@ -170,14 +170,14 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 
   void FinishCsr();
   void OnFinishCsrDone(policy::DeviceManagementStatus status,
-                       base::Optional<CertProvisioningResponseErrorType> error,
-                       base::Optional<int64_t> try_later);
+                       absl::optional<CertProvisioningResponseErrorType> error,
+                       absl::optional<int64_t> try_later);
 
   void DownloadCert();
   void OnDownloadCertDone(
       policy::DeviceManagementStatus status,
-      base::Optional<CertProvisioningResponseErrorType> error,
-      base::Optional<int64_t> try_later,
+      absl::optional<CertProvisioningResponseErrorType> error,
+      absl::optional<int64_t> try_later,
       const std::string& pem_encoded_certificate);
 
   void ImportCert(const std::string& pem_encoded_certificate);
@@ -221,8 +221,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   bool ProcessResponseErrors(
       DeviceManagementServerRequestType request_type,
       policy::DeviceManagementStatus status,
-      base::Optional<CertProvisioningResponseErrorType> error,
-      base::Optional<int64_t> try_later);
+      absl::optional<CertProvisioningResponseErrorType> error,
+      absl::optional<int64_t> try_later);
 
   CertScope cert_scope_ = CertScope::kUser;
   Profile* profile_ = nullptr;
@@ -256,7 +256,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   std::string csr_;
   std::string va_challenge_;
   std::string va_challenge_response_;
-  base::Optional<platform_keys::HashAlgorithm> hashing_algorithm_;
+  absl::optional<platform_keys::HashAlgorithm> hashing_algorithm_;
   std::string signature_;
 
   // IMPORTANT:

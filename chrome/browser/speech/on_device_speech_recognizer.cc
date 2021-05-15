@@ -32,7 +32,7 @@ static constexpr int kAudioSampleRate = 16000;
 static constexpr int kPollingTimesPerSecond = 10;
 
 media::AudioParameters GetAudioParameters(
-    const base::Optional<media::AudioParameters>& params,
+    const absl::optional<media::AudioParameters>& params,
     bool is_multichannel_supported) {
   if (params) {
     media::AudioParameters result = params.value();
@@ -136,7 +136,7 @@ void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
     return;
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_IN_SPEECH);
   delegate()->OnSpeechResult(base::UTF8ToUTF16(result->transcription),
-                             result->is_final, base::nullopt);
+                             result->is_final, absl::nullopt);
   // Returning true ensures the speech recognition continues.
   std::move(reply).Run(true);
 }
@@ -161,7 +161,7 @@ void OnDeviceSpeechRecognizer::OnRecognizerDisconnected() {
 }
 
 void OnDeviceSpeechRecognizer::StartFetchingOnInputDeviceInfo(
-    const base::Optional<media::AudioParameters>& params) {
+    const absl::optional<media::AudioParameters>& params) {
   // waiting_for_params_ was set before requesting audio params from the
   // AudioSystem, which returns here asynchronously. If this has changed, then
   // we shouldn't start up any more.

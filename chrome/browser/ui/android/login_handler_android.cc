@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/chrome_http_auth_handler.h"
@@ -16,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 

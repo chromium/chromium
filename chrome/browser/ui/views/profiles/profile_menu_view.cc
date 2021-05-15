@@ -477,14 +477,14 @@ void ProfileMenuView::BuildIdentity() {
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           account);
   ProfileAttributesEntry* profile_attributes =
       GetProfileAttributesEntry(profile);
 
   std::u16string profile_name;
-  base::Optional<EditButtonParams> edit_button_params;
+  absl::optional<EditButtonParams> edit_button_params;
 // Profile names are not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   size_t num_of_profiles =
@@ -542,7 +542,7 @@ void ProfileMenuView::BuildGuestIdentity() {
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(), menu_title_,
+      /*edit_button=*/absl::nullopt, profiles::GetGuestAvatar(), menu_title_,
       menu_subtitle_, header_art_icon);
 }
 
@@ -596,7 +596,7 @@ void ProfileMenuView::BuildSyncInfo() {
   // Show sync promos.
   CoreAccountInfo unconsented_account =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           unconsented_account);
 

@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -58,7 +58,7 @@ class App : public base::RefCountedThreadSafe<App> {
   // the command line arguments, including the tag arguments.
   UpdaterScope updater_scope() const;
 
-  base::Optional<tagging::TagArgs> tag_args() const;
+  absl::optional<tagging::TagArgs> tag_args() const;
 
  private:
   // Allows initialization of the thread pool for specific environments, in
@@ -82,7 +82,7 @@ class App : public base::RefCountedThreadSafe<App> {
   const UpdaterScope process_scope_;
 
   // Contains the tag if a tag is present on the command line.
-  const base::Optional<tagging::TagArgs> tag_args_;
+  const absl::optional<tagging::TagArgs> tag_args_;
 };
 
 }  // namespace updater

@@ -6,7 +6,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/util/values/values_util.h"
 #include "build/build_config.h"
@@ -18,6 +17,7 @@
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
 
@@ -98,7 +98,7 @@ void PermissionActionsHistory::RecordAction(
   // Discard permission actions older than |kPermissionActionMaxAge|.
   const base::Time cutoff = base::Time::Now() - kPermissionActionMaxAge;
   permission_actions->EraseListValueIf([cutoff](const base::Value& entry) {
-    const base::Optional<base::Time> timestamp =
+    const absl::optional<base::Time> timestamp =
         util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
     return !timestamp || *timestamp < cutoff;
   });
@@ -125,7 +125,7 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   for (const auto& permission_entry : update->DictItems()) {
     permission_entry.second.EraseListValueIf([delete_begin,
                                               delete_end](const auto& entry) {
-      const base::Optional<base::Time> timestamp =
+      const absl::optional<base::Time> timestamp =
           util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
       return (!timestamp ||
               (*timestamp >= delete_begin && *timestamp < delete_end));
@@ -148,7 +148,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
   std::vector<Entry> matching_actions;
 
   for (const auto& entry : permission_actions->GetList()) {
-    const base::Optional<base::Time> timestamp =
+    const absl::optional<base::Time> timestamp =
         util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
 
     if (timestamp >= begin) {

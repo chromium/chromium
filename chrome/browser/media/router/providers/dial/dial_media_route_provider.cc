@@ -101,7 +101,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
         mojom::LogCategory::kRoute, kLoggerComponent,
         "Failed to create route. Cannot find sink with the sink id", sink_id,
         media_source, presentation_id);
-    std::move(callback).Run(base::nullopt, nullptr, "Unknown sink " + sink_id,
+    std::move(callback).Run(absl::nullopt, nullptr, "Unknown sink " + sink_id,
                             RouteRequestResult::SINK_NOT_FOUND);
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(
         DialCreateRouteResult::kSinkNotFound);
@@ -114,7 +114,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Failed to create route. Unsupported source.", sink_id,
                       media_source, presentation_id);
-    std::move(callback).Run(base::nullopt, nullptr,
+    std::move(callback).Run(absl::nullopt, nullptr,
                             "Unsupported source " + media_source,
                             RouteRequestResult::NO_SUPPORTED_PROVIDER);
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(
@@ -128,7 +128,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       "Failed to create route. Route already exists.", sink_id,
                       media_source, presentation_id);
-    std::move(callback).Run(base::nullopt, nullptr, "Activity already exists",
+    std::move(callback).Run(absl::nullopt, nullptr, "Activity already exists",
                             RouteRequestResult::ROUTE_ALREADY_EXISTS);
     DialMediaRouteProviderMetrics::RecordCreateRouteResult(
         DialCreateRouteResult::kRouteAlreadyExists);
@@ -140,7 +140,7 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
                    "Successfully created a new route.", sink_id, media_source,
                    presentation_id);
   std::move(callback).Run(activity->route, /*presentation_connection*/ nullptr,
-                          /*error_text*/ base::nullopt, RouteRequestResult::OK);
+                          /*error_text*/ absl::nullopt, RouteRequestResult::OK);
 
   // When a custom DIAL launch request is received, DialMediaRouteProvider will
   // create a MediaRoute immediately in order to start exchanging messages with
@@ -166,9 +166,9 @@ void DialMediaRouteProvider::JoinRoute(const std::string& media_source,
   if (activity) {
     std::move(callback).Run(
         activity->route, /*presentation_connection*/ nullptr,
-        /*error_text*/ base::nullopt, RouteRequestResult::OK);
+        /*error_text*/ absl::nullopt, RouteRequestResult::OK);
   } else {
-    std::move(callback).Run(base::nullopt, /*presentation_connection*/ nullptr,
+    std::move(callback).Run(absl::nullopt, /*presentation_connection*/ nullptr,
                             "DIAL activity not found",
                             RouteRequestResult::ROUTE_NOT_FOUND);
   }
@@ -185,7 +185,7 @@ void DialMediaRouteProvider::ConnectRouteByRouteId(
     ConnectRouteByRouteIdCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(
-      base::nullopt, nullptr, std::string("Not implemented"),
+      absl::nullopt, nullptr, std::string("Not implemented"),
       RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
 }
 
@@ -458,7 +458,7 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
                                               const MediaSinkInternal& sink,
                                               TerminateRouteCallback callback) {
   const MediaRoute::Id& route_id = activity.route.media_route_id();
-  std::pair<base::Optional<std::string>, RouteRequestResult::ResultCode>
+  std::pair<absl::optional<std::string>, RouteRequestResult::ResultCode>
       can_stop_app = activity_manager_->CanStopApp(route_id);
   if (can_stop_app.second == RouteRequestResult::OK) {
     std::vector<mojom::RouteMessagePtr> messages;
@@ -485,7 +485,7 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
 void DialMediaRouteProvider::HandleStopAppResult(
     const MediaRoute::Id& route_id,
     TerminateRouteCallback callback,
-    const base::Optional<std::string>& message,
+    const absl::optional<std::string>& message,
     RouteRequestResult::ResultCode result_code) {
   switch (result_code) {
     case RouteRequestResult::OK:

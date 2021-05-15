@@ -7,8 +7,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace base {
@@ -32,7 +32,7 @@ bool LiteVideoUseOptimizationGuide();
 
 // Return the origins that are whitelisted for using the LiteVideo optimization
 // and the parameters needed to throttle media requests for that origin.
-base::Optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial();
+absl::optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial();
 
 // The target for of the round-trip time for media requests used when
 // throttling media requests.

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Defines a reader for archive volumes. This class is used by minizip
 // for custom reads.
@@ -37,7 +37,7 @@ class VolumeReader {
 
   // Fetches a passphrase for reading. If the passphrase is not available, the
   // returned Optional will have no value.
-  virtual base::Optional<std::string> Passphrase() = 0;
+  virtual absl::optional<std::string> Passphrase() = 0;
 
   virtual int64_t offset() = 0;
 

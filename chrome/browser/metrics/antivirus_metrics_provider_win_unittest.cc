@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +18,7 @@
 #include "chrome/services/util_win/util_win_impl.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -106,7 +106,7 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
   bool got_results_;
   bool expect_unhashed_value_;
   base::test::TaskEnvironment task_environment_;
-  base::Optional<UtilWinImpl> util_win_impl_;
+  absl::optional<UtilWinImpl> util_win_impl_;
   AntiVirusMetricsProvider provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ThreadCheckerImpl thread_checker_;

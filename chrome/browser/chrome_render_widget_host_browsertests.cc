@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   // On MacOS, calling omnibox->SetFocus function doesn't invoke
   // RWHI::SetActive. Hence there is no IPC call to renderer and
   // FakeFrameWidget's 'active' state remains uninitialised.
-  EXPECT_EQ(fake_frame_widget.GetActive(), base::nullopt);
+  EXPECT_EQ(fake_frame_widget.GetActive(), absl::nullopt);
 #else
   EXPECT_EQ(fake_frame_widget.GetActive(), false);
 #endif

@@ -15,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -29,6 +28,7 @@
 #include "extensions/browser/content_verifier.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::URLPatternSet;
 
@@ -71,7 +71,7 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallbackAfterLoad) {
   base::RunLoop run_loop;
   auto on_load_complete = [&run_loop](
                               UserScriptLoader* loader,
-                              const base::Optional<std::string>& error) {
+                              const absl::optional<std::string>& error) {
     EXPECT_FALSE(error.has_value()) << *error;
     run_loop.Quit();
   };
@@ -93,7 +93,7 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsAddedWithCallback) {
   // synchronously.
   bool callback_called = false;
   auto callback = [&callback_called](UserScriptLoader* loader,
-                                     const base::Optional<std::string>& error) {
+                                     const absl::optional<std::string>& error) {
     // Check that there is at least an error message.
     EXPECT_TRUE(error.has_value());
     EXPECT_THAT(*error, testing::HasSubstr("No changes to loaded scripts"));
@@ -125,7 +125,7 @@ TEST_F(ExtensionUserScriptLoaderTest, QueuedLoadWithCallback) {
   // otherwise completes the test.
   auto on_load_complete = [&run_loop, &first_callback_fired](
                               UserScriptLoader* loader,
-                              const base::Optional<std::string>& error) {
+                              const absl::optional<std::string>& error) {
     EXPECT_FALSE(error.has_value()) << *error;
     EXPECT_TRUE(loader->initial_load_complete());
     if (first_callback_fired)

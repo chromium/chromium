@@ -148,14 +148,14 @@ void OfflineSigninLimiter::UpdateLimit() {
   bool using_saml =
       ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
 
-  const base::Optional<base::TimeDelta> offline_signin_time_limit =
+  const absl::optional<base::TimeDelta> offline_signin_time_limit =
       using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
   base::Time last_gaia_signin_time =
       prefs->GetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
                                 : prefs::kGaiaLastOnlineSignInTime);
 
   if (!offline_signin_time_limit.has_value()) {
-    UpdateOnlineSigninData(last_gaia_signin_time, base::nullopt);
+    UpdateOnlineSigninData(last_gaia_signin_time, absl::nullopt);
     // If no limit is in force, return.
     return;
   }
@@ -209,7 +209,7 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
   bool using_saml =
       ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
 
-  const base::Optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
+  const absl::optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
       using_saml ? GetGaiaSamlLockScreenTimeLimit()
                  : GetGaiaNoSamlLockScreenTimeLimit();
   base::Time last_gaia_signin_time =
@@ -261,7 +261,7 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
                      base::Unretained(this)));
 }
 
-base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
+absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
   // TODO(crbug.com/1177416): Clean up this override once testing is complete.
   auto override_val = GetTimeLimitOverrideForTesting();
   if (override_val.has_value())
@@ -270,13 +270,13 @@ base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
   int no_saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
   if (no_saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional<base::TimeDelta>(
+  return absl::make_optional<base::TimeDelta>(
       base::TimeDelta::FromDays(no_saml_offline_limit));
 }
 
-base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
+absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
   // TODO(crbug.com/1177416): Clean up this override once testing is complete.
   auto override_val = GetTimeLimitOverrideForTesting();
   if (override_val.has_value())
@@ -285,13 +285,13 @@ base::Optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
   const int saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
   if (saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional<base::TimeDelta>(
+  return absl::make_optional<base::TimeDelta>(
       base::TimeDelta::FromSeconds(saml_offline_limit));
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
   // TODO(crbug.com/1177416): Clean up this override once testing is complete.
   auto override_val = GetTimeLimitOverrideForTesting();
@@ -309,14 +309,14 @@ OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
 
   if (no_saml_lock_screen_offline_limit <=
       constants::kOfflineSigninTimeLimitNotSet) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::make_optional<base::TimeDelta>(
+  return absl::make_optional<base::TimeDelta>(
       base::TimeDelta::FromDays(no_saml_lock_screen_offline_limit));
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
   // TODO(crbug.com/1177416): Clean up this override once testing is complete.
   auto override_val = GetTimeLimitOverrideForTesting();
@@ -334,14 +334,14 @@ OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
 
   if (saml_lock_screen_offline_limit <=
       constants::kOfflineSigninTimeLimitNotSet) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::make_optional<base::TimeDelta>(
+  return absl::make_optional<base::TimeDelta>(
       base::TimeDelta::FromDays(saml_lock_screen_offline_limit));
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 OfflineSigninLimiter::GetTimeLimitOverrideForTesting() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOfflineSignInTimeLimitInSecondsOverrideForTesting)) {
@@ -350,14 +350,14 @@ OfflineSigninLimiter::GetTimeLimitOverrideForTesting() {
             switches::kOfflineSignInTimeLimitInSecondsOverrideForTesting);
     int numeric_val = 0;
     if (base::StringToInt(ascii_value, &numeric_val) && numeric_val >= 0) {
-      return base::make_optional<base::TimeDelta>(
+      return absl::make_optional<base::TimeDelta>(
           base::TimeDelta::FromSeconds(numeric_val));
     }
     LOG(WARNING)
         << "Manual offline signin time limit override requested but failed.";
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void OfflineSigninLimiter::ForceOnlineLogin() {
@@ -403,7 +403,7 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
 
 void OfflineSigninLimiter::UpdateOnlineSigninData(
     base::Time time,
-    base::Optional<base::TimeDelta> limit) {
+    absl::optional<base::TimeDelta> limit) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user) {

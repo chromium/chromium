@@ -141,9 +141,9 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   const base::DictionaryValue* pref_data =
       browser()->profile()->GetPrefs()->GetDictionary(
           prefs::kHatsSurveyMetadata);
-  base::Optional<base::Time> last_survey_started_time =
+  absl::optional<base::Time> last_survey_started_time =
       util::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
-  base::Optional<int> last_major_version =
+  absl::optional<int> last_major_version =
       pref_data->FindIntPath(kLastMajorVersion);
   ASSERT_FALSE(last_survey_started_time.has_value());
   ASSERT_FALSE(last_major_version.has_value());

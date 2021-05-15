@@ -88,10 +88,10 @@ bool IsSyncDisabledForSharing(syncer::SyncService* sync_service) {
   return false;
 }
 
-base::Optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
+absl::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
     const syncer::DeviceInfo& device_info) {
   if (!device_info.sharing_info())
-    return base::nullopt;
+    return absl::nullopt;
 
   chrome_browser_sharing::FCMChannelConfiguration fcm_configuration;
   auto& vapid_target_info = device_info.sharing_info()->vapid_target_info;

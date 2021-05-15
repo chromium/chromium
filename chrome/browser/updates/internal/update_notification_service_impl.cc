@@ -55,18 +55,18 @@ notifications::ScheduleParams BuildScheduleParams(
       notifications::UserFeedback::kNotHelpful,
       notifications::ImpressionResult::kNegative);
   if (should_show_immediately) {
-    schedule_params.deliver_time_start = base::make_optional(clock->Now());
+    schedule_params.deliver_time_start = absl::make_optional(clock->Now());
     schedule_params.deliver_time_end =
-        base::make_optional(clock->Now() + base::TimeDelta::FromMinutes(1));
+        absl::make_optional(clock->Now() + base::TimeDelta::FromMinutes(1));
   } else {
     notifications::TimePair actual_window;
     notifications::NextTimeWindow(clock, config->deliver_window_morning,
                                   config->deliver_window_evening,
                                   &actual_window);
     schedule_params.deliver_time_start =
-        base::make_optional(std::move(actual_window.first));
+        absl::make_optional(std::move(actual_window.first));
     schedule_params.deliver_time_end =
-        base::make_optional(std::move(actual_window.second));
+        absl::make_optional(std::move(actual_window.second));
   }
   return schedule_params;
 }

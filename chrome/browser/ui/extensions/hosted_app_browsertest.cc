@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -84,6 +83,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
@@ -1886,7 +1886,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
                 nested_origin_url.spec().c_str());
             content::URLLoaderInterceptor::WriteResponse(
                 headers, body, params->client.get(),
-                base::Optional<net::SSLInfo>());
+                absl::optional<net::SSLInfo>());
             return true;
           } else if (params->url_request.url.host() ==
                      nested_origin_url.host()) {
@@ -1897,7 +1897,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
                 nested_origin_url.spec().c_str());
             content::URLLoaderInterceptor::WriteResponse(
                 headers, body, params->client.get(),
-                base::Optional<net::SSLInfo>());
+                absl::optional<net::SSLInfo>());
             return true;
           }
           // Not handled by us.

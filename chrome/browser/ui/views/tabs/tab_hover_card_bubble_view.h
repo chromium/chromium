@@ -14,7 +14,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/metrics_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace gfx {
@@ -59,7 +59,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   views::Label* title_label_ = nullptr;
   FadeLabel* title_fade_label_ = nullptr;
-  base::Optional<TabAlertState> alert_state_;
+  absl::optional<TabAlertState> alert_state_;
   views::Label* domain_label_ = nullptr;
   FadeLabel* domain_fade_label_ = nullptr;
   views::ImageView* preview_image_ = nullptr;

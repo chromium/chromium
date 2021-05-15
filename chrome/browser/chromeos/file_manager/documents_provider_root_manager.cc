@@ -167,7 +167,7 @@ void DocumentsProviderRootManager::RequestGetRoots() {
 }
 
 void DocumentsProviderRootManager::OnGetRoots(
-    base::Optional<std::vector<arc::mojom::RootPtr>> maybe_roots) {
+    absl::optional<std::vector<arc::mojom::RootPtr>> maybe_roots) {
   if (!maybe_roots.has_value())
     return;
 

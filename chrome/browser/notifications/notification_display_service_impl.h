@@ -12,12 +12,12 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -59,9 +59,9 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
-      const base::Optional<int>& action_index,
-      const base::Optional<std::u16string>& reply,
-      const base::Optional<bool>& by_user);
+      const absl::optional<int>& action_index,
+      const absl::optional<std::u16string>& reply,
+      const absl::optional<bool>& by_user);
 
   // Registers an implementation object to handle notification operations
   // for |notification_type|.
@@ -88,9 +88,9 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     NotificationHandler::Type notification_type,
                                     const GURL& origin,
                                     const std::string& notification_id,
-                                    const base::Optional<int>& action_index,
-                                    const base::Optional<std::u16string>& reply,
-                                    const base::Optional<bool>& by_user,
+                                    const absl::optional<int>& action_index,
+                                    const absl::optional<std::u16string>& reply,
+                                    const absl::optional<bool>& by_user,
                                     Profile* profile);
 
   // Sets the list of |blockers| to be used by the |notification_queue_|. Only

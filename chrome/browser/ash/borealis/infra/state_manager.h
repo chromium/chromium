@@ -9,9 +9,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
 
@@ -61,7 +61,7 @@ class BorealisStateManager {
   using OnTransition = Transition<OffState, State, OnError>;
   using OffTransition = Transition<State, OffState, OffError>;
   using WhenOn = void(Expected<State*, OnError>);
-  using WhenOff = void(base::Optional<OffError>);
+  using WhenOff = void(absl::optional<OffError>);
 
   // Create the state object, turning the state to "on". The |callback| will be
   // invoked on completion with the result.
@@ -92,7 +92,7 @@ class BorealisStateManager {
   void TurnOff(base::OnceCallback<WhenOff> callback) {
     switch (GetPhase()) {
       case Phase::kOff:
-        std::move(callback).Run(base::nullopt);
+        std::move(callback).Run(absl::nullopt);
         break;
       case Phase::kTransitioningOn:
         std::move(callback).Run(GetIsTurningOnError());
@@ -166,8 +166,8 @@ class BorealisStateManager {
   void CompleteOff(typename OffTransition::Result off_result) {
     off_transition_.reset();
     pending_off_callbacks_.Notify(
-        off_result ? base::nullopt
-                   : base::Optional<OffError>(off_result.Error()));
+        off_result ? absl::nullopt
+                   : absl::optional<OffError>(off_result.Error()));
   }
 
   std::unique_ptr<State> instance_;

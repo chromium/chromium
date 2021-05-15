@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +24,7 @@
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace optimization_guide {
@@ -42,12 +42,12 @@ class TestPredictionModelDownloadObserver
     last_ready_model_ = model;
   }
 
-  base::Optional<proto::PredictionModel> last_ready_model() const {
+  absl::optional<proto::PredictionModel> last_ready_model() const {
     return last_ready_model_;
   }
 
  private:
-  base::Optional<proto::PredictionModel> last_ready_model_;
+  absl::optional<proto::PredictionModel> last_ready_model_;
 };
 
 enum class PredictionModelDownloadFileStatus {

@@ -10,9 +10,9 @@
 #include <windows.ui.notifications.h>
 #include <wrl/client.h>
 
-#include "base/optional.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -86,7 +86,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
       NotificationCommon::Operation operation,
       ABI::Windows::UI::Notifications::IToastNotification* notification,
       ABI::Windows::UI::Notifications::IToastActivatedEventArgs* args,
-      const base::Optional<bool>& by_user);
+      const absl::optional<bool>& by_user);
 
   // Initializes the expected displayed notification map. For testing use only.
   void SetExpectedDisplayedNotificationsForTesting(

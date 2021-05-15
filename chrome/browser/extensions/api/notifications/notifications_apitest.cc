@@ -410,13 +410,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
     // Action button event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        0 /* action_index */, base::nullopt /* reply */);
+        0 /* action_index */, absl::nullopt /* reply */);
     EXPECT_TRUE(catcher.GetNextResult());
 
     // Click event.
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::EXTENSION, notification->id(),
-        base::nullopt /* action_index */, base::nullopt /* reply */);
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
     EXPECT_TRUE(catcher.GetNextResult());
 
     // Close event.

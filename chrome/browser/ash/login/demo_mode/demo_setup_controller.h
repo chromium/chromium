@@ -262,7 +262,7 @@ class DemoSetupController
 
   // Called when the device local account policy for the offline demo mode is
   // loaded.
-  void OnDeviceLocalAccountPolicyLoaded(base::Optional<std::string> blob);
+  void OnDeviceLocalAccountPolicyLoaded(absl::optional<std::string> blob);
 
   // Called when device is marked as registered and the second part of OOBE flow
   // is completed. This is the last step of demo mode setup flow.

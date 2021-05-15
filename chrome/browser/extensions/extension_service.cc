@@ -1952,8 +1952,8 @@ bool ExtensionService::OnExternalExtensionFileFound(
 
 void ExtensionService::InstallationFromExternalFileFinished(
     const std::string& extension_id,
-    const base::Optional<CrxInstallError>& error) {
-  if (error != base::nullopt) {
+    const absl::optional<CrxInstallError>& error) {
+  if (error != absl::nullopt) {
     // When installation is finished, the extension should not remain in the
     // pending extension manager. For successful installations this is done in
     // OnExtensionInstalled handler.

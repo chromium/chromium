@@ -30,7 +30,7 @@ class LastTabStandingTrackerTabHelper
  private:
   explicit LastTabStandingTrackerTabHelper(content::WebContents* webContents);
   friend class content::WebContentsUserData<LastTabStandingTrackerTabHelper>;
-  base::Optional<url::Origin> last_committed_origin_;
+  absl::optional<url::Origin> last_committed_origin_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

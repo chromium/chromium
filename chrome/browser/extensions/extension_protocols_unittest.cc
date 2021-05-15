@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -56,6 +55,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -382,7 +382,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
   const bool force_incognito_;
   const ukm::SourceIdObj test_ukm_id_;
 
-  base::Optional<base::test::ScopedPowerMonitorTestSource>
+  absl::optional<base::test::ScopedPowerMonitorTestSource>
       power_monitor_source_;
 };
 

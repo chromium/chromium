@@ -9,11 +9,11 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/token.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -64,7 +64,7 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   //
   // Returns an ID that can be passed to CloseBubbleForCriticalPromo()
   // if successful. This can fail if another critical promo is showing.
-  base::Optional<base::Token> ShowCriticalPromo(
+  absl::optional<base::Token> ShowCriticalPromo(
       const FeaturePromoBubbleParams& params);
 
   // Ends a promo started by ShowCriticalPromo() if it's still showing.
@@ -130,14 +130,14 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   const base::Feature* current_iph_feature_ = nullptr;
 
   // Bubble ID from `bubble_owner_`, if a bubble is showing.
-  base::Optional<base::Token> bubble_id_;
+  absl::optional<base::Token> bubble_id_;
 
   // Has a value if a critical promo is showing. If this has a value,
   // |current_iph_feature_| will usually be null. There is one edge case
   // where this may not be true: when a critical promo is requested
   // between a normal promo's CloseBubbleAndContinuePromo() call and its
   // end.
-  base::Optional<base::Token> current_critical_promo_;
+  absl::optional<base::Token> current_critical_promo_;
 
   // If present, called when |current_iph_feature_|'s bubble stops
   // showing. Only valid if |current_iph_feature_| and |promo_bubble_|

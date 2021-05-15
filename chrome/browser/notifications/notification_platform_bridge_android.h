@@ -11,10 +11,10 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -105,11 +105,11 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
     RegeneratedNotificationInfo();
     RegeneratedNotificationInfo(
         const GURL& service_worker_scope,
-        const base::Optional<std::string>& webapk_package);
+        const absl::optional<std::string>& webapk_package);
     ~RegeneratedNotificationInfo();
 
     GURL service_worker_scope;
-    base::Optional<std::string> webapk_package;
+    absl::optional<std::string> webapk_package;
   };
 
   // Mapping of notification id to renegerated notification info.

@@ -640,7 +640,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
         }
       })",
       force_pinned_extension->id().c_str());
-  base::Optional<base::Value> parsed = base::JSONReader::Read(json);
+  absl::optional<base::Value> parsed = base::JSONReader::Read(json);
   policy::PolicyMap map;
   map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
           policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
@@ -928,7 +928,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
     std::string requested_pattern;
     // The pattern that's granted to the extension, if any. This may be
     // significantly different than the requested pattern.
-    base::Optional<std::string> granted_pattern;
+    absl::optional<std::string> granted_pattern;
     // The current URL the context menu will be used on.
     GURL current_url;
     // The set of page access menu entries that should be present.
@@ -936,7 +936,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
     // The set of page access menu entries that should be enabled.
     std::set<Entries> enabled_entries;
     // The selected page access menu entry.
-    base::Optional<Entries> selected_entry;
+    absl::optional<Entries> selected_entry;
   } test_cases[] = {
       // Easy cases: site the extension wants to run on, with or without
       // permission granted.
@@ -947,7 +947,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
        {kOnClick, kOnSite},
        kOnSite},
       {"https://google.com/maps",
-       base::nullopt,
+       absl::nullopt,
        GURL("https://google.com/maps"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -982,7 +982,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
        {kOnClick, kOnSite},
        kOnSite},
       {"https://*.google.com/*",
-       base::nullopt,
+       absl::nullopt,
        GURL("https://google.com"),
        {kOnClick, kOnSite, kOnAllSites},
        {kOnClick, kOnSite},
@@ -1002,7 +1002,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
       // On sites the extension doesn't want to run on, no controls should be
       // shown...
       {"https://*.google.com/*",
-       base::nullopt,
+       absl::nullopt,
        GURL("https://example.com"),
        {}},
       // ...unless the extension has access to the page, in which case we should

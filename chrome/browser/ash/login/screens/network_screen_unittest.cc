@@ -9,7 +9,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
@@ -18,6 +17,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -59,7 +59,7 @@ class NetworkScreenUnitTest : public testing::Test {
   std::unique_ptr<NetworkScreen> network_screen_;
 
   login::MockNetworkStateHelper* mock_network_state_helper_ = nullptr;
-  base::Optional<NetworkScreen::Result> last_screen_result_;
+  absl::optional<NetworkScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(NetworkScreen::Result screen_result) {

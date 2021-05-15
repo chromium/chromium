@@ -148,7 +148,7 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(retry_on_failure), /*app_id=*/base::nullopt,
+      base::BindOnce(std::move(retry_on_failure), /*app_id=*/absl::nullopt,
                      ExternallyManagedAppManager::InstallResult{.code = code}));
 }
 
@@ -172,7 +172,7 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
 void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       externally_installed_app_prefs_.LookupPlaceholderAppId(
           install_options_.install_url);
 
@@ -200,7 +200,7 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)
-        .Run(/*app_id=*/base::nullopt,
+        .Run(/*app_id=*/absl::nullopt,
              {.code = InstallResultCode::kFailedPlaceholderUninstall});
     return;
   }
@@ -225,7 +225,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Optional<AppId> app_id =
+  absl::optional<AppId> app_id =
       externally_installed_app_prefs_.LookupPlaceholderAppId(
           install_options_.install_url);
   if (app_id.has_value() && registrar_->IsInstalled(app_id.value())) {
@@ -275,7 +275,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
     const AppId& app_id,
     InstallResultCode code) {
   if (!IsNewInstall(code)) {
-    std::move(result_callback).Run(/*app_id=*/base::nullopt, {.code = code});
+    std::move(result_callback).Run(/*app_id=*/absl::nullopt, {.code = code});
     return;
   }
 
@@ -344,7 +344,7 @@ void ExternallyManagedAppInstallTask::OnOsHooksCreated(
 
 void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(
     ResultCallback result_callback,
-    base::Optional<AppId> app_id,
+    absl::optional<AppId> app_id,
     ExternallyManagedAppManager::InstallResult result) {
   if (!IsSuccess(result.code) && install_options().app_info_factory) {
     InstallFromInfo(std::move(result_callback));

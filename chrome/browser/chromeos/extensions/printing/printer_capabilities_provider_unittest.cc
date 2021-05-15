@@ -74,7 +74,7 @@ class PrinterCapabilitiesProviderTest : public testing::Test {
 
   void OnPrinterCapabilitiesRetrieved(
       base::RepeatingClosure run_loop_closure,
-      base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
+      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
     capabilities_ = std::move(capabilities);
     run_loop_closure.Run();
   }
@@ -85,7 +85,7 @@ class PrinterCapabilitiesProviderTest : public testing::Test {
   std::unique_ptr<chromeos::TestCupsPrintersManager> printers_manager_;
   chromeos::TestPrinterConfigurer* printer_configurer_;
   std::unique_ptr<PrinterCapabilitiesProvider> printer_capabilities_provider_;
-  base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities_;
+  absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities_;
 };
 
 // Tests that no capabilities are returned if the printer is not added to

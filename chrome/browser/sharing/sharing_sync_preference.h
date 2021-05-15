@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class DeviceInfoSyncService;
@@ -37,14 +37,14 @@ class SharingSyncPreference {
  public:
   // FCM registration status of current device. Not synced across devices.
   struct FCMRegistration {
-    FCMRegistration(base::Optional<std::string> authorized_entity,
+    FCMRegistration(absl::optional<std::string> authorized_entity,
                     base::Time timestamp);
     FCMRegistration(FCMRegistration&& other);
     FCMRegistration& operator=(FCMRegistration&& other);
     ~FCMRegistration();
 
     // Authorized entity registered with FCM.
-    base::Optional<std::string> authorized_entity;
+    absl::optional<std::string> authorized_entity;
 
     // Timestamp of latest registration.
     base::Time timestamp;
@@ -58,14 +58,14 @@ class SharingSyncPreference {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns local SharingInfo to be uploaded to sync.
-  static base::Optional<syncer::DeviceInfo::SharingInfo>
+  static absl::optional<syncer::DeviceInfo::SharingInfo>
   GetLocalSharingInfoForSync(PrefService* prefs);
 
   // Returns VAPID key from preferences if present, otherwise returns
-  // base::nullopt.
+  // absl::nullopt.
   // For more information on vapid keys, please see
   // https://tools.ietf.org/html/draft-thomson-webpush-vapid-02
-  base::Optional<std::vector<uint8_t>> GetVapidKey() const;
+  absl::optional<std::vector<uint8_t>> GetVapidKey() const;
 
   // Adds VAPID key to preferences for syncing across devices.
   void SetVapidKey(const std::vector<uint8_t>& vapid_key) const;
@@ -76,7 +76,7 @@ class SharingSyncPreference {
   // Clears previously set observer.
   void ClearVapidKeyChangeObserver();
 
-  base::Optional<FCMRegistration> GetFCMRegistration() const;
+  absl::optional<FCMRegistration> GetFCMRegistration() const;
 
   void SetFCMRegistration(FCMRegistration registration);
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +27,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 class SessionServiceLogTest : public InProcessBrowserTest {
@@ -55,14 +55,14 @@ class SessionServiceLogTest : public InProcessBrowserTest {
     SessionStartupPref::SetStartupPref(browser()->profile(), pref);
   }
 
-  base::Optional<SessionServiceEvent> FindMostRecentEventOfType(
+  absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) const {
     auto events = GetSessionServiceEvents(profile_);
     for (auto i = events.rbegin(); i != events.rend(); ++i) {
       if (i->type == type)
         return *i;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::list<SessionServiceEvent>::reverse_iterator

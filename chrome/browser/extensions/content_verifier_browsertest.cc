@@ -69,7 +69,7 @@ class MockUpdateService : public UpdateService {
 };
 
 void ExtensionUpdateComplete(base::OnceClosure callback,
-                             const base::Optional<CrxInstallError>& error) {
+                             const absl::optional<CrxInstallError>& error) {
   // Expect success (no CrxInstallError). Assert on an error to put the error
   // message into the test log to aid debugging.
   ASSERT_FALSE(error.has_value()) << error->message();
@@ -98,7 +98,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
 
   void TearDown() override {
     ExtensionBrowserTest::TearDown();
-    ChromeContentVerifierDelegate::SetDefaultModeForTesting(base::nullopt);
+    ChromeContentVerifierDelegate::SetDefaultModeForTesting(absl::nullopt);
   }
 
   bool ShouldEnableContentVerification() override { return true; }

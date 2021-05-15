@@ -131,7 +131,7 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
         content::JsReplace("executeFetch($1);", url));
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     std::string result;
     EXPECT_TRUE(value->GetAsString(&result));

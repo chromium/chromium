@@ -16,7 +16,7 @@ class UpdatePasswordInfoBarDelegate;
 class UpdatePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   UpdatePasswordInfoBar(std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
-                        base::Optional<AccountInfo> account_info);
+                        absl::optional<AccountInfo> account_info);
   ~UpdatePasswordInfoBar() override;
 
   int GetIdOfSelectedUsername() const;
@@ -31,7 +31,7 @@ class UpdatePasswordInfoBar : public infobars::ConfirmInfoBar {
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 
-  base::Optional<AccountInfo> account_info_;
+  absl::optional<AccountInfo> account_info_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdatePasswordInfoBar);
 };

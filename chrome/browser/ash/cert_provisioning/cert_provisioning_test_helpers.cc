@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
 
-#include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -65,7 +65,7 @@ void CertificateHelperForTesting::GetCertificates(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id,
+    const absl::optional<CertProfileId>& cert_profile_id,
     platform_keys::Status status,
     base::Time not_valid_before,
     base::Time not_valid_after) {
@@ -88,7 +88,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id) {
+    const absl::optional<CertProfileId>& cert_profile_id) {
   base::Time not_valid_before =
       base::Time::Now() - base::TimeDelta::FromDays(1);
   base::Time not_valid_after =
@@ -99,7 +99,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
-    const base::Optional<CertProfileId>& cert_profile_id,
+    const absl::optional<CertProfileId>& cert_profile_id,
     platform_keys::Status status) {
   base::Time not_valid_before =
       base::Time::Now() - base::TimeDelta::FromDays(1);

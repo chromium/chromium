@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A NearbyShareSchedulerBase that does not schedule recurring tasks.
 class NearbyShareOnDemandScheduler : public NearbyShareSchedulerBase {
@@ -25,8 +25,8 @@ class NearbyShareOnDemandScheduler : public NearbyShareSchedulerBase {
   ~NearbyShareOnDemandScheduler() override;
 
  private:
-  // Return base::nullopt so as not to schedule recurring requests.
-  base::Optional<base::TimeDelta> TimeUntilRecurringRequest(
+  // Return absl::nullopt so as not to schedule recurring requests.
+  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override;
 };
 

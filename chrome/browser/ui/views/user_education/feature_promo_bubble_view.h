@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -59,24 +59,24 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT;
 
     std::u16string body_text;
-    base::Optional<std::u16string> title_text;
-    base::Optional<std::u16string> screenreader_text;
+    absl::optional<std::u16string> title_text;
+    absl::optional<std::u16string> screenreader_text;
 
     std::vector<ButtonParams> buttons;
 
-    base::Optional<int> preferred_width;
+    absl::optional<int> preferred_width;
 
     bool focusable = false;
     bool persist_on_blur = false;
 
     // Determines how progress indicators for tutorials will be rendered. If not
     // provided, no progress indicator will be visible.
-    base::Optional<int> tutorial_progress_current;
-    base::Optional<int> tutorial_progress_max;
+    absl::optional<int> tutorial_progress_current;
+    absl::optional<int> tutorial_progress_max;
 
     // Changes the bubble timeout. Intended for tests, avoid use.
-    base::Optional<base::TimeDelta> timeout_default;
-    base::Optional<base::TimeDelta> timeout_short;
+    absl::optional<base::TimeDelta> timeout_default;
+    absl::optional<base::TimeDelta> timeout_short;
   };
 
   // NOTE: Please read comment above class. This method shouldn't be
@@ -120,7 +120,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
   std::u16string accessible_name_;
 
-  base::Optional<int> preferred_width_;
+  absl::optional<int> preferred_width_;
 
   std::unique_ptr<FeaturePromoBubbleTimeout> feature_promo_bubble_timeout_;
 };

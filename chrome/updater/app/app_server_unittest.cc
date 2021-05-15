@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/updater/constants.h"
@@ -22,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::Invoke;
 using testing::Return;
@@ -57,7 +57,7 @@ class AppServerTest : public AppServer {
 };
 
 void ClearPrefs() {
-  for (const base::Optional<base::FilePath>& path :
+  for (const absl::optional<base::FilePath>& path :
        {GetBaseDirectory(), GetVersionedDirectory()}) {
     ASSERT_TRUE(path);
     ASSERT_TRUE(

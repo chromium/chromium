@@ -202,7 +202,7 @@ class SyncConsentTest : public OobeBaseTest {
   }
 
  protected:
-  base::Optional<SyncConsentScreen::Result> screen_result_;
+  absl::optional<SyncConsentScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   std::vector<int> expected_consent_ids_;
 

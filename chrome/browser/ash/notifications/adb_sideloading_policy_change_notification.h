@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_ADB_SIDELOADING_POLICY_CHANGE_NOTIFICATION_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -43,7 +43,7 @@ class AdbSideloadingPolicyChangeNotification {
   virtual ~AdbSideloadingPolicyChangeNotification();
 
   virtual void Show(Type type);
-  void HandleNotificationClick(base::Optional<int> button_index);
+  void HandleNotificationClick(absl::optional<int> button_index);
 
  private:
   base::WeakPtrFactory<AdbSideloadingPolicyChangeNotification>

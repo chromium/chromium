@@ -100,7 +100,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
 
     auto* request = report->add_extension_requests();
     request->set_id(it.first);
-    base::Optional<base::Time> timestamp = ::util::ValueToTime(
+    absl::optional<base::Time> timestamp = ::util::ValueToTime(
         it.second.FindKey(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());

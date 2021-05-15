@@ -61,7 +61,7 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 
 void OnDidGetDefaultPrinterName(
     PrinterHandler::DefaultPrinterCallback callback,
-    const base::Optional<std::string>& printer_name) {
+    const absl::optional<std::string>& printer_name) {
   if (!printer_name.has_value()) {
     LOG(WARNING) << "Failure getting default printer";
     std::move(callback).Run(std::string());

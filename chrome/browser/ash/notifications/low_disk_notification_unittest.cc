@@ -73,7 +73,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  base::Optional<message_center::Notification> GetNotification() {
+  absl::optional<message_center::Notification> GetNotification() {
     return tester_->GetNotification("low_disk");
   }
 

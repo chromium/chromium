@@ -255,14 +255,14 @@ class TabStripTestBase : public ChromeViewsTestBase {
   views::View::Views GetTabSlotViewsInVisualOrder() {
     views::View::Views ordered_views;
 
-    base::Optional<tab_groups::TabGroupId> prev_group = base::nullopt;
+    absl::optional<tab_groups::TabGroupId> prev_group = absl::nullopt;
 
     for (int i = 0; i < tab_strip_->GetTabCount(); ++i) {
       Tab* tab = tab_strip_->tab_at(i);
 
       // If the current Tab is the first one in a group, first add the
       // TabGroupHeader to the list of views.
-      base::Optional<tab_groups::TabGroupId> curr_group = tab->group();
+      absl::optional<tab_groups::TabGroupId> curr_group = tab->group();
       if (curr_group.has_value() && curr_group != prev_group)
         ordered_views.push_back(tab_strip_->group_header(curr_group.value()));
       prev_group = curr_group;
@@ -427,9 +427,9 @@ TEST_P(TabStripTest, TabViewOrderWithGroups) {
   controller_->AddTab(3, false);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 
-  base::Optional<tab_groups::TabGroupId> group1 =
+  absl::optional<tab_groups::TabGroupId> group1 =
       tab_groups::TabGroupId::GenerateNew();
-  base::Optional<tab_groups::TabGroupId> group2 =
+  absl::optional<tab_groups::TabGroupId> group2 =
       tab_groups::TabGroupId::GenerateNew();
 
   // Add multiple tabs to a group and verify view order.
@@ -895,7 +895,7 @@ TEST_P(TabStripTest, GroupHeaderBasics) {
   Tab* tab = tab_strip_->tab_at(0);
   const int first_slot_x = tab->x();
 
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();
@@ -918,7 +918,7 @@ TEST_P(TabStripTest, GroupHeaderBetweenTabs) {
 
   const int second_slot_x = tab_strip_->tab_at(1)->x();
 
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(1, group);
 
@@ -930,7 +930,7 @@ TEST_P(TabStripTest, GroupHeaderMovesRightWithTab) {
   SetMaxTabStripWidth(2000);
   for (int i = 0; i < 4; i++)
     controller_->AddTab(i, false);
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(1, group);
   CompleteAnimationAndLayout();
@@ -948,7 +948,7 @@ TEST_P(TabStripTest, GroupHeaderMovesLeftWithTab) {
   SetMaxTabStripWidth(2000);
   for (int i = 0; i < 4; i++)
     controller_->AddTab(i, false);
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(2, group);
   CompleteAnimationAndLayout();
@@ -966,7 +966,7 @@ TEST_P(TabStripTest, GroupHeaderDoesntMoveReorderingTabsInGroup) {
   SetMaxTabStripWidth(2000);
   for (int i = 0; i < 4; i++)
     controller_->AddTab(i, false);
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(1, group);
   controller_->MoveTabIntoGroup(2, group);
@@ -1037,14 +1037,14 @@ TEST_P(TabStripTest, UngroupedTabMovesLeftOfHeader) {
 TEST_P(TabStripTest, DeleteTabGroupViewsWhenEmpty) {
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   controller_->MoveTabIntoGroup(1, group);
-  controller_->MoveTabIntoGroup(0, base::nullopt);
+  controller_->MoveTabIntoGroup(0, absl::nullopt);
 
   EXPECT_EQ(1u, ListGroupViews().size());
-  controller_->MoveTabIntoGroup(1, base::nullopt);
+  controller_->MoveTabIntoGroup(1, absl::nullopt);
   EXPECT_EQ(0u, ListGroupViews().size());
 }
 
@@ -1053,7 +1053,7 @@ TEST_P(TabStripTest, GroupUnderlineBasics) {
   bounds_animator()->SetAnimationDuration(base::TimeDelta());
   controller_->AddTab(0, false);
 
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();
@@ -1087,7 +1087,7 @@ TEST_P(TabStripTest, GroupHighlightBasics) {
   bounds_animator()->SetAnimationDuration(base::TimeDelta());
   controller_->AddTab(0, false);
 
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();
@@ -1141,7 +1141,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   CompleteAnimationAndLayout();
   ASSERT_EQ(3, tab_strip_->GetTabCount());
   ASSERT_EQ(3, tab_strip_->GetModelCount());
-  EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(absl::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(group_id, tab_strip_->tab_at(1)->group());
   EXPECT_EQ(group_id, tab_strip_->tab_at(2)->group());
 
@@ -1170,7 +1170,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   // After finishing animations, there should be exactly 1 tab in no
   // group.
   EXPECT_EQ(1, tab_strip_->GetTabCount());
-  EXPECT_EQ(base::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(absl::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(1, tab_strip_->GetModelCount());
 }
 
@@ -1380,7 +1380,7 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
     ASSERT_TRUE(tab_strip_->tab_at(i)->GetVisible());
 
   // The group header of an invisible tab should not be visible.
-  base::Optional<tab_groups::TabGroupId> group1 =
+  absl::optional<tab_groups::TabGroupId> group1 =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(invisible_tab_index, group1);
   CompleteAnimationAndLayout();
@@ -1389,7 +1389,7 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
 
   // The group header of a visible tab should be visible when the group is
   // expanded and collapsed.
-  base::Optional<tab_groups::TabGroupId> group2 =
+  absl::optional<tab_groups::TabGroupId> group2 =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group2);
   CompleteAnimationAndLayout();
@@ -1416,7 +1416,7 @@ TEST_P(TabStripTestWithScrollingDisabled, TabGroupCreatedWhenStacked) {
   CompleteAnimationAndLayout();
 
   // Create a tab group.
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();

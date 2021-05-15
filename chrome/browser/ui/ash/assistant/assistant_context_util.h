@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 

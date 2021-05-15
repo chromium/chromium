@@ -133,7 +133,7 @@ void AvatarToolbarButton::Layout() {
 }
 
 void AvatarToolbarButton::UpdateText() {
-  base::Optional<SkColor> color;
+  absl::optional<SkColor> color;
   std::u16string text;
 
   switch (delegate_->GetState()) {

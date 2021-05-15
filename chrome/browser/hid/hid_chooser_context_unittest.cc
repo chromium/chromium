@@ -123,7 +123,7 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
@@ -182,7 +182,7 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
@@ -244,7 +244,7 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
@@ -307,7 +307,7 @@ TEST_F(HidChooserContextTest, GuardPermission) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()));
 
@@ -349,7 +349,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {
@@ -389,7 +389,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
   base::RunLoop permission_granted_loop;
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
-                  base::make_optional(ContentSettingsType::HID_GUARD),
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA))
       .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
       .WillOnce([]() {

@@ -11,7 +11,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test implementation of ash's SessionController interface.
 class TestSessionController : public ash::SessionController {
@@ -19,7 +19,7 @@ class TestSessionController : public ash::SessionController {
   TestSessionController();
   ~TestSessionController() override;
 
-  const base::Optional<ash::SessionInfo>& last_session_info() const {
+  const absl::optional<ash::SessionInfo>& last_session_info() const {
     return last_session_info_;
   }
 
@@ -31,7 +31,7 @@ class TestSessionController : public ash::SessionController {
     return last_session_start_time_;
   }
 
-  const base::Optional<ash::UserSession>& last_user_session() const {
+  const absl::optional<ash::UserSession>& last_user_session() const {
     return last_user_session_;
   }
 
@@ -78,8 +78,8 @@ class TestSessionController : public ash::SessionController {
   bool IsScreenLocked() const override;
 
  private:
-  base::Optional<ash::SessionInfo> last_session_info_;
-  base::Optional<ash::UserSession> last_user_session_;
+  absl::optional<ash::SessionInfo> last_session_info_;
+  absl::optional<ash::UserSession> last_user_session_;
   base::TimeDelta last_session_length_limit_;
   base::Time last_session_start_time_;
   int update_user_session_count_ = 0;

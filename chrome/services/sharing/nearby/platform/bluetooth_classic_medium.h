@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
 
 namespace location {
@@ -66,7 +66,7 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   mojo::Receiver<bluetooth::mojom::AdapterObserver> adapter_observer_{this};
 
   // These properties are only set while discovery is active.
-  base::Optional<DiscoveryCallback> discovery_callback_;
+  absl::optional<DiscoveryCallback> discovery_callback_;
   mojo::Remote<bluetooth::mojom::DiscoverySession> discovery_session_;
 
   // This is a mapping of MAC addresses to discovered Bluetooth devices.

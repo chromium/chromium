@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +16,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -28,7 +28,7 @@ bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
           ->GetPolicyService()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                 std::string()));
-  base::Optional<bool> policy_value;
+  absl::optional<bool> policy_value;
   if (const base::Value* value = policies.GetValue(policy_name))
     policy_value = value->GetIfBool();
   return policy_value.value_or(base::FeatureList::IsEnabled(feature));

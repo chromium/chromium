@@ -131,7 +131,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (!navigate_from_link())
     return false;
 
-  base::Optional<std::string> preferred_app_id =
+  absl::optional<std::string> preferred_app_id =
       proxy->PreferredApps().FindPreferredAppForUrl(url);
   if (!preferred_app_id.has_value() ||
       !base::Contains(app_ids, preferred_app_id.value())) {

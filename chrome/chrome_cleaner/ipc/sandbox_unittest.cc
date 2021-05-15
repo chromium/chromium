@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -31,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 

@@ -7,11 +7,11 @@
 #include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -62,7 +62,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
   }
 
   ash::AccessibilityAlert last_a11y_alert_ = ash::AccessibilityAlert::NONE;
-  base::Optional<Sound> last_sound_key_;
+  absl::optional<Sound> last_sound_key_;
   ax::mojom::Gesture last_a11y_gesture_ = ax::mojom::Gesture::kNone;
   gfx::PointF last_a11y_gesture_point_;
   int toggle_dictation_count_ = 0;

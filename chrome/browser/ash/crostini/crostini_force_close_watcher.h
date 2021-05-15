@@ -11,9 +11,9 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace exo {
@@ -91,7 +91,7 @@ class ForceCloseWatcher : public views::WidgetObserver {
 
   // Implements the delay between the first and second time the user tries to
   // close the window.
-  base::Optional<base::ElapsedTimer> show_dialog_timer_;
+  absl::optional<base::ElapsedTimer> show_dialog_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(ForceCloseWatcher);
 };

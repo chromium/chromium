@@ -11,9 +11,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_loader.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -46,7 +46,7 @@ class OneGoogleBarLoaderImpl : public OneGoogleBarLoader {
 
   void JsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
-  void Respond(Status status, const base::Optional<OneGoogleBarData>& data);
+  void Respond(Status status, const absl::optional<OneGoogleBarData>& data);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string application_locale_;

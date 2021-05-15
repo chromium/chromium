@@ -74,7 +74,7 @@ namespace {
 void DidGetTPMInfoForUserOnUIThread(
     std::unique_ptr<chromeos::TPMTokenInfoGetter> getter,
     const std::string& username_hash,
-    base::Optional<user_data_auth::TpmTokenInfo> token_info) {
+    absl::optional<user_data_auth::TpmTokenInfo> token_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (token_info.has_value() && token_info->slot() != -1) {
     DVLOG(1) << "Got TPM slot for " << username_hash << ": "

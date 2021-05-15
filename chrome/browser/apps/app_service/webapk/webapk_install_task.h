@@ -11,10 +11,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/arc/arc_features_parser.h"
 #include "components/arc/mojom/webapk.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -49,7 +49,7 @@ class WebApkInstallTask {
  private:
   void OnArcFeaturesLoaded(std::unique_ptr<webapk::WebApk> webapk,
                            ResultCallback callback,
-                           base::Optional<arc::ArcFeatures> arc_features);
+                           absl::optional<arc::ArcFeatures> arc_features);
   void OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
                     ResultCallback callback,
                     IconPurpose purpose,

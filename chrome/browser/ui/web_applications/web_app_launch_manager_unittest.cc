@@ -5,7 +5,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -14,6 +13,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -62,8 +62,8 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
   apps::AppLaunchParams CreateLaunchParams(
       const base::CommandLine& command_line,
       const std::vector<base::FilePath>& launch_files,
-      const base::Optional<GURL>& url_handler_launch_url,
-      const base::Optional<GURL>& protocol_handler_launch_url) {
+      const absl::optional<GURL>& url_handler_launch_url,
+      const absl::optional<GURL>& protocol_handler_launch_url) {
     apps::AppLaunchParams params(
         kTestAppId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW,
@@ -84,8 +84,8 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
     return command_line;
   }
 
-  void ValidateOptionalGURL(const base::Optional<GURL>& actual,
-                            const base::Optional<GURL>& expected) {
+  void ValidateOptionalGURL(const absl::optional<GURL>& actual,
+                            const absl::optional<GURL>& expected) {
     ASSERT_EQ(actual.has_value(), expected.has_value());
     if (actual.has_value()) {
       EXPECT_EQ(actual.value(), expected.value());
@@ -119,7 +119,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication) {
 
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
-                         base::nullopt, base::nullopt);
+                         absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -134,14 +134,14 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
-                            base::nullopt, base::DoNothing());
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
   base::RunLoop run_loop;
-  const base::Optional<GURL> protocol_handler_launch_url(
+  const absl::optional<GURL> protocol_handler_launch_url(
       GURL("web+test://test"));
   base::CommandLine command_line = CreateCommandLine();
 
@@ -149,7 +149,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
 
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
-                         base::nullopt, protocol_handler_launch_url);
+                         absl::nullopt, protocol_handler_launch_url);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -164,14 +164,14 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolWebPrefix) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
                             protocol_handler_launch_url, base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
   base::RunLoop run_loop;
-  const base::Optional<GURL> protocol_handler_launch_url(
+  const absl::optional<GURL> protocol_handler_launch_url(
       GURL("mailto://test@test.com"));
   base::CommandLine command_line = CreateCommandLine();
 
@@ -179,7 +179,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
 
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, std::vector<base::FilePath>(),
-                         base::nullopt, protocol_handler_launch_url);
+                         absl::nullopt, protocol_handler_launch_url);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -194,7 +194,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolMailTo) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
                             protocol_handler_launch_url, base::DoNothing());
   run_loop.Run();
 }
@@ -209,14 +209,14 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolFile) {
 #endif  // defined(OS_WIN)
 
   base::RunLoop run_loop;
-  const base::Optional<GURL> protocol_handler_launch_url(
+  const absl::optional<GURL> protocol_handler_launch_url(
       "file:///C:/test_app_path/test_app_file.txt");
   base::CommandLine command_line = CreateCommandLine();
 
   command_line.AppendArg(protocol_handler_launch_url.value().spec());
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {base::FilePath(kTestPath)}, base::nullopt, base::nullopt);
+      command_line, {base::FilePath(kTestPath)}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -231,8 +231,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolFile) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
-                            base::nullopt, base::DoNothing());
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, base::DoNothing());
   run_loop.Run();
 }
 
@@ -246,14 +246,14 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
 #endif  // defined(OS_WIN)
 
   base::RunLoop run_loop;
-  const base::Optional<GURL> protocol_handler_launch_url(
+  const absl::optional<GURL> protocol_handler_launch_url(
       "https://www.test.com/");
   base::CommandLine command_line = CreateCommandLine();
 
   command_line.AppendArg(protocol_handler_launch_url.value().spec());
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {base::FilePath(kTestPath)}, base::nullopt, base::nullopt);
+      command_line, {base::FilePath(kTestPath)}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -268,8 +268,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
-                            base::nullopt, base::DoNothing());
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, base::DoNothing());
   run_loop.Run();
 }
 
@@ -289,7 +289,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileFullPath) {
   command_line.AppendArgPath(test_path);
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {test_path}, base::nullopt, base::nullopt);
+      command_line, {test_path}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -304,8 +304,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileFullPath) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
-                            base::nullopt, base::DoNothing());
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, base::DoNothing());
   run_loop.Run();
 }
 
@@ -325,7 +325,7 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileRelativePath) {
   command_line.AppendArgPath(test_path);
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {test_path}, base::nullopt, base::nullopt);
+      command_line, {test_path}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
@@ -340,8 +340,8 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileRelativePath) {
           }));
 
   manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), base::nullopt,
-                            base::nullopt, base::DoNothing());
+                            base::FilePath(kCurrentDirectory), absl::nullopt,
+                            absl::nullopt, base::DoNothing());
   run_loop.Run();
 }
 

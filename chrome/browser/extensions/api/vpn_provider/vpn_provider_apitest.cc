@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -30,6 +29,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
@@ -187,7 +187,7 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
 
   void TriggerInternalRemove() {
     NetworkHandler::Get()->network_configuration_handler()->RemoveConfiguration(
-        GetSingleServicePath(), /*remove_confirmer=*/base::nullopt,
+        GetSingleServicePath(), /*remove_confirmer=*/absl::nullopt,
         base::DoNothing(), base::BindOnce(DoNothingFailureCallback));
   }
 

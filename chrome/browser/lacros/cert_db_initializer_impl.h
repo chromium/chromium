@@ -54,7 +54,7 @@ class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
   // created together with a new profile and never outlives it.`
   Profile* profile_ = nullptr;
   std::unique_ptr<IdentityManagerObserver> identity_manager_observer_;
-  base::Optional<bool> is_ready_;
+  absl::optional<bool> is_ready_;
   base::OnceCallbackList<ReadyCallback::RunType> callbacks_;
 
   base::WeakPtrFactory<CertDbInitializerImpl> weak_factory_{this};

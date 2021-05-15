@@ -197,8 +197,8 @@ bool LocalPolicyTestServerMixin::SetDeviceInitialEnrollmentResponse(
     const std::string& device_serial_number,
     enterprise_management::DeviceInitialEnrollmentStateResponse::
         InitialEnrollmentMode initial_mode,
-    const base::Optional<std::string>& management_domain,
-    const base::Optional<bool> is_license_packaged_with_device) {
+    const absl::optional<std::string>& management_domain,
+    const absl::optional<bool> is_license_packaged_with_device) {
   base::Value serial_entry(base::Value::Type::DICTIONARY);
   serial_entry.SetKey("initial_enrollment_mode", base::Value(initial_mode));
 
@@ -226,7 +226,7 @@ void LocalPolicyTestServerMixin::SetupZeroTouchForcedEnrollment() {
   SetUpdateDeviceAttributesPermission(false);
   SetDeviceInitialEnrollmentResponse(
       test::kTestRlzBrandCodeKey, test::kTestSerialNumber, initial_enrollment,
-      test::kTestDomain, base::nullopt /* is_license_packaged_with_device */);
+      test::kTestDomain, absl::nullopt /* is_license_packaged_with_device */);
 }
 
 void LocalPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(

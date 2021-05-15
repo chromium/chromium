@@ -7,9 +7,9 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -36,7 +36,7 @@ class TimeLimitNotifier {
 
   // Shows a notification informing that the provided limit was updated.
   void ShowPolicyUpdateNotification(LimitType limit_type,
-                                    base::Optional<base::Time> lock_time);
+                                    absl::optional<base::Time> lock_time);
 
   // Cancels any scheduled notification timers.
   void UnscheduleNotifications();

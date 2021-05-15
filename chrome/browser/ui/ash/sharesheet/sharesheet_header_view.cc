@@ -13,7 +13,6 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -30,6 +29,7 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -388,7 +388,7 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
       size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::Optional<gfx::ImageSkia>(
+      absl::optional<gfx::ImageSkia>(
           CreateMimeTypeIcon(chromeos::kFiletypeImageIcon, size)));
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));

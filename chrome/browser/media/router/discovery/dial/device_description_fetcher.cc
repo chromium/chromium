@@ -87,7 +87,7 @@ void DeviceDescriptionFetcher::ProcessResponse(const std::string& response) {
 }
 
 void DeviceDescriptionFetcher::ReportError(const std::string& message,
-                                           base::Optional<int> response_code) {
+                                           absl::optional<int> response_code) {
   std::move(error_cb_).Run(message);
 }
 

@@ -6,9 +6,9 @@
 #define CHROME_UPDATER_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -18,11 +18,11 @@ namespace base {
 class CommandLine;
 
 template <class T>
-std::ostream& operator<<(std::ostream& os, const base::Optional<T>& opt) {
+std::ostream& operator<<(std::ostream& os, const absl::optional<T>& opt) {
   if (opt.has_value()) {
     return os << opt.value();
   } else {
-    return os << "base::nullopt";
+    return os << "absl::nullopt";
   }
 }
 
@@ -33,12 +33,12 @@ namespace updater {
 // Returns the base directory common to all versions of the updater. For
 // instance, this function may return %localappdata%\Chromium\ChromiumUpdater
 // for a User install.
-base::Optional<base::FilePath> GetBaseDirectory();
+absl::optional<base::FilePath> GetBaseDirectory();
 
 // Returns a versioned directory under which the running version of the updater
 // stores its files and data. For instance, this function may return
 // %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a User install.
-base::Optional<base::FilePath> GetVersionedDirectory();
+absl::optional<base::FilePath> GetVersionedDirectory();
 
 // Returns true if the user running the updater also owns the |path|.
 bool PathOwnedByUser(const base::FilePath& path);

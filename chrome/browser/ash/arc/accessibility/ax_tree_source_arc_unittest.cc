@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
@@ -15,6 +14,7 @@
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -79,7 +79,7 @@ class MockAutomationEventRouter
 
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) override {}
+      const absl::optional<gfx::Rect>& rect) override {}
 
   ax::mojom::Event last_event_type() const { return last_event_type_; }
 

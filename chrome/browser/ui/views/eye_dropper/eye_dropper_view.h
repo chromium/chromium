@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -81,7 +81,7 @@ class EyeDropperView : public content::EyeDropper,
   std::unique_ptr<PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<ViewPositionHandler> view_position_handler_;
   std::unique_ptr<ScreenCapturer> screen_capturer_;
-  base::Optional<SkColor> selected_color_;
+  absl::optional<SkColor> selected_color_;
   base::TimeTicks ignore_selection_time_;
 };
 

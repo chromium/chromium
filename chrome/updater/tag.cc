@@ -9,13 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/lib_util.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace tagging {
@@ -85,7 +85,7 @@ constexpr base::StringPiece kAppArgInstallerData = "installerdata";
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
 
-base::Optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
+absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return AppArgs::NeedsAdmin::kNo;
 
@@ -95,18 +95,18 @@ base::Optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("prefers", str))
     return AppArgs::NeedsAdmin::kPrefers;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-// Returns base::nullopt if parsing failed.
-base::Optional<bool> ParseBool(base::StringPiece str) {
+// Returns absl::nullopt if parsing failed.
+absl::optional<bool> ParseBool(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return false;
 
   if (base::EqualsCaseInsensitiveASCII("true", str))
     return true;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // A custom comparator functor class for the parse tables.
@@ -176,7 +176,7 @@ ErrorCode ParseLanguage(base::StringPiece value, TagArgs* args) {
 }
 
 ErrorCode ParseFlighting(base::StringPiece value, TagArgs* args) {
-  const base::Optional<bool> flighting = ParseBool(value);
+  const absl::optional<bool> flighting = ParseBool(value);
   if (!flighting.has_value())
     return ErrorCode::kGlobal_FlightingValueIsNotABoolean;
 
@@ -194,7 +194,7 @@ ErrorCode ParseUsageStats(base::StringPiece value, TagArgs* args) {
   } else if (tristate == 1) {
     args->usage_stats_enable = true;
   } else if (tristate == 2) {
-    args->usage_stats_enable = base::nullopt;
+    args->usage_stats_enable = absl::nullopt;
   } else {
     return ErrorCode::kGlobal_UsageStatsValueIsInvalid;
   }
@@ -309,7 +309,7 @@ namespace installer_data_attributes {
 // index to |current_app_index|.
 ErrorCode FindAppIdInTagArgs(base::StringPiece value,
                              TagArgs* args,
-                             base::Optional<size_t>* current_app_index) {
+                             absl::optional<size_t>* current_app_index) {
   if (!base::IsStringASCII(value))
     return ErrorCode::kApp_AppIdIsNotValid;
 
@@ -328,7 +328,7 @@ ErrorCode FindAppIdInTagArgs(base::StringPiece value,
 
 ErrorCode ParseInstallerData(base::StringPiece value,
                              TagArgs* args,
-                             base::Optional<size_t>* current_app_index) {
+                             absl::optional<size_t>* current_app_index) {
   if (!current_app_index->has_value())
     return ErrorCode::
         kAppInstallerData_InstallerDataCannotBeSpecifiedBeforeAppId;
@@ -347,7 +347,7 @@ ErrorCode ParseInstallerData(base::StringPiece value,
 using ParseInstallerDataAttributeFunPtr =
     ErrorCode (*)(base::StringPiece value,
                   TagArgs* args,
-                  base::Optional<size_t>* current_app_index);
+                  absl::optional<size_t>* current_app_index);
 
 using InstallerDataParseTable = std::map<base::StringPiece,
                                          ParseInstallerDataAttributeFunPtr,
@@ -449,7 +449,7 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
 ErrorCode ParseAppInstallerDataArgs(base::StringPiece app_installer_data_args,
                                     TagArgs* args) {
   // The currently tracked app index to apply installer data to.
-  base::Optional<size_t> current_app_index;
+  absl::optional<size_t> current_app_index;
 
   // Installer data is assumed to be URL-encoded, so we don't unescape it.
   bool unescape_value = false;
@@ -500,7 +500,7 @@ TagArgs::TagArgs(TagArgs&&) = default;
 TagArgs& TagArgs::operator=(TagArgs&&) = default;
 
 ErrorCode Parse(base::StringPiece tag,
-                base::Optional<base::StringPiece> app_installer_data_args,
+                absl::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args) {
   if (!IsValidArgs(tag))
     return ErrorCode::kTagIsInvalid;

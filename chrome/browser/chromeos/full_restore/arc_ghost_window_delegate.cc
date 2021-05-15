@@ -149,7 +149,7 @@ void ArcGhostWindowDelegate::OnWindowCloseRequested(int window_id) {
 }
 
 bool ArcGhostWindowDelegate::SetDisplayId(int64_t display_id) {
-  base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
+  absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   if (!scale_factor.has_value()) {
     LOG(ERROR) << "Invalid display id for ARC Ghost Window";
     scale_factor_ = 1.;

@@ -70,7 +70,7 @@ std::unique_ptr<ThumbnailImage::Subscription> ThumbnailImage::Subscribe() {
 }
 
 void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap,
-                                    base::Optional<uint64_t> frame_id) {
+                                    absl::optional<uint64_t> frame_id) {
   thumbnail_id_ = base::Token::CreateRandom();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -123,7 +123,7 @@ size_t ThumbnailImage::GetCompressedDataSizeInBytes() const {
 
 void ThumbnailImage::AssignJPEGData(base::Token thumbnail_id,
                                     base::TimeTicks assign_sk_bitmap_time,
-                                    base::Optional<uint64_t> frame_id_for_trace,
+                                    absl::optional<uint64_t> frame_id_for_trace,
                                     std::vector<uint8_t> data) {
   // If the image is stale (a new thumbnail was assigned or the
   // thumbnail was cleared after AssignSkBitmap), ignore it.
@@ -212,7 +212,7 @@ void ThumbnailImage::NotifyCompressedDataObservers(
 // static
 std::vector<uint8_t> ThumbnailImage::CompressBitmap(
     SkBitmap bitmap,
-    base::Optional<uint64_t> frame_id) {
+    absl::optional<uint64_t> frame_id) {
   constexpr int kCompressionQuality = 97;
   std::vector<uint8_t> data;
 

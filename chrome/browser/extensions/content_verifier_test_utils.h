@@ -14,7 +14,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/policy_extension_reinstaller.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier.h"
@@ -22,6 +21,7 @@
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -99,7 +99,7 @@ class DelayTracker {
 
  private:
   std::vector<base::TimeDelta> calls_;
-  base::Optional<base::OnceClosure> saved_callback_;
+  absl::optional<base::OnceClosure> saved_callback_;
   PolicyExtensionReinstaller::ReinstallCallback action_;
 
   DISALLOW_COPY_AND_ASSIGN(DelayTracker);

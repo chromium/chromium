@@ -105,7 +105,7 @@ void DownloadDialogBridge::OnComplete(
 
   if (on_wifi) {
     dialog_result.download_schedule =
-        download::DownloadSchedule(true /*only_on_wifi*/, base::nullopt);
+        download::DownloadSchedule(true /*only_on_wifi*/, absl::nullopt);
   }
   if (start_time > 0) {
     dialog_result.download_schedule = download::DownloadSchedule(

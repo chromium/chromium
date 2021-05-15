@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/notification_details.h"
 #include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

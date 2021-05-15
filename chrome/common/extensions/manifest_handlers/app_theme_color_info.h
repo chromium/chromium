@@ -6,9 +6,9 @@
 #define CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_APP_THEME_COLOR_INFO_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace extensions {
@@ -18,10 +18,10 @@ struct AppThemeColorInfo : public Extension::ManifestData {
   AppThemeColorInfo();
   ~AppThemeColorInfo() override;
 
-  static base::Optional<SkColor> GetThemeColor(const Extension* extension);
+  static absl::optional<SkColor> GetThemeColor(const Extension* extension);
 
   // The color to use for the browser frame.
-  base::Optional<SkColor> theme_color;
+  absl::optional<SkColor> theme_color;
 };
 
 // Parses the "app.theme_color" manifest key.

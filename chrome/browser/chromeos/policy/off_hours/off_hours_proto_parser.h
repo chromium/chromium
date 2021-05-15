@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/policy/weekly_time/weekly_time.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -36,7 +36,7 @@ std::vector<int> ExtractIgnoredPolicyProtoTagsFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
 // Return timezone from DeviceOffHoursProto if exists otherwise return nullptr.
-base::Optional<std::string> ExtractTimezoneFromProto(
+absl::optional<std::string> ExtractTimezoneFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
 // Return DictionaryValue in format:

@@ -99,9 +99,9 @@ void ForwardNotificationOperationOnUiThread(
     const std::string& notification_id,
     const std::string& profile_id,
     bool incognito,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
-    const base::Optional<bool>& by_user) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
+    const absl::optional<bool>& by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!g_browser_process)
     return;
@@ -619,7 +619,7 @@ class NotificationPlatformBridgeWinImpl
       if (!displayed_notifications.count(notification.first)) {
         HandleEvent(/*launch_id=*/notification.second,
                     NotificationCommon::OPERATION_CLOSE,
-                    /*action_index=*/base::nullopt, /*by_user=*/true);
+                    /*action_index=*/absl::nullopt, /*by_user=*/true);
         key_to_remove.push_back(notification.first);
       }
     }
@@ -724,8 +724,8 @@ class NotificationPlatformBridgeWinImpl
 
   void HandleEvent(NotificationLaunchId launch_id,
                    NotificationCommon::Operation operation,
-                   const base::Optional<int>& action_index,
-                   const base::Optional<bool>& by_user) {
+                   const absl::optional<int>& action_index,
+                   const absl::optional<bool>& by_user) {
     if (!launch_id.is_valid()) {
       LogHandleEventStatus(HandleEventStatus::kHandleEventLaunchIdInvalid);
       DLOG(ERROR) << "Failed to decode launch ID for operation " << operation;
@@ -738,30 +738,30 @@ class NotificationPlatformBridgeWinImpl
                        launch_id.notification_type(), launch_id.origin_url(),
                        launch_id.notification_id(), launch_id.profile_id(),
                        launch_id.incognito(), action_index,
-                       /*reply=*/base::nullopt, by_user));
+                       /*reply=*/absl::nullopt, by_user));
     LogHandleEventStatus(HandleEventStatus::kSuccess);
   }
 
-  base::Optional<int> ParseActionIndex(
+  absl::optional<int> ParseActionIndex(
       winui::Notifications::IToastActivatedEventArgs* args) {
     HSTRING arguments;
     HRESULT hr = args->get_Arguments(&arguments);
     if (FAILED(hr))
-      return base::nullopt;
+      return absl::nullopt;
 
     ScopedHString arguments_scoped(arguments);
     NotificationLaunchId launch_id(arguments_scoped.GetAsUTF8());
     return (launch_id.is_valid() && launch_id.button_index() >= 0)
-               ? base::Optional<int>(launch_id.button_index())
-               : base::nullopt;
+               ? absl::optional<int>(launch_id.button_index())
+               : absl::nullopt;
   }
 
   void ForwardHandleEventForTesting(
       NotificationCommon::Operation operation,
       winui::Notifications::IToastNotification* notification,
       winui::Notifications::IToastActivatedEventArgs* args,
-      const base::Optional<bool>& by_user) {
-    base::Optional<int> action_index = ParseActionIndex(args);
+      const absl::optional<bool>& by_user) {
+    absl::optional<int> action_index = ParseActionIndex(args);
     HandleEvent(GetNotificationLaunchId(notification), operation, action_index,
                 by_user);
   }
@@ -978,7 +978,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
     return false;
   }
 
-  base::Optional<std::u16string> reply;
+  absl::optional<std::u16string> reply;
   std::wstring inline_reply =
       command_line.GetSwitchValueNative(switches::kNotificationInlineReply);
   if (!inline_reply.empty())
@@ -992,7 +992,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
   else
     operation = NotificationCommon::OPERATION_CLICK;
 
-  base::Optional<int> action_index;
+  absl::optional<int> action_index;
   if (launch_id.button_index() != -1)
     action_index = launch_id.button_index();
 
@@ -1023,7 +1023,7 @@ void NotificationPlatformBridgeWin::ForwardHandleEventForTesting(
     NotificationCommon::Operation operation,
     winui::Notifications::IToastNotification* notification,
     winui::Notifications::IToastActivatedEventArgs* args,
-    const base::Optional<bool>& by_user) {
+    const absl::optional<bool>& by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   notification_task_runner_->PostTask(
       FROM_HERE,

@@ -115,7 +115,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   SendErrorReport(std::move(report));
   EXPECT_TRUE(finish_callback_was_called_);
 
-  const base::Optional<MockCrashEndpoint::Report>& actual_report =
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
       endpoint_->last_report();
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
@@ -169,7 +169,7 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   SendErrorReport(std::move(report));
   EXPECT_TRUE(finish_callback_was_called_);
 
-  const base::Optional<MockCrashEndpoint::Report>& actual_report =
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
       endpoint_->last_report();
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
@@ -244,7 +244,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, StackTraceWithErrorMessage) {
   SendErrorReport(std::move(report));
   EXPECT_TRUE(finish_callback_was_called_);
 
-  const base::Optional<MockCrashEndpoint::Report>& actual_report =
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
       endpoint_->last_report();
   ASSERT_TRUE(actual_report);
   EXPECT_THAT(actual_report->query, HasSubstr("error_message=Hello%20World"));
@@ -261,7 +261,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, RedactMessage) {
   SendErrorReport(std::move(report));
   EXPECT_TRUE(finish_callback_was_called_);
 
-  const base::Optional<MockCrashEndpoint::Report>& actual_report =
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
       endpoint_->last_report();
   ASSERT_TRUE(actual_report);
   // Escaped version of "<email: 1> says hi to <email: 2>"

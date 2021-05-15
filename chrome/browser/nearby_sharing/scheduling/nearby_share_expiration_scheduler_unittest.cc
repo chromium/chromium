@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -15,6 +14,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -47,7 +47,7 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
         &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
   }
 
-  base::Optional<base::Time> TestExpirationTimeFunctor() {
+  absl::optional<base::Time> TestExpirationTimeFunctor() {
     return expiration_time_;
   }
 
@@ -58,7 +58,7 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  base::Optional<base::Time> expiration_time_;
+  absl::optional<base::Time> expiration_time_;
   NearbyShareScheduler* scheduler() { return scheduler_.get(); }
 
  private:
@@ -98,5 +98,5 @@ TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
 TEST_F(NearbyShareExpirationSchedulerTest, NullExpirationTime) {
   expiration_time_.reset();
   scheduler()->Start();
-  EXPECT_EQ(base::nullopt, scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeUntilNextRequest());
 }

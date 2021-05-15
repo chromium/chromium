@@ -22,7 +22,7 @@ void EditSavedPasswords(
     const base::span<const std::unique_ptr<password_manager::PasswordForm>>
         forms_to_change,
     const std::u16string& new_username,
-    const base::Optional<std::u16string>& new_password) {
+    const absl::optional<std::u16string>& new_password) {
   DCHECK(!forms_to_change.empty());
 
   const std::string signon_realm = forms_to_change[0]->signon_realm;

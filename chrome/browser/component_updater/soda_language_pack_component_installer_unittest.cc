@@ -24,13 +24,13 @@ class SodaLanguagePackComponentInstallerTest : public ::testing::Test {
 };
 
 TEST_F(SodaLanguagePackComponentInstallerTest, TestGetLanguageComponentConfig) {
-  base::Optional<speech::SodaLanguagePackComponentConfig> config_by_name =
+  absl::optional<speech::SodaLanguagePackComponentConfig> config_by_name =
       speech::GetLanguageComponentConfig("fr-FR");
 
   ASSERT_TRUE(config_by_name);
   ASSERT_EQ(config_by_name.value().language_code, speech::LanguageCode::kFrFr);
 
-  base::Optional<speech::SodaLanguagePackComponentConfig>
+  absl::optional<speech::SodaLanguagePackComponentConfig>
       config_by_language_code =
           speech::GetLanguageComponentConfig(speech::LanguageCode::kFrFr);
 

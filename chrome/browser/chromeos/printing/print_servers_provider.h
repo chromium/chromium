@@ -65,7 +65,7 @@ class PrintServersProvider
 
   // Returns the list of all print servers given from the data provided in
   // SetData(...) and limited by the allowlist.
-  virtual base::Optional<std::vector<PrintServer>> GetPrintServers() = 0;
+  virtual absl::optional<std::vector<PrintServer>> GetPrintServers() = 0;
 
  protected:
   PrintServersProvider() = default;

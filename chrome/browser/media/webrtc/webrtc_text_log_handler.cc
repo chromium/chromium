@@ -411,7 +411,7 @@ void WebRtcTextLogHandler::SetWebAppId(int web_app_id) {
 
 void WebRtcTextLogHandler::OnGetNetworkInterfaceList(
     GenericDoneCallback callback,
-    const base::Optional<net::NetworkInterfaceList>& networks) {
+    const absl::optional<net::NetworkInterfaceList>& networks) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Hop to a background thread to get the distro string, which can block.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -426,7 +426,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceList(
 
 void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
     GenericDoneCallback callback,
-    const base::Optional<net::NetworkInterfaceList>& networks,
+    const absl::optional<net::NetworkInterfaceList>& networks,
     const std::string& linux_distro) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

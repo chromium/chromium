@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -35,6 +34,7 @@
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -166,7 +166,7 @@ std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
 }  // namespace
 
 /* static */
-base::Optional<enterprise_connectors::AnalysisSettings>
+absl::optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -176,7 +176,7 @@ DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
   if (!service ||
       !service->IsConnectorEnabled(
           enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Check that item->GetURL() matches the appropriate URL patterns by getting

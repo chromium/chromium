@@ -90,7 +90,7 @@ DevicePolicyDecoderChromeOSTest::GetBluetoothServiceAllowedList() const {
 TEST_F(DevicePolicyDecoderChromeOSTest,
        DecodeJsonStringAndNormalizeJSONParseError) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidJson, key::kDeviceWallpaperImage, &error);
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
@@ -114,7 +114,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
 TEST_F(DevicePolicyDecoderChromeOSTest,
        DecodeJsonStringAndNormalizeInvalidValue) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonInvalidValue, key::kDeviceWallpaperImage, &error);
   EXPECT_FALSE(decoded_json.has_value());
   std::string localized_error = l10n_util::GetStringFUTF8(
@@ -128,7 +128,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
 TEST_F(DevicePolicyDecoderChromeOSTest,
        DecodeJsonStringAndNormalizeUnknownProperty) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJsonUnknownProperty, key::kDeviceWallpaperImage, &error);
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
@@ -141,7 +141,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest,
 
 TEST_F(DevicePolicyDecoderChromeOSTest, DecodeJsonStringAndNormalizeSuccess) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kWallpaperJson, key::kDeviceWallpaperImage, &error);
   EXPECT_EQ(*GetWallpaperDict(), decoded_json.value());
   EXPECT_TRUE(error.empty());
@@ -178,7 +178,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
 
 TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListSuccess) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kValidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
   EXPECT_EQ(*GetBluetoothServiceAllowedList(), decoded_json.value());
@@ -187,7 +187,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListSuccess) {
 
 TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListError) {
   std::string error;
-  base::Optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
+  absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(
       kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
   EXPECT_FALSE(decoded_json.has_value());

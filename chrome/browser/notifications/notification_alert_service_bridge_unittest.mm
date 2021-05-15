@@ -275,7 +275,7 @@ TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
 
   auto action_info = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
-      /*button_index=*/-1, /*reply=*/base::nullopt);
+      /*button_index=*/-1, /*reply=*/absl::nullopt);
   handler_remote_->OnNotificationAction(std::move(action_info));
 
   // TODO(knollr): verify expected notification action data.

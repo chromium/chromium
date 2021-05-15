@@ -139,7 +139,7 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::Optional<AccountInfo> account_info =
+    absl::optional<AccountInfo> account_info =
         identity_manager
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
                 identity_manager->GetPrimaryAccountId(

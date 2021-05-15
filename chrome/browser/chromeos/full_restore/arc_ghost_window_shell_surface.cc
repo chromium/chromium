@@ -22,11 +22,11 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
-    base::Optional<gfx::Size> maximum_size,
-    base::Optional<gfx::Size> minimum_size,
+    absl::optional<gfx::Size> maximum_size,
+    absl::optional<gfx::Size> minimum_size,
     std::unique_ptr<views::View> content,
     base::RepeatingClosure close_callback) {
-  base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
+  absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
 
   // TODO(sstan): Handle the desk container from full_restore data.

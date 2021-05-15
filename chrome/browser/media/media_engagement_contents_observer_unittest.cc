@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -33,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug/1004580) All these tests crash on Android
 #if !defined(OS_ANDROID)

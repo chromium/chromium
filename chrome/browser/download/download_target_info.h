@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/safe_browsing/core/proto/download_file_types.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct DownloadTargetInfo {
   DownloadTargetInfo();
@@ -84,7 +84,7 @@ struct DownloadTargetInfo {
   download::DownloadItem::MixedContentStatus mixed_content_status;
 
   // Defines when to start the download, used by download later feature.
-  base::Optional<download::DownloadSchedule> download_schedule;
+  absl::optional<download::DownloadSchedule> download_schedule;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_

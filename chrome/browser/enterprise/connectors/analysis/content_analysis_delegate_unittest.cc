@@ -674,7 +674,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::set<base::FilePath> encrypted_;
 
   // DLP response to ovewrite in the callback if present.
-  base::Optional<ContentAnalysisResponse> dlp_response_ = base::nullopt;
+  absl::optional<ContentAnalysisResponse> dlp_response_ = absl::nullopt;
 };
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, Empty) {
@@ -1626,7 +1626,7 @@ class ContentAnalysisDelegateSettingsTest
   const char* bool_setting() const { return GetParam() ? "true" : "false"; }
 
   AnalysisSettings settings() {
-    base::Optional<AnalysisSettings> settings =
+    absl::optional<AnalysisSettings> settings =
         ConnectorsServiceFactory::GetForBrowserContext(profile())
             ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
     EXPECT_TRUE(settings.has_value());

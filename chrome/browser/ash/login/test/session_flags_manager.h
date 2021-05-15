@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -99,10 +99,10 @@ class SessionFlagsManager {
   // session restore mode), the logged in user information.
   std::string user_id_;
   std::string user_hash_;
-  base::Optional<std::vector<Switch>> user_flags_;
+  absl::optional<std::vector<Switch>> user_flags_;
 
   // List of switches passed as a restart job arguments.
-  base::Optional<std::vector<Switch>> restart_job_;
+  absl::optional<std::vector<Switch>> restart_job_;
 
   // If `session_restore_enabled_` is set, the path to the file where session
   // state is saved.

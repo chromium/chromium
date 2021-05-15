@@ -29,7 +29,7 @@ class BookmarkAppIconManager : public web_app::AppIconManager {
   bool HasIcons(const web_app::AppId& app_id,
                 IconPurpose purpose,
                 const SortedSizesPx& icon_sizes_in_px) const override;
-  base::Optional<IconSizeAndPurpose> FindIconMatchBigger(
+  absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const web_app::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size) const override;

@@ -195,7 +195,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   RandomHelper random(seed);
 
   const std::string seed_str = base::NumberToString(seed);
-  base::Optional<std::string> manifest_id;
+  absl::optional<std::string> manifest_id;
   if (random.next_bool())
     manifest_id = "manifest_id_" + seed_str;
   const GURL scope = base_url.Resolve("scope" + seed_str + "/");
@@ -204,9 +204,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
-  const base::Optional<SkColor> theme_color = random.next_uint();
-  const base::Optional<SkColor> background_color = random.next_uint();
-  const base::Optional<SkColor> synced_theme_color = random.next_uint();
+  const absl::optional<SkColor> theme_color = random.next_uint();
+  const absl::optional<SkColor> background_color = random.next_uint();
+  const absl::optional<SkColor> synced_theme_color = random.next_uint();
   auto app = std::make_unique<WebApp>(app_id);
 
   // Generate all possible permutations of field values in a random way:
@@ -324,7 +324,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
   if (IsChromeOs()) {
-    auto chromeos_data = base::make_optional<WebAppChromeOsData>();
+    auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = random.next_bool();
     chromeos_data->show_in_search = random.next_bool();
     chromeos_data->show_in_management = random.next_bool();

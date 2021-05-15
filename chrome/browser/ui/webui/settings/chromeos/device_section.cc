@@ -792,7 +792,7 @@ DeviceSection::DeviceSection(Profile* profile,
   if (power_manager_client) {
     power_manager_client->AddObserver(this);
 
-    const base::Optional<power_manager::PowerSupplyProperties>& last_status =
+    const absl::optional<power_manager::PowerSupplyProperties>& last_status =
         power_manager_client->GetLastStatus();
     if (last_status)
       PowerChanged(*last_status);
@@ -1160,7 +1160,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
 }
 
 void DeviceSection::OnGotSwitchStates(
-    base::Optional<PowerManagerClient::SwitchStates> result) {
+    absl::optional<PowerManagerClient::SwitchStates> result) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   if (result && result->lid_state != PowerManagerClient::LidState::NOT_PRESENT)

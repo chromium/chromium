@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -99,7 +99,7 @@ class MultiTabLoadingPageLoadMetricsObserverTest
   }
 
  private:
-  base::Optional<int> number_of_tabs_with_inflight_load_;
+  absl::optional<int> number_of_tabs_with_inflight_load_;
 };
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {

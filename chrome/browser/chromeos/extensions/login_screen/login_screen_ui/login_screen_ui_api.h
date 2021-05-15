@@ -39,7 +39,7 @@ class LoginScreenUiCloseFunction : public ExtensionFunction {
 
  private:
   // Callback upon completion of window closing.
-  void OnClosed(bool success, const base::Optional<std::string>& error);
+  void OnClosed(bool success, const absl::optional<std::string>& error);
 
   DISALLOW_COPY_AND_ASSIGN(LoginScreenUiCloseFunction);
 };

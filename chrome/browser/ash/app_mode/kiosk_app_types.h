@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -19,8 +19,8 @@ enum class KioskAppType { kArcApp, kChromeApp, kWebApp };
 class KioskAppId {
  public:
   KioskAppType type;
-  base::Optional<std::string> app_id;
-  base::Optional<AccountId> account_id;
+  absl::optional<std::string> app_id;
+  absl::optional<AccountId> account_id;
 
   KioskAppId();
   ~KioskAppId();

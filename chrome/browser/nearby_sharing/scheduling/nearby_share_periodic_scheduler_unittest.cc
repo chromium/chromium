@@ -59,7 +59,7 @@ TEST_F(NearbySharePeriodicSchedulerTest, PeriodicRequest) {
 
   // Immediately runs a first-time periodic request.
   scheduler()->Start();
-  base::Optional<base::TimeDelta> time_until_next_request =
+  absl::optional<base::TimeDelta> time_until_next_request =
       scheduler()->GetTimeUntilNextRequest();
   EXPECT_EQ(base::TimeDelta::FromSeconds(0),
             scheduler()->GetTimeUntilNextRequest());

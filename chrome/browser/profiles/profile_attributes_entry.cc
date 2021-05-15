@@ -8,7 +8,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -29,6 +28,7 @@
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -430,13 +430,13 @@ size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   return icon_index;
 }
 
-base::Optional<ProfileThemeColors>
+absl::optional<ProfileThemeColors>
 ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
-  base::Optional<SkColor> profile_highlight_color =
+  absl::optional<SkColor> profile_highlight_color =
       GetProfileThemeColor(kProfileHighlightColorKey);
-  base::Optional<SkColor> default_avatar_fill_color =
+  absl::optional<SkColor> default_avatar_fill_color =
       GetProfileThemeColor(kDefaultAvatarFillColorKey);
-  base::Optional<SkColor> default_avatar_stroke_color =
+  absl::optional<SkColor> default_avatar_stroke_color =
       GetProfileThemeColor(kDefaultAvatarStrokeColorKey);
 
   DCHECK_EQ(profile_highlight_color.has_value(),
@@ -445,7 +445,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
             default_avatar_fill_color.has_value());
 
   if (!profile_highlight_color.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ProfileThemeColors colors;
@@ -461,7 +461,7 @@ ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
   NOTREACHED();
   return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
 #else
-  base::Optional<ProfileThemeColors> theme_colors =
+  absl::optional<ProfileThemeColors> theme_colors =
       GetProfileThemeColorsIfSet();
   if (theme_colors)
     return *theme_colors;
@@ -623,7 +623,7 @@ void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
 }
 
 void ProfileAttributesEntry::SetProfileThemeColors(
-    const base::Optional<ProfileThemeColors>& colors) {
+    const absl::optional<ProfileThemeColors>& colors) {
   bool changed = false;
   if (colors.has_value()) {
     changed |=
@@ -833,11 +833,11 @@ int ProfileAttributesEntry::GetInteger(const char* key) const {
   return value->GetInt();
 }
 
-base::Optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
+absl::optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
     const char* key) const {
   const base::Value* value = GetValue(key);
   if (!value || !value->is_int())
-    return base::nullopt;
+    return absl::nullopt;
   return value->GetInt();
 }
 

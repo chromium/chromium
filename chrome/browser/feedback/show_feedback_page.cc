@@ -76,7 +76,7 @@ void OnLacrosActiveTabUrlFeteched(
     const std::string& description_placeholder_text,
     const std::string& category_tag,
     const std::string& extra_diagnostics,
-    const base::Optional<GURL>& active_tab_url) {
+    const absl::optional<GURL>& active_tab_url) {
   GURL page_url;
   if (active_tab_url)
     page_url = *active_tab_url;

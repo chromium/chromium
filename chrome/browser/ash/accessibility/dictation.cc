@@ -128,7 +128,7 @@ bool Dictation::OnToggleDictation() {
 void Dictation::OnSpeechResult(
     const std::u16string& transcription,
     bool is_final,
-    const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
+    const absl::optional<SpeechRecognizerDelegate::TranscriptTiming>&
         word_offsets) {
   // If the first character of text isn't a space, add a space before it.
   // NetworkSpeechRecognizer adds the preceding space but

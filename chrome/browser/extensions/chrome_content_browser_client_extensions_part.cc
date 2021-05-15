@@ -421,8 +421,8 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   if (is_guest &&
       url_request_util::AllowSpecialCaseExtensionURLInGuest(
           extension, url_path.length() > 1
-                         ? base::make_optional<base::StringPiece>(url_path)
-                         : base::nullopt)) {
+                         ? absl::make_optional<base::StringPiece>(url_path)
+                         : absl::nullopt)) {
     return true;
   }
 

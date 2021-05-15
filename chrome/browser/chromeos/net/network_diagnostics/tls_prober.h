@@ -39,7 +39,7 @@ class TlsProber {
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using OnConnectCompleteOnUIThreadCallback = base::OnceCallback<
-      void(int result, const base::Optional<net::IPEndPoint>& peer_addr)>;
+      void(int result, const absl::optional<net::IPEndPoint>& peer_addr)>;
   using TlsProbeCompleteCallback =
       base::OnceCallback<void(int result, ProbeExitEnum probe_exit_enum)>;
 
@@ -76,8 +76,8 @@ class TlsProber {
   // handling has not been set up, the streams should not be used and fall out
   // of scope when this method completes.
   void OnConnectComplete(int result,
-                         const base::Optional<net::IPEndPoint>& local_addr,
-                         const base::Optional<net::IPEndPoint>& peer_addr,
+                         const absl::optional<net::IPEndPoint>& local_addr,
+                         const absl::optional<net::IPEndPoint>& peer_addr,
                          mojo::ScopedDataPipeConsumerHandle receive_stream,
                          mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -89,7 +89,7 @@ class TlsProber {
   void OnTlsUpgrade(int result,
                     mojo::ScopedDataPipeConsumerHandle receive_stream,
                     mojo::ScopedDataPipeProducerHandle send_stream,
-                    const base::Optional<net::SSLInfo>& ssl_info);
+                    const absl::optional<net::SSLInfo>& ssl_info);
 
   // Handles disconnects on the TCP connected and TLS client remotes.
   void OnDisconnect();

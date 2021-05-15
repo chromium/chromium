@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
@@ -22,6 +21,7 @@
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -35,13 +35,13 @@ namespace extensions {
 class PasswordsPrivateDelegate : public KeyedService {
  public:
   using PlaintextPasswordCallback =
-      base::OnceCallback<void(base::Optional<std::u16string>)>;
+      base::OnceCallback<void(absl::optional<std::u16string>)>;
 
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
   using PlaintextInsecurePasswordCallback = base::OnceCallback<void(
-      base::Optional<api::passwords_private::InsecureCredential>)>;
+      absl::optional<api::passwords_private::InsecureCredential>)>;
 
   ~PasswordsPrivateDelegate() override = default;
 
@@ -80,7 +80,7 @@ class PasswordsPrivateDelegate : public KeyedService {
   // |id| the id created when going over the list of saved passwords.
   // |reason| The reason why the plaintext password is requested.
   // |callback| The callback that gets invoked with the saved password if it
-  // could be obtained successfully, or base::nullopt otherwise.
+  // could be obtained successfully, or absl::nullopt otherwise.
   // |web_contents| The web content object used as the UI; will be used to show
   //     an OS-level authentication dialog if necessary.
   virtual void RequestPlaintextPassword(

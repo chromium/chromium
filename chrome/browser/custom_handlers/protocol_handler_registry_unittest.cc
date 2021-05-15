@@ -119,7 +119,7 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
   }
 
   bool IsFakeAppHandlerRegisteredWithOS(const std::string& protocol,
-                                        base::Optional<std::string> app_id) {
+                                        absl::optional<std::string> app_id) {
     auto handler_iter = os_registered_app_protocols_.find(protocol);
     return handler_iter != os_registered_app_protocols_.end() &&
            handler_iter->second == app_id;
@@ -1359,7 +1359,7 @@ TEST_F(ProtocolHandlerRegistryTest,
   registry()->RegisterAppProtocolHandlers("app_id2", {ph2_info});
   // The protocol should be registered for disambiguation with a null app_id.
   EXPECT_TRUE(delegate()->IsFakeAppHandlerRegisteredWithOS(ph2.protocol(),
-                                                           base::nullopt));
+                                                           absl::nullopt));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestRemoveWebAppHandlers) {
@@ -1378,7 +1378,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestRemoveWebAppHandlers) {
   registry()->RegisterAppProtocolHandlers("app_id2", {ph3_info});
 
   EXPECT_TRUE(
-      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", base::nullopt));
+      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", absl::nullopt));
   EXPECT_TRUE(
       delegate()->IsFakeAppHandlerRegisteredWithOS("web+testing", "app_id1"));
 
@@ -1416,7 +1416,7 @@ TEST_F(ProtocolHandlerRegistryTest,
   registry()->RegisterAppProtocolHandlers("app_id2", {ph2_info});
 
   ASSERT_TRUE(
-      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", base::nullopt));
+      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", absl::nullopt));
 
   // Remove the non default handler (ph2) and test that the protocol is handled
   // by ph1 and no longer registered for disambiguation.

@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_LITEPAGES_SERVICE_BYPASS_DECIDER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Interface to decide whether LitePages service should be bypassed, which is
 // used for fetching compressed image and fetching robots.txt. Whenever an
@@ -34,7 +34,7 @@ class LitePagesServiceBypassDecider
   // start bypassing subsequent LitePage fetches.
   void NotifyFetchFailure(base::TimeDelta retry_after);
 
-  base::Optional<base::TimeTicks> GetBypassUntilTimeForTesting() const {
+  absl::optional<base::TimeTicks> GetBypassUntilTimeForTesting() const {
     return bypassed_until_time_;
   }
   void SetBypassUntilTimeForTesting(base::TimeTicks bypass_until) {
@@ -44,7 +44,7 @@ class LitePagesServiceBypassDecider
  private:
   // The time until which image compression should be bypassed. Null time
   // indicates no bypass.
-  base::Optional<base::TimeTicks> bypassed_until_time_;
+  absl::optional<base::TimeTicks> bypassed_until_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

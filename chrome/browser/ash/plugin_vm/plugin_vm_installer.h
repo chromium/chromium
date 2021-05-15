@@ -120,7 +120,7 @@ class PluginVmInstaller : public KeyedService,
 
   // Start the installation. Progress updates will be sent to the observer.
   // Returns a FailureReason if the installation couldn't be started.
-  base::Optional<FailureReason> Start();
+  absl::optional<FailureReason> Start();
   // Cancel the installation, and calls OnCancelFinished() when done. Some steps
   // cannot be directly cancelled, in which case we wait for the step to
   // complete and then abort the installation.
@@ -182,7 +182,7 @@ class PluginVmInstaller : public KeyedService,
   void CheckForExistingVm();
   void OnConciergeAvailable(bool success);
   void OnListVmDisks(
-      base::Optional<vm_tools::concierge::ListVmDisksResponse> response);
+      absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
   void CheckDiskSpace();
   void OnAvailableDiskSpace(int64_t bytes);
@@ -206,23 +206,23 @@ class PluginVmInstaller : public KeyedService,
   void DetectImageType();
   void OnImageTypeDetected();
   // Ran as a blocking task preparing the FD for the ImportDiskImage call.
-  base::Optional<base::ScopedFD> PrepareFD();
+  absl::optional<base::ScopedFD> PrepareFD();
   // Calls CreateDiskImage or ImportDiskImage, depending on whether we are
   // creating a new VM from an ISO, or importing a prepared VM image.
-  void OnFDPrepared(base::Optional<base::ScopedFD> maybe_fd);
+  void OnFDPrepared(absl::optional<base::ScopedFD> maybe_fd);
   // Callback for the concierge CreateDiskImage/ImportDiskImage calls. The
   // import has just started (unless that failed).
   template <typename ReplyType>
-  void OnImportDiskImage(base::Optional<ReplyType> reply);
+  void OnImportDiskImage(absl::optional<ReplyType> reply);
   // Progress updates are sent to OnDiskImageProgress(). After we get a signal
   // that the import is finished successfully, we make one final call to
   // concierge's DiskImageStatus method to get a final resolution.
   void RequestFinalStatus();
   void OnFinalDiskImageStatus(
-      base::Optional<vm_tools::concierge::DiskImageStatusResponse> response);
+      absl::optional<vm_tools::concierge::DiskImageStatusResponse> response);
   // Finishes the processing of installation. If |failure_reason| has a value,
   // then the import has failed, otherwise it was successful.
-  void OnImported(base::Optional<FailureReason> failure_reason);
+  void OnImported(absl::optional<FailureReason> failure_reason);
 
   // End of the install flow!
 
@@ -245,7 +245,7 @@ class PluginVmInstaller : public KeyedService,
   void CancelImport();
   // Callback for the concierge CancelDiskImageOperation call.
   void OnImportDiskImageCancelled(
-      base::Optional<vm_tools::concierge::CancelDiskImageResponse> response);
+      absl::optional<vm_tools::concierge::CancelDiskImageResponse> response);
   // Called once cancel is completed, firing the OnCancelFinished() observer
   // event.
   void CancelFinished();
@@ -282,7 +282,7 @@ class PluginVmInstaller : public KeyedService,
 
   // -1 indicates not set
   int64_t free_disk_space_for_testing_ = -1;
-  base::Optional<base::FilePath> downloaded_image_for_testing_;
+  absl::optional<base::FilePath> downloaded_image_for_testing_;
 
   // Keep the system awake during installation.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;

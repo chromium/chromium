@@ -37,10 +37,10 @@ const char kSearchSuggestResponsePreamble[] = ")]}'";
 // {"update":{"query_suggestions":{"query_suggestions_with_html": "", "script":
 // "", impression_cap_expire_time_ms: "", request_freeze_time_ms: "",
 // max_impressions: ""}}}.
-// Additionally |data| will be base::nullopt if "query_suggestions" keys is not
+// Additionally |data| will be absl::nullopt if "query_suggestions" keys is not
 // present.
 bool JsonToSearchSuggestionData(const base::Value& value,
-                                base::Optional<SearchSuggestData>* data) {
+                                absl::optional<SearchSuggestData>* data) {
   data->reset();
 
   bool all_fields_present = true;
@@ -246,7 +246,7 @@ void SearchSuggestLoaderImpl::LoadDone(
     // This represents network errors (i.e. the server did not provide a
     // response).
     DVLOG(1) << "Request failed with error: " << simple_loader->NetError();
-    Respond(Status::TRANSIENT_ERROR, base::nullopt);
+    Respond(Status::TRANSIENT_ERROR, absl::nullopt);
     return;
   }
 
@@ -268,11 +268,11 @@ void SearchSuggestLoaderImpl::JsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     DVLOG(1) << "Parsing JSON failed: " << *result.error;
-    Respond(Status::FATAL_ERROR, base::nullopt);
+    Respond(Status::FATAL_ERROR, absl::nullopt);
     return;
   }
 
-  base::Optional<SearchSuggestData> data;
+  absl::optional<SearchSuggestData> data;
   if (JsonToSearchSuggestionData(*result.value, &data)) {
     Respond(Status::OK_WITH_SUGGESTIONS, data);
   } else if (data.has_value()) {
@@ -284,7 +284,7 @@ void SearchSuggestLoaderImpl::JsonParsed(
 
 void SearchSuggestLoaderImpl::Respond(
     Status status,
-    const base::Optional<SearchSuggestData>& data) {
+    const absl::optional<SearchSuggestData>& data) {
   for (auto& callback : callbacks_) {
     std::move(callback).Run(status, data);
   }

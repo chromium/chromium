@@ -51,7 +51,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                               pending_receiver) {
                          g_browser_process->system_network_context_manager()
                              ->GetContext()
-                             ->CreateHostResolver(base::nullopt,
+                             ->CreateHostResolver(absl::nullopt,
                                                   std::move(pending_receiver));
                        },
                        resolver.BindNewPipeAndPassReceiver()));
@@ -63,7 +63,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(
         base::BindOnce(&ResolveHostAndOpenSocket::OnComplete,
                        base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
  private:
@@ -71,7 +71,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+      const absl::optional<net::AddressList>& resolved_addresses) override {
     if (result != net::OK) {
       RunSocketCallback(std::move(callback_), nullptr,
                         resolve_error_info.error);

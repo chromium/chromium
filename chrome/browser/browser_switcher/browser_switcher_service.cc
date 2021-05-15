@@ -318,10 +318,10 @@ std::vector<RulesetSource> BrowserSwitcherService::GetRulesetSources() {
 void BrowserSwitcherService::LoadRulesFromPrefs() {
   if (prefs().GetExternalSitelistUrl().is_valid())
     sitelist()->SetExternalSitelist(
-        ParsedXml(prefs().GetCachedExternalSitelist(), base::nullopt));
+        ParsedXml(prefs().GetCachedExternalSitelist(), absl::nullopt));
   if (prefs().GetExternalGreylistUrl().is_valid())
     sitelist()->SetExternalGreylist(
-        ParsedXml(prefs().GetCachedExternalGreylist(), base::nullopt));
+        ParsedXml(prefs().GetCachedExternalGreylist(), absl::nullopt));
 }
 
 void BrowserSwitcherService::OnAllRulesetsParsed() {

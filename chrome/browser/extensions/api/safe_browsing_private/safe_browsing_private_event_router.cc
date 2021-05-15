@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -934,7 +934,7 @@ void SafeBrowsingPrivateEventRouter::OnCloudPolicyClientAvailable(
   VLOG(1) << "Ready for safe browsing real-time event reporting.";
 }
 
-base::Optional<enterprise_connectors::ReportingSettings>
+absl::optional<enterprise_connectors::ReportingSettings>
 SafeBrowsingPrivateEventRouter::GetReportingSettings() {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              context_)

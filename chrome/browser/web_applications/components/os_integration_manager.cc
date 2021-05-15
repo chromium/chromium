@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,6 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
@@ -277,7 +277,7 @@ const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
   return file_handler_manager_->GetEnabledFileHandlers(app_id);
 }
 
-const base::Optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
+const absl::optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   DCHECK(file_handler_manager_);
@@ -305,11 +305,11 @@ void OsIntegrationManager::DisableForceEnabledFileHandlingOriginTrial(
       app_id);
 }
 
-base::Optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
+absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
     const AppId& app_id,
     const GURL& protocol_url) {
   if (!protocol_handler_manager_)
-    return base::Optional<GURL>();
+    return absl::optional<GURL>();
 
   return protocol_handler_manager_->TranslateProtocolUrl(app_id, protocol_url);
 }

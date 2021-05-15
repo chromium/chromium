@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer_utils.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -35,6 +34,7 @@
 #include "content/public/browser/browser_context.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -81,7 +81,7 @@ using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;
 
 void CheckCorporateFlag(
     IsCertificateAllowedCallback callback,
-    base::Optional<bool> corporate_key,
+    absl::optional<bool> corporate_key,
     chromeos::platform_keys::Status is_corporate_key_status) {
   if (is_corporate_key_status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Error checking whether key is corporate. Will not install "
@@ -97,7 +97,7 @@ void CheckKeyLocationAndCorporateFlag(
     IsCertificateAllowedCallback callback,
     const std::string& public_key_spki_der,
     content::BrowserContext* const context,
-    base::Optional<bool> key_on_user_token,
+    absl::optional<bool> key_on_user_token,
     chromeos::platform_keys::Status is_key_on_token_status) {
   if (is_key_on_token_status != chromeos::platform_keys::Status::kSuccess) {
     LOG(WARNING) << "Error while checking key location: "
@@ -233,7 +233,7 @@ void CertStoreService::OnCertDBChanged() {
   UpdateCertificates();
 }
 
-base::Optional<CertStoreService::KeyInfo>
+absl::optional<CertStoreService::KeyInfo>
 CertStoreService::GetKeyInfoForDummySpki(const std::string& dummy_spki) {
   return certificate_cache_.GetKeyInfoForDummySpki(dummy_spki);
 }
@@ -428,12 +428,12 @@ void CertStoreService::OnArcCertsInstalled(bool success) {
   }
 }
 
-base::Optional<CertStoreService::KeyInfo>
+absl::optional<CertStoreService::KeyInfo>
 CertStoreService::CertificateCache::GetKeyInfoForDummySpki(
     const std::string& dummy_spki) {
   if (key_info_by_dummy_spki_cache_.count(dummy_spki))
     return key_info_by_dummy_spki_cache_[dummy_spki];
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace arc

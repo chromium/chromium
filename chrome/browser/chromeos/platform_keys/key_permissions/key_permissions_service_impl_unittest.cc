@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 
@@ -77,7 +77,7 @@ class ExecutionWaiter {
 
 // Supports waiting for the result of KeyPermissionsService::IsCorporateKey.
 class IsCorporateKeyExecutionWaiter
-    : public ExecutionWaiter<base::Optional<bool>, Status> {
+    : public ExecutionWaiter<absl::optional<bool>, Status> {
  public:
   IsCorporateKeyExecutionWaiter() = default;
   ~IsCorporateKeyExecutionWaiter() = default;

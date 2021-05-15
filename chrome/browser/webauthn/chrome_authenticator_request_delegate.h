@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +20,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -53,7 +53,7 @@ class ChromeWebAuthenticationDelegate
   ~ChromeWebAuthenticationDelegate() override;
 
   // content::WebAuthenticationDelegate:
-  base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
+  absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;
   bool ShouldPermitIndividualAttestation(
@@ -63,14 +63,14 @@ class ChromeWebAuthenticationDelegate
       content::RenderFrameHost* render_frame_host) override;
   bool IsFocused(content::WebContents* web_contents) override;
 #if defined(OS_MAC)
-  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       content::BrowserContext* browser_context) override;
 #endif  // defined(OS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
       content::RenderFrameHost* render_frame_host) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host) override;
 };
 
@@ -174,7 +174,7 @@ class ChromeAuthenticatorRequestDelegate
 
   content::BrowserContext* GetBrowserContext() const;
 
-  base::Optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
+  absl::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing

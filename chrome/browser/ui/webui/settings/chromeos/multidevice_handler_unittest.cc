@@ -74,7 +74,7 @@ GenerateDefaultFeatureStatesMap() {
 void VerifyPageContentDict(
     const base::Value* value,
     multidevice_setup::mojom::HostStatus expected_host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& expected_host_device,
+    const absl::optional<multidevice::RemoteDeviceRef>& expected_host_device,
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
   const base::DictionaryValue* page_content_dict;
@@ -249,7 +249,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   void SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
     fake_multidevice_setup_client_->SetHostStatusWithDevice(
@@ -312,7 +312,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   void CallSetFeatureEnabledState(multidevice_setup::mojom::Feature feature,
                                   bool enabled,
-                                  const base::Optional<std::string>& auth_token,
+                                  const absl::optional<std::string>& auth_token,
                                   bool success) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
@@ -474,7 +474,7 @@ TEST_F(MultideviceHandlerTest, PageContentData) {
 
   SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      base::nullopt /* host_device */);
+      absl::nullopt /* host_device */);
   SimulateHostStatusUpdate(multidevice_setup::mojom::HostStatus::
                                kHostSetLocallyButWaitingForBackendConfirmation,
                            test_device_);

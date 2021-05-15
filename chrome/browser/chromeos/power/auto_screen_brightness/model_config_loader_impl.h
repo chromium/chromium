@@ -13,11 +13,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/model_config.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/model_config_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {

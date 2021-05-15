@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
@@ -35,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 // TODO(crbug.com/909794): Verify apps restoration.
@@ -113,7 +113,7 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
   bool HasNotificationFor(const std::string& notification_id) {
-    base::Optional<message_center::Notification> message_center_notification =
+    absl::optional<message_center::Notification> message_center_notification =
         display_service()->GetNotification(notification_id);
     return message_center_notification.has_value();
   }
@@ -141,7 +141,7 @@ class FullRestoreServiceTest : public testing::Test {
                      RestoreNotificationButtonIndex action_index) {
     display_service()->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        static_cast<int>(action_index), base::nullopt);
+        static_cast<int>(action_index), absl::nullopt);
   }
 
   // Simulates the initial sync of preferences.

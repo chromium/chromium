@@ -54,7 +54,7 @@ void U2FNotification::Check() {
       &U2FNotification::CheckStatus, weak_factory_.GetWeakPtr()));
 }
 
-void U2FNotification::CheckStatus(base::Optional<std::set<std::string>> flags) {
+void U2FNotification::CheckStatus(absl::optional<std::set<std::string>> flags) {
   if (!flags) {
     LOG(ERROR) << "Failed to get U2F flags.";
     return;
@@ -127,7 +127,7 @@ void U2FNotification::ShowNotification() {
 }
 
 void U2FNotification::OnNotificationClick(
-    const base::Optional<int> button_index) {
+    const absl::optional<int> button_index) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (!button_index || !profile) {
     return;
@@ -146,7 +146,7 @@ void U2FNotification::OnNotificationClick(
     case ButtonIndex::kReset: {
       // Add the user_keys flag.
       DBusThreadManager::Get()->GetDebugDaemonClient()->GetU2fFlags(
-          base::BindOnce([](base::Optional<std::set<std::string>> flags) {
+          base::BindOnce([](absl::optional<std::set<std::string>> flags) {
             if (!flags) {
               LOG(ERROR) << "Failed to get U2F flags.";
               return;

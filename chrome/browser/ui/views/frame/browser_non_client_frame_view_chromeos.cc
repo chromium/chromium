@@ -232,7 +232,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
 
   // Web apps apply a theme color if specified by the extension.
   Browser* browser = browser_view()->browser();
-  base::Optional<SkColor> theme_color =
+  absl::optional<SkColor> theme_color =
       browser->app_controller()->GetThemeColor();
   if (theme_color)
     active_color = views::FrameCaptionButton::GetButtonColor(*theme_color);
@@ -778,7 +778,7 @@ bool BrowserNonClientFrameViewChromeOS::GetOverviewMode() const {
 
 void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
   aura::Window* window = frame()->GetNativeWindow();
-  base::Optional<SkColor> active_color, inactive_color;
+  absl::optional<SkColor> active_color, inactive_color;
   if (!UsePackagedAppHeaderStyle(browser_view()->browser())) {
     active_color = GetFrameColor(BrowserFrameActiveState::kActive);
     inactive_color = GetFrameColor(BrowserFrameActiveState::kInactive);

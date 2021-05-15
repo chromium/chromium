@@ -46,7 +46,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
-    virtual base::Optional<content::DesktopMediaID> GetSelection() = 0;
+    virtual absl::optional<content::DesktopMediaID> GetSelection() = 0;
 
     // Returns the SourceListListener to use to notify this ListView of changes
     // to the backing DesktopMediaList.
@@ -81,7 +81,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
-  base::Optional<content::DesktopMediaID> GetSelection() const;
+  absl::optional<content::DesktopMediaID> GetSelection() const;
 
   // These three methods are called by the view to inform the controller of
   // events. The first two indicate changes in the visual state of the view; the

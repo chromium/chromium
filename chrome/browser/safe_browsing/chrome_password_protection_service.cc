@@ -1435,7 +1435,7 @@ std::string ChromePasswordProtectionService::GetSyncPasswordHashFromPrefs() {
 
   password_manager::HashPasswordManager hash_password_manager;
   hash_password_manager.set_prefs(profile_->GetPrefs());
-  base::Optional<password_manager::PasswordHashData> sync_hash_data =
+  absl::optional<password_manager::PasswordHashData> sync_hash_data =
       hash_password_manager.RetrievePasswordHash(GetAccountInfo().email,
                                                  /*is_gaia_password=*/true);
   return sync_hash_data ? base::NumberToString(sync_hash_data->hash)
@@ -1660,7 +1660,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
   if (!identity_manager)
     return AccountInfo();
 
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
 

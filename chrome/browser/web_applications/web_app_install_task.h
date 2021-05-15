@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -64,7 +64,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // kExpectedAppIdCheckFailed if actual app_id doesn't match expected app_id.
   // The actual resulting app_id is reported as a part of OnceInstallCallback.
   void ExpectAppId(const AppId& expected_app_id);
-  const base::Optional<AppId>& app_id_to_expect() const {
+  const absl::optional<AppId>& app_id_to_expect() const {
     return expected_app_id_;
   }
 
@@ -183,7 +183,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       WebAppUrlLoader::Result result);
   void OnWebAppInstallabilityChecked(
-      base::Optional<blink::Manifest> opt_manifest,
+      absl::optional<blink::Manifest> opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
@@ -201,7 +201,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnDidPerformInstallableCheck(
       std::unique_ptr<WebApplicationInfo> web_app_info,
       bool force_shortcut_app,
-      base::Optional<blink::Manifest> opt_manifest,
+      absl::optional<blink::Manifest> opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
@@ -211,7 +211,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
   // check if it cannot be made.
   void CheckForPlayStoreIntentOrGetIcons(
-      base::Optional<blink::Manifest> opt_manifest,
+      absl::optional<blink::Manifest> opt_manifest,
       std::unique_ptr<WebApplicationInfo> web_app_info,
       std::vector<GURL> icon_urls,
       ForInstallableSite for_installable_site,
@@ -261,8 +261,8 @@ class WebAppInstallTask : content::WebContentsObserver {
   InstallManager::WebAppInstallDialogCallback dialog_callback_;
   InstallManager::OnceInstallCallback install_callback_;
   RetrieveWebApplicationInfoWithIconsCallback retrieve_info_callback_;
-  base::Optional<InstallManager::InstallParams> install_params_;
-  base::Optional<AppId> expected_app_id_;
+  absl::optional<InstallManager::InstallParams> install_params_;
+  absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
 
   // The mechanism via which the app creation was triggered, will stay as

@@ -7,11 +7,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
 
 namespace component_updater {

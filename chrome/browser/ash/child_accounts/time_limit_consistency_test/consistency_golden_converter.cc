@@ -153,7 +153,7 @@ ConsistencyGoldenOutput ConvertProcessorOutputToGoldenOutput(
   return golden_output;
 }
 
-base::Optional<usage_time_limit::State>
+absl::optional<usage_time_limit::State>
 GenerateUnlockUsageLimitOverrideStateFromInput(
     const ConsistencyGoldenInput& input) {
   const ConsistencyGoldenOverride* usage_limit_override = nullptr;
@@ -167,7 +167,7 @@ GenerateUnlockUsageLimitOverrideStateFromInput(
   }
 
   if (!usage_limit_override)
-    return base::nullopt;
+    return absl::nullopt;
 
   usage_time_limit::State previous_state;
   previous_state.is_locked = true;

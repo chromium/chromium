@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +44,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -132,7 +132,7 @@ class ChangePasswordNavigationThrottleBrowserTestBase
   void TestNavigationThrottle(
       const GURL& navigate_url,
       const GURL& expected_url,
-      base::Optional<url::Origin> initiator_origin = base::nullopt);
+      absl::optional<url::Origin> initiator_origin = absl::nullopt);
 
   // Whitelist all https certs for the |test_server_|.
   void AddHttpsCertificate() {
@@ -179,7 +179,7 @@ ChangePasswordNavigationThrottleBrowserTestBase::HandleRequest(
 void ChangePasswordNavigationThrottleBrowserTestBase::TestNavigationThrottle(
     const GURL& navigate_url,
     const GURL& expected_url,
-    base::Optional<url::Origin> initiator_origin) {
+    absl::optional<url::Origin> initiator_origin) {
   AddHttpsCertificate();
 
   NavigateParams params(browser(), navigate_url, page_transition());

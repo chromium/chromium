@@ -135,11 +135,11 @@ NearbyShareContactDownloaderImpl::~NearbyShareContactDownloaderImpl() = default;
 void NearbyShareContactDownloaderImpl::OnRun() {
   NS_LOG(VERBOSE) << __func__ << ": Starting contacts download.";
   start_timestamp_ = base::TimeTicks::Now();
-  CallListContactPeople(/*next_page_token=*/base::nullopt);
+  CallListContactPeople(/*next_page_token=*/absl::nullopt);
 }
 
 void NearbyShareContactDownloaderImpl::CallListContactPeople(
-    const base::Optional<std::string>& next_page_token) {
+    const absl::optional<std::string>& next_page_token) {
   ++current_page_number_;
   NS_LOG(VERBOSE) << __func__
                   << ": Making ListContactPeople RPC call to fetch page number "
@@ -171,10 +171,10 @@ void NearbyShareContactDownloaderImpl::OnListContactPeopleSuccess(
   timer_.Stop();
   contacts_.insert(contacts_.end(), response.contact_records().begin(),
                    response.contact_records().end());
-  base::Optional<std::string> next_page_token =
+  absl::optional<std::string> next_page_token =
       response.next_page_token().empty()
-          ? base::nullopt
-          : base::make_optional<std::string>(response.next_page_token());
+          ? absl::nullopt
+          : absl::make_optional<std::string>(response.next_page_token());
   client_.reset();
   RecordListContactPeopleResultMetrics(NearbyShareHttpResult::kSuccess);
 

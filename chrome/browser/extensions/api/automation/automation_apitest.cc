@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
     wait_for_tracing.Run();
   }
 
-  base::Optional<base::Value> trace_data = base::JSONReader::Read(trace_output);
+  absl::optional<base::Value> trace_data = base::JSONReader::Read(trace_output);
   ASSERT_TRUE(trace_data);
 
   const base::Value* trace_events = trace_data->FindListKey("traceEvents");
@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
     if (!name)
       continue;
 
-    base::Optional<int> dur = event.FindIntKey("dur");
+    absl::optional<int> dur = event.FindIntKey("dur");
     if (!dur)
       continue;
 

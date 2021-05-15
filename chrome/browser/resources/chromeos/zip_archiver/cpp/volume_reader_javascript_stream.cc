@@ -97,7 +97,7 @@ void VolumeReaderJavaScriptStream::SetPassphraseAndSignal(
     const std::string& passphrase) {
   base::AutoLock al(shared_state_lock_);
   // Signal VolumeReaderJavaScriptStream::Passphrase to continue execution.
-  available_passphrase_ = base::make_optional(passphrase);
+  available_passphrase_ = absl::make_optional(passphrase);
   available_passphrase_cond_.Signal();
 }
 
@@ -212,7 +212,7 @@ void VolumeReaderJavaScriptStream::SetRequestId(const std::string& request_id) {
   request_id_ = request_id;
 }
 
-base::Optional<std::string> VolumeReaderJavaScriptStream::Passphrase() {
+absl::optional<std::string> VolumeReaderJavaScriptStream::Passphrase() {
   // Reset the state and prompt the user for a passphrase. Assume a correct
   // passphrase from a previous request has been saved by the requestor.
   {

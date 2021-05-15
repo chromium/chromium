@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
@@ -24,6 +23,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
@@ -41,7 +41,7 @@ constexpr char kAccumulatedUsagePref[] =
 // Used as a callback to DemoModeResourcesRemover::AttemptRemoval - it records
 // the result of the attempt to `result_out`.
 void RecordRemovalResult(
-    base::Optional<DemoModeResourcesRemover::RemovalResult>* result_out,
+    absl::optional<DemoModeResourcesRemover::RemovalResult>* result_out,
     DemoModeResourcesRemover::RemovalResult result) {
   *result_out = result;
 }
@@ -287,7 +287,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemoval) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kEnterpriseEnrolled,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -305,7 +305,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemovalResourcesNonExistent) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -322,7 +322,7 @@ TEST_F(DemoModeResourcesRemoverTest, AttemptRemovalInDemoSession) {
       DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
   demo_mode_test_helper_->InitializeSession();
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));
@@ -340,12 +340,12 @@ TEST_F(DemoModeResourcesRemoverTest, ConcurrentRemovalAttempts) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result_1;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result_1;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result_1));
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result_2;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result_2;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result_2));
@@ -374,7 +374,7 @@ TEST_F(DemoModeResourcesRemoverTest, RepeatedRemovalAttempt) {
 
   EXPECT_FALSE(DemoModeResourcesExist());
 
-  base::Optional<DemoModeResourcesRemover::RemovalResult> result;
+  absl::optional<DemoModeResourcesRemover::RemovalResult> result;
   remover->AttemptRemoval(
       DemoModeResourcesRemover::RemovalReason::kLowDiskSpace,
       base::BindOnce(&RecordRemovalResult, &result));

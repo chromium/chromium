@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class BrowserSwitchHandler;

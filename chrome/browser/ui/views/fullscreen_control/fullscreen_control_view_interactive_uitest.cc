@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -27,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -138,7 +138,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   bool EnableKeyboardLock() {
-    base::Optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
+    absl::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
     return content::RequestKeyboardLock(GetActiveWebContents(),
                                         std::move(codes));
   }

@@ -131,12 +131,12 @@ class GM2TabStyle : public TabStyleViews {
   void PaintInactiveTabBackground(gfx::Canvas* canvas) const;
   void PaintTabBackground(gfx::Canvas* canvas,
                           TabActive active,
-                          base::Optional<int> fill_id,
+                          absl::optional<int> fill_id,
                           int y_inset) const;
   void PaintTabBackgroundFill(gfx::Canvas* canvas,
                               TabActive active,
                               bool paint_hover_effect,
-                              base::Optional<int> fill_id,
+                              absl::optional<int> fill_id,
                               int y_inset) const;
   void PaintBackgroundStroke(gfx::Canvas* canvas,
                              TabActive active,
@@ -478,7 +478,7 @@ const gfx::FontList& GM2TabStyle::GetFontList() const {
 }
 
 void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
-  base::Optional<int> active_tab_fill_id;
+  absl::optional<int> active_tab_fill_id;
   int active_tab_y_inset = 0;
   if (tab_->GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
     active_tab_fill_id = IDR_THEME_TOOLBAR;
@@ -741,7 +741,7 @@ float GM2TabStyle::GetThrobValue() const {
 }
 
 int GM2TabStyle::GetStrokeThickness(bool should_paint_as_active) const {
-  base::Optional<tab_groups::TabGroupId> group = tab_->group();
+  absl::optional<tab_groups::TabGroupId> group = tab_->group();
   if (group.has_value() && tab_->IsActive())
     return TabGroupUnderline::kStrokeThickness;
 
@@ -802,12 +802,12 @@ void GM2TabStyle::PaintInactiveTabBackground(gfx::Canvas* canvas) const {
 
 void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
                                      TabActive active,
-                                     base::Optional<int> fill_id,
+                                     absl::optional<int> fill_id,
                                      int y_inset) const {
   // |y_inset| is only set when |fill_id| is being used.
   DCHECK(!y_inset || fill_id.has_value());
 
-  base::Optional<SkColor> group_color = tab_->GetGroupColor();
+  absl::optional<SkColor> group_color = tab_->GetGroupColor();
 
   PaintTabBackgroundFill(canvas, active,
                          active == TabActive::kInactive && IsHoverActive(),
@@ -821,7 +821,7 @@ void GM2TabStyle::PaintTabBackground(gfx::Canvas* canvas,
 void GM2TabStyle::PaintTabBackgroundFill(gfx::Canvas* canvas,
                                          TabActive active,
                                          bool paint_hover_effect,
-                                         base::Optional<int> fill_id,
+                                         absl::optional<int> fill_id,
                                          int y_inset) const {
   const SkPath fill_path = GetPath(PathType::kFill, canvas->image_scale(),
                                    active == TabActive::kActive);
@@ -964,7 +964,7 @@ std::u16string ui::metadata::TypeConverter<TabStyle::TabColors>::ToString(
 }
 
 // static
-base::Optional<TabStyle::TabColors> ui::metadata::TypeConverter<
+absl::optional<TabStyle::TabColors> ui::metadata::TypeConverter<
     TabStyle::TabColors>::FromString(const std::u16string& source_value) {
   std::u16string trimmed_string;
   base::TrimString(source_value, u"{ }", &trimmed_string);
@@ -974,9 +974,9 @@ base::Optional<TabStyle::TabColors> ui::metadata::TypeConverter<
   const auto background_color =
       SkColorConverter::GetNextColor(color_pos, trimmed_string.cend());
   return (foreground_color && background_color)
-             ? base::make_optional<TabStyle::TabColors>(
+             ? absl::make_optional<TabStyle::TabColors>(
                    foreground_color.value(), background_color.value())
-             : base::nullopt;
+             : absl::nullopt;
 }
 
 // static

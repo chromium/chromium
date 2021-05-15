@@ -84,8 +84,8 @@ class ScreenshotGrabberNotificationDelegate
         screenshot_path_(screenshot_path) {}
 
   // message_center::NotificationDelegate:
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (!button_index) {
       // TODO(estade): this conditional can be a DCHECK after
       // NotificationDelegate::Click() is not called for notifications that are
@@ -318,7 +318,7 @@ void ChromeScreenshotGrabber::HandleTakeScreenshotForAllRootWindows() {
     aura::Window* root_window = root_windows[i];
     gfx::Rect rect = root_window->bounds();
 
-    base::Optional<int> display_id;
+    absl::optional<int> display_id;
     if (root_windows.size() > 1)
       display_id = static_cast<int>(i + 1);
     screenshot_grabber_->TakeScreenshot(
@@ -342,7 +342,7 @@ void ChromeScreenshotGrabber::HandleTakePartialScreenshot(
       window, rect,
       base::BindOnce(&ChromeScreenshotGrabber::OnTookScreenshot,
                      weak_factory_.GetWeakPtr(), base::Time::Now(),
-                     base::Optional<int>(), area));
+                     absl::optional<int>(), area));
   base::RecordAction(base::UserMetricsAction("Screenshot_TakePartial"));
 }
 
@@ -356,7 +356,7 @@ void ChromeScreenshotGrabber::HandleTakeWindowScreenshot(aura::Window* window) {
       window, gfx::Rect(window->bounds().size()),
       base::BindOnce(&ChromeScreenshotGrabber::OnTookScreenshot,
                      weak_factory_.GetWeakPtr(), base::Time::Now(),
-                     base::Optional<int>(), area));
+                     absl::optional<int>(), area));
   base::RecordAction(base::UserMetricsAction("Screenshot_TakeWindow"));
 }
 
@@ -366,7 +366,7 @@ bool ChromeScreenshotGrabber::CanTakeScreenshot() {
 
 void ChromeScreenshotGrabber::OnTookScreenshot(
     const base::Time& screenshot_time,
-    const base::Optional<int>& display_num,
+    const absl::optional<int>& display_num,
     const ScreenshotArea& area,
     ScreenshotResult result,
     scoped_refptr<base::RefCountedMemory> png_data) {

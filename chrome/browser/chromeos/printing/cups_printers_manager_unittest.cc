@@ -626,12 +626,12 @@ TEST_F(CupsPrintersManagerTest, GetPrinter) {
 
   for (const std::string& id :
        {"Saved", "Enterprise", "Discovered", "Automatic"}) {
-    base::Optional<Printer> printer = manager_->GetPrinter(id);
+    absl::optional<Printer> printer = manager_->GetPrinter(id);
     ASSERT_TRUE(printer);
     EXPECT_EQ(printer->id(), id);
   }
 
-  base::Optional<Printer> printer = manager_->GetPrinter("Nope");
+  absl::optional<Printer> printer = manager_->GetPrinter("Nope");
   EXPECT_FALSE(printer);
 }
 
@@ -727,10 +727,10 @@ TEST_F(CupsPrintersManagerTest, GetPrinterUserNativePrintersDisabled) {
   // Disable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
 
-  base::Optional<Printer> saved_printer = manager_->GetPrinter("Saved");
+  absl::optional<Printer> saved_printer = manager_->GetPrinter("Saved");
   EXPECT_FALSE(saved_printer);
 
-  base::Optional<Printer> enterprise_printer =
+  absl::optional<Printer> enterprise_printer =
       manager_->GetPrinter("Enterprise");
   ASSERT_TRUE(enterprise_printer);
   EXPECT_EQ(enterprise_printer->id(), "Enterprise");

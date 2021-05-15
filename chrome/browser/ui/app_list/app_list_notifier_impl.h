@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -191,7 +191,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // The current search query, may be empty.
   std::u16string query_;
   // The most recently launched result.
-  base::Optional<Result> launched_result_;
+  absl::optional<Result> launched_result_;
 
   base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
 };

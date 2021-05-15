@@ -37,12 +37,12 @@ namespace util {
 namespace {
 
 void GetMimeTypeAfterGetMetadata(
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback,
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK || !metadata ||
       metadata->content_mime_type.empty()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(std::move(metadata->content_mime_type));
@@ -51,13 +51,13 @@ void GetMimeTypeAfterGetMetadata(
 // Helper function used to implement GetNonNativeLocalPathMimeType. It extracts
 // the mime type from the passed metadata from a providing extension.
 void GetMimeTypeAfterGetMetadataForProvidedFileSystem(
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback,
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
     std::unique_ptr<chromeos::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != base::File::FILE_OK || !metadata->mime_type.get()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(*metadata->mime_type);
@@ -66,13 +66,13 @@ void GetMimeTypeAfterGetMetadataForProvidedFileSystem(
 // Helper function used to implement GetNonNativeLocalPathMimeType. It passes
 // the returned mime type to the callback.
 void GetMimeTypeAfterGetMimeTypeForArcContentFileSystem(
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback,
-    const base::Optional<std::string>& mime_type) {
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    const absl::optional<std::string>& mime_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (mime_type.has_value()) {
     std::move(callback).Run(mime_type.value());
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 
@@ -170,7 +170,7 @@ bool HasNonNativeMimeTypeProvider(Profile* profile,
 void GetNonNativeLocalPathMimeType(
     Profile* profile,
     const base::FilePath& path,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback) {
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(HasNonNativeMimeTypeProvider(profile, path));
 
@@ -190,7 +190,7 @@ void GetNonNativeLocalPathMimeType(
       return;
     }
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -199,7 +199,7 @@ void GetNonNativeLocalPathMimeType(
     chromeos::file_system_provider::util::LocalPathParser parser(profile, path);
     if (!parser.Parse()) {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
 
@@ -219,7 +219,7 @@ void GetNonNativeLocalPathMimeType(
         arc::ArcFileSystemOperationRunner::GetForBrowserContext(profile);
     if (!runner) {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
     runner->GetMimeType(
@@ -233,7 +233,7 @@ void GetNonNativeLocalPathMimeType(
   // error with empty MIME type, that leads fallback guessing mime type from
   // file extensions.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void IsNonNativeLocalPathDirectory(Profile* profile,

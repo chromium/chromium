@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_LIGHT_SAMPLES_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {
@@ -59,7 +59,7 @@ class LightSamplesObserver
       receiver_{this};
 
   // Channel index of the target channel: "illuminance".
-  base::Optional<int32_t> channel_index_;
+  absl::optional<int32_t> channel_index_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

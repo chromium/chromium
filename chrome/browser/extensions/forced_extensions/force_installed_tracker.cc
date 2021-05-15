@@ -275,7 +275,7 @@ bool ForceInstalledTracker::IsMisconfiguration(
 
 // static
 bool ForceInstalledTracker::IsExtensionFetchedFromCache(
-    const base::Optional<ExtensionDownloaderDelegate::CacheStatus>& status) {
+    const absl::optional<ExtensionDownloaderDelegate::CacheStatus>& status) {
   if (!status)
     return false;
   return status.value() == ExtensionDownloaderDelegate::CacheStatus::

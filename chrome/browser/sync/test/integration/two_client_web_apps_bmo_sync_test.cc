@@ -176,7 +176,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
   bool AllProfilesHaveSameWebAppIds() {
-    base::Optional<base::flat_set<AppId>> app_ids;
+    absl::optional<base::flat_set<AppId>> app_ids;
     for (Profile* profile : GetAllProfiles()) {
       base::flat_set<AppId> profile_app_ids(GetRegistrar(profile).GetAppIds());
       if (!app_ids) {

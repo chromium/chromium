@@ -37,7 +37,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
     int command_index = -1;
   };
 
-  base::Optional<MenuSection> GetContextMenuSectionForAppCommand(
+  absl::optional<MenuSection> GetContextMenuSectionForAppCommand(
       const web_app::AppId& app_id,
       int command_id) {
     MenuSection result;
@@ -59,7 +59,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
     result.command_index = -1;
     if (!ui::MenuModel::GetModelAndIndexForCommandId(
             command_id, &result.sub_model, &result.command_index)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return result;
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       ->FlushMojoCallsForTesting();
 
   // Activate open in window menu item.
-  base::Optional<MenuSection> menu_section =
+  absl::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       ->FlushMojoCallsForTesting();
 
   // Set app to open in tabbed window.
-  base::Optional<MenuSection> menu_section = GetContextMenuSectionForAppCommand(
+  absl::optional<MenuSection> menu_section = GetContextMenuSectionForAppCommand(
       app_id, ash::LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
       ->FlushMojoCallsForTesting();
 
   // Set app to open in browser tab.
-  base::Optional<MenuSection> menu_section =
+  absl::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::LAUNCH_TYPE_REGULAR_TAB);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);

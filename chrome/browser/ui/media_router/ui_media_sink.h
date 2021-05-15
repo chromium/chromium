@@ -54,7 +54,7 @@ struct UIMediaSink {
   GURL presentation_url;
 
   // Active route associated with the sink.
-  base::Optional<MediaRoute> route;
+  absl::optional<MediaRoute> route;
 
   // The icon to use for the sink.
   SinkIconType icon_type = SinkIconType::GENERIC;
@@ -67,7 +67,7 @@ struct UIMediaSink {
 
   // An issue the sink is having. This is a nullopt when there are no issues
   // with the sink.
-  base::Optional<Issue> issue;
+  absl::optional<Issue> issue;
 
   // Set of Cast Modes (e.g. presentation, desktop mirroring) supported by the
   // sink.

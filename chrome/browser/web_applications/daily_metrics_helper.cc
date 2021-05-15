@@ -60,8 +60,8 @@ class DesktopWebAppUkmRecorder {
 
 namespace {
 
+using absl::optional;
 using base::DictionaryValue;
-using base::Optional;
 using base::TimeDelta;
 using base::Value;
 
@@ -75,46 +75,46 @@ const char kForegroundDurationSec[] = "foreground_duration_sec";
 const char kBackgroundDurationSec[] = "background_duration_sec";
 const char kNumSessions[] = "num_sessions";
 
-Optional<DailyInteraction> DictToRecord(const std::string& url,
+optional<DailyInteraction> DictToRecord(const std::string& url,
                                         const DictionaryValue& record_dict) {
   GURL gurl(url);
   if (!gurl.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
   DailyInteraction record(gurl);
 
-  Optional<int> installed = record_dict.FindBoolKey(kInstalled);
+  optional<int> installed = record_dict.FindBoolKey(kInstalled);
   if (!installed.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   record.installed = *installed;
 
   record.install_source = record_dict.FindIntKey(kInstallSource);
 
-  Optional<int> effective_display_mode =
+  optional<int> effective_display_mode =
       record_dict.FindIntKey(kEffectiveDisplayMode);
   if (!effective_display_mode.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   record.effective_display_mode = *effective_display_mode;
 
-  Optional<bool> promotable = record_dict.FindBoolKey(kPromotable);
+  optional<bool> promotable = record_dict.FindBoolKey(kPromotable);
   if (!promotable.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   record.promotable = *promotable;
 
-  Optional<int> foreground_duration_sec =
+  optional<int> foreground_duration_sec =
       record_dict.FindIntKey(kForegroundDurationSec);
   if (foreground_duration_sec) {
     record.foreground_duration =
         TimeDelta::FromSeconds(*foreground_duration_sec);
   }
 
-  Optional<int> background_duration_sec =
+  optional<int> background_duration_sec =
       record_dict.FindIntKey(kBackgroundDurationSec);
   if (background_duration_sec) {
     record.background_duration =
         TimeDelta::FromSeconds(*background_duration_sec);
   }
 
-  Optional<int> num_sessions = record_dict.FindIntKey(kNumSessions);
+  optional<int> num_sessions = record_dict.FindIntKey(kNumSessions);
   if (num_sessions)
     record.num_sessions = *num_sessions;
 
@@ -138,7 +138,7 @@ std::unique_ptr<DictionaryValue> RecordToDict(DailyInteraction& record) {
 }
 
 void EmitIfSourceIdExists(DailyInteraction record,
-                          Optional<ukm::SourceId> origin_source_id) {
+                          optional<ukm::SourceId> origin_source_id) {
   if (!origin_source_id)
     return;
 
@@ -169,7 +169,7 @@ void EmitRecords(Profile* profile) {
     const std::string& url = iter.key();
     const Value& val = iter.value();
     const DictionaryValue& dict = Value::AsDictionaryValue(val);
-    Optional<DailyInteraction> record = DictToRecord(url, dict);
+    optional<DailyInteraction> record = DictToRecord(url, dict);
     if (record)
       EmitRecord(*record, profile);
   }
@@ -194,7 +194,7 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
   if (existing_val) {
     // Sum duration and session values from existing record.
     const DictionaryValue& dict = Value::AsDictionaryValue(*existing_val);
-    Optional<DailyInteraction> existing_record = DictToRecord(url, dict);
+    optional<DailyInteraction> existing_record = DictToRecord(url, dict);
     if (existing_record) {
       record.foreground_duration += existing_record->foreground_duration;
       record.background_duration += existing_record->background_duration;

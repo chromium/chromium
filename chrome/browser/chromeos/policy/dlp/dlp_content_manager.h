@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 struct ScreenshotArea;
@@ -207,7 +207,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   DlpContentRestrictionSet on_screen_restrictions_;
 
   // The currently running video capture area if any.
-  base::Optional<ScreenshotArea> running_video_capture_area_;
+  absl::optional<ScreenshotArea> running_video_capture_area_;
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;

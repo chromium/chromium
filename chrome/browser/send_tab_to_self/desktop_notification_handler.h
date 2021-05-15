@@ -41,8 +41,8 @@ class DesktopNotificationHandler : public NotificationHandler,
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<std::u16string>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
 
   // When the user share a tab, a confirmation notification will be shown.

@@ -933,11 +933,11 @@ std::wstring GetSelectedLanguage() {
   return GetLanguageSelector().matched_candidate();
 }
 
-void SecurelyClearDictionaryValue(base::Optional<base::Value>* value) {
+void SecurelyClearDictionaryValue(absl::optional<base::Value>* value) {
   SecurelyClearDictionaryValueWithKey(value, kKeyPassword);
 }
 
-void SecurelyClearDictionaryValueWithKey(base::Optional<base::Value>* value,
+void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
                                          const std::string& password_key) {
   if (!value || !(*value) || !((*value)->is_dict()))
     return;
@@ -969,7 +969,7 @@ std::string SearchForKeyInStringDictUTF8(
     const std::initializer_list<base::StringPiece>& path) {
   DCHECK(path.size() > 0);
 
-  base::Optional<base::Value> json_obj =
+  absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj || !json_obj->is_dict()) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
@@ -1007,7 +1007,7 @@ HRESULT SearchForListInStringDictUTF8(
     std::vector<std::string>* output) {
   DCHECK(path.size() > 0);
 
-  base::Optional<base::Value> json_obj =
+  absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj || !json_obj->is_dict()) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";

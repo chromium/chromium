@@ -13,7 +13,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
 #include "ui/android/color_helpers.h"
@@ -182,7 +182,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
 }
 
 void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
-    base::Optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
+    absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
   if (!hashes)
     return;
 

@@ -87,7 +87,7 @@ class CastInternalMessage {
 
   Type type() const { return type_; }
   const std::string& client_id() const { return client_id_; }
-  base::Optional<int> sequence_number() const { return sequence_number_; }
+  absl::optional<int> sequence_number() const { return sequence_number_; }
 
   bool has_session_id() const {
     return type_ == Type::kAppMessage || type_ == Type::kV2Message;
@@ -121,14 +121,14 @@ class CastInternalMessage {
  private:
   CastInternalMessage(Type type,
                       const std::string& client_id,
-                      base::Optional<int> sequence_number,
+                      absl::optional<int> sequence_number,
                       const std::string& session_id,
                       const std::string& namespace_or_v2_type_,
                       base::Value message_body);
 
   const Type type_;
   const std::string client_id_;
-  const base::Optional<int> sequence_number_;
+  const absl::optional<int> sequence_number_;
 
   // Set if |type| is |kAppMessage| or |kV2Message|.
   const std::string session_id_;
@@ -228,17 +228,17 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
     const base::Value& payload,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
     base::Value error,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 
 base::Value SupportedMediaCommandsToListValue(int media_commands);
 

@@ -122,7 +122,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
     if (!test_succeeded)
       ASSERT_TRUE(test_result->GetString(1, &message));
 
-    TestComplete(test_succeeded ? base::Optional<std::string>() : message);
+    TestComplete(test_succeeded ? absl::optional<std::string>() : message);
   }
 
   // content::WebUIMessageHandler:

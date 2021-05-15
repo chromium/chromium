@@ -1419,13 +1419,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
       restored_window->tab_strip_model()->group_model();
   ASSERT_EQ(tab_count, restored_window->tab_strip_model()->count());
   EXPECT_EQ(
-      base::make_optional(group1),
+      absl::make_optional(group1),
       restored_window->tab_strip_model()->GetTabGroupForTab(tab_count - 3));
   EXPECT_EQ(
-      base::make_optional(group1),
+      absl::make_optional(group1),
       restored_window->tab_strip_model()->GetTabGroupForTab(tab_count - 2));
   EXPECT_EQ(
-      base::make_optional(group2),
+      absl::make_optional(group2),
       restored_window->tab_strip_model()->GetTabGroupForTab(tab_count - 1));
 
   EXPECT_EQ(group1_data,

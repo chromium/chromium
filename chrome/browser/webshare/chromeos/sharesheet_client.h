@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
 
@@ -87,7 +87,7 @@ class SharesheetClient : public content::WebContentsObserver {
     std::unique_ptr<PrepareDirectoryTask> prepare_directory_task;
   };
 
-  base::Optional<CurrentShare> current_share_;
+  absl::optional<CurrentShare> current_share_;
 
   base::WeakPtrFactory<SharesheetClient> weak_ptr_factory_{this};
 };

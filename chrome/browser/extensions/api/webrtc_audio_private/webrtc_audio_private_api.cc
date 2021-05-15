@@ -202,7 +202,7 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::
     }
   }
   if (raw_source_id.empty()) {
-    CalculateHMACAndReply(base::nullopt);
+    CalculateHMACAndReply(absl::nullopt);
     return;
   }
   GetAudioSystem()->GetAssociatedOutputDeviceID(
@@ -213,7 +213,7 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::
 }
 
 void WebrtcAudioPrivateGetAssociatedSinkFunction::CalculateHMACAndReply(
-    const base::Optional<std::string>& raw_sink_id) {
+    const absl::optional<std::string>& raw_sink_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!raw_sink_id || !raw_sink_id->empty());
   // If no |raw_sink_id| is provided, the default device is used.

@@ -277,7 +277,7 @@ void SessionServiceBase::TabRestored(WebContents* tab, bool pinned) {
   if (!ShouldTrackChangesToWindow(session_tab_helper->window_id()))
     return;
 
-  BuildCommandsForTab(session_tab_helper->window_id(), tab, -1, base::nullopt,
+  BuildCommandsForTab(session_tab_helper->window_id(), tab, -1, absl::nullopt,
                       pinned, nullptr);
   command_storage_manager()->StartSaveTimer();
 }
@@ -486,7 +486,7 @@ void SessionServiceBase::BuildCommandsForTab(
     const SessionID& window_id,
     WebContents* tab,
     int index_in_window,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
   DCHECK(tab);
@@ -606,7 +606,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
   for (int i = 0; i < tab_strip->count(); ++i) {
     WebContents* tab = tab_strip->GetWebContentsAt(i);
     DCHECK(tab);
-    const base::Optional<tab_groups::TabGroupId> group_id =
+    const absl::optional<tab_groups::TabGroupId> group_id =
         tab_strip->GetTabGroupForTab(i);
     BuildCommandsForTab(browser->session_id(), tab, i, group_id,
                         tab_strip->IsTabPinned(i), tab_to_available_range);

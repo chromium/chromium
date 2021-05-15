@@ -113,7 +113,7 @@ class CrostiniPortForwarderTest : public testing::Test {
   void MakePortPreferenceExpectation(CrostiniPortForwarder::PortRuleKey key,
                                      bool exists,
                                      std::string label) {
-    base::Optional<base::Value> pref =
+    absl::optional<base::Value> pref =
         crostini_port_forwarder_->ReadPortPreferenceForTesting(key);
     EXPECT_EQ(exists, pref.has_value());
     if (!exists) {

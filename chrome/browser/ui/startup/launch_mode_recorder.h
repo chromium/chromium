@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_LAUNCH_MODE_RECORDER_H_
 #define CHROME_BROWSER_UI_STARTUP_LAUNCH_MODE_RECORDER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence,
@@ -54,7 +54,7 @@ class LaunchModeRecorder {
   void SetLaunchMode(LaunchMode mode);
 
  private:
-  base::Optional<LaunchMode> mode_;
+  absl::optional<LaunchMode> mode_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_LAUNCH_MODE_RECORDER_H_

@@ -9,13 +9,13 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -75,7 +75,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
 
  private:
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
-  base::Optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
+  absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
                               const AppId& app_id,
                               base::Time time);
@@ -99,7 +99,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
 
   base::flat_map<AppId, base::Time> last_update_check_;
 
-  base::Optional<base::Time> time_override_for_testing_;
+  absl::optional<base::Time> time_override_for_testing_;
   ResultCallback result_callback_for_testing_;
 
   bool started_ = false;

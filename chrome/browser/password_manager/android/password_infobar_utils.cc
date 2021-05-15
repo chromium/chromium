@@ -12,7 +12,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
-base::Optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
+absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                                                               bool is_syncing) {
   DCHECK(profile);
   if (!base::FeatureList::IsEnabled(
@@ -22,13 +22,13 @@ base::Optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
       !base::FeatureList::IsEnabled(
           autofill::features::
               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);
@@ -42,14 +42,14 @@ base::Optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)) &&
       account_info.has_value();
 
-  return should_show_account_footer ? account_info : base::nullopt;
+  return should_show_account_footer ? account_info : absl::nullopt;
 }
 
-base::Optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
+absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile,
                                                               bool is_syncing) {
   DCHECK(profile);
   if (!is_syncing)
-    return base::nullopt;
+    return absl::nullopt;
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

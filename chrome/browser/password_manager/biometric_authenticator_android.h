@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/optional.h"
 #include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/window_android.h"
 
 // Android implementation of the BiometricAuthenticator interface.
@@ -42,7 +42,7 @@ class BiometricAuthenticatorAndroid : public ChromeBiometricAuthenticator {
 
   // Enum value representing the filling surface that has requested the current
   // authentication.
-  base::Optional<password_manager::BiometricAuthRequester> requester_;
+  absl::optional<password_manager::BiometricAuthRequester> requester_;
 
   // This object is an instance of BiometricAuthenticatorBridge, i.e. the Java
   // counterpart to this class.

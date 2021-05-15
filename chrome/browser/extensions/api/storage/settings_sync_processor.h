@@ -36,7 +36,7 @@ class SettingsSyncProcessor {
   void Init(const base::DictionaryValue& initial_state);
 
   // Sends |changes| to sync.
-  base::Optional<syncer::ModelError> SendChanges(
+  absl::optional<syncer::ModelError> SendChanges(
       const ValueStoreChangeList& changes);
 
   // Informs this that |changes| have been receieved from sync. No action will

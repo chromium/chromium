@@ -184,7 +184,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   }
 
   bool skip_for_now = dict.FindBoolKey("skipForNow").value_or(false);
-  base::Optional<bool> trusted = dict.FindBoolKey("trusted");
+  absl::optional<bool> trusted = dict.FindBoolKey("trusted");
   bool trusted_value = trusted.value_or(false);
   bool trusted_found = trusted.has_value();
 

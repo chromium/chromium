@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +37,7 @@
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -122,7 +122,7 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "GetTempDir failed.";
     return -1;
   }
-  base::Optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  absl::optional<base::FilePath> versioned_dir = GetVersionedDirectory();
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;

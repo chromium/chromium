@@ -53,19 +53,19 @@ TEST_F(ArcTracingEventMatcherTest, CategoryNamePrefixMatch) {
 TEST_F(ArcTracingEventMatcherTest, CategoryNamePrefixAndroidInt64) {
   ArcTracingEventMatcher matcher("android:ARC_VSYNC|*");
 
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC"})")));
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC|"})")));
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC|abc"})")));
   EXPECT_EQ(
-      base::make_optional(0),
+      absl::make_optional(0),
       matcher.ReadAndroidEventInt64(MakeEvent(R"({"name":"ARC_VSYNC|0"})")));
-  EXPECT_EQ(base::make_optional(777777777777LL),
+  EXPECT_EQ(absl::make_optional(777777777777LL),
             matcher.ReadAndroidEventInt64(
                 MakeEvent(R"({"name":"ARC_VSYNC|777777777777"})")));
-  EXPECT_EQ(base::make_optional(-777777777777LL),
+  EXPECT_EQ(absl::make_optional(-777777777777LL),
             matcher.ReadAndroidEventInt64(
                 MakeEvent(R"({"name":"ARC_VSYNC|-777777777777"})")));
 }

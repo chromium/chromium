@@ -8,13 +8,13 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
@@ -85,9 +85,9 @@ std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
 
 }  // namespace
 
-base::Optional<base::FilePath> GetBaseDirectory() {
+absl::optional<base::FilePath> GetBaseDirectory() {
   UpdaterScope scope = GetProcessScope();
-  base::Optional<base::FilePath> app_data_dir;
+  absl::optional<base::FilePath> app_data_dir;
 #if defined(OS_WIN)
   base::FilePath path;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem
@@ -95,14 +95,14 @@ base::Optional<base::FilePath> GetBaseDirectory() {
                                   : base::DIR_LOCAL_APP_DATA,
                               &path)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   app_data_dir = path;
 #elif defined(OS_MAC)
   app_data_dir = GetApplicationSupportDirectory(scope);
   if (!app_data_dir) {
     LOG(ERROR) << "Can't retrieve app data directory.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif
   const auto product_data_dir =
@@ -110,22 +110,22 @@ base::Optional<base::FilePath> GetBaseDirectory() {
           .AppendASCII(PRODUCT_FULLNAME_STRING);
   if (!base::CreateDirectory(product_data_dir)) {
     LOG(ERROR) << "Can't create base directory: " << product_data_dir;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return product_data_dir;
 }
 
-base::Optional<base::FilePath> GetVersionedDirectory() {
-  base::Optional<base::FilePath> product_dir = GetBaseDirectory();
+absl::optional<base::FilePath> GetVersionedDirectory() {
+  absl::optional<base::FilePath> product_dir = GetBaseDirectory();
   if (!product_dir) {
     LOG(ERROR) << "Failed to get the base directory.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const auto versioned_dir = product_dir->AppendASCII(kUpdaterVersion);
   if (!base::CreateDirectory(versioned_dir)) {
     LOG(ERROR) << "Can't create versioned directory.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return versioned_dir;
@@ -141,7 +141,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
 void InitLogging(const base::FilePath::StringType& filename) {
   logging::LoggingSettings settings;
-  base::Optional<base::FilePath> log_dir = GetBaseDirectory();
+  absl::optional<base::FilePath> log_dir = GetBaseDirectory();
   if (!log_dir) {
     LOG(ERROR) << "Error getting base dir.";
     return;

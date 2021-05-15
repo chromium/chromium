@@ -6,9 +6,9 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 
@@ -18,19 +18,19 @@ using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 
-base::Optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
+absl::optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
     const std::vector<int32_t>& arc_content_change_types) {
   if (base::Contains(
           arc_content_change_types,
           static_cast<int32_t>(mojom::ContentChangeType::STATE_DESCRIPTION))) {
     return ax::mojom::Event::kAriaAttributeChanged;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ax::mojom::Event ToAXEvent(
     mojom::AccessibilityEventType arc_event_type,
-    const base::Optional<std::vector<int>>& arc_content_change_types,
+    const absl::optional<std::vector<int>>& arc_content_change_types,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node) {
   switch (arc_event_type) {
@@ -46,7 +46,7 @@ ax::mojom::Event ToAXEvent(
       return ax::mojom::Event::kTextSelectionChanged;
     case mojom::AccessibilityEventType::WINDOW_STATE_CHANGED: {
       if (source_node && arc_content_change_types.has_value()) {
-        const base::Optional<ax::mojom::Event> event_or_null =
+        const absl::optional<ax::mojom::Event> event_or_null =
             FromContentChangeTypesToAXEvent(arc_content_change_types.value());
         if (event_or_null.has_value()) {
           return event_or_null.value();
@@ -61,7 +61,7 @@ ax::mojom::Event ToAXEvent(
       return ax::mojom::Event::kLayoutComplete;
     case mojom::AccessibilityEventType::WINDOW_CONTENT_CHANGED:
       if (source_node && arc_content_change_types.has_value()) {
-        const base::Optional<ax::mojom::Event> event_or_null =
+        const absl::optional<ax::mojom::Event> event_or_null =
             FromContentChangeTypesToAXEvent(arc_content_change_types.value());
         if (event_or_null.has_value()) {
           return event_or_null.value();
@@ -108,7 +108,7 @@ ax::mojom::Event ToAXEvent(
   return ax::mojom::Event::kChildrenChanged;
 }
 
-base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
+absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action) {
   switch (action) {
     case ax::mojom::Action::kDoDefault:
@@ -150,7 +150,7 @@ base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     case ax::mojom::Action::kShowContextMenu:
       return arc::mojom::AccessibilityActionType::LONG_CLICK;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

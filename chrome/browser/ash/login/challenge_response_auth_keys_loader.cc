@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -38,6 +37,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -118,7 +118,7 @@ std::vector<ChallengeResponseKey::SignatureAlgorithm> MakeAlgorithmListFromSsl(
   std::vector<ChallengeResponseKey::SignatureAlgorithm>
       challenge_response_algorithms;
   for (auto ssl_algorithm : ssl_algorithms) {
-    base::Optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
+    absl::optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
         GetChallengeResponseKeyAlgorithmFromSsl(ssl_algorithm);
     if (algorithm)
       challenge_response_algorithms.push_back(*algorithm);

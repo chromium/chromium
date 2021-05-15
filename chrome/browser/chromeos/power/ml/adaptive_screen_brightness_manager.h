@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): use forward declaration when moving to
 // chrome/browser/ash/.
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -90,15 +90,15 @@ class AdaptiveScreenBrightnessManager
 
   // Updates lid state and tablet mode from received switch states.
   void OnReceiveSwitchStates(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // Updates screen brightness percent from received value.
   void OnReceiveScreenBrightnessPercent(
-      base::Optional<double> screen_brightness_percent);
+      absl::optional<double> screen_brightness_percent);
 
   // Returns the night light temperature as a percentage in the range [0, 100].
   // Returns nullopt when the night light is not enabled.
-  const base::Optional<int> GetNightLightTemperaturePercent() const;
+  const absl::optional<int> GetNightLightTemperaturePercent() const;
 
   void LogEvent();
 
@@ -132,27 +132,27 @@ class AdaptiveScreenBrightnessManager
   chromeos::PowerManagerClient::TabletMode tablet_mode_ =
       chromeos::PowerManagerClient::TabletMode::UNSUPPORTED;
 
-  base::Optional<power_manager::PowerSupplyProperties::ExternalPower>
+  absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
 
   // Battery percent. This is in the range [0.0, 100.0].
-  base::Optional<float> battery_percent_;
+  absl::optional<float> battery_percent_;
 
   // Both |screen_brightness_percent_| and |previous_screen_brightness_percent_|
   // are values reported directly by powerd. They are percentages as double but
   // are in the range of [0, 100]. When we convert these values to the fields in
   // ScreenBrightnessEvent, we cast them to ints.
-  base::Optional<double> screen_brightness_percent_;
-  base::Optional<double> previous_screen_brightness_percent_;
-  base::Optional<base::TimeDelta> last_event_time_since_boot_;
+  absl::optional<double> screen_brightness_percent_;
+  absl::optional<double> previous_screen_brightness_percent_;
+  absl::optional<base::TimeDelta> last_event_time_since_boot_;
 
   // The time (since boot) of the most recent active event. This is the end of
   // the most recent period of activity.
-  base::Optional<base::TimeDelta> last_activity_time_since_boot_;
+  absl::optional<base::TimeDelta> last_activity_time_since_boot_;
   // The time (since boot) of the start of the most recent period of activity.
-  base::Optional<base::TimeDelta> start_activity_time_since_boot_;
-  base::Optional<bool> is_video_playing_;
-  base::Optional<ScreenBrightnessEvent_Event_Reason> reason_;
+  absl::optional<base::TimeDelta> start_activity_time_since_boot_;
+  absl::optional<bool> is_video_playing_;
+  absl::optional<ScreenBrightnessEvent_Event_Reason> reason_;
 
   base::WeakPtrFactory<AdaptiveScreenBrightnessManager> weak_ptr_factory_{this};
 

@@ -25,15 +25,15 @@ AuthToken::AuthToken(const chromeos::UserContext& user_context)
 
 AuthToken::~AuthToken() = default;
 
-base::Optional<std::string> AuthToken::Identifier() const {
+absl::optional<std::string> AuthToken::Identifier() const {
   if (!user_context_)
-    return base::nullopt;
+    return absl::nullopt;
   return identifier_.ToString();
 }
 
-base::Optional<base::TimeDelta> AuthToken::GetAge() const {
+absl::optional<base::TimeDelta> AuthToken::GetAge() const {
   if (!user_context_)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeTicks::Now() - creation_time_;
 }
 

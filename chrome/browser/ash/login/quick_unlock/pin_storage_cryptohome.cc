@@ -41,7 +41,7 @@ void WriteSalt(const AccountId& account_id, const std::string& salt) {
 
 template <typename ReplyType>
 void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,
-                              base::Optional<ReplyType> reply) {
+                              absl::optional<ReplyType> reply) {
   std::move(callback).Run(
       reply.has_value() &&
       reply->error() ==
@@ -53,7 +53,7 @@ void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,
 void CheckCryptohomePinKey(
     PinStorageCryptohome::BoolCallback callback,
     bool require_unlocked,
-    base::Optional<user_data_auth::GetKeyDataReply> reply) {
+    absl::optional<user_data_auth::GetKeyDataReply> reply) {
   const cryptohome::MountError return_code =
       user_data_auth::ReplyToMountError(reply);
   if (return_code == cryptohome::MOUNT_ERROR_NONE) {
@@ -75,7 +75,7 @@ void CheckCryptohomePinKey(
 // cryptohome supports low entropy credentials (ie, PIN).
 void OnGetSupportedKeyPolicies(
     PinStorageCryptohome::BoolCallback callback,
-    base::Optional<user_data_auth::GetSupportedKeyPoliciesReply> reply) {
+    absl::optional<user_data_auth::GetSupportedKeyPoliciesReply> reply) {
   if (!reply) {
     std::move(callback).Run(false);
     return;
@@ -130,7 +130,7 @@ void PinStorageCryptohome::IsSupported(BoolCallback result) {
 }
 
 // static
-base::Optional<Key> PinStorageCryptohome::TransformKey(
+absl::optional<Key> PinStorageCryptohome::TransformKey(
     const AccountId& account_id,
     const Key& key) {
   Key result = key;
@@ -138,12 +138,12 @@ base::Optional<Key> PinStorageCryptohome::TransformKey(
 
   DCHECK(key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN);
   if (key.GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Try to lookup in known_user.
   const std::string salt = GetSalt(account_id);
   if (salt.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   result.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
   return result;
@@ -171,7 +171,7 @@ void PinStorageCryptohome::IsPinSetInCryptohome(const AccountId& account_id,
 
 void PinStorageCryptohome::SetPin(const UserContext& user_context,
                                   const std::string& pin,
-                                  const base::Optional<std::string>& pin_salt,
+                                  const absl::optional<std::string>& pin_salt,
                                   BoolCallback did_set) {
   // Rerun this method only after we have system salt.
   if (!salt_obtained_) {

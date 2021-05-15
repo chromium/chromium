@@ -6,13 +6,13 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "chrome/services/sharing/public/cpp/sharing_webrtc_metrics.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -92,7 +92,7 @@ std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
 
 std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
   std::vector<sharing::mojom::IceServerPtr> ice_servers;
-  base::Optional<base::Value> response = base::JSONReader::Read(json);
+  absl::optional<base::Value> response = base::JSONReader::Read(json);
   if (!response)
     return ice_servers;
 

@@ -225,7 +225,7 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
     CountUserInstalledApps();
   }
 
-  base::Optional<InstallResultCode> result_code_;
+  absl::optional<InstallResultCode> result_code_;
 
  private:
   ScopedOsHooksSuppress os_hooks_suppress_;
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DefaultApp) {
   InstallDefaultAppAndCountApps(CreateInstallOptions(example_url));
   ASSERT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
 
-  base::Optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   // TODO(ericwilligers): Assert app_id was installed by default.
 
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindow) {
   auto result_code = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
   ASSERT_EQ(InstallResultCode::kSuccessNewInstall, result_code);
-  base::Optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   auto result_code =
       ExternallyManagedAppManagerInstall(browser()->profile(), install_options);
   ASSERT_EQ(InstallResultCode::kSuccessNewInstall, result_code);
-  base::Optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,

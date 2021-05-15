@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
@@ -42,6 +41,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

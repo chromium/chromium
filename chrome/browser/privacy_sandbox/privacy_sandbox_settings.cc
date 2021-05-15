@@ -188,7 +188,7 @@ bool PrivacySandboxSettings::IsFlocAllowed() const {
 
 bool PrivacySandboxSettings::IsFlocAllowedForContext(
     const GURL& url,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   // If FLoC is disabled completely, it is not available in any context.
   if (!IsFlocAllowed())
     return false;
@@ -351,7 +351,7 @@ void PrivacySandboxSettings::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
     const GURL& url,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const ContentSettingsForOneType& cookie_settings) const {
   if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
     // Simply respect cookie settings if the UI is not available. An empty site

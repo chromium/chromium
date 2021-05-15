@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -24,6 +23,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -153,10 +153,10 @@ class SystemNetworkContextManager {
   GetHttpAuthDynamicParamsForTesting();
 
   // Enables Certificate Transparency and enforcing the Chrome Certificate
-  // Transparency Policy. For test use only. Use base::nullopt_t to reset to
+  // Transparency Policy. For test use only. Use absl::nullopt_t to reset to
   // the default state.
   static void SetEnableCertificateTransparencyForTesting(
-      base::Optional<bool> enabled);
+      absl::optional<bool> enabled);
 
   static void set_stub_resolver_config_reader_for_testing(
       StubResolverConfigReader* reader) {

@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -38,7 +38,7 @@ class HelpAppDiscoverTabNotification {
   void SetOnClickCallbackForTesting(base::RepeatingCallback<void()> callback);
 
  private:
-  void OnClick(base::Optional<int> button_index);
+  void OnClick(absl::optional<int> button_index);
 
   Profile* const profile_;
   std::unique_ptr<message_center::Notification> notification_;

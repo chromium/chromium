@@ -72,7 +72,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
         kProfile, {}, kProfile16, 0, {},
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        base::nullopt, std::move(policy_service_));
+        absl::nullopt, std::move(policy_service_));
   }
 
   void InitMockPolicyService() {
@@ -127,7 +127,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    base::Optional<base::Value> settings =
+    absl::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(

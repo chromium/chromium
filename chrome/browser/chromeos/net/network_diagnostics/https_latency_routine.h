@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/http_request_manager.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
@@ -18,6 +17,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class HttpRequestManager;
@@ -64,7 +64,7 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses);
+      const absl::optional<net::AddressList>& resolved_addresses);
 
   // Sets the NetworkContextGetter for testing.
   void set_network_context_getter(NetworkContextGetter network_context_getter) {

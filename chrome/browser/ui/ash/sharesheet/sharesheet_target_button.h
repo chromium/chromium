@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
 
-#include "base/optional.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
@@ -28,7 +28,7 @@ class SharesheetTargetButton : public views::Button {
   SharesheetTargetButton(PressedCallback callback,
                          const std::u16string& display_name,
                          const std::u16string& secondary_display_name,
-                         const base::Optional<gfx::ImageSkia> icon,
+                         const absl::optional<gfx::ImageSkia> icon,
                          const gfx::VectorIcon* vector_icon);
   SharesheetTargetButton(const SharesheetTargetButton&) = delete;
   SharesheetTargetButton& operator=(const SharesheetTargetButton&) = delete;

@@ -81,7 +81,7 @@ class FakeExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin) override {
+      const absl::optional<url::Origin>& initiating_origin) override {
     EXPECT_EQ(block_state_, ExternalProtocolHandler::UNKNOWN);
     EXPECT_NE(os_state_, shell_integration::IS_DEFAULT);
     has_prompted_ = true;
@@ -121,7 +121,7 @@ class FakeExternalProtocolHandlerDelegate
   bool has_launched() { return has_launched_; }
   bool has_prompted() { return has_prompted_; }
   bool has_blocked() { return has_blocked_; }
-  const base::Optional<url::Origin>& initiating_origin() {
+  const absl::optional<url::Origin>& initiating_origin() {
     return initiating_origin_;
   }
 
@@ -137,7 +137,7 @@ class FakeExternalProtocolHandlerDelegate
   bool has_prompted_;
   bool has_blocked_;
   GURL launch_or_prompt_url_;
-  base::Optional<url::Origin> initiating_origin_;
+  absl::optional<url::Origin> initiating_origin_;
   base::OnceClosure on_complete_;
 };
 

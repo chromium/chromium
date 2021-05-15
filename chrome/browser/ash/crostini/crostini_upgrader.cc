@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -66,9 +66,7 @@ CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
 }
 
 CrostiniUpgrader::CrostiniUpgrader(Profile* profile)
-    : profile_(profile),
-      container_id_("", ""),
-      backup_path_(base::nullopt) {
+    : profile_(profile), container_id_("", ""), backup_path_(absl::nullopt) {
   CrostiniManager::GetForProfile(profile_)->AddUpgradeContainerProgressObserver(
       this);
 }
@@ -140,7 +138,7 @@ void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
     result = CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_SPACE;
   }
   if (type() == ExportImportType::EXPORT) {
-    upgrader_->OnBackup(result, base::nullopt);
+    upgrader_->OnBackup(result, absl::nullopt);
   } else {
     upgrader_->OnRestore(result);
   }
@@ -178,7 +176,7 @@ void CrostiniUpgrader::OnBackupPathChecked(const ContainerId& container_id,
 }
 
 void CrostiniUpgrader::OnBackup(CrostiniResult result,
-                                base::Optional<base::FilePath> backup_path) {
+                                absl::optional<base::FilePath> backup_path) {
   if (result != CrostiniResult::SUCCESS) {
     for (auto& observer : upgrader_observers_) {
       observer.OnBackupFailed();

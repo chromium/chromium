@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
 namespace ash {
@@ -138,7 +138,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // Returns whether a request with |request_id| is running, or if any request
   // is running if no |request_id| is supplied.
   bool IsRunningRequest(
-      base::Optional<base::UnguessableToken> request_id = base::nullopt) const;
+      absl::optional<base::UnguessableToken> request_id = absl::nullopt) const;
 
   // content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* web_contents,
@@ -192,7 +192,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   bool did_stop_loading_ = false;
 
   // Responsible for temporarily replacing contents of the clipboard.
-  base::Optional<ScopedClipboardModifier> scoped_clipboard_modifier_;
+  absl::optional<ScopedClipboardModifier> scoped_clipboard_modifier_;
 
   // Callback used to deliver the rendered ImageModel.
   ImageModelCallback deliver_image_model_callback_;

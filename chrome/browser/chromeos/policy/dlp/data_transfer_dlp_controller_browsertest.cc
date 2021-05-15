@@ -126,7 +126,7 @@ class FakeDlpController : public DataTransferDlpController,
   MOCK_METHOD1(OnWidgetClosing, void(views::Widget* widget));
   views::Widget* widget_ = nullptr;
   FakeClipboardNotifier* helper_ = nullptr;
-  base::Optional<ui::DataTransferEndpoint> blink_data_dst_;
+  absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
 };
 

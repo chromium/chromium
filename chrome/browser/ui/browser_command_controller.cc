@@ -317,7 +317,7 @@ void BrowserCommandController::ExtensionStateChanged() {
 }
 
 void BrowserCommandController::TabKeyboardFocusChangedTo(
-    base::Optional<int> index) {
+    absl::optional<int> index) {
   UpdateCommandsForTabKeyboardFocus(index);
 }
 
@@ -1556,7 +1556,7 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
-    base::Optional<int> target_index) {
+    absl::optional<int> target_index) {
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TARGET_TAB, !browser_->deprecated_is_app() &&
                                     target_index.has_value() &&

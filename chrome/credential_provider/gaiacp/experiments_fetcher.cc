@@ -178,7 +178,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
   }
 
   // Make the fetch experiments HTTP request.
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GetExperimentsUrl(), access_token, {}, *request_dict.get(),
       kDefaultFetchExperimentsRequestTimeout, kMaxNumHttpRetries,

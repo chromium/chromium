@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browser_switcher {
 

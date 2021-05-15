@@ -18,12 +18,12 @@ BuildState::~BuildState() {
 void BuildState::SetUpdate(
     UpdateType update_type,
     const base::Version& installed_version,
-    const base::Optional<base::Version>& critical_version) {
+    const absl::optional<base::Version>& critical_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(update_type != UpdateType::kNone ||
          (!installed_version.IsValid() && !critical_version.has_value()));
 
-  base::Optional<base::Version> new_installed_version;
+  absl::optional<base::Version> new_installed_version;
   if (installed_version.IsValid())
     new_installed_version = installed_version;
 

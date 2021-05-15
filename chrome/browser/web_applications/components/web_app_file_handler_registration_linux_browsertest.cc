@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +24,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -68,7 +68,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::Optional<InstallResultCode> result_code_;
+  absl::optional<InstallResultCode> result_code_;
 };
 
 // Verify that the MIME type registration callback is called and that

@@ -42,7 +42,7 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 }
 
 std::string GetManagedDeviceTitle() {
-  base::Optional<std::string> device_manager =
+  absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
   if (!device_manager)
     return std::string();

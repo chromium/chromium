@@ -1791,7 +1791,7 @@ void BrowserView::ShowIntentPickerBubble(
     bool show_stay_in_chrome,
     bool show_remember_selection,
     PageActionIconType icon_type,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   toolbar_->ShowIntentPickerBubble(std::move(app_info), show_stay_in_chrome,
                                    show_remember_selection, icon_type,
@@ -2331,7 +2331,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
   std::u16string title =
       browser_->GetWindowTitleForTab(include_app_name, index);
 
-  base::Optional<tab_groups::TabGroupId> group =
+  absl::optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();
   if (group.has_value()) {
     std::u16string group_title = tabstrip_->GetGroupTitle(group.value());
@@ -2362,7 +2362,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
   }
 
   // Alert tab states.
-  base::Optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
+  absl::optional<TabAlertState> alert = tabstrip_->GetTabAlertState(index);
   if (!alert.has_value())
     return title;
 

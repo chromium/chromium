@@ -407,7 +407,7 @@ struct BookmarkBarView::DropLocation {
   }
 
   // Index into the model the drop is over. This is relative to the root node.
-  base::Optional<size_t> index;
+  absl::optional<size_t> index;
 
   // Drop constants.
   DragOperation operation = DragOperation::kNone;

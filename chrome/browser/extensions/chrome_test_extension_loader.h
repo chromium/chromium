@@ -10,10 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -129,7 +129,7 @@ class ChromeTestExtensionLoader {
   std::string expected_id_;
 
   // An install param to use with the loaded extension.
-  base::Optional<std::string> install_param_;
+  absl::optional<std::string> install_param_;
 
   // Any creation flags (see Extension::InitFromValueFlags) to use for the
   // extension. Only used for crx installs.
@@ -155,10 +155,10 @@ class ChromeTestExtensionLoader {
   bool grant_permissions_ = true;
 
   // Whether or not to allow file access by default to the extension.
-  base::Optional<bool> allow_file_access_;
+  absl::optional<bool> allow_file_access_;
 
   // Whether or not to allow incognito access by default to the extension.
-  base::Optional<bool> allow_incognito_access_;
+  absl::optional<bool> allow_incognito_access_;
 
   // Whether or not to ignore manifest warnings during installation.
   bool ignore_manifest_warnings_ = false;
@@ -170,7 +170,7 @@ class ChromeTestExtensionLoader {
   // If unspecified, this will default to true if there is at least one existent
   // renderer and false otherwise (this roughly maps to "true in browser tests,
   // false in unit tests").
-  base::Optional<bool> wait_for_renderers_;
+  absl::optional<bool> wait_for_renderers_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeTestExtensionLoader);
 };

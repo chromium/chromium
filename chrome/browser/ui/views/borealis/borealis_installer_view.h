@@ -99,7 +99,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  base::Optional<borealis::BorealisInstallResult> result_;
+  absl::optional<borealis::BorealisInstallResult> result_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_

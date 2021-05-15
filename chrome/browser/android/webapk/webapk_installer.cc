@@ -20,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -50,6 +49,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/android/color_helpers.h"
@@ -688,7 +688,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
 }
 
 void WebApkInstaller::OnGotIconMurmur2Hashes(
-    base::Optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
+    absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
   if (!hashes) {
     OnResult(WebApkInstallResult::FAILURE);
     return;

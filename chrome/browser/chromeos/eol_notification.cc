@@ -102,7 +102,7 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
     dismiss_pref_ = prefs::kFirstEolWarningDismissed;
   } else {
     // |now| < FirstWarningDate() so don't show anything.
-    dismiss_pref_ = base::nullopt;
+    dismiss_pref_ = absl::nullopt;
     return;
   }
 
@@ -178,8 +178,8 @@ void EolNotification::Close(bool by_user) {
   profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
 }
 
-void EolNotification::Click(const base::Optional<int>& button_index,
-                            const base::Optional<std::u16string>& reply) {
+void EolNotification::Click(const absl::optional<int>& button_index,
+                            const absl::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 

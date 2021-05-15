@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadCharacteristicValue) {
       .WillOnce(
           InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_FAILED,
                                     /*value=*/std::vector<uint8_t>()))
-      .WillOnce(InvokeCallbackArgument<0>(base::nullopt, value));
+      .WillOnce(InvokeCallbackArgument<0>(absl::nullopt, value));
 
   ExtensionTestMessageListener listener("ready", true);
   listener.set_failure_message("fail");
@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadDescriptorValue) {
       .WillOnce(InvokeCallbackArgument<0>(
           BluetoothGattService::GATT_ERROR_IN_PROGRESS,
           /*value=*/std::vector<uint8_t>()))
-      .WillOnce(InvokeCallbackArgument<0>(/*error_code=*/base::nullopt, value));
+      .WillOnce(InvokeCallbackArgument<0>(/*error_code=*/absl::nullopt, value));
 
   ExtensionTestMessageListener listener("ready", true);
   listener.set_failure_message("fail");

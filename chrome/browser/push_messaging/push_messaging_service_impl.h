@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
@@ -36,6 +35,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/push_messaging_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 class GURL;
@@ -236,7 +236,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void SubscribeEnd(RegisterCallback callback,
                     const std::string& subscription_id,
                     const GURL& endpoint,
-                    const base::Optional<base::Time>& expiration_time,
+                    const absl::optional<base::Time>& expiration_time,
                     const std::vector<uint8_t>& p256dh,
                     const std::vector<uint8_t>& auth,
                     blink::mojom::PushRegistrationStatus status);
@@ -264,12 +264,12 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const std::string& app_id,
       const std::string& sender_id,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       SubscriptionInfoCallback callback,
       bool is_valid);
 
   void DidGetEncryptionInfo(const GURL& endpoint,
-                            const base::Optional<base::Time>& expiration_time,
+                            const absl::optional<base::Time>& expiration_time,
                             SubscriptionInfoCallback callback,
                             std::string p256dh,
                             std::string auth_secret) const;
@@ -316,7 +316,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const std::string& sender_id,
       bool is_valid,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth);
 
@@ -345,7 +345,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                              const std::string& sender_id,
                              const std::string& registration_id,
                              const GURL& endpoint,
-                             const base::Optional<base::Time>& expiration_time,
+                             const absl::optional<base::Time>& expiration_time,
                              const std::vector<uint8_t>& p256dh,
                              const std::vector<uint8_t>& auth,
                              blink::mojom::PushRegistrationStatus status);
@@ -396,7 +396,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::RepeatingCallback<void(const std::string& app_id,
                                    const GURL& origin,
                                    int64_t service_worker_registration_id,
-                                   base::Optional<std::string> payload)>;
+                                   absl::optional<std::string> payload)>;
 
   void SetMessageDispatchedCallbackForTesting(
       const MessageDispatchedCallback& callback) {

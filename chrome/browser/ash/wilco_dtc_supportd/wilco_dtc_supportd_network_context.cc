@@ -88,7 +88,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnSSLCertificateError(
 }
 
 void WilcoDtcSupportdNetworkContextImpl::OnCertificateRequested(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder_remote) {
@@ -98,7 +98,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnCertificateRequested(
 }
 
 void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -108,7 +108,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
         auth_challenge_responder) {
   mojo::Remote<network::mojom::AuthChallengeResponder>
       auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
+  auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
 }
 
 void WilcoDtcSupportdNetworkContextImpl::OnClearSiteData(

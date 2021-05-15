@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/view_android.h"
 
 using base::android::AttachCurrentThread;
@@ -83,7 +83,7 @@ void BiometricAuthenticatorAndroid::Cancel(
   if (!requester_.has_value() || requester != requester_.value())
     return;
   callback_.Reset();
-  requester_ = base::nullopt;
+  requester_ = absl::nullopt;
   Java_BiometricAuthenticatorBridge_cancel(AttachCurrentThread(), java_object_);
 }
 
@@ -93,5 +93,5 @@ void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
   if (callback_.is_null())
     return;
   std::move(callback_).Run(success);
-  requester_ = base::nullopt;
+  requester_ = absl::nullopt;
 }

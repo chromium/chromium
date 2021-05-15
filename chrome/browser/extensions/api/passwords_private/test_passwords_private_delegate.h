@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 // A test PasswordsPrivateDelegate implementation which uses mock data.
@@ -116,7 +116,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   std::vector<api::passwords_private::ExceptionEntry>
       last_deleted_exceptions_batch_;
 
-  base::Optional<std::u16string> plaintext_password_ = u"plaintext";
+  absl::optional<std::u16string> plaintext_password_ = u"plaintext";
 
   // List of insecure credentials.
   std::vector<api::passwords_private::InsecureCredential> insecure_credentials_;

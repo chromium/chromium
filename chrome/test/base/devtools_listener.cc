@@ -279,7 +279,7 @@ void DevToolsListener::DispatchProtocolMessage(
     return;
   }
 
-  base::Optional<int> id = value->FindIntPath("id");
+  absl::optional<int> id = value->FindIntPath("id");
   if (id.has_value() && id.value() == value_id_) {
     value_ = std::move(value);
     CHECK(value_closure_);

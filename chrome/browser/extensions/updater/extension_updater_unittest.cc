@@ -1537,7 +1537,7 @@ class ExtensionUpdaterTest : public testing::Test {
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             id, test_url, hash, version.GetString(), requests, fetch_priority);
 
-    updater.downloader_->FetchUpdatedExtension(std::move(fetch), base::nullopt);
+    updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
     auto* request = helper.GetPendingRequest(0);
     if (fetch_priority == ManifestFetchData::FetchPriority::FOREGROUND) {
@@ -1580,7 +1580,7 @@ class ExtensionUpdaterTest : public testing::Test {
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             id, test_url, hash, version.GetString(), requests,
             ManifestFetchData::FetchPriority::BACKGROUND);
-    updater.downloader_->FetchUpdatedExtension(std::move(fetch), base::nullopt);
+    updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
     if (pending) {
       const bool kIsFromSync = true;
@@ -1855,7 +1855,7 @@ class ExtensionUpdaterTest : public testing::Test {
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             id, test_url, hash, version.GetString(), requests,
             ManifestFetchData::FetchPriority::BACKGROUND);
-    updater.downloader_->FetchUpdatedExtension(std::move(fetch), base::nullopt);
+    updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
     EXPECT_EQ(
         kExpectedLoadFlags,
@@ -2081,9 +2081,9 @@ class ExtensionUpdaterTest : public testing::Test {
             id2, url2, hash2, version2, requests,
             ManifestFetchData::FetchPriority::BACKGROUND);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch1),
-                                               base::Optional<std::string>());
+                                               absl::optional<std::string>());
     updater.downloader_->FetchUpdatedExtension(std::move(fetch2),
-                                               base::Optional<std::string>());
+                                               absl::optional<std::string>());
 
     // Make the first fetch complete.
     EXPECT_TRUE(updater.downloader_->extension_loader_);
@@ -2363,7 +2363,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
     updater.downloader_->HandleManifestResults(std::move(fetch_data),
                                                std::move(results),
-                                               /*error=*/base::nullopt);
+                                               /*error=*/absl::nullopt);
     Time last_ping_day =
         service.extension_prefs()->LastPingDay(extension->id());
     EXPECT_FALSE(last_ping_day.is_null());

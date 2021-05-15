@@ -49,7 +49,7 @@ void HelpAppDiscoverTabNotification::Show() {
       base::UserMetricsAction("Discover.DiscoverTabNotification.Shown"));
 }
 
-void HelpAppDiscoverTabNotification::OnClick(base::Optional<int> button_index) {
+void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
   SystemNotificationHelper::GetInstance()->Close(
       kShowHelpAppDiscoverTabNotificationId);
 

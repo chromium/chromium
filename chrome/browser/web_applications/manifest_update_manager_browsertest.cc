@@ -192,7 +192,7 @@ class UpdateCheckResultAwaiter {
   Browser* browser_ = nullptr;
   const GURL& url_;
   base::RunLoop run_loop_;
-  base::Optional<ManifestUpdateResult> result_;
+  absl::optional<ManifestUpdateResult> result_;
 };
 
 }  // namespace
@@ -366,8 +366,8 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer http_server_;
 
  private:
-  base::Optional<base::RunLoop> shortcut_run_loop_;
-  base::Optional<SkColor> updated_shortcut_top_left_color_;
+  absl::optional<base::RunLoop> shortcut_run_loop_;
+  absl::optional<SkColor> updated_shortcut_top_left_color_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

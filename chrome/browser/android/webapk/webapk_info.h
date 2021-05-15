@@ -32,8 +32,8 @@ struct WebApkInfo {
              std::string manifest_start_url,
              blink::mojom::DisplayMode display,
              device::mojom::ScreenOrientationLockType orientation,
-             base::Optional<SkColor> theme_color,
-             base::Optional<SkColor> background_color,
+             absl::optional<SkColor> theme_color,
+             absl::optional<SkColor> background_color,
              base::Time last_update_check_time,
              base::Time last_update_completion_time,
              bool relax_updates,
@@ -69,8 +69,8 @@ struct WebApkInfo {
   std::string manifest_start_url;
   blink::mojom::DisplayMode display;
   device::mojom::ScreenOrientationLockType orientation;
-  base::Optional<SkColor> theme_color;
-  base::Optional<SkColor> background_color;
+  absl::optional<SkColor> theme_color;
+  absl::optional<SkColor> background_color;
   base::Time last_update_check_time;
   base::Time last_update_completion_time;
   bool relax_updates;

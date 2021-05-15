@@ -65,7 +65,7 @@ void EasyUnlockRemoveKeysOperation::RemoveKey() {
 }
 
 void EasyUnlockRemoveKeysOperation::OnKeyRemoved(
-    base::Optional<::user_data_auth::RemoveKeyReply> reply) {
+    absl::optional<::user_data_auth::RemoveKeyReply> reply) {
   if (reply.has_value() &&
       reply->error() ==
           ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {

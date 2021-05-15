@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -89,6 +88,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -222,8 +222,8 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
   value->SetBoolean("mayCreateShortcuts", is_locally_installed);
   value->SetBoolean("isLocallyInstalled", is_locally_installed);
 
-  base::Optional<std::string> icon_big;
-  base::Optional<std::string> icon_small;
+  absl::optional<std::string> icon_big;
+  absl::optional<std::string> icon_small;
 
   if (HasMatchingOrGreaterThanIcon(
           registrar.GetAppDownloadedIconSizesAny(app_id),
@@ -565,7 +565,7 @@ void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
 
   visible_apps_.insert(app_id);
   base::Value highlight(attempting_web_app_install_page_ordinal_.has_value());
-  attempting_web_app_install_page_ordinal_ = base::nullopt;
+  attempting_web_app_install_page_ordinal_ = absl::nullopt;
   web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info, highlight);
 }
 
@@ -1240,7 +1240,7 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
             if (install_result !=
                 web_app::InstallResultCode::kSuccessNewInstall) {
               app_launcher_handler->attempting_web_app_install_page_ordinal_ =
-                  base::nullopt;
+                  absl::nullopt;
             }
           },
           weak_ptr_factory_.GetWeakPtr());

@@ -86,7 +86,7 @@ bool g_ui_enabled = true;
 // tests, even when the tests are set to skip creating UI.
 bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 
-base::Optional<bool> g_enable_check_android_management_in_tests;
+absl::optional<bool> g_enable_check_android_management_in_tests;
 
 constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 constexpr const size_t kArcSaltFileSize = 16;
@@ -718,7 +718,7 @@ void ArcSessionManager::OnProvisioningFinished(
     RequestArcDataRemoval();
   }
 
-  base::Optional<int> error_code;
+  absl::optional<int> error_code;
   ArcSupportHost::Error support_error = GetSupportHostError(result);
   if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
     error_code = static_cast<std::underlying_type_t<ProvisioningStatus>>(
@@ -985,10 +985,10 @@ void ArcSessionManager::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& vm_signal) {
   // When an ARCVM stops, clear the stored vm info.
   if (vm_signal.name() == kArcVmName)
-    vm_info_ = base::nullopt;
+    vm_info_ = absl::nullopt;
 }
 
-const base::Optional<vm_tools::concierge::VmInfo>&
+const absl::optional<vm_tools::concierge::VmInfo>&
 ArcSessionManager::GetVmInfo() const {
   return vm_info_;
 }
@@ -1450,7 +1450,7 @@ void ArcSessionManager::MaybeStartArcDataRemoval() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArcSessionManager::OnArcDataRemoved(base::Optional<bool> result) {
+void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::REMOVING_DATA_DIR);
   DCHECK(profile_);

@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/auto_enrollment_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 class PrefRegistrySimple;
@@ -161,7 +161,7 @@ class AutoEnrollmentClientImpl
           state_download_message_processor,
       int power_initial,
       int power_limit,
-      base::Optional<int> power_outdated_server_detect,
+      absl::optional<int> power_outdated_server_detect,
       std::string uma_suffix,
       std::unique_ptr<PsmHelper> psm_helper);
 
@@ -257,7 +257,7 @@ class AutoEnrollmentClientImpl
   // If set and the modulus requested by the server is higher than
   // |1<<power_outdated_server_detect|, this client will assume that the server
   // is outdated.
-  base::Optional<int> power_outdated_server_detect_;
+  absl::optional<int> power_outdated_server_detect_;
 
   // Number of requests for a different modulus received from the server.
   // Used to determine if the server keeps asking for different moduli.

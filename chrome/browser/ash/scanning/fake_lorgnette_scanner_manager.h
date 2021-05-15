@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -41,17 +41,17 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
 
   // Sets the response returned by GetScannerCapabilities().
   void SetGetScannerCapabilitiesResponse(
-      const base::Optional<lorgnette::ScannerCapabilities>&
+      const absl::optional<lorgnette::ScannerCapabilities>&
           scanner_capabilities);
 
   // Sets the response returned by Scan().
   void SetScanResponse(
-      const base::Optional<std::vector<std::string>>& scan_data);
+      const absl::optional<std::vector<std::string>>& scan_data);
 
  private:
   std::vector<std::string> scanner_names_;
-  base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
-  base::Optional<std::vector<std::string>> scan_data_;
+  absl::optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
+  absl::optional<std::vector<std::string>> scan_data_;
 };
 
 }  // namespace ash

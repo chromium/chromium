@@ -68,7 +68,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void OnSizeCalculated(
       const calculator::SizeCalculator::CalculationType& calculation_type,
       int64_t total_bytes,
-      const base::Optional<int64_t>& available_bytes = base::nullopt) override;
+      const absl::optional<int64_t>& available_bytes = absl::nullopt) override;
 
   // Remove the handler from the list of observers of every observed instances.
   void StopObservingEvents();

@@ -8,9 +8,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
-#include "base/optional.h"
 #include "chrome/android/chrome_jni_headers/QualityEnforcer_jni.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
@@ -61,15 +61,15 @@ static void JNI_QualityEnforcer_ReportDevtoolsIssue(
     return;
 
   std::string url = base::android::ConvertJavaStringToUTF8(env, jurl);
-  base::Optional<std::string> package_name =
+  absl::optional<std::string> package_name =
       jpackage_name
-          ? base::make_optional(
+          ? absl::make_optional(
                 base::android::ConvertJavaStringToUTF8(env, jpackage_name))
-          : base::nullopt;
-  base::Optional<std::string> signature =
-      jsignature ? base::make_optional(
+          : absl::nullopt;
+  absl::optional<std::string> signature =
+      jsignature ? absl::make_optional(
                        base::android::ConvertJavaStringToUTF8(env, jsignature))
-                 : base::nullopt;
+                 : absl::nullopt;
 
   auto details = blink::mojom::InspectorIssueDetails::New();
   auto twa_issue = blink::mojom::TrustedWebActivityIssueDetails::New(

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "url/gurl.h"
@@ -981,7 +981,7 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
   SystemWebAppManagerTimerTest()
       : SystemWebAppManagerTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  void SetupTimer(base::Optional<base::TimeDelta> period,
+  void SetupTimer(absl::optional<base::TimeDelta> period,
                   bool open_immediately) {
     InitEmptyRegistrar();
 
@@ -1094,7 +1094,7 @@ TEST_F(SystemWebAppManagerTimerTest,
 
 TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
-  SetupTimer(base::nullopt, true);
+  SetupTimer(absl::nullopt, true);
   TestWebAppUrlLoader* loader = nullptr;
   SystemWebAppWaiter waiter(&system_web_app_manager());
 
@@ -1121,7 +1121,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(121));
   EXPECT_EQ(1u, timers.size());
   EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
-  EXPECT_EQ(base::nullopt, timers[0]->period_for_testing());
+  EXPECT_EQ(absl::nullopt, timers[0]->period_for_testing());
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 

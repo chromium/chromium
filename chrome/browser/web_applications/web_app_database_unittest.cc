@@ -61,7 +61,7 @@ class WebAppDatabaseTest : public WebAppTest {
     database_factory().store()->CommitWriteBatch(
         std::move(write_batch),
         base::BindLambdaForTesting(
-            [&](const base::Optional<syncer::ModelError>& error) {
+            [&](const absl::optional<syncer::ModelError>& error) {
               EXPECT_FALSE(error);
               run_loop.Quit();
             }));
@@ -285,7 +285,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   app->SetIsLocallyInstalled(false);
   // chromeos_data should always be set on ChromeOS.
   if (IsChromeOs())
-    app->SetWebAppChromeOsData(base::make_optional<WebAppChromeOsData>());
+    app->SetWebAppChromeOsData(absl::make_optional<WebAppChromeOsData>());
 
   EXPECT_FALSE(app->HasAnySources());
   for (int i = Source::kMinValue; i <= Source::kMaxValue; ++i) {

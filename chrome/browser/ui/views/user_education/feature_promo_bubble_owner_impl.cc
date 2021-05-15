@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
 #include "base/callback.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 FeaturePromoBubbleOwnerImpl::FeaturePromoBubbleOwnerImpl() = default;
@@ -19,11 +19,11 @@ FeaturePromoBubbleOwnerImpl* FeaturePromoBubbleOwnerImpl::GetInstance() {
   return instance.get();
 }
 
-base::Optional<base::Token> FeaturePromoBubbleOwnerImpl::ShowBubble(
+absl::optional<base::Token> FeaturePromoBubbleOwnerImpl::ShowBubble(
     FeaturePromoBubbleView::CreateParams params,
     base::OnceClosure close_callback) {
   if (bubble_)
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(!bubble_id_);
   DCHECK(!close_callback_);
 
@@ -72,6 +72,6 @@ void FeaturePromoBubbleOwnerImpl::OnWidgetDestroying(views::Widget* widget) {
 void FeaturePromoBubbleOwnerImpl::HandleBubbleClosed() {
   widget_observation_.Reset();
   bubble_ = nullptr;
-  bubble_id_ = base::nullopt;
+  bubble_id_ = absl::nullopt;
   std::move(close_callback_).Run();
 }

@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/bubble/bubble_border.h"
 
@@ -38,10 +38,10 @@ struct FeaturePromoBubbleParams {
   std::u16string body_text_raw;
 
   // Title shown larger at top of bubble. Optional.
-  base::Optional<int> title_string_specifier;
+  absl::optional<int> title_string_specifier;
 
   // String to be announced when bubble is shown. Optional.
-  base::Optional<int> screenreader_string_specifier;
+  absl::optional<int> screenreader_string_specifier;
 
   // A keyboard accelerator to access the feature. If
   // |screenreader_string_specifier| is set and contains a placeholder,
@@ -50,8 +50,8 @@ struct FeaturePromoBubbleParams {
   // One of |feature_accelerator| or |feature_command_id|, or neither,
   // can be filled in. If |feature_command_id| is specified this ID is
   // looked up on BrowserView and the associated accelerator is fetched.
-  base::Optional<ui::Accelerator> feature_accelerator;
-  base::Optional<int> feature_command_id;
+  absl::optional<ui::Accelerator> feature_accelerator;
+  absl::optional<int> feature_command_id;
 
   // Positioning and sizing:
 
@@ -64,7 +64,7 @@ struct FeaturePromoBubbleParams {
 
   // If set, determines the width of the bubble. Prefer the default if
   // possible.
-  base::Optional<int> preferred_width;
+  absl::optional<int> preferred_width;
 
   // Determines if this bubble can be focused. If true, it will get
   // focused on creation.
@@ -81,8 +81,8 @@ struct FeaturePromoBubbleParams {
   bool allow_snooze = false;
 
   // Changes the bubble timeout. Intended for tests, avoid use.
-  base::Optional<base::TimeDelta> timeout_default;
-  base::Optional<base::TimeDelta> timeout_short;
+  absl::optional<base::TimeDelta> timeout_default;
+  absl::optional<base::TimeDelta> timeout_short;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_

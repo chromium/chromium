@@ -24,7 +24,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -102,6 +101,7 @@
 #include "net/cert/x509_certificate.h"
 #include "services/network/nss_temp_certs_cache_chromeos.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -683,7 +683,7 @@ void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
           user_manager::known_user::GetAccountId(
               user_email, std::string() /* id */, AccountType::UNKNOWN),
-          base::nullopt)) {
+          absl::nullopt)) {
     ShowAllowlistCheckFailedError();
   }
 }
@@ -802,9 +802,9 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
           using_saml_api_, password,
           SamlPasswordAttributes::FromJs(*password_attributes),
           IsSyncTrustedVaultKeysEnabled()
-              ? base::make_optional(
+              ? absl::make_optional(
                     SyncTrustedVaultKeys::FromJs(*sync_trusted_vault_keys))
-              : base::nullopt,
+              : absl::nullopt,
           *extension_provided_client_cert_usage_observer_,
           pending_user_context_.get(), &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
@@ -1020,7 +1020,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
           user ? user->GetType() : CalculateUserType(account_id),
           GetAccountId(typed_email, gaia_id, AccountType::GOOGLE), using_saml,
           using_saml_api_, password, SamlPasswordAttributes(),
-          /*sync_trusted_vault_keys=*/base::nullopt,
+          /*sync_trusted_vault_keys=*/absl::nullopt,
           *extension_provided_client_cert_usage_observer_, &user_context,
           &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
@@ -1190,7 +1190,7 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     bool enable_user_input,
     security_token_pin::ErrorLabel error_label,
     int attempts_left,
-    const base::Optional<AccountId>& /*authenticating_user_account_id*/,
+    const absl::optional<AccountId>& /*authenticating_user_account_id*/,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
   DCHECK(is_security_token_pin_enabled_);

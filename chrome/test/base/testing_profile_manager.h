@@ -69,9 +69,9 @@ class TestingProfileManager : public ProfileObserver {
       int avatar_id,
       const std::string& supervised_user_id,
       TestingProfile::TestingFactories testing_factories,
-      base::Optional<bool> is_new_profile = base::nullopt,
-      base::Optional<std::unique_ptr<policy::PolicyService>> policy_service =
-          base::nullopt);
+      absl::optional<bool> is_new_profile = absl::nullopt,
+      absl::optional<std::unique_ptr<policy::PolicyService>> policy_service =
+          absl::nullopt);
 
   // Small helpers for creating testing profiles. Just forward to above.
   TestingProfile* CreateTestingProfile(const std::string& name);

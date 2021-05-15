@@ -10,13 +10,13 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -70,7 +70,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   bool IsTokenRefreshScheduledForTesting() const;
 
   // Returns delay to next token refresh if it is scheduled.
-  base::Optional<base::TimeDelta> GetTokenRefreshDelayForTesting() const;
+  absl::optional<base::TimeDelta> GetTokenRefreshDelayForTesting() const;
 
   // Overrides elements responsible for time progression to allow testing.
   // Affects time calculation and timer objects.
@@ -90,7 +90,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
       access_token_fetcher_;
 
   // Last fetched OAuth token.
-  base::Optional<signin::AccessTokenInfo> oauth_token_;
+  absl::optional<signin::AccessTokenInfo> oauth_token_;
 
   // Timer that measures time to the next OAuth token refresh. Not initialized
   // if token refresh is not scheduled.

@@ -798,14 +798,14 @@ Status ExecuteGetComputedLabel(Session* session,
     return status;
 
   // Computed label stores as `name` in the AXTree.
-  base::Optional<base::Value> nameNode = axNode->ExtractKey("name");
+  absl::optional<base::Value> nameNode = axNode->ExtractKey("name");
   if (!nameNode) {
     // No computed label found. Return empty string.
     *value = std::make_unique<base::Value>("");
     return Status(kOk);
   }
 
-  base::Optional<base::Value> nameVal = nameNode->ExtractKey("value");
+  absl::optional<base::Value> nameVal = nameNode->ExtractKey("value");
   if (!nameVal)
     return Status(kUnknownError,
                   "No name value found in the node in CDP response");
@@ -825,14 +825,14 @@ Status ExecuteGetComputedRole(Session* session,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> roleNode = axNode->ExtractKey("role");
+  absl::optional<base::Value> roleNode = axNode->ExtractKey("role");
   if (!roleNode) {
     // No computed role found. Return empty string.
     *value = std::make_unique<base::Value>("");
     return Status(kOk);
   }
 
-  base::Optional<base::Value> roleVal = roleNode->ExtractKey("value");
+  absl::optional<base::Value> roleVal = roleNode->ExtractKey("value");
   if (!roleVal)
     return Status(kUnknownError,
                   "No role value found in the node in CDP response");

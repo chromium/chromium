@@ -62,7 +62,7 @@ class WebAppControllerBrowserTestBase
 
   Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
 
-  base::Optional<AppId> FindAppWithUrlInScope(const GURL& url);
+  absl::optional<AppId> FindAppWithUrlInScope(const GURL& url);
 };
 
 class WebAppControllerBrowserTest : public WebAppControllerBrowserTestBase {

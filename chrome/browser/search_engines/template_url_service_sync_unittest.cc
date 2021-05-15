@@ -100,7 +100,7 @@ class TestChangeProcessor : public syncer::SyncChangeProcessor {
   ~TestChangeProcessor() override;
 
   // Store a copy of all the changes passed in so we can examine them later.
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -135,7 +135,7 @@ TestChangeProcessor::TestChangeProcessor() : erroneous_(false) {
 TestChangeProcessor::~TestChangeProcessor() {
 }
 
-base::Optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
+absl::optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (erroneous_)
@@ -145,7 +145,7 @@ base::Optional<syncer::ModelError> TestChangeProcessor::ProcessSyncChanges(
   for (auto iter = change_list.begin(); iter != change_list.end(); ++iter)
     change_map_.emplace(GetGUID(iter->sync_data()), *iter);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 class TestTemplateURLServiceClient : public TemplateURLServiceClient {
@@ -219,15 +219,15 @@ class TemplateURLServiceSyncTest : public testing::Test {
   // Executes MergeDataAndStartSyncing and ProcessSyncChanges respectively, and
   // verifies the expected number of calls were made to notify observers. These
   // will clear out previous notify call counts beforehand.
-  base::Optional<syncer::ModelError> MergeAndExpectNotify(
+  absl::optional<syncer::ModelError> MergeAndExpectNotify(
       syncer::SyncDataList initial_sync_data,
       int expected_notify_count);
-  base::Optional<syncer::ModelError> MergeAndExpectNotifyAtLeast(
+  absl::optional<syncer::ModelError> MergeAndExpectNotifyAtLeast(
       syncer::SyncDataList initial_sync_data);
-  base::Optional<syncer::ModelError> ProcessAndExpectNotify(
+  absl::optional<syncer::ModelError> ProcessAndExpectNotify(
       syncer::SyncChangeList changes,
       int expected_notify_count);
-  base::Optional<syncer::ModelError> ProcessAndExpectNotifyAtLeast(
+  absl::optional<syncer::ModelError> ProcessAndExpectNotifyAtLeast(
       syncer::SyncChangeList changes);
 
  protected:
@@ -355,45 +355,45 @@ std::unique_ptr<TemplateURL> TemplateURLServiceSyncTest::CopyTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::MergeAndExpectNotify(
     syncer::SyncDataList initial_sync_data,
     int expected_notify_count) {
   test_util_a_->ResetObserverCount();
-  base::Optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
       syncer::SEARCH_ENGINES, initial_sync_data, PassProcessor(),
       CreateAndPassSyncErrorFactory());
   EXPECT_EQ(expected_notify_count, test_util_a_->GetObserverCount());
   return error;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::MergeAndExpectNotifyAtLeast(
     syncer::SyncDataList initial_sync_data) {
   test_util_a_->ResetObserverCount();
-  base::Optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> error = model()->MergeDataAndStartSyncing(
       syncer::SEARCH_ENGINES, initial_sync_data, PassProcessor(),
       CreateAndPassSyncErrorFactory());
   EXPECT_LE(1, test_util_a_->GetObserverCount());
   return error;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::ProcessAndExpectNotify(
     syncer::SyncChangeList changes,
     int expected_notify_count) {
   test_util_a_->ResetObserverCount();
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       model()->ProcessSyncChanges(FROM_HERE, changes);
   EXPECT_EQ(expected_notify_count, test_util_a_->GetObserverCount());
   return error;
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 TemplateURLServiceSyncTest::ProcessAndExpectNotifyAtLeast(
     syncer::SyncChangeList changes) {
   test_util_a_->ResetObserverCount();
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       model()->ProcessSyncChanges(FROM_HERE, changes);
   EXPECT_LE(1, test_util_a_->GetObserverCount());
   return error;
@@ -1133,7 +1133,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwoClientsDupesAndConflicts) {
 }
 
 TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
-  base::Optional<syncer::ModelError> merge_error =
+  absl::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   ASSERT_FALSE(merge_error.has_value());
   model()->StopSyncing(syncer::SEARCH_ENGINES);
@@ -1144,7 +1144,7 @@ TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   // Because the sync data is never applied locally, there should not be any
   // notification.
-  base::Optional<syncer::ModelError> process_error =
+  absl::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 0);
   EXPECT_TRUE(process_error.has_value());
 
@@ -1156,7 +1156,7 @@ TEST_F(TemplateURLServiceSyncTest, StopSyncing) {
 TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
   processor()->set_erroneous(true);
   // Error happens after local changes are applied, still expect a notify.
-  base::Optional<syncer::ModelError> merge_error =
+  absl::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   EXPECT_TRUE(merge_error.has_value());
 
@@ -1168,7 +1168,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
       syncer::SyncChange::ACTION_UPDATE,
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   processor()->set_erroneous(false);
-  base::Optional<syncer::ModelError> process_error =
+  absl::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 0);
   EXPECT_TRUE(process_error.has_value());
 
@@ -1180,7 +1180,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnInitialSync) {
 TEST_F(TemplateURLServiceSyncTest, SyncErrorOnLaterSync) {
   // Ensure that if the SyncProcessor succeeds in the initial merge, but fails
   // in future ProcessSyncChanges, we still return an error.
-  base::Optional<syncer::ModelError> merge_error =
+  absl::optional<syncer::ModelError> merge_error =
       MergeAndExpectNotify(CreateInitialSyncData(), 1);
   ASSERT_FALSE(merge_error.has_value());
 
@@ -1190,7 +1190,7 @@ TEST_F(TemplateURLServiceSyncTest, SyncErrorOnLaterSync) {
       CreateTestTemplateURL(u"newkeyword", "http://new.com", "guid2")));
   processor()->set_erroneous(true);
   // Because changes make it to local before the error, still need to notify.
-  base::Optional<syncer::ModelError> process_error =
+  absl::optional<syncer::ModelError> process_error =
       ProcessAndExpectNotify(changes, 1);
   EXPECT_TRUE(process_error.has_value());
 }
@@ -1204,7 +1204,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwiceWithSameSyncData) {
   model()->Add(CreateTestTemplateURL(u"key1", "http://key1.com", "guid1",
                                      base::Time::FromTimeT(10)));  // earlier
 
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       MergeAndExpectNotify(initial_data, 1);
   ASSERT_FALSE(error.has_value());
 

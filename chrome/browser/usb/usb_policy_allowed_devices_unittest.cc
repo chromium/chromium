@@ -55,7 +55,7 @@ class UsbPolicyAllowedDevicesTest : public testing::Test {
 };
 
 std::unique_ptr<base::Value> ReadJson(base::StringPiece json) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   EXPECT_TRUE(value);
   return value ? base::Value::ToUniquePtrValue(std::move(*value)) : nullptr;
 }

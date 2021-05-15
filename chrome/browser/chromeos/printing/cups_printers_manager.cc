@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -48,6 +47,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/printer_query_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -219,7 +219,7 @@ class CupsPrintersManagerImpl
   }
 
   // Public API function.
-  base::Optional<Printer> GetPrinter(const std::string& id) const override {
+  absl::optional<Printer> GetPrinter(const std::string& id) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (!user_printers_allowed_.GetValue()) {
       LOG(WARNING) << "UserPrintersAllowed is disabled - only searching "
@@ -312,7 +312,7 @@ class CupsPrintersManagerImpl
 
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {
-    base::Optional<Printer> printer = GetPrinter(printer_id);
+    absl::optional<Printer> printer = GetPrinter(printer_id);
     if (!printer) {
       PRINTER_LOG(ERROR) << "Unable to complete printer status request. "
                          << "Printer not found. Printer id: " << printer_id;
@@ -458,7 +458,7 @@ class CupsPrintersManagerImpl
   }
 
  private:
-  base::Optional<Printer> GetEnterprisePrinter(const std::string& id) const {
+  absl::optional<Printer> GetEnterprisePrinter(const std::string& id) const {
     return printers_.Get(PrinterClass::kEnterprise, id);
   }
 

@@ -13,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -40,6 +39,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -435,7 +435,7 @@ class BrowserView : public BrowserWindow,
       bool show_stay_in_chrome,
       bool show_remember_selection,
       PageActionIconType icon_type,
-      const base::Optional<url::Origin>& initiating_origin,
+      const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override;
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) override;
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
@@ -940,7 +940,7 @@ class BrowserView : public BrowserWindow,
   // is true, OnWidgetActivationChanged will call RestoreFocus. This is set
   // to true when not set in Show() so that RestoreFocus on activation only
   // happens for very first Show() calls.
-  base::Optional<bool> restore_focus_on_activation_;
+  absl::optional<bool> restore_focus_on_activation_;
 
   // This is non-null on Chrome OS only.
   std::unique_ptr<TopControlsSlideController> top_controls_slide_controller_;
@@ -994,7 +994,7 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |loading_animation_tracker_| is used to measure animation smoothness for
   // tab loading animation.
-  base::Optional<ui::ThroughputTracker> loading_animation_tracker_;
+  absl::optional<ui::ThroughputTracker> loading_animation_tracker_;
 #endif
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};

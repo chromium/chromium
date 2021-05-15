@@ -62,8 +62,8 @@ class NetworkPortalNotificationControllerDelegate
       : guid_(guid), clicked_(false), controller_(controller) {}
 
   // Overridden from message_center::NotificationDelegate:
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   ~NetworkPortalNotificationControllerDelegate() override {}
@@ -79,8 +79,8 @@ class NetworkPortalNotificationControllerDelegate
 };
 
 void NetworkPortalNotificationControllerDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   clicked_ = true;
 
   Profile* profile = ProfileManager::GetActiveUserProfile();

@@ -337,7 +337,7 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
 }
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
-  EXPECT_EQ(challenge_response_, base::nullopt);
+  EXPECT_EQ(challenge_response_, absl::nullopt);
   challenge_response_ = response;
 }
 

@@ -69,7 +69,7 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   GetContentAnnotationsTask(
       const GURL& url,
       base::OnceCallback<void(
-          const base::Optional<history::VisitContentAnnotations>&)> callback)
+          const absl::optional<history::VisitContentAnnotations>&)> callback)
       : url_(url), callback_(std::move(callback)) {}
   ~GetContentAnnotationsTask() override = default;
 
@@ -101,10 +101,10 @@ class GetContentAnnotationsTask : public history::HistoryDBTask {
   const GURL url_;
   // The callback to invoke when the database call has completed.
   base::OnceCallback<void(
-      const base::Optional<history::VisitContentAnnotations>&)>
+      const absl::optional<history::VisitContentAnnotations>&)>
       callback_;
   // The content annotations that were stored for |url_|.
-  base::Optional<history::VisitContentAnnotations> stored_content_annotations_;
+  absl::optional<history::VisitContentAnnotations> stored_content_annotations_;
 };
 
 class PageContentAnnotationsServiceDisabledBrowserTest
@@ -205,16 +205,16 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  base::Optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
+  absl::optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
       const GURL& url) {
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
     if (!history_service)
-      return base::nullopt;
+      return absl::nullopt;
 
     std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    base::Optional<history::VisitContentAnnotations> got_content_annotations;
+    absl::optional<history::VisitContentAnnotations> got_content_annotations;
 
     base::CancelableTaskTracker task_tracker;
     history_service->ScheduleDBTask(
@@ -222,9 +222,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<GetContentAnnotationsTask>(
             url, base::BindOnce(
                      [](base::RunLoop* run_loop,
-                        base::Optional<history::VisitContentAnnotations>*
+                        absl::optional<history::VisitContentAnnotations>*
                             out_content_annotations,
-                        const base::Optional<history::VisitContentAnnotations>&
+                        const absl::optional<history::VisitContentAnnotations>&
                             content_annotations) {
                        *out_content_annotations = content_annotations;
                        run_loop->Quit();
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  base::Optional<int64_t> model_version = service->GetPageTopicsModelVersion();
+  absl::optional<int64_t> model_version = service->GetPageTopicsModelVersion();
   EXPECT_TRUE(model_version.has_value());
   EXPECT_EQ(123, *model_version);
 #else
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       "ContentAnnotationsStorageStatus",
       PageContentAnnotationsStorageStatus::kSuccess, 1);
 
-  base::Optional<history::VisitContentAnnotations> got_content_annotations =
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_NE(-1.0,
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
   PageContentAnnotationsService* service =
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
 
-  base::Optional<int64_t> model_version = service->GetPageTopicsModelVersion();
+  absl::optional<int64_t> model_version = service->GetPageTopicsModelVersion();
   EXPECT_TRUE(model_version.has_value());
   EXPECT_EQ(123, *model_version);
 
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
       "ContentAnnotationsStorageStatus",
       PageContentAnnotationsStorageStatus::kSuccess, 1);
 
-  base::Optional<history::VisitContentAnnotations> got_content_annotations =
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_NE(-1.0,

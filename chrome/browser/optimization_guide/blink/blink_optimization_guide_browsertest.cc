@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(BlinkOptimizationGuideBrowserTest, NoMetadata) {
   // Set up a fake optimization hints without metadata for simple.html.
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddHintForTesting(GetURLWithMockHost("/simple.html"),
-                          GetOptimizationType(), base::nullopt);
+                          GetOptimizationType(), absl::nullopt);
 
   // Navigation to the URL shouldn't see the hints.
   ui_test_utils::NavigateToURL(browser(), GetURLWithMockHost("/simple.html"));

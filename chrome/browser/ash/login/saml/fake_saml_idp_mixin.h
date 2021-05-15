@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -108,7 +108,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
 
   bool require_http_basic_auth_ = false;
 
-  base::Optional<std::string> challenge_response_;
+  absl::optional<std::string> challenge_response_;
 };
 
 }  // namespace chromeos

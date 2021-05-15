@@ -47,10 +47,10 @@ void VerifyPaper(const Value& paper_dict,
   const std::string* vendor = paper_dict.FindStringKey("vendor_id");
   ASSERT_TRUE(vendor);
   EXPECT_EQ(expected_vendor, *vendor);
-  base::Optional<int> width = paper_dict.FindIntKey("width_microns");
+  absl::optional<int> width = paper_dict.FindIntKey("width_microns");
   ASSERT_TRUE(width.has_value());
   EXPECT_EQ(expected_size.width(), width.value());
-  base::Optional<int> height = paper_dict.FindIntKey("height_microns");
+  absl::optional<int> height = paper_dict.FindIntKey("height_microns");
   ASSERT_TRUE(height.has_value());
   EXPECT_EQ(expected_size.height(), height.value());
 }
@@ -252,7 +252,7 @@ TEST_F(PrinterCapabilitiesTest, HasNotSecureProtocol) {
   // Verify that pin is not supported.
   const Value* pin = printer->FindKeyOfType("pin", Value::Type::DICTIONARY);
   ASSERT_TRUE(pin);
-  base::Optional<bool> pin_supported = pin->FindBoolKey("supported");
+  absl::optional<bool> pin_supported = pin->FindBoolKey("supported");
   ASSERT_TRUE(pin_supported.has_value());
   ASSERT_FALSE(pin_supported.value());
 }

@@ -117,7 +117,7 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
       media::AudioDeviceDescriptions source_devices);
 
   // Receives the raw sink ID, calculates HMAC and calls Reply().
-  void CalculateHMACAndReply(const base::Optional<std::string>& raw_sink_id);
+  void CalculateHMACAndReply(const absl::optional<std::string>& raw_sink_id);
 
   // Receives the associated sink ID as HMAC and sends the response.
   void Reply(const std::string& hmac);

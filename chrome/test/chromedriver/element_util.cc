@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +21,7 @@
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "chrome/test/chromedriver/session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webdriver/atoms.h"
 
 namespace {
@@ -105,7 +105,7 @@ Status VerifyElementClickable(
       args, &result);
   if (status.IsError())
     return status;
-  base::Optional<bool> is_clickable = base::nullopt;
+  absl::optional<bool> is_clickable = absl::nullopt;
   if (result->is_dict())
     is_clickable = result->FindBoolKey("clickable");
   if (!is_clickable.has_value()) {
@@ -956,7 +956,7 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> nodes = result->ExtractKey("nodes");
+  absl::optional<base::Value> nodes = result->ExtractKey("nodes");
   if (!nodes)
     return Status(kUnknownError, "No `nodes` found in CDP response");
 

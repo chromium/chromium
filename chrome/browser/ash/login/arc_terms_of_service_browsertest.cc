@@ -215,7 +215,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
     on_screen_exit_called_ = std::move(on_screen_exit_called);
   }
 
-  const base::Optional<ArcTermsOfServiceScreen::Result>& screen_exit_result()
+  const absl::optional<ArcTermsOfServiceScreen::Result>& screen_exit_result()
       const {
     return screen_exit_result_;
   }
@@ -291,7 +291,7 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
 
   bool serve_tos_with_privacy_policy_footer_ = false;
 
-  base::Optional<ArcTermsOfServiceScreen::Result> screen_exit_result_;
+  absl::optional<ArcTermsOfServiceScreen::Result> screen_exit_result_;
   ArcTermsOfServiceScreen::ScreenExitCallback original_callback_;
   base::OnceClosure on_screen_exit_called_ = base::DoNothing();
 

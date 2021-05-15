@@ -64,7 +64,7 @@ void SetResourceLoadingImageHints(
 
 void UpdateRobotsRules(
     mojom::SubresourceRedirectService::GetRobotsRulesCallback callback,
-    base::Optional<std::string> robots_rules_proto) {
+    absl::optional<std::string> robots_rules_proto) {
   std::move(callback).Run(robots_rules_proto);
 }
 
@@ -83,7 +83,7 @@ void ImageCompressionAppliedDocument::GetAndUpdateRobotsRules(
     OriginRobotsRulesCache* rules_cache,
     mojom::SubresourceRedirectService::GetRobotsRulesCallback callback) {
   if (!rules_cache) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   rules_cache->GetRobotsRules(
@@ -279,7 +279,7 @@ void SubresourceRedirectObserver::GetRobotsRules(
   DCHECK(ShouldEnableRobotsRulesFetching());
   DCHECK(!origin.opaque());
   if (!web_contents()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -289,7 +289,7 @@ void SubresourceRedirectObserver::GetRobotsRules(
       ImageCompressionAppliedDocument::GetForCurrentDocument(
           web_contents()->GetMainFrame());
   if (!subresource_redirect_document_host) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

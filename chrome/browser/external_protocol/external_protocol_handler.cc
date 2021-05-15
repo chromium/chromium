@@ -109,7 +109,7 @@ void RunExternalProtocolDialogWithDelegate(
     content::WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     ExternalProtocolHandler::Delegate* delegate) {
   DCHECK(web_contents);
   if (delegate) {
@@ -180,7 +180,7 @@ void OnDefaultProtocolClientWorkerFinished(
     bool prompt_user,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     ExternalProtocolHandler::Delegate* delegate,
     shell_integration::DefaultWebClientState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -332,7 +332,7 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
           allowed_origin_protocol_pairs->FindDictKey(
               initiating_origin->Serialize());
       if (allowed_protocols_for_origin) {
-        base::Optional<bool> allow =
+        absl::optional<bool> allow =
             allowed_protocols_for_origin->FindBoolKey(scheme);
         if (allow.has_value() && allow.value())
           return DONT_BLOCK;
@@ -395,7 +395,7 @@ void ExternalProtocolHandler::LaunchUrl(
     int render_view_routing_id,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Disable anti-flood protection if the user is invoking a bookmark or
@@ -437,7 +437,7 @@ void ExternalProtocolHandler::LaunchUrl(
 
   g_accept_requests = false;
 
-  base::Optional<url::Origin> initiating_origin_or_precursor;
+  absl::optional<url::Origin> initiating_origin_or_precursor;
   if (initiating_origin) {
     // Transform the initiating origin to its precursor origin if it is
     // opaque. |initiating_origin| is shown in the UI to attribute the external

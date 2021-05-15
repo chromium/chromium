@@ -11,7 +11,6 @@
 #include "base/base64url.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -27,6 +26,7 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -123,12 +123,12 @@ std::string EncodeString(const std::string& unencoded_string) {
   return encoded_string;
 }
 
-base::Optional<std::string> DecodeString(const std::string& encoded_string) {
+absl::optional<std::string> DecodeString(const std::string& encoded_string) {
   std::string decoded_string;
   if (!base::Base64UrlDecode(encoded_string,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &decoded_string))
-    return base::nullopt;
+    return absl::nullopt;
 
   return decoded_string;
 }
@@ -431,26 +431,26 @@ void NearbyShareCertificateStorageImpl::GetPublicCertificates(
   db_->LoadEntries(std::move(callback));
 }
 
-base::Optional<std::vector<NearbySharePrivateCertificate>>
+absl::optional<std::vector<NearbySharePrivateCertificate>>
 NearbyShareCertificateStorageImpl::GetPrivateCertificates() const {
   const base::Value* list =
       pref_service_->Get(prefs::kNearbySharingPrivateCertificateListPrefName);
   std::vector<NearbySharePrivateCertificate> certs;
   for (const base::Value& cert_dict : list->GetList()) {
-    base::Optional<NearbySharePrivateCertificate> cert(
+    absl::optional<NearbySharePrivateCertificate> cert(
         NearbySharePrivateCertificate::FromDictionary(cert_dict));
     if (!cert)
-      return base::nullopt;
+      return absl::nullopt;
 
     certs.push_back(*std::move(cert));
   }
   return certs;
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 NearbyShareCertificateStorageImpl::NextPublicCertificateExpirationTime() const {
   if (public_certificate_expirations_.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // |public_certificate_expirations_| is sorted by expiration date.
   return public_certificate_expirations_.front().second;
@@ -624,8 +624,8 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
   public_certificate_expirations_.reserve(dict->DictSize());
   for (const std::pair<const std::string&, const base::Value&>& pair :
        dict->DictItems()) {
-    base::Optional<std::string> id = DecodeString(pair.first);
-    base::Optional<base::Time> expiration = util::ValueToTime(pair.second);
+    absl::optional<std::string> id = DecodeString(pair.first);
+    absl::optional<base::Time> expiration = util::ValueToTime(pair.second);
     if (!id || !expiration)
       return false;
 

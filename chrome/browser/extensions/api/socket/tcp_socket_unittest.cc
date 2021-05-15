@@ -641,7 +641,7 @@ TEST_F(TCPSocketServerTest, ListenAccept) {
       [&](int result,
           mojo::PendingRemote<network::mojom::TCPConnectedSocket>
               accepted_socket,
-          const base::Optional<net::IPEndPoint>& remote_addr,
+          const absl::optional<net::IPEndPoint>& remote_addr,
           mojo::ScopedDataPipeConsumerHandle receive_handle,
           mojo::ScopedDataPipeProducerHandle send_handle) {
         EXPECT_EQ(net::OK, result);
@@ -698,7 +698,7 @@ TEST_F(TCPSocketServerTest, ReadAndWrite) {
       [&](int result,
           mojo::PendingRemote<network::mojom::TCPConnectedSocket>
               connected_socket,
-          const base::Optional<net::IPEndPoint>& remote_addr,
+          const absl::optional<net::IPEndPoint>& remote_addr,
           mojo::ScopedDataPipeConsumerHandle receive_handle,
           mojo::ScopedDataPipeProducerHandle send_handle) {
         EXPECT_EQ(net::OK, result);

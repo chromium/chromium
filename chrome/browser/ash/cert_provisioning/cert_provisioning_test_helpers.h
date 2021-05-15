@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 class User;
@@ -39,7 +39,7 @@ struct CertificateHelperForTesting {
   // certificate.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const base::Optional<CertProfileId>& cert_profile_id,
+      const absl::optional<CertProfileId>& cert_profile_id,
       platform_keys::Status status,
       base::Time not_valid_before,
       base::Time not_valid_after);
@@ -48,13 +48,13 @@ struct CertificateHelperForTesting {
   // |cert_profile_id|.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const base::Optional<CertProfileId>& cert_profile_id);
+      const absl::optional<CertProfileId>& cert_profile_id);
 
   // Simplified version of AddCert(). The certificate is not expired, but fails
   // to retrieve |cert_profile_id|.
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
-      const base::Optional<CertProfileId>& cert_profile_id,
+      const absl::optional<CertProfileId>& cert_profile_id,
       platform_keys::Status status);
 
   void ClearCerts();

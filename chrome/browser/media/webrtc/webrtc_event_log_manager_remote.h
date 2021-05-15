@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 #include "components/upload_list/upload_list.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc_event_logging {
 
@@ -279,7 +279,7 @@ class WebRtcRemoteEventLogManager final
   // this check is not too expensive.
   // If a |browser_context_id| is provided, logs are only pruned for it.
   void PrunePendingLogs(
-      base::Optional<BrowserContextId> browser_context_id = base::nullopt);
+      absl::optional<BrowserContextId> browser_context_id = absl::nullopt);
 
   // PrunePendingLogs() and schedule the next proactive pending logs prune.
   void RecurringlyPrunePendingLogs();
@@ -308,7 +308,7 @@ class WebRtcRemoteEventLogManager final
   void MaybeRemovePendingLogs(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      base::Optional<BrowserContextId> browser_context_id,
+      absl::optional<BrowserContextId> browser_context_id,
       bool is_cache_clear);
 
   // Remove all history files associated with |browser_context_id| which were
@@ -342,7 +342,7 @@ class WebRtcRemoteEventLogManager final
   //   can match the filter.
   bool MatchesFilter(BrowserContextId log_browser_context_id,
                      const base::Time& log_last_modification,
-                     base::Optional<BrowserContextId> filter_browser_context_id,
+                     absl::optional<BrowserContextId> filter_browser_context_id,
                      const base::Time& filter_range_begin,
                      const base::Time& filter_range_end) const;
 

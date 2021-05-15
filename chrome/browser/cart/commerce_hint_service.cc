@@ -71,7 +71,7 @@ class CommerceHintObserverImpl
 
   ~CommerceHintObserverImpl() override = default;
 
-  void OnAddToCart(const base::Optional<GURL>& cart_url,
+  void OnAddToCart(const absl::optional<GURL>& cart_url,
                    const std::string& product_id) override {
     DVLOG(1) << "Received OnAddToCart in the browser process on "
              << binding_url_;
@@ -161,14 +161,14 @@ bool CommerceHintService::ShouldSkip(const GURL& url) {
 }
 
 void CommerceHintService::OnAddToCart(const GURL& navigation_url,
-                                      const base::Optional<GURL>& cart_url,
+                                      const absl::optional<GURL>& cart_url,
                                       const std::string& product_id) {
   if (ShouldSkip(navigation_url))
     return;
-  base::Optional<GURL> validated_cart = cart_url;
+  absl::optional<GURL> validated_cart = cart_url;
   if (cart_url && GetDomain(*cart_url) != GetDomain(navigation_url)) {
     DVLOG(1) << "Reject cart URL with different eTLD+1 domain.";
-    validated_cart = base::nullopt;
+    validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
   std::vector<mojom::ProductPtr> products;

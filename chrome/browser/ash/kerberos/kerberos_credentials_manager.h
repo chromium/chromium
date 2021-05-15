@@ -13,10 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chromeos/network/onc/variable_expander.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -111,7 +111,7 @@ class KerberosCredentialsManager : public KeyedService,
   // existing account is updated.
   void AddAccountAndAuthenticate(std::string principal_name,
                                  bool is_managed,
-                                 const base::Optional<std::string>& password,
+                                 const absl::optional<std::string>& password,
                                  bool remember_password,
                                  const std::string& krb5_conf,
                                  bool allow_existing,

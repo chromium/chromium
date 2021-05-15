@@ -337,7 +337,7 @@ void WebAppPolicyManager::RemoveObserver(
 }
 
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
-    base::Optional<GURL> url) const {
+    absl::optional<GURL> url) const {
   if (url) {
     auto it = settings_by_url_.find(url.value());
     if (it != settings_by_url_.end())
@@ -470,7 +470,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   }
 
   for (const auto& app_type : disabled_system_apps_) {
-    base::Optional<AppId> app_id =
+    absl::optional<AppId> app_id =
         web_app_manager_->GetAppIdForSystemApp(app_type);
     if (app_id.has_value()) {
       disabled_web_apps_.insert(app_id.value());

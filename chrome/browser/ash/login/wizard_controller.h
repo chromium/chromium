@@ -14,9 +14,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move KioskAppType to forward declaration
 // when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -165,7 +165,7 @@ class WizardController {
   // is explicitly set on DemoSetupController and going through demo settings
   // screens can be skipped.
   void SimulateDemoModeSetupForTesting(
-      base::Optional<DemoSession::DemoModeConfig> demo_config = base::nullopt);
+      absl::optional<DemoSession::DemoModeConfig> demo_config = absl::nullopt);
 
   // Stores authorization data that will be used to configure extra auth factors
   // during user onboarding.

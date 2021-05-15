@@ -106,8 +106,8 @@ class CheckClientDownloadRequestBase {
 
   // Returns whether or not the file should be uploaded to Safe Browsing for
   // deep scanning. Returns the settings to apply for analysis if the file
-  // should be uploaded for deep scanning, or base::nullopt if it should not.
-  virtual base::Optional<enterprise_connectors::AnalysisSettings>
+  // should be uploaded for deep scanning, or absl::nullopt if it should not.
+  virtual absl::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(DownloadCheckResultReason reason) = 0;
 
   // If ShouldUploadBinary returns settings, actually performs the upload to

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 
 #include "ash/public/cpp/system_tray.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +12,7 @@
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -476,20 +476,20 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   int inline_reply_id;
   CHECK(notification_data_dict->GetInteger("inlineReplyId", &inline_reply_id));
 
-  base::Optional<std::u16string> opt_title;
+  absl::optional<std::u16string> opt_title;
   std::u16string title;
   if (notification_data_dict->GetString("title", &title) && !title.empty()) {
     opt_title = title;
   }
 
-  base::Optional<std::u16string> opt_text_content;
+  absl::optional<std::u16string> opt_text_content;
   std::u16string text_content;
   if (notification_data_dict->GetString("textContent", &text_content) &&
       !text_content.empty()) {
     opt_text_content = text_content;
   }
 
-  base::Optional<gfx::Image> opt_shared_image;
+  absl::optional<gfx::Image> opt_shared_image;
   int shared_image_type_as_int;
   if (notification_data_dict->GetInteger("sharedImage",
                                          &shared_image_type_as_int) &&
@@ -499,7 +499,7 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
         ImageTypeToBitmap(shared_image_type, kSharedImageSize));
   }
 
-  base::Optional<gfx::Image> opt_contact_image;
+  absl::optional<gfx::Image> opt_contact_image;
   int contact_image_type_as_int;
   if (notification_data_dict->GetInteger("contactImage",
                                          &contact_image_type_as_int) &&

@@ -9,10 +9,10 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
@@ -37,7 +37,7 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
   // Create JWS.
   base::Value claims(base::Value::Type::DICTIONARY);
   claims.SetKey("aud", base::Value("https://chromium.org"));
-  base::Optional<std::string> jwt =
+  absl::optional<std::string> jwt =
       CreateJSONWebToken(claims, private_key.get());
   ASSERT_TRUE(jwt);
 
@@ -85,7 +85,7 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
   ASSERT_TRUE(base::Base64UrlDecode(data.substr(0, data_dot_position),
                                     base::Base64UrlDecodePolicy::IGNORE_PADDING,
                                     &header_decoded));
-  base::Optional<base::Value> header_value =
+  absl::optional<base::Value> header_value =
       base::JSONReader::Read(header_decoded);
   ASSERT_TRUE(header_value);
   ASSERT_TRUE(header_value->is_dict());

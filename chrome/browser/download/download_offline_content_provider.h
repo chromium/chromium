@@ -78,7 +78,7 @@ class DownloadOfflineContentProvider
                   RenameCallback callback) override;
   void ChangeSchedule(
       const offline_items_collection::ContentId& id,
-      base::Optional<offline_items_collection::OfflineItemSchedule> schedule)
+      absl::optional<offline_items_collection::OfflineItemSchedule> schedule)
       override;
 
   // Methods that can be run in reduced mode.
@@ -125,7 +125,7 @@ class DownloadOfflineContentProvider
                                     DownloadItem* item,
                                     DownloadItem::DownloadRenameResult result);
   void UpdateObservers(const OfflineItem& item,
-                       const base::Optional<UpdateDelta>& update_delta);
+                       const absl::optional<UpdateDelta>& update_delta);
   void CheckForExternallyRemovedDownloads();
 
   // Ensure that download core service is started.

@@ -9,7 +9,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -21,6 +20,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -380,7 +380,7 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
       }
     }
 
-    base::Optional<base::TimeDelta> largest_content_paint_time;
+    absl::optional<base::TimeDelta> largest_content_paint_time;
     uint64_t largest_content_paint_size;
     page_load_metrics::ContentfulPaintTimingInfo::LargestContentType
         largest_content_type;

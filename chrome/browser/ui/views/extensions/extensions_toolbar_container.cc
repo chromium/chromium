@@ -279,7 +279,7 @@ void ExtensionsToolbarContainer::OnContextMenuClosed(
   // |extension_with_open_context_menu_id_| does not have a value when a context
   // menu is being shown from within the extensions menu.
   if (extension_with_open_context_menu_id_.has_value()) {
-    base::Optional<extensions::ExtensionId> const
+    absl::optional<extensions::ExtensionId> const
         extension_with_open_context_menu = extension_with_open_context_menu_id_;
     extension_with_open_context_menu_id_.reset();
     UpdateIconVisibility(extension_with_open_context_menu.value());

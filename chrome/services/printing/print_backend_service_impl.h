@@ -9,11 +9,11 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 

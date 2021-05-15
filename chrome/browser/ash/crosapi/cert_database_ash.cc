@@ -97,7 +97,7 @@ void CertDatabaseAsh::WaitForTpmTokenReady(
 void CertDatabaseAsh::OnTpmTokenReady(
     std::unique_ptr<chromeos::TPMTokenInfoGetter> token_getter,
     GetCertDatabaseInfoCallback callback,
-    base::Optional<user_data_auth::TpmTokenInfo> token_info) {
+    absl::optional<user_data_auth::TpmTokenInfo> token_info) {
   is_tpm_token_ready_ = token_info.has_value();
 
   // Calling the initial method again. Since |is_tpm_token_ready_| is not empty

@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/closure_animation_observer.h"
@@ -357,7 +357,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
           location_bar_view_->profile()));
     }
   } else {
-    base::Optional<int> previous_row_group_id = base::nullopt;
+    absl::optional<int> previous_row_group_id = absl::nullopt;
     PrefService* const pref_service = GetPrefService();
     for (size_t i = 0; i < result_size; ++i) {
       // Create child views lazily.  Since especially the first result view may

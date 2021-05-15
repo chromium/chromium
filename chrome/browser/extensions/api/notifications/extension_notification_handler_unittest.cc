@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -14,6 +13,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -82,8 +82,8 @@ TEST_F(ExtensionNotificationHandlerTest, ClickHandler) {
   TestExtensionNotificationHandler handler;
   handler.SetTestExpectations(kChromeExtensionId, "notifications.onClicked", 1);
   handler.OnClick(profile.get(), GURL(kChromeExtensionOrigin),
-                  kChromeNotificationId, base::nullopt /* action_index */,
-                  base::nullopt /* reply */, base::DoNothing());
+                  kChromeNotificationId, absl::nullopt /* action_index */,
+                  absl::nullopt /* reply */, base::DoNothing());
 }
 
 TEST_F(ExtensionNotificationHandlerTest, ClickHandlerButton) {
@@ -96,7 +96,7 @@ TEST_F(ExtensionNotificationHandlerTest, ClickHandlerButton) {
                               "notifications.onButtonClicked", 2);
   handler.OnClick(profile.get(), GURL(kChromeExtensionOrigin),
                   kChromeNotificationId, 1 /* action_index */,
-                  base::nullopt /* reply */, base::DoNothing());
+                  absl::nullopt /* reply */, base::DoNothing());
 }
 
 }  // namespace extensions

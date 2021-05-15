@@ -504,9 +504,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         ->model();
   }
 
-  base::Optional<int> GetActiveTouchIndex() const override {
+  absl::optional<int> GetActiveTouchIndex() const override {
     if (!tab_strip_->touch_layout_)
-      return base::nullopt;
+      return absl::nullopt;
     return tab_strip_->touch_layout_->active_index();
   }
 
@@ -594,13 +594,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       int num_dragged_tabs,
       bool mouse_has_ever_moved_left,
       bool mouse_has_ever_moved_right,
-      base::Optional<tab_groups::TabGroupId> group) const override {
+      absl::optional<tab_groups::TabGroupId> group) const override {
     // If the strip has no tabs, the only position to insert at is 0.
     if (!GetTabCount())
       return 0;
 
-    base::Optional<int> index;
-    base::Optional<int> touch_index = GetActiveTouchIndex();
+    absl::optional<int> index;
+    absl::optional<int> touch_index = GetActiveTouchIndex();
     if (touch_index) {
       index = GetInsertionIndexForDraggedBoundsStacked(
           dragged_bounds, mouse_has_ever_moved_left,
@@ -839,7 +839,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       const gfx::Rect& dragged_bounds,
       int first_dragged_tab_index,
       int num_dragged_tabs,
-      base::Optional<tab_groups::TabGroupId> dragged_group) const {
+      absl::optional<tab_groups::TabGroupId> dragged_group) const {
     // This method assumes that the dragged tabs and group are already in the
     // tabstrip (i.e. it doesn't support attaching a drag to a new tabstrip).
     // This assumption is critical because it means that tab width won't change
@@ -904,7 +904,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       int candidate_index,
       int first_dragged_tab_index,
       int num_dragged_tabs,
-      base::Optional<tab_groups::TabGroupId> dragged_group) const {
+      absl::optional<tab_groups::TabGroupId> dragged_group) const {
     if (candidate_index == 0)
       return true;
 
@@ -917,12 +917,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     }
 
     // This might be in the middle of a group, which may or may not be fine.
-    base::Optional<tab_groups::TabGroupId> left_group =
+    absl::optional<tab_groups::TabGroupId> left_group =
         GetTabAt(candidate_index - 1)->group();
-    base::Optional<tab_groups::TabGroupId> right_group =
+    absl::optional<tab_groups::TabGroupId> right_group =
         tab_strip_->IsValidModelIndex(candidate_index)
             ? GetTabAt(candidate_index)->group()
-            : base::nullopt;
+            : absl::nullopt;
     if (left_group.has_value() && left_group == right_group) {
       // Can't drag a group into another group.
       if (dragged_group.has_value())
@@ -965,18 +965,18 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   // added to that group, thereby moving them to that header's right.
   int CalculateIdealXAdjustmentIfAddedToGroup(
       int candidate_index,
-      base::Optional<tab_groups::TabGroupId> dragged_group) const {
+      absl::optional<tab_groups::TabGroupId> dragged_group) const {
     // If the tab to the right of |candidate_index| is the first tab in a
     // (non-collapsed) group, we are sharing this model index with a group
     // header. We might end up on either side of it, so we need to check
     // both positions.
     if (!dragged_group.has_value() &&
         tab_strip_->IsValidModelIndex(candidate_index)) {
-      base::Optional<tab_groups::TabGroupId> left_group =
+      absl::optional<tab_groups::TabGroupId> left_group =
           tab_strip_->IsValidModelIndex(candidate_index - 1)
               ? GetTabAt(candidate_index - 1)->group()
-              : base::nullopt;
-      base::Optional<tab_groups::TabGroupId> right_group =
+              : absl::nullopt;
+      absl::optional<tab_groups::TabGroupId> right_group =
           GetTabAt(candidate_index)->group();
       if (right_group.has_value() && left_group != right_group) {
         if (tab_strip_->controller()->IsGroupCollapsed(right_group.value()))
@@ -992,14 +992,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   }
 
   // Used by GetInsertionIndexForDraggedBounds() when the tabstrip is stacked.
-  base::Optional<int> GetInsertionIndexForDraggedBoundsStacked(
+  absl::optional<int> GetInsertionIndexForDraggedBoundsStacked(
       const gfx::Rect& dragged_bounds,
       bool mouse_has_ever_moved_left,
       bool mouse_has_ever_moved_right) const {
     int active_index = *GetActiveTouchIndex();
     // Search from the active index to the front of the tabstrip. Do this as
     // tabs overlap each other from the active index.
-    base::Optional<int> index =
+    absl::optional<int> index =
         GetInsertionIndexFromReversedStacked(dragged_bounds, active_index);
     if (index != active_index)
       return index;
@@ -1029,20 +1029,20 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   // Determines the index to insert tabs at. |dragged_bounds| is the bounds of
   // the tab being dragged and |start| is the index of the tab to start looking
   // from. The search proceeds to the end of the strip.
-  base::Optional<int> GetInsertionIndexFromStacked(
+  absl::optional<int> GetInsertionIndexFromStacked(
       const gfx::Rect& dragged_bounds,
       int start) const {
     const int last_tab = GetTabCount() - 1;
     if (start < 0 || start > last_tab)
-      return base::nullopt;
+      return absl::nullopt;
 
     const int dragged_x = GetDraggedX(dragged_bounds);
     if (dragged_x < ideal_bounds(start).x() ||
         dragged_x > ideal_bounds(last_tab).right()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
-    base::Optional<int> insertion_index;
+    absl::optional<int> insertion_index;
     for (int i = start; i <= last_tab; ++i) {
       const gfx::Rect current_bounds = ideal_bounds(i);
       int current_center = current_bounds.CenterPoint().x();
@@ -1066,14 +1066,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
   // Like GetInsertionIndexFrom(), but searches backwards from |start| to the
   // beginning of the strip.
-  base::Optional<int> GetInsertionIndexFromReversedStacked(
+  absl::optional<int> GetInsertionIndexFromReversedStacked(
       const gfx::Rect& dragged_bounds,
       int start) const {
     const int dragged_x = GetDraggedX(dragged_bounds);
     if (start < 0 || start >= GetTabCount() ||
         dragged_x >= ideal_bounds(start).right() ||
         dragged_x < ideal_bounds(0).x())
-      return base::nullopt;
+      return absl::nullopt;
 
     for (int i = start; i >= 0; --i) {
       if (dragged_x >= ideal_bounds(i).CenterPoint().x())
@@ -1237,7 +1237,7 @@ bool TabStrip::TabHasNetworkError(int tab_index) const {
   return tab_at(tab_index)->data().network_state == TabNetworkState::kError;
 }
 
-base::Optional<TabAlertState> TabStrip::GetTabAlertState(int tab_index) const {
+absl::optional<TabAlertState> TabStrip::GetTabAlertState(int tab_index) const {
   return Tab::GetAlertStateToShow(tab_at(tab_index)->data().alert_state);
 }
 
@@ -1269,7 +1269,7 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   Tab* tab = new Tab(this);
   tab->set_context_menu_controller(&context_menu_controller_);
   tab->AddObserver(this);
-  AddChildViewAt(tab, GetViewInsertionIndex(tab, base::nullopt, model_index));
+  AddChildViewAt(tab, GetViewInsertionIndex(tab, absl::nullopt, model_index));
   const bool pinned = data.pinned;
   tabs_.Add(tab, model_index);
   selected_tabs_.IncrementFrom(model_index);
@@ -1460,7 +1460,7 @@ void TabStrip::SetTabData(int model_index, TabRendererData data) {
   SwapLayoutIfNecessary();
 }
 
-void TabStrip::AddTabToGroup(base::Optional<tab_groups::TabGroupId> group,
+void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
                              int model_index) {
   tab_at(model_index)->set_group(group);
 
@@ -1839,12 +1839,12 @@ void TabStrip::StopAnimating(bool layout) {
     CompleteAnimationAndLayout();
 }
 
-base::Optional<int> TabStrip::GetFocusedTabIndex() const {
+absl::optional<int> TabStrip::GetFocusedTabIndex() const {
   for (int i = 0; i < tabs_.view_size(); ++i) {
     if (tabs_.view_at(i)->HasFocus())
       return i;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 views::View* TabStrip::GetTabViewForPromoAnchor(int index_hint) {
@@ -2249,15 +2249,15 @@ std::u16string TabStrip::GetAccessibleTabName(const Tab* tab) const {
                                         : std::u16string();
 }
 
-base::Optional<int> TabStrip::GetCustomBackgroundId(
+absl::optional<int> TabStrip::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   if (!TitlebarBackgroundIsTransparent())
     return controller_->GetCustomBackgroundId(active_state);
 
   constexpr int kBackgroundIdGlass = IDR_THEME_TAB_BACKGROUND_V;
   return GetThemeProvider()->HasCustomImage(kBackgroundIdGlass)
-             ? base::make_optional(kBackgroundIdGlass)
-             : base::nullopt;
+             ? absl::make_optional(kBackgroundIdGlass)
+             : absl::nullopt;
 }
 
 gfx::Rect TabStrip::GetTabAnimationTargetBounds(const Tab* tab) {
@@ -2400,8 +2400,8 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
   // Keep track of the dragging group if dragging by the group header, or
   // the current group if just dragging tabs into a group. At most one of these
   // will have a value, since a drag is either a group drag or a tab drag.
-  base::Optional<tab_groups::TabGroupId> dragging_group = base::nullopt;
-  base::Optional<tab_groups::TabGroupId> current_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> dragging_group = absl::nullopt;
+  absl::optional<tab_groups::TabGroupId> current_group = absl::nullopt;
 
   // Paint group headers and underlines.
   for (const auto& group_view_pair : group_views_) {
@@ -2589,7 +2589,7 @@ views::View* TabStrip::GetViewForDrop() {
 }
 
 void TabStrip::HandleDragUpdate(
-    const base::Optional<BrowserRootView::DropIndex>& index) {
+    const absl::optional<BrowserRootView::DropIndex>& index) {
   SetDropArrow(index);
 }
 
@@ -2898,15 +2898,15 @@ void TabStrip::CompleteAnimationAndLayout() {
 
 void TabStrip::SetTabSlotVisibility() {
   bool last_tab_visible = false;
-  base::Optional<tab_groups::TabGroupId> last_tab_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> last_tab_group = absl::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
   for (std::vector<Tab*>::reverse_iterator tab = tabs.rbegin();
        tab != tabs.rend(); ++tab) {
-    base::Optional<tab_groups::TabGroupId> current_group = (*tab)->group();
+    absl::optional<tab_groups::TabGroupId> current_group = (*tab)->group();
     if (current_group != last_tab_group && last_tab_group.has_value())
       group_header(last_tab_group.value())->SetVisible(last_tab_visible);
     last_tab_visible = ShouldTabBeVisible(*tab);
-    last_tab_group = (*tab)->closing() ? base::nullopt : current_group;
+    last_tab_group = (*tab)->closing() ? absl::nullopt : current_group;
 
     // Collapsed tabs disappear once they've reached their minimum size. This
     // is different than very small non-collapsed tabs, because in that case
@@ -2951,7 +2951,7 @@ const Tab* TabStrip::GetLastVisibleTab() const {
 }
 
 int TabStrip::GetViewInsertionIndex(Tab* tab,
-                                    base::Optional<int> from_model_index,
+                                    absl::optional<int> from_model_index,
                                     int to_model_index) const {
   // -1 is treated a sentinel value to indicate a tab is newly added to the
   // beginning of the tab strip.
@@ -3229,7 +3229,7 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
 
   // If the tab is at a group boundary and the group is expanded, instead of
   // actually moving the tab just change its group membership.
-  base::Optional<tab_groups::TabGroupId> target_group =
+  absl::optional<tab_groups::TabGroupId> target_group =
       tab_at(target_index)->group();
   if (old_group != target_group) {
     if (old_group.has_value()) {
@@ -3282,7 +3282,7 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
     return;
 
   // Avoid moving into the middle of another group by accounting for its size.
-  base::Optional<tab_groups::TabGroupId> target_group =
+  absl::optional<tab_groups::TabGroupId> target_group =
       tab_at(target_index)->group();
   if (target_group.has_value()) {
     target_index +=
@@ -3420,7 +3420,7 @@ gfx::Rect TabStrip::GetDropBounds(int drop_index,
 }
 
 void TabStrip::SetDropArrow(
-    const base::Optional<BrowserRootView::DropIndex>& index) {
+    const absl::optional<BrowserRootView::DropIndex>& index) {
   if (!index) {
     controller_->OnDropIndexUpdate(-1, false);
     drop_arrow_.reset();
@@ -3857,7 +3857,7 @@ void TabStrip::OnViewFocused(views::View* observed_view) {
 }
 
 void TabStrip::OnViewBlurred(views::View* observed_view) {
-  controller_->OnKeyboardFocusedTabChanged(base::nullopt);
+  controller_->OnKeyboardFocusedTabChanged(absl::nullopt);
 }
 
 void TabStrip::OnTouchUiChanged() {
@@ -3897,7 +3897,7 @@ ADD_PROPERTY_METADATA(int, BackgroundOffset)
 ADD_READONLY_PROPERTY_METADATA(int, TabCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
 ADD_READONLY_PROPERTY_METADATA(int, PinnedTabCount)
-ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, FocusedTabIndex)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<int>, FocusedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                ToolbarTopSeparatorColor,

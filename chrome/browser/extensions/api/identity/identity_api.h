@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
@@ -30,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -56,9 +56,9 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // GAIA id cache.
   void SetGaiaIdForExtension(const std::string& extension_id,
                              const std::string& gaia_id);
-  // Returns |base::nullopt| if no GAIA id is saved for |extension_id|.
+  // Returns |absl::nullopt| if no GAIA id is saved for |extension_id|.
   // Otherwise, returns GAIA id previously saved via SetGaiaIdForExtension().
-  base::Optional<std::string> GetGaiaIdForExtension(
+  absl::optional<std::string> GetGaiaIdForExtension(
       const std::string& extension_id);
   void EraseGaiaIdForExtension(const std::string& extension_id);
   // If refresh tokens have been loaded, erases GAIA ids of accounts that are no

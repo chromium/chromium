@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -18,6 +17,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -166,8 +166,8 @@ class SyncConsentScreen : public BaseScreen,
   Profile* profile_ = nullptr;
   bool is_initialized_ = false;
 
-  base::Optional<bool> test_sync_disabled_by_policy_;
-  base::Optional<bool> test_sync_engine_initialized_;
+  absl::optional<bool> test_sync_disabled_by_policy_;
+  absl::optional<bool> test_sync_engine_initialized_;
 
   // Notify tests.
   SyncConsentScreenTestDelegate* test_delegate_ = nullptr;

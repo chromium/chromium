@@ -12,12 +12,12 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -64,7 +64,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   bool HasIcons(const AppId& app_id,
                 IconPurpose purpose,
                 const SortedSizesPx& icon_sizes) const override;
-  base::Optional<IconSizeAndPurpose> FindIconMatchBigger(
+  absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size) const override;
@@ -117,7 +117,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
 
  private:
-  base::Optional<IconSizeAndPurpose> FindIconMatchSmaller(
+  absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx max_size) const;

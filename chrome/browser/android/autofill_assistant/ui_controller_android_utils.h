@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/optional.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -38,7 +38,7 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
 
 // Returns the pixelsize of |proto| in |jcontext|, or |nullopt| if |proto| is
 // invalid.
-base::Optional<int> GetPixelSize(
+absl::optional<int> GetPixelSize(
     JNIEnv* env,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext,
     const ClientDimensionProto& proto);

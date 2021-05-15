@@ -11,7 +11,7 @@ class PrefService;
 
 namespace captions {
 
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
+absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics);
 

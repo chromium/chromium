@@ -12,10 +12,10 @@ namespace {
 
 // Uses the icon image to calculate the light vibrant color to be used for
 // the notification indicator.
-base::Optional<SkColor> CalculateNotificationBadgeColor(gfx::ImageSkia image) {
+absl::optional<SkColor> CalculateNotificationBadgeColor(gfx::ImageSkia image) {
   const SkBitmap* source = image.bitmap();
   if (!source || source->empty() || source->isNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<color_utils::ColorProfile> color_profiles;
   color_profiles.push_back(color_utils::ColorProfile(
@@ -29,7 +29,7 @@ base::Optional<SkColor> CalculateNotificationBadgeColor(gfx::ImageSkia image) {
   // If the best swatch color is transparent, then
   // CalculateProminentColorsOfBitmap() failed to find a suitable color.
   if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT)
-    return base::nullopt;
+    return absl::nullopt;
 
   return best_swatches[0].color;
 }

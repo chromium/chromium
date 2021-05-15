@@ -59,7 +59,7 @@ class PluginVmImageDownloadClient : public download::Client {
   void GetUploadData(const std::string& guid,
                      download::GetUploadDataCallback callback) override;
 
-  base::Optional<double> GetFractionComplete(int64_t bytes_downloaded);
+  absl::optional<double> GetFractionComplete(int64_t bytes_downloaded);
 
   DISALLOW_COPY_AND_ASSIGN(PluginVmImageDownloadClient);
 };

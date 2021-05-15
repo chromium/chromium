@@ -18,7 +18,7 @@ class DialInternalMessageUtilTest : public ::testing::Test {
  public:
   DialInternalMessageUtilTest()
       : launch_info_("YouTube",
-                     base::nullopt,
+                     absl::nullopt,
                      "152127444812943594",
                      GURL("http://172.17.32.151/app/YouTube")),
         util_("hash-token") {

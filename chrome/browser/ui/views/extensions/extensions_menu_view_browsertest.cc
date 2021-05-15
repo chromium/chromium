@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   // action and show the view.
   auto visible_icons = GetVisibleToolbarActionViews();
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             extensions_container->GetExtensionWithOpenContextMenuForTesting());
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_EQ(extensions_container->GetPoppedOutAction(),
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_EQ(nullptr, extensions_container->GetPoppedOutAction());
-  EXPECT_NE(base::nullopt,
+  EXPECT_NE(absl::nullopt,
             extensions_container->GetExtensionWithOpenContextMenuForTesting());
   EXPECT_EQ(extensions_container->GetExtensionWithOpenContextMenuForTesting(),
             visible_icons[0]->view_controller()->GetId());

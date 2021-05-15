@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -38,7 +38,7 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // SchedulerConfigurationManagerBase overrides:
-  base::Optional<std::pair<bool, size_t>> GetLastReply() const override;
+  absl::optional<std::pair<bool, size_t>> GetLastReply() const override;
 
  private:
   void OnDebugDaemonReady(bool service_is_ready);
@@ -48,7 +48,7 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   DebugDaemonClient* debug_daemon_client_ = nullptr;
   PrefChangeRegistrar observer_;
   bool debug_daemon_ready_ = false;
-  base::Optional<std::pair<bool, size_t>> last_reply_;
+  absl::optional<std::pair<bool, size_t>> last_reply_;
 
   base::WeakPtrFactory<SchedulerConfigurationManager> weak_ptr_factory_{this};
 

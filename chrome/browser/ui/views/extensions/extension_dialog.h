@@ -11,13 +11,13 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -63,10 +63,10 @@ class ExtensionDialog : public views::DialogDelegate,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // |title_color| customizes the color of the window title.
-    base::Optional<SkColor> title_color;
+    absl::optional<SkColor> title_color;
     // |title_inactive_color| customizes the color of the window title when
     // window is inactive.
-    base::Optional<SkColor> title_inactive_color;
+    absl::optional<SkColor> title_inactive_color;
 #endif
   };
   // Create and show a dialog with |url| centered over the provided window.

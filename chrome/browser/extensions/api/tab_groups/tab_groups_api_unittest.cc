@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
@@ -42,6 +41,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 

@@ -51,7 +51,7 @@ class ContextMenuWaiter {
   std::vector<int> captured_command_ids_;
 
   base::RunLoop run_loop_;
-  base::Optional<int> maybe_command_to_execute_;
+  absl::optional<int> maybe_command_to_execute_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextMenuWaiter);
 };

@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
 namespace {
@@ -79,7 +79,7 @@ TEST(BorealisStateManagerTest, DefaultStateIsOff) {
   // State managers are created in the "Off" state, so we don't need to
   // transition there.
   EXPECT_CALL(state_manager, GetOffTransition).Times(0);
-  EXPECT_CALL(on_callback_handler, Call(testing::Eq(base::nullopt)));
+  EXPECT_CALL(on_callback_handler, Call(testing::Eq(absl::nullopt)));
   state_manager.TurnOff(on_callback_handler.GetOnce());
 }
 
@@ -98,7 +98,7 @@ TEST(BorealisStateManagerTest, CanBeTurnedOnAndOff) {
   EXPECT_CALL(on_callback_handler, Call(testing::_))
       .WillOnce(testing::Invoke(
           [](Expected<Foo*, Bar> result) { EXPECT_TRUE(result); }));
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
 
   state_manager.TurnOn(on_callback_handler.GetOnce());
   task_environment.RunUntilIdle();
@@ -140,7 +140,7 @@ TEST(BorealisStateManagerTest, TurnOffRejectedWhileTurningOn) {
   EXPECT_CALL(state_manager, GetIsTurningOnError)
       .WillOnce(testing::Return(Baz{.msg = "rejected"}));
   EXPECT_CALL(off_callback_handler, Call(testing::_))
-      .WillOnce(testing::Invoke([](base::Optional<Baz> err) {
+      .WillOnce(testing::Invoke([](absl::optional<Baz> err) {
         ASSERT_TRUE(err.has_value());
         EXPECT_EQ(err->msg, "rejected");
       }));
@@ -192,7 +192,7 @@ TEST(BorealisStateManagerTest, FailureToTurnOnProducesAnErrorAndResultsInOff) {
   // Additional call to turn off requires no transition, because the state is
   // off.
   CallbackFactory<MockStateManager::WhenOff> off_callback_handler;
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
   state_manager.TurnOff(off_callback_handler.GetOnce());
 }
 
@@ -212,7 +212,7 @@ TEST(BorealisStateManagerTest, FailureToTurnOffProducesErrorButDoesTurnOff) {
       .WillOnce(testing::Invoke(
           [](Expected<Foo*, Bar> result) { EXPECT_TRUE(result); }));
   EXPECT_CALL(off_callback_handler,
-              Call(testing::Not(testing::Eq(base::nullopt))));
+              Call(testing::Not(testing::Eq(absl::nullopt))));
 
   state_manager.TurnOn(on_callback_handler.GetOnce());
   task_environment.RunUntilIdle();
@@ -221,7 +221,7 @@ TEST(BorealisStateManagerTest, FailureToTurnOffProducesErrorButDoesTurnOff) {
 
   // Additional call to turn off requires no transition, because the state is
   // off.
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
   state_manager.TurnOff(off_callback_handler.GetOnce());
 }
 

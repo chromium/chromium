@@ -233,7 +233,7 @@ class MediaRouterUI
   void UpdateSinks();
 
   // Populates common route-related parameters for calls to MediaRouter.
-  base::Optional<RouteParameters> GetRouteParameters(
+  absl::optional<RouteParameters> GetRouteParameters(
       const MediaSink::Id& sink_id,
       MediaCastMode cast_mode);
 
@@ -293,7 +293,7 @@ class MediaRouterUI
 
   UIMediaSink ConvertToUISink(const MediaSinkWithCastModes& sink,
                               const MediaRoute* route,
-                              const base::Optional<Issue>& issue);
+                              const absl::optional<Issue>& issue);
 
   // MediaRouterFileDialogDelegate:
   void FileDialogFileSelected(const ui::SelectedFileInfo& file_info) override;
@@ -302,7 +302,7 @@ class MediaRouterUI
 
   // Populates route-related parameters for CreateRoute() when doing file
   // casting.
-  base::Optional<RouteParameters> GetLocalFileRouteParameters(
+  absl::optional<RouteParameters> GetLocalFileRouteParameters(
       const MediaSink::Id& sink_id,
       const GURL& file_url,
       content::WebContents* tab_contents);
@@ -326,7 +326,7 @@ class MediaRouterUI
   // Retrieves the browser associated with this UI.
   Browser* GetBrowser();
 
-  const base::Optional<RouteRequest> current_route_request() const {
+  const absl::optional<RouteRequest> current_route_request() const {
     return current_route_request_;
   }
 
@@ -351,18 +351,18 @@ class MediaRouterUI
   content::WebContentsObserver* web_contents_observer_for_test_ = nullptr;
 
   // This value is set whenever there is an outstanding issue.
-  base::Optional<Issue> issue_;
+  absl::optional<Issue> issue_;
 
   // Contains up-to-date data to show in the dialog.
   CastDialogModel model_;
 
   // This value is set when the user opens a file picker, and used when a file
   // is selected and casting starts.
-  base::Optional<MediaSink::Id> local_file_sink_id_;
+  absl::optional<MediaSink::Id> local_file_sink_id_;
 
   // This value is set when the UI requests a route to be terminated, and gets
   // reset when the route is removed.
-  base::Optional<MediaRoute::Id> terminating_route_id_;
+  absl::optional<MediaRoute::Id> terminating_route_id_;
 
   // Observers for dialog model updates.
   // TODO(takumif): CastDialogModel should manage the observers.
@@ -376,7 +376,7 @@ class MediaRouterUI
   std::unique_ptr<MediaRoutesObserver> routes_observer_;
 
   // This contains a value only when tracking a pending route request.
-  base::Optional<RouteRequest> current_route_request_;
+  absl::optional<RouteRequest> current_route_request_;
 
   // Used for locale-aware sorting of sinks by name. Set during
   // InitCommon() using the current locale.
@@ -394,7 +394,7 @@ class MediaRouterUI
 
   // Set to the presentation request corresponding to the presentation cast
   // mode, if supported. Otherwise set to nullopt.
-  base::Optional<content::PresentationRequest> presentation_request_;
+  absl::optional<content::PresentationRequest> presentation_request_;
 
   // |presentation_manager_| notifies |this| whenever there is an update to the
   // default PresentationRequest or MediaRoutes associated with |initiator_|.
@@ -415,7 +415,7 @@ class MediaRouterUI
   std::unique_ptr<WebContentsDisplayObserver> display_observer_;
 
 #if defined(OS_MAC)
-  base::Optional<bool> screen_capture_allowed_for_testing_;
+  absl::optional<bool> screen_capture_allowed_for_testing_;
 #endif
   LoggerImpl* logger_;
 

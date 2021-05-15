@@ -10,10 +10,10 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
@@ -159,7 +159,7 @@ void TestControllerAsh::GetWindowPositionInScreen(
     GetWindowPositionInScreenCallback cb) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window) {
-    std::move(cb).Run(base::nullopt);
+    std::move(cb).Run(absl::nullopt);
     return;
   }
   std::move(cb).Run(window->GetBoundsInScreen().origin());

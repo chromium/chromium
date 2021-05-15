@@ -8,13 +8,13 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/system_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace memory {

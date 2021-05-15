@@ -1375,7 +1375,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
   if (!app_id)
     return;
@@ -1926,7 +1926,7 @@ void RenderViewContextMenu::AppendSharingItems() {
 
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
-  base::Optional<std::string> phone_number;
+  absl::optional<std::string> phone_number;
   std::string selection_text;
   if (ShouldOfferClickToCallForURL(browser_context_, params_.link_url)) {
     entry_point = SharingClickToCallEntryPoint::kRightClickLink;
@@ -2915,7 +2915,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(
           Profile::FromBrowserContext(browser_context_), params_.link_url);
   // |app_id| could be nullopt if it has been uninstalled since the user

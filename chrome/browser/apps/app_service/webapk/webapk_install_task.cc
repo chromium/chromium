@@ -168,7 +168,7 @@ void WebApkInstallTask::Start(ResultCallback callback) {
 void WebApkInstallTask::OnArcFeaturesLoaded(
     std::unique_ptr<webapk::WebApk> webapk,
     ResultCallback callback,
-    base::Optional<arc::ArcFeatures> arc_features) {
+    absl::optional<arc::ArcFeatures> arc_features) {
   if (!arc_features) {
     LOG(ERROR) << "Could not load ArcFeatures";
     std::move(callback).Run(false);
@@ -177,7 +177,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   webapk->set_android_abi(GetArcAbi(arc_features.value()));
 
   auto& icon_manager = web_app_provider_->icon_manager();
-  base::Optional<web_app::AppIconManager::IconSizeAndPurpose>
+  absl::optional<web_app::AppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
           app_id_, {IconPurpose::MASKABLE, IconPurpose::ANY}, kMinimumIconSize);
 

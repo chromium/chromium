@@ -21,13 +21,13 @@
 
 namespace {
 
-base::Optional<content::TtsControllerDelegate::PreferredVoiceId>
+absl::optional<content::TtsControllerDelegate::PreferredVoiceId>
 PreferredVoiceIdFromString(const base::DictionaryValue* pref,
                            const std::string& pref_key) {
   std::string voice_id;
   pref->GetString(l10n_util::GetLanguage(pref_key), &voice_id);
   if (voice_id.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::unique_ptr<base::DictionaryValue> json =
       base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
@@ -35,7 +35,7 @@ PreferredVoiceIdFromString(const base::DictionaryValue* pref,
   std::string id;
   json->GetString("name", &name);
   json->GetString("extension", &id);
-  return base::Optional<content::TtsControllerDelegate::PreferredVoiceId>(
+  return absl::optional<content::TtsControllerDelegate::PreferredVoiceId>(
       {name, id});
 }
 

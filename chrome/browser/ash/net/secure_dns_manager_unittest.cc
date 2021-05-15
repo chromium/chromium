@@ -28,7 +28,7 @@ constexpr const char kCloudflareDns[] =
 void OnGetProperties(bool* success_out,
                      std::map<std::string, std::string>* props_out,
                      base::OnceClosure callback,
-                     base::Optional<base::Value> result) {
+                     absl::optional<base::Value> result) {
   *success_out = result.has_value();
   if (result) {
     base::Value* value = result->FindKeyOfType(

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -48,7 +48,7 @@ class AppTimeLimitInterface {
   // Returns current time limit for the app identified by |app_service_id| and
   // |app_type|.Will return nullopt if there is no limit set or app does not
   // exist.
-  virtual base::Optional<base::TimeDelta> GetTimeLimitForApp(
+  virtual absl::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
       apps::mojom::AppType app_type) = 0;
 };

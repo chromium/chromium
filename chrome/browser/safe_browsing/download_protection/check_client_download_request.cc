@@ -227,12 +227,12 @@ void CheckClientDownloadRequest::MaybeStorePingsForDownload(
       result, upload_requested, item_, request_data, response_body);
 }
 
-base::Optional<enterprise_connectors::AnalysisSettings>
+absl::optional<enterprise_connectors::AnalysisSettings>
 CheckClientDownloadRequest::ShouldUploadBinary(
     DownloadCheckResultReason reason) {
   // If the download was destroyed, we can't upload it.
   if (reason == REASON_DOWNLOAD_DESTROYED)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto settings = DeepScanningRequest::ShouldUploadBinary(item_);
   if (settings && (reason == REASON_DOWNLOAD_DANGEROUS ||
@@ -240,7 +240,7 @@ CheckClientDownloadRequest::ShouldUploadBinary(
                    reason == REASON_ALLOWLISTED_URL)) {
     settings->tags.erase("malware");
     if (settings->tags.empty())
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   return settings;

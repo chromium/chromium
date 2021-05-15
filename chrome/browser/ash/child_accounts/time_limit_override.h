@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -36,18 +36,18 @@ class TimeLimitOverride {
 
   // Factory method. Creates TimeLimitOverride from a |dict|. Returns nullopt if
   // |dict| could not be parsed.
-  static base::Optional<TimeLimitOverride> FromDictionary(
+  static absl::optional<TimeLimitOverride> FromDictionary(
       const base::Value* dict);
 
   // Factory method. Creates TimeLimitOverride from the most recent override in
   // the list of overrides passed in |list|. Returns nullopt if |list| could not
   // be parsed.
-  static base::Optional<TimeLimitOverride> MostRecentFromList(
+  static absl::optional<TimeLimitOverride> MostRecentFromList(
       const base::Value* list);
 
   TimeLimitOverride(Action action,
                     base::Time created_at,
-                    base::Optional<base::TimeDelta> duration);
+                    absl::optional<base::TimeDelta> duration);
   ~TimeLimitOverride();
   TimeLimitOverride(TimeLimitOverride&&);
   TimeLimitOverride& operator=(TimeLimitOverride&&);
@@ -63,7 +63,7 @@ class TimeLimitOverride {
   base::Time created_at() const { return created_at_; }
 
   // Returns override duration if specified.
-  base::Optional<base::TimeDelta> duration() const { return duration_; }
+  absl::optional<base::TimeDelta> duration() const { return duration_; }
 
   // Convenience method to quickly check if is this is a locking override.
   bool IsLock() const;
@@ -74,7 +74,7 @@ class TimeLimitOverride {
  private:
   Action action_;
   base::Time created_at_;
-  base::Optional<base::TimeDelta> duration_;
+  absl::optional<base::TimeDelta> duration_;
 
   DISALLOW_COPY_AND_ASSIGN(TimeLimitOverride);
 };

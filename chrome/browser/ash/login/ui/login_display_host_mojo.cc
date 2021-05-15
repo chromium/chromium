@@ -681,7 +681,7 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
     return;
   bool offline_limit_expired = false;
 
-  const base::Optional<base::TimeDelta> offline_signin_interval =
+  const absl::optional<base::TimeDelta> offline_signin_interval =
       user_manager::known_user::GetOfflineSigninLimit(account_id);
 
   // Check if the limit is set only.

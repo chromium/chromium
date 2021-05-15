@@ -8,9 +8,9 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -77,7 +77,7 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
   // The state to which the metrics tracker should move after
   // the window contents is loaded.
   // Should be either kForeground or kBackground.
-  base::Optional<State> state_after_window_contents_load_ = State::kForeground;
+  absl::optional<State> state_after_window_contents_load_ = State::kForeground;
 
   DISALLOW_COPY_AND_ASSIGN(AppWindowMetricsTracker);
 };

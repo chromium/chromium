@@ -14,10 +14,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chromeos/dbus/update_engine_client.h"
@@ -59,7 +59,7 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // TPM firmware update has to be installed, the mode of update will be passed
   // as second parameter to `callback`.
   static void CheckIfPowerwashAllowed(
-      base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+      base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
           callback);
 
  private:

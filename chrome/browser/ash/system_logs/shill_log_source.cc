@@ -104,7 +104,7 @@ void ShillLogSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void ShillLogSource::OnGetManagerProperties(
-    base::Optional<base::Value> result) {
+    absl::optional<base::Value> result) {
   if (!result) {
     LOG(ERROR) << "ManagerPropertiesCallback Failed";
     std::move(callback_).Run(std::make_unique<SystemLogsResponse>());
@@ -143,7 +143,7 @@ void ShillLogSource::OnGetManagerProperties(
 }
 
 void ShillLogSource::OnGetDevice(const std::string& device_path,
-                                 base::Optional<base::Value> properties) {
+                                 absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Device Properties Failed for : " << device_path;
   } else {
@@ -183,7 +183,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
 
 void ShillLogSource::OnGetIPConfig(const std::string& device_path,
                                    const std::string& ip_config_path,
-                                   base::Optional<base::Value> properties) {
+                                   absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get IPConfig Properties Failed for : " << device_path << ": "
                << ip_config_path;
@@ -207,7 +207,7 @@ void ShillLogSource::AddIPConfig(const std::string& device_path,
 }
 
 void ShillLogSource::OnGetService(const std::string& service_path,
-                                  base::Optional<base::Value> properties) {
+                                  absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Service Properties Failed for : " << service_path;
   } else {

@@ -4,19 +4,19 @@
 
 #include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/test/widget_test.h"
 
 namespace {
 
 struct DialogState {
   bool shown = false;
-  base::Optional<SettingsOverriddenDialogController::DialogResult> result;
+  absl::optional<SettingsOverriddenDialogController::DialogResult> result;
 };
 
 // A dialog controller that updates the provided DialogState when the dialog

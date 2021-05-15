@@ -71,12 +71,12 @@ class PolicyTest : public InProcessBrowserTest {
 
   static void SetPolicy(PolicyMap* policies,
                         const char* key,
-                        base::Optional<base::Value> value);
+                        absl::optional<base::Value> value);
 
-  void ApplySafeSearchPolicy(base::Optional<base::Value> legacy_safe_search,
-                             base::Optional<base::Value> google_safe_search,
-                             base::Optional<base::Value> legacy_youtube,
-                             base::Optional<base::Value> youtube_restrict);
+  void ApplySafeSearchPolicy(absl::optional<base::Value> legacy_safe_search,
+                             absl::optional<base::Value> google_safe_search,
+                             absl::optional<base::Value> legacy_youtube,
+                             absl::optional<base::Value> youtube_restrict);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void TestScreenshotFile(bool enabled);

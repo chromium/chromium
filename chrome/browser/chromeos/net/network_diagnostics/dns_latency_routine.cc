@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -21,6 +20,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -131,7 +131,7 @@ void DnsLatencyRoutine::CreateHostResolver() {
 void DnsLatencyRoutine::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
+             absl::nullopt);
 }
 
 void DnsLatencyRoutine::AttemptNextResolution() {
@@ -161,7 +161,7 @@ void DnsLatencyRoutine::AttemptNextResolution() {
 void DnsLatencyRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   receiver_.reset();
   resolution_complete_time_ = tick_clock_->NowTicks();
   const base::TimeDelta latency =

@@ -14,7 +14,7 @@ namespace {
 PrintersMap::PrintersMap() = default;
 PrintersMap::~PrintersMap() = default;
 
-base::Optional<Printer> PrintersMap::Get(const std::string& printer_id) const {
+absl::optional<Printer> PrintersMap::Get(const std::string& printer_id) const {
   for (const auto& kv : printers_) {
     const PrinterClass& printer_class = kv.first;
     const auto& printer_list = kv.second;
@@ -22,13 +22,13 @@ base::Optional<Printer> PrintersMap::Get(const std::string& printer_id) const {
       return printer_list.at(printer_id);
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<Printer> PrintersMap::Get(PrinterClass printer_class,
+absl::optional<Printer> PrintersMap::Get(PrinterClass printer_class,
                                          const std::string& printer_id) const {
   if (!IsPrinterInClass(printer_class, printer_id)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return printers_.at(printer_class).at(printer_id);
@@ -92,7 +92,7 @@ void PrintersMap::ReplacePrintersInClass(PrinterClass printer_class,
     // deleted.
     statuses_to_remove.erase(printer.id());
 
-    base::Optional<CupsPrinterStatus> printer_status =
+    absl::optional<CupsPrinterStatus> printer_status =
         GetPrinterStatus(printer.id());
     if (printer_status) {
       Insert(printer_class, printer, printer_status.value());
@@ -176,13 +176,13 @@ void PrintersMap::SavePrinterStatus(
   }
 }
 
-base::Optional<CupsPrinterStatus> PrintersMap::GetPrinterStatus(
+absl::optional<CupsPrinterStatus> PrintersMap::GetPrinterStatus(
     const std::string& printer_id) const {
   auto printer_iter = printer_statuses_.find(printer_id);
   if (printer_iter != printer_statuses_.end()) {
     return printer_iter->second;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::set<std::string> PrintersMap::GetPrinterIdsInClass(

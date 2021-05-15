@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -29,6 +28,7 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -145,7 +145,7 @@ void AppInstall::WakeCandidate() {
 
 void AppInstall::MaybeInstallApp() {
   const std::string app_id = [this]() {
-    base::Optional<tagging::TagArgs> tag_args = this->tag_args();
+    absl::optional<tagging::TagArgs> tag_args = this->tag_args();
     if (tag_args && !tag_args->apps.empty()) {
       // TODO(crbug.com/1128631): support bundles. For now, assume one app.
       DCHECK_EQ(tag_args->apps.size(), size_t{1});

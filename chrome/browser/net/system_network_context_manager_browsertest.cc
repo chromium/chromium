@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -36,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
@@ -433,7 +433,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class SystemNetworkContextManagerCertificateTransparencyBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<base::Optional<bool>> {
+      public testing::WithParamInterface<absl::optional<bool>> {
  public:
   SystemNetworkContextManagerCertificateTransparencyBrowsertest() {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
@@ -441,7 +441,7 @@ class SystemNetworkContextManagerCertificateTransparencyBrowsertest
   }
   ~SystemNetworkContextManagerCertificateTransparencyBrowsertest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 };
 
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SystemNetworkContextManagerCertificateTransparencyBrowsertest,
-    ::testing::Values(base::nullopt, true, false));
+    ::testing::Values(absl::nullopt, true, false));
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 class SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest

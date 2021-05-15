@@ -77,7 +77,7 @@ struct PageRequestSummary {
 
   // The time for which the first resource prefetch was initiated for the
   // navigation.
-  base::Optional<base::TimeTicks> first_prefetch_initiated;
+  absl::optional<base::TimeTicks> first_prefetch_initiated;
 
  private:
   void UpdateOrAddToOrigins(
@@ -122,7 +122,7 @@ class LoadingDataCollector {
   // up to this point are the only ones considered.
   virtual void RecordMainFrameLoadComplete(
       NavigationId navigation_id,
-      const base::Optional<OptimizationGuidePrediction>&
+      const absl::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction);
 
   // Called after the main frame's first contentful paint.

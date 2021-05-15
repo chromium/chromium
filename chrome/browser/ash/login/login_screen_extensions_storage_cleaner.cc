@@ -61,7 +61,7 @@ void LoginScreenExtensionsStorageCleaner::
     ClearPersistentDataForUninstalledExtensionsImpl(
         const std::vector<std::string>& installed_extension_ids,
         std::vector<std::string> keys,
-        base::Optional<std::string> error) {
+        absl::optional<std::string> error) {
   if (error)
     return;
 

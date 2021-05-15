@@ -181,8 +181,8 @@ class NearbySharingServiceImpl
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
   bool IsVisibleInBackground(Visibility visibility);
-  const base::Optional<std::vector<uint8_t>> CreateEndpointInfo(
-      const base::Optional<std::string>& device_name);
+  const absl::optional<std::vector<uint8_t>> CreateEndpointInfo(
+      const absl::optional<std::string>& device_name);
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void StartFastInitiationAdvertising();
@@ -210,7 +210,7 @@ class NearbySharingServiceImpl
       const std::string& endpoint_id,
       const std::vector<uint8_t>& endpoint_info,
       sharing::mojom::AdvertisementPtr advertisement,
-      base::Optional<NearbyShareDecryptedPublicCertificate> certificate);
+      absl::optional<NearbyShareDecryptedPublicCertificate> certificate);
   void ScheduleCertificateDownloadDuringDiscovery(size_t attempt_count);
   void OnCertificateDownloadDuringDiscoveryTimerFired(size_t attempt_count);
 
@@ -257,7 +257,7 @@ class NearbySharingServiceImpl
                             base::TimeTicks connect_start_time,
                             NearbyConnection* connection);
   void SendIntroduction(const ShareTarget& share_target,
-                        base::Optional<std::string> four_digit_token);
+                        absl::optional<std::string> four_digit_token);
 
   void CreatePayloads(ShareTarget share_target,
                       base::OnceCallback<void(ShareTarget, bool)> callback);
@@ -288,7 +288,7 @@ class NearbySharingServiceImpl
       const std::string& endpoint_id,
       sharing::mojom::AdvertisementPtr advertisement,
       ShareTarget placeholder_share_target,
-      base::Optional<NearbyShareDecryptedPublicCertificate> certificate);
+      absl::optional<NearbyShareDecryptedPublicCertificate> certificate);
   void RunPairedKeyVerification(
       const ShareTarget& share_target,
       const std::string& endpoint_id,
@@ -296,27 +296,27 @@ class NearbySharingServiceImpl
           PairedKeyVerificationRunner::PairedKeyVerificationResult)> callback);
   void OnIncomingConnectionKeyVerificationDone(
       ShareTarget share_target,
-      base::Optional<std::string> four_digit_token,
+      absl::optional<std::string> four_digit_token,
       PairedKeyVerificationRunner::PairedKeyVerificationResult result);
   void OnOutgoingConnectionKeyVerificationDone(
       const ShareTarget& share_target,
-      base::Optional<std::string> four_digit_token,
+      absl::optional<std::string> four_digit_token,
       PairedKeyVerificationRunner::PairedKeyVerificationResult result);
   void RefreshUIOnDisconnection(ShareTarget share_target);
   void ReceiveIntroduction(ShareTarget share_target,
-                           base::Optional<std::string> four_digit_token);
+                           absl::optional<std::string> four_digit_token);
   void OnReceivedIntroduction(ShareTarget share_target,
-                              base::Optional<std::string> four_digit_token,
-                              base::Optional<sharing::mojom::V1FramePtr> frame);
+                              absl::optional<std::string> four_digit_token,
+                              absl::optional<sharing::mojom::V1FramePtr> frame);
   void ReceiveConnectionResponse(ShareTarget share_target);
   void OnReceiveConnectionResponse(
       ShareTarget share_target,
-      base::Optional<sharing::mojom::V1FramePtr> frame);
+      absl::optional<sharing::mojom::V1FramePtr> frame);
   void OnStorageCheckCompleted(ShareTarget share_target,
-                               base::Optional<std::string> four_digit_token,
+                               absl::optional<std::string> four_digit_token,
                                bool is_out_of_storage);
   void OnFrameRead(ShareTarget share_target,
-                   base::Optional<sharing::mojom::V1FramePtr> frame);
+                   absl::optional<sharing::mojom::V1FramePtr> frame);
   void HandleCertificateInfoFrame(
       const sharing::mojom::CertificateInfoFramePtr& certificate_frame);
 
@@ -340,10 +340,10 @@ class NearbySharingServiceImpl
   void BindToNearbyProcess();
   sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
 
-  base::Optional<ShareTarget> CreateShareTarget(
+  absl::optional<ShareTarget> CreateShareTarget(
       const std::string& endpoint_id,
       const sharing::mojom::AdvertisementPtr& advertisement,
-      base::Optional<NearbyShareDecryptedPublicCertificate> certificate,
+      absl::optional<NearbyShareDecryptedPublicCertificate> certificate,
       bool is_incoming);
 
   void OnPayloadTransferUpdate(ShareTarget share_target,
@@ -365,12 +365,12 @@ class NearbySharingServiceImpl
       const ShareTarget& share_target);
 
   NearbyConnection* GetConnection(const ShareTarget& share_target);
-  base::Optional<std::vector<uint8_t>> GetBluetoothMacAddressForShareTarget(
+  absl::optional<std::vector<uint8_t>> GetBluetoothMacAddressForShareTarget(
       const ShareTarget& share_target);
 
   void ClearOutgoingShareTargetInfoMap();
   void SetAttachmentPayloadId(const Attachment& attachment, int64_t payload_id);
-  base::Optional<int64_t> GetAttachmentPayloadId(int64_t attachment_id);
+  absl::optional<int64_t> GetAttachmentPayloadId(int64_t attachment_id);
   void UnregisterShareTarget(const ShareTarget& share_target);
 
   void OnStartAdvertisingResult(
@@ -439,10 +439,10 @@ class NearbySharingServiceImpl
   // Registers the most recent TransferMetadata and ShareTarget used for
   // transitioning notifications between foreground surfaces and background
   // surfaces. Empty if no metadata is available.
-  base::Optional<std::pair<ShareTarget, TransferMetadata>>
+  absl::optional<std::pair<ShareTarget, TransferMetadata>>
       last_incoming_metadata_;
   // The most recent outgoing TransferMetadata and ShareTarget.
-  base::Optional<std::pair<ShareTarget, TransferMetadata>>
+  absl::optional<std::pair<ShareTarget, TransferMetadata>>
       last_outgoing_metadata_;
   // A map of ShareTarget id to IncomingShareTargetInfo. This lets us know which
   // Nearby Connections endpoint and public certificate are related to the
@@ -520,7 +520,7 @@ class NearbySharingServiceImpl
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
-  base::Optional<int64_t> free_disk_space_for_testing_;
+  absl::optional<int64_t> free_disk_space_for_testing_;
 
   // A queue of endpoint-discovered and endpoint-lost events that ensures the
   // events are processed sequentially, in the order received from Nearby

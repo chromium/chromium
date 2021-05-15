@@ -79,10 +79,10 @@ void FrecencyStore::Remove(const std::string& value) {
   values_.erase(value);
 }
 
-base::Optional<unsigned int> FrecencyStore::GetId(const std::string& value) {
+absl::optional<unsigned int> FrecencyStore::GetId(const std::string& value) {
   auto it = values_.find(value);
   if (it == values_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return it->second.id;
 }
 

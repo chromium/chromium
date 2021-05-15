@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace media_router {
@@ -108,10 +108,10 @@ class MirroringActivity : public CastActivity,
   mojo::Receiver<mirroring::mojom::CastMessageChannel> channel_receiver_{this};
 
   // Set before and after a mirroring session is established, for metrics.
-  base::Optional<base::Time> will_start_mirroring_timestamp_;
-  base::Optional<base::Time> did_start_mirroring_timestamp_;
+  absl::optional<base::Time> will_start_mirroring_timestamp_;
+  absl::optional<base::Time> did_start_mirroring_timestamp_;
 
-  const base::Optional<MirroringType> mirroring_type_;
+  const absl::optional<MirroringType> mirroring_type_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};

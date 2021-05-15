@@ -43,7 +43,7 @@ using DisplayLayoutList = DisplayInfoProvider::DisplayLayoutList;
 
 void ErrorCallback(std::string* result,
                    base::OnceClosure callback,
-                   base::Optional<std::string> error) {
+                   absl::optional<std::string> error) {
   *result = error ? *error : "";
   std::move(callback).Run();
 }
@@ -605,7 +605,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
   EXPECT_TRUE(result[1].mirroring_source_id.empty());
 
   GetDisplayManager()->SetMirrorMode(display::MirrorMode::kNormal,
-                                     base::nullopt);
+                                     absl::nullopt);
   ASSERT_TRUE(GetDisplayManager()->IsInMirrorMode());
 
   result = GetAllDisplaysInfo();
@@ -615,7 +615,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
   EXPECT_EQ(base::NumberToString(display_id_primary),
             result[0].mirroring_source_id);
 
-  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   ASSERT_FALSE(GetDisplayManager()->IsInMirrorMode());
 
   result = GetAllDisplaysInfo();
@@ -860,7 +860,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   UpdateDisplay("500x400,500x400");
 
   GetDisplayManager()->SetMirrorMode(display::MirrorMode::kNormal,
-                                     base::nullopt);
+                                     absl::nullopt);
   EXPECT_TRUE(GetDisplayManager()->IsInMirrorMode());
 
   EXPECT_FALSE(GetDisplayManager()->unified_desktop_enabled());
@@ -875,7 +875,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetUnifiedMirrored) {
   EXPECT_FALSE(GetDisplayManager()->IsInUnifiedMode());
 
   // Turning off mirroring should set unified mode.
-  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  GetDisplayManager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_TRUE(GetDisplayManager()->IsInUnifiedMode());
 
   // Restore extended mode.

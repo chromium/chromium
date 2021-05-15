@@ -109,8 +109,8 @@ class CorbAndCorsExtensionTestBase : public ExtensionBrowserTest {
 
   std::string CreateFetchScript(
       const GURL& resource,
-      base::Optional<base::Value> request_init = base::nullopt) {
-    CHECK(request_init == base::nullopt || request_init->is_dict());
+      absl::optional<base::Value> request_init = absl::nullopt) {
+    CHECK(request_init == absl::nullopt || request_init->is_dict());
 
     const char kFetchScriptTemplate[] = R"(
       fetch($1, $2)
@@ -127,7 +127,7 @@ class CorbAndCorsExtensionTestBase : public ExtensionBrowserTest {
   std::string PopString(content::DOMMessageQueue* message_queue) {
     std::string json;
     EXPECT_TRUE(message_queue->WaitForMessage(&json));
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     std::string result;
     EXPECT_TRUE(value->GetAsString(&result));

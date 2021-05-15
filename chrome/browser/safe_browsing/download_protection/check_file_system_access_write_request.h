@@ -46,7 +46,7 @@ class CheckFileSystemAccessWriteRequest
                                   bool upload_requested,
                                   const std::string& request_data,
                                   const std::string& response_body) override;
-  base::Optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
+  absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
   void UploadBinary(DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;

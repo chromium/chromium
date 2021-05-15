@@ -1526,12 +1526,12 @@ void BrowserThemePack::CreateFrameImagesAndColors(ImageCache* images) {
   static constexpr struct FrameValues {
     PersistentID prs_id;
     int tint_id;
-    base::Optional<int> color_id;
+    absl::optional<int> color_id;
   } kFrameValues[] = {
       {PRS::kFrame, TP::TINT_FRAME, TP::COLOR_FRAME_ACTIVE},
       {PRS::kFrameInactive, TP::TINT_FRAME_INACTIVE, TP::COLOR_FRAME_INACTIVE},
-      {PRS::kFrameOverlay, TP::TINT_FRAME, base::nullopt},
-      {PRS::kFrameOverlayInactive, TP::TINT_FRAME_INACTIVE, base::nullopt},
+      {PRS::kFrameOverlay, TP::TINT_FRAME, absl::nullopt},
+      {PRS::kFrameOverlayInactive, TP::TINT_FRAME_INACTIVE, absl::nullopt},
       {PRS::kFrameIncognito, TP::TINT_FRAME_INCOGNITO,
        TP::COLOR_FRAME_ACTIVE_INCOGNITO},
       {PRS::kFrameIncognitoInactive, TP::TINT_FRAME_INCOGNITO_INACTIVE,
@@ -1685,7 +1685,7 @@ void BrowserThemePack::CreateTabBackgroundImagesAndColors(ImageCache* images) {
     // For inactive images, the corresponding active image.  If the active
     // images are customized and the inactive ones are not, the inactive ones
     // will be based on the active ones.
-    base::Optional<PersistentID> fallback_tab_id;
+    absl::optional<PersistentID> fallback_tab_id;
 
     // The frame image to use as the base of this tab background image.
     PersistentID frame_id;
@@ -1696,12 +1696,12 @@ void BrowserThemePack::CreateTabBackgroundImagesAndColors(ImageCache* images) {
     // The color to compute and store for this image, if not present.
     int color_id;
   } kTabBackgroundMap[] = {
-      {PRS::kTabBackground, base::nullopt, PRS::kFrame, TP::COLOR_FRAME_ACTIVE,
+      {PRS::kTabBackground, absl::nullopt, PRS::kFrame, TP::COLOR_FRAME_ACTIVE,
        TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE},
       {PRS::kTabBackgroundInactive, PRS::kTabBackground, PRS::kFrameInactive,
        TP::COLOR_FRAME_INACTIVE,
        TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE},
-      {PRS::kTabBackgroundIncognito, base::nullopt, PRS::kFrameIncognito,
+      {PRS::kTabBackgroundIncognito, absl::nullopt, PRS::kFrameIncognito,
        TP::COLOR_FRAME_ACTIVE_INCOGNITO,
        TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO},
       {PRS::kTabBackgroundIncognitoInactive, PRS::kTabBackgroundIncognito,

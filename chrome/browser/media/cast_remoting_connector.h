@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
@@ -19,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;
@@ -226,7 +226,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
 
   // Permission is checked the first time remoting requested to start for each
   // casting session.
-  base::Optional<bool> remoting_allowed_;
+  absl::optional<bool> remoting_allowed_;
 
   // This callback is non-null when a dialog is showing to get user's
   // permission, and is reset when the dialog closes.

@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
@@ -21,6 +20,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace previews {
 

@@ -59,7 +59,7 @@ class PasswordCheckDelegate
   // Requests the plaintext password for |credential|. If successful, this
   // returns |credential| with its |password| member set. This can fail if no
   // matching insecure credential can be found in the password store.
-  base::Optional<api::passwords_private::InsecureCredential>
+  absl::optional<api::passwords_private::InsecureCredential>
   GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential) const;
 

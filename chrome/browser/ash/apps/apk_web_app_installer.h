@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -32,7 +32,7 @@ class ApkWebAppInstaller {
   using InstallFinishCallback = base::OnceCallback<void(
       const web_app::AppId&,
       const bool is_web_only_twa,
-      const base::Optional<std::string> sha256_fingerprint,
+      const absl::optional<std::string> sha256_fingerprint,
       web_app::InstallResultCode)>;
 
   // Do nothing class purely for the purpose of allowing us to specify
@@ -85,7 +85,7 @@ class ApkWebAppInstaller {
   // shorter than that of |profile_|.
   Profile* profile_;
   bool is_web_only_twa_;
-  base::Optional<std::string> sha256_fingerprint_;
+  absl::optional<std::string> sha256_fingerprint_;
   InstallFinishCallback callback_;
   base::WeakPtr<Owner> weak_owner_;
 

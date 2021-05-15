@@ -83,7 +83,7 @@ void ChromeLoginPerformer::DidRunTrustedCheck(base::OnceClosure* callback) {
 bool ChromeLoginPerformer::IsUserAllowlisted(
     const AccountId& account_id,
     bool* wildcard_match,
-    const base::Optional<user_manager::UserType>& user_type) {
+    const absl::optional<user_manager::UserType>& user_type) {
   return CrosSettings::Get()->IsUserAllowlisted(account_id.GetUserEmail(),
                                                 wildcard_match, user_type);
 }

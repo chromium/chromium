@@ -63,7 +63,7 @@ void DigitalAssetLinkCrossValidator::Start() {
   start_time_ = clock_->Now();
   asset_link_handler_->SetTimeoutDuration(timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
-      lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
+      lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, absl::nullopt,
       {{"namespace", {"web"}}, {"site", {target_domain_.Serialize()}}},
       base::BindOnce(
           &DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete,
@@ -100,7 +100,7 @@ void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
   target_manifest_timeout_ = timeout_ - elapsed;
   asset_link_handler_->SetTimeoutDuration(target_manifest_timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
-      target_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
+      target_domain_.Serialize(), kDigitalAssetLinkRecordType, absl::nullopt,
       {{"namespace", {"web"}},
        {"site", GetLookalikeOrigins(lookalike_domain_)}},
       base::BindOnce(

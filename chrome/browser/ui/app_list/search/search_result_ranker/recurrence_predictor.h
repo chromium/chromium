@@ -333,7 +333,7 @@ class MarkovPredictor : public RecurrencePredictor {
   std::unique_ptr<ConditionalFrequencyPredictor> frequencies_;
 
   // The most recently observed target.
-  base::Optional<unsigned int> previous_target_;
+  absl::optional<unsigned int> previous_target_;
 
   DISALLOW_COPY_AND_ASSIGN(MarkovPredictor);
 };

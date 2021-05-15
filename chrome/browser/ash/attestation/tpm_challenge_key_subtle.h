@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -22,6 +21,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

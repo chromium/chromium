@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,6 +18,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -74,12 +74,12 @@ TEST_F(ArcCastReceiverServiceTest, ConstructDestruct) {
 // Test that OnConnectionReady has already been called because of the
 // SetInstance() call in SetUp().
 TEST_F(ArcCastReceiverServiceTest, OnConnectionReady) {
-  const base::Optional<bool>& last_enabled =
+  const absl::optional<bool>& last_enabled =
       cast_receiver_instance()->last_enabled();
   ASSERT_TRUE(last_enabled);    // SetEnabled() has already been called.
   EXPECT_FALSE(*last_enabled);  // ..and it is called with false.
 
-  const base::Optional<std::string>& last_name =
+  const absl::optional<std::string>& last_name =
       cast_receiver_instance()->last_name();
   EXPECT_FALSE(last_name);  // SetName() hasn't been called yet.
 }
@@ -88,7 +88,7 @@ TEST_F(ArcCastReceiverServiceTest, OnConnectionReady) {
 TEST_F(ArcCastReceiverServiceTest, OnCastReceiverEnabledChanged) {
   prefs()->SetBoolean(prefs::kCastReceiverEnabled, true);
 
-  const base::Optional<bool>& last_enabled =
+  const absl::optional<bool>& last_enabled =
       cast_receiver_instance()->last_enabled();
   // Verify that the call was made with true.
   ASSERT_TRUE(last_enabled);
@@ -99,7 +99,7 @@ TEST_F(ArcCastReceiverServiceTest, OnCastReceiverEnabledChanged) {
 TEST_F(ArcCastReceiverServiceTest, OnCastReceiverNameChanged) {
   settings_helper()->SetString(chromeos::kCastReceiverName, "name");
 
-  const base::Optional<std::string>& last_name =
+  const absl::optional<std::string>& last_name =
       cast_receiver_instance()->last_name();
   // Verify that the call was made with "name".
   ASSERT_TRUE(last_name);

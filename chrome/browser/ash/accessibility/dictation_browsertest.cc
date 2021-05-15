@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
@@ -131,7 +131,7 @@ class DictationTest : public InProcessBrowserTest,
         // FakeSpeechRecognitionManager can only send final results,
         // so if this isn't final just send to Dictation directly.
         GetManager()->dictation_->OnSpeechResult(base::ASCIIToUTF16(result),
-                                                 is_final, base::nullopt);
+                                                 is_final, absl::nullopt);
       } else {
         base::RunLoop loop;
         fake_speech_recognition_manager_->SetFakeResult(result);

@@ -31,7 +31,7 @@ const int kMaxRestartAttempts = 10;
 
 void OnGetNetworkList(
     base::OnceCallback<void(net::NetworkInterfaceList)> callback,
-    const base::Optional<net::NetworkInterfaceList>& networks) {
+    const absl::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!networks.has_value())
     return;
@@ -168,7 +168,7 @@ void PrivetTrafficDetector::Helper::Bind() {
 void PrivetTrafficDetector::Helper::OnBindComplete(
     net::IPEndPoint multicast_group_addr,
     int rv,
-    const base::Optional<net::IPEndPoint>& ip_endpoint) {
+    const absl::optional<net::IPEndPoint>& ip_endpoint) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (rv == net::OK) {
     socket_->JoinGroup(multicast_group_addr.address(),
@@ -238,8 +238,8 @@ void PrivetTrafficDetector::Helper::ResetConnection() {
 
 void PrivetTrafficDetector::Helper::OnReceived(
     int32_t result,
-    const base::Optional<net::IPEndPoint>& src_addr,
-    base::Optional<base::span<const uint8_t>> data) {
+    const absl::optional<net::IPEndPoint>& src_addr,
+    absl::optional<base::span<const uint8_t>> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (result != net::OK)
     return;

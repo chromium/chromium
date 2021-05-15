@@ -19,11 +19,11 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -458,7 +458,7 @@ class UserSessionManager
 
   // Callback to process RetrieveActiveSessions() request results.
   void OnRestoreActiveSessions(
-      base::Optional<SessionManagerClient::ActiveSessionsMap> sessions);
+      absl::optional<SessionManagerClient::ActiveSessionsMap> sessions);
 
   // Called by OnRestoreActiveSessions() when there're user sessions in
   // `pending_user_sessions_` that has to be restored one by one.

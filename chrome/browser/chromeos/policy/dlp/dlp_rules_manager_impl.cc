@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -28,6 +27,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -139,7 +139,7 @@ RulesConditionsMap MatchUrlAndGetRulesMapping(
 // Returns the maximum level of the rules of given `restriction` joined with
 // the `selected_rules`.
 template <typename T>
-std::pair<DlpRulesManager::Level, base::Optional<T>> GetMaxJoinRestrictionLevel(
+std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
     const DlpRulesManager::Restriction restriction,
     const std::map<RuleId, T>& selected_rules,
     const std::map<DlpRulesManager::Restriction,
@@ -147,13 +147,13 @@ std::pair<DlpRulesManager::Level, base::Optional<T>> GetMaxJoinRestrictionLevel(
         restrictions_map) {
   auto restriction_it = restrictions_map.find(restriction);
   if (restriction_it == restrictions_map.end())
-    return std::make_pair(DlpRulesManager::Level::kAllow, base::nullopt);
+    return std::make_pair(DlpRulesManager::Level::kAllow, absl::nullopt);
 
   const std::map<RuleId, DlpRulesManager::Level>& restriction_rules =
       restriction_it->second;
 
-  std::pair<DlpRulesManager::Level, base::Optional<T>> max_level =
-      std::make_pair(DlpRulesManager::Level::kNotSet, base::nullopt);
+  std::pair<DlpRulesManager::Level, absl::optional<T>> max_level =
+      std::make_pair(DlpRulesManager::Level::kNotSet, absl::nullopt);
 
   for (const auto& rule_pair : selected_rules) {
     const auto& restriction_rule_itr = restriction_rules.find(rule_pair.first);
@@ -167,7 +167,7 @@ std::pair<DlpRulesManager::Level, base::Optional<T>> GetMaxJoinRestrictionLevel(
   }
 
   if (max_level.first == DlpRulesManager::Level::kNotSet)
-    return std::make_pair(DlpRulesManager::Level::kAllow, base::nullopt);
+    return std::make_pair(DlpRulesManager::Level::kAllow, absl::nullopt);
 
   return max_level;
 }
@@ -262,7 +262,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     }
   }
 
-  std::pair<Level, base::Optional<std::pair<UrlConditionId, UrlConditionId>>>
+  std::pair<Level, absl::optional<std::pair<UrlConditionId, UrlConditionId>>>
       level_urls_pair = GetMaxJoinRestrictionLevel(
           restriction, intersection_rules, restrictions_map_);
   if (level_urls_pair.second.has_value() && out_source_pattern &&
@@ -308,7 +308,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     }
   }
 
-  std::pair<Level, base::Optional<UrlConditionId>> level_url_pair =
+  std::pair<Level, absl::optional<UrlConditionId>> level_url_pair =
       GetMaxJoinRestrictionLevel(restriction, intersection_rules,
                                  restrictions_map_);
   if (level_url_pair.second.has_value() && out_source_pattern) {

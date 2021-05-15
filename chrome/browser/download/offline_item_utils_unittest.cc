@@ -106,7 +106,7 @@ OfflineItemUtilsTest::CreateDownloadItem(
   ON_CALL(*item, GetTotalBytes()).WillByDefault(Return(total_bytes));
   ON_CALL(*item, IsDone()).WillByDefault(Return(IsDownloadDone(item.get())));
   ON_CALL(*item, GetDownloadSchedule())
-      .WillByDefault(ReturnRefOfCopy(base::Optional<DownloadSchedule>()));
+      .WillByDefault(ReturnRefOfCopy(absl::optional<DownloadSchedule>()));
   return item;
 }
 
@@ -357,18 +357,18 @@ TEST_F(OfflineItemUtilsTest, PendingAndFailedStates) {
 TEST_F(OfflineItemUtilsTest, OfflineItemSchedule) {
   auto time = base::Time::Now();
   std::vector<DownloadSchedule> download_schedules = {{false, time},
-                                                      {true, base::nullopt}};
+                                                      {true, absl::nullopt}};
 
   for (const auto& download_schedule : download_schedules) {
     auto download =
         CreateDownloadItem(DownloadItem::IN_PROGRESS, false,
                            download::DOWNLOAD_INTERRUPT_REASON_NONE);
-    base::Optional<DownloadSchedule> copy = download_schedule;
+    absl::optional<DownloadSchedule> copy = download_schedule;
     ON_CALL(*download, GetDownloadSchedule())
         .WillByDefault(ReturnRefOfCopy(copy));
     OfflineItem offline_item =
         OfflineItemUtils::CreateOfflineItem(kNameSpace, download.get());
-    auto offline_item_schedule = base::make_optional<OfflineItemSchedule>(
+    auto offline_item_schedule = absl::make_optional<OfflineItemSchedule>(
         download_schedule.only_on_wifi(), download_schedule.start_time());
     EXPECT_EQ(offline_item.schedule, offline_item.schedule);
   }

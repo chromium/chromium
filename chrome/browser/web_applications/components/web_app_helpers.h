@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -46,7 +46,7 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 //
 // App ID and App Key match Extension ID and Extension Key for migration.
 AppId GenerateAppIdFromURL(const GURL& url);
-AppId GenerateAppId(const base::Optional<std::string>& manifest_id,
+AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
                     const GURL& start_url);
 
 std::string GenerateAppKeyFromURL(const GURL& url);
@@ -60,7 +60,7 @@ bool IsValidExtensionUrl(const GURL& app_url);
 // Searches for the first locally installed app id in the registry for which
 // the |url| is in scope. If |window_only| is specified, only apps that
 // open in app windows will be considered.
-base::Optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
+absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only = false);
 

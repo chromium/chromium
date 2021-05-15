@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -40,6 +39,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using google::protobuf::RepeatedField;
@@ -171,7 +171,7 @@ void SetJsonDeviceSetting(const std::string& setting_name,
                           const std::string& json_string,
                           PrefValueMap* pref_value_map) {
   std::string error;
-  base::Optional<base::Value> decoded_json =
+  absl::optional<base::Value> decoded_json =
       policy::DecodeJsonStringAndNormalize(json_string, policy_name, &error);
   if (decoded_json.has_value()) {
     pref_value_map->SetValue(setting_name, std::move(decoded_json.value()));

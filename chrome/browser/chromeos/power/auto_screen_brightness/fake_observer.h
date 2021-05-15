@@ -7,7 +7,7 @@
 
 #include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {
@@ -38,7 +38,7 @@ class FakeObserver : public AlsReader::Observer {
  private:
   int ambient_light_ = -1;
   int num_received_ambient_lights_ = 0;
-  base::Optional<AlsReader::AlsInitStatus> status_;
+  absl::optional<AlsReader::AlsInitStatus> status_;
 };
 
 }  // namespace auto_screen_brightness

@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
@@ -59,7 +59,7 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     const std::u16string text;
 
     // The optional image for an entry in the sub menu.
-    base::Optional<ui::ImageModel> image;
+    absl::optional<ui::ImageModel> image;
 
     bool may_have_mnemonics = true;
   };

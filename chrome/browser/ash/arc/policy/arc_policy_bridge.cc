@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -39,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -272,7 +272,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   const base::Value* const app_policy_value =
       policy_map.GetValue(policy::key::kArcPolicy);
   if (app_policy_value) {
-    base::Optional<base::Value> app_policy_dict;
+    absl::optional<base::Value> app_policy_dict;
     if (app_policy_value->is_string()) {
       app_policy_dict = base::JSONReader::Read(
           app_policy_value->GetString(),

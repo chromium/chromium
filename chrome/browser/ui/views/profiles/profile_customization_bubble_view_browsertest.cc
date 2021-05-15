@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +22,7 @@
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace {

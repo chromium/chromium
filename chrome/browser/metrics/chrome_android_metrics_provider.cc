@@ -5,13 +5,13 @@
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "chrome/browser/android/locale/locale_manager.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -19,14 +19,14 @@ namespace {
 const char kLastActivityTypePref[] =
     "user_experience_metrics.last_activity_type";
 
-base::Optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
+absl::optional<chrome::android::ActivityType> GetActivityTypeFromLocalState(
     PrefService* local_state_) {
   auto value = local_state_->GetInteger(kLastActivityTypePref);
   if (value >= static_cast<int>(chrome::android::ActivityType::kTabbed) &&
       value <= static_cast<int>(chrome::android::ActivityType::kMaxValue)) {
     return static_cast<chrome::android::ActivityType>(value);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void EmitActivityTypeHistograms(chrome::android::ActivityType type) {

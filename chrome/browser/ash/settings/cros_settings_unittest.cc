@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -33,6 +32,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -134,7 +134,7 @@ class CrosSettingsTest : public testing::Test {
   }
 
   bool IsUserAllowed(const std::string& username,
-                     const base::Optional<user_manager::UserType>& user_type) {
+                     const absl::optional<user_manager::UserType>& user_type) {
     return CrosSettings::Get()->IsUserAllowlisted(username, nullptr, user_type);
   }
 
@@ -374,7 +374,7 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
   ExpectPref(kAccountsPrefUsers, base::ListValue());
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
-  EXPECT_FALSE(IsUserAllowed(kUser1, base::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
 }
@@ -401,8 +401,8 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
   ExpectPref(kAccountsPrefUsers, allowlist);
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
 
-  EXPECT_TRUE(IsUserAllowed(kOwner, base::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, base::nullopt));
+  EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
 }
@@ -426,8 +426,8 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
   ExpectPref(kAccountsPrefUsers, allowlist);
   ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(true));
 
-  EXPECT_TRUE(IsUserAllowed(kOwner, base::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, base::nullopt));
+  EXPECT_TRUE(IsUserAllowed(kOwner, absl::nullopt));
+  EXPECT_FALSE(IsUserAllowed(kUser1, absl::nullopt));
   EXPECT_TRUE(IsUserAllowed(kUser1, user_manager::USER_TYPE_CHILD));
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
 }

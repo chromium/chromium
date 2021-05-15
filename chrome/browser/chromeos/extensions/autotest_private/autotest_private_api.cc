@@ -45,7 +45,6 @@
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -157,6 +156,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -790,7 +790,7 @@ bool GetDisplayIdFromOptionalArg(const std::unique_ptr<std::string>& arg,
 }
 
 struct SmoothnessTrackerInfo {
-  base::Optional<ui::ThroughputTracker> tracker;
+  absl::optional<ui::ThroughputTracker> tracker;
   ui::ThroughputTrackerHost::ReportCallback callback;
 };
 using DisplaySmoothnessTrackerInfos = std::map<int64_t, SmoothnessTrackerInfo>;
@@ -1874,7 +1874,7 @@ AutotestPrivateIsSystemWebAppOpenFunction::Run() {
       api::autotest_private::IsSystemWebAppOpen::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
   DVLOG(1) << "AutotestPrivateIsSystemWebAppOpenFunction " << params->app_id;
-  base::Optional<web_app::SystemAppType> app_type =
+  absl::optional<web_app::SystemAppType> app_type =
       web_app::GetSystemWebAppTypeForAppId(profile, params->app_id);
   if (!app_type)
     return RespondNow(Error("No system web app is found by given app id."));
@@ -1897,7 +1897,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLaunchArcAppFunction::Run() {
   DVLOG(1) << "AutotestPrivateLaunchArcIntentFunction " << params->app_id << "/"
            << params->intent;
 
-  base::Optional<std::string> launch_intent;
+  absl::optional<std::string> launch_intent;
   if (!params->intent.empty())
     launch_intent = params->intent;
   const bool result = arc::LaunchAppWithIntent(
@@ -1950,7 +1950,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   if (!provider)
     return RespondNow(Error("Web Apps not enabled for profile."));
 
-  base::Optional<web_app::SystemAppType> app_type;
+  absl::optional<web_app::SystemAppType> app_type;
   for (const auto& type_and_info :
        provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
     if (type_and_info.second.internal_name == params->app_name) {
@@ -2775,7 +2775,7 @@ class AssistantInteractionHelper
     : public chromeos::assistant::AssistantInteractionSubscriber {
  public:
   using OnInteractionFinishedCallback =
-      base::OnceCallback<void(const base::Optional<std::string>& error)>;
+      base::OnceCallback<void(const absl::optional<std::string>& error)>;
 
   AssistantInteractionHelper()
       : query_status_(std::make_unique<base::DictionaryValue>()) {}
@@ -2889,7 +2889,7 @@ class AssistantInteractionHelper
   }
 
   void SendSuccessResponse() {
-    std::move(on_interaction_finished_callback_).Run(base::nullopt);
+    std::move(on_interaction_finished_callback_).Run(absl::nullopt);
   }
 
   void SendErrorResponse(const std::string& error) {
@@ -2953,7 +2953,7 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
 }
 
 void AutotestPrivateSendAssistantTextQueryFunction::
-    OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
+    OnInteractionFinishedCallback(const absl::optional<std::string>& error) {
   DCHECK(!did_respond());
   if (error) {
     Respond(Error(error.value()));
@@ -3016,7 +3016,7 @@ AutotestPrivateWaitForAssistantQueryStatusFunction::Run() {
 }
 
 void AutotestPrivateWaitForAssistantQueryStatusFunction::
-    OnInteractionFinishedCallback(const base::Optional<std::string>& error) {
+    OnInteractionFinishedCallback(const absl::optional<std::string>& error) {
   DCHECK(!did_respond());
   if (error) {
     Respond(Error(error.value()));
@@ -3757,7 +3757,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
   // Use negative number to avoid potential collision with normal use if any.
   static int id_count = -10000;
 
-  base::Optional<ash::OverviewInfo> overview_info =
+  absl::optional<ash::OverviewInfo> overview_info =
       ash::OverviewTestApi().GetOverviewInfo();
 
   auto window_list = ash::GetAppWindowList();

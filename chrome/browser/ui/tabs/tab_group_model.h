@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TabGroup;
 class TabGroupController;
@@ -39,7 +39,7 @@ class TabGroupModel {
   // added to it immediately.
   TabGroup* AddTabGroup(
       const tab_groups::TabGroupId& id,
-      base::Optional<tab_groups::TabGroupVisualData> visual_data);
+      absl::optional<tab_groups::TabGroupVisualData> visual_data);
 
   // Returns whether a tab group with the given |id| exists.
   bool ContainsTabGroup(const tab_groups::TabGroupId& id) const;

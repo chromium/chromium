@@ -8,7 +8,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +30,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -73,7 +73,7 @@ std::string GetClassifyURLRequestString(
 // ClassifyUrlResponse proto object.
 std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
 GetClassifyURLResponseProto(const std::string& response) {
-  base::Optional<base::Value> optional_value = base::JSONReader::Read(response);
+  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
   const base::DictionaryValue* dict = nullptr;
 
   auto response_proto =

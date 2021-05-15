@@ -38,7 +38,7 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
         account_id_, &capability_access_cache_);
   }
 
-  base::Optional<std::u16string> GetAppAccessingMicrophone() {
+  absl::optional<std::u16string> GetAppAccessingMicrophone() {
     return media_delegate_->GetAppAccessingMicrophone(&capability_access_cache_,
                                                       &registry_cache_);
   }
@@ -91,7 +91,7 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
 
 TEST_F(MicrophoneMuteNotificationDelegateTest, NoAppsLaunched) {
   // Should return a completely value-free app_name.
-  base::Optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
@@ -99,7 +99,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedNotUsingMicrophone) {
   LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kFalse);
 
   // Should return a completely value-free app_name.
-  base::Optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
@@ -107,7 +107,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedUsingMicrophone) {
   LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
 
   // Should return the name of our app.
-  base::Optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   std::string app_name_utf8 = base::UTF16ToUTF8(app_name.value());
   EXPECT_STREQ(app_name_utf8.c_str(), "name_rose");
@@ -124,7 +124,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest,
   // GetAppAccessingMicrophone) returns a set, we have no guarantee of
   // which app will be found first.  So we verify that the app name is one of
   // our microphone-users.
-  base::Optional<std::u16string> app_name = GetAppAccessingMicrophone();
+  absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_TRUE(app_name.has_value());
   std::string app_name_utf8 = base::UTF16ToUTF8(app_name.value());
   EXPECT_THAT(app_name_utf8, AnyOf("name_rose", "name_mars", "name_zara"));

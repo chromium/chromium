@@ -9,10 +9,10 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -20,7 +20,7 @@ namespace network_diagnostics {
 FakeHostResolver::DnsResult::DnsResult(
     int32_t result,
     net::ResolveErrorInfo resolve_error_info,
-    base::Optional<net::AddressList> resolved_addresses)
+    absl::optional<net::AddressList> resolved_addresses)
     : result_(result),
       resolve_error_info_(resolve_error_info),
       resolved_addresses_(resolved_addresses) {}

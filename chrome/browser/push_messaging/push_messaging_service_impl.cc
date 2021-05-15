@@ -363,7 +363,7 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   // Drop message and unregister if app_id was unknown (maybe recently deleted).
   if (app_identifier.is_null()) {
-    base::Optional<PushMessagingAppIdentifier> refresh_identifier =
+    absl::optional<PushMessagingAppIdentifier> refresh_identifier =
         refresher_.FindActiveAppIdentifier(app_id);
     if (!refresh_identifier) {
       DeliverMessageCallback(app_id, GURL::EmptyGURL(),
@@ -448,7 +448,7 @@ void PushMessagingServiceImpl::OnCheckedOriginForAbuse(
       IsPermissionSet(origin)) {
     // The payload of a push message can be valid with content, valid with empty
     // content, or null.
-    base::Optional<std::string> payload;
+    absl::optional<std::string> payload;
     if (message.decrypted)
       payload = message.raw_data;
 
@@ -861,7 +861,7 @@ void PushMessagingServiceImpl::SubscribeEnd(
     RegisterCallback callback,
     const std::string& subscription_id,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
@@ -874,7 +874,7 @@ void PushMessagingServiceImpl::SubscribeEndWithError(
     blink::mojom::PushRegistrationStatus status) {
   SubscribeEnd(std::move(callback), std::string() /* subscription_id */,
                GURL::EmptyGURL() /* endpoint */,
-               base::nullopt /* expiration_time */,
+               absl::nullopt /* expiration_time */,
                std::vector<uint8_t>() /* p256dh */,
                std::vector<uint8_t>() /* auth */, status);
 }
@@ -962,14 +962,14 @@ void PushMessagingServiceImpl::GetSubscriptionInfo(
   if (app_identifier.is_null()) {
     std::move(callback).Run(
         false /* is_valid */, GURL::EmptyGURL() /*endpoint*/,
-        base::nullopt /* expiration_time */,
+        absl::nullopt /* expiration_time */,
         std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */);
     return;
   }
 
   const GURL endpoint = push_messaging::CreateEndpoint(subscription_id);
   const std::string& app_id = app_identifier.app_id();
-  base::Optional<base::Time> expiration_time = app_identifier.expiration_time();
+  absl::optional<base::Time> expiration_time = app_identifier.expiration_time();
 
   base::OnceCallback<void(bool)> validate_cb =
       base::BindOnce(&PushMessagingServiceImpl::DidValidateSubscription,
@@ -991,13 +991,13 @@ void PushMessagingServiceImpl::DidValidateSubscription(
     const std::string& app_id,
     const std::string& sender_id,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     SubscriptionInfoCallback callback,
     bool is_valid) {
   if (!is_valid) {
     std::move(callback).Run(
         false /* is_valid */, GURL::EmptyGURL() /* endpoint */,
-        base::nullopt /* expiration_time */,
+        absl::nullopt /* expiration_time */,
         std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */);
     return;
   }
@@ -1011,7 +1011,7 @@ void PushMessagingServiceImpl::DidValidateSubscription(
 
 void PushMessagingServiceImpl::DidGetEncryptionInfo(
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     SubscriptionInfoCallback callback,
     std::string p256dh,
     std::string auth_secret) const {
@@ -1333,7 +1333,7 @@ void PushMessagingServiceImpl::GetPushSubscriptionFromAppIdentifierEnd(
     const std::string& sender_id,
     bool is_valid,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
   if (!is_valid) {
@@ -1461,7 +1461,7 @@ void PushMessagingServiceImpl::StartRefresh(
       PushMessagingAppIdentifier::Generate(
           old_app_identifier.origin(),
           old_app_identifier.service_worker_registration_id(),
-          base::nullopt /* expiration_time */);
+          absl::nullopt /* expiration_time */);
 
   refresher_.Refresh(old_app_identifier, new_app_identifier.app_id(),
                      sender_id);
@@ -1483,7 +1483,7 @@ void PushMessagingServiceImpl::UpdateSubscription(
   auto register_callback = base::BindOnce(
       [](RegisterCallback cb, Profile* profile, PushMessagingAppIdentifier ai,
          const std::string& registration_id, const GURL& endpoint,
-         const base::Optional<base::Time>& expiration_time,
+         const absl::optional<base::Time>& expiration_time,
          const std::vector<uint8_t>& p256dh, const std::vector<uint8_t>& auth,
          blink::mojom::PushRegistrationStatus status) {
         base::OnceClosure closure =
@@ -1512,7 +1512,7 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
     const std::string& sender_id,
     const std::string& registration_id,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {

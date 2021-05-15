@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -16,13 +15,14 @@
 #include "content/public/test/browser_test.h"
 #include "sandbox/policy/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
 class AudioSandboxEnabledTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<
-          /*policy::key::kAllowAudioSandbox=*/base::Optional<bool>> {
+          /*policy::key::kAllowAudioSandbox=*/absl::optional<bool>> {
  public:
   // InProcessBrowserTest implementation:
   void SetUp() override {
@@ -47,7 +47,7 @@ class AudioSandboxEnabledTest
 };
 
 IN_PROC_BROWSER_TEST_P(AudioSandboxEnabledTest, IsRespected) {
-  base::Optional<bool> enable_sandbox_via_policy = GetParam();
+  absl::optional<bool> enable_sandbox_via_policy = GetParam();
   bool is_sandbox_enabled_by_default =
       base::FeatureList::IsEnabled(features::kAudioServiceSandbox);
 
@@ -68,6 +68,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     NotSet,
     AudioSandboxEnabledTest,
-    ::testing::Values(/*policy::key::kAudioSandboxEnabled=*/base::nullopt));
+    ::testing::Values(/*policy::key::kAudioSandboxEnabled=*/absl::nullopt));
 
 }  // namespace policy

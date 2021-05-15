@@ -20,7 +20,7 @@ ChromePromptActions::~ChromePromptActions() {}
 
 void ChromePromptActions::PromptUser(
     const std::vector<base::FilePath>& files_to_delete,
-    const base::Optional<std::vector<std::wstring>>& registry_keys,
+    const absl::optional<std::vector<std::wstring>>& registry_keys,
     PromptUserReplyCallback callback) {
   using FileCollection = ChromeCleanerScannerResults::FileCollection;
   using RegistryKeyCollection =

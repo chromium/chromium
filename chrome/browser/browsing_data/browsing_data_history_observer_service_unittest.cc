@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_types.h"
@@ -15,6 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -52,10 +52,10 @@ class RemovalDataTestStoragePartition : public content::TestStoragePartition {
     std::move(callback).Run();
   }
 
-  const base::Optional<RemovalData>& GetRemovalData() { return removal_data_; }
+  const absl::optional<RemovalData>& GetRemovalData() { return removal_data_; }
 
  private:
-  base::Optional<RemovalData> removal_data_;
+  absl::optional<RemovalData> removal_data_;
 };
 
 }  // namespace
@@ -77,7 +77,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest, AllHistoryDeleted_DataCleared) {
   service.OnURLsDeleted(nullptr /* history_service */,
                         history::DeletionInfo::ForAllHistory());
 
-  const base::Optional<RemovalData>& removal_data = partition.GetRemovalData();
+  const absl::optional<RemovalData>& removal_data = partition.GetRemovalData();
   EXPECT_TRUE(removal_data.has_value());
   EXPECT_EQ(content::StoragePartition::REMOVE_DATA_MASK_CONVERSIONS,
             removal_data->removal_mask);
@@ -111,7 +111,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
 
   service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
 
-  const base::Optional<RemovalData>& removal_data = partition.GetRemovalData();
+  const absl::optional<RemovalData>& removal_data = partition.GetRemovalData();
   EXPECT_TRUE(removal_data.has_value());
 
   EXPECT_EQ(base::Time(), removal_data->begin);
@@ -136,11 +136,11 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   history::DeletionInfo deletion_info(
       history::DeletionTimeRange(begin, end), false /* is_from_expiration */,
       {} /* deleted_rows */, {} /* favicon_urls */,
-      base::nullopt /* restrict_urls */);
+      absl::nullopt /* restrict_urls */);
 
   service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
 
-  const base::Optional<RemovalData>& removal_data = partition.GetRemovalData();
+  const absl::optional<RemovalData>& removal_data = partition.GetRemovalData();
   EXPECT_TRUE(removal_data.has_value());
 
   EXPECT_EQ(begin, removal_data->begin);
@@ -169,7 +169,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
 
   service.OnURLsDeleted(nullptr /* history_service */, deletion_info);
 
-  const base::Optional<RemovalData>& removal_data = partition.GetRemovalData();
+  const absl::optional<RemovalData>& removal_data = partition.GetRemovalData();
   EXPECT_TRUE(removal_data.has_value());
 
   EXPECT_EQ(begin, removal_data->begin);

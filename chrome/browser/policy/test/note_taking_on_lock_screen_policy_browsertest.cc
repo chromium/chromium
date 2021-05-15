@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -51,7 +51,7 @@ class NoteTakingOnLockScreenPolicyTest : public PolicyTest {
                                                enabled_on_lock_screen);
   }
 
-  void SetPolicyValue(base::Optional<base::Value> value) {
+  void SetPolicyValue(absl::optional<base::Value> value) {
     PolicyMap policies;
     if (value) {
       policies.Set(key::kNoteTakingAppsLockScreenAllowlist,
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(NoteTakingOnLockScreenPolicyTest,
   EXPECT_EQ(chromeos::NoteTakingLockScreenSupport::kNotAllowedByPolicy,
             GetAppLockScreenStatus(app->id()));
 
-  SetPolicyValue(base::nullopt);
+  SetPolicyValue(absl::nullopt);
   EXPECT_EQ(chromeos::NoteTakingLockScreenSupport::kEnabled,
             GetAppLockScreenStatus(app->id()));
 }

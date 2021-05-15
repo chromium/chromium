@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "chrome/browser/profiles/profile_theme_update_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ProfileThemeUpdateServiceBrowserTest,
   EXPECT_NE(theme_colors, GetDefaultProfileThemeColorsForLightMode());
 
   // Reset the cached colors to test that they're recreated on the next startup.
-  GetProfileAttributesEntry()->SetProfileThemeColors(base::nullopt);
+  GetProfileAttributesEntry()->SetProfileThemeColors(absl::nullopt);
   EXPECT_EQ(GetProfileAttributesEntry()->GetProfileThemeColors(),
             GetDefaultProfileThemeColorsForLightMode());
 }

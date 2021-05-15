@@ -1133,8 +1133,8 @@ void AutofillPopupViewNativeViews::Hide() {
 }
 
 void AutofillPopupViewNativeViews::OnSelectedRowChanged(
-    base::Optional<int> previous_row_selection,
-    base::Optional<int> current_row_selection) {
+    absl::optional<int> previous_row_selection,
+    absl::optional<int> current_row_selection) {
   if (previous_row_selection) {
     rows_[*previous_row_selection]->SetSelected(false);
   }
@@ -1148,8 +1148,8 @@ void AutofillPopupViewNativeViews::OnSuggestionsChanged() {
   DoUpdateBoundsAndRedrawPopup();
 }
 
-base::Optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
-  return base::Optional<int32_t>(
+absl::optional<int32_t> AutofillPopupViewNativeViews::GetAxUniqueId() {
+  return absl::optional<int32_t>(
       AutofillPopupBaseView::GetViewAccessibility().GetUniqueId());
 }
 

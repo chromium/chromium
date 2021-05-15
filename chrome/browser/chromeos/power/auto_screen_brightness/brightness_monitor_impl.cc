@@ -115,7 +115,7 @@ base::TimeDelta BrightnessMonitorImpl::GetBrightnessSampleDelayForTesting()
 }
 
 void BrightnessMonitorImpl::OnReceiveInitialBrightnessPercent(
-    const base::Optional<double> brightness_percent) {
+    const absl::optional<double> brightness_percent) {
   DCHECK_EQ(brightness_monitor_status_, Status::kInitializing);
 
   if (brightness_percent && *brightness_percent >= 0.0 &&
@@ -161,7 +161,7 @@ void BrightnessMonitorImpl::NotifyUserBrightnessChanged() {
   }
 
   stable_brightness_percent_ = user_brightness_percent_;
-  user_brightness_percent_ = base::nullopt;
+  user_brightness_percent_ = absl::nullopt;
 }
 
 void BrightnessMonitorImpl::NotifyUserBrightnessChangeRequested() {

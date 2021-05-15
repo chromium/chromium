@@ -44,10 +44,10 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
 
-base::Optional<base::Value> JSONToDictionary(int resource_id) {
+absl::optional<base::Value> JSONToDictionary(int resource_id) {
   base::StringPiece json_resource(
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id));
-  base::Optional<base::Value> value = base::JSONReader::Read(json_resource);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_resource);
   DCHECK(value && value.has_value() && value->is_dict());
   return value;
 }
@@ -117,7 +117,7 @@ void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
 }
 
 void CartService::AddCart(const std::string& domain,
-                          const base::Optional<GURL>& cart_url,
+                          const absl::optional<GURL>& cart_url,
                           const cart_db::ChromeCartContentProto& proto) {
   cart_db_->LoadCart(domain, base::BindOnce(&CartService::OnAddCart,
                                             weak_ptr_factory_.GetWeakPtr(),
@@ -458,7 +458,7 @@ void CartService::SetCartRemovedStatus(
 }
 
 void CartService::OnAddCart(const std::string& domain,
-                            const base::Optional<GURL>& cart_url,
+                            const absl::optional<GURL>& cart_url,
                             cart_db::ChromeCartContentProto proto,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs) {

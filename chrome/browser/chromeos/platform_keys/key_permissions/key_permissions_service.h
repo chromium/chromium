@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -22,7 +22,7 @@ using CanUserGrantPermissionForKeyCallback =
 
 // If an error occurs, |corporate| will be a nullopt.
 using IsCorporateKeyCallback =
-    base::OnceCallback<void(base::Optional<bool> corporate, Status status)>;
+    base::OnceCallback<void(absl::optional<bool> corporate, Status status)>;
 
 using SetCorporateKeyCallback = base::OnceCallback<void(Status status)>;
 

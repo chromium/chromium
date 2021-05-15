@@ -30,7 +30,7 @@ constexpr int kButtonMaxLines = 2;
 constexpr int kButtonPadding = 8;
 
 std::unique_ptr<views::ImageView> CreateImageView(
-    const base::Optional<gfx::ImageSkia> icon,
+    const absl::optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon) {
   if (icon.has_value()) {
     auto image = std::make_unique<views::ImageView>();
@@ -61,7 +61,7 @@ SharesheetTargetButton::SharesheetTargetButton(
     PressedCallback callback,
     const std::u16string& display_name,
     const std::u16string& secondary_display_name,
-    const base::Optional<gfx::ImageSkia> icon,
+    const absl::optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon)
     : Button(std::move(callback)) {
   // TODO(crbug.com/1097623) Margins shouldn't be within

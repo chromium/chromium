@@ -206,7 +206,7 @@ void PredictionModelDownloadManager::OnDownloadFailed(const std::string& guid) {
       false);
 }
 
-base::Optional<std::pair<base::FilePath, base::FilePath>>
+absl::optional<std::pair<base::FilePath, base::FilePath>>
 PredictionModelDownloadManager::ProcessDownload(
     const base::FilePath& file_path) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
@@ -225,7 +225,7 @@ PredictionModelDownloadManager::ProcessDownload(
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
           base::BindOnce(base::GetDeleteFileCallback(), file_path));
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // Verify that the CRX3 file is from a publisher we trust.
@@ -242,7 +242,7 @@ PredictionModelDownloadManager::ProcessDownload(
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
           base::BindOnce(base::GetDeleteFileCallback(), file_path));
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -255,14 +255,14 @@ PredictionModelDownloadManager::ProcessDownload(
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), file_path));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::make_pair(file_path, temp_dir_path);
 }
 
 void PredictionModelDownloadManager::StartUnzipping(
-    const base::Optional<std::pair<base::FilePath, base::FilePath>>&
+    const absl::optional<std::pair<base::FilePath, base::FilePath>>&
         unzip_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -302,7 +302,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::Optional<proto::PredictionModel>
+absl::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& unzipped_dir_path) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
@@ -318,18 +318,18 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   if (!base::ReadFileToString(model_info_path, &binary_model_info_pb)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoFileRead);
-    return base::nullopt;
+    return absl::nullopt;
   }
   proto::ModelInfo model_info;
   if (!model_info.ParseFromString(binary_model_info_pb)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoParsing);
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (!model_info.has_version() || !model_info.has_optimization_target()) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoInvalid);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!models_dir_) {
@@ -339,8 +339,8 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
             &(*models_dir_))) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kModelDirectoryDoesNotExist);
-      models_dir_ = base::nullopt;
-      return base::nullopt;
+      models_dir_ = absl::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -372,11 +372,11 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
   RecordPredictionModelDownloadStatus(
       PredictionModelDownloadStatus::kFailedModelFileOtherError);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void PredictionModelDownloadManager::NotifyModelReady(
-    const base::Optional<proto::PredictionModel>& model) {
+    const absl::optional<proto::PredictionModel>& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!model)

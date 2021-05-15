@@ -63,13 +63,13 @@ class FakeContentTranslateDriver
 
   void ResetNewPageValues() {
     called_new_page_ = false;
-    details_ = base::nullopt;
+    details_ = absl::nullopt;
     page_level_translation_critiera_met_ = false;
   }
 
   bool called_new_page_ = false;
   bool page_level_translation_critiera_met_ = false;
-  base::Optional<translate::LanguageDetectionDetails> details_;
+  absl::optional<translate::LanguageDetectionDetails> details_;
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
@@ -96,8 +96,8 @@ class TestTranslateAgent : public translate::TranslateAgent {
     // Reset result values firstly.
     page_translated_ = false;
     trans_result_cancelled_ = false;
-    trans_result_source_lang_ = base::nullopt;
-    trans_result_translated_lang_ = base::nullopt;
+    trans_result_source_lang_ = absl::nullopt;
+    trans_result_translated_lang_ = absl::nullopt;
     trans_result_error_type_ = translate::TranslateErrors::NONE;
 
     // Will get new result values via OnPageTranslated.
@@ -148,8 +148,8 @@ class TestTranslateAgent : public translate::TranslateAgent {
 
   bool page_translated_;
   bool trans_result_cancelled_;
-  base::Optional<std::string> trans_result_source_lang_;
-  base::Optional<std::string> trans_result_translated_lang_;
+  absl::optional<std::string> trans_result_source_lang_;
+  absl::optional<std::string> trans_result_translated_lang_;
   translate::TranslateErrors::Type trans_result_error_type_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTranslateAgent);

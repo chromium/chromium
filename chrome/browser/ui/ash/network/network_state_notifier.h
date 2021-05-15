@@ -13,11 +13,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class SystemTrayClient;
@@ -85,12 +85,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   void OnConnectErrorGetProperties(
       const std::string& error_name,
       const std::string& service_path,
-      base::Optional<base::Value> shill_properties);
+      absl::optional<base::Value> shill_properties);
 
   void ShowConnectErrorNotification(
       const std::string& error_name,
       const std::string& service_path,
-      base::Optional<base::Value> shill_properties);
+      absl::optional<base::Value> shill_properties);
 
   void ShowVpnDisconnectedNotification(VpnDetails* vpn);
 

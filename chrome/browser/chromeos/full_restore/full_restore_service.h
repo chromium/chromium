@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -62,7 +62,7 @@ class FullRestoreService : public KeyedService {
   // Show the restore notification on startup.
   void ShowRestoreNotification(const std::string& id);
 
-  void HandleRestoreNotificationClicked(base::Optional<int> button_index);
+  void HandleRestoreNotificationClicked(absl::optional<int> button_index);
 
   // Implement the restoration.
   void Restore();

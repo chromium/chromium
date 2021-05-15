@@ -445,7 +445,7 @@ class MailtoExternalProtocolHandlerDelegate
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin) override {}
+      const absl::optional<url::Origin>& initiating_origin) override {}
 
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
   CreateShellWorker(

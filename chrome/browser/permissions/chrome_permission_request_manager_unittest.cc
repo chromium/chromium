@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,6 +41,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -329,7 +329,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 
   ASSERT_TRUE(
       QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled());
-  base::Optional<bool> has_three_consecutive_denies =
+  absl::optional<bool> has_three_consecutive_denies =
       permissions::PermissionsClient::Get()
           ->HadThreeConsecutiveNotificationPermissionDenies(profile());
   ASSERT_TRUE(has_three_consecutive_denies.has_value());

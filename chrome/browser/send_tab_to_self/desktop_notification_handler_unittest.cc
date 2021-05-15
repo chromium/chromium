@@ -205,7 +205,7 @@ TEST_F(DesktopNotificationHandlerTest, ClickHandler) {
 
   handler.OnClick(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*action_index=*/1,
-                  /*reply=*/base::nullopt, base::DoNothing());
+                  /*reply=*/absl::nullopt, base::DoNothing());
 }
 
 }  // namespace

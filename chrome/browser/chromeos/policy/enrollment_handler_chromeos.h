@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
@@ -27,6 +26,7 @@
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -166,7 +166,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
 
   // Invoked after the firmware management partition in TPM is updated.
   void OnFirmwareManagementParametersDataSet(
-      base::Optional<user_data_auth::SetFirmwareManagementParametersReply>
+      absl::optional<user_data_auth::SetFirmwareManagementParametersReply>
           reply);
 
   // Calls InstallAttributes::LockDevice() for enterprise enrollment and
@@ -191,7 +191,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   void HandleActiveDirectoryPolicyRefreshed(authpolicy::ErrorType error);
 
   // Handles the blob for the device policy for the offline demo mode.
-  void OnOfflinePolicyBlobLoaded(base::Optional<std::string> blob);
+  void OnOfflinePolicyBlobLoaded(absl::optional<std::string> blob);
 
   // Handles the policy validation result for the offline demo mode.
   void OnOfflinePolicyValidated(DeviceCloudPolicyValidator* validator);

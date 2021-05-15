@@ -7,7 +7,6 @@
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -50,6 +49,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -158,7 +158,7 @@ WebAppIntegrationBrowserTestBase::WebAppIntegrationBrowserTestBase(
 WebAppIntegrationBrowserTestBase::~WebAppIntegrationBrowserTestBase() = default;
 
 // static
-base::Optional<ProfileState>
+absl::optional<ProfileState>
 WebAppIntegrationBrowserTestBase::GetStateForProfile(
     StateSnapshot* state_snapshot,
     Profile* profile) {
@@ -166,36 +166,36 @@ WebAppIntegrationBrowserTestBase::GetStateForProfile(
   DCHECK(profile);
   auto it = state_snapshot->profiles.find(profile);
   return it == state_snapshot->profiles.end()
-             ? base::nullopt
-             : base::make_optional<ProfileState>(it->second);
+             ? absl::nullopt
+             : absl::make_optional<ProfileState>(it->second);
 }
 
 // static
-base::Optional<BrowserState>
+absl::optional<BrowserState>
 WebAppIntegrationBrowserTestBase::GetStateForBrowser(
     StateSnapshot* state_snapshot,
     Profile* profile,
     Browser* browser) {
-  base::Optional<ProfileState> profile_state =
+  absl::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto it = profile_state->browsers.find(browser);
   return it == profile_state->browsers.end()
-             ? base::nullopt
-             : base::make_optional<BrowserState>(it->second);
+             ? absl::nullopt
+             : absl::make_optional<BrowserState>(it->second);
 }
 
-base::Optional<AppState> WebAppIntegrationBrowserTestBase::GetAppByScope(
+absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetAppByScope(
     StateSnapshot* state_snapshot,
     Profile* profile,
     const std::string& action_param) {
-  base::Optional<ProfileState> profile_state =
+  absl::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   GURL scope = GetURLForScope(action_param);
@@ -206,37 +206,37 @@ base::Optional<AppState> WebAppIntegrationBrowserTestBase::GetAppByScope(
                    });
 
   return it == profile_state->apps.end()
-             ? base::nullopt
-             : base::make_optional<AppState>(it->second);
+             ? absl::nullopt
+             : absl::make_optional<AppState>(it->second);
 }
 
 // static
-base::Optional<TabState> WebAppIntegrationBrowserTestBase::GetStateForActiveTab(
+absl::optional<TabState> WebAppIntegrationBrowserTestBase::GetStateForActiveTab(
     BrowserState browser_state) {
   if (!browser_state.active_tab) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto it = browser_state.tabs.find(browser_state.active_tab);
   DCHECK(it != browser_state.tabs.end());
-  return base::make_optional<TabState>(it->second);
+  return absl::make_optional<TabState>(it->second);
 }
 
 // static
-base::Optional<AppState> WebAppIntegrationBrowserTestBase::GetStateForAppId(
+absl::optional<AppState> WebAppIntegrationBrowserTestBase::GetStateForAppId(
     StateSnapshot* state_snapshot,
     Profile* profile,
     web_app::AppId id) {
-  base::Optional<ProfileState> profile_state =
+  absl::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto it = profile_state->apps.find(id);
   return it == profile_state->apps.end()
-             ? base::nullopt
-             : base::make_optional<AppState>(it->second);
+             ? absl::nullopt
+             : absl::make_optional<AppState>(it->second);
 }
 
 // static
@@ -603,7 +603,7 @@ web_app::AppId WebAppIntegrationBrowserTestBase::InstallOmniboxOrMenu() {
 
 void WebAppIntegrationBrowserTestBase::LaunchInternal(
     const std::string& action_param) {
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(before_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
@@ -665,7 +665,7 @@ void WebAppIntegrationBrowserTestBase::RemovePolicyApp(
 
 void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
     const std::string& action_param) {
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(before_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
@@ -678,7 +678,7 @@ void WebAppIntegrationBrowserTestBase::SetOpenInTabInternal(
 
 void WebAppIntegrationBrowserTestBase::SetOpenInWindowInternal(
     const std::string& action_param) {
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(before_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
@@ -749,7 +749,7 @@ void WebAppIntegrationBrowserTestBase::UninstallFromMenu() {
 
 void WebAppIntegrationBrowserTestBase::UninstallInternal(
     const std::string& action_param) {
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(before_action_state_.get(), profile(), action_param);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
@@ -786,7 +786,7 @@ void WebAppIntegrationBrowserTestBase::UserSigninInternal() {
 // Assert Actions
 void WebAppIntegrationBrowserTestBase::AssertAppNotLocallyInstalledInternal() {
   DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
@@ -795,17 +795,17 @@ void WebAppIntegrationBrowserTestBase::AssertAppNotLocallyInstalledInternal() {
 void WebAppIntegrationBrowserTestBase::AssertAppNotInList(
     const std::string& action_param) {
   DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(after_action_state_.get(), profile(), action_param);
   EXPECT_FALSE(app_state.has_value());
 }
 
 void WebAppIntegrationBrowserTestBase::AssertInstallable() {
   DCHECK(after_action_state_);
-  base::Optional<BrowserState> browser_state =
+  absl::optional<BrowserState> browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
-  base::Optional<TabState> active_tab =
+  absl::optional<TabState> active_tab =
       GetStateForActiveTab(browser_state.value());
   ASSERT_TRUE(active_tab.has_value());
   EXPECT_TRUE(active_tab->is_installable);
@@ -813,7 +813,7 @@ void WebAppIntegrationBrowserTestBase::AssertInstallable() {
 
 void WebAppIntegrationBrowserTestBase::AssertInstallIconShown() {
   DCHECK(after_action_state_);
-  base::Optional<BrowserState> browser_state =
+  absl::optional<BrowserState> browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_TRUE(browser_state->install_icon_shown);
@@ -821,7 +821,7 @@ void WebAppIntegrationBrowserTestBase::AssertInstallIconShown() {
 }
 
 void WebAppIntegrationBrowserTestBase::AssertInstallIconNotShown() {
-  base::Optional<BrowserState> browser_state =
+  absl::optional<BrowserState> browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_FALSE(browser_state->install_icon_shown);
@@ -830,7 +830,7 @@ void WebAppIntegrationBrowserTestBase::AssertInstallIconNotShown() {
 
 void WebAppIntegrationBrowserTestBase::AssertLaunchIconShown() {
   DCHECK(after_action_state_);
-  base::Optional<BrowserState> browser_state =
+  absl::optional<BrowserState> browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_TRUE(browser_state->launch_icon_shown);
@@ -838,7 +838,7 @@ void WebAppIntegrationBrowserTestBase::AssertLaunchIconShown() {
 
 void WebAppIntegrationBrowserTestBase::AssertLaunchIconNotShown() {
   DCHECK(after_action_state_);
-  base::Optional<BrowserState> browser_state =
+  absl::optional<BrowserState> browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
   ASSERT_TRUE(browser_state.has_value());
   EXPECT_FALSE(browser_state->launch_icon_shown);
@@ -847,7 +847,7 @@ void WebAppIntegrationBrowserTestBase::AssertLaunchIconNotShown() {
 void WebAppIntegrationBrowserTestBase::AssertManifestDisplayModeInternal(
     DisplayMode display_mode) {
   DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(display_mode, app_state->effective_display_mode);
@@ -856,16 +856,16 @@ void WebAppIntegrationBrowserTestBase::AssertManifestDisplayModeInternal(
 void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
   DCHECK(before_action_state_);
   DCHECK(after_action_state_);
-  base::Optional<BrowserState> most_recent_browser_state =
+  absl::optional<BrowserState> most_recent_browser_state =
       GetStateForBrowser(after_action_state_.get(), profile(), browser());
-  base::Optional<BrowserState> previous_browser_state =
+  absl::optional<BrowserState> previous_browser_state =
       GetStateForBrowser(before_action_state_.get(), profile(), browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
   ASSERT_TRUE(previous_browser_state.has_value());
   EXPECT_GT(most_recent_browser_state->tabs.size(),
             previous_browser_state->tabs.size());
 
-  base::Optional<TabState> active_tab =
+  absl::optional<TabState> active_tab =
       GetStateForActiveTab(most_recent_browser_state.value());
   ASSERT_TRUE(active_tab.has_value());
 }
@@ -873,7 +873,7 @@ void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
 void WebAppIntegrationBrowserTestBase::AssertUserDisplayModeInternal(
     DisplayMode display_mode) {
   DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(display_mode, app_state->user_display_mode);
@@ -882,9 +882,9 @@ void WebAppIntegrationBrowserTestBase::AssertUserDisplayModeInternal(
 void WebAppIntegrationBrowserTestBase::AssertWindowClosed() {
   DCHECK(before_action_state_);
   DCHECK(after_action_state_);
-  base::Optional<ProfileState> after_action_profile =
+  absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_action_state_.get(), profile());
-  base::Optional<ProfileState> before_action_profile =
+  absl::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -895,9 +895,9 @@ void WebAppIntegrationBrowserTestBase::AssertWindowClosed() {
 void WebAppIntegrationBrowserTestBase::AssertWindowCreated() {
   DCHECK(before_action_state_);
   DCHECK(after_action_state_);
-  base::Optional<ProfileState> after_action_profile =
+  absl::optional<ProfileState> after_action_profile =
       GetStateForProfile(after_action_state_.get(), profile());
-  base::Optional<ProfileState> before_action_profile =
+  absl::optional<ProfileState> before_action_profile =
       GetStateForProfile(before_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
@@ -909,7 +909,7 @@ void WebAppIntegrationBrowserTestBase::AssertWindowDisplayMode(
     blink::mojom::DisplayMode display_mode) {
   DCHECK(app_browser());
   DCHECK(app_browser()->app_controller()->AsWebAppBrowserController());
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
 
@@ -997,7 +997,7 @@ content::WebContents* WebAppIntegrationBrowserTestBase::GetCurrentTab(
 void WebAppIntegrationBrowserTestBase::ForceUpdateManifestContents(
     const std::string& app_scope,
     GURL app_url_with_manifest_param) {
-  base::Optional<AppState> app_state =
+  absl::optional<AppState> app_state =
       GetAppByScope(before_action_state_.get(), profile(), app_scope);
   ASSERT_TRUE(app_state.has_value());
   auto app_id = app_state->id;

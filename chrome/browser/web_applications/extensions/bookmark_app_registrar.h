@@ -41,9 +41,9 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   int CountUserInstalledApps() const override;
   std::string GetAppShortName(const web_app::AppId& app_id) const override;
   std::string GetAppDescription(const web_app::AppId& app_id) const override;
-  base::Optional<SkColor> GetAppThemeColor(
+  absl::optional<SkColor> GetAppThemeColor(
       const web_app::AppId& app_id) const override;
-  base::Optional<SkColor> GetAppBackgroundColor(
+  absl::optional<SkColor> GetAppBackgroundColor(
       const web_app::AppId& app_id) const override;
   const GURL& GetAppStartUrl(const web_app::AppId& app_id) const override;
   const std::string* GetAppLaunchQueryParams(
@@ -56,7 +56,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   bool IsAppFileHandlerPermissionBlocked(
       const web_app::AppId& app_id) const override;
-  base::Optional<GURL> GetAppScopeInternal(
+  absl::optional<GURL> GetAppScopeInternal(
       const web_app::AppId& app_id) const override;
   web_app::DisplayMode GetAppDisplayMode(
       const web_app::AppId& app_id) const override;

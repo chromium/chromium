@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -18,7 +18,7 @@ namespace network_diagnostics {
 HostResolver::ResolutionResult::ResolutionResult(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses)
+    const absl::optional<net::AddressList>& resolved_addresses)
     : result(result),
       resolve_error_info(resolve_error_info),
       resolved_addresses(resolved_addresses) {}
@@ -55,7 +55,7 @@ HostResolver::~HostResolver() = default;
 void HostResolver::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   receiver_.reset();
   host_resolver_.reset();
 
@@ -66,7 +66,7 @@ void HostResolver::OnComplete(
 
 void HostResolver::OnMojoConnectionError() {
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
+             absl::nullopt);
 }
 
 }  // namespace network_diagnostics

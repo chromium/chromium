@@ -127,15 +127,15 @@ class MediaSessionNotificationProducer
     void MediaSessionInfoChanged(
         media_session::mojom::MediaSessionInfoPtr session_info) override;
     void MediaSessionMetadataChanged(
-        const base::Optional<media_session::MediaMetadata>& metadata) override {
+        const absl::optional<media_session::MediaMetadata>& metadata) override {
     }
     void MediaSessionActionsChanged(
         const std::vector<media_session::mojom::MediaSessionAction>& actions)
         override;
     void MediaSessionChanged(
-        const base::Optional<base::UnguessableToken>& request_id) override {}
+        const absl::optional<base::UnguessableToken>& request_id) override {}
     void MediaSessionPositionChanged(
-        const base::Optional<media_session::MediaPosition>& position) override;
+        const absl::optional<media_session::MediaPosition>& position) override;
 
     // media_router::WebContentsPresentationManager::Observer:
     void OnMediaRoutesChanged(
@@ -194,7 +194,7 @@ class MediaSessionNotificationProducer
     base::TimeTicks last_interaction_time_ = base::TimeTicks::Now();
 
     // The reason why this session was dismissed/removed.
-    base::Optional<GlobalMediaControlsDismissReason> dismiss_reason_;
+    absl::optional<GlobalMediaControlsDismissReason> dismiss_reason_;
 
     // True if the session's playback state is "playing".
     bool is_playing_ = false;

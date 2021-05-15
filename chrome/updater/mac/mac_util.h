@@ -6,9 +6,9 @@
 #define CHROME_UPDATER_MAC_MAC_UTIL_H_
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/optional.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -19,44 +19,44 @@ namespace updater {
 
 // For user installations returns: the "~/Library" for the logged in user.
 // For system installations returns: "/Library".
-base::Optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
+absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
 
 // For user installations sets `path` to: the "~/Library/Application Support"
 // for the logged in user. For system installations sets `path` to:
 // "/Library/Application Support".
-base::Optional<base::FilePath> GetApplicationSupportDirectory(
+absl::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope);
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater
 // For system installations:
 // /Library/Google/GoogleUpdater
-base::Optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0
 // For system installations:
 // /Library/Google/GoogleUpdater/88.0.4293.0
-base::Optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version);
 
 // The same as GetVersionedUpdaterFolderPathForVersion, where the version is
 // kUpdaterVersion.
-base::Optional<base::FilePath> GetVersionedUpdaterFolderPath(
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
     UpdaterScope scope);
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater
 // For system installations:
 // /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater
-base::Optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
 
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
 // For system installations:
 // /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
-base::Optional<base::FilePath> GetExecutableFolderPathForVersion(
+absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
     UpdaterScope scope,
     const base::Version& version);
 

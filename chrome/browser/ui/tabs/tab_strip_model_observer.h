@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 
@@ -336,7 +336,7 @@ class TabStripModelObserver {
 
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       content::WebContents* contents,
       int index);
 

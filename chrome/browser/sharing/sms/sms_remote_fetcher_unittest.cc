@@ -58,9 +58,9 @@ TEST(SmsRemoteFetcherTest, DisabledByDefault) {
   FetchRemoteSms(
       web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
-          [&loop](base::Optional<std::vector<url::Origin>>,
-                  base::Optional<std::string> result,
-                  base::Optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](absl::optional<std::vector<url::Origin>>,
+                  absl::optional<std::string> result,
+                  absl::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -90,9 +90,9 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   FetchRemoteSms(
       web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
-          [&loop](base::Optional<std::vector<url::Origin>>,
-                  base::Optional<std::string> result,
-                  base::Optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](absl::optional<std::vector<url::Origin>>,
+                  absl::optional<std::string> result,
+                  absl::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -136,9 +136,9 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   FetchRemoteSms(
       web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
-          [&loop](base::Optional<std::vector<url::Origin>>,
-                  base::Optional<std::string> result,
-                  base::Optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](absl::optional<std::vector<url::Origin>>,
+                  absl::optional<std::string> result,
+                  absl::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_TRUE(result);
             ASSERT_EQ("ABC", result);
             loop.Quit();
@@ -181,9 +181,9 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   FetchRemoteSms(
       web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
-          [&loop](base::Optional<std::vector<url::Origin>>,
-                  base::Optional<std::string> result,
-                  base::Optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](absl::optional<std::vector<url::Origin>>,
+                  absl::optional<std::string> result,
+                  absl::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
@@ -226,9 +226,9 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
   base::OnceClosure cancel_callback = FetchRemoteSms(
       web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
-          [&loop](base::Optional<std::vector<url::Origin>>,
-                  base::Optional<std::string> one_time_code,
-                  base::Optional<content::SmsFetchFailureType> failure_type) {
+          [&loop](absl::optional<std::vector<url::Origin>>,
+                  absl::optional<std::string> one_time_code,
+                  absl::optional<content::SmsFetchFailureType> failure_type) {
             ASSERT_FALSE(one_time_code);
             loop.Quit();
           }));

@@ -176,7 +176,7 @@ class UpdateScreen : public BaseScreen,
   bool is_critical_checked_ = false;
 
   // Caches the result of HasCriticalUpdate function.
-  base::Optional<bool> has_critical_update_;
+  absl::optional<bool> has_critical_update_;
 
   // True if the update progress should be hidden even if update_info suggests
   // the opposite.

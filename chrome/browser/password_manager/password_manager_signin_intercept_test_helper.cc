@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -30,6 +29,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -107,7 +107,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   profile_storage->AddProfile(std::move(params));
 
   // Check that the signin qualifies for interception.
-  base::Optional<SigninInterceptionHeuristicOutcome> outcome =
+  absl::optional<SigninInterceptionHeuristicOutcome> outcome =
       GetSigninInterceptor(current_profile)
           ->GetHeuristicOutcome(
               /*is_new_account=*/true, /*is_sync_signin=*/false, kGaiaUsername);

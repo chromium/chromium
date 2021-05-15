@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -23,6 +22,7 @@
 #include "device/fido/pin.h"
 #include "device/fido/reset_request_handler.h"
 #include "device/fido/set_pin_request_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;
@@ -117,7 +117,7 @@ void SecurityKeysPINHandler::HandleStartSetPIN(const base::ListValue* args) {
 
 void SecurityKeysPINHandler::OnGatherPIN(uint32_t current_min_pin_length,
                                          uint32_t new_min_pin_length,
-                                         base::Optional<int64_t> num_retries) {
+                                         absl::optional<int64_t> num_retries) {
   DCHECK_EQ(State::kStartSetPIN, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -422,9 +422,9 @@ void SecurityKeysCredentialHandler::OnCredentialManagementReady() {
 
 void SecurityKeysCredentialHandler::OnHaveCredentials(
     device::CtapDeviceResponseCode status,
-    base::Optional<std::vector<device::AggregatedEnumerateCredentialsResponse>>
+    absl::optional<std::vector<device::AggregatedEnumerateCredentialsResponse>>
         responses,
-    base::Optional<size_t> remaining_credentials) {
+    absl::optional<size_t> remaining_credentials) {
   DCHECK_EQ(State::kGettingCredentials, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(credential_management_);
@@ -741,7 +741,7 @@ void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
 
 void SecurityKeysBioEnrollmentHandler::OnHaveEnumeration(
     device::CtapDeviceResponseCode code,
-    base::Optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
+    absl::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback_id_.empty());
   DCHECK_EQ(state_, State::kEnumerating);
@@ -814,7 +814,7 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
 void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
     std::vector<uint8_t> enrolled_template_id,
     device::CtapDeviceResponseCode code,
-    base::Optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
+    absl::optional<std::map<std::vector<uint8_t>, std::string>> enrollments) {
   DCHECK_EQ(state_, State::kEnrolling);
   DCHECK(!callback_id_.empty());
   state_ = State::kReady;

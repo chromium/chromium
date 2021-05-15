@@ -6,12 +6,12 @@
 
 #include <utility>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
-AccessingRequest::AccessingRequest(base::Optional<bool> camera,
-                                   base::Optional<bool> microphone)
+AccessingRequest::AccessingRequest(absl::optional<bool> camera,
+                                   absl::optional<bool> microphone)
     : camera(camera), microphone(microphone) {}
 
 AccessingRequest::AccessingRequest(AccessingRequest&&) = default;
@@ -46,8 +46,8 @@ AccessingRequest MediaRequests::UpdateRequests(
     const content::MediaRequestState state) {
   DCHECK(web_contents);
 
-  base::Optional<bool> accessing_camera;
-  base::Optional<bool> accessing_microphone;
+  absl::optional<bool> accessing_camera;
+  absl::optional<bool> accessing_microphone;
   if (state == content::MEDIA_REQUEST_STATE_DONE) {
     if (blink::IsVideoInputMediaType(stream_type)) {
       accessing_camera = MaybeAddRequest(app_id, web_contents,
@@ -102,7 +102,7 @@ bool MediaRequests::HasRequest(
   return false;
 }
 
-base::Optional<bool> MediaRequests::MaybeAddRequest(
+absl::optional<bool> MediaRequests::MaybeAddRequest(
     const std::string& app_id,
     const content::WebContents* web_contents,
     std::map<std::string, std::set<const content::WebContents*>>&
@@ -110,10 +110,10 @@ base::Optional<bool> MediaRequests::MaybeAddRequest(
   auto it = app_id_to_web_contents.find(app_id);
   if (it != app_id_to_web_contents.end() &&
       it->second.find(web_contents) != it->second.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<bool> ret;
+  absl::optional<bool> ret;
   if (it == app_id_to_web_contents.end()) {
     ret = true;
     app_id_to_web_contents[app_id].insert(web_contents);
@@ -124,7 +124,7 @@ base::Optional<bool> MediaRequests::MaybeAddRequest(
   return ret;
 }
 
-base::Optional<bool> MediaRequests::MaybeRemoveRequest(
+absl::optional<bool> MediaRequests::MaybeRemoveRequest(
     const std::string& app_id,
     const content::WebContents* web_contents,
     std::map<std::string, std::set<const content::WebContents*>>&
@@ -132,7 +132,7 @@ base::Optional<bool> MediaRequests::MaybeRemoveRequest(
   auto it = app_id_to_web_contents.find(app_id);
   if (it == app_id_to_web_contents.end() ||
       it->second.find(web_contents) == it->second.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   it->second.erase(web_contents);
@@ -141,16 +141,16 @@ base::Optional<bool> MediaRequests::MaybeRemoveRequest(
     return false;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> MediaRequests::MaybeRemoveRequest(
+absl::optional<bool> MediaRequests::MaybeRemoveRequest(
     const std::string& app_id,
     std::map<std::string, std::set<const content::WebContents*>>&
         app_id_to_web_contents) {
   auto it = app_id_to_web_contents.find(app_id);
   if (it == app_id_to_web_contents.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   app_id_to_web_contents.erase(it);

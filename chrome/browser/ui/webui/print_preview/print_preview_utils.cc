@@ -221,7 +221,7 @@ bool ParseSettings(const base::Value& settings,
     NOTREACHED();
     return false;
   }
-  base::Optional<base::Value> ticket_value =
+  absl::optional<base::Value> ticket_value =
       base::JSONReader::Read(*ticket_opt);
   if (!ticket_value)
     return false;

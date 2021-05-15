@@ -112,7 +112,7 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
       profile_->GetPrefs(), web_app_id, web_app::ExternalInstallSource::kArc);
 }
 
-base::Optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
+absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const web_app::AppId& app_id) {
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
@@ -122,26 +122,26 @@ base::Optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
       {app_id, kPackageNameKey}, base::Value::Type::STRING);
 
   if (!v)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::Optional<std::string>(v->GetString());
+  return absl::optional<std::string>(v->GetString());
 }
 
-base::Optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
+absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const GURL& url) {
   web_app::AppRegistrar& registrar =
       web_app::WebAppProvider::Get(profile_)->registrar();
-  base::Optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(url);
+  absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(url);
   if (!app_id)
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetPackageNameForWebApp(app_id.value());
 }
 
-base::Optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
+absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
     const web_app::AppId& app_id) {
   if (!IsWebAppInstalledFromArc(app_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
@@ -151,9 +151,9 @@ base::Optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
       {app_id, kSha256FingerprintKey}, base::Value::Type::STRING);
 
   if (!v)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::Optional<std::string>(v->GetString());
+  return absl::optional<std::string>(v->GetString());
 }
 
 void ApkWebAppService::SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs) {
@@ -461,7 +461,7 @@ void ApkWebAppService::OnDidFinishInstall(
     const std::string& package_name,
     const web_app::AppId& web_app_id,
     bool is_web_only_twa,
-    const base::Optional<std::string> sha256_fingerprint,
+    const absl::optional<std::string> sha256_fingerprint,
     web_app::InstallResultCode code) {
   // Do nothing: any error cancels installation.
   if (code != web_app::InstallResultCode::kSuccessNewInstall)

@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -22,6 +21,7 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -332,13 +332,13 @@ class KioskAppManager : public KioskAppManagerBase,
   std::unique_ptr<KioskExternalUpdater> usb_stick_updater_;
 
   // Last app id set by UpdatePrimaryAppLoaderPrefs().
-  base::Optional<std::string> primary_app_id_;
+  absl::optional<std::string> primary_app_id_;
 
   // Callback registered using SetPrimaryAppLoaderPrefsChangedHandler().
   base::RepeatingClosure primary_app_changed_handler_;
 
   // Extensions id set by UpdateSecondatyAppsLoaderPrefs().
-  base::Optional<std::vector<std::string>> secondary_app_ids_;
+  absl::optional<std::vector<std::string>> secondary_app_ids_;
 
   // Callback registered using SetSecondaryAppsLoaderPrefsChangedHandler().
   base::RepeatingClosure secondary_apps_changed_handler_;

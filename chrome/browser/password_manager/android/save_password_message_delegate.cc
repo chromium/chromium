@@ -51,7 +51,7 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
       password_bubble_experiment::IsSmartLockUser(
           ProfileSyncServiceFactory::GetForProfile(profile));
 
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(
           profile, is_saving_google_account);
   DisplaySavePasswordPromptInternal(web_contents, std::move(form_to_save),
@@ -76,7 +76,7 @@ void SavePasswordMessageDelegate::DismissSavePasswordMessage(
 void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    base::Optional<AccountInfo> account_info,
+    absl::optional<AccountInfo> account_info,
     bool update_password) {
   // Dismiss previous message if it is displayed.
   DismissSavePasswordPrompt();
@@ -292,7 +292,7 @@ void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
 void SavePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::UIDismissalReason ui_dismissal_reason) {
   password_manager::metrics_util::LogSaveUIDismissalReason(
-      ui_dismissal_reason, /*user_state=*/base::nullopt);
+      ui_dismissal_reason, /*user_state=*/absl::nullopt);
   if (passwords_state_.form_manager()->WasUnblocklisted()) {
     password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
         ui_dismissal_reason);

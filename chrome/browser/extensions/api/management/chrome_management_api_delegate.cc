@@ -363,7 +363,7 @@ void OnWebAppInstallabilityChecked(
     InstallOrLaunchWebAppCallback callback,
     std::unique_ptr<content::WebContents> web_contents,
     InstallableCheckResult result,
-    base::Optional<web_app::AppId> app_id) {
+    absl::optional<web_app::AppId> app_id) {
   switch (result) {
     case InstallableCheckResult::kAlreadyInstalled:
       DCHECK(app_id);

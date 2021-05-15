@@ -46,10 +46,10 @@ const base::Feature kFileSystemConnectorEnabled{
     "FileSystemConnectorsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // static
-base::Optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
+absl::optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
     download::DownloadItem* download_item) {
   if (!base::FeatureList::IsEnabled(kFileSystemConnectorEnabled))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Check to see if the download item matches any rules.  If the URL of the
   // download itself does not match then check the URL of site on which the
@@ -70,7 +70,7 @@ base::Optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
     return settings;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static

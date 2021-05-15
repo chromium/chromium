@@ -29,7 +29,7 @@ void OriginRobotsRulesCache::GetRobotsRules(
   DCHECK(!origin.opaque());
   if (!litepages_service_bypass_decider_ ||
       !litepages_service_bypass_decider_->ShouldAllowNow()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   auto rules = rules_cache_.Get(origin);

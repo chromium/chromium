@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace app_time {
@@ -52,7 +52,7 @@ std::vector<AppId> AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistAppList()
 
   base::Value::ConstListView list_view = app_list->GetList();
   for (const base::Value& value : list_view) {
-    base::Optional<AppId> app_id = policy::AppIdFromDict(value);
+    absl::optional<AppId> app_id = policy::AppIdFromDict(value);
     if (app_id)
       return_value.push_back(*app_id);
   }

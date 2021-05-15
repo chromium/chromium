@@ -190,10 +190,10 @@ void AddInspectionResultToCache(
   DCHECK(insert_result.second);
 }
 
-base::Optional<ModuleInspectionResult> GetInspectionResultFromCache(
+absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache) {
-  base::Optional<ModuleInspectionResult> inspection_result;
+  absl::optional<ModuleInspectionResult> inspection_result;
 
   auto it = inspection_results_cache->find(module_key);
   if (it != inspection_results_cache->end()) {

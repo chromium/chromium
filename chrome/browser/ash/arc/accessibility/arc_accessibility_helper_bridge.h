@@ -149,10 +149,10 @@ class ArcAccessibilityHelperBridge
   void OnActionResult(const ui::AXActionData& data, bool result) const;
   void OnGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& result_rect) const;
+      const absl::optional<gfx::Rect>& result_rect) const;
 
-  base::Optional<gfx::Rect> OnGetTextLocationDataResultInternal(
-      const base::Optional<gfx::Rect>& result_rect) const;
+  absl::optional<gfx::Rect> OnGetTextLocationDataResultInternal(
+      const absl::optional<gfx::Rect>& result_rect) const;
 
   void OnAccessibilityStatusChanged(
       const ash::AccessibilityStatusEventDetails& event_details);

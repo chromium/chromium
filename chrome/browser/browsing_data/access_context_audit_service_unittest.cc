@@ -193,10 +193,10 @@ TEST_F(AccessContextAuditServiceTest, CookieRecords) {
 
   auto test_cookie = net::CanonicalCookie::Create(
       kTestCookieURL, kTestCookieName + "=1; max-age=3600", kAccessTime1,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
   auto test_non_persistent_cookie = net::CanonicalCookie::Create(
       kTestCookieURL, kTestNonPersistentCookieName + "=1", kAccessTime1,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   // Record access to these cookies against a URL.
   url::Origin kTopFrameOrigin = url::Origin::Create(GURL("https://test.com"));
@@ -281,7 +281,7 @@ TEST_F(AccessContextAuditServiceTest, ExpiredCookies) {
   const GURL kTestURL("https://test.com");
   auto test_cookie_expired = net::CanonicalCookie::Create(
       kTestURL, "test_1=1; expires=Thu, 01 Jan 1970 00:00:00 GMT",
-      base::Time::Now(), base::nullopt /* server_time */);
+      base::Time::Now(), absl::nullopt /* server_time */);
 
   service()->RecordCookieAccess({*test_cookie_expired},
                                 url::Origin::Create(kTestURL));
@@ -299,7 +299,7 @@ TEST_F(AccessContextAuditServiceTest, GetStorageRecords) {
   service()->RecordCookieAccess(
       {*net::CanonicalCookie::Create(kTestUrl, "foo=bar; max-age=3600",
                                      kAccessTime1,
-                                     base::nullopt /* server_time */)},
+                                     absl::nullopt /* server_time */)},
       kTopFrameOrigin);
   url::Origin kTestOrigin = url::Origin::Create(kTestUrl);
   service()->RecordStorageAPIAccess(
@@ -343,7 +343,7 @@ TEST_F(AccessContextAuditServiceTest, GetThirdPartyStorageRecords) {
   service()->RecordCookieAccess(
       {*net::CanonicalCookie::Create(kTestUrl, "foo=bar; max-age=3600",
                                      kAccessTime1,
-                                     base::nullopt /* server_time */)},
+                                     absl::nullopt /* server_time */)},
       kTopFrameOrigin);
   service()->RecordStorageAPIAccess(
       kTestOrigin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
@@ -426,7 +426,7 @@ TEST_F(AccessContextAuditServiceTest, HistoryDeletion) {
 
   auto test_cookie = net::CanonicalCookie::Create(
       kTestCookieURL, kTestCookieName + "=1; max-age=3600", kAccessTime,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   // Record access for two top level origins for the same storage and cookie.
   service()->RecordCookieAccess({*test_cookie}, kHistoryEntriesRemainingOrigin);
@@ -485,12 +485,12 @@ TEST_F(AccessContextAuditServiceTest, AllHistoryDeletion) {
   service()->RecordCookieAccess(
       {*net::CanonicalCookie::Create(GURL("https://foo.com"),
                                      "foo=1; max-age=3600", base::Time::Now(),
-                                     base::nullopt /* server_time */)},
+                                     absl::nullopt /* server_time */)},
       kHistoryEntryOrigin);
   service()->RecordCookieAccess(
       {*net::CanonicalCookie::Create(GURL("https://bar.com"),
                                      "bar=1; max-age=3600", base::Time::Now(),
-                                     base::nullopt /* server_time */)},
+                                     absl::nullopt /* server_time */)},
       kNoHistoryEntryOrigin);
   service()->RecordStorageAPIAccess(
       url::Origin::Create(GURL("https://foo.com")),
@@ -555,10 +555,10 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
   // Record accesses to cookies both inside and outside the deletion range.
   auto cookie_accessed_in_range = net::CanonicalCookie::Create(
       kTestCookieURL, "inside=1; max-age=3600", kInsideTimeRange,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
   auto cookie_accessed_outside_range = net::CanonicalCookie::Create(
       kTestCookieURL, "outside=1; max-age=3600", kOutsideTimeRange,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   clock()->SetNow(kInsideTimeRange);
   service()->RecordCookieAccess({*cookie_accessed_in_range}, kOrigin1);
@@ -611,19 +611,19 @@ TEST_F(AccessContextAuditServiceTest, SessionOnlyRecords) {
   // Create a cookie that will persist after shutdown.
   auto test_cookie_persistent = net::CanonicalCookie::Create(
       kTestPersistentURL, kTestCookieName + "=1; max-age=3600", kAccessTime,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   // Create a cookie that will persist (be cleared on next startup) because it
   // is explicitly session only.
   auto test_cookie_session_only_explicit = net::CanonicalCookie::Create(
       kTestSessionOnlyExplicitURL, kTestCookieName + "=1", kAccessTime,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   // Create a cookie that will be cleared because the content setting associated
   // with the cookie domain is set to session only.
   auto test_cookie_session_only_content_setting = net::CanonicalCookie::Create(
       kTestSessionOnlyContentSettingURL, kTestCookieName + "=1; max-age=3600",
-      kAccessTime, base::nullopt /* server_time */);
+      kAccessTime, absl::nullopt /* server_time */);
 
   service()->RecordCookieAccess(
       {*test_cookie_persistent, *test_cookie_session_only_explicit,
@@ -745,7 +745,7 @@ TEST_F(AccessContextAuditServiceTest, OpaqueOrigins) {
   // Check that records which have opaque top frame origins are not recorded.
   auto test_cookie = net::CanonicalCookie::Create(
       GURL("https://example.com"), "test_1=1; max-age=3600", base::Time::Now(),
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
   service()->RecordCookieAccess({*test_cookie}, url::Origin());
   service()->RecordStorageAPIAccess(
       url::Origin::Create(GURL("https://example.com")),
@@ -767,7 +767,7 @@ TEST_F(AccessContextAuditServiceTest, CookieAccessHelper) {
 
   auto test_cookie = net::CanonicalCookie::Create(
       kTestCookieURL, kTestCookieName + "=1; max-age=3600", kAccessTime1,
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
 
   // Record access to the cookie via a helper.
   auto helper = std::make_unique<AccessContextAuditService::CookieAccessHelper>(

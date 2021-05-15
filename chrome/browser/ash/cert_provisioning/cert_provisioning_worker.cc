@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -76,7 +76,7 @@ std::string CertScopeToString(CertScope cert_scope) {
 
 bool ConvertHashingAlgorithm(
     em::HashingAlgorithm input_algo,
-    base::Optional<chromeos::platform_keys::HashAlgorithm>* output_algo) {
+    absl::optional<chromeos::platform_keys::HashAlgorithm>* output_algo) {
   switch (input_algo) {
     case em::HashingAlgorithm::SHA1:
       *output_algo =
@@ -459,8 +459,8 @@ void CertProvisioningWorkerImpl::StartCsr() {
 
 void CertProvisioningWorkerImpl::OnStartCsrDone(
     policy::DeviceManagementStatus status,
-    base::Optional<CertProvisioningResponseErrorType> error,
-    base::Optional<int64_t> try_later,
+    absl::optional<CertProvisioningResponseErrorType> error,
+    absl::optional<int64_t> try_later,
     const std::string& invalidation_topic,
     const std::string& va_challenge,
     enterprise_management::HashingAlgorithm hashing_algorithm,
@@ -647,8 +647,8 @@ void CertProvisioningWorkerImpl::FinishCsr() {
 
 void CertProvisioningWorkerImpl::OnFinishCsrDone(
     policy::DeviceManagementStatus status,
-    base::Optional<CertProvisioningResponseErrorType> error,
-    base::Optional<int64_t> try_later) {
+    absl::optional<CertProvisioningResponseErrorType> error,
+    absl::optional<int64_t> try_later) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ProcessResponseErrors(DeviceManagementServerRequestType::kFinishCsr,
@@ -672,8 +672,8 @@ void CertProvisioningWorkerImpl::DownloadCert() {
 
 void CertProvisioningWorkerImpl::OnDownloadCertDone(
     policy::DeviceManagementStatus status,
-    base::Optional<CertProvisioningResponseErrorType> error,
-    base::Optional<int64_t> try_later,
+    absl::optional<CertProvisioningResponseErrorType> error,
+    absl::optional<int64_t> try_later,
     const std::string& pem_encoded_certificate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -728,8 +728,8 @@ void CertProvisioningWorkerImpl::OnImportCertDone(
 bool CertProvisioningWorkerImpl::ProcessResponseErrors(
     DeviceManagementServerRequestType request_type,
     policy::DeviceManagementStatus status,
-    base::Optional<CertProvisioningResponseErrorType> error,
-    base::Optional<int64_t> try_later) {
+    absl::optional<CertProvisioningResponseErrorType> error,
+    absl::optional<int64_t> try_later) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if ((status ==

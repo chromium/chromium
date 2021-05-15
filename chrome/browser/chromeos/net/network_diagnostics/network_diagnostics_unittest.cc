@@ -58,7 +58,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   void TestICMP(const std::string& ip_address,
                 TestICMPCallback callback) override {
     // Invoke the test callback with fake output.
-    std::move(callback).Run(base::Optional<std::string>{icmp_output_});
+    std::move(callback).Run(absl::optional<std::string>{icmp_output_});
   }
 
   void set_icmp_output(const std::string& icmp_output) {

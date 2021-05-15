@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -24,6 +23,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -78,10 +78,10 @@ class PolicyTestGoogle : public PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, ForceGoogleSafeSearch) {
-  ApplySafeSearchPolicy(base::nullopt,  // ForceSafeSearch
+  ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch
                         base::Value(true),
-                        base::nullopt,   // ForceYouTubeSafetyMode
-                        base::nullopt);  // ForceYouTubeRestrict
+                        absl::nullopt,   // ForceYouTubeSafetyMode
+                        absl::nullopt);  // ForceYouTubeRestrict
 
   GURL url = https_server()->GetURL("www.google.com",
                                     "/server-redirect?http://google.com/");
@@ -92,9 +92,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, ForceYouTubeRestrict) {
   for (int youtube_restrict_mode = safe_search_util::YOUTUBE_RESTRICT_OFF;
        youtube_restrict_mode < safe_search_util::YOUTUBE_RESTRICT_COUNT;
        ++youtube_restrict_mode) {
-    ApplySafeSearchPolicy(base::nullopt,  // ForceSafeSearch
-                          base::nullopt,  // ForceGoogleSafeSearch
-                          base::nullopt,  // ForceYouTubeSafetyMode
+    ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch
+                          absl::nullopt,  // ForceGoogleSafeSearch
+                          absl::nullopt,  // ForceYouTubeSafetyMode
                           base::Value(youtube_restrict_mode));
     {
       // First check frame requests.

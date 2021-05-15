@@ -207,7 +207,7 @@ class BackgroundModeManagerTest : public testing::Test {
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile(
         "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
-        base::nullopt, std::move(policy_service));
+        absl::nullopt, std::move(policy_service));
   }
 
  protected:

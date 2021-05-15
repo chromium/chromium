@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
@@ -43,7 +43,7 @@ class AppIconManager {
   };
   // For each of |purposes|, in the given order, looks for an icon with size at
   // least |min_icon_size|. Returns information on the first icon found.
-  virtual base::Optional<IconSizeAndPurpose> FindIconMatchBigger(
+  virtual absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size) const = 0;

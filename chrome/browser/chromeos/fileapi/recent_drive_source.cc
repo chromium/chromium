@@ -112,7 +112,7 @@ void RecentDriveSource::OnComplete() {
 
 void RecentDriveSource::GotSearchResults(
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
   search_query_.reset();
   auto* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);

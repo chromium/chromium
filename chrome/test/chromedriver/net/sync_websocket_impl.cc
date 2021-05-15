@@ -134,7 +134,7 @@ void SyncWebSocketImpl::Core::OnMessageReceived(const std::string& message) {
 
 void SyncWebSocketImpl::Core::DetermineRecipient(const std::string& message,
                                                  bool* send_to_chromedriver) {
-  base::Optional<base::Value> message_value =
+  absl::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
   base::DictionaryValue* message_dict;
   if (!message_value || !message_value->GetAsDictionary(&message_dict)) {

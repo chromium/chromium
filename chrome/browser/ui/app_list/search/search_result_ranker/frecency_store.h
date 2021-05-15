@@ -11,8 +11,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -47,8 +47,8 @@ class FrecencyStore {
   void Remove(const std::string& value);
 
   // Returns the ID for the given value. If the value is not in the store,
-  // return base::nullopt.
-  base::Optional<unsigned int> GetId(const std::string& value);
+  // return absl::nullopt.
+  absl::optional<unsigned int> GetId(const std::string& value);
   // Returns all stored value data. This ensures all scores have been correctly
   // updated, and none of the scores are below the |min_score_| threshold.
   const ScoreTable& GetAll();

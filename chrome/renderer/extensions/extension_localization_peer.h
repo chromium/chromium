@@ -126,7 +126,7 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
 
   // Set when OnCompletedRequest() is called, and sent to the original peer on
   // CompleteRequest().
-  base::Optional<network::URLLoaderCompletionStatus> completion_status_;
+  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
 
   // Sends ExtensionHostMsg_GetMessageBundle message to the browser to fetch
   // message catalog.

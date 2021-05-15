@@ -35,7 +35,7 @@ void AdaptLacrosResult(
         Result::NewErrorMessage(lacros_result->get_error_message()));
   } else if (lacros_result->get_contents().empty()) {
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   } else {
     std::move(callback).Run(
         Result::NewAttribute(lacros_result->get_contents()));
@@ -52,7 +52,7 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
                                     ->GetDirectoryApiID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -74,7 +74,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
                                     ->GetDeviceHostname();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -95,7 +95,7 @@ void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
           ->GetEnterpriseMachineID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -117,7 +117,7 @@ void GetAnnotatedAssetId(
                                     ->GetDeviceAssetID();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -139,7 +139,7 @@ void GetAnnotatedLocation(
                                     ->GetDeviceAnnotatedLocation();
   if (attribute.empty())
     std::move(callback).Run(
-        Result::NewAttribute(base::Optional<std::string>()));
+        Result::NewAttribute(absl::optional<std::string>()));
   else
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

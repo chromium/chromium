@@ -10,9 +10,9 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -65,7 +65,7 @@ class TerminaInstaller {
   base::FilePath GetInstallLocation();
 
   // Get the id of the installed DLC, or nullopt if DLC is not being used.
-  base::Optional<std::string> GetDlcId();
+  absl::optional<std::string> GetDlcId();
 
   // Attempt to cancel a pending install. Note that neither DLC service nor
   // component updater support this, but we have some retry logic that can be
@@ -105,8 +105,8 @@ class TerminaInstaller {
   // successfully check for an update or we need to install a new major version.
   bool component_update_check_needed_{true};
 
-  base::Optional<base::FilePath> termina_location_{base::nullopt};
-  base::Optional<std::string> dlc_id_{};
+  absl::optional<base::FilePath> termina_location_{absl::nullopt};
+  absl::optional<std::string> dlc_id_{};
   base::WeakPtrFactory<TerminaInstaller> weak_ptr_factory_{this};
 };
 

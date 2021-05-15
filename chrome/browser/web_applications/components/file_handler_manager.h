@@ -57,7 +57,7 @@ class FileHandlerManager {
 
   // Returns |app_id|'s URL registered to handle |launch_files|'s extensions, or
   // nullopt otherwise.
-  const base::Optional<GURL> GetMatchingFileHandlerURL(
+  const absl::optional<GURL> GetMatchingFileHandlerURL(
       const AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
 

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_active_popup.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -240,7 +240,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedLine(base::nullopt);
+      SetSelectedLine(absl::nullopt);
       SelectNextLine();
       return true;
     case ui::VKEY_NEXT:  // Page down.
@@ -280,7 +280,7 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 }
 
 void AutofillPopupControllerImpl::SelectionCleared() {
-  SetSelectedLine(base::nullopt);
+  SetSelectedLine(absl::nullopt);
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
@@ -370,7 +370,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   return true;
 }
 
-base::Optional<int> AutofillPopupControllerImpl::selected_line() const {
+absl::optional<int> AutofillPopupControllerImpl::selected_line() const {
   return selected_line_;
 }
 
@@ -379,14 +379,14 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
 }
 
 void AutofillPopupControllerImpl::SetSelectedLine(
-    base::Optional<int> selected_line) {
+    absl::optional<int> selected_line) {
   if (selected_line_ == selected_line)
     return;
 
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
     if (!CanAccept(suggestions_[*selected_line].frontend_id))
-      selected_line = base::nullopt;
+      selected_line = absl::nullopt;
   }
 
   auto previous_selected_line(selected_line_);
@@ -534,7 +534,7 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
       root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id, node_id);
-  base::Optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
+  absl::optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
   if (!target_node || !popup_ax_id)
     return;
 

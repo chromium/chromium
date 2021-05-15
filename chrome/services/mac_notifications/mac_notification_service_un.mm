@@ -330,7 +330,7 @@ void MacNotificationServiceUN::RequestPermission() {
       GetNotificationOperationFromAction([response actionIdentifier]);
   int buttonIndex = GetActionButtonIndexFromAction([response actionIdentifier]);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/base::nullopt);
+      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
   _handler->OnNotificationAction(std::move(actionInfo));
   completionHandler();
 }

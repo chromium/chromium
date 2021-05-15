@@ -158,7 +158,7 @@ class AutomationEventWaiter
       content::BrowserContext* browser_context = nullptr) override {}
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) override {}
+      const absl::optional<gfx::Rect>& rect) override {}
 
   ui::AXTree ax_tree_;
   std::unique_ptr<base::RunLoop> run_loop_;

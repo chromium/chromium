@@ -175,7 +175,7 @@ TEST_F(AndroidSmsAppManagerImplTest, TestSetUpMessages_NoPreviousApp_Fails) {
       GetAndroidMessagesURL() /* expected_app_url */,
       GetAndroidMessagesURL(
           true /* use_install_url */) /* expected_install_url */,
-      base::nullopt /* id_for_app */);
+      absl::nullopt /* id_for_app */);
 
   // Verify that no installed app exists and no observers were notified.
   EXPECT_FALSE(fake_android_sms_app_setup_controller()->GetAppMetadataAtUrl(
@@ -267,7 +267,7 @@ TEST_F(AndroidSmsAppManagerImplTest,
       GetAndroidMessagesURL() /* expected_app_url */,
       GetAndroidMessagesURL(
           true /* use_install_url */) /* expected_install_url */,
-      base::nullopt /* id_for_app */);
+      absl::nullopt /* id_for_app */);
 
   // Verify that the new app was not installed and no observers were notified.
   EXPECT_FALSE(fake_android_sms_app_setup_controller()->GetAppMetadataAtUrl(
@@ -357,7 +357,7 @@ TEST_F(AndroidSmsAppManagerImplTest, TestManualUninstall) {
 
   // Now uninstall the app and verify that the app manager registers it.
   fake_android_sms_app_setup_controller()->SetAppAtUrl(install_url,
-                                                       base::nullopt);
+                                                       absl::nullopt);
   EXPECT_TRUE(android_sms_app_manager()->HasAppBeenManuallyUninstalledByUser());
 }
 

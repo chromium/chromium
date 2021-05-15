@@ -86,7 +86,7 @@ struct GetParamAsString {
   }
 };
 
-base::Optional<base::FilePath> GetCommandFilePath();
+absl::optional<base::FilePath> GetCommandFilePath();
 
 // Prints tips on how to run captured-site tests.
 // |test_file_name| should be without the .cc suffix.
@@ -214,7 +214,7 @@ class TestRecipeReplayer {
   // 2. Replaying the specified Test Recipe file.
   bool ReplayTest(const base::FilePath& capture_file_path,
                   const base::FilePath& recipe_file_path,
-                  const base::Optional<base::FilePath>& command_file_path);
+                  const absl::optional<base::FilePath>& command_file_path);
 
   const std::vector<testing::AssertionResult> GetValidationFailures() const;
 
@@ -261,7 +261,7 @@ class TestRecipeReplayer {
                            base::Process* process);
   bool ReplayRecordedActions(
       const base::FilePath& recipe_file_path,
-      const base::Optional<base::FilePath>& command_file_path);
+      const absl::optional<base::FilePath>& command_file_path);
   bool InitializeBrowserToExecuteRecipe(
       const std::unique_ptr<base::DictionaryValue>& recipe);
   bool ExecuteAutofillAction(const base::DictionaryValue& action);

@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -119,7 +119,7 @@ class PasswordsPrivateRequestPlaintextPasswordFunction
   ResponseAction Run() override;
 
  private:
-  void GotPassword(base::Optional<std::u16string> password);
+  void GotPassword(absl::optional<std::u16string> password);
 };
 
 class PasswordsPrivateGetSavedPasswordListFunction : public ExtensionFunction {
@@ -285,7 +285,7 @@ class PasswordsPrivateGetPlaintextInsecurePasswordFunction
 
  private:
   void GotCredential(
-      base::Optional<api::passwords_private::InsecureCredential> credential);
+      absl::optional<api::passwords_private::InsecureCredential> credential);
 };
 
 class PasswordsPrivateChangeInsecureCredentialFunction

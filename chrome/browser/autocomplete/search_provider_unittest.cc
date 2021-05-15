@@ -141,7 +141,7 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
 class SearchProviderFeatureTestComponent {
  public:
   SearchProviderFeatureTestComponent(
-      const base::Optional<bool> warm_up_on_focus,
+      const absl::optional<bool> warm_up_on_focus,
       const bool command_line_overrides);
 
   ~SearchProviderFeatureTestComponent() {
@@ -153,7 +153,7 @@ class SearchProviderFeatureTestComponent {
 };
 
 SearchProviderFeatureTestComponent::SearchProviderFeatureTestComponent(
-    const base::Optional<bool> warm_up_on_focus,
+    const absl::optional<bool> warm_up_on_focus,
     const bool command_line_overrides) {
   if (warm_up_on_focus.has_value()) {
     if (warm_up_on_focus.value())
@@ -219,7 +219,7 @@ class BaseSearchProviderTest : public testing::Test,
   };
 
   BaseSearchProviderTest(
-      const base::Optional<bool> warm_up_on_focus = base::nullopt,
+      const absl::optional<bool> warm_up_on_focus = absl::nullopt,
       const bool command_line_overrides = false)
       : feature_test_component_(warm_up_on_focus, command_line_overrides) {
     // We need both the history service and template url model loaded.
@@ -340,7 +340,7 @@ class BaseSearchProviderTest : public testing::Test,
 class SearchProviderTest : public BaseSearchProviderTest {
  public:
   SearchProviderTest(
-      const base::Optional<bool> warm_up_on_focus = base::nullopt,
+      const absl::optional<bool> warm_up_on_focus = absl::nullopt,
       const bool command_line_overrides = false)
       : BaseSearchProviderTest(warm_up_on_focus, command_line_overrides) {}
 
@@ -3781,7 +3781,7 @@ INSTANTIATE_TEST_CASE_P(SearchProviderTest,
 class SearchProviderCommandLineOverrideTest : public SearchProviderTest {
  public:
   SearchProviderCommandLineOverrideTest()
-      : SearchProviderTest(base::nullopt, true) {}
+      : SearchProviderTest(absl::nullopt, true) {}
 
   SearchProviderCommandLineOverrideTest(
       SearchProviderCommandLineOverrideTest const&) = delete;

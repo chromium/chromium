@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_INSTALL_FINALIZER_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct WebApplicationInfo;
 class GURL;
@@ -50,8 +50,8 @@ class InstallFinalizer {
         webapps::WebappInstallSource::COUNT;
     bool locally_installed = true;
 
-    base::Optional<WebAppChromeOsData> chromeos_data;
-    base::Optional<WebAppSystemWebAppData> system_web_app_data;
+    absl::optional<WebAppChromeOsData> chromeos_data;
+    absl::optional<WebAppSystemWebAppData> system_web_app_data;
   };
 
   // Write the WebApp data to disk and register the app.

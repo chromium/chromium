@@ -5,7 +5,6 @@
 #include "chrome/browser/sharing/webrtc/tachyon_ice_config_fetcher.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -21,6 +20,7 @@
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "url/gurl.h"
 

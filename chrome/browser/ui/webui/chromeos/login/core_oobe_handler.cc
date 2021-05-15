@@ -227,7 +227,7 @@ void CoreOobeHandler::HandleSkipToUpdateForTesting() {
 }
 
 void CoreOobeHandler::HandleToggleResetScreen() {
-  base::OnceCallback<void(bool, base::Optional<tpm_firmware_update::Mode>)>
+  base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
       callback =
           base::BindOnce(&CoreOobeHandler::HandleToggleResetScreenCallback,
                          weak_ptr_factory_.GetWeakPtr());
@@ -236,7 +236,7 @@ void CoreOobeHandler::HandleToggleResetScreen() {
 
 void CoreOobeHandler::HandleToggleResetScreenCallback(
     bool is_reset_allowed,
-    base::Optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
+    absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode) {
   if (!is_reset_allowed)
     return;
   if (tpm_firmware_update_mode.has_value()) {

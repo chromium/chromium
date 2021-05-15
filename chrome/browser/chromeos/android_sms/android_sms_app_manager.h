@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -36,7 +36,7 @@ class AndroidSmsAppManager
   ~AndroidSmsAppManager() override;
 
   // If no app is installed, null is returned.
-  virtual base::Optional<GURL> GetCurrentAppUrl() = 0;
+  virtual absl::optional<GURL> GetCurrentAppUrl() = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

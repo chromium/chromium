@@ -53,7 +53,7 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
       net::OK, net::ResolveErrorInfo(net::OK), address_list);
   InitializeNetworkContext(std::move(fake_dns_result));
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), base::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),
@@ -82,10 +82,10 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
 TEST_F(HostResolverTest, TestFailedHostResolution) {
   auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), base::nullopt);
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), absl::nullopt);
   InitializeNetworkContext(std::move(fake_dns_result));
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), base::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),
@@ -113,7 +113,7 @@ TEST_F(HostResolverTest, TestMojoDisconnectDuringHostResolution) {
   InitializeNetworkContext(/*fake_dns_result=*/{});
   fake_network_context()->set_disconnect_during_host_resolution(true);
   HostResolver::ResolutionResult resolution_result{
-      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), base::nullopt};
+      net::ERR_FAILED, net::ResolveErrorInfo(net::OK), absl::nullopt};
   base::RunLoop run_loop;
   host_resolver_ = std::make_unique<HostResolver>(
       kFakeHostPortPair, fake_network_context(),

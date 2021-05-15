@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"
@@ -34,6 +33,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace content {
@@ -118,9 +118,9 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   // Methods for obtaining a pointer to the provider associated with the given
   // object. They return a nullopt when such a provider is not found.
-  virtual base::Optional<MediaRouteProviderId> GetProviderIdForPresentation(
+  virtual absl::optional<MediaRouteProviderId> GetProviderIdForPresentation(
       const std::string& presentation_id);
-  base::Optional<MediaRouteProviderId> GetProviderIdForRoute(
+  absl::optional<MediaRouteProviderId> GetProviderIdForRoute(
       const MediaRoute::Id& route_id);
 
   void CreateRouteWithSelectedDesktop(
@@ -244,7 +244,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     bool HasObserver(MediaRoutesObserver* observer) const;
     bool HasObservers() const;
 
-    const base::Optional<std::vector<MediaRoute>>& cached_route_list() const {
+    const absl::optional<std::vector<MediaRoute>>& cached_route_list() const {
       return cached_route_list_;
     }
     const std::vector<MediaRoute::Id>& joinable_route_ids() const {
@@ -257,7 +257,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
    private:
     // Cached list of routes and joinable route IDs for the query.
-    base::Optional<std::vector<MediaRoute>> cached_route_list_;
+    absl::optional<std::vector<MediaRoute>> cached_route_list_;
     std::vector<MediaRoute::Id> joinable_route_ids_;
 
     // Per-MRP lists of routes and joinable route IDs for the query.
@@ -363,7 +363,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // |result_code|: The result of the request.
   void OnTerminateRouteResult(const MediaRoute::Id& route_id,
                               MediaRouteProviderId provider_id,
-                              const base::Optional<std::string>& error_text,
+                              const absl::optional<std::string>& error_text,
                               RouteRequestResult::ResultCode result_code);
 
   // Adds |route| to the list of routes. Called in the callback for
@@ -378,9 +378,9 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                              bool is_off_the_record,
                              MediaRouteResponseCallback callback,
                              bool is_join,
-                             const base::Optional<MediaRoute>& media_route,
+                             const absl::optional<MediaRoute>& media_route,
                              mojom::RoutePresentationConnectionPtr connection,
-                             const base::Optional<std::string>& error_text,
+                             const absl::optional<std::string>& error_text,
                              RouteRequestResult::ResultCode result_code);
 
   // Callback called by MRP's CreateMediaRouteController().
@@ -388,7 +388,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   // Method for obtaining a pointer to the provider associated with the given
   // object. Returns a nullopt when such a provider is not found.
-  base::Optional<MediaRouteProviderId> GetProviderIdForSink(
+  absl::optional<MediaRouteProviderId> GetProviderIdForSink(
       const MediaSink::Id& sink_id);
 
   // Gets the sink with the given ID from lists of sinks held by sink queries.
@@ -443,7 +443,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   DesktopMediaPickerController desktop_picker_;
 
-  base::Optional<PendingStreamRequest> pending_stream_request_;
+  absl::optional<PendingStreamRequest> pending_stream_request_;
 
   // Collects logs from the Media Router and the native Media Route Providers.
   // TODO(crbug.com/1077138): Limit logging before Media Router usage.

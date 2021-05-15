@@ -52,7 +52,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
-      base::Optional<ui::CaptionStyle> caption_style) override;
+      absl::optional<ui::CaptionStyle> caption_style) override;
 
  private:
   friend class CaptionBubbleControllerViewsTest;

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 
-#include "base/optional.h"
 #include "chromeos/components/media_app_ui/media_app_ui_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUI;
@@ -24,7 +24,7 @@ class ChromeMediaAppUIDelegate : public MediaAppUIDelegate {
   ChromeMediaAppUIDelegate& operator=(const ChromeMediaAppUIDelegate&) = delete;
 
   // MediaAppUIDelegate:
-  base::Optional<std::string> OpenFeedbackDialog() override;
+  absl::optional<std::string> OpenFeedbackDialog() override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.

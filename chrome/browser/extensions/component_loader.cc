@@ -656,7 +656,7 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
                      manifest_filename, true),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     base::nullopt, base::nullopt, std::move(done_cb)));
+                     absl::nullopt, absl::nullopt, std::move(done_cb)));
 }
 
 void ComponentLoader::AddWithNameAndDescriptionFromDir(
@@ -699,8 +699,8 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
 void ComponentLoader::FinishAddComponentFromDir(
     const base::FilePath& root_directory,
     const char* extension_id,
-    const base::Optional<std::string>& name_string,
-    const base::Optional<std::string>& description_string,
+    const absl::optional<std::string>& name_string,
+    const absl::optional<std::string>& description_string,
     base::OnceClosure done_cb,
     std::unique_ptr<base::DictionaryValue> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

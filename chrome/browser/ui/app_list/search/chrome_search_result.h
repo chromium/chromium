@@ -72,8 +72,8 @@ class ChromeSearchResult {
   double display_score() const { return metadata_->display_score; }
   bool is_installing() const { return metadata_->is_installing; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
-  const base::Optional<GURL>& query_url() const { return metadata_->query_url; }
-  const base::Optional<std::string>& equivalent_result_id() const {
+  const absl::optional<GURL>& query_url() const { return metadata_->query_url; }
+  const absl::optional<std::string>& equivalent_result_id() const {
     return metadata_->equivalent_result_id;
   }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }

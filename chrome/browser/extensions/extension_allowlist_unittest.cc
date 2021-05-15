@@ -603,7 +603,7 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
   base::RunLoop run_loop;
   installer->set_installer_callback(base::BindOnce(
       [](base::OnceClosure quit_closure,
-         const base::Optional<CrxInstallError>& error) {
+         const absl::optional<CrxInstallError>& error) {
         ASSERT_FALSE(error) << error->message();
         std::move(quit_closure).Run();
       },

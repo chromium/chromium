@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -122,6 +121,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_features.h"
 #include "url/origin.h"
@@ -192,7 +192,7 @@ class NavigateTabMessageHandler : public content::NotificationObserver {
     DCHECK_EQ(NOTIFICATION_EXTENSION_TEST_MESSAGE, type);
     const auto message =
         content::Details<std::pair<std::string, bool*>>(details)->first;
-    base::Optional<base::Value> command = base::JSONReader::Read(message);
+    absl::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
       base::Value* data = command->FindDictKey("navigate");
       if (data && data->is_dict()) {
@@ -1645,7 +1645,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   // and given content.
   auto make_browser_request =
       [](network::mojom::URLLoaderFactory* url_loader_factory, const GURL& url,
-         const base::Optional<std::string>& expected_response,
+         const absl::optional<std::string>& expected_response,
          int expected_net_code) {
         auto request = std::make_unique<network::ResourceRequest>();
         request->url = url;
@@ -1837,7 +1837,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       frame->GetProcess()->GetBrowserContext(), frame,
       frame->GetProcess()->GetID(),
       content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      base::nullopt, ukm::kInvalidSourceIdObj, &pending_receiver, nullptr));
+      absl::nullopt, ukm::kInvalidSourceIdObj, &pending_receiver, nullptr));
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = 0;
@@ -2627,7 +2627,7 @@ class ServiceWorkerWebRequestApiTest : public testing::WithParamInterface<bool>,
   }
 
   void RegisterServiceWorker(const std::string& worker_path,
-                             const base::Optional<std::string>& scope) {
+                             const absl::optional<std::string>& scope) {
     GURL url = embedded_test_server()->GetURL(
         "/service_worker/create_service_worker.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2648,7 +2648,7 @@ class ServiceWorkerWebRequestApiTest : public testing::WithParamInterface<bool>,
     InstallRequestHeaderModifyingExtension();
 
     // Register a service worker and navigate to a page it controls.
-    RegisterServiceWorker(worker_script_name, base::nullopt);
+    RegisterServiceWorker(worker_script_name, absl::nullopt);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/service_worker/fetch_from_page.html")));
@@ -4112,7 +4112,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   EXPECT_EQ(redirected_url, web_contents->GetLastCommittedURL());
 
   // Check the parameters passed to the URLLoaderFactory.
-  base::Optional<network::ResourceRequest> resource_request =
+  absl::optional<network::ResourceRequest> resource_request =
       monitor.GetRequestInfo(redirected_url);
   ASSERT_TRUE(resource_request.has_value());
   EXPECT_TRUE(resource_request->site_for_cookies.IsFirstParty(redirected_url));
@@ -4161,7 +4161,7 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   ASSERT_EQ(redirected_url, all_frames[1]->GetLastCommittedURL());
 
   // Check the parameters passed to the URLLoaderFactory.
-  base::Optional<network::ResourceRequest> resource_request =
+  absl::optional<network::ResourceRequest> resource_request =
       monitor.GetRequestInfo(redirected_url);
   ASSERT_TRUE(resource_request.has_value());
   EXPECT_TRUE(

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_CLIENT_IMPL_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/sync_device_info/device_info_sync_client.h"
 
@@ -27,17 +27,17 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   bool GetSendTabToSelfReceivingEnabled() const override;
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
+  absl::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override;
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<std::string> GetFCMRegistrationToken() const override;
+  absl::optional<std::string> GetFCMRegistrationToken() const override;
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override;
+  absl::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override;
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
   GetPhoneAsASecurityKeyInfo() const override;
 
   // syncer::DeviceInfoSyncClient:

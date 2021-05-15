@@ -77,11 +77,11 @@ bool UserCloudPolicyTokenForwarder::IsTokenRefreshScheduledForTesting() const {
   return refresh_oauth_token_timer_ && refresh_oauth_token_timer_->IsRunning();
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 UserCloudPolicyTokenForwarder::GetTokenRefreshDelayForTesting() const {
   return IsTokenRefreshScheduledForTesting()
              ? refresh_oauth_token_timer_->GetCurrentDelay()
-             : base::Optional<base::TimeDelta>();
+             : absl::optional<base::TimeDelta>();
 }
 
 void UserCloudPolicyTokenForwarder::OverrideTimeForTesting(

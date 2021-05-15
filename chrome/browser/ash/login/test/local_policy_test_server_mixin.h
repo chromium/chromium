@@ -94,8 +94,8 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
       const std::string& device_serial_number,
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           InitialEnrollmentMode initial_mode,
-      const base::Optional<std::string>& management_domain,
-      const base::Optional<bool> is_license_packaged_with_device);
+      const absl::optional<std::string>& management_domain,
+      const absl::optional<bool> is_license_packaged_with_device);
 
   // Utility function that configures server parameters for zero-touch
   // enrollment. Should be used in conjunction with enabling zero-touch

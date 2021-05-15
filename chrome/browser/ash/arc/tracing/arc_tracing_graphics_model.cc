@@ -1349,7 +1349,7 @@ void GetAndroidTopEvents(const ArcTracingModel& common_model,
             // vsync timestamp which is provided as extra metadata encoded in
             // the event name string, rather than looking at the the timestamp
             // at which the event was recorded.
-            base::Optional<int64_t> timestamp =
+            absl::optional<int64_t> timestamp =
                 matcher.ReadAndroidEventInt64(event);
 
             // The encoded int64 timestamp is in nanoseconds. Convert to

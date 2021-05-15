@@ -12,11 +12,11 @@
 
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -131,7 +131,7 @@ bool LaunchApp(content::BrowserContext* context,
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,
-                         const base::Optional<std::string>& launch_intent,
+                         const absl::optional<std::string>& launch_intent,
                          int event_flags,
                          UserInteractionType user_action,
                          arc::mojom::WindowInfoPtr window_info);

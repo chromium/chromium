@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sharesheet {
@@ -32,11 +32,11 @@ enum class TargetType {
 
 struct TargetInfo {
   TargetInfo(TargetType type,
-             const base::Optional<gfx::ImageSkia> icon,
+             const absl::optional<gfx::ImageSkia> icon,
              const std::u16string& launch_name,
              const std::u16string& display_name,
-             const base::Optional<std::u16string>& secondary_display_name,
-             const base::Optional<std::string>& activity_name);
+             const absl::optional<std::u16string>& secondary_display_name,
+             const absl::optional<std::string>& activity_name);
   ~TargetInfo();
 
   // Allow move.
@@ -53,7 +53,7 @@ struct TargetInfo {
   // The icon to be displayed for this target in the sharesheet bubble.
   // DIP size must be kIconSize. Only apps will have icons as share actions will
   // have vector_icons that get generated when the view is displayed.
-  base::Optional<gfx::ImageSkia> icon;
+  absl::optional<gfx::ImageSkia> icon;
 
   // The string used to launch this target. Represents an Android package name
   // when the app type is kArc.
@@ -66,11 +66,11 @@ struct TargetInfo {
   // A secondary string below the |display_name| shown to the user to provide
   // additional information for this target. This will be populated by showing
   // the activity name in ARC apps.
-  base::Optional<std::u16string> secondary_display_name;
+  absl::optional<std::u16string> secondary_display_name;
 
   // The activity of the app for the target. This only applies when the app type
   // is kArc.
-  base::Optional<std::string> activity_name;
+  absl::optional<std::string> activity_name;
 };
 
 using DeliveredCallback = base::OnceCallback<void(SharesheetResult success)>;

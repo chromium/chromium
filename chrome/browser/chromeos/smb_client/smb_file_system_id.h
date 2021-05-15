@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace smb_client {
@@ -39,7 +39,7 @@ bool IsKerberosChromadFileSystemId(const std::string& file_system_id);
 // Returns the username if |file_system_id| was constructed with
 // CreateFileSystemIdForUser(). Returns nullopt if |file_system_id| does not
 // store the username.
-base::Optional<std::string> GetUserFromFileSystemId(
+absl::optional<std::string> GetUserFromFileSystemId(
     const std::string& file_system_id);
 
 }  // namespace smb_client

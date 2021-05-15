@@ -106,7 +106,7 @@ void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
 void SyncConfirmationHandler::HandleAccountInfoRequest(
     const base::ListValue* args) {
   DCHECK(ProfileSyncServiceFactory::IsSyncAllowed(profile_));
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
@@ -217,7 +217,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
     const base::ListValue* args) {
   AllowJavascript();
 
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (!primary_account_info) {

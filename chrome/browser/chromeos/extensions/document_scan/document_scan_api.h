@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -39,7 +39,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   void OnPageReceived(std::string scanned_image, uint32_t /*page_number*/);
   void OnScanCompleted(lorgnette::ScanFailureMode failure_mode);
 
-  base::Optional<std::string> scan_data_;
+  absl::optional<std::string> scan_data_;
   std::unique_ptr<document_scan::Scan::Params> params_;
 };
 

@@ -36,7 +36,7 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
       base::Time::FromJavaTime(current_state.time_millis());
   base::Time usage_timestamp =
       base::Time::FromJavaTime(current_state.usage_timestamp());
-  base::Optional<usage_time_limit::State> previous_state =
+  absl::optional<usage_time_limit::State> previous_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(golden_case.input());
 
   base::Value policy = ConvertGoldenInputToProcessorInput(golden_case.input());

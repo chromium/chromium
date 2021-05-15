@@ -21,7 +21,6 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -51,6 +50,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace {
@@ -394,7 +394,7 @@ void ChildStatusCollector::FillChildStatusReportRequest(
   anything_reported |= GetAppActivity(status);
 
   if (report_boot_mode_) {
-    base::Optional<std::string> boot_mode =
+    absl::optional<std::string> boot_mode =
         StatusCollector::GetBootMode(statistics_provider_);
     if (boot_mode) {
       status->set_boot_mode(*boot_mode);

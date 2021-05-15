@@ -48,7 +48,7 @@ class CaptionBubbleController {
 
   // Called when the caption style changes.
   virtual void UpdateCaptionStyle(
-      base::Optional<ui::CaptionStyle> caption_style) = 0;
+      absl::optional<ui::CaptionStyle> caption_style) = 0;
 
  private:
   friend class CaptionControllerTest;

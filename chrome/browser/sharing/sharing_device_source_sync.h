@@ -65,7 +65,7 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
 
   // The personalized name is stored for deduplicating devices running older
   // clients.
-  base::Optional<std::string> personalizable_local_device_name_;
+  absl::optional<std::string> personalizable_local_device_name_;
 
   base::WeakPtrFactory<SharingDeviceSourceSync> weak_ptr_factory_{this};
 

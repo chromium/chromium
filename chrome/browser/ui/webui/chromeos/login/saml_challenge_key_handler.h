@@ -58,7 +58,7 @@ class SamlChallengeKeyHandler final {
   // Timeout for `tpm_key_challenger_` to response.
   const base::TimeDelta default_tpm_response_timeout_ =
       base::TimeDelta::FromSeconds(15);
-  base::Optional<base::TimeDelta> tpm_response_timeout_for_testing_;
+  absl::optional<base::TimeDelta> tpm_response_timeout_for_testing_;
 
   // Performs attestation flow.
   std::unique_ptr<attestation::TpmChallengeKeyWithTimeout> tpm_key_challenger_;

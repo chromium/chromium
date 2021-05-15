@@ -11,13 +11,13 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -85,7 +85,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
       base::ScopedClosureRunner complete_callback_runner,
       std::unique_ptr<content::WebContents> web_contents,
       InstallManager::InstallableCheckResult result,
-      base::Optional<AppId> app_id);
+      absl::optional<AppId> app_id);
 
   void OnAllUninstalled(
       base::ScopedClosureRunner complete_callback_runner,

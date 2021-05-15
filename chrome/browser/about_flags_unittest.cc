@@ -179,7 +179,7 @@ class AboutFlagsHistogramTest : public ::testing::Test {
 };
 
 TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
-  base::Optional<base::HistogramEnumEntryMap> login_custom_flags =
+  absl::optional<base::HistogramEnumEntryMap> login_custom_flags =
       base::ReadEnumFromEnumsXml("LoginCustomFlags");
   ASSERT_TRUE(login_custom_flags)
       << "Error reading enum 'LoginCustomFlags' from "

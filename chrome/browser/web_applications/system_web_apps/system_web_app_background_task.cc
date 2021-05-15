@@ -22,7 +22,7 @@ SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
     const SystemAppBackgroundTaskInfo& other) = default;
 
 SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
-    const base::Optional<base::TimeDelta>& period,
+    const absl::optional<base::TimeDelta>& period,
     const GURL& url,
     bool open_immediately)
     : period(period), url(url), open_immediately(open_immediately) {}

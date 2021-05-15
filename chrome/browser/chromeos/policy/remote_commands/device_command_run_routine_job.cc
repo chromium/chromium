@@ -13,12 +13,12 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -105,14 +105,14 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root.has_value())
     return false;
   if (!root->is_dict())
     return false;
 
   // Make sure the command payload specified a valid DiagnosticRoutineEnum.
-  base::Optional<int> routine_enum = root->FindIntKey(kRoutineEnumFieldName);
+  absl::optional<int> routine_enum = root->FindIntKey(kRoutineEnumFieldName);
   if (!routine_enum.has_value())
     return false;
   if (!PopulateMojoEnumValueIfValid(routine_enum.value(), &routine_enum_)) {
@@ -157,9 +157,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<base::TimeDelta> routine_parameter;
+      absl::optional<base::TimeDelta> routine_parameter;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
         int value = length_seconds.value();
@@ -194,7 +194,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kExpectedStatusFieldName[] = "expectedStatus";
       // Note that expectedPowerType is an optional parameter.
       constexpr char kExpectedPowerTypeFieldName[] = "expectedPowerType";
-      base::Optional<int> expected_status =
+      absl::optional<int> expected_status =
           params_dict_.FindIntKey(kExpectedStatusFieldName);
       std::string* expected_power_type =
           params_dict_.FindStringKey(kExpectedPowerTypeFieldName);
@@ -215,8 +215,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           ->RunAcPowerRoutine(
               expected_status_enum,
               expected_power_type
-                  ? base::Optional<std::string>(*expected_power_type)
-                  : base::nullopt,
+                  ? absl::optional<std::string>(*expected_power_type)
+                  : absl::nullopt,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -225,9 +225,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<base::TimeDelta> routine_duration;
+      absl::optional<base::TimeDelta> routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
         int value = length_seconds.value();
@@ -252,9 +252,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<base::TimeDelta> routine_duration;
+      absl::optional<base::TimeDelta> routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
         int value = length_seconds.value();
@@ -280,9 +280,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
         kFloatingPointAccuracy: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<base::TimeDelta> routine_duration;
+      absl::optional<base::TimeDelta> routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
         int value = length_seconds.value();
@@ -308,7 +308,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
       constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
-      base::Optional<int> wear_level_threshold =
+      absl::optional<int> wear_level_threshold =
           params_dict_.FindIntKey(kWearLevelThresholdFieldName);
       // The NVMe wear level routine expects one integer >= 0.
       if (!wear_level_threshold.has_value() ||
@@ -331,7 +331,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
       constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
-      base::Optional<int> nvme_self_test_type =
+      absl::optional<int> nvme_self_test_type =
           params_dict_.FindIntKey(kNvmeSelfTestTypeFieldName);
       chromeos::cros_healthd::mojom::NvmeSelfTestTypeEnum
           nvme_self_test_type_enum;
@@ -359,10 +359,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kTypeFieldName[] = "type";
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kFileSizeMbFieldName[] = "fileSizeMb";
-      base::Optional<int> type = params_dict_.FindIntKey(kTypeFieldName);
-      base::Optional<int> length_seconds =
+      absl::optional<int> type = params_dict_.FindIntKey(kTypeFieldName);
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<int> file_size_mb =
+      absl::optional<int> file_size_mb =
           params_dict_.FindIntKey(kFileSizeMbFieldName);
       chromeos::cros_healthd::mojom::DiskReadRoutineTypeEnum type_enum;
       if (!length_seconds.has_value() || length_seconds.value() < 0 ||
@@ -388,9 +388,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<base::TimeDelta> routine_duration;
+      absl::optional<base::TimeDelta> routine_duration;
       if (length_seconds.has_value()) {
         // If the optional integer parameter is specified, it must be >= 0.
         int value = length_seconds.value();
@@ -418,9 +418,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMaximumDischargePercentAllowedFieldName[] =
           "maximumDischargePercentAllowed";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<int> maximum_discharge_percent_allowed =
+      absl::optional<int> maximum_discharge_percent_allowed =
           params_dict_.FindIntKey(kMaximumDischargePercentAllowedFieldName);
       // The battery discharge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
@@ -448,9 +448,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       constexpr char kMinimumChargePercentRequiredFieldName[] =
           "minimumChargePercentRequired";
-      base::Optional<int> length_seconds =
+      absl::optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      base::Optional<int> minimum_charge_percent_required =
+      absl::optional<int> minimum_charge_percent_required =
           params_dict_.FindIntKey(kMinimumChargePercentRequiredFieldName);
       // The battery charge routine expects two integers >= 0.
       if (!length_seconds.has_value() ||
@@ -582,8 +582,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunVideoConferencingRoutine(
               stun_server_hostname
-                  ? base::make_optional<std::string>(*stun_server_hostname)
-                  : base::nullopt,
+                  ? absl::make_optional<std::string>(*stun_server_hostname)
+                  : absl::nullopt,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),

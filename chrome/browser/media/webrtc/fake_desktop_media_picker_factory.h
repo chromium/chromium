@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeDesktopMediaPicker;
 

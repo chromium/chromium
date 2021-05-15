@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enum_util.h"
 
 namespace aura {
@@ -26,16 +26,16 @@ class AccessibilityInfoDataWrapper;
 
 // This function is only called when EventType is WINDOW_STATE_CHANGED or
 // WINDOW_CONTENT_CHANGED.
-base::Optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
+absl::optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
     const std::vector<int>& arc_content_change_types);
 
 ax::mojom::Event ToAXEvent(
     mojom::AccessibilityEventType arc_event_type,
-    const base::Optional<std::vector<int>>& arc_content_change_types,
+    const absl::optional<std::vector<int>>& arc_content_change_types,
     AccessibilityInfoDataWrapper* source_node,
     AccessibilityInfoDataWrapper* focused_node);
 
-base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
+absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action);
 
 AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
@@ -80,13 +80,13 @@ bool GetProperty(const PropMTypeMap& properties,
 }
 
 template <class PropType, class OutType>
-base::Optional<OutType> GetPropertyOrNull(
-    const base::Optional<base::flat_map<PropType, OutType>>& properties,
+absl::optional<OutType> GetPropertyOrNull(
+    const absl::optional<base::flat_map<PropType, OutType>>& properties,
     const PropType prop) {
   OutType out_value;
   if (GetProperty(properties, prop, &out_value))
     return out_value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 template <class InfoDataType, class PropType>

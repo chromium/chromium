@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class SignInFatalErrorView;
@@ -59,7 +59,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   void OnUserAction(const std::string& action_id) override;
 
   Error error_state_ = Error::UNKNOWN;
-  base::Optional<base::Value> extra_error_info_;
+  absl::optional<base::Value> extra_error_info_;
 
   chromeos::SignInFatalErrorView* view_ = nullptr;
   base::RepeatingClosure exit_callback_;

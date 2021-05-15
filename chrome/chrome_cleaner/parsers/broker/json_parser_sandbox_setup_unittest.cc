@@ -52,8 +52,8 @@ class JsonParserSandboxSetupTest : public base::MultiProcessTest {
 void ParseCallbackExpectedKeyValue(const std::string& expected_key,
                                    const std::string& expected_value,
                                    WaitableEvent* done,
-                                   base::Optional<base::Value> value,
-                                   const base::Optional<std::string>& error) {
+                                   absl::optional<base::Value> value,
+                                   const absl::optional<std::string>& error) {
   ASSERT_FALSE(error.has_value());
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
@@ -67,8 +67,8 @@ void ParseCallbackExpectedKeyValue(const std::string& expected_key,
 }
 
 void ParseCallbackExpectedError(WaitableEvent* done,
-                                base::Optional<base::Value> value,
-                                const base::Optional<std::string>& error) {
+                                absl::optional<base::Value> value,
+                                const absl::optional<std::string>& error) {
   ASSERT_TRUE(error.has_value());
   EXPECT_FALSE(error->empty());
   done->Signal();

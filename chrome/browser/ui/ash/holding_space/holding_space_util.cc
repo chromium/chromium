@@ -22,7 +22,7 @@ namespace holding_space_util {
 
 namespace {
 
-base::Optional<base::Time> now_for_testing;
+absl::optional<base::Time> now_for_testing;
 
 }  // namespace
 
@@ -167,7 +167,7 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
           thumbnail_loader->GetWeakPtr()));
 }
 
-void SetNowForTesting(base::Optional<base::Time> now) {
+void SetNowForTesting(absl::optional<base::Time> now) {
   now_for_testing = now;
 }
 

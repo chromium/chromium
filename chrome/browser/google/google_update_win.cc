@@ -203,8 +203,8 @@ HRESULT CreateGoogleUpdate3WebClass(
 }
 
 // Returns the process-wide storage for the state of the last update check.
-base::Optional<UpdateState>* GetLastUpdateStateStorage() {
-  static base::NoDestructor<base::Optional<UpdateState>> storage;
+absl::optional<UpdateState>* GetLastUpdateStateStorage() {
+  static base::NoDestructor<absl::optional<UpdateState>> storage;
   return storage.get();
 }
 
@@ -213,10 +213,10 @@ base::Optional<UpdateState>* GetLastUpdateStateStorage() {
 // was present without the value, or the value of the switch as an HRESULT.
 // Additionally the returned structure contains the default error code
 // GOOGLE_UPDATE_ERROR_UPDATING or the value of --simulate-update-error-code.
-base::Optional<UpdateCheckResult> GetSimulatedErrorForDebugging() {
+absl::optional<UpdateCheckResult> GetSimulatedErrorForDebugging() {
   const base::CommandLine& cmd_line = *base::CommandLine::ForCurrentProcess();
   if (!cmd_line.HasSwitch(switches::kSimulateUpdateHresult))
-    return base::nullopt;
+    return absl::nullopt;
 
   uint32_t error_from_string = 0;
   std::string error_switch_value =
@@ -288,7 +288,7 @@ class UpdateCheckDriver {
   // to the user. This call should be followed by deletion of the driver, which
   // will result in callers being notified via their delegates.
   void OnUpgradeError(UpdateCheckResult check_result,
-                      base::Optional<int> installer_exit_code,
+                      absl::optional<int> installer_exit_code,
                       const std::u16string& error_string);
 
   // Returns true if |current_state| and |state_value| can be obtained from the
@@ -312,7 +312,7 @@ class UpdateCheckDriver {
                     CurrentState state_value,
                     GoogleUpdateErrorCode* error_code,
                     HRESULT* hresult,
-                    base::Optional<int>* installer_exit_code,
+                    absl::optional<int>* installer_exit_code,
                     std::u16string* error_string) const;
 
   // Returns true if |current_state| and |state_value| constitute a final state
@@ -518,7 +518,7 @@ void UpdateCheckDriver::BeginUpdateCheck() {
   }
 
   DCHECK(FAILED(result.hresult));
-  OnUpgradeError(result, base::nullopt, std::u16string());
+  OnUpgradeError(result, absl::nullopt, std::u16string());
   result_runner_->DeleteSoon(FROM_HERE, this);
 }
 
@@ -652,7 +652,7 @@ bool UpdateCheckDriver::IsErrorState(
     CurrentState state_value,
     GoogleUpdateErrorCode* error_code,
     HRESULT* hresult,
-    base::Optional<int>* installer_exit_code,
+    absl::optional<int>* installer_exit_code,
     std::u16string* error_string) const {
   if (state_value == STATE_ERROR) {
     // In general, errors reported by Google Update fall under this category
@@ -808,7 +808,7 @@ void UpdateCheckDriver::PollGoogleUpdate() {
   CurrentState state_value = STATE_INIT;
   HRESULT hresult = S_OK;
   GoogleUpdateErrorCode error_code = GOOGLE_UPDATE_NO_ERROR;
-  base::Optional<int> installer_exit_code;
+  absl::optional<int> installer_exit_code;
   std::u16string error_string;
   GoogleUpdateUpgradeStatus upgrade_status = UPGRADE_ERROR;
   std::u16string new_version;
@@ -816,7 +816,7 @@ void UpdateCheckDriver::PollGoogleUpdate() {
 
   if (!GetCurrentState(&state, &state_value, &hresult)) {
     OnUpgradeError({GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR, hresult},
-                   base::nullopt, std::u16string());
+                   absl::nullopt, std::u16string());
   } else if (IsErrorState(state, state_value, &error_code, &hresult,
                           &installer_exit_code, &error_string)) {
     OnUpgradeError({error_code, hresult}, installer_exit_code, error_string);
@@ -867,7 +867,7 @@ void UpdateCheckDriver::PollGoogleUpdate() {
 }
 
 void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
-                                       base::Optional<int> installer_exit_code,
+                                       absl::optional<int> installer_exit_code,
                                        const std::u16string& error_string) {
   status_ = UPGRADE_ERROR;
   update_state_.error_code = check_result.error_code;
@@ -922,7 +922,7 @@ UpdateState::UpdateState(UpdateState&&) = default;
 UpdateState& UpdateState::operator=(UpdateState&&) = default;
 UpdateState::~UpdateState() = default;
 
-base::Optional<UpdateState> GetLastUpdateState() {
+absl::optional<UpdateState> GetLastUpdateState() {
   return *GetLastUpdateStateStorage();
 }
 

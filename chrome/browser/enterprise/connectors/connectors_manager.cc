@@ -54,10 +54,10 @@ bool ConnectorsManager::IsConnectorEnabled(
   return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
 }
 
-base::Optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
+absl::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
     ReportingConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (reporting_connector_settings_.count(connector) == 0)
     CacheReportingConnectorPolicy(connector);
@@ -65,18 +65,18 @@ base::Optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (reporting_connector_settings_.count(connector) == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return reporting_connector_settings_[connector][0].GetReportingSettings();
 }
 
-base::Optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
+absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (analysis_connector_settings_.count(connector) == 0)
     CacheAnalysisConnectorPolicy(connector);
@@ -84,14 +84,14 @@ base::Optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (analysis_connector_settings_.count(connector) == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
 }
 
-base::Optional<AnalysisSettings>
+absl::optional<AnalysisSettings>
 ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
     const GURL& url,
     AnalysisConnector connector) {
@@ -101,18 +101,18 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (analysis_connector_settings_.count(connector) == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
 }
 
-base::Optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
+absl::optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
     const GURL& url,
     FileSystemConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (file_system_connector_settings_.count(connector) == 0)
     CacheFileSystemConnectorPolicy(connector);
@@ -120,7 +120,7 @@ base::Optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (file_system_connector_settings_.count(connector) == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.

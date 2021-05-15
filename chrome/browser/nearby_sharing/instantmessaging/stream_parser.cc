@@ -29,7 +29,7 @@ StreamParser::~StreamParser() = default;
 void StreamParser::Append(base::StringPiece data) {
   data_.append(data.data(), data.size());
 
-  base::Optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
+  absl::optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
       stream_body = GetNextMessage();
   while (stream_body) {
     DelegateMessage(stream_body.value());
@@ -37,7 +37,7 @@ void StreamParser::Append(base::StringPiece data) {
   }
 }
 
-base::Optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
+absl::optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
 StreamParser::GetNextMessage() {
   // The incoming stream may not be a valid StreamBody proto as it might be
   // split into various OnDataReceived calls. The easy way is to append all
@@ -49,7 +49,7 @@ StreamParser::GetNextMessage() {
   // TODO(crbug.com/1123172) - Add metrics to figure out which code paths are
   // more used and the time taken to parse the incoming messages.
   if (data_.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // There's a good chance that the entire message is a valid proto since the
   // individual messages sent by WebRTC are small, so check that first to
@@ -79,7 +79,7 @@ StreamParser::GetNextMessage() {
     end_pos++;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StreamParser::DelegateMessage(

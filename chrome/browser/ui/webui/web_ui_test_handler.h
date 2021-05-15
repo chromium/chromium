@@ -45,7 +45,7 @@ class WebUITestHandler {
 
   // Handles the result of a test. If |error_message| has no value, the test has
   // succeeded.
-  void TestComplete(const base::Optional<std::string>& error_message);
+  void TestComplete(const absl::optional<std::string>& error_message);
 
   // Quits the currently running RunLoop.
   void RunQuitClosure();

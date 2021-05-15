@@ -10,9 +10,9 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 

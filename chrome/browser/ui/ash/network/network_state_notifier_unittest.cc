@@ -229,7 +229,7 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -241,8 +241,8 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED)));
 
   // Clicking the notification should open SIM unlock settings.
-  notification->delegate()->Click(/*button_index=*/base::nullopt,
-                                  /*reply=*/base::nullopt);
+  notification->delegate()->Click(/*button_index=*/absl::nullopt,
+                                  /*reply=*/absl::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_sim_unlock_settings_count());
 }
 
@@ -255,7 +255,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);

@@ -76,11 +76,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                  bool open_settings,
                                  Profile* profile,
                                  Profile::CreateStatus profile_create_status);
-  void OnProfileCreated(base::Optional<SkColor> profile_color,
+  void OnProfileCreated(absl::optional<SkColor> profile_color,
                         bool create_shortcut,
                         Profile* profile,
                         Profile::CreateStatus status);
-  void OnProfileCreationSuccess(base::Optional<SkColor> profile_color,
+  void OnProfileCreationSuccess(absl::optional<SkColor> profile_color,
                                 bool create_shortcut,
                                 Profile* profile);
   void PushProfilesList();

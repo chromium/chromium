@@ -76,7 +76,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
 
   // Notify automation of result to getTextLocation.
   void NotifyGetTextLocationDataResult(const ui::AXActionData& data,
-                                       const base::Optional<gfx::Rect>& rect);
+                                       const absl::optional<gfx::Rect>& rect);
 
   // Invalidates the tree serializer.
   void InvalidateTree();
@@ -112,7 +112,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   bool is_input_method_window() { return is_input_method_window_; }
 
   // The window id of this tree.
-  base::Optional<int32_t> window_id() const { return window_id_; }
+  absl::optional<int32_t> window_id() const { return window_id_; }
 
  private:
   friend class arc::AXTreeSourceArcTest;
@@ -182,14 +182,14 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   std::map<int32_t, int32_t> parent_map_;
 
   std::unique_ptr<AXTreeArcSerializer> current_tree_serializer_;
-  base::Optional<int32_t> root_id_;
-  base::Optional<int32_t> window_id_;
-  base::Optional<int32_t> android_focused_id_;
+  absl::optional<int32_t> root_id_;
+  absl::optional<int32_t> window_id_;
+  absl::optional<int32_t> android_focused_id_;
 
   bool is_notification_;
   bool is_input_method_window_;
 
-  base::Optional<std::string> notification_key_;
+  absl::optional<std::string> notification_key_;
 
   // Cache of mapping from the *Android* window id to the last focused node id.
   std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;

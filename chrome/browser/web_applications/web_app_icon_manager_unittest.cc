@@ -904,18 +904,18 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
   controller().RegisterApp(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasSmallestIcon(app_id, {IconPurpose::ANY}, 70));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             icon_manager().FindIconMatchBigger(app_id, {IconPurpose::ANY}, 70));
 
   EXPECT_FALSE(icon_manager().HasSmallestIcon(
       app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, 70));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             icon_manager().FindIconMatchBigger(
                 app_id, {IconPurpose::ANY, IconPurpose::MASKABLE}, 70));
 
   EXPECT_FALSE(
       icon_manager().HasSmallestIcon(app_id, {IconPurpose::MASKABLE}, 40));
-  EXPECT_EQ(base::nullopt, icon_manager().FindIconMatchBigger(
+  EXPECT_EQ(absl::nullopt, icon_manager().FindIconMatchBigger(
                                app_id, {IconPurpose::MASKABLE}, 40));
 
   EXPECT_TRUE(icon_manager().HasSmallestIcon(

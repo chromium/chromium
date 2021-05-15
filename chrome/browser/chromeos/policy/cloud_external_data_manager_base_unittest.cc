@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -33,6 +32,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -115,7 +115,7 @@ void CloudExternalDataManagerBaseTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   resource_cache_ = std::make_unique<ResourceCache>(
       temp_dir_.GetPath(), task_environment_.GetMainThreadTaskRunner(),
-      /* max_cache_size */ base::nullopt);
+      /* max_cache_size */ absl::nullopt);
   SetUpExternalDataManager();
 
   // Set |kStringPolicy| to a string value.

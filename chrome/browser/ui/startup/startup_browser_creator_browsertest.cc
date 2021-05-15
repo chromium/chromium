@@ -195,7 +195,7 @@ Browser* CloseBrowserAndOpenNew(Browser* browser, Profile* profile) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-typedef base::Optional<policy::PolicyLevel> PolicyVariant;
+typedef absl::optional<policy::PolicyLevel> PolicyVariant;
 
 // This class waits until all browser windows are closed, and then runs
 // a quit closure.
@@ -2486,9 +2486,9 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
 
 struct ProfilePickerSetup {
   bool expected_to_show;
-  base::Optional<std::string> switch_name;
-  base::Optional<std::string> switch_value_ascii;
-  base::Optional<GURL> url_arg;
+  absl::optional<std::string> switch_name;
+  absl::optional<std::string> switch_value_ascii;
+  absl::optional<GURL> url_arg;
   bool session_restore = false;
 };
 
@@ -2570,15 +2570,15 @@ INSTANTIATE_TEST_SUITE_P(
         // OS when Chrome is the default web browser) and use the last used
         // profile, instead.
         ProfilePickerSetup{/*expected_to_show=*/false,
-                           /*switch_name=*/base::nullopt,
-                           /*switch_value_ascii=*/base::nullopt,
+                           /*switch_name=*/absl::nullopt,
+                           /*switch_value_ascii=*/absl::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
         // Regression test for http://crbug.com/1166192
         // Picker should be shown even in case of session restore.
         ProfilePickerSetup{/*expected_to_show=*/true,
-                           /*switch_name=*/base::nullopt,
-                           /*switch_value_ascii=*/base::nullopt,
-                           /*url_arg=*/base::nullopt,
+                           /*switch_name=*/absl::nullopt,
+                           /*switch_value_ascii=*/absl::nullopt,
+                           /*url_arg=*/absl::nullopt,
                            /*session_restore=*/true}));
 
 class GuestStartupBrowserCreatorPickerTest

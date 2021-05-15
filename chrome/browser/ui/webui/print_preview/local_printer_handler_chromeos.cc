@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,6 +34,7 @@
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
 #include "printing/print_job_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -65,10 +65,10 @@ void AddPrintersToList(const std::vector<chromeos::Printer>& printers,
 base::Value OnSetUpPrinter(
     base::Value policies,
     const chromeos::Printer& printer,
-    const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+    const absl::optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Optional<PrinterSemanticCapsAndDefaults> caps = printer_caps;
+  absl::optional<PrinterSemanticCapsAndDefaults> caps = printer_caps;
   base::Value printer_info = AssemblePrinterSettings(
       printer.id(), ToBasicInfo(printer),
       PrinterSemanticCapsAndDefaults::Papers(), printer.HasSecureProtocol(),
@@ -185,7 +185,7 @@ void LocalPrinterHandlerChromeos::StartGetCapability(
     GetCapabilityCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(printer_id);
 
   if (!printer) {
@@ -205,7 +205,7 @@ void LocalPrinterHandlerChromeos::StartGetEulaUrl(
     GetEulaUrlCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Optional<chromeos::Printer> printer =
+  absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(destination_id);
 
   if (!printer) {

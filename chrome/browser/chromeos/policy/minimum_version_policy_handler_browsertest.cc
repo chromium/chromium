@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
   // notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, base::nullopt);
+                                         0 /*action_index*/, absl::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
   // network settings and hides the notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, base::nullopt);
+                                         0 /*action_index*/, absl::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   EXPECT_TRUE(tray_test_api_->IsTrayBubbleOpen());
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   // Clicking on notification button starts update and hides the notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, base::nullopt);
+                                         0 /*action_index*/, absl::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
   // Clicking on notification button opens settings page and hides notification.
   display_service_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                          kUpdateRequiredNotificationId,
-                                         0 /*action_index*/, base::nullopt);
+                                         0 /*action_index*/, absl::nullopt);
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   Browser* settings_browser = chrome::FindLastActive();

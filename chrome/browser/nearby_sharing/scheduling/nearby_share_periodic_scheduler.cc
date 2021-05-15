@@ -25,9 +25,9 @@ NearbySharePeriodicScheduler::NearbySharePeriodicScheduler(
 
 NearbySharePeriodicScheduler::~NearbySharePeriodicScheduler() = default;
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 NearbySharePeriodicScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  base::Optional<base::Time> last_success_time = GetLastSuccessTime();
+  absl::optional<base::Time> last_success_time = GetLastSuccessTime();
 
   // Immediately run a first-time request.
   if (!last_success_time)

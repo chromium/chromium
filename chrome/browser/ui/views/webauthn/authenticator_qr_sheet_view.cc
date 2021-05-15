@@ -51,7 +51,7 @@ class QRView : public views::View {
   explicit QRView(const std::string& qr_string) {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
-    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(
+    absl::optional<QRCode::GeneratedCode> code = qr_.Generate(
         base::as_bytes(base::make_span(qr_string)), kMinimumQRVersion);
     DCHECK(code);
     // The QR Encoder supports dynamic sizing but we expect our data to fit in
@@ -68,7 +68,7 @@ class QRView : public views::View {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
     state_ = (state_ + 1) % 6;
-    base::Optional<QRCode::GeneratedCode> code =
+    absl::optional<QRCode::GeneratedCode> code =
         qr_.Generate(base::as_bytes(base::make_span(qr_string)),
                      kMinimumQRVersion, /*mask=*/state_);
     DCHECK(code);

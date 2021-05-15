@@ -175,14 +175,14 @@ void DispatchGetAllNotificationsReply(
     std::u16string title = base::SysNSStringToUTF16(
         notificationData[notification_constants::kNotificationButtonOne]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
-        std::move(title), /*placeholder=*/base::nullopt);
+        std::move(title), /*placeholder=*/absl::nullopt);
     buttons.push_back(std::move(button));
   }
   if (notificationData[notification_constants::kNotificationButtonTwo]) {
     std::u16string title = base::SysNSStringToUTF16(
         notificationData[notification_constants::kNotificationButtonTwo]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
-        std::move(title), /*placeholder=*/base::nullopt);
+        std::move(title), /*placeholder=*/absl::nullopt);
     buttons.push_back(std::move(button));
   }
 

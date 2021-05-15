@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -26,6 +25,7 @@
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 
@@ -81,7 +81,7 @@ class SiteSettingsHandler
 
   // ObjectPermissionContextBase::PermissionObserver implementation:
   void OnObjectPermissionChanged(
-      base::Optional<ContentSettingsType> guard_content_settings_type,
+      absl::optional<ContentSettingsType> guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);

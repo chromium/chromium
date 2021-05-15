@@ -47,7 +47,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const base::Optional<std::u16string>& reply) override {
+      const absl::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }

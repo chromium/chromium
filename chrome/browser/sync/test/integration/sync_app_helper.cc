@@ -46,7 +46,7 @@ struct AppState {
   GURL launch_web_url;
   GURL bookmark_app_scope;
   std::string icon_color;
-  base::Optional<SkColor> theme_color;
+  absl::optional<SkColor> theme_color;
   std::string description;
   std::string name;
   bool from_bookmark;

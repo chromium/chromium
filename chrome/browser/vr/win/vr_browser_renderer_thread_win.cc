@@ -372,7 +372,7 @@ device::mojom::XRRenderInfoPtr ValidateFrameData(
                                 InRange(ret->pose->position->y()) &&
                                 InRange(ret->pose->position->z()));
       if (any_out_of_range) {
-        ret->pose->position = base::nullopt;
+        ret->pose->position = absl::nullopt;
         // If testing with unexpectedly high values, catch on debug builds
         // rather than silently change data.  On release builds its better to
         // be safe and validate.

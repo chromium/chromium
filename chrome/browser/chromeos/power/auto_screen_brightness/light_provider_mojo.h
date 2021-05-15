@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/light_samples_observer.h"
@@ -18,6 +17,7 @@
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {
@@ -58,8 +58,8 @@ class LightProviderMojo
     // Something wrong with attributes of this light sensor or simply not needed
     // if true.
     bool ignored = false;
-    base::Optional<std::string> name;
-    base::Optional<bool> on_lid;
+    absl::optional<std::string> name;
+    absl::optional<bool> on_lid;
 
     // Temporarily stores the remote, waiting for its attributes information.
     // It'll be passed to LightProviderMojo' constructor as an argument after
@@ -90,9 +90,9 @@ class LightProviderMojo
   void RegisterLightWithId(int32_t id);
   void GetNameLocationCallback(
       int32_t id,
-      const std::vector<base::Optional<std::string>>& values);
+      const std::vector<absl::optional<std::string>>& values);
   void GetNameCallback(int32_t id,
-                       const std::vector<base::Optional<std::string>>& values);
+                       const std::vector<absl::optional<std::string>>& values);
 
   // Ignores the light with |id| due to some errors of it's attributes.
   void IgnoreLight(int32_t id);
@@ -124,7 +124,7 @@ class LightProviderMojo
   std::map<int32_t, LightData> lights_;
 
   // The device id of light to be used.
-  base::Optional<int32_t> light_device_id_;
+  absl::optional<int32_t> light_device_id_;
 
   // The observer that waits for the wanted light sensor's samples and sends
   // them to |als_reader_|.

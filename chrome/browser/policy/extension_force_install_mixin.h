@@ -10,11 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "extensions/common/extension_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -131,7 +131,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // version.
   bool ForceInstallFromSourceDir(
       const base::FilePath& extension_dir_path,
-      const base::Optional<base::FilePath>& pem_path,
+      const absl::optional<base::FilePath>& pem_path,
       WaitMode wait_mode,
       extensions::ExtensionId* extension_id = nullptr,
       base::Version* extension_version = nullptr) WARN_UNUSED_RESULT;
@@ -168,7 +168,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // random key otherwise) and makes the produced CRX file served by the
   // embedded test server.
   bool CreateAndServeCrx(const base::FilePath& extension_dir_path,
-                         const base::Optional<base::FilePath>& pem_path,
+                         const absl::optional<base::FilePath>& pem_path,
                          const base::Version& extension_version,
                          extensions::ExtensionId* extension_id);
   // Force-installs the CRX file served by the embedded test server.

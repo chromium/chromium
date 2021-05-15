@@ -291,7 +291,7 @@ void SpeechRecognitionRecognizerImpl::
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
     const std::string& language) {
-  base::Optional<speech::SodaLanguagePackComponentConfig>
+  absl::optional<speech::SodaLanguagePackComponentConfig>
       language_component_config = GetLanguageComponentConfig(language);
   if (!language_component_config.has_value())
     return;

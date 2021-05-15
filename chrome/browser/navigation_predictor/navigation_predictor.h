@@ -12,13 +12,13 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"

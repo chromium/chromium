@@ -251,7 +251,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
             !enrollment_token.empty()
                 ? DMAuth::FromEnrollmentToken(enrollment_token)
                 : DMAuth::NoAuth(),
-            /*oauth_token=*/base::nullopt,
+            /*oauth_token=*/absl::nullopt,
             g_browser_process->system_network_context_manager()
                 ->GetSharedURLLoaderFactory(),
             base::BindOnce(

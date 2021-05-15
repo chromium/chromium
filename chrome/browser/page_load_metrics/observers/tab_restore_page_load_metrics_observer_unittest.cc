@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -20,6 +19,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -102,7 +102,7 @@ class TabRestorePageLoadMetricsObserverTest
   int64_t cache_bytes_;
 
  private:
-  base::Optional<bool> is_restore_;
+  absl::optional<bool> is_restore_;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
   DISALLOW_COPY_AND_ASSIGN(TabRestorePageLoadMetricsObserverTest);

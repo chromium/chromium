@@ -67,14 +67,14 @@ sql::InitStatus MediaHistorySessionTable::CreateTableIfNonExistent() {
   return sql::INIT_OK;
 }
 
-base::Optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
+absl::optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
     const GURL& url,
     const url::Origin& origin,
     const media_session::MediaMetadata& metadata,
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
-    return base::nullopt;
+    return absl::nullopt;
 
   sql::Statement statement(DB()->GetCachedStatement(
       SQL_FROM_HERE,
@@ -111,13 +111,13 @@ base::Optional<int64_t> MediaHistorySessionTable::SavePlaybackSession(
     return DB()->GetLastInsertRowId();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<mojom::MediaHistoryPlaybackSessionRowPtr>
 MediaHistorySessionTable::GetPlaybackSessions(
-    base::Optional<unsigned int> num_sessions,
-    base::Optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
+    absl::optional<unsigned int> num_sessions,
+    absl::optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter) {
   std::vector<mojom::MediaHistoryPlaybackSessionRowPtr> sessions;
   if (!CanAccessDatabase())
     return sessions;

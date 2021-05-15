@@ -79,7 +79,7 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
   }
 
  protected:
-  const base::Optional<HIDDetectionScreen::Result>& GetExitResult() {
+  const absl::optional<HIDDetectionScreen::Result>& GetExitResult() {
     return WizardController::default_controller()
         ->GetScreen<HIDDetectionScreen>()
         ->get_exit_result_for_testing();

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +37,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using extensions::mojom::ManifestLocation;
@@ -228,7 +228,7 @@ void BookmarkAppInstallFinalizer::OnExtensionInstalled(
     bool is_locally_installed,
     InstallFinalizedCallback callback,
     scoped_refptr<CrxInstaller> crx_installer,
-    const base::Optional<CrxInstallError>& error) {
+    const absl::optional<CrxInstallError>& error) {
   if (error) {
     std::move(callback).Run(
         web_app::AppId(),
@@ -272,7 +272,7 @@ void BookmarkAppInstallFinalizer::OnExtensionUpdated(
     const WebApplicationInfo& web_app_info,
     InstallFinalizedCallback callback,
     scoped_refptr<CrxInstaller> crx_installer,
-    const base::Optional<CrxInstallError>& error) {
+    const absl::optional<CrxInstallError>& error) {
   if (error) {
     std::move(callback).Run(
         web_app::AppId(),

@@ -2283,7 +2283,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     // The url to use in chrome.windows.create().
     std::string url;
     // If set, its value will be used to specify |setSelfAsOpener|.
-    base::Optional<bool> set_self_as_opener;
+    absl::optional<bool> set_self_as_opener;
     // The origin we expect the new tab to be in, opaque origins will be "null".
     std::string expected_origin_str;
   } test_cases[] = {
@@ -2293,20 +2293,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
       // origin.
       {url::kAboutBlankURL, true, extension_origin_str},
       {url::kAboutBlankURL, false, "null"},
-      {url::kAboutBlankURL, base::nullopt, "null"},
+      {url::kAboutBlankURL, absl::nullopt, "null"},
 
       // data:... URLs.
       // With opener relationship or not, "data:..." URLs always gets unique
       // origin, so origin will always be "null" in these cases.
       {kDataURL, true, "null"},
       {kDataURL, false, "null"},
-      {kDataURL, base::nullopt, "null"},
+      {kDataURL, absl::nullopt, "null"},
 
       // chrome-extension:// URLs.
       // These always get extension origin.
       {extension_url_str, true, extension_origin_str},
       {extension_url_str, false, extension_origin_str},
-      {extension_url_str, base::nullopt, extension_origin_str},
+      {extension_url_str, absl::nullopt, extension_origin_str},
   };
 
   auto run_test_case = [&web_contents](const TestCase& test_case) {

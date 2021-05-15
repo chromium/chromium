@@ -15,7 +15,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -68,11 +67,12 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace {
 
-base::Optional<base::TimeDelta> GetTotalPrefetchTime(
+absl::optional<base::TimeDelta> GetTotalPrefetchTime(
     network::mojom::URLResponseHead* head) {
   DCHECK(head);
 
@@ -80,12 +80,12 @@ base::Optional<base::TimeDelta> GetTotalPrefetchTime(
   base::Time end = head->response_time;
 
   if (start.is_null() || end.is_null())
-    return base::nullopt;
+    return absl::nullopt;
 
   return end - start;
 }
 
-base::Optional<base::TimeDelta> GetPrefetchConnectTime(
+absl::optional<base::TimeDelta> GetPrefetchConnectTime(
     network::mojom::URLResponseHead* head) {
   DCHECK(head);
 
@@ -93,7 +93,7 @@ base::Optional<base::TimeDelta> GetPrefetchConnectTime(
   base::TimeTicks end = head->load_timing.connect_timing.connect_end;
 
   if (start.is_null() || end.is_null())
-    return base::nullopt;
+    return absl::nullopt;
 
   return end - start;
 }
@@ -146,7 +146,7 @@ void OnGotCookieList(
     return;
   }
 
-  std::move(result_callback).Run(url, true, base::nullopt);
+  std::move(result_callback).Run(url, true, absl::nullopt);
 }
 
 void CookieSetHelper(base::RepeatingClosure run_me,
@@ -308,12 +308,12 @@ PrefetchProxyTabHelper::GetIsolatedContextForTesting() const {
   return page_->isolated_network_context_.get();
 }
 
-base::Optional<PrefetchProxyTabHelper::AfterSRPMetrics>
+absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics>
 PrefetchProxyTabHelper::after_srp_metrics() const {
   if (page_->after_srp_metrics_) {
     return *(page_->after_srp_metrics_);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
@@ -544,8 +544,8 @@ PrefetchProxyTabHelper::ComputeAfterSRPMetricsBeforeCommit(
   // way to the end, the status is already propagated. But if a redirect was
   // not eligible then this will find its last known status.
   DCHECK(!handle->GetRedirectChain().empty());
-  base::Optional<PrefetchProxyPrefetchStatus> status;
-  base::Optional<size_t> prediction_position;
+  absl::optional<PrefetchProxyPrefetchStatus> status;
+  absl::optional<size_t> prediction_position;
   for (auto back_iter = handle->GetRedirectChain().rbegin();
        back_iter != handle->GetRedirectChain().rend(); ++back_iter) {
     GURL chain_url = *back_iter;
@@ -936,7 +936,7 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
   UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
                            body->size());
 
-  base::Optional<base::TimeDelta> total_time = GetTotalPrefetchTime(head.get());
+  absl::optional<base::TimeDelta> total_time = GetTotalPrefetchTime(head.get());
   if (total_time) {
     UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.TotalTime",
                                *total_time,
@@ -944,7 +944,7 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
                                base::TimeDelta::FromSeconds(30), 100);
   }
 
-  base::Optional<base::TimeDelta> connect_time =
+  absl::optional<base::TimeDelta> connect_time =
       GetPrefetchConnectTime(head.get());
   if (connect_time) {
     UMA_HISTOGRAM_TIMES("PrefetchProxy.Prefetch.Mainframe.ConnectTime",
@@ -1027,7 +1027,7 @@ void PrefetchProxyTabHelper::DoNoStatePrefetch() {
     return;
   }
 
-  base::Optional<size_t> max_attempts =
+  absl::optional<size_t> max_attempts =
       PrefetchProxyMaximumNumberOfNoStatePrefetchAttempts();
   if (max_attempts.has_value() &&
       page_->number_of_no_state_prefetch_attempts_ >= max_attempts.value()) {
@@ -1179,7 +1179,7 @@ void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
 }
 
 void PrefetchProxyTabHelper::OnPredictionUpdated(
-    const base::Optional<NavigationPredictorKeyedService::Prediction>
+    const absl::optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1202,7 +1202,7 @@ void PrefetchProxyTabHelper::OnPredictionUpdated(
     return;
   }
 
-  const base::Optional<GURL>& source_document_url =
+  const absl::optional<GURL>& source_document_url =
       prediction->source_document_url();
 
   if (!source_document_url || source_document_url->is_empty())
@@ -1283,11 +1283,11 @@ content::ServiceWorkerContext* PrefetchProxyTabHelper::GetServiceWorkerContext(
 }
 
 // static
-std::pair<bool, base::Optional<PrefetchProxyPrefetchStatus>>
+std::pair<bool, absl::optional<PrefetchProxyPrefetchStatus>>
 PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(Profile* profile,
                                                           const GURL& url) {
   if (!IsProfileEligible(profile)) {
-    return std::make_pair(false, base::nullopt);
+    return std::make_pair(false, absl::nullopt);
   }
 
   if (!PrefetchProxyUseSpeculationRules() &&
@@ -1311,7 +1311,7 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(Profile* profile,
   PrefetchProxyService* prefetch_proxy_service =
       PrefetchProxyServiceFactory::GetForProfile(profile);
   if (!prefetch_proxy_service) {
-    return std::make_pair(false, base::nullopt);
+    return std::make_pair(false, absl::nullopt);
   }
 
   if (!prefetch_proxy_service->proxy_configurator()
@@ -1320,7 +1320,7 @@ PrefetchProxyTabHelper::CheckEligibilityOfURLSansUserData(Profile* profile,
         false, PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable);
   }
 
-  return std::make_pair(true, base::nullopt);
+  return std::make_pair(true, absl::nullopt);
 }
 
 // static
@@ -1353,7 +1353,7 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   PrefetchProxyService* prefetch_proxy_service =
       PrefetchProxyServiceFactory::GetForProfile(profile);
   if (!prefetch_proxy_service) {
-    std::move(result_callback).Run(url, false, base::nullopt);
+    std::move(result_callback).Run(url, false, absl::nullopt);
     return;
   }
 
@@ -1389,7 +1389,7 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
 void PrefetchProxyTabHelper::OnGotEligibilityResult(
     const GURL& url,
     bool eligible,
-    base::Optional<PrefetchProxyPrefetchStatus> status) {
+    absl::optional<PrefetchProxyPrefetchStatus> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // It is possible that this callback is being run late. That is, after the
@@ -1547,7 +1547,7 @@ PrefetchProxyTabHelper::GetURLLoaderFactory() {
 
 void PrefetchProxyTabHelper::CreateNewURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    base::Optional<net::IsolationInfo> isolation_info) {
+    absl::optional<net::IsolationInfo> isolation_info) {
   DCHECK(page_->isolated_network_context_);
 
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
@@ -1621,7 +1621,7 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
 
   CreateNewURLLoaderFactory(
-      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), base::nullopt);
+      isolated_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
 
   page_->isolated_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

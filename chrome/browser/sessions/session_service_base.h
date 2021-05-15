@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_common_utils.h"
@@ -26,6 +25,7 @@
 #include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
@@ -221,7 +221,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   virtual void BuildCommandsForTab(const SessionID& window_id,
                                    content::WebContents* tab,
                                    int index_in_window,
-                                   base::Optional<tab_groups::TabGroupId> group,
+                                   absl::optional<tab_groups::TabGroupId> group,
                                    bool is_pinned,
                                    IdToRange* tab_to_available_range);
 

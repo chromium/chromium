@@ -19,7 +19,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -27,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -190,7 +190,7 @@ void AmbientModeHandler::HandleRequestSettings(const base::ListValue* args) {
   // since the last time requesting the data. Abort any request in progress to
   // avoid unnecessary updating invisible subpage.
   ui_update_weak_factory_.InvalidateWeakPtrs();
-  RequestSettingsAndAlbums(/*topic_source=*/base::nullopt);
+  RequestSettingsAndAlbums(/*topic_source=*/absl::nullopt);
 }
 
 void AmbientModeHandler::HandleRequestAlbums(const base::ListValue* args) {
@@ -452,11 +452,11 @@ void AmbientModeHandler::UpdateUIWithCachedSettings(bool success) {
   OnSettingsAndAlbumsFetched(last_fetch_request_topic_source_, cached_settings_,
                              std::move(personal_albums_));
   has_pending_fetch_request_ = false;
-  last_fetch_request_topic_source_ = base::nullopt;
+  last_fetch_request_topic_source_ = absl::nullopt;
 }
 
 void AmbientModeHandler::RequestSettingsAndAlbums(
-    base::Optional<ash::AmbientModeTopicSource> topic_source) {
+    absl::optional<ash::AmbientModeTopicSource> topic_source) {
   last_fetch_request_topic_source_ = topic_source;
 
   // If there is an ongoing update, do not request. If update succeeds, it will
@@ -476,8 +476,8 @@ void AmbientModeHandler::RequestSettingsAndAlbums(
 }
 
 void AmbientModeHandler::OnSettingsAndAlbumsFetched(
-    base::Optional<ash::AmbientModeTopicSource> topic_source,
-    const base::Optional<ash::AmbientSettings>& settings,
+    absl::optional<ash::AmbientModeTopicSource> topic_source,
+    const absl::optional<ash::AmbientSettings>& settings,
     ash::PersonalAlbums personal_albums) {
   // |settings| value implies success.
   if (!settings) {

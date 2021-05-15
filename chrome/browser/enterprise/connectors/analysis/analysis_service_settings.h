@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/url_matcher/url_matcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -25,9 +25,9 @@ class AnalysisServiceSettings {
   AnalysisServiceSettings(AnalysisServiceSettings&&);
   ~AnalysisServiceSettings();
 
-  // Get the settings to apply to a specific analysis. base::nullopt implies no
+  // Get the settings to apply to a specific analysis. absl::nullopt implies no
   // analysis should take place.
-  base::Optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
+  absl::optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
 
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
@@ -53,12 +53,12 @@ class AnalysisServiceSettings {
       std::map<url_matcher::URLMatcherConditionSet::ID, URLPatternSettings>;
 
   // Accessors for the pattern setting maps.
-  static base::Optional<URLPatternSettings> GetPatternSettings(
+  static absl::optional<URLPatternSettings> GetPatternSettings(
       const PatternSettings& patterns,
       url_matcher::URLMatcherConditionSet::ID match);
 
   // Returns true if the settings were initialized correctly. If this returns
-  // false, then GetAnalysisSettings will always return base::nullopt.
+  // false, then GetAnalysisSettings will always return absl::nullopt.
   bool IsValid() const;
 
   // Updates the states of |matcher_|, |enabled_patterns_settings_| and/or

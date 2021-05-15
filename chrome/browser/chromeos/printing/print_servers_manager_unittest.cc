@@ -69,11 +69,11 @@ class FakePrintServersProvider : public PrintServersProvider {
                         const std::string& allowlist_pref) override {}
   void ClearData() override {}
 
-  base::Optional<std::vector<PrintServer>> GetPrintServers() override {
+  absl::optional<std::vector<PrintServer>> GetPrintServers() override {
     return print_servers_;
   }
 
-  void SetPrintServers(base::Optional<std::vector<PrintServer>> print_servers) {
+  void SetPrintServers(absl::optional<std::vector<PrintServer>> print_servers) {
     print_servers_ = print_servers;
     if (observer_) {
       observer_->OnServersChanged(print_servers.has_value(),
@@ -82,7 +82,7 @@ class FakePrintServersProvider : public PrintServersProvider {
   }
 
  private:
-  base::Optional<std::vector<PrintServer>> print_servers_;
+  absl::optional<std::vector<PrintServer>> print_servers_;
   PrintServersProvider::Observer* observer_;
 };
 

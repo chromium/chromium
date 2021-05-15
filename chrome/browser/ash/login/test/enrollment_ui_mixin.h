@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace test {
@@ -80,8 +80,8 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   EnrollmentScreen::Result WaitForScreenExit();
 
  private:
-  base::Optional<EnrollmentScreen::Result> screen_result_;
-  base::Optional<base::RunLoop> screen_exit_waiter_;
+  absl::optional<EnrollmentScreen::Result> screen_result_;
+  absl::optional<base::RunLoop> screen_exit_waiter_;
 
   void HandleScreenExit(EnrollmentScreen::Result result);
 

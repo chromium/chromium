@@ -12,10 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -153,7 +153,7 @@ class SessionRestorePolicy {
     // Indicates whether or not the tab communicates with the user even when it
     // is in the background (tab title changes, favicons, etc).
     // It is initialized to nullopt and set asynchronously to the proper value.
-    base::Optional<bool> used_in_bg;
+    absl::optional<bool> used_in_bg;
 
     // Indicates whether or not the tab has been pinned by the user. Only
     // applicable on desktop platforms.

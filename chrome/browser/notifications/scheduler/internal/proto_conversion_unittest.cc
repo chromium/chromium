@@ -87,10 +87,10 @@ TEST(ProtoConversionTest, ClientStateProtoConversion) {
       SchedulerClientType::kTest1,
       3 /* current_max_daily_show */,
       {} /* impressions */,
-      base::nullopt /* suppression_info */,
+      absl::nullopt /* suppression_info */,
       0 /* negative_events_count */,
-      base::nullopt /* negative_event_ts */,
-      base::nullopt /* last_shown_ts */,
+      absl::nullopt /* negative_event_ts */,
+      absl::nullopt /* last_shown_ts */,
   };
   test::AddImpressionTestData(test_data, &client_state);
   TestClientStateConversion(&client_state);

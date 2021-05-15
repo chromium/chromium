@@ -78,7 +78,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
   if (!navigation_handle->IsSameDocument()) {
     is_publicly_routable_ = false;
 
-    base::Optional<bool> is_publicly_routable =
+    absl::optional<bool> is_publicly_routable =
         IsPubliclyRoutable(navigation_handle);
 
     if (is_publicly_routable) {
@@ -234,7 +234,7 @@ bool NavigationPredictorPreconnectClient::IsSearchEnginePage() const {
       web_contents()->GetLastCommittedURL());
 }
 
-base::Optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
+absl::optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
     content::NavigationHandle* navigation_handle) const {
   net::IPEndPoint remote_endpoint = navigation_handle->GetSocketAddress();
   net::IPAddress page_ip_address_ = remote_endpoint.address();
@@ -242,7 +242,7 @@ base::Optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
   // Sometimes the IP address may not be set (e.g., if the socket is being
   // reused).
   if (!page_ip_address_.IsValid()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!enable_preconnects_for_local_ips_for_testing_) {

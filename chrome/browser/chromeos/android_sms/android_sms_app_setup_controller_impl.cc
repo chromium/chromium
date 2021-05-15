@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
@@ -28,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
@@ -52,7 +52,7 @@ AndroidSmsAppSetupControllerImpl::PwaDelegate::PwaDelegate() = default;
 
 AndroidSmsAppSetupControllerImpl::PwaDelegate::~PwaDelegate() = default;
 
-base::Optional<web_app::AppId>
+absl::optional<web_app::AppId>
 AndroidSmsAppSetupControllerImpl::PwaDelegate::GetPwaForUrl(
     const GURL& install_url,
     Profile* profile) {
@@ -123,7 +123,7 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
                          std::move(callback)));
 }
 
-base::Optional<web_app::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
+absl::optional<web_app::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
     const GURL& install_url) {
   return pwa_delegate_->GetPwaForUrl(install_url, profile_);
 }
@@ -152,7 +152,7 @@ void AndroidSmsAppSetupControllerImpl::RemoveApp(
     const GURL& install_url,
     const GURL& migrated_to_app_url,
     SuccessCallback callback) {
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       pwa_delegate_->GetPwaForUrl(install_url, profile_);
 
   // If there is no app installed at |url|, there is nothing more to do.

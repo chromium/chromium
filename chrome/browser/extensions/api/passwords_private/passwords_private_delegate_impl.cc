@@ -291,14 +291,14 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
   web_contents_ = web_contents;
   if (!password_access_authenticator_.EnsureUserIsAuthenticated(
           GetReauthPurpose(reason))) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   // Request the password. When it is retrieved, ShowPassword() will be called.
   const std::string* sort_key = password_id_generator_.TryGetKey(id);
   if (!sort_key) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -308,9 +308,9 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     // Copying occurs here so javascript doesn't need plaintext password.
     callback = base::BindOnce(
         [](PlaintextPasswordCallback callback,
-           base::Optional<std::u16string> password) {
+           absl::optional<std::u16string> password) {
           if (!password) {
-            std::move(callback).Run(base::nullopt);
+            std::move(callback).Run(absl::nullopt);
             return;
           }
           ui::ScopedClipboardWriter clipboard_writer(
@@ -527,7 +527,7 @@ void PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword(
   web_contents_ = web_contents;
   if (!password_access_authenticator_.EnsureUserIsAuthenticated(
           GetReauthPurpose(reason))) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

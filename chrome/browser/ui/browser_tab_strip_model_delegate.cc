@@ -50,7 +50,7 @@ void BrowserTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    base::Optional<tab_groups::TabGroupId> group) {
+    absl::optional<tab_groups::TabGroupId> group) {
   chrome::AddTabAt(browser_, url, index, foreground, group);
 }
 
@@ -180,10 +180,10 @@ void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
   chrome::MoveTabsToNewWindow(browser_, indices, group);
 }
 
-base::Optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
+absl::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
   if (!BrowserSupportsHistoricalEntries())
-    return base::nullopt;
+    return absl::nullopt;
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
@@ -194,7 +194,7 @@ base::Optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
         sessions::ContentLiveTab::GetForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void BrowserTabStripModelDelegate::CreateHistoricalGroup(

@@ -4,7 +4,6 @@
 
 #include <cmath>
 
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -38,6 +37,7 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"

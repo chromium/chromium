@@ -84,10 +84,10 @@ class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
     return result;
   }
 
-  base::Optional<TabInfo> FindNavigationTab(
+  absl::optional<TabInfo> FindNavigationTab(
       content::WebContents* web_contents) override {
     if (!tabs_.count(current_tab_id_))
-      return base::nullopt;
+      return absl::nullopt;
     return TabInfo{current_tab_id_, tabs_[current_tab_id_]};
   }
 

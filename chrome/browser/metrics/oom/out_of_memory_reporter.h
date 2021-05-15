@@ -71,7 +71,7 @@ class OutOfMemoryReporter
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::Optional<ukm::SourceId> last_committed_source_id_;
+  absl::optional<ukm::SourceId> last_committed_source_id_;
   base::TimeTicks last_navigation_timestamp_;
   std::unique_ptr<const base::TickClock> tick_clock_;
   int crashed_render_process_id_ = content::ChildProcessHost::kInvalidUniqueID;

@@ -225,7 +225,7 @@ void TestPasswordsPrivateDelegate::GetPlaintextInsecurePassword(
     PlaintextInsecurePasswordCallback callback) {
   // Return a mocked password value.
   if (!plaintext_password_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

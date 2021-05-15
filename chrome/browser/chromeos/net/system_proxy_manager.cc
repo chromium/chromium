@@ -78,7 +78,7 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
                              const std::string& password,
                              LoginAuthRequiredCallback auth_required_callback) {
     std::move(auth_required_callback)
-        .Run(base::make_optional<net::AuthCredentials>(
+        .Run(absl::make_optional<net::AuthCredentials>(
             base::UTF8ToUTF16(username), base::UTF8ToUTF16(password)));
   }
 
@@ -649,7 +649,7 @@ void SystemProxyManager::OnAuthenticationRequired(
 
 void SystemProxyManager::LookupProxyAuthCredentialsCallback(
     const system_proxy::ProtectionSpace& protection_space,
-    const base::Optional<net::AuthCredentials>& credentials) {
+    const absl::optional<net::AuthCredentials>& credentials) {
   if (!credentials) {
     // Ask the user for credentials
     ShowAuthenticationNotification(protection_space, /*show_error=*/false);

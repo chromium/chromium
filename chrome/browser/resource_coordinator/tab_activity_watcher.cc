@@ -71,14 +71,14 @@ class TabActivityWatcher::WebContentsData
   // Calculates the tab reactivation score for a background tab. Returns nullopt
   // if the score could not be calculated, e.g. because the tab is in the
   // foreground.
-  base::Optional<float> CalculateReactivationScore() {
+  absl::optional<float> CalculateReactivationScore() {
     if (web_contents()->IsBeingDestroyed() || backgrounded_time_.is_null())
-      return base::nullopt;
+      return absl::nullopt;
 
     // No log for CalculateReactivationScore.
-    base::Optional<TabFeatures> tab = GetTabFeatures();
+    absl::optional<TabFeatures> tab = GetTabFeatures();
     if (!tab.has_value())
-      return base::nullopt;
+      return absl::nullopt;
 
     float score = 0.0f;
     const tab_ranker::TabRankerResult result =
@@ -86,7 +86,7 @@ class TabActivityWatcher::WebContentsData
                                                                 &score);
     if (result == tab_ranker::TabRankerResult::kSuccess)
       return score;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Call when the associated WebContents has been replaced.
@@ -151,7 +151,7 @@ class TabActivityWatcher::WebContentsData
     if (backgrounded_time_.is_null() || DisableBackgroundLogWithTabRanker())
       return;
 
-    base::Optional<TabFeatures> tab = GetTabFeatures();
+    absl::optional<TabFeatures> tab = GetTabFeatures();
     if (tab.has_value()) {
       // Background time logging always logged with label_id == 0, since we
       // only use label_id for query time logging for now.
@@ -161,7 +161,7 @@ class TabActivityWatcher::WebContentsData
   }
 
   // Logs current TabFeatures; skips if current tab is null.
-  void LogCurrentTabFeatures(const base::Optional<TabFeatures>& tab) {
+  void LogCurrentTabFeatures(const absl::optional<TabFeatures>& tab) {
     if (!tab.has_value())
       return;
     // Update label_id_: a new label_id is generated for this query if the
@@ -372,11 +372,11 @@ class TabActivityWatcher::WebContentsData
   // WindowFeatures and MRUFeatures.
   // TODO(charleszhao): refactor TabMetricsLogger::GetTabFeatures to return a
   // full TabFeatures instead of a partial TabFeatures.
-  base::Optional<TabFeatures> GetTabFeatures() {
+  absl::optional<TabFeatures> GetTabFeatures() {
     if (web_contents()->IsBeingDestroyed() || backgrounded_time_.is_null())
-      return base::nullopt;
+      return absl::nullopt;
     // For tab features.
-    base::Optional<TabFeatures> tab =
+    absl::optional<TabFeatures> tab =
         TabMetricsLogger::GetTabFeatures(page_metrics_, web_contents());
     if (!tab.has_value())
       return tab;
@@ -502,12 +502,12 @@ TabActivityWatcher::~TabActivityWatcher() {
   BrowserList::RemoveObserver(this);
 }
 
-base::Optional<float> TabActivityWatcher::CalculateReactivationScore(
+absl::optional<float> TabActivityWatcher::CalculateReactivationScore(
     content::WebContents* web_contents) {
   WebContentsData* web_contents_data =
       WebContentsData::FromWebContents(web_contents);
   if (!web_contents_data)
-    return base::nullopt;
+    return absl::nullopt;
   return web_contents_data->CalculateReactivationScore();
 }
 
@@ -519,14 +519,14 @@ void TabActivityWatcher::LogAndMaybeSortLifecycleUnitWithTabRanker(
   const bool should_sort_tabs =
       base::FeatureList::IsEnabled(features::kTabRanker);
 
-  std::map<int32_t, base::Optional<TabFeatures>> tab_features;
+  std::map<int32_t, absl::optional<TabFeatures>> tab_features;
   for (auto* lifecycle_unit : *tabs) {
     auto* lifecycle_unit_external =
         lifecycle_unit->AsTabLifecycleUnitExternal();
     // the lifecycle_unit_external is nullptr in the unit test
     // TabManagerDelegateTest::KillMultipleProcesses.
     if (!lifecycle_unit_external) {
-      tab_features[lifecycle_unit->GetID()] = base::nullopt;
+      tab_features[lifecycle_unit->GetID()] = absl::nullopt;
       continue;
     }
     WebContentsData* web_contents_data = WebContentsData::FromWebContents(
@@ -536,11 +536,11 @@ void TabActivityWatcher::LogAndMaybeSortLifecycleUnitWithTabRanker(
     // TODO(crbug.com/1019482): move the creation of WebContentsData to
     // TabHelpers::AttachTabHelpers.
     if (!web_contents_data) {
-      tab_features[lifecycle_unit->GetID()] = base::nullopt;
+      tab_features[lifecycle_unit->GetID()] = absl::nullopt;
       continue;
     }
 
-    const base::Optional<TabFeatures> tab = web_contents_data->GetTabFeatures();
+    const absl::optional<TabFeatures> tab = web_contents_data->GetTabFeatures();
     web_contents_data->LogCurrentTabFeatures(tab);
 
     // No reason to store TabFeatures if TabRanker is disabled.

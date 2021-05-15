@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -38,7 +38,7 @@ class LoginScreenExtensionsStorageCleaner {
   void ClearPersistentDataForUninstalledExtensionsImpl(
       const std::vector<std::string>& installed_extension_ids,
       std::vector<std::string> keys,
-      base::Optional<std::string> error);
+      absl::optional<std::string> error);
 
   PrefService* prefs_;
   PrefChangeRegistrar pref_change_registrar_;

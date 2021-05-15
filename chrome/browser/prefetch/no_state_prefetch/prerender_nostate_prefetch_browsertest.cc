@@ -943,10 +943,10 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchLoadFlag) {
   test_prerender->WaitForLoads(0);
   monitor.WaitForUrls();
 
-  base::Optional<network::ResourceRequest> page_request =
+  absl::optional<network::ResourceRequest> page_request =
       monitor.GetRequestInfo(prefetch_page);
   EXPECT_TRUE(page_request->load_flags & net::LOAD_PREFETCH);
-  base::Optional<network::ResourceRequest> script_request =
+  absl::optional<network::ResourceRequest> script_request =
       monitor.GetRequestInfo(prefetch_script);
   EXPECT_TRUE(script_request->load_flags & net::LOAD_PREFETCH);
 }
@@ -965,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
   WaitForRequestCount(prefetch_script, 1);
   monitor.WaitForUrls();
   for (const GURL& url : {prefetch_page, prefetch_script}) {
-    base::Optional<network::ResourceRequest> request =
+    absl::optional<network::ResourceRequest> request =
         monitor.GetRequestInfo(url);
     EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
     EXPECT_FALSE(request->headers.HasHeader(kExpectedPurposeHeaderOnPrefetch));
@@ -994,7 +994,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   WaitForRequestCount(prefetch_script2, 1);
   monitor.WaitForUrls();
   for (const GURL& url : {prefetch_page, prefetch_script, prefetch_script2}) {
-    base::Optional<network::ResourceRequest> request =
+    absl::optional<network::ResourceRequest> request =
         monitor.GetRequestInfo(url);
     EXPECT_FALSE(request->load_flags & net::LOAD_PREFETCH);
     EXPECT_FALSE(request->headers.HasHeader(kExpectedPurposeHeaderOnPrefetch));
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, Prefetch301LoadFlags) {
   WaitForRequestCount(page_url, 1);
   monitor.WaitForUrls();
 
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(redirect_url);
   EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
 }
@@ -1433,7 +1433,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 #else
   constexpr net::RequestPriority kExpectedPriority = net::IDLE;
 #endif
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(script_url);
   EXPECT_EQ(kExpectedPriority, request->priority);
 }

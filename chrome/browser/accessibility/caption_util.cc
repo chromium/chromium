@@ -16,7 +16,7 @@ namespace {
 // Returns whether the style is default or not. If the user has changed any of
 // the captions settings from the default value, that is an interesting metric
 // to observe.
-bool IsDefaultStyle(base::Optional<ui::CaptionStyle> style) {
+bool IsDefaultStyle(absl::optional<ui::CaptionStyle> style) {
   return (style.has_value() && style->text_size.empty() &&
           style->font_family.empty() && style->text_color.empty() &&
           style->background_color.empty() && style->text_shadow.empty());
@@ -26,11 +26,11 @@ bool IsDefaultStyle(base::Optional<ui::CaptionStyle> style) {
 
 namespace captions {
 
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
+absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics) {
   // Apply native CaptionStyle parameters.
-  base::Optional<ui::CaptionStyle> style;
+  absl::optional<ui::CaptionStyle> style;
 
   // Apply native CaptionStyle parameters.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

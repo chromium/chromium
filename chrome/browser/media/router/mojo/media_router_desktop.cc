@@ -90,7 +90,7 @@ void MediaRouterDesktop::GetProviderState(
   }
 }
 
-base::Optional<MediaRouteProviderId>
+absl::optional<MediaRouteProviderId>
 MediaRouterDesktop::GetProviderIdForPresentation(
     const std::string& presentation_id) {
   // TODO(takumif): Once the Android Media Router also uses MediaRouterMojoImpl,

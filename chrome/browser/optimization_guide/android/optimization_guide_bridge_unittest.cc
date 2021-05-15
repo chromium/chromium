@@ -43,7 +43,7 @@ class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD4(CanApplyOptimizationAsync,
                void(const GURL&,
-                    const base::Optional<int64_t>&,
+                    const absl::optional<int64_t>&,
                     optimization_guide::proto::OptimizationType,
                     optimization_guide::OptimizationGuideDecisionCallback));
 };
@@ -151,7 +151,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(
       *optimization_guide_hints_manager_,
-      CanApplyOptimizationAsync(GURL("https://example.com/"), Eq(base::nullopt),
+      CanApplyOptimizationAsync(GURL("https://example.com/"), Eq(absl::nullopt),
                                 optimization_guide::proto::PERFORMANCE_HINTS,
                                 base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<3>(

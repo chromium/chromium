@@ -182,7 +182,7 @@ TEST_F(LiteVideoUserBlocklistTest,
        MainframeNavigationBlocklistedByRebufferBlocklist) {
   ConfigBlocklistParamsForTesting();
   GURL url("https://test.com");
-  blocklist()->AddRebufferToBlocklist(url, base::nullopt, true);
+  blocklist()->AddRebufferToBlocklist(url, absl::nullopt, true);
   EXPECT_EQ(CheckBlocklistForMainframeNavigation(url),
             LiteVideoBlocklistReason::kRebufferingBlocklisted);
 }

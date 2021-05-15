@@ -64,7 +64,7 @@ class EditAddressProfileDialogControllerImpl
   // If not nullptr, this dialog was opened from an update prompt. Contains the
   // details of the address profile that will be updated if the user accepts
   // that update prompt from which this edit dialog was opened..
-  base::Optional<AutofillProfile> original_profile_;
+  absl::optional<AutofillProfile> original_profile_;
 
   AutofillBubbleBase* edit_dialog_ = nullptr;
 

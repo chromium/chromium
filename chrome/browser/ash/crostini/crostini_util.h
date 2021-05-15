@@ -12,10 +12,10 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace aura {

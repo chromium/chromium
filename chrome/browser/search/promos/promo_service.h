@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chrome/browser/search/promos/promo_data.h"
 #include "chrome/browser/search/promos/promo_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -58,7 +58,7 @@ class PromoService : public KeyedService {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns the currently cached middle-slot PromoData, if any.
-  const base::Optional<PromoData>& promo_data() const { return promo_data_; }
+  const absl::optional<PromoData>& promo_data() const { return promo_data_; }
   Status promo_status() const { return promo_status_; }
 
   // Requests an asynchronous refresh from the network. After the update
@@ -76,7 +76,7 @@ class PromoService : public KeyedService {
   GURL GetLoadURLForTesting() const;
 
  protected:
-  void PromoDataLoaded(Status status, const base::Optional<PromoData>& data);
+  void PromoDataLoaded(Status status, const absl::optional<PromoData>& data);
 
  private:
   void OnLoadDone(std::unique_ptr<std::string> response_body);
@@ -97,7 +97,7 @@ class PromoService : public KeyedService {
 
   base::ObserverList<PromoServiceObserver, true>::Unchecked observers_;
 
-  base::Optional<PromoData> promo_data_;
+  absl::optional<PromoData> promo_data_;
   Status promo_status_;
 
   Profile* profile_;

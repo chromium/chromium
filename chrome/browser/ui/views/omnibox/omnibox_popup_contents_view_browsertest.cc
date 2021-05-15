@@ -63,10 +63,10 @@ class ClickTrackingOverlayView : public views::View {
     last_click_ = event->location();
   }
 
-  base::Optional<gfx::Point> last_click() const { return last_click_; }
+  absl::optional<gfx::Point> last_click() const { return last_click_; }
 
  private:
-  base::Optional<gfx::Point> last_click_;
+  absl::optional<gfx::Point> last_click_;
 };
 
 // Helper to wait for theme changes. The wait is triggered when an instance of

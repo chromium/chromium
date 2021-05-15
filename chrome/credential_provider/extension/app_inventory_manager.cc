@@ -196,7 +196,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
   request_dict_->SetKey(kUploadAppInventoryRequestWin32AppsParameterName,
                         GetInstalledWin32Apps());
 
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       AppInventoryManager::Get()->GetGemServiceUploadAppInventoryUrl(),
       /* access_token= */ std::string(), {}, *request_dict_,

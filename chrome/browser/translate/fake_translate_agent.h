@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -39,6 +38,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class FakeTranslateAgent : public translate::mojom::TranslateAgent {
@@ -68,8 +68,8 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle);
 
   bool called_translate_;
-  base::Optional<std::string> source_lang_;
-  base::Optional<std::string> target_lang_;
+  absl::optional<std::string> source_lang_;
+  absl::optional<std::string> target_lang_;
   bool called_revert_translation_;
   std::string next_page_lang_;
   bool next_page_translatable_;

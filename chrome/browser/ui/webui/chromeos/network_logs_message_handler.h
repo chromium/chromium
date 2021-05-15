@@ -9,9 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -33,12 +33,12 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
   void OnStoreLogs(const base::ListValue* list);
   void OnWriteSystemLogs(const std::string& callback_id,
                          base::Value&& options,
-                         base::Optional<base::FilePath> syslogs_path);
+                         absl::optional<base::FilePath> syslogs_path);
   void MaybeWriteDebugLogs(const std::string& callback_id,
                            base::Value&& options);
   void OnWriteDebugLogs(const std::string& callback_id,
                         base::Value&& options,
-                        base::Optional<base::FilePath> logs_path);
+                        absl::optional<base::FilePath> logs_path);
   void MaybeWritePolicies(const std::string& callback_id,
                           base::Value&& options);
   void OnWritePolicies(const std::string& callback_id, bool result);

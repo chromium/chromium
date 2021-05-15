@@ -7,7 +7,7 @@
 BatteryLevelProvider::BatteryState::BatteryState(
     size_t interface_count,
     size_t battery_count,
-    base::Optional<double> charge_level,
+    absl::optional<double> charge_level,
     bool on_battery,
     base::TimeTicks capture_time)
     : interface_count(interface_count),
@@ -62,7 +62,7 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
     total_max_capacity += interface.details->full_charged_capacity;
   }
 
-  base::Optional<double> charge_level;
+  absl::optional<double> charge_level;
   // Avoid invalid division.
   if (!any_capacity_invalid && total_max_capacity != 0) {
     charge_level = static_cast<double>(total_current_capacity) /

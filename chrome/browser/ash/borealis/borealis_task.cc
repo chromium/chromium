@@ -81,7 +81,7 @@ void CreateDiskImage::RunInternal(BorealisContext* context) {
 
 void CreateDiskImage::OnCreateDiskImage(
     BorealisContext* context,
-    base::Optional<vm_tools::concierge::CreateDiskImageResponse> response) {
+    absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
     Complete(BorealisStartupResult::kDiskImageFailed,
@@ -136,7 +136,7 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
 
 void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
-    base::Optional<vm_tools::concierge::StartVmResponse> response) {
+    absl::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
     Complete(BorealisStartupResult::kStartVmFailed,
              "Failed to start Borealis VM: Empty response.");
@@ -171,7 +171,7 @@ BorealisLaunchWatcher& AwaitBorealisStartup::GetWatcherForTesting() {
 
 void AwaitBorealisStartup::OnAwaitBorealisStartup(
     BorealisContext* context,
-    base::Optional<std::string> container) {
+    absl::optional<std::string> container) {
   if (!container) {
     Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
              "Awaiting for Borealis launch failed: timed out");

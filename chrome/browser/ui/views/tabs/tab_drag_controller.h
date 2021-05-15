@@ -133,7 +133,7 @@ class TabDragController : public views::WidgetObserver {
   // Returns the tab group being dragged, if any. Will only return a value if
   // the user is dragging a tab group header, not an individual tab or tabs from
   // a group.
-  const base::Optional<tab_groups::TabGroupId>& group() const { return group_; }
+  const absl::optional<tab_groups::TabGroupId>& group() const { return group_; }
 
   // Returns true if currently dragging a tab with |contents|.
   bool IsDraggingTab(content::WebContents* contents);
@@ -259,7 +259,7 @@ class TabDragController : public views::WidgetObserver {
 
     // Stores the information of the group the tab is in, or nullopt if tab is
     // not grouped.
-    base::Optional<TabGroupData> tab_group_data;
+    absl::optional<TabGroupData> tab_group_data;
   };
 
   typedef std::vector<TabDragData> DragData;
@@ -549,10 +549,10 @@ class TabDragController : public views::WidgetObserver {
   void UpdateGroupForDraggedTabs();
 
   // Helper method for TabDragController::UpdateGroupForDraggedTabs to decide if
-  // a dragged tab should stay in the tab group. Returns base::nullopt if the
+  // a dragged tab should stay in the tab group. Returns absl::nullopt if the
   // tab should not be in a group. Otherwise returns tab_groups::TabGroupId of
   // the group the selected tabs should join.
-  base::Optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
+  absl::optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
       const std::vector<int>& selected);
 
   EventSource event_source_;
@@ -635,7 +635,7 @@ class TabDragController : public views::WidgetObserver {
 
   // The group that is being dragged. Only set if the drag originated from a
   // group header, indicating that the entire group is being dragged together.
-  base::Optional<tab_groups::TabGroupId> group_;
+  absl::optional<tab_groups::TabGroupId> group_;
 
   // True until MoveAttached() is first invoked.
   bool initial_move_;

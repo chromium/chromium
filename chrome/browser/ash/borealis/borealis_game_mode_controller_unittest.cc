@@ -63,7 +63,7 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
 
 TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(true));
+      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
       CreateTestWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -71,7 +71,7 @@ TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(false));
+      absl::optional<bool>(false));
   test_widget->SetFullscreen(false);
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
@@ -79,7 +79,7 @@ TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(false));
+      absl::optional<bool>(false));
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   views::Widget::GetTopLevelWidgetForNativeView(window.get())
       ->SetFullscreen(true);
@@ -89,7 +89,7 @@ TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(true));
+      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
       CreateTestWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -97,7 +97,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(false));
+      absl::optional<bool>(false));
   std::unique_ptr<views::Widget> other_test_widget =
       CreateTestWidget("org.chromium.borealis.bar");
   aura::Window* other_window = other_test_widget->GetNativeWindow();
@@ -106,7 +106,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(true));
+      absl::optional<bool>(true));
   window->Focus();
 
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
@@ -115,7 +115,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(true));
+      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
       CreateTestWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -123,7 +123,7 @@ TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(false));
+      absl::optional<bool>(false));
   test_widget.reset();
 
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
@@ -131,7 +131,7 @@ TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(true));
+      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
       CreateTestWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -148,7 +148,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
 
 TEST_F(BorealisGameModeControllerTest, SetGameModeFailureDoesNotCrash) {
   fake_resourced_client_->set_set_game_mode_response(
-      base::Optional<bool>(base::nullopt));
+      absl::optional<bool>(absl::nullopt));
   std::unique_ptr<views::Widget> test_widget =
       CreateTestWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();

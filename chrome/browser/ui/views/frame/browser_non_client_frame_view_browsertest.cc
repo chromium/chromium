@@ -51,7 +51,7 @@ class BrowserNonClientFrameViewBrowserTest
   // TODO: Add tests for non-bookmark hosted apps, as bookmark apps will no
   // longer be hosted apps when BMO ships.
   void InstallAndLaunchBookmarkApp(
-      base::Optional<GURL> app_url = base::nullopt) {
+      absl::optional<GURL> app_url = absl::nullopt) {
     blink::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
@@ -74,7 +74,7 @@ class BrowserNonClientFrameViewBrowserTest
   }
 
  protected:
-  base::Optional<SkColor> app_theme_color_ = SK_ColorBLUE;
+  absl::optional<SkColor> app_theme_color_ = SK_ColorBLUE;
   Browser* app_browser_ = nullptr;
   BrowserView* app_browser_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;

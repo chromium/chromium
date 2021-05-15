@@ -37,19 +37,19 @@ bool IsDrawerLayout(arc::mojom::AccessibilityNodeInfoData* node) {
 namespace arc {
 
 // static
-base::Optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
+absl::optional<std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
 DrawerLayoutHandler::CreateIfNecessary(
     AXTreeSourceArc* tree_source,
     const mojom::AccessibilityEventData& event_data) {
   if (event_data.event_type !=
       mojom::AccessibilityEventType::WINDOW_STATE_CHANGED) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   AccessibilityInfoDataWrapper* source_node =
       tree_source->GetFromId(event_data.source_id);
   if (!source_node || !IsDrawerLayout(source_node->GetNode()))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Find a node with accessibility importance. That is a menu node opened now.
   // Extract the accessibility name of the drawer menu from the event text.
@@ -67,7 +67,7 @@ DrawerLayoutHandler::CreateIfNecessary(
             event_data.event_text.value_or<std::vector<std::string>>({}),
             " ")));
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool DrawerLayoutHandler::PreDispatchEvent(

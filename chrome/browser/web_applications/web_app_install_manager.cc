@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -35,7 +35,7 @@ constexpr bool kLocallyInstallWebAppsOnSync = false;
 #endif
 
 InstallManager::InstallParams CreateSyncInstallParams(
-    const base::Optional<std::string>& manifest_id,
+    const absl::optional<std::string>& manifest_id,
     const GURL& start_url,
     const std::u16string& app_name,
     DisplayMode user_display_mode) {
@@ -159,13 +159,13 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   InstallWebAppFromInfo(std::move(web_application_info), for_installable_site,
-                        base::nullopt, install_source, std::move(callback));
+                        absl::nullopt, install_source, std::move(callback));
 }
 
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     ForInstallableSite for_installable_site,
-    const base::Optional<InstallParams>& install_params,
+    const absl::optional<InstallParams>& install_params,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
   DCHECK(started_);
@@ -464,7 +464,7 @@ void WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted(
   DeleteTask(task);
 
   InstallableCheckResult result;
-  base::Optional<AppId> opt_app_id;
+  absl::optional<AppId> opt_app_id;
   if (IsSuccess(code)) {
     if (!app_id.empty() && registrar()->IsInstalled(app_id)) {
       result = InstallableCheckResult::kAlreadyInstalled;

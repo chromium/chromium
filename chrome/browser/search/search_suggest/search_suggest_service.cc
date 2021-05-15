@@ -120,7 +120,7 @@ SearchSuggestService::SearchSuggestService(
           base::BindRepeating(&SearchSuggestService::SigninStatusChanged,
                               base::Unretained(this)))),
       profile_(profile),
-      search_suggest_data_(base::nullopt),
+      search_suggest_data_(absl::nullopt),
       search_suggest_status_(SearchSuggestLoader::Status::FATAL_ERROR) {}
 
 SearchSuggestService::~SearchSuggestService() = default;
@@ -134,7 +134,7 @@ void SearchSuggestService::Shutdown() {
   DCHECK(observers_.empty());
 }
 
-const base::Optional<SearchSuggestData>&
+const absl::optional<SearchSuggestData>&
 SearchSuggestService::search_suggest_data() const {
   return search_suggest_data_;
 }
@@ -153,17 +153,17 @@ void SearchSuggestService::MaybeLoadWithBlocklist(
     const std::string& blocklist) {
   if (!signin_observer_->SignedIn()) {
     SearchSuggestDataLoaded(SearchSuggestLoader::Status::SIGNED_OUT,
-                            base::nullopt);
+                            absl::nullopt);
   } else if (profile_->GetPrefs()->GetBoolean(
                  prefs::kNtpSearchSuggestionsOptOut)) {
     SearchSuggestDataLoaded(SearchSuggestLoader::Status::OPTED_OUT,
-                            base::nullopt);
+                            absl::nullopt);
   } else if (RequestsFrozen()) {
     SearchSuggestDataLoaded(SearchSuggestLoader::Status::REQUESTS_FROZEN,
-                            base::nullopt);
+                            absl::nullopt);
   } else if (ImpressionCapReached()) {
     SearchSuggestDataLoaded(SearchSuggestLoader::Status::IMPRESSION_CAP,
-                            base::nullopt);
+                            absl::nullopt);
   } else {
     loader_->Load(blocklist,
                   base::BindOnce(&SearchSuggestService::SearchSuggestDataLoaded,
@@ -183,13 +183,13 @@ void SearchSuggestService::RemoveObserver(
 void SearchSuggestService::SigninStatusChanged() {
   // If we have cached data, clear it.
   if (search_suggest_data_.has_value()) {
-    search_suggest_data_ = base::nullopt;
+    search_suggest_data_ = absl::nullopt;
   }
 }
 
 void SearchSuggestService::SearchSuggestDataLoaded(
     SearchSuggestLoader::Status status,
-    const base::Optional<SearchSuggestData>& data) {
+    const absl::optional<SearchSuggestData>& data) {
   // In case of transient errors, keep our cached data (if any), but still
   // notify observers of the finished load (attempt).
   if (status != SearchSuggestLoader::Status::TRANSIENT_ERROR) {
@@ -290,7 +290,7 @@ void SearchSuggestService::BlocklistSearchSuggestion(int task_version,
   base::DictionaryValue* blocklist = update.Get();
   blocklist->SetKey(task_version_id, base::ListValue());
 
-  search_suggest_data_ = base::nullopt;
+  search_suggest_data_ = absl::nullopt;
   Refresh();
 }
 
@@ -316,7 +316,7 @@ void SearchSuggestService::BlocklistSearchSuggestionWithHash(
     value = blocklist->SetKey(task_version_id, base::ListValue());
   value->Append(base::Value(hash_string));
 
-  search_suggest_data_ = base::nullopt;
+  search_suggest_data_ = absl::nullopt;
   Refresh();
 }
 
@@ -339,7 +339,7 @@ void SearchSuggestService::SearchSuggestionSelected(int task_version,
     blocklist += ";";
   blocklist += blocklist_item;
 
-  search_suggest_data_ = base::nullopt;
+  search_suggest_data_ = absl::nullopt;
   MaybeLoadWithBlocklist(blocklist);
 }
 
@@ -373,7 +373,7 @@ std::string SearchSuggestService::GetBlocklistAsString() {
 }
 
 void SearchSuggestService::SuggestionsDisplayed() {
-  search_suggest_data_ = base::nullopt;
+  search_suggest_data_ = absl::nullopt;
 
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kNtpSearchSuggestionsImpressions);
@@ -395,7 +395,7 @@ void SearchSuggestService::OptOutOfSearchSuggestions() {
 
   profile_->GetPrefs()->SetBoolean(prefs::kNtpSearchSuggestionsOptOut, true);
 
-  search_suggest_data_ = base::nullopt;
+  search_suggest_data_ = absl::nullopt;
 }
 
 // static

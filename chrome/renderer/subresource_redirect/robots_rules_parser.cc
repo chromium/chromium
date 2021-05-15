@@ -140,7 +140,7 @@ RobotsRulesParser::~RobotsRulesParser() {
 }
 
 void RobotsRulesParser::UpdateRobotsRules(
-    const base::Optional<std::string>& rules) {
+    const absl::optional<std::string>& rules) {
   robots_rules_.clear();
   rules_receive_timeout_timer_.Stop();
 
@@ -184,7 +184,7 @@ void RobotsRulesParser::UpdateRobotsRules(
   pending_check_requests_.clear();
 }
 
-base::Optional<RobotsRulesParser::CheckResult>
+absl::optional<RobotsRulesParser::CheckResult>
 RobotsRulesParser::CheckRobotsRules(int routing_id,
                                     const GURL& url,
                                     CheckResultCallback callback) {
@@ -198,7 +198,7 @@ RobotsRulesParser::CheckRobotsRules(int routing_id,
         std::vector<std::pair<CheckResultCallback, std::string>>()));
     it.first->second.emplace_back(
         std::make_pair(std::move(callback), path_with_query));
-    return base::nullopt;
+    return absl::nullopt;
   }
   return CheckRobotsRulesImmediate(path_with_query);
 }

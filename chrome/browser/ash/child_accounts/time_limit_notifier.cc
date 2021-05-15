@@ -119,7 +119,7 @@ void TimeLimitNotifier::MaybeScheduleLockNotifications(
 
 void TimeLimitNotifier::ShowPolicyUpdateNotification(
     LimitType limit_type,
-    base::Optional<base::Time> lock_time) {
+    absl::optional<base::Time> lock_time) {
   int title_id;
   std::u16string message;
   std::string notification_id;

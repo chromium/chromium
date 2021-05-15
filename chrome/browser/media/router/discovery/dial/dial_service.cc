@@ -60,7 +60,7 @@ namespace media_router {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
-    const base::Optional<net::NetworkInterfaceList>& networks) {
+    const absl::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DialServiceImpl::SendNetworkList,
@@ -446,7 +446,7 @@ void DialServiceImpl::StartDiscovery() {
 }
 
 void DialServiceImpl::SendNetworkList(
-    const base::Optional<NetworkInterfaceList>& networks) {
+    const absl::optional<NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   using InterfaceIndexAddressFamily = std::pair<uint32_t, net::AddressFamily>;

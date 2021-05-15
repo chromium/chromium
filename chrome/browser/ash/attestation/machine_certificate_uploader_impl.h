@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
 // after //chromeos/attestation is moved to ash.
 #include "chromeos/attestation/attestation_flow.h"
@@ -107,7 +107,7 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   int num_retries_ = {};
   int retry_limit_ = {};
   int retry_delay_ = {};
-  base::Optional<bool> certificate_uploaded_;
+  absl::optional<bool> certificate_uploaded_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

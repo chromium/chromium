@@ -203,7 +203,7 @@ constexpr char InvalidPolicyNoUrls[] = R"(
       }
     ])";
 
-base::Optional<base::Value> ReadJson(base::StringPiece json) {
+absl::optional<base::Value> ReadJson(base::StringPiece json) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(json);
   EXPECT_TRUE(result.value) << result.error_message;
   return std::move(result.value);
@@ -612,7 +612,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, &pref_value));
   EXPECT_TRUE(pref_value);
 
-  base::Optional<base::Value> expected_pref_value =
+  absl::optional<base::Value> expected_pref_value =
       ReadJson(kInvalidPolicyUnknownPropertyAfterCleanup);
   EXPECT_EQ(*expected_pref_value, *pref_value);
 }
@@ -795,7 +795,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, &pref_value));
   ASSERT_TRUE(pref_value);
 
-  base::Optional<base::Value> expected_pref_value = ReadJson(kNormalizedPolicy);
+  absl::optional<base::Value> expected_pref_value = ReadJson(kNormalizedPolicy);
   EXPECT_EQ(*expected_pref_value, *pref_value);
 }
 

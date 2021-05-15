@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
               testing::ElementsAre(std::string() /* shill shared profile */));
   network_policy_application_observer.ResetEvents();
 
-  base::Optional<std::string> wifi_service =
+  absl::optional<std::string> wifi_service =
       shill_service_client_test_->FindServiceMatchingGUID(
           "{device-policy-for-Wifi1}");
   ASSERT_TRUE(wifi_service);
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                                    base::Value(shill::kStateIdle)));
   }
 
-  base::Optional<std::string> wifi2_service =
+  absl::optional<std::string> wifi2_service =
       shill_service_client_test_->FindServiceMatchingGUID(
           "{user-policy-for-Wifi2}");
   ASSERT_TRUE(wifi2_service);

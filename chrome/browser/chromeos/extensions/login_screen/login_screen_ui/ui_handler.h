@@ -48,7 +48,7 @@ class UiHandler : public session_manager::SessionManagerObserver,
  public:
   using WindowClosedCallback =
       base::OnceCallback<void(bool success,
-                              const base::Optional<std::string>& error)>;
+                              const absl::optional<std::string>& error)>;
 
   static UiHandler* Get(bool can_create);
   static void Shutdown();

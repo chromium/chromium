@@ -58,7 +58,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
         receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(
         &ProxyLookupRequest::OnProxyLookupComplete, base::Unretained(this),
-        net::ERR_ABORTED, base::nullopt));
+        net::ERR_ABORTED, absl::nullopt));
 
     network_context->LookUpProxyForURL(source_url, network_isolation_key,
                                        std::move(proxy_lookup_client));
@@ -68,7 +68,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
 
   void OnProxyLookupComplete(
       int32_t net_error,
-      const base::Optional<net::ProxyInfo>& proxy_info) override {
+      const absl::optional<net::ProxyInfo>& proxy_info) override {
     DCHECK_EQ(net_error == net::OK, proxy_info.has_value());
 
     std::string error;

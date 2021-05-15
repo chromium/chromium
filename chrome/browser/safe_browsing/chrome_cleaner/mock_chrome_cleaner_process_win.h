@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -88,7 +88,7 @@ class MockChromeCleanerProcess {
     const std::vector<base::FilePath>& files_to_delete() const {
       return files_to_delete_;
     }
-    const base::Optional<std::vector<std::wstring>>& registry_keys() const {
+    const absl::optional<std::vector<std::wstring>>& registry_keys() const {
       return registry_keys_;
     }
 
@@ -120,7 +120,7 @@ class MockChromeCleanerProcess {
 
    private:
     std::vector<base::FilePath> files_to_delete_;
-    base::Optional<std::vector<std::wstring>> registry_keys_;
+    absl::optional<std::vector<std::wstring>> registry_keys_;
     bool reboot_required_ = false;
     CrashPoint crash_point_ = CrashPoint::kNone;
     ItemsReporting registry_keys_reporting_ = ItemsReporting::kUnsupported;

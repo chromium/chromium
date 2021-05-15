@@ -100,7 +100,7 @@ bool ResponseIndicatesValidLicense(int response_code,
 
   // Expected response body:
   // { "status": "ACTIVE", ...}
-  base::Optional<base::Value> response = base::JSONReader::Read(response_body);
+  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
   if (!response || !response->is_dict()) {
     LOG(ERROR) << "response_body was of unexpected format.";
     return false;

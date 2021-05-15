@@ -96,7 +96,7 @@ void NearbyEndpointFinderImpl::PerformFindEndpoint() {
                                                  /*ble=*/false,
                                                  /*webrtc=*/false,
                                                  /*wifi_lan=*/false),
-                            /*fast_advertisement_service_uuid=*/base::nullopt,
+                            /*fast_advertisement_service_uuid=*/absl::nullopt,
                             /*is_out_of_band_connection=*/true),
       endpoint_discovery_listener_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&NearbyEndpointFinderImpl::OnStartDiscoveryResult,

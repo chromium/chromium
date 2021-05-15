@@ -72,7 +72,7 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
   auto record_result = EncryptedRecordDictionaryBuilder(record).Build();
   if (!record_result.has_value()) {
     // Record has errors. Stop here.
-    result_ = base::nullopt;
+    result_ = absl::nullopt;
     return *this;
   }
 
@@ -80,7 +80,7 @@ UploadEncryptedReportingRequestBuilder::AddRecord(
   return *this;
 }
 
-base::Optional<base::Value> UploadEncryptedReportingRequestBuilder::Build() {
+absl::optional<base::Value> UploadEncryptedReportingRequestBuilder::Build() {
   return std::move(result_);
 }
 
@@ -155,7 +155,7 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
 
 EncryptedRecordDictionaryBuilder::~EncryptedRecordDictionaryBuilder() = default;
 
-base::Optional<base::Value> EncryptedRecordDictionaryBuilder::Build() {
+absl::optional<base::Value> EncryptedRecordDictionaryBuilder::Build() {
   return std::move(result_);
 }
 
@@ -206,7 +206,7 @@ SequencingInformationDictionaryBuilder::SequencingInformationDictionaryBuilder(
 SequencingInformationDictionaryBuilder::
     ~SequencingInformationDictionaryBuilder() = default;
 
-base::Optional<base::Value> SequencingInformationDictionaryBuilder::Build() {
+absl::optional<base::Value> SequencingInformationDictionaryBuilder::Build() {
   return std::move(result_);
 }
 
@@ -248,7 +248,7 @@ EncryptionInfoDictionaryBuilder::EncryptionInfoDictionaryBuilder(
 
 EncryptionInfoDictionaryBuilder::~EncryptionInfoDictionaryBuilder() = default;
 
-base::Optional<base::Value> EncryptionInfoDictionaryBuilder::Build() {
+absl::optional<base::Value> EncryptionInfoDictionaryBuilder::Build() {
   return std::move(result_);
 }
 

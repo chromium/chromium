@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -75,6 +74,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -112,7 +112,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   FileExpansionObserver(const FileExpansionObserver&) = delete;
   FileExpansionObserver& operator=(const FileExpansionObserver&) = delete;
 
-  const base::Optional<bool>& property_files_expansion_result() const {
+  const absl::optional<bool>& property_files_expansion_result() const {
     return property_files_expansion_result_;
   }
 
@@ -122,7 +122,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  base::Optional<bool> property_files_expansion_result_;
+  absl::optional<bool> property_files_expansion_result_;
 };
 
 class ShowErrorObserver : public ArcSessionManagerObserver {
@@ -137,7 +137,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
   ~ShowErrorObserver() override { session_manager_->RemoveObserver(this); }
 
-  const base::Optional<ArcSupportHost::ErrorInfo> error_info() const {
+  const absl::optional<ArcSupportHost::ErrorInfo> error_info() const {
     return error_info_;
   }
 
@@ -146,7 +146,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  base::Optional<ArcSupportHost::ErrorInfo> error_info_;
+  absl::optional<ArcSupportHost::ErrorInfo> error_info_;
   ArcSessionManager* const session_manager_;
 };
 
@@ -1090,10 +1090,10 @@ TEST_F(ArcSessionManagerTest, RequestDisableDoesNotRemoveData) {
   arc_session_manager()->Shutdown();
 }
 
-// Tests that |vm_info| is initialized with base::nullopt.
+// Tests that |vm_info| is initialized with absl::nullopt.
 TEST_F(ArcSessionManagerTest, GetVmInfo_InitialValue) {
   const auto& vm_info = arc_session_manager()->GetVmInfo();
-  EXPECT_EQ(base::nullopt, vm_info);
+  EXPECT_EQ(absl::nullopt, vm_info);
 }
 
 // Tests that |vm_info| is updated with that from VmStartedSignal.
@@ -1104,21 +1104,21 @@ TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStarted) {
   arc_session_manager()->OnVmStarted(vm_signal);
 
   const auto& vm_info = arc_session_manager()->GetVmInfo();
-  ASSERT_NE(base::nullopt, vm_info);
+  ASSERT_NE(absl::nullopt, vm_info);
   EXPECT_EQ(1000UL, vm_info->seneschal_server_handle());
 }
 
-// Tests that |vm_info| remains as base::nullopt after VM stops.
+// Tests that |vm_info| remains as absl::nullopt after VM stops.
 TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStopped) {
   vm_tools::concierge::VmStoppedSignal vm_signal;
   vm_signal.set_name(kArcVmName);
   arc_session_manager()->OnVmStopped(vm_signal);
 
   const auto& vm_info = arc_session_manager()->GetVmInfo();
-  EXPECT_EQ(base::nullopt, vm_info);
+  EXPECT_EQ(absl::nullopt, vm_info);
 }
 
-// Tests that |vm_info| is reset to base::nullopt after VM starts and stops.
+// Tests that |vm_info| is reset to absl::nullopt after VM starts and stops.
 TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStarted_ThenStopped) {
   vm_tools::concierge::VmStartedSignal start_signal;
   start_signal.set_name(kArcVmName);
@@ -1130,7 +1130,7 @@ TEST_F(ArcSessionManagerTest, GetVmInfo_WithVmStarted_ThenStopped) {
   arc_session_manager()->OnVmStopped(stop_signal);
 
   const auto& vm_info = arc_session_manager()->GetVmInfo();
-  EXPECT_EQ(base::nullopt, vm_info);
+  EXPECT_EQ(absl::nullopt, vm_info);
 }
 
 // Tests that |vm_info| is not updated with non-ARCVM VmStartedSignal.
@@ -1141,7 +1141,7 @@ TEST_F(ArcSessionManagerTest, GetVmInfo_WithNonVmStarted) {
   arc_session_manager()->OnVmStarted(non_vm_signal);
 
   const auto& vm_info = arc_session_manager()->GetVmInfo();
-  EXPECT_EQ(base::nullopt, vm_info);
+  EXPECT_EQ(absl::nullopt, vm_info);
 }
 
 class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {
@@ -1208,7 +1208,7 @@ struct ProvisioningErrorDisplayTestParam {
   ArcSupportHost::Error message;
 
   // the error code sent to arc support host
-  base::Optional<int> arg;
+  absl::optional<int> arg;
 };
 
 constexpr ProvisioningErrorDisplayTestParam

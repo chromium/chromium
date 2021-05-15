@@ -77,9 +77,9 @@ void SharedClipboardUiController::OnDeviceChosen(
   sharing_message.mutable_shared_clipboard_message()->set_text(
       base::UTF16ToUTF8(text_));
 
-  SendMessageToDevice(device, /*response_timeout=*/base::nullopt,
+  SendMessageToDevice(device, /*response_timeout=*/absl::nullopt,
                       std::move(sharing_message),
-                      /*callback=*/base::nullopt);
+                      /*callback=*/absl::nullopt);
 }
 
 void SharedClipboardUiController::OnAppChosen(const SharingApp& app) {

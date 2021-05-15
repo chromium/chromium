@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/media_controller.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -20,6 +19,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 // Gmock matchers and actions that are used below.
@@ -64,14 +64,14 @@ class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
     last_media_key_ = accelerator;
   }
 
-  base::Optional<ui::Accelerator> ConsumeLastMediaKey() {
-    base::Optional<ui::Accelerator> key = last_media_key_;
+  absl::optional<ui::Accelerator> ConsumeLastMediaKey() {
+    absl::optional<ui::Accelerator> key = last_media_key_;
     last_media_key_.reset();
     return key;
   }
 
  private:
-  base::Optional<ui::Accelerator> last_media_key_;
+  absl::optional<ui::Accelerator> last_media_key_;
 
   DISALLOW_COPY_AND_ASSIGN(TestMediaKeysDelegate);
 };
@@ -104,7 +104,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
     BrowserList::SetLastActive(browser());
 
     ASSERT_FALSE(test_media_controller_->force_media_client_key_handling());
-    ASSERT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    ASSERT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
   }
 
   void TearDown() override {
@@ -253,7 +253,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Simulate the media key and check that the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
 
     // Change the active browser back and ensure the override was enabled.
     BrowserList::SetLastActive(browser());
@@ -270,7 +270,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Simulate the media key and check the delegate did not receive it.
     test.client_handler.Run();
-    EXPECT_EQ(base::nullopt, delegate()->ConsumeLastMediaKey());
+    EXPECT_EQ(absl::nullopt, delegate()->ConsumeLastMediaKey());
   }
 }
 

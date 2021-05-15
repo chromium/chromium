@@ -62,13 +62,13 @@ std::map<AppId, GURL> TestAppRegistrar::GetExternallyInstalledApps(
   return apps;
 }
 
-base::Optional<AppId> TestAppRegistrar::LookupExternalAppId(
+absl::optional<AppId> TestAppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
   auto it = std::find_if(installed_apps_.begin(), installed_apps_.end(),
                          [install_url](const auto& app_it) {
                            return app_it.second.install_url == install_url;
                          });
-  return it == installed_apps_.end() ? base::Optional<AppId>() : it->first;
+  return it == installed_apps_.end() ? absl::optional<AppId>() : it->first;
 }
 
 bool TestAppRegistrar::HasExternalAppWithInstallSource(
@@ -97,16 +97,16 @@ std::string TestAppRegistrar::GetAppDescription(const AppId&) const {
   return std::string();
 }
 
-base::Optional<SkColor> TestAppRegistrar::GetAppThemeColor(
+absl::optional<SkColor> TestAppRegistrar::GetAppThemeColor(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<SkColor> TestAppRegistrar::GetAppBackgroundColor(
+absl::optional<SkColor> TestAppRegistrar::GetAppBackgroundColor(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const GURL& TestAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
@@ -142,13 +142,13 @@ bool TestAppRegistrar::IsAppFileHandlerPermissionBlocked(
   return false;
 }
 
-base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
+absl::optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);
   if (result == installed_apps_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional(result->second.install_url);
+  return absl::make_optional(result->second.install_url);
 }
 
 DisplayMode TestAppRegistrar::GetAppDisplayMode(const AppId& app_id) const {

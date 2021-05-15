@@ -44,7 +44,7 @@ void RecordLaunchSessionResponseAppType(const base::Value* app_type) {
   if (!app_type) {
     return;
   }
-  base::Optional<ReceiverAppType> type =
+  absl::optional<ReceiverAppType> type =
       cast_util::StringToEnum<ReceiverAppType>(app_type->GetString());
   if (type) {
     base::UmaHistogramEnumeration(kHistogramCastAppType, *type);

@@ -12,9 +12,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -25,10 +25,10 @@ class PrintersMap {
   ~PrintersMap();
 
   // Returns printer matching |printer_id| if found in any PrinterClass.
-  base::Optional<Printer> Get(const std::string& printer_id) const;
+  absl::optional<Printer> Get(const std::string& printer_id) const;
 
   // Returns printer matching |printer_id| in |printer_class|.
-  base::Optional<Printer> Get(PrinterClass printer_class,
+  absl::optional<Printer> Get(PrinterClass printer_class,
                               const std::string& printer_id) const;
 
   // Returns all printers across all classes.
@@ -80,7 +80,7 @@ class PrintersMap {
   // Returns true if |printer_id| exists in any class. Used only for DCHECKs.
   bool IsExistingPrinter(const std::string& printer_id) const;
 
-  base::Optional<CupsPrinterStatus> GetPrinterStatus(
+  absl::optional<CupsPrinterStatus> GetPrinterStatus(
       const std::string& printer_id) const;
 
   // Returns set of printer id's for printers in class |printer_class|.

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
@@ -19,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -32,7 +32,7 @@ struct TypeConverter<
     // now, continue even if it is missing.
     // TODO(b/185580965) switch to using StructTraits and reject if preview is
     // missing.
-    base::Optional<GURL> preview_url;
+    absl::optional<GURL> preview_url;
     if (collection.preview_size() > 0)
       preview_url = GURL(collection.preview(0).image_url());
 
@@ -105,7 +105,7 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollections(
   using ResultType =
       std::vector<chromeos::personalization_app::mojom::WallpaperCollectionPtr>;
 
-  base::Optional<ResultType> result;
+  absl::optional<ResultType> result;
   if (success && !collections.empty()) {
     ResultType data;
     std::transform(
@@ -128,7 +128,7 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
   using ResultType =
       std::vector<chromeos::personalization_app::mojom::WallpaperImagePtr>;
 
-  base::Optional<ResultType> result;
+  absl::optional<ResultType> result;
   if (success && !images.empty()) {
     ResultType data;
     std::transform(images.cbegin(), images.cend(), std::back_inserter(data),

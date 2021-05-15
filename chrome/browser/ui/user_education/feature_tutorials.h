@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A tutorial's identifier. Each defined tutorial has a FeatureTutorial enum
 // value.
@@ -23,7 +23,7 @@ base::StringPiece GetStringIdForFeatureTutorial(FeatureTutorial tutorial);
 
 // Translate a string ID GetStringIdForFeatureTutorial() back to a
 // FeatureTutorial.
-base::Optional<FeatureTutorial> GetFeatureTutorialFromStringId(
+absl::optional<FeatureTutorial> GetFeatureTutorialFromStringId(
     base::StringPiece id);
 
 // Get the string IDs of all defined tutorials.

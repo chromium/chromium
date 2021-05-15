@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
@@ -21,6 +20,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -106,10 +106,10 @@ void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-base::Optional<autofill::AccessorySheetData>
+absl::optional<autofill::AccessorySheetData>
 AddressAccessoryControllerImpl::GetSheetData() const {
   if (!personal_data_manager_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::vector<AutofillProfile*> profiles =
       personal_data_manager_->GetProfilesToSuggest();
@@ -163,7 +163,7 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
             Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
     personal_data_manager_->AddObserver(this);
   }
-  base::Optional<AccessorySheetData> data = GetSheetData();
+  absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
     source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));
   } else {

@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -44,6 +43,7 @@
 #include "extensions/common/extension_builder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_impl_win.h"

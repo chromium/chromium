@@ -142,7 +142,7 @@ class OtherUsersSizeTestAPI {
   }
 
   void SimulateOnGetOtherUserSize(
-      base::Optional<user_data_auth::GetAccountDiskUsageReply> reply) {
+      absl::optional<user_data_auth::GetAccountDiskUsageReply> reply) {
     other_users_size_calculator_->OnGetOtherUserSize(reply);
   }
 

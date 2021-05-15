@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -17,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -314,14 +314,14 @@ TEST_F(MessageCenterAshTest, UserActions) {
   ASSERT_TRUE(ui_notification);
 
   // Simulate the user clicking on the notification body.
-  ui_notification->delegate()->Click(/*button_index=*/base::nullopt,
-                                     /*reply=*/base::nullopt);
+  ui_notification->delegate()->Click(/*button_index=*/absl::nullopt,
+                                     /*reply=*/absl::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.clicked_count_);
 
   // Simulate the user clicking on a notification button.
   ui_notification->delegate()->Click(/*button_index=*/1,
-                                     /*reply=*/base::nullopt);
+                                     /*reply=*/absl::nullopt);
   mojo_delegate.receiver_.FlushForTesting();
   EXPECT_EQ(1, mojo_delegate.button_clicked_count_);
   EXPECT_EQ(1u, mojo_delegate.last_button_index_);

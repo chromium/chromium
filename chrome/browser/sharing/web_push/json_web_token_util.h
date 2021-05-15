@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -22,7 +22,7 @@ class ECPrivateKey;
 // NIST P-256 curve and ECSignatureCreator is hardcoded to SHA256.
 //
 // https://tools.ietf.org/html/rfc7519
-base::Optional<std::string> CreateJSONWebToken(
+absl::optional<std::string> CreateJSONWebToken(
     const base::Value& claims,
     crypto::ECPrivateKey* private_key);
 

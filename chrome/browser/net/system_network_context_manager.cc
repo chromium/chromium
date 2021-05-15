@@ -737,7 +737,7 @@ SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting() {
 }
 
 void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-    base::Optional<bool> enabled) {
+    absl::optional<bool> enabled) {
   g_enable_certificate_transparency =
       enabled.value_or(kCertificateTransparencyEnabled);
 }

@@ -10,11 +10,11 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -35,7 +35,7 @@ enterprise_management::RemoteCommand_Type DeviceCommandSetVolumeJob::GetType()
 
 bool DeviceCommandSetVolumeJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root)
     return false;
   base::DictionaryValue* payload = nullptr;

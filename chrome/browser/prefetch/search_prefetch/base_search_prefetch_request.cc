@@ -185,7 +185,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       /*is_ua_override_on=*/false, js_enabled);
 
 #if defined(OS_ANDROID)
-  base::Optional<std::string> geo_header =
+  absl::optional<std::string> geo_header =
       GetGeolocationHeaderIfAllowed(resource_request->url, profile);
   if (geo_header) {
     resource_request->headers.AddHeaderFromString(geo_header.value());

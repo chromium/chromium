@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -22,6 +21,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
@@ -117,7 +117,7 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
 std::unique_ptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
     std::unique_ptr<ExternalConstants> next_provider) {
-  base::Optional<base::FilePath> data_dir_path = GetBaseDirectory();
+  absl::optional<base::FilePath> data_dir_path = GetBaseDirectory();
   if (!data_dir_path) {
     LOG(ERROR) << "Cannot find app data path.";
     return nullptr;

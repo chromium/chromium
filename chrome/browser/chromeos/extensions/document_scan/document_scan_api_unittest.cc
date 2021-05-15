@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
@@ -20,6 +19,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 
 namespace extensions {
@@ -91,7 +91,7 @@ TEST_F(DocumentScanScanFunctionTest, UnsupportedMimeTypesError) {
 
 TEST_F(DocumentScanScanFunctionTest, ScanImageError) {
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  GetLorgnetteScannerManager()->SetScanResponse(base::nullopt);
+  GetLorgnetteScannerManager()->SetScanResponse(absl::nullopt);
   EXPECT_EQ("Failed to scan image",
             RunFunctionAndReturnError("[{\"mimeTypes\": [\"image/png\"]}]"));
 }

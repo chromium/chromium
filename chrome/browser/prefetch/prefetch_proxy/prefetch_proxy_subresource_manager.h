@@ -12,7 +12,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxying_url_loader_factory.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "content/public/browser/content_browser_client.h"
@@ -21,6 +20,7 @@
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -46,7 +46,7 @@ class PrefetchProxySubresourceManager
       base::RepeatingCallback<void(
           mojo::PendingReceiver<network::mojom::URLLoaderFactory>
               pending_receiver,
-          base::Optional<net::IsolationInfo> isolation_info)>;
+          absl::optional<net::IsolationInfo> isolation_info)>;
 
   explicit PrefetchProxySubresourceManager(
       const GURL& url,

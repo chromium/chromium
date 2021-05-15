@@ -19,7 +19,7 @@
 
 ManifestWebAppBrowserController::ManifestWebAppBrowserController(
     Browser* browser)
-    : AppBrowserController(browser, /*app_id=*/base::nullopt) {}
+    : AppBrowserController(browser, /*app_id=*/absl::nullopt) {}
 
 ManifestWebAppBrowserController::~ManifestWebAppBrowserController() = default;
 

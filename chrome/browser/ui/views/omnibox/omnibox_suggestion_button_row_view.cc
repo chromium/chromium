@@ -130,7 +130,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   const gfx::VectorIcon* icon_;
   OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupModel::Selection selection_;
-  base::Optional<SkColor> omnibox_bg_color_;
+  absl::optional<SkColor> omnibox_bg_color_;
 };
 
 BEGIN_METADATA(OmniboxSuggestionRowButton, views::MdTextButton)

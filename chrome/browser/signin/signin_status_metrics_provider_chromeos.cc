@@ -66,4 +66,4 @@ void SigninStatusMetricsProviderChromeOS::SetGuestForTesting(bool is_guest) {
   guest_for_testing_ = is_guest;
 }
 
-base::Optional<bool> SigninStatusMetricsProviderChromeOS::guest_for_testing_;
+absl::optional<bool> SigninStatusMetricsProviderChromeOS::guest_for_testing_;

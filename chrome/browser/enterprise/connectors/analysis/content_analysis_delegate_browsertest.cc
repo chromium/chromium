@@ -1112,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
 
   bool called = false;
   base::RunLoop run_loop;
-  base::Optional<base::RepeatingClosure> quit_closure = base::nullopt;
+  absl::optional<base::RepeatingClosure> quit_closure = absl::nullopt;
 
   // If the scan is blocking, we can call the quit closure when the dialog
   // closes. If it's not, call it at the end of the result callback.

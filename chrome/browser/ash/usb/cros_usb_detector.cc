@@ -151,8 +151,8 @@ class CrosUsbNotificationDelegate
         settings_sub_page_(std::move(settings_sub_page)),
         disposition_(CrosUsbNotificationClosed::kUnknown) {}
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
     if (button_index && *button_index < static_cast<int>(vm_names_.size())) {
       HandleConnectToVm(vm_names_[*button_index]);
@@ -324,7 +324,7 @@ void FilesystemUnmounter::OnUnmountPath(MountError mount_error) {
 
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(std::string guid,
                                      std::u16string label,
-                                     base::Optional<std::string> shared_vm_name,
+                                     absl::optional<std::string> shared_vm_name,
                                      bool prompt_before_sharing)
     : guid(guid),
       label(label),
@@ -640,7 +640,7 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
     if (device.shared_vm_name == vm_name) {
       VLOG(1) << "Connecting " << device.label << " to " << vm_name;
       // Clear any older guest_port setting.
-      device.guest_port = base::nullopt;
+      device.guest_port = absl::nullopt;
       AttachUsbDeviceToVm(vm_name, device.info->guid, base::DoNothing());
     }
   }
@@ -711,7 +711,7 @@ void CrosUsbDetector::DetachUsbDeviceFromVm(
     // TODO(timloh): Check what happens if attaching to a different VM races
     // with an in progress attach.
     RelinquishDeviceClaim(guid);
-    device.shared_vm_name = base::nullopt;
+    device.shared_vm_name = absl::nullopt;
     SignalUsbDeviceObservers();
     std::move(callback).Run(/*success=*/true);
     return;
@@ -903,7 +903,7 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
-    base::Optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
+    absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
   bool success = true;
   if (!response) {
     LOG(ERROR) << "Failed to attach USB device, empty dbus response";
@@ -932,7 +932,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
     const std::string& vm_name,
     const std::string& guid,
     base::OnceCallback<void(bool success)> callback,
-    base::Optional<vm_tools::concierge::DetachUsbDeviceResponse> response) {
+    absl::optional<vm_tools::concierge::DetachUsbDeviceResponse> response) {
   bool success = true;
   if (!response) {
     LOG(ERROR) << "Failed to detach USB device, empty dbus response";
@@ -947,8 +947,8 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
     LOG(WARNING) << "Dbus response indicates successful detach but device info "
                  << "was missing for " << guid;
   } else {
-    it->second.shared_vm_name = base::nullopt;
-    it->second.guest_port = base::nullopt;
+    it->second.shared_vm_name = absl::nullopt;
+    it->second.guest_port = absl::nullopt;
   }
   RelinquishDeviceClaim(guid);
   SignalUsbDeviceObservers();

@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Then click.
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
-                                 base::nullopt, base::nullopt);
+                                 absl::nullopt, absl::nullopt);
 
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
@@ -291,8 +291,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Then click.
   display_service->SimulateClick(
       NotificationHandler::Type::TRANSIENT,
-      chromeos::kShowHelpAppDiscoverTabNotificationId, base::nullopt,
-      base::nullopt);
+      chromeos::kShowHelpAppDiscoverTabNotificationId, absl::nullopt,
+      absl::nullopt);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));

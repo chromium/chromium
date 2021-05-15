@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,6 +27,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 class PrefService;
@@ -336,7 +336,7 @@ class UserCloudPolicyManagerChromeOS
 
   // Refresh token used in tests instead of the user context refresh token to
   // fetch the policy OAuth token.
-  base::Optional<std::string> user_context_refresh_token_for_tests_;
+  absl::optional<std::string> user_context_refresh_token_for_tests_;
 
   // Used to track the reregistration state of the CloudPolicyClient, i.e.
   // whether this class has triggered a re-registration after the client failed

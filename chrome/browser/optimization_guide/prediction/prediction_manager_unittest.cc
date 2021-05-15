@@ -133,18 +133,18 @@ class FakeOptimizationTargetModelObserver
     : public OptimizationTargetModelObserver {
  public:
   void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const base::Optional<proto::Any>& model_metadata,
+                          const absl::optional<proto::Any>& model_metadata,
                           const base::FilePath& file_path) override {
     last_received_models_[optimization_target] =
         std::make_pair(model_metadata, file_path);
   }
 
-  base::Optional<std::pair<base::Optional<proto::Any>, base::FilePath>>
+  absl::optional<std::pair<absl::optional<proto::Any>, base::FilePath>>
   last_received_model_for_target(
       proto::OptimizationTarget optimization_target) {
     auto model_it = last_received_models_.find(optimization_target);
     if (model_it == last_received_models_.end())
-      return base::nullopt;
+      return absl::nullopt;
     return model_it->second;
   }
 
@@ -153,7 +153,7 @@ class FakeOptimizationTargetModelObserver
 
  private:
   base::flat_map<proto::OptimizationTarget,
-                 std::pair<base::Optional<proto::Any>, base::FilePath>>
+                 std::pair<absl::optional<proto::Any>, base::FilePath>>
       last_received_models_;
 };
 
@@ -200,7 +200,7 @@ void RunGetModelsCallback(
     std::move(callback).Run(std::move(get_models_response));
     return;
   }
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 // A mock class implementation of PredictionModelFetcher.
@@ -223,7 +223,7 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
       const std::string& locale,
       ModelsFetchedCallback models_fetched_callback) override {
     if (!ValidateModelsInfoForFetch(models_request_info)) {
-      std::move(models_fetched_callback).Run(base::nullopt);
+      std::move(models_fetched_callback).Run(absl::nullopt);
       return false;
     }
 
@@ -639,7 +639,7 @@ TEST_F(PredictionManagerRemoteFetchingDisabledTest, RemoteFetchingDisabled) {
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
@@ -668,7 +668,7 @@ TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
 
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
@@ -744,7 +744,7 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   prediction_manager()->OnModelReady(model1);
   RunUntilIdle();
 
-  base::Optional<std::pair<base::Optional<proto::Any>, base::FilePath>>
+  absl::optional<std::pair<absl::optional<proto::Any>, base::FilePath>>
       received_model = observer.last_received_model_for_target(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   EXPECT_EQ(received_model->first->type_url(), "sometypeurl");
@@ -800,7 +800,7 @@ TEST_F(PredictionManagerTest,
   FakeOptimizationTargetModelObserver observer1;
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt, &observer1);
+      /*model_metadata=*/absl::nullopt, &observer1);
   SetStoreInitialized(/* load_models= */ false,
                       /* load_host_model_features= */ false,
                       /* have_models_in_store= */ false);
@@ -833,7 +833,7 @@ TEST_F(PredictionManagerTest,
   EXPECT_DCHECK_DEATH(
       prediction_manager()->AddObserverForOptimizationTargetModel(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-          /*model_metadata=*/base::nullopt, &observer2));
+          /*model_metadata=*/absl::nullopt, &observer2));
   RunUntilIdle();
 #endif
 }
@@ -910,7 +910,7 @@ TEST_F(PredictionManagerTest,
 
   CreatePredictionManager();
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
             prediction_manager()->ShouldTargetNavigation(
@@ -937,7 +937,7 @@ TEST_F(PredictionManagerTest, EvaluatePredictionModel) {
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
 
@@ -984,7 +984,7 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
           PredictionModelFetcherEndState::kFetchFailed));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   std::unique_ptr<proto::GetModelsResponse> get_models_response =
       BuildGetModelsResponse();
@@ -1016,7 +1016,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
           PredictionModelFetcherEndState::kFetchFailed));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   // Seed the PredictionManager with a prediction model with a higher version
   // to try to be updated.
@@ -1058,7 +1058,7 @@ TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      /*model_metadata=*/base::nullopt, &observer);
+      /*model_metadata=*/absl::nullopt, &observer);
 
   proto::PredictionModel model;
   model.mutable_model_info()->set_optimization_target(
@@ -1106,7 +1106,7 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
@@ -1132,7 +1132,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
           task_environment()->GetMainThreadTaskRunner()));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
@@ -1166,7 +1166,7 @@ TEST_F(PredictionManagerTest, ShouldTargetNavigationStoreAvailableNoModel) {
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized(/* load_models= */ false,
                       /* load_host_model_features= */ true,
@@ -1200,7 +1200,7 @@ TEST_F(PredictionManagerTest,
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized(/* load_models= */ false,
                       /* load_host_model_features= */ true,
@@ -1237,7 +1237,7 @@ TEST_F(PredictionManagerTest,
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_EQ(OptimizationTargetDecision::kModelNotAvailableOnClient,
             prediction_manager()->ShouldTargetNavigation(
@@ -1318,7 +1318,7 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
   CreatePredictionManager();
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   SetStoreInitialized();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1, 1);
@@ -1364,7 +1364,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
           PredictionModelFetcherEndState::kFetchFailed));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
@@ -1399,7 +1399,7 @@ TEST_F(PredictionManagerTest,
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   EXPECT_FALSE(models_and_features_store()->WasHostModelFeaturesLoaded());
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
   EXPECT_FALSE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
@@ -1428,7 +1428,7 @@ TEST_F(PredictionManagerTest,
   EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
   EXPECT_FALSE(prediction_manager()->GetHostModelFeaturesForHost("foo.com"));
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
   RunUntilIdle();
 
   EXPECT_TRUE(models_and_features_store()->WasHostModelFeaturesLoaded());
@@ -1450,7 +1450,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
           PredictionModelFetcherEndState::kFetchFailed));
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
@@ -1478,7 +1478,7 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   g_browser_process->SetApplicationLocale("en-US");
 
   prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt}});
 
   SetStoreInitialized();
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());

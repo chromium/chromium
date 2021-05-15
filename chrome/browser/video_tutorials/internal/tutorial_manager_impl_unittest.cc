@@ -142,7 +142,7 @@ class TutorialManagerTest : public testing::Test {
   }
 
   void OnGetTutorial(base::RepeatingClosure closure,
-                     base::Optional<Tutorial> tutorial) {
+                     absl::optional<Tutorial> tutorial) {
     last_get_tutorial_result_ = tutorial;
     std::move(closure).Run();
   }
@@ -160,7 +160,7 @@ class TutorialManagerTest : public testing::Test {
   TutorialManager* manager() { return manager_.get(); }
   TestStore* tutorial_store() { return tutorial_store_; }
   std::vector<Tutorial> last_results() { return last_results_; }
-  base::Optional<Tutorial> last_get_tutorial_result() {
+  absl::optional<Tutorial> last_get_tutorial_result() {
     return last_get_tutorial_result_;
   }
 
@@ -170,7 +170,7 @@ class TutorialManagerTest : public testing::Test {
   std::unique_ptr<TutorialManager> manager_;
   TestStore* tutorial_store_;
   std::vector<Tutorial> last_results_;
-  base::Optional<Tutorial> last_get_tutorial_result_;
+  absl::optional<Tutorial> last_get_tutorial_result_;
 };
 
 TEST_F(TutorialManagerTest, InitAndGetTutorials) {

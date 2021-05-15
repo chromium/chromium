@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
@@ -33,6 +32,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -99,7 +99,7 @@ class CallbackObserver {
   }
 
   base::RunLoop loop_;
-  base::Optional<TpmChallengeKeyResult> result_;
+  absl::optional<TpmChallengeKeyResult> result_;
 };
 
 template <typename T>

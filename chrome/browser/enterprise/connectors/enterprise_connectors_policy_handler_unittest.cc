@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -16,6 +15,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -92,7 +92,7 @@ class EnterpriseConnectorsPolicyHandlerTest
             source() == policy::PolicySource::POLICY_SOURCE_PRIORITY_CLOUD);
   }
 
-  base::Optional<base::Value> policy_value() const {
+  absl::optional<base::Value> policy_value() const {
     return base::JSONReader::Read(policy(), base::JSON_ALLOW_TRAILING_COMMAS);
   }
 };

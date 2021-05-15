@@ -147,20 +147,20 @@ void SharingFCMHandler::OnStoreReset() {
   // TODO: Handle GCM store reset.
 }
 
-base::Optional<chrome_browser_sharing::FCMChannelConfiguration>
+absl::optional<chrome_browser_sharing::FCMChannelConfiguration>
 SharingFCMHandler::GetFCMChannel(
     const chrome_browser_sharing::SharingMessage& original_message) {
   if (!original_message.has_fcm_channel_configuration())
-    return base::nullopt;
+    return absl::nullopt;
 
   return original_message.fcm_channel_configuration();
 }
 
-base::Optional<chrome_browser_sharing::ServerChannelConfiguration>
+absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
 SharingFCMHandler::GetServerChannel(
     const chrome_browser_sharing::SharingMessage& original_message) {
   if (!original_message.has_server_channel_configuration())
-    return base::nullopt;
+    return absl::nullopt;
 
   return original_message.server_channel_configuration();
 }
@@ -178,8 +178,8 @@ SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
 void SharingFCMHandler::SendAckMessage(
     std::string original_message_id,
     chrome_browser_sharing::MessageType original_message_type,
-    base::Optional<chrome_browser_sharing::FCMChannelConfiguration> fcm_channel,
-    base::Optional<chrome_browser_sharing::ServerChannelConfiguration>
+    absl::optional<chrome_browser_sharing::FCMChannelConfiguration> fcm_channel,
+    absl::optional<chrome_browser_sharing::ServerChannelConfiguration>
         server_channel,
     SharingDevicePlatform sender_device_type,
     base::TimeTicks message_received_time,
@@ -233,7 +233,7 @@ void SharingFCMHandler::OnAckMessageSent(
     SharingDevicePlatform sender_device_type,
     int trace_id,
     SharingSendMessageResult result,
-    base::Optional<std::string> message_id,
+    absl::optional<std::string> message_id,
     SharingChannelType channel_type) {
   LogSendSharingAckMessageResult(original_message_type, sender_device_type,
                                  channel_type, result);

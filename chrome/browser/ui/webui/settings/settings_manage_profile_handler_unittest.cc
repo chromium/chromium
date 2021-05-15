@@ -101,7 +101,7 @@ class ManageProfileHandlerTest : public testing::Test {
       EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(icon_url, &url_icon_index));
       EXPECT_EQ(icon_index, url_icon_index);
       EXPECT_TRUE(!icon->FindStringPath("label")->empty());
-      base::Optional<bool> current_selected = icon->FindBoolPath("selected");
+      absl::optional<bool> current_selected = icon->FindBoolPath("selected");
       if (selected_index == icon_index) {
         EXPECT_FALSE(selected_found);
         EXPECT_TRUE(current_selected.value_or(false));
@@ -350,7 +350,7 @@ TEST_F(ManageProfileHandlerTest, ProfileThemeColorsChangedWebUIEvent) {
   entry()->SetAvatarIconIndex(37);
   web_ui()->ClearTrackedCalls();
 
-  entry()->SetProfileThemeColors(base::nullopt);
+  entry()->SetProfileThemeColors(absl::nullopt);
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
   const content::TestWebUI::CallData& data_1 = *web_ui()->call_data().back();

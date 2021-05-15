@@ -136,10 +136,10 @@ MakeUpdateClientCrxStateChangeCallback(
       config, callback);
 }
 
-std::vector<base::Optional<update_client::CrxComponent>> GetComponents(
+std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     scoped_refptr<PersistedData> persisted_data,
     const std::vector<std::string>& ids) {
-  std::vector<base::Optional<update_client::CrxComponent>> components;
+  std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids) {
     components.push_back(base::MakeRefCounted<Installer>(id, persisted_data)
                              ->MakeCrxComponent());

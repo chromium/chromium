@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +20,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -30,7 +30,7 @@ namespace web_app {
 struct SystemAppBackgroundTaskInfo {
   SystemAppBackgroundTaskInfo();
   SystemAppBackgroundTaskInfo(const SystemAppBackgroundTaskInfo& other);
-  SystemAppBackgroundTaskInfo(const base::Optional<base::TimeDelta>& period,
+  SystemAppBackgroundTaskInfo(const absl::optional<base::TimeDelta>& period,
                               const GURL& url,
                               bool open_immediately = false);
   ~SystemAppBackgroundTaskInfo();
@@ -39,7 +39,7 @@ struct SystemAppBackgroundTaskInfo {
   // previous task is still running, it will be closed.
   // You should have at least one of period or open_immediately set for the task
   // to do anything.
-  base::Optional<base::TimeDelta> period;
+  absl::optional<base::TimeDelta> period;
 
   // The url of the background page to open. This should do one specific thing.
   // (Probably opening a shared worker, waiting for a response, and closing)
@@ -98,7 +98,7 @@ class SystemAppBackgroundTask {
     return web_contents_.get();
   }
 
-  base::Optional<base::TimeDelta> period_for_testing() const { return period_; }
+  absl::optional<base::TimeDelta> period_for_testing() const { return period_; }
 
   unsigned long opened_count_for_testing() const { return opened_count_; }
 
@@ -149,7 +149,7 @@ class SystemAppBackgroundTask {
   std::unique_ptr<base::OneShotTimer> timer_;
   TimerState state_;
   GURL url_;
-  base::Optional<base::TimeDelta> period_;
+  absl::optional<base::TimeDelta> period_;
   unsigned long opened_count_;
   unsigned long timer_activated_count_;
   bool open_immediately_;

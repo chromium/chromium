@@ -45,7 +45,7 @@ TEST(Installer, GetInstallerOutcome) {
     EXPECT_TRUE(SetInstallerOutcomeForTesting(kAppId, installer_outcome));
   }
 
-  base::Optional<InstallerOutcome> installer_outcome =
+  absl::optional<InstallerOutcome> installer_outcome =
       GetInstallerOutcome(kAppId);
   ASSERT_TRUE(installer_outcome);
   EXPECT_EQ(installer_outcome->installer_result, InstallerResult::kSystemError);
@@ -94,7 +94,7 @@ TEST(Installer, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_STREQ(installer_result.installer_text.c_str(), "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = base::nullopt;
+    installer_outcome.installer_error = absl::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, 10);
     EXPECT_EQ(installer_result.extended_error, -2);
@@ -114,7 +114,7 @@ TEST(Installer, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = base::nullopt;
+    installer_outcome.installer_error = absl::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, 10);
     EXPECT_EQ(installer_result.extended_error, -2);
@@ -134,7 +134,7 @@ TEST(Installer, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = base::nullopt;
+    installer_outcome.installer_error = absl::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, 10);
     EXPECT_EQ(installer_result.extended_error, -2);

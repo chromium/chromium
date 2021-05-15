@@ -753,7 +753,7 @@ class KioskTest : public OobeBaseTest {
                          int current_width) {
     std::string message;
     while (message_queue->WaitForMessage(&message)) {
-      base::Optional<base::Value> message_value =
+      absl::optional<base::Value> message_value =
           base::JSONReader::Read(message);
 
       if (!message_value.has_value() || !message_value.value().is_dict())

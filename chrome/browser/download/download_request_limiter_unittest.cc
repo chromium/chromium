@@ -72,11 +72,11 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CanDownloadFor(WebContents* web_contents) {
-    CanDownloadFor(web_contents, base::nullopt);
+    CanDownloadFor(web_contents, absl::nullopt);
   }
 
   void CanDownloadFor(WebContents* web_contents,
-                      base::Optional<url::Origin> origin) {
+                      absl::optional<url::Origin> origin) {
     download_request_limiter_->CanDownloadImpl(
         web_contents,
         "GET",  // request method

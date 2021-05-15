@@ -216,7 +216,7 @@ TEST_F(SecondaryAccountConsentLoggerTest, NoRefreshToken) {
 TEST_F(SecondaryAccountConsentLoggerTest, RequestBody) {
   CoreAccountInfo account_info = SetPrimaryAccount();
   CreateLogger();
-  base::Optional<base::Value> test_request_body =
+  absl::optional<base::Value> test_request_body =
       base::JSONReader::Read(GetTestRequestBody(
           kChromeSyncId, kSecondaryEmail, kParentObfuscatedGaiaId,
           kReAuthProofToken, kConsentScreenTextVersion));

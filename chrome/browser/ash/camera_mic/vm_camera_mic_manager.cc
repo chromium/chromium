@@ -298,8 +298,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   // message_center::NotificationObserver:
   //
   // This open the settings page if the button is clicked on the notification.
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     switch (vm_type_) {
       case VmType::kCrostiniVm:
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

@@ -1104,7 +1104,7 @@ void LaunchURL(const GURL& url,
                content::WebContents::OnceGetter web_contents_getter,
                ui::PageTransition page_transition,
                bool has_user_gesture,
-               const base::Optional<url::Origin>& initiating_origin) {
+               const absl::optional<url::Origin>& initiating_origin) {
   // If there is no longer a WebContents, the request may have raced with tab
   // closing. Don't fire the external request. (It may have been a prerender.)
   content::WebContents* web_contents = std::move(web_contents_getter).Run();
@@ -1871,7 +1871,7 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
     ui::PageTransition* transition,
     bool* is_renderer_initiated,
     content::Referrer* referrer,
-    base::Optional<url::Origin>* initiator_origin) {
+    absl::optional<url::Origin>* initiator_origin) {
   DCHECK(transition);
   DCHECK(is_renderer_initiated);
   DCHECK(referrer);
@@ -1888,7 +1888,7 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
     *transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
     *is_renderer_initiated = false;
     *referrer = content::Referrer();
-    *initiator_origin = base::nullopt;
+    *initiator_origin = absl::nullopt;
   }
 #if defined(OS_ANDROID)
   if (web_contents) {
@@ -2542,7 +2542,7 @@ void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(
 bool ChromeContentBrowserClient::AllowAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return embedder_support::AllowAppCache(
@@ -2555,7 +2555,7 @@ content::AllowServiceWorkerResult
 ChromeContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -2584,7 +2584,7 @@ ChromeContentBrowserClient::AllowServiceWorker(
 bool ChromeContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const storage::StorageKey& storage_key,
     content::BrowserContext* context,
@@ -3428,7 +3428,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
         ':', ',', &pairs);
 
     for (const auto& pair : pairs) {
-      base::Optional<net::EffectiveConnectionType> effective_connection_type =
+      absl::optional<net::EffectiveConnectionType> effective_connection_type =
           net::GetEffectiveConnectionTypeForName(pair.first);
       int value = 0;
       if (effective_connection_type && base::StringToInt(pair.second, &value)) {
@@ -3453,7 +3453,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
         ':', ',', &pairs);
 
     for (const auto& pair : pairs) {
-      base::Optional<net::EffectiveConnectionType> effective_connection_type =
+      absl::optional<net::EffectiveConnectionType> effective_connection_type =
           net::GetEffectiveConnectionTypeForName(pair.first);
       int value = 0;
       if (effective_connection_type && base::StringToInt(pair.second, &value)) {
@@ -3470,7 +3470,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
         ':', ',', &pairs);
 
     for (const auto& pair : pairs) {
-      base::Optional<net::EffectiveConnectionType> effective_connection_type =
+      absl::optional<net::EffectiveConnectionType> effective_connection_type =
           net::GetEffectiveConnectionTypeForName(pair.first);
       int value = 0;
       if (effective_connection_type && base::StringToInt(pair.second, &value)) {
@@ -3488,7 +3488,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             features::kNetworkQualityEstimatorWebHoldback,
             "web_effective_connection_type_override");
 
-    base::Optional<net::EffectiveConnectionType> effective_connection_type =
+    absl::optional<net::EffectiveConnectionType> effective_connection_type =
         net::GetEffectiveConnectionTypeForName(effective_connection_type_param);
     DCHECK(effective_connection_type_param.empty() ||
            effective_connection_type);
@@ -3522,7 +3522,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
   web_prefs->translate_service_available = TranslateService::IsAvailable(prefs);
 
-  base::Optional<ui::CaptionStyle> style =
+  absl::optional<ui::CaptionStyle> style =
       captions::GetCaptionStyleFromUserSettings(prefs,
                                                 true /* record_metrics */);
   if (style) {
@@ -4829,7 +4829,7 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     const url::Origin& request_initiator,
-    base::Optional<int64_t> navigation_id,
+    absl::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -4964,7 +4964,7 @@ void ChromeContentBrowserClient::CreateWebSocket(
     WebSocketFactory factory,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const base::Optional<std::string>& user_agent,
+    const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -5217,7 +5217,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     bool is_main_frame,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // External protocols are disabled for guests. An exception is made for the
@@ -5419,7 +5419,7 @@ ChromeContentBrowserClient::GetUrlLookupService(
   return nullptr;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 ChromeContentBrowserClient::GetOriginPolicyErrorPage(
     network::OriginPolicyState error_reason,
     content::NavigationHandle* handle) {
@@ -5487,15 +5487,15 @@ blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata();
 }
 
-base::Optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {
+absl::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {
   // This icon is available on Android, but adds 19KiB to the APK. Since it
   // isn't used on Android we exclude it to avoid bloat.
 #if !defined(OS_ANDROID)
-  return base::Optional<gfx::ImageSkia>(
+  return absl::optional<gfx::ImageSkia>(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PRODUCT_LOGO_256));
 #else
-  return base::nullopt;
+  return absl::nullopt;
 #endif
 }
 
@@ -5584,7 +5584,7 @@ blink::mojom::InterestCohortPtr
 ChromeContentBrowserClient::GetInterestCohortForJsApi(
     content::WebContents* web_contents,
     const GURL& url,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   federated_learning::FlocEligibilityObserver::GetOrCreateForCurrentDocument(
       web_contents->GetMainFrame())
       ->OnInterestCohortApiUsed();
@@ -5642,7 +5642,7 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
     content::BrowserContext* browser_context,
     const GURL& url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   // Persistent MediaDevice IDs are allowed if cookies are allowed.
   return CookieSettingsFactory::GetForProfile(
              Profile::FromBrowserContext(browser_context))
@@ -5653,9 +5653,9 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
 base::OnceClosure ChromeContentBrowserClient::FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                            base::Optional<std::string>,
-                            base::Optional<content::SmsFetchFailureType>)>
+    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                            absl::optional<std::string>,
+                            absl::optional<content::SmsFetchFailureType>)>
         callback) {
   return ::FetchRemoteSms(web_contents, origin, std::move(callback));
 }

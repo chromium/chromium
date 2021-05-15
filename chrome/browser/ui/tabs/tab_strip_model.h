@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
@@ -201,7 +201,7 @@ class TabStripModel : public TabGroupController {
       int index,
       std::unique_ptr<content::WebContents> contents,
       int add_types,
-      base::Optional<tab_groups::TabGroupId> group = base::nullopt);
+      absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
   // |close_types| is a bitmask of CloseTypes. Returns true if the
@@ -361,14 +361,14 @@ class TabStripModel : public TabGroupController {
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
-  base::Optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
 
   // If a tab inserted at |index| would be within a tab group, return that
   // group's ID. Otherwise, return nullopt. If |index| points to the first tab
   // in a group, it will return nullopt since a new tab would be either between
   // two different groups or just after a non-grouped tab.
-  base::Optional<tab_groups::TabGroupId> GetSurroundingTabGroup(
+  absl::optional<tab_groups::TabGroupId> GetSurroundingTabGroup(
       int index) const;
 
   // Returns the index of the first tab that is not a pinned tab. This returns
@@ -407,7 +407,7 @@ class TabStripModel : public TabGroupController {
       int index,
       ui::PageTransition transition,
       int add_types,
-      base::Optional<tab_groups::TabGroupId> group = base::nullopt);
+      absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
 
   // Closes the selected tabs.
   void CloseSelectedTabs();
@@ -444,7 +444,7 @@ class TabStripModel : public TabGroupController {
   // being moved, and adds them to the tab group |group|.
   void MoveTabsAndSetGroup(const std::vector<int>& indices,
                            int destination_index,
-                           base::Optional<tab_groups::TabGroupId> group);
+                           absl::optional<tab_groups::TabGroupId> group);
 
   // Similar to AddToExistingGroup(), but creates a group with id |group| if it
   // doesn't exist. This is only intended to be called from session restore
@@ -457,8 +457,8 @@ class TabStripModel : public TabGroupController {
   // create the group then add the tab to the group.
   void UpdateGroupForDragRevert(
       int index,
-      base::Optional<tab_groups::TabGroupId> group_id,
-      base::Optional<tab_groups::TabGroupVisualData> group_data);
+      absl::optional<tab_groups::TabGroupId> group_id,
+      absl::optional<tab_groups::TabGroupVisualData> group_data);
 
   // Removes the set of tabs pointed to by |indices| from the the groups they
   // are in, if any. The tabs are moved out of the group if necessary. |indices|
@@ -566,11 +566,11 @@ class TabStripModel : public TabGroupController {
   // |index|. This method will check the indices to the right of |index| before
   // checking the indices to the left of |index|. |index| cannot be returned.
   // |collapsing_group| is optional and used in cases where the group is
-  // collapsing but not yet reflected in the model. Returns base::nullopt if
+  // collapsing but not yet reflected in the model. Returns absl::nullopt if
   // there are no valid tabs.
-  base::Optional<int> GetNextExpandedActiveTab(
+  absl::optional<int> GetNextExpandedActiveTab(
       int index,
-      base::Optional<tab_groups::TabGroupId> collapsing_group) const;
+      absl::optional<tab_groups::TabGroupId> collapsing_group) const;
 
   // Forget all opener relationships, to reduce unpredictable tab switching
   // behavior in complex session states. The exact circumstances under which
@@ -655,7 +655,7 @@ class TabStripModel : public TabGroupController {
   int InsertWebContentsAtImpl(int index,
                               std::unique_ptr<content::WebContents> contents,
                               int add_types,
-                              base::Optional<tab_groups::TabGroupId> group);
+                              absl::optional<tab_groups::TabGroupId> group);
 
   // Closes the WebContentses at the specified indices. This causes the
   // WebContentses to be destroyed, but it may not happen immediately. If
@@ -734,20 +734,20 @@ class TabStripModel : public TabGroupController {
   // appropriate |group|.
   void MoveTabsAndSetGroupImpl(const std::vector<int>& indices,
                                int destination_index,
-                               base::Optional<tab_groups::TabGroupId> group);
+                               absl::optional<tab_groups::TabGroupId> group);
 
   // Moves the tab at |index| to |new_index| and sets its group to |new_group|.
   // Notifies any observers that group affiliation has changed for the tab.
   void MoveAndSetGroup(int index,
                        int new_index,
-                       base::Optional<tab_groups::TabGroupId> new_group);
+                       absl::optional<tab_groups::TabGroupId> new_group);
 
   void AddToReadLaterImpl(const std::vector<int>& indices);
 
   // Helper function for MoveAndSetGroup. Removes the tab at |index| from the
   // group that contains it, if any. Also deletes that group, if it now contains
   // no tabs. Returns that group.
-  base::Optional<tab_groups::TabGroupId> UngroupTab(int index);
+  absl::optional<tab_groups::TabGroupId> UngroupTab(int index);
 
   // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|.
   void GroupTab(int index, const tab_groups::TabGroupId& group);

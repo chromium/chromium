@@ -93,7 +93,7 @@ class ContentIndexProviderImplTest : public testing::Test,
                void(const OfflineContentProvider::OfflineItemList& items));
   MOCK_METHOD1(OnItemRemoved, void(const ContentId& id));
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override {
+                     const absl::optional<UpdateDelta>& update_delta) override {
     NOTREACHED();
   }
   void OnContentProviderGoingDown() override {}

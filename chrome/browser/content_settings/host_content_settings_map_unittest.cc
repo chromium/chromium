@@ -2077,7 +2077,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithSessionModel) {
   ASSERT_EQ(3u, settings.size());
 
   // Validate that using no SessionModel functions the exact same way.
-  map->GetSettingsForOneType(persistent_type, &settings, base::nullopt);
+  map->GetSettingsForOneType(persistent_type, &settings, absl::nullopt);
   ASSERT_EQ(3u, settings.size());
 
   // Each one/type of settings we set should be retrievable by specifying the

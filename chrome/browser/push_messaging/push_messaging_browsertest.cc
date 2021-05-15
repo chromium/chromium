@@ -133,7 +133,7 @@ void LegacyRegisterCallback(base::OnceClosure done_callback,
 void DidRegister(base::OnceClosure done_callback,
                  const std::string& registration_id,
                  const GURL& endpoint,
-                 const base::Optional<base::Time>& expiration_time,
+                 const absl::optional<base::Time>& expiration_time,
                  const std::vector<uint8_t>& p256dh,
                  const std::vector<uint8_t>& auth,
                  blink::mojom::PushRegistrationStatus status) {
@@ -1676,7 +1676,7 @@ class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::Optional<testing::ScopedCrowdDenyPreloadDataOverride>
+  absl::optional<testing::ScopedCrowdDenyPreloadDataOverride>
       testing_preload_data_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;

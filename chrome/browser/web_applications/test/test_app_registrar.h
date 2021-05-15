@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -50,7 +50,7 @@ class TestAppRegistrar : public AppRegistrar {
   bool WasInstalledByOem(const AppId& app_id) const override;
   std::map<AppId, GURL> GetExternallyInstalledApps(
       ExternalInstallSource install_source) const override;
-  base::Optional<AppId> LookupExternalAppId(
+  absl::optional<AppId> LookupExternalAppId(
       const GURL& install_url) const override;
   bool HasExternalAppWithInstallSource(
       const AppId& app_id,
@@ -58,8 +58,8 @@ class TestAppRegistrar : public AppRegistrar {
   int CountUserInstalledApps() const override;
   std::string GetAppShortName(const AppId& app_id) const override;
   std::string GetAppDescription(const AppId& app_id) const override;
-  base::Optional<SkColor> GetAppThemeColor(const AppId& app_id) const override;
-  base::Optional<SkColor> GetAppBackgroundColor(
+  absl::optional<SkColor> GetAppThemeColor(const AppId& app_id) const override;
+  absl::optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const override;
   const GURL& GetAppStartUrl(const AppId& app_id) const override;
   const std::string* GetAppLaunchQueryParams(
@@ -72,7 +72,7 @@ class TestAppRegistrar : public AppRegistrar {
       const AppId& app_id) const override;
   bool IsAppFileHandlerPermissionBlocked(
       const web_app::AppId& app_id) const override;
-  base::Optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
+  absl::optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
   DisplayMode GetAppDisplayMode(const AppId& app_id) const override;
   DisplayMode GetAppUserDisplayMode(const AppId& app_id) const override;
   std::vector<DisplayMode> GetAppDisplayModeOverride(

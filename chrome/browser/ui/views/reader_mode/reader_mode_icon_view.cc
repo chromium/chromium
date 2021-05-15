@@ -31,7 +31,7 @@ UMAHelper::ReaderModePageType GetPageType(content::WebContents* contents) {
   if (IsDistilledPage(contents->GetLastCommittedURL())) {
     page_type = UMAHelper::ReaderModePageType::kDistilled;
   } else {
-    base::Optional<dom_distiller::DistillabilityResult> distillability =
+    absl::optional<dom_distiller::DistillabilityResult> distillability =
         dom_distiller::GetLatestResult(contents);
     if (distillability && distillability.value().is_distillable)
       page_type = UMAHelper::ReaderModePageType::kDistillable;

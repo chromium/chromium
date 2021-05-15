@@ -112,7 +112,7 @@ void LocaleSwitchScreen::ShowImpl() {
   identity_manager_observer_.Observe(identity_manager);
 
   gaia_id_ = user->GetAccountId().GetGaiaId();
-  base::Optional<AccountInfo> maybe_account_info =
+  absl::optional<AccountInfo> maybe_account_info =
       identity_manager
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(gaia_id_);
   if (!maybe_account_info.has_value() || maybe_account_info->locale.empty()) {

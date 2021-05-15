@@ -7,11 +7,11 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {

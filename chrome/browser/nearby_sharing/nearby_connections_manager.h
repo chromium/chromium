@@ -12,10 +12,10 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
@@ -67,10 +67,10 @@ class NearbyConnectionsManager {
     base::WeakPtr<PayloadStatusListener> GetWeakPtr() const;
 
     // Note: |upgraded_medium| is passed in for use in metrics, and it is
-    // base::nullopt if the bandwidth has not upgraded yet or if the upgrade
+    // absl::nullopt if the bandwidth has not upgraded yet or if the upgrade
     // status is not known.
     virtual void OnStatusUpdate(PayloadTransferUpdatePtr update,
-                                base::Optional<Medium> upgraded_medium) = 0;
+                                absl::optional<Medium> upgraded_medium) = 0;
 
     base::WeakPtrFactory<PayloadStatusListener> weak_ptr_factory_{this};
   };
@@ -109,7 +109,7 @@ class NearbyConnectionsManager {
   virtual void Connect(
       std::vector<uint8_t> endpoint_info,
       const std::string& endpoint_id,
-      base::Optional<std::vector<uint8_t>> bluetooth_mac_address,
+      absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
       DataUsage data_usage,
       NearbyConnectionCallback callback) = 0;
 
@@ -141,7 +141,7 @@ class NearbyConnectionsManager {
   virtual void ClearIncomingPayloads() = 0;
 
   // Gets the raw authentication token for the |endpoint_id|.
-  virtual base::Optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  virtual absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) = 0;
 
   // Initiates bandwidth upgrade for |endpoint_id|.

@@ -113,7 +113,7 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 
@@ -126,7 +126,7 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
 
 TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {
   delegate()->set_should_hide_page_action_icons(true);
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 

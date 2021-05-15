@@ -115,7 +115,7 @@ printing::PrinterSemanticCapsAndDefaults ConstructPrinterCapabilities() {
 TEST(PrintingApiUtilsTest, GetDefaultPrinterRules) {
   std::string default_printer_rules_str =
       R"({"kind": "local", "idPattern": "id.*", "namePattern": "name.*"})";
-  base::Optional<DefaultPrinterRules> default_printer_rules =
+  absl::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(default_printer_rules_str);
   ASSERT_TRUE(default_printer_rules.has_value());
   EXPECT_EQ("local", default_printer_rules->kind);
@@ -125,7 +125,7 @@ TEST(PrintingApiUtilsTest, GetDefaultPrinterRules) {
 
 TEST(PrintingApiUtilsTest, GetDefaultPrinterRules_EmptyPref) {
   std::string default_printer_rules_str;
-  base::Optional<DefaultPrinterRules> default_printer_rules =
+  absl::optional<DefaultPrinterRules> default_printer_rules =
       GetDefaultPrinterRules(default_printer_rules_str);
   EXPECT_FALSE(default_printer_rules.has_value());
 }
@@ -137,7 +137,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
   EXPECT_TRUE(printer.SetUri(kUri));
   printer.set_source(chromeos::Printer::SRC_POLICY);
 
-  base::Optional<DefaultPrinterRules> default_printer_rules =
+  absl::optional<DefaultPrinterRules> default_printer_rules =
       DefaultPrinterRules();
   default_printer_rules->kind = "local";
   default_printer_rules->name_pattern = "n.*e";
@@ -157,7 +157,7 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket) {
-  base::Optional<base::Value> cjt_ticket = base::JSONReader::Read(kCjt);
+  absl::optional<base::Value> cjt_ticket = base::JSONReader::Read(kCjt);
   ASSERT_TRUE(cjt_ticket);
   std::unique_ptr<printing::PrintSettings> settings =
       ParsePrintTicket(std::move(*cjt_ticket));
@@ -175,7 +175,7 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {
-  base::Optional<base::Value> incomplete_cjt_ticket =
+  absl::optional<base::Value> incomplete_cjt_ticket =
       base::JSONReader::Read(kIncompleteCjt);
   ASSERT_TRUE(incomplete_cjt_ticket);
   EXPECT_FALSE(ParsePrintTicket(std::move(*incomplete_cjt_ticket)));

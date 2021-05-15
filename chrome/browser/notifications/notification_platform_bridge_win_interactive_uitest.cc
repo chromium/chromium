@@ -151,9 +151,9 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                        NotificationHandler::Type notification_type,
                        const GURL& origin,
                        const std::string& notification_id,
-                       const base::Optional<int>& action_index,
-                       const base::Optional<std::u16string>& reply,
-                       const base::Optional<bool>& by_user) {
+                       const absl::optional<int>& action_index,
+                       const absl::optional<std::u16string>& reply,
+                       const absl::optional<bool>& by_user) {
     last_operation_ = operation;
     last_notification_type_ = notification_type;
     last_origin_ = origin;
@@ -204,9 +204,9 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                                   NotificationHandler::Type notification_type,
                                   const GURL& origin,
                                   const std::string& notification_id,
-                                  const base::Optional<int>& action_index,
-                                  const base::Optional<std::u16string>& reply,
-                                  const base::Optional<bool>& by_user) {
+                                  const absl::optional<int>& action_index,
+                                  const absl::optional<std::u16string>& reply,
+                                  const absl::optional<bool>& by_user) {
     return operation == last_operation_ &&
            notification_type == last_notification_type_ &&
            origin == last_origin_ && notification_id == last_notification_id_ &&
@@ -220,9 +220,9 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
   NotificationHandler::Type last_notification_type_;
   GURL last_origin_;
   std::string last_notification_id_;
-  base::Optional<int> last_action_index_;
-  base::Optional<std::u16string> last_reply_;
-  base::Optional<bool> last_by_user_;
+  absl::optional<int> last_action_index_;
+  absl::optional<std::u16string> last_reply_;
+  absl::optional<bool> last_by_user_;
 
   std::set<std::string> displayed_notifications_;
 
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
   bridge->ForwardHandleEventForTesting(NotificationCommon::OPERATION_CLICK,
-                                       &toast, &args, base::nullopt);
+                                       &toast, &args, absl::nullopt);
   run_loop.Run();
 
   // Validate the click values.
@@ -293,8 +293,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
   EXPECT_EQ(1, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
-  EXPECT_EQ(base::nullopt, last_by_user_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_by_user_);
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleActivation) {
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
   EXPECT_EQ(1, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_EQ(true, last_by_user_);
 }
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
   NotificationPlatformBridgeWin* bridge = GetBridge();
   ASSERT_TRUE(bridge);
   bridge->ForwardHandleEventForTesting(NotificationCommon::OPERATION_SETTINGS,
-                                       &toast, &args, base::nullopt);
+                                       &toast, &args, absl::nullopt);
   run_loop.Run();
 
   // Validate the click values.
@@ -363,9 +363,9 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleSettings) {
   EXPECT_EQ(NotificationHandler::Type::WEB_PERSISTENT, last_notification_type_);
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
-  EXPECT_EQ(base::nullopt, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
-  EXPECT_EQ(base::nullopt, last_by_user_);
+  EXPECT_EQ(absl::nullopt, last_action_index_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_by_user_);
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
@@ -390,8 +390,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleClose) {
   EXPECT_EQ(NotificationHandler::Type::WEB_PERSISTENT, last_notification_type_);
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
-  EXPECT_EQ(base::nullopt, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_action_index_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_EQ(true, last_by_user_);
 }
 
@@ -543,8 +543,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   // Validate the close event values.
   EXPECT_EQ(NotificationCommon::OPERATION_CLOSE, last_operation_);
   EXPECT_EQ("P2i", last_notification_id_);
-  EXPECT_EQ(base::nullopt, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_action_index_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_EQ(true, last_by_user_);
 
   bridge->SetDisplayedNotificationsForTesting(nullptr);
@@ -639,8 +639,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineClick) {
   EXPECT_EQ(NotificationHandler::Type::WEB_PERSISTENT, last_notification_type_);
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
-  EXPECT_EQ(base::nullopt, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_action_index_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_TRUE(last_by_user_);
 }
 
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineButton) {
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
   EXPECT_EQ(0, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_TRUE(last_by_user_);
 }
 
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, CmdLineSettings) {
   EXPECT_EQ(NotificationHandler::Type::WEB_PERSISTENT, last_notification_type_);
   EXPECT_EQ(GURL("https://example.com/"), last_origin_);
   EXPECT_EQ("notification_id", last_notification_id_);
-  EXPECT_EQ(base::nullopt, last_action_index_);
-  EXPECT_EQ(base::nullopt, last_reply_);
+  EXPECT_EQ(absl::nullopt, last_action_index_);
+  EXPECT_EQ(absl::nullopt, last_reply_);
   EXPECT_TRUE(last_by_user_);
 }

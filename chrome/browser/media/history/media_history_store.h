@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
@@ -20,6 +19,7 @@
 #include "content/public/browser/media_player_watch_time.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace media_session {
@@ -136,12 +136,12 @@ class MediaHistoryStore : public base::RefCountedThreadSafe<MediaHistoryStore> {
   void SavePlaybackSession(
       const GURL& url,
       const media_session::MediaMetadata& metadata,
-      const base::Optional<media_session::MediaPosition>& position,
+      const absl::optional<media_session::MediaPosition>& position,
       const std::vector<media_session::MediaImage>& artwork);
 
   std::vector<mojom::MediaHistoryPlaybackSessionRowPtr> GetPlaybackSessions(
-      base::Optional<unsigned int> num_sessions,
-      base::Optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter);
+      absl::optional<unsigned int> num_sessions,
+      absl::optional<MediaHistoryStore::GetPlaybackSessionsFilter> filter);
 
   void DeleteAllOriginData(const std::set<url::Origin>& origins);
   void DeleteAllURLData(const std::set<GURL>& urls);

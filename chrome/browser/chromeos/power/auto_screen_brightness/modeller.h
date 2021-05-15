@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_MODELLER_H_
 
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/monotone_cubic_spline.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace power {

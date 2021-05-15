@@ -139,12 +139,12 @@ gfx::ImageSkia WebAppBrowserController::GetWindowIcon() const {
   return GetWindowAppIcon();
 }
 
-base::Optional<SkColor> WebAppBrowserController::GetThemeColor() const {
+absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   // System App popups (settings pages) always use default theme.
   if (is_for_system_web_app() && browser()->is_type_app_popup())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<SkColor> web_theme_color =
+  absl::optional<SkColor> web_theme_color =
       AppBrowserController::GetThemeColor();
   if (web_theme_color)
     return web_theme_color;
@@ -152,7 +152,7 @@ base::Optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   return registrar().GetAppThemeColor(GetAppId());
 }
 
-base::Optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
+absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   if (auto color = AppBrowserController::GetBackgroundColor())
     return color;
   return registrar().GetAppBackgroundColor(GetAppId());
@@ -285,7 +285,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   asset_link_handler_ =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
           browser->profile()->GetURLLoaderFactory());
-  is_verified_ = base::nullopt;
+  is_verified_ = absl::nullopt;
 
   if (!HasAppId())
     return;
@@ -296,9 +296,9 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
     return;
 
   const std::string origin = GetAppStartUrl().GetOrigin().spec();
-  const base::Optional<std::string> package_name =
+  const absl::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(GetAppId());
-  const base::Optional<std::string> fingerprint =
+  const absl::optional<std::string> fingerprint =
       apk_web_app_service->GetCertificateSha256Fingerprint(GetAppId());
 
   // Any web-only TWA should have an associated package name and fingerprint.

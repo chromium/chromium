@@ -249,7 +249,7 @@ void DevToolsFileHelper::Save(const std::string& url,
 
   const base::Value* path_value;
   if (file_map->Get(base::MD5String(url), &path_value)) {
-    base::Optional<base::FilePath> path = util::ValueToFilePath(*path_value);
+    absl::optional<base::FilePath> path = util::ValueToFilePath(*path_value);
     if (path)
       initial_path = std::move(*path);
   }

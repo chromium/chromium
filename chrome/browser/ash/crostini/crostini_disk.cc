@@ -126,7 +126,7 @@ void OnListVmDisks(
     OnceDiskInfoCallback callback,
     std::string vm_name,
     int64_t free_space,
-    base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
+    absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get response from concierge";
     std::move(callback).Run(nullptr);
@@ -297,7 +297,7 @@ void OnVMRunning(base::OnceCallback<void(bool)> callback,
 
 void OnResize(
     base::OnceCallback<void(bool)> callback,
-    base::Optional<vm_tools::concierge::ResizeDiskImageResponse> response) {
+    absl::optional<vm_tools::concierge::ResizeDiskImageResponse> response) {
   if (!response) {
     LOG(ERROR) << "Got null response from concierge";
     EmitResizeResultMetric(

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/lacros/browser_test_util.h"
@@ -17,6 +16,7 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -32,11 +32,11 @@ void WaitForWindowPositionInScreen(const std::string& window_id,
   base::RunLoop outer_loop;
   auto wait_for_position = base::BindLambdaForTesting([&]() {
     base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    base::Optional<gfx::Point> position;
+    absl::optional<gfx::Point> position;
     lacros_service->GetRemote<crosapi::mojom::TestController>()
         ->GetWindowPositionInScreen(
             window_id, base::BindLambdaForTesting(
-                           [&](const base::Optional<gfx::Point>& p) {
+                           [&](const absl::optional<gfx::Point>& p) {
                              position = p;
                              inner_loop.Quit();
                            }));

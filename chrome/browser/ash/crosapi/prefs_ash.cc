@@ -58,8 +58,8 @@ void PrefsAsh::GetPref(mojom::PrefPath path, GetPrefCallback callback) {
   auto state = GetState(path);
   const base::Value* value =
       state ? state->pref_service->Get(state->path) : nullptr;
-  std::move(callback).Run(value ? base::Optional<base::Value>(value->Clone())
-                                : base::nullopt);
+  std::move(callback).Run(value ? absl::optional<base::Value>(value->Clone())
+                                : absl::nullopt);
 }
 
 void PrefsAsh::SetPref(mojom::PrefPath path,
@@ -108,7 +108,7 @@ void PrefsAsh::OnProfileAdded(Profile* profile) {
   OnPrimaryProfileReady(primary_profile);
 }
 
-base::Optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
+absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kMetricsReportingEnabled:
       return State{local_state_, &local_state_registrar_,
@@ -116,13 +116,13 @@ base::Optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
       if (!profile_prefs_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
-        return base::nullopt;
+        return absl::nullopt;
       }
       return State{profile_prefs_, &profile_prefs_registrar_,
                    ash::prefs::kAccessibilitySpokenFeedbackEnabled};
     default:
       LOG(WARNING) << "Unknown pref path: " << path;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

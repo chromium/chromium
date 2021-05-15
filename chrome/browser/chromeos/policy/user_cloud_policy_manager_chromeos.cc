@@ -843,7 +843,7 @@ void UserCloudPolicyManagerChromeOS::SetUserContextRefreshTokenForTests(
     const std::string& refresh_token) {
   DCHECK(!refresh_token.empty());
   DCHECK(!user_context_refresh_token_for_tests_);
-  user_context_refresh_token_for_tests_ = base::make_optional(refresh_token);
+  user_context_refresh_token_for_tests_ = absl::make_optional(refresh_token);
 }
 
 enterprise_reporting::ReportScheduler*

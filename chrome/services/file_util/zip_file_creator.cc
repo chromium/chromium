@@ -94,7 +94,7 @@ class MojoFileAccessor : public zip::FileAccessor {
       dir = dir_remote.get();
     }
 
-    base::Optional<std::vector<filesystem::mojom::DirectoryEntryPtr>>
+    absl::optional<std::vector<filesystem::mojom::DirectoryEntryPtr>>
         directory_contents;
     base::File::Error error;
     dir->Read(&error, &directory_contents);

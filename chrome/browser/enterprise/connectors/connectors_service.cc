@@ -234,19 +234,19 @@ ConnectorsService::ConnectorsService(content::BrowserContext* context,
 
 ConnectorsService::~ConnectorsService() = default;
 
-base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
+absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     ReportingConnector connector) {
   if (!ConnectorsEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<ReportingSettings> settings =
+  absl::optional<ReportingSettings> settings =
       connectors_manager_->GetReportingSettings(connector);
   if (!settings.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   settings.value().dm_token = dm_token.value().value;
   settings.value().per_profile =
@@ -255,20 +255,20 @@ base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   return settings;
 }
 
-base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
+absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   if (!ConnectorsEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AnalysisSettings> settings =
+  absl::optional<AnalysisSettings> settings =
       connectors_manager_->GetAnalysisSettings(url, connector);
   if (!settings.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
+  absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   settings.value().dm_token = dm_token.value().value;
   settings.value().per_profile =
@@ -278,16 +278,16 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   return settings;
 }
 
-base::Optional<FileSystemSettings> ConnectorsService::GetFileSystemSettings(
+absl::optional<FileSystemSettings> ConnectorsService::GetFileSystemSettings(
     const GURL& url,
     FileSystemConnector connector) {
   if (!ConnectorsEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<FileSystemSettings> settings =
+  absl::optional<FileSystemSettings> settings =
       connectors_manager_->GetFileSystemSettings(url, connector);
   if (!settings.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   return settings;
 }
@@ -343,23 +343,23 @@ std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
   return connectors_manager_->GetAnalysisServiceProviderNames(connector);
 }
 
-base::Optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
+absl::optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
     const {
   if (!ConnectorsEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) ==
       safe_browsing::REAL_TIME_CHECK_DISABLED) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<DmToken> dm_token =
+  absl::optional<DmToken> dm_token =
       GetDmToken(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope);
 
   if (dm_token.has_value())
     return dm_token.value().value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 safe_browsing::EnterpriseRealTimeUrlCheckMode
@@ -387,7 +387,7 @@ ConnectorsService::DmToken& ConnectorsService::DmToken::operator=(DmToken&&) =
     default;
 ConnectorsService::DmToken::~DmToken() = default;
 
-base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
+absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS, the device must be affiliated to use the DM token for
@@ -400,30 +400,30 @@ base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
 #endif
 }
 
-base::Optional<ConnectorsService::DmToken>
+absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetBrowserDmToken() const {
   policy::DMToken dm_token =
       policy::GetDMToken(Profile::FromBrowserContext(context_));
 
   if (!dm_token.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
 
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-base::Optional<ConnectorsService::DmToken>
+absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
   if (!base::FeatureList::IsEnabled(kPerProfileConnectorsEnabled))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!CanUseProfileDmToken())
-    return base::nullopt;
+    return absl::nullopt;
 
   policy::UserCloudPolicyManager* policy_manager =
       Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
   if (!policy_manager || !policy_manager->IsClientRegistered())
-    return base::nullopt;
+    return absl::nullopt;
 
   return DmToken(policy_manager->core()->client()->dm_token(),
                  policy::POLICY_SCOPE_USER);

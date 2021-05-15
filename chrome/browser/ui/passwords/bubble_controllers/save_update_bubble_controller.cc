@@ -275,8 +275,8 @@ void SaveUpdateBubbleController::ReportInteractions() {
   if (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     metrics_util::LogUpdateUIDismissalReason(dismissal_reason_);
   } else if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
-    base::Optional<metrics_util::PasswordAccountStorageUserState> user_state =
-        base::nullopt;
+    absl::optional<metrics_util::PasswordAccountStorageUserState> user_state =
+        absl::nullopt;
     Profile* profile = GetProfile();
     if (profile) {
       user_state = password_manager::features_util::

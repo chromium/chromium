@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -25,20 +24,21 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
     base::TimeDelta::FromDays(1);
 
-base::Optional<policy::AdbSideloadingAllowanceMode>
+absl::optional<policy::AdbSideloadingAllowanceMode>
 GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
                                   const base::RepeatingClosure callback) {
   auto status = cros_settings->PrepareTrustedValues(callback);
 
   // If the policy value is still not trusted, return optional null
   if (status != chromeos::CrosSettingsProvider::TRUSTED) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Get the trusted policy value.
@@ -63,7 +63,7 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
     case Mode::ALLOW_FOR_AFFILIATED_USERS:
       return policy::AdbSideloadingAllowanceMode::kAllowForAffiliatedUser;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 }  // namespace
@@ -127,7 +127,7 @@ void AdbSideloadingAllowanceModePolicyHandler::SetNotificationTimerForTesting(
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification() {
-  base::Optional<policy::AdbSideloadingAllowanceMode> mode =
+  absl::optional<policy::AdbSideloadingAllowanceMode> mode =
       GetAdbSideloadingDevicePolicyMode(
           cros_settings_,
           base::BindRepeating(

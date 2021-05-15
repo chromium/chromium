@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/auth.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -187,7 +187,7 @@ class LoginHandler : public content::LoginDelegate,
       const GURL& request_url,
       const content::GlobalRequestID& request_id,
       bool is_main_frame,
-      const base::Optional<net::AuthCredentials>& credentials,
+      const absl::optional<net::AuthCredentials>& credentials,
       bool cancelled_by_extension);
 
   void ShowLoginPrompt(const GURL& request_url);

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -29,6 +28,7 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionServiceTest;
 class SkBitmap;
@@ -276,11 +276,11 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   // Called after OnUnpackSuccess check to see whether the install expectations
   // are met and the install process should continue.
-  base::Optional<CrxInstallError> CheckExpectations(const Extension* extension);
+  absl::optional<CrxInstallError> CheckExpectations(const Extension* extension);
 
   // Called after OnUnpackSuccess as a last check to see whether the install
   // should complete.
-  base::Optional<CrxInstallError> AllowInstall(const Extension* extension);
+  absl::optional<CrxInstallError> AllowInstall(const Extension* extension);
 
   // To check whether we need to compute hashes or not, we have to make a query
   // to ContentVerifier, and that should be done on the UI thread.
@@ -332,7 +332,7 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Always report from the UI thread.
   void ReportInstallationStage(InstallationStage stage);
   void NotifyCrxInstallBegin();
-  void NotifyCrxInstallComplete(const base::Optional<CrxInstallError>& error);
+  void NotifyCrxInstallComplete(const absl::optional<CrxInstallError>& error);
 
   // Deletes temporary directory and crx file if needed.
   void CleanupTempFiles();

@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -28,14 +28,14 @@ base::StringPiece GetStringIdForFeatureTutorial(FeatureTutorial tutorial) {
   return "";
 }
 
-base::Optional<FeatureTutorial> GetFeatureTutorialFromStringId(
+absl::optional<FeatureTutorial> GetFeatureTutorialFromStringId(
     base::StringPiece id) {
   for (const auto& p : kTutorialIds) {
     if (p.second == id)
       return p.first;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<base::StringPiece> GetAllFeatureTutorialStringIds() {

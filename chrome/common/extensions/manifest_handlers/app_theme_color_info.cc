@@ -23,11 +23,11 @@ AppThemeColorInfo::AppThemeColorInfo() {}
 AppThemeColorInfo::~AppThemeColorInfo() {}
 
 // static
-base::Optional<SkColor> AppThemeColorInfo::GetThemeColor(
+absl::optional<SkColor> AppThemeColorInfo::GetThemeColor(
     const Extension* extension) {
   AppThemeColorInfo* info = static_cast<AppThemeColorInfo*>(
       extension->GetManifestData(keys::kAppThemeColor));
-  return info ? info->theme_color : base::Optional<SkColor>();
+  return info ? info->theme_color : absl::optional<SkColor>();
 }
 
 AppThemeColorHandler::AppThemeColorHandler() {}

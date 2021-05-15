@@ -66,8 +66,8 @@ class SyncableSettingsStorage : public ValueStore {
   // already active.
   // |sync_state| is the current state of the extension settings in sync.
   // |sync_processor| is used to write out any changes.
-  // Returns any error when trying to sync, or base::nullopt on success.
-  base::Optional<syncer::ModelError> StartSyncing(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> StartSyncing(
       std::unique_ptr<base::DictionaryValue> sync_state,
       std::unique_ptr<SettingsSyncProcessor> sync_processor);
 
@@ -76,8 +76,8 @@ class SyncableSettingsStorage : public ValueStore {
 
   // Pushes a list of sync changes into this storage area. May be called at any
   // time, changes will be ignored if sync isn't active.
-  // Returns any error when trying to sync, or base::nullopt on success.
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       std::unique_ptr<SettingSyncDataList> sync_changes);
 
  private:
@@ -91,13 +91,13 @@ class SyncableSettingsStorage : public ValueStore {
 
   // Sends all local settings to sync. This assumes that there are no settings
   // in sync yet.
-  // Returns any error when trying to sync, or base::nullopt on success.
-  base::Optional<syncer::ModelError> SendLocalSettingsToSync(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> SendLocalSettingsToSync(
       std::unique_ptr<base::DictionaryValue> local_state);
 
   // Overwrites local state with sync state.
-  // Returns any error when trying to sync, or base::nullopt on success.
-  base::Optional<syncer::ModelError> OverwriteLocalSettingsWithSync(
+  // Returns any error when trying to sync, or absl::nullopt on success.
+  absl::optional<syncer::ModelError> OverwriteLocalSettingsWithSync(
       std::unique_ptr<base::DictionaryValue> sync_state,
       std::unique_ptr<base::DictionaryValue> local_state);
 

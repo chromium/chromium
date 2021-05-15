@@ -113,7 +113,7 @@ TEST_F(TabScorePredictorTest, ScoreTabWithFrecencyScorer) {
 class ScoreTabsWithPairwiseScorerTest : public testing::Test {
  protected:
   std::map<int32_t, float> ScoreTabsWithPairwiseScorer(
-      const std::map<int32_t, base::Optional<TabFeatures>>& tabs) {
+      const std::map<int32_t, absl::optional<TabFeatures>>& tabs) {
     return TabScorePredictor().ScoreTabsWithPairwiseScorer(tabs);
   }
 };
@@ -131,7 +131,7 @@ TEST_F(ScoreTabsWithPairwiseScorerTest, EmptyTabFeaturesFirst) {
     }
     base::RandomShuffle(ids.begin(), ids.end());
 
-    std::map<int32_t, base::Optional<TabFeatures>> tabs;
+    std::map<int32_t, absl::optional<TabFeatures>> tabs;
     for (int i = 0; i < length; ++i) {
       TabFeatures tab;
       tab.mru_index = base::RandInt(0, 3000);
@@ -140,7 +140,7 @@ TEST_F(ScoreTabsWithPairwiseScorerTest, EmptyTabFeaturesFirst) {
 
       // Set half of the TabFeatures to be null.
       if (i < length / 2) {
-        tabs[ids[i]] = base::nullopt;
+        tabs[ids[i]] = absl::nullopt;
       } else {
         tabs[ids[i]] = tab;
       }
@@ -175,7 +175,7 @@ TEST_F(ScoreTabsWithPairwiseScorerTest, SortByScore) {
     base::RandomShuffle(ids.begin(), ids.end());
 
     // set ids[i] to have frecency_score i*5;
-    std::map<int32_t, base::Optional<TabFeatures>> tabs;
+    std::map<int32_t, absl::optional<TabFeatures>> tabs;
     for (int i = 0; i < length; ++i) {
       TabFeatures tab;
       tab.mru_index = base::RandInt(0, 3000);

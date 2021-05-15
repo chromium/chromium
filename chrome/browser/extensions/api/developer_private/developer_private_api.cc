@@ -238,7 +238,7 @@ developer::LoadError CreateLoadError(
   return response;
 }
 
-base::Optional<URLPattern> ParseRuntimePermissionsPattern(
+absl::optional<URLPattern> ParseRuntimePermissionsPattern(
     const std::string& pattern_str) {
   constexpr int kValidRuntimePermissionSchemes = URLPattern::SCHEME_HTTP |
                                                  URLPattern::SCHEME_HTTPS |
@@ -246,13 +246,13 @@ base::Optional<URLPattern> ParseRuntimePermissionsPattern(
 
   URLPattern pattern(kValidRuntimePermissionSchemes);
   if (pattern.Parse(pattern_str) != URLPattern::ParseResult::kSuccess)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We don't allow adding paths for permissions, because they aren't meaningful
   // in terms of origin access. The frontend should validate this, but there's
   // a chance something can slip through, so we should fail gracefully.
   if (pattern.path() != "/*")
-    return base::nullopt;
+    return absl::nullopt;
 
   return pattern;
 }
@@ -2017,7 +2017,7 @@ DeveloperPrivateAddHostPermissionFunction::Run() {
       developer::AddHostPermission::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Optional<URLPattern> pattern =
+  absl::optional<URLPattern> pattern =
       ParseRuntimePermissionsPattern(params->host);
   if (!pattern)
     return RespondNow(Error(kInvalidHost));
@@ -2060,7 +2060,7 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
       developer::RemoveHostPermission::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Optional<URLPattern> pattern =
+  absl::optional<URLPattern> pattern =
       ParseRuntimePermissionsPattern(params->host);
   if (!pattern)
     return RespondNow(Error(kInvalidHost));

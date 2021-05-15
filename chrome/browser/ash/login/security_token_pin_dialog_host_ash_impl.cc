@@ -26,7 +26,7 @@ void SecurityTokenPinDialogHostAshImpl::ShowSecurityTokenPinDialog(
     bool enable_user_input,
     security_token_pin::ErrorLabel error_label,
     int attempts_left,
-    const base::Optional<AccountId>& authenticating_user_account_id,
+    const absl::optional<AccountId>& authenticating_user_account_id,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
   DCHECK(!enable_user_input || attempts_left);

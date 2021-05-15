@@ -30,7 +30,7 @@ class TabStripModelOrderController : public TabStripModelObserver {
                               bool foreground);
 
   // Determine where to shift selection after a tab is closed.
-  base::Optional<int> DetermineNewSelectedIndex(int removed_index) const;
+  absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(

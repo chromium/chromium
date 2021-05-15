@@ -100,7 +100,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
 
 void SharingMessageSender::OnMessageSent(const std::string& message_guid,
                                          SharingSendMessageResult result,
-                                         base::Optional<std::string> message_id,
+                                         absl::optional<std::string> message_id,
                                          SharingChannelType channel_type) {
   auto metadata_iter = message_metadata_.find(message_guid);
   DCHECK(metadata_iter != message_metadata_.end());

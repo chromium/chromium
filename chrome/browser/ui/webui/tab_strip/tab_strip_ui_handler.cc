@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -38,6 +37,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -265,7 +265,7 @@ void TabStripUIHandler::OnTabGroupChanged(const TabGroupChange& change) {
 }
 
 void TabStripUIHandler::TabGroupedStateChanged(
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
   TRACE_EVENT0("browser",
@@ -309,7 +309,7 @@ void TabStripUIHandler::OnTabStripModelChanged(
     case TabStripModelChange::kMoved: {
       auto* move = change.GetMove();
 
-      base::Optional<tab_groups::TabGroupId> tab_group_id =
+      absl::optional<tab_groups::TabGroupId> tab_group_id =
           tab_strip_model->GetTabGroupForTab(move->to_index);
       if (tab_group_id.has_value()) {
         const gfx::Range tabs_in_group = tab_strip_model->group_model()
@@ -541,7 +541,7 @@ base::DictionaryValue TabStripUIHandler::GetTabData(
   tab_data.SetInteger("id", extensions::ExtensionTabUtil::GetTabId(contents));
   tab_data.SetInteger("index", index);
 
-  const base::Optional<tab_groups::TabGroupId> group_id =
+  const absl::optional<tab_groups::TabGroupId> group_id =
       browser_->tab_strip_model()->GetTabGroupForTab(index);
   if (group_id.has_value()) {
     tab_data.SetString("groupId", group_id.value().ToString());
@@ -697,7 +697,7 @@ void TabStripUIHandler::HandleGroupTab(const base::ListValue* args) {
   DCHECK(got_tab);
 
   const std::string group_id_string = args->GetList()[1].GetString();
-  base::Optional<tab_groups::TabGroupId> group_id =
+  absl::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           browser_->tab_strip_model()->group_model(), group_id_string);
   if (group_id.has_value()) {
@@ -733,7 +733,7 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
     return;
   }
 
-  base::Optional<tab_groups::TabGroupId> group_id =
+  absl::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           source_browser->tab_strip_model()->group_model(), group_id_string);
   TabGroup* group =
@@ -766,7 +766,7 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
 
   target_browser->tab_strip_model()->group_model()->AddTabGroup(
       group_id.value(),
-      base::Optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
+      absl::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
 
   gfx::Range source_tab_indices = group->ListTabs();
   const int tab_count = source_tab_indices.length();
@@ -854,7 +854,7 @@ void TabStripUIHandler::HandleShowBackgroundContextMenu(
 void TabStripUIHandler::HandleShowEditDialogForGroup(
     const base::ListValue* args) {
   const std::string group_id_string = args->GetList()[0].GetString();
-  base::Optional<tab_groups::TabGroupId> group_id =
+  absl::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
           browser_->tab_strip_model()->group_model(), group_id_string);
   if (!group_id.has_value()) {

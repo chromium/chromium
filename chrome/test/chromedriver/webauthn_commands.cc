@@ -162,7 +162,7 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> authenticator_id =
+  absl::optional<base::Value> authenticator_id =
       result->ExtractKey("authenticatorId");
   if (!authenticator_id)
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
@@ -214,7 +214,7 @@ Status ExecuteGetCredentials(WebView* web_view,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> credentials = result->ExtractKey("credentials");
+  absl::optional<base::Value> credentials = result->ExtractKey("credentials");
   if (!credentials)
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
 

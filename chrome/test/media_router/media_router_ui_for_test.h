@@ -8,12 +8,12 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -99,13 +99,13 @@ class MediaRouterUiForTest
   // of |watch_type| is observed. |sink_name| should be set only if observing
   // for a sink.
   void ObserveDialog(WatchType watch_type,
-                     base::Optional<std::string> sink_name = base::nullopt);
+                     absl::optional<std::string> sink_name = absl::nullopt);
 
   content::WebContents* web_contents_;
   MediaRouterDialogControllerViews* dialog_controller_;
 
-  base::Optional<std::string> watch_sink_name_;
-  base::Optional<base::OnceClosure> watch_callback_;
+  absl::optional<std::string> watch_sink_name_;
+  absl::optional<base::OnceClosure> watch_callback_;
   WatchType watch_type_ = WatchType::kNone;
 
   base::WeakPtrFactory<MediaRouterUiForTest> weak_factory_{this};

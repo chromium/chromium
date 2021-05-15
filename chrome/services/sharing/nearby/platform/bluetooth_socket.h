@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
 #include "third_party/nearby/src/cpp/platform/base/input_stream.h"
 #include "third_party/nearby/src/cpp/platform/base/output_stream.h"
@@ -92,7 +92,7 @@ class BluetoothSocket : public api::BluetoothSocket {
   // connection, there is no previous owner of that device object, and therefore
   // BluetoothSocket is expected to own it (within |remote_device_|). In this
   // case, |remote_device_ref_| is a reference to |remote_device_|.
-  base::Optional<chrome::BluetoothDevice> remote_device_;
+  absl::optional<chrome::BluetoothDevice> remote_device_;
   api::BluetoothDevice& remote_device_ref_;
 
   // The public methods which are overridden by BluetoothSocket's subclasses

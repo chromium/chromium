@@ -182,7 +182,7 @@ TEST_F(SigninErrorNotifierTest, ErrorTransitionForPrimaryAccount) {
       account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   std::u16string message = notification->message();
@@ -228,7 +228,7 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
 
   for (size_t i = 0; i < base::size(table); ++i) {
     SetAuthError(account_id, GoogleServiceAuthError(table[i].error_state));
-    base::Optional<message_center::Notification> notification =
+    absl::optional<message_center::Notification> notification =
         display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
     ASSERT_EQ(table[i].is_error, !!notification) << "Failed case #" << i;
     if (table[i].is_error) {
@@ -256,7 +256,7 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Expect that there is a notification, accounts didn't migrate yet.
-  base::Optional<message_center::Notification> notification =
+  absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
   std::u16string message = notification->message();

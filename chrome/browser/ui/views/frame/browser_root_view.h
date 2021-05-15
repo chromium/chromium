@@ -54,7 +54,7 @@ class BrowserRootView : public views::internal::RootView {
     virtual DropIndex GetDropIndex(const ui::DropTargetEvent& event) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
-    virtual void HandleDragUpdate(const base::Optional<DropIndex>& index) {}
+    virtual void HandleDragUpdate(const absl::optional<DropIndex>& index) {}
     virtual void HandleDragExited() {}
 
    protected:
@@ -96,7 +96,7 @@ class BrowserRootView : public views::internal::RootView {
     DropTarget* target = nullptr;
 
     // Where to drop the url.
-    base::Optional<DropIndex> index;
+    absl::optional<DropIndex> index;
 
     // The URL for the drop event.
     GURL url;

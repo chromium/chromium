@@ -11,9 +11,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace syncer {
@@ -74,7 +74,7 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
   std::string phone_number_;
   std::string selection_text_;
-  base::Optional<SharingClickToCallEntryPoint> entry_point_;
+  absl::optional<SharingClickToCallEntryPoint> entry_point_;
 
   std::unique_ptr<ui::SimpleMenuModel> sub_menu_model_;
 

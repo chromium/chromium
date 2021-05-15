@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/services/network_config/in_process_instance.h"
@@ -16,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -136,7 +136,7 @@ void GatewayCanBePingedRoutine::PingGateways() {
 bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
                                                 std::string* ip,
                                                 base::TimeDelta* latency) {
-  base::Optional<base::Value> parsed_value(base::JSONReader::Read(status));
+  absl::optional<base::Value> parsed_value(base::JSONReader::Read(status));
   if (!parsed_value.has_value()) {
     return false;
   }
@@ -215,7 +215,7 @@ void GatewayCanBePingedRoutine::OnManagedPropertiesReceived(
 
 void GatewayCanBePingedRoutine::OnTestICMPCompleted(
     bool is_default_network_ping_result,
-    const base::Optional<std::string> status) {
+    const absl::optional<std::string> status) {
   DCHECK(gateways_remaining_ > 0);
   std::string result_ip;
   base::TimeDelta result_latency;

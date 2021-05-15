@@ -231,7 +231,7 @@ PerformanceHintsObserver::HintForURLResult PerformanceHintsObserver::HintForURL(
     return result;
   }
 
-  base::Optional<GURL> maybe_rewritten;
+  absl::optional<GURL> maybe_rewritten;
   if (features::ShouldHandleRewrites()) {
     maybe_rewritten = rewrite_handler_.HandleRewriteIfNecessary(url);
     result.rewritten = maybe_rewritten.has_value();
@@ -250,7 +250,7 @@ PerformanceHintsObserver::HintForURLResult PerformanceHintsObserver::HintForURL(
 
   using LookupFn = base::OnceCallback<std::tuple<
       SourceLookupStatus,
-      base::Optional<optimization_guide::proto::PerformanceHint>>(const GURL&)>;
+      absl::optional<optimization_guide::proto::PerformanceHint>>(const GURL&)>;
 
   std::vector<std::tuple<HintLookupSource, LookupFn>> sources;
   sources.emplace_back(HintLookupSource::kLinkHint,
@@ -315,7 +315,7 @@ void PerformanceHintsObserver::PopulateLinkHints() {
       nullptr;
   // Metadata variables are scoped here to share the same scope as link_hints.
   optimization_guide::OptimizationMetadata metadata;
-  base::Optional<LinkPerformanceMetadata> link_metadata;
+  absl::optional<LinkPerformanceMetadata> link_metadata;
   if (features::AreLinkPerformanceHintsEnabled()) {
     link_hints_decision_ = optimization_guide_decider_->CanApplyOptimization(
         page_url_.value(), optimization_guide::proto::LINK_PERFORMANCE,
@@ -344,10 +344,10 @@ void PerformanceHintsObserver::PopulateLinkHints() {
 }
 
 std::tuple<PerformanceHintsObserver::SourceLookupStatus,
-           base::Optional<optimization_guide::proto::PerformanceHint>>
+           absl::optional<optimization_guide::proto::PerformanceHint>>
 PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
   if (!optimization_guide_decider_) {
-    return {SourceLookupStatus::kNoMatch, base::nullopt};
+    return {SourceLookupStatus::kNoMatch, absl::nullopt};
   }
 
   if (link_hints_decision_ == OptimizationGuideDecision::kUnknown) {
@@ -355,9 +355,9 @@ PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
   }
   switch (link_hints_decision_) {
     case OptimizationGuideDecision::kUnknown:
-      return {SourceLookupStatus::kNotReady, base::nullopt};
+      return {SourceLookupStatus::kNotReady, absl::nullopt};
     case OptimizationGuideDecision::kFalse:
-      return {SourceLookupStatus::kNoMatch, base::nullopt};
+      return {SourceLookupStatus::kNoMatch, absl::nullopt};
     case OptimizationGuideDecision::kTrue: {
       // Link hints only contain scheme, host, and path, so remove other
       // components.
@@ -374,16 +374,16 @@ PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
           return {SourceLookupStatus::kHintFound, pattern_hint.second};
         }
       }
-      return {SourceLookupStatus::kNoMatch, base::nullopt};
+      return {SourceLookupStatus::kNoMatch, absl::nullopt};
     }
   }
 }
 
 std::tuple<PerformanceHintsObserver::SourceLookupStatus,
-           base::Optional<optimization_guide::proto::PerformanceHint>>
+           absl::optional<optimization_guide::proto::PerformanceHint>>
 PerformanceHintsObserver::PageHintForURL(const GURL& url) const {
   if (!optimization_guide_decider_) {
-    return {SourceLookupStatus::kNoMatch, base::nullopt};
+    return {SourceLookupStatus::kNoMatch, absl::nullopt};
   }
 
   // Check to see if there happens to be a cached hint for the site that this
@@ -394,7 +394,7 @@ PerformanceHintsObserver::PageHintForURL(const GURL& url) const {
       optimization_guide_decider_->CanApplyOptimization(
           url, optimization_guide::proto::PERFORMANCE_HINTS, &metadata);
   if (decision == OptimizationGuideDecision::kUnknown) {
-    return {SourceLookupStatus::kNotReady, base::nullopt};
+    return {SourceLookupStatus::kNotReady, absl::nullopt};
   } else if (decision == OptimizationGuideDecision::kTrue &&
              metadata.performance_hints_metadata() &&
              metadata.performance_hints_metadata()->has_page_hint()) {
@@ -402,14 +402,14 @@ PerformanceHintsObserver::PageHintForURL(const GURL& url) const {
             metadata.performance_hints_metadata()->page_hint()};
   }
 
-  return {SourceLookupStatus::kNoMatch, base::nullopt};
+  return {SourceLookupStatus::kNoMatch, absl::nullopt};
 }
 
 std::tuple<PerformanceHintsObserver::SourceLookupStatus,
-           base::Optional<optimization_guide::proto::PerformanceHint>>
+           absl::optional<optimization_guide::proto::PerformanceHint>>
 PerformanceHintsObserver::FastHostHintForURL(const GURL& url) const {
   if (!optimization_guide_decider_) {
-    return {SourceLookupStatus::kNoMatch, base::nullopt};
+    return {SourceLookupStatus::kNoMatch, absl::nullopt};
   }
 
   OptimizationGuideDecision decision =
@@ -422,9 +422,9 @@ PerformanceHintsObserver::FastHostHintForURL(const GURL& url) const {
       return {SourceLookupStatus::kHintFound, hint};
     }
     case OptimizationGuideDecision::kFalse:
-      return {SourceLookupStatus::kNoMatch, base::nullopt};
+      return {SourceLookupStatus::kNoMatch, absl::nullopt};
     case OptimizationGuideDecision::kUnknown:
-      return {SourceLookupStatus::kNotReady, base::nullopt};
+      return {SourceLookupStatus::kNotReady, absl::nullopt};
   }
 }
 

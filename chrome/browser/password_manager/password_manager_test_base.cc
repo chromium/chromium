@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -42,6 +41,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace {
@@ -113,7 +113,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   base::RunLoop* run_loop_;
 
   // The state CustomManagePasswordsUIController is currently waiting for.
-  base::Optional<password_manager::ui::State> target_state_;
+  absl::optional<password_manager::ui::State> target_state_;
 
   // True iff showing fallback is waited.
   bool wait_for_fallback_;

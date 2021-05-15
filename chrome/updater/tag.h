@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -52,7 +52,7 @@ struct AppArgs {
   std::string install_data_index;
   std::string experiment_labels;
   std::string untrusted_data;
-  base::Optional<NeedsAdmin> needs_admin;
+  absl::optional<NeedsAdmin> needs_admin;
 };
 
 std::ostream& operator<<(std::ostream&, const AppArgs::NeedsAdmin&);
@@ -88,9 +88,9 @@ struct TagArgs {
   std::string experiment_labels;
   std::string referral_id;
   std::string language;
-  base::Optional<BrowserType> browser_type;
-  base::Optional<bool> flighting = false;
-  base::Optional<bool> usage_stats_enable;
+  absl::optional<BrowserType> browser_type;
+  absl::optional<bool> flighting = false;
+  absl::optional<bool> usage_stats_enable;
 
   // List of apps to install.
   std::vector<AppArgs> apps;
@@ -219,7 +219,7 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 //
 // Note: This method assumes all attribute names are ASCII.
 ErrorCode Parse(base::StringPiece tag,
-                base::Optional<base::StringPiece> app_installer_data_args,
+                absl::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args);
 
 }  // namespace tagging

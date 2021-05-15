@@ -177,11 +177,11 @@ class TaskGroup {
   void OnIdleWakeupsRefreshDone(int idle_wakeups_per_second);
 
   void OnSamplerRefreshDone(
-      base::Optional<SharedSampler::SamplingResult> results);
+      absl::optional<SharedSampler::SamplingResult> results);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnArcSamplerRefreshDone(
-      base::Optional<ArcSharedSampler::MemoryFootprintBytes> results);
+      absl::optional<ArcSharedSampler::MemoryFootprintBytes> results);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void OnBackgroundRefreshTypeFinished(int64_t finished_refresh_type);

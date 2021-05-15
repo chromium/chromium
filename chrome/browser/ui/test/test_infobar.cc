@@ -21,7 +21,7 @@ void TestInfoBar::PreShow() {
 }
 
 bool TestInfoBar::VerifyUi() {
-  base::Optional<InfoBars> infobars = GetNewInfoBars();
+  absl::optional<InfoBars> infobars = GetNewInfoBars();
   if (!infobars || infobars->empty()) {
     ADD_FAILURE() << "No new infobars were displayed.";
     return false;
@@ -73,15 +73,15 @@ const infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() const {
              : nullptr;
 }
 
-base::Optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
+absl::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
   const infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
   if (!infobar_manager)
-    return base::nullopt;
+    return absl::nullopt;
   const InfoBars& infobars = infobar_manager->infobars_;
   if ((infobars.size() < starting_infobars_.size()) ||
       !std::equal(starting_infobars_.begin(), starting_infobars_.end(),
                   infobars.begin()))
-    return base::nullopt;
+    return absl::nullopt;
   return InfoBars(std::next(infobars.begin(), starting_infobars_.size()),
                   infobars.end());
 }

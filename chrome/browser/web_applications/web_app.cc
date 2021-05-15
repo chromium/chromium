@@ -21,7 +21,7 @@
 
 namespace {
 
-std::string ColorToString(base::Optional<SkColor> color) {
+std::string ColorToString(absl::optional<SkColor> color) {
   return color.has_value() ? color_utils::SkColorToRgbaString(color.value())
                            : "none";
 }
@@ -34,8 +34,8 @@ WebApp::WebApp(const AppId& app_id)
     : app_id_(app_id),
       display_mode_(DisplayMode::kUndefined),
       user_display_mode_(DisplayMode::kUndefined),
-      chromeos_data_(IsChromeOs() ? base::make_optional<WebAppChromeOsData>()
-                                  : base::nullopt) {}
+      chromeos_data_(IsChromeOs() ? absl::make_optional<WebAppChromeOsData>()
+                                  : absl::nullopt) {}
 
 WebApp::~WebApp() = default;
 
@@ -144,11 +144,11 @@ void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
   note_taking_new_note_url_ = note_taking_new_note_url;
 }
 
-void WebApp::SetThemeColor(base::Optional<SkColor> theme_color) {
+void WebApp::SetThemeColor(absl::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
 }
 
-void WebApp::SetBackgroundColor(base::Optional<SkColor> background_color) {
+void WebApp::SetBackgroundColor(absl::optional<SkColor> background_color) {
   background_color_ = background_color;
 }
 
@@ -188,7 +188,7 @@ void WebApp::SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal) {
 }
 
 void WebApp::SetWebAppChromeOsData(
-    base::Optional<WebAppChromeOsData> chromeos_data) {
+    absl::optional<WebAppChromeOsData> chromeos_data) {
   chromeos_data_ = std::move(chromeos_data);
 }
 
@@ -230,7 +230,7 @@ void WebApp::SetFileHandlers(apps::FileHandlers file_handlers) {
   file_handlers_ = std::move(file_handlers);
 }
 
-void WebApp::SetShareTarget(base::Optional<apps::ShareTarget> share_target) {
+void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
 
@@ -284,7 +284,7 @@ void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
 }
 
 void WebApp::SetLaunchQueryParams(
-    base::Optional<std::string> launch_query_params) {
+    absl::optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
 }
 
@@ -292,7 +292,7 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 }
 
-void WebApp::SetManifestId(const base::Optional<std::string>& manifest_id) {
+void WebApp::SetManifestId(const absl::optional<std::string>& manifest_id) {
   manifest_id_ = manifest_id;
 }
 
@@ -317,7 +317,7 @@ WebApp::SyncFallbackData& WebApp::SyncFallbackData::operator=(
     SyncFallbackData&& sync_fallback_data) = default;
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, const base::Optional<T>& optional) {
+std::ostream& operator<<(std::ostream& out, const absl::optional<T>& optional) {
   if (optional.has_value())
     return out << optional.value();
   return out << "nullopt";

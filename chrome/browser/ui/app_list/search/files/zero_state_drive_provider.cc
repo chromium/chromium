@@ -176,7 +176,7 @@ void ZeroStateDriveProvider::Start(const std::u16string& query) {
 }
 
 void ZeroStateDriveProvider::OnFilePathsLocated(
-    base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
+    absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!paths) {
     LogStatus(Status::kPathLocationFailed);

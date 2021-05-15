@@ -70,12 +70,12 @@ class TabGroup {
   // Gets the model index of this group's first tab, or nullopt if it is
   // empty. Similar to ListTabs() it traverses through TabStripModel's
   // tabs. Unlike ListTabs() this is always safe to call.
-  base::Optional<int> GetFirstTab() const;
+  absl::optional<int> GetFirstTab() const;
 
   // Gets the model index of this group's last tab, or nullopt if it is
   // empty. Similar to ListTabs() it traverses through TabStripModel's
   // tabs. Unlike ListTabs() this is always safe to call.
-  base::Optional<int> GetLastTab() const;
+  absl::optional<int> GetLastTab() const;
 
   // Returns the range of tab model indices this group contains. Notably
   // does not rely on the TabGroup's internal metadata, but rather

@@ -104,7 +104,7 @@ class PlatformNotificationServiceImpl
   static void DidGetBackgroundSourceId(
       base::OnceClosure recorded_closure,
       const content::NotificationDatabaseData& data,
-      base::Optional<ukm::SourceId> source_id);
+      absl::optional<ukm::SourceId> source_id);
 
   // Creates a new Web Notification-based Notification object. Should only be
   // called when the notification is first shown.

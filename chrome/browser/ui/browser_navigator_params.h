@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
@@ -21,6 +20,7 @@
 #include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
@@ -95,7 +95,7 @@ struct NavigateParams {
   // drop), and the frame with the corresponding frame token may have been
   // deleted before the navigation begins. It is defined if and only if
   // |initiator_process_id| below is.
-  base::Optional<blink::LocalFrameToken> initiator_frame_token;
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token| above is, and it is
@@ -103,7 +103,7 @@ struct NavigateParams {
   int initiator_process_id = content::ChildProcessHost::kInvalidUniqueID;
 
   // The origin of the initiator of the navigation.
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 
   // The frame name to be used for the main frame.
   std::string frame_name;
@@ -246,7 +246,7 @@ struct NavigateParams {
   Browser* browser = nullptr;
 
   // The group the caller would like the tab to be added to.
-  base::Optional<tab_groups::TabGroupId> group;
+  absl::optional<tab_groups::TabGroupId> group;
 
   // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
   // determine where to insert a new tab and whether or not it should be
@@ -307,7 +307,7 @@ struct NavigateParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<blink::Impression> impression;
+  absl::optional<blink::Impression> impression;
 
   // True if the navigation was initiated by typing in the omnibox but the typed
   // text didn't have a scheme such as http or https (e.g. google.com), and

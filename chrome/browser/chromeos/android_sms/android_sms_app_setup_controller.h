@@ -36,8 +36,8 @@ class AndroidSmsAppSetupController {
                         SuccessCallback callback) = 0;
 
   // Returns the id for the PWA at |install_url|; if no PWA exists,
-  // base::nullopt is returned.
-  virtual base::Optional<web_app::AppId> GetPwa(const GURL& install_url) = 0;
+  // absl::nullopt is returned.
+  virtual absl::optional<web_app::AppId> GetPwa(const GURL& install_url) = 0;
 
   // Deletes the cookie which causes the PWA to remember this computer by
   // default. Note that this does not actually stop the PWA from remembering

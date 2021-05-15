@@ -95,7 +95,7 @@ BorealisGameModeController::GameModeEnabler::~GameModeEnabler() {
 
 // State is true if entering game mode, false if exiting.
 void BorealisGameModeController::GameModeEnabler::OnSetGameMode(
-    base::Optional<bool> state) {
+    absl::optional<bool> state) {
   if (!state.has_value()) {
     LOG(ERROR) << "Failed to set Game Mode";
     // TODO(b/186184700): Remove logging for entering/exiting game mode.

@@ -27,7 +27,7 @@
 
 namespace {
 
-base::Optional<media_router::MediaRouter*> media_router_for_test_;
+absl::optional<media_router::MediaRouter*> media_router_for_test_;
 
 Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())

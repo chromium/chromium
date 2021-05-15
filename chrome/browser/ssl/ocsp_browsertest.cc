@@ -72,7 +72,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     InProcessBrowserTest::TearDown();
 
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 
   void SetUpOnMainThread() override {

@@ -8,12 +8,12 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 namespace content {
@@ -66,7 +66,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
                             const std::string& refresh_token);
 
  private:
-  static base::Optional<FileSystemSettings> IsEnabled(
+  static absl::optional<FileSystemSettings> IsEnabled(
       download::DownloadItem* download_item);
 
   static std::unique_ptr<download::DownloadItemRenameHandler> Create(

@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
@@ -17,6 +16,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // Snooze data will be saved as a dictionary in the PrefService of a profile.
@@ -182,30 +182,30 @@ void FeaturePromoSnoozeService::Reset(const base::Feature& iph_feature) {
 
 int FeaturePromoSnoozeService::GetSnoozeCount(
     const base::Feature& iph_feature) {
-  base::Optional<SnoozeData> snooze_data = ReadSnoozeData(iph_feature);
+  absl::optional<SnoozeData> snooze_data = ReadSnoozeData(iph_feature);
   return snooze_data ? snooze_data->snooze_count : 0;
 }
 
-base::Optional<FeaturePromoSnoozeService::SnoozeData>
+absl::optional<FeaturePromoSnoozeService::SnoozeData>
 FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
   const base::DictionaryValue* pref_data =
       profile_->GetPrefs()->GetDictionary(kIPHSnoozeDataPath);
-  base::Optional<bool> is_dismissed =
+  absl::optional<bool> is_dismissed =
       pref_data->FindBoolPath(path_prefix + kIPHIsDismissedPath);
-  base::Optional<base::Time> show_time = util::ValueToTime(
+  absl::optional<base::Time> show_time = util::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastShowTimePath));
-  base::Optional<base::Time> snooze_time = util::ValueToTime(
+  absl::optional<base::Time> snooze_time = util::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeTimePath));
-  base::Optional<base::TimeDelta> snooze_duration = util::ValueToTimeDelta(
+  absl::optional<base::TimeDelta> snooze_duration = util::ValueToTimeDelta(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeDurationPath));
-  base::Optional<int> snooze_count =
+  absl::optional<int> snooze_count =
       pref_data->FindIntPath(path_prefix + kIPHSnoozeCountPath);
-  base::Optional<int> show_count =
+  absl::optional<int> show_count =
       pref_data->FindIntPath(path_prefix + kIPHShowCountPath);
 
-  base::Optional<SnoozeData> snooze_data;
+  absl::optional<SnoozeData> snooze_data;
 
   if (!is_dismissed)
     return snooze_data;

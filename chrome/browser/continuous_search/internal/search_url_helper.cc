@@ -39,7 +39,7 @@ JNI_SearchUrlHelper_GetQueryIfValidSrpUrl(
   if (!url->is_valid())
     return base::android::ScopedJavaLocalRef<jstring>();
 
-  base::Optional<std::string> query = ExtractSearchQueryIfValidUrl(*url);
+  absl::optional<std::string> query = ExtractSearchQueryIfValidUrl(*url);
 
   return query.has_value()
              ? base::android::ConvertUTF8ToJavaString(env, query.value())
@@ -56,10 +56,10 @@ jint JNI_SearchUrlHelper_GetSrpPageCategoryFromUrl(
   return static_cast<jint>(GetSrpPageCategoryForUrl(*url));
 }
 
-base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
+absl::optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
   if (!google_util::IsGoogleSearchUrl(url) ||
       GetSrpPageCategoryForUrl(url) == PageCategory::kNone)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::StringPiece query_str = url.query_piece();
   url::Component query(0, static_cast<int>(query_str.length())), key, value;
@@ -73,7 +73,7 @@ base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
               base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 PageCategory GetSrpPageCategoryForUrl(const GURL& url) {

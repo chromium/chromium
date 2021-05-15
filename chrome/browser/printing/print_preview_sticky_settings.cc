@@ -36,7 +36,7 @@ const std::string* PrintPreviewStickySettings::printer_app_state() const {
 }
 
 void PrintPreviewStickySettings::StoreAppState(const std::string& data) {
-  printer_app_state_ = base::make_optional(data);
+  printer_app_state_ = absl::make_optional(data);
 }
 
 void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
@@ -71,7 +71,7 @@ std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
   if (!sticky_settings_state)
     return {};
 
-  base::Optional<base::Value> sticky_settings_state_value =
+  absl::optional<base::Value> sticky_settings_state_value =
       base::JSONReader::Read(*sticky_settings_state);
   if (!sticky_settings_state_value || !sticky_settings_state_value->is_dict())
     return {};

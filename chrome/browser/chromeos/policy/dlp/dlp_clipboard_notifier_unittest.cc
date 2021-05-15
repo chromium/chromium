@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -21,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -84,7 +84,7 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
 }  // namespace
 
 class ClipboardBubbleTestWithParam
-    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {
+    : public ::testing::TestWithParam<absl::optional<ui::EndpointType>> {
  public:
   ClipboardBubbleTestWithParam() = default;
   ClipboardBubbleTestWithParam(const ClipboardBubbleTestWithParam&) = delete;
@@ -96,7 +96,7 @@ class ClipboardBubbleTestWithParam
 TEST_P(ClipboardBubbleTestWithParam, BlockBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
-  base::Optional<ui::DataTransferEndpoint> data_dst;
+  absl::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
     data_dst.emplace(CreateEndpoint(param.value()));
@@ -110,7 +110,7 @@ TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
-  base::Optional<ui::DataTransferEndpoint> data_dst;
+  absl::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
     data_dst.emplace(CreateEndpoint(param.value()));
@@ -124,7 +124,7 @@ TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
                          ClipboardBubbleTestWithParam,
-                         ::testing::Values(base::nullopt,
+                         ::testing::Values(absl::nullopt,
                                            ui::EndpointType::kDefault,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,

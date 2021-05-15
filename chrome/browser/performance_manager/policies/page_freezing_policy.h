@@ -100,7 +100,7 @@ class PageFreezingPolicy : public GraphObserver,
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
   void OnFreezingVoteChanged(
       const PageNode* page_node,
-      base::Optional<performance_manager::freezing::FreezingVote> previous_vote)
+      absl::optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
   void OnLoadingStateChanged(const PageNode* page_node) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;

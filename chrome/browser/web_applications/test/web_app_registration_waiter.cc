@@ -40,7 +40,7 @@ void WebAppRegistrationWaiter::AwaitNextRegistration(
 void WebAppRegistrationWaiter::AwaitNextNonFailedRegistration(
     const GURL& install_url) {
   install_url_ = install_url;
-  code_ = base::nullopt;
+  code_ = absl::nullopt;
   run_loop_.Run();
 }
 

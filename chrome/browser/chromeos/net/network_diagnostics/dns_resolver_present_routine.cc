@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {

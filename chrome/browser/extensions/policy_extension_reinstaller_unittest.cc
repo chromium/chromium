@@ -47,7 +47,7 @@ class TestReinstallerTracker {
 
  private:
   int call_count_ = 0;
-  base::Optional<base::OnceClosure> saved_callback_;
+  absl::optional<base::OnceClosure> saved_callback_;
   PolicyExtensionReinstaller::ReinstallCallback action_;
 
   DISALLOW_COPY_AND_ASSIGN(TestReinstallerTracker);

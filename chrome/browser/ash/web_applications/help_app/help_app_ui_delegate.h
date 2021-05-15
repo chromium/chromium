@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
 
-#include "base/optional.h"
 #include "chromeos/components/help_app_ui/help_app_ui_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUI;
@@ -24,7 +24,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   ChromeHelpAppUIDelegate& operator=(const ChromeHelpAppUIDelegate&) = delete;
 
   // HelpAppUIDelegate:
-  base::Optional<std::string> OpenFeedbackDialog() override;
+  absl::optional<std::string> OpenFeedbackDialog() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   void ShowParentalControls() override;
   PrefService* GetLocalState() override;

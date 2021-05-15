@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +28,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
@@ -232,14 +232,14 @@ bool UntrustedSource::ShouldServiceRequest(
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
-  base::Optional<OneGoogleBarData> data =
+  absl::optional<OneGoogleBarData> data =
       one_google_bar_service_->one_google_bar_data();
 
   if (one_google_bar_load_start_time_.has_value()) {
     NTPUserDataLogger::LogOneGoogleBarFetchDuration(
         /*success=*/data.has_value(),
         /*duration=*/base::TimeTicks::Now() - *one_google_bar_load_start_time_);
-    one_google_bar_load_start_time_ = base::nullopt;
+    one_google_bar_load_start_time_ = absl::nullopt;
   }
 
   std::string html;

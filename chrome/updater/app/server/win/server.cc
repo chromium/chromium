@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -36,6 +35,7 @@
 #include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -217,7 +217,7 @@ void ComServerApp::UninstallSelf() {
 bool ComServerApp::SwapRPCInterfaces() {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
-  base::Optional<base::FilePath> versioned_directory = GetVersionedDirectory();
+  absl::optional<base::FilePath> versioned_directory = GetVersionedDirectory();
   if (!versioned_directory)
     return false;
   for (const CLSID& clsid : GetActiveServers()) {

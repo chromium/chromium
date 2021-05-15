@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/hash.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -26,11 +25,11 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_config.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
 
-using base::Optional;
 using base::Time;
 using base::TimeDelta;
 
@@ -280,8 +279,8 @@ std::map<std::string, float> RecurrenceRanker::Rank(
   if (predictor_->GetPredictorName() == DefaultPredictor::kPredictorName)
     return GetScoresFromFrecencyStore(targets_->GetAll());
 
-  base::Optional<unsigned int> condition_id = conditions_->GetId(condition);
-  if (condition_id == base::nullopt)
+  absl::optional<unsigned int> condition_id = conditions_->GetId(condition);
+  if (condition_id == absl::nullopt)
     return {};
 
   const auto& targets = targets_->GetAll();

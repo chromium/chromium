@@ -317,7 +317,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
@@ -331,7 +331,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1b_image));
   }
 
@@ -345,7 +345,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
@@ -359,7 +359,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
@@ -373,7 +373,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
@@ -511,7 +511,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
@@ -525,7 +525,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1b_image));
   }
 
@@ -539,7 +539,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
@@ -553,7 +553,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
@@ -567,7 +567,7 @@ TEST_P(MediaHistoryKeyedServiceTest,
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
@@ -705,7 +705,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
@@ -719,7 +719,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
@@ -733,7 +733,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1c_image));
   }
 
@@ -747,7 +747,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
@@ -761,7 +761,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 

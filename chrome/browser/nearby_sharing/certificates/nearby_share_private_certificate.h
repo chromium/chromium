@@ -12,13 +12,13 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -33,9 +33,9 @@ class SymmetricKey;
 // metadata encryption key, which can then be advertised.
 class NearbySharePrivateCertificate {
  public:
-  // Inverse operation of ToDictionary(). Returns base::nullopt if the
+  // Inverse operation of ToDictionary(). Returns absl::nullopt if the
   // conversion is not successful
-  static base::Optional<NearbySharePrivateCertificate> FromDictionary(
+  static absl::optional<NearbySharePrivateCertificate> FromDictionary(
       const base::Value& dict);
 
   // Generates a random EC key pair, secret key, and metadata encryption
@@ -77,14 +77,14 @@ class NearbySharePrivateCertificate {
 
   // Encrypts |metadata_encryption_key_| with the |secret_key_|, using a
   // randomly generated 2-byte salt that has not already been consumed. Returns
-  // base::nullopt if the encryption failed or if there are no remaining salts.
+  // absl::nullopt if the encryption failed or if there are no remaining salts.
   // Note: Due to the generation and storage of an unconsumed salt, this method
   // is not thread safe.
-  base::Optional<NearbyShareEncryptedMetadataKey> EncryptMetadataKey();
+  absl::optional<NearbyShareEncryptedMetadataKey> EncryptMetadataKey();
 
   // Signs the input |payload| with the private key from |key_pair_|. Returns
-  // base::nullopt if the signing was unsuccessful.
-  base::Optional<std::vector<uint8_t>> Sign(
+  // absl::nullopt if the signing was unsuccessful.
+  absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> payload) const;
 
   // Creates a hash of the |authentication_token|, using |secret_key_|. The use
@@ -94,9 +94,9 @@ class NearbySharePrivateCertificate {
       base::span<const uint8_t> authentication_token) const;
 
   // Converts this private certificate to a public certificate proto that can be
-  // shared with select contacts. Returns base::nullopt if the conversion was
+  // shared with select contacts. Returns absl::nullopt if the conversion was
   // unsuccessful.
-  base::Optional<nearbyshare::proto::PublicCertificate> ToPublicCertificate()
+  absl::optional<nearbyshare::proto::PublicCertificate> ToPublicCertificate()
       const;
 
   // Converts this private certificate to a dictionary value for storage
@@ -107,21 +107,21 @@ class NearbySharePrivateCertificate {
   base::queue<std::vector<uint8_t>>& next_salts_for_testing() {
     return next_salts_for_testing_;
   }
-  base::Optional<base::TimeDelta>& offset_for_testing() {
+  absl::optional<base::TimeDelta>& offset_for_testing() {
     return offset_for_testing_;
   }
 
  private:
   // Generates a random 2-byte salt used for encrypting the metadata encryption
-  // key. Adds returned salt to |consumed_salts_|. Returns base::nullopt if the
+  // key. Adds returned salt to |consumed_salts_|. Returns absl::nullopt if the
   // maximum number of salts have been exhausted or if an unconsumed salt cannot
   // be found in a fixed number of attempts, though this is highly improbably.
   // Note: This function is not thread safe.
-  base::Optional<std::vector<uint8_t>> GenerateUnusedSalt();
+  absl::optional<std::vector<uint8_t>> GenerateUnusedSalt();
 
   // Encrypts |unencrypted_metadata_| with the |metadata_encryption_key_|, using
   // the |secret_key_| as salt.
-  base::Optional<std::vector<uint8_t>> EncryptMetadata() const;
+  absl::optional<std::vector<uint8_t>> EncryptMetadata() const;
 
   // Specifies which contacts can receive the public certificate corresponding
   // to this private certificate.
@@ -160,7 +160,7 @@ class NearbySharePrivateCertificate {
 
   // For testing only.
   base::queue<std::vector<uint8_t>> next_salts_for_testing_;
-  base::Optional<base::TimeDelta> offset_for_testing_;
+  absl::optional<base::TimeDelta> offset_for_testing_;
 
   FRIEND_TEST_ALL_PREFIXES(NearbySharePrivateCertificateTest, ToFromDictionary);
 };

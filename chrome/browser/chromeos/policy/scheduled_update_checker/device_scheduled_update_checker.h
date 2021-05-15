@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/scheduled_update_checker/os_and_policies_update_checker.h"
@@ -20,6 +19,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -58,11 +58,11 @@ class DeviceScheduledUpdateChecker
 
     // Only set when frequency is |kWeekly|. Corresponds to UCAL_DAY_OF_WEEK in
     // icu::Calendar. Values between 1 (SUNDAY) to 7 (SATURDAY).
-    base::Optional<UCalendarDaysOfWeek> day_of_week;
+    absl::optional<UCalendarDaysOfWeek> day_of_week;
 
     // Only set when frequency is |kMonthly|. Corresponds to UCAL_DAY_OF_MONTH
     // in icu::Calendar i.e. values between 1 to 31.
-    base::Optional<int> day_of_month;
+    absl::optional<int> day_of_month;
 
     // Absolute time ticks when the next update check (i.e. |UpdateCheck|) will
     // happen.
@@ -133,7 +133,7 @@ class DeviceScheduledUpdateChecker
   base::CallbackListSubscription cros_settings_subscription_;
 
   // Currently active scheduled update check policy.
-  base::Optional<ScheduledUpdateCheckData> scheduled_update_check_data_;
+  absl::optional<ScheduledUpdateCheckData> scheduled_update_check_data_;
 
   // Used to run and retry |StartUpdateCheckTimer| if it fails.
   TaskExecutorWithRetries start_update_check_timer_task_executor_;
@@ -168,7 +168,7 @@ constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
 
 // Parses |value| into a |ScheduledUpdateCheckData|. Returns nullopt if there
 // is any error while parsing |value|.
-base::Optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
+absl::optional<DeviceScheduledUpdateChecker::ScheduledUpdateCheckData>
 ParseScheduledUpdate(const base::Value& value);
 
 // Converts an icu::Calendar to base::Time. Assumes |time| is valid.

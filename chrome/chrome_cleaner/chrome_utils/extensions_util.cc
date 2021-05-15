@@ -19,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
@@ -30,6 +29,7 @@
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/os/system_util.h"
 #include "chrome/chrome_cleaner/parsers/parser_utils/parse_tasks_remaining_counter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/981388): See if there's anything that isn't used from
 // system_report_component.cc that can be removed from this file.
@@ -102,8 +102,8 @@ void GetExtensionSettingsPoliciesFromParsedJson(
     std::vector<ExtensionPolicyRegistryEntry>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
     ContentType type,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 
@@ -172,8 +172,8 @@ void GetDefaultExtensionsFromParsedJson(
     const base::FilePath& extensions_file,
     std::vector<ExtensionPolicyFile>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 
@@ -201,8 +201,8 @@ void GetMasterPreferencesExtensionsFromParsedJson(
     const base::FilePath& extensions_file,
     std::vector<ExtensionPolicyFile>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 

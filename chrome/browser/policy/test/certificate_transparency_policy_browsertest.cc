@@ -33,7 +33,7 @@ class CertificateTransparencyPolicyTest : public PolicyTest {
 
   ~CertificateTransparencyPolicyTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 };
 

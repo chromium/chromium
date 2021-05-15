@@ -138,13 +138,13 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
 }  // namespace
 
-base::Optional<ExtensionSettingsOverriddenDialog::Params>
+absl::optional<ExtensionSettingsOverriddenDialog::Params>
 GetNtpOverriddenParams(Profile* profile) {
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
       ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
   if (!extension)
-    return base::nullopt;
+    return absl::nullopt;
 
   // This preference tracks whether users have acknowledged the extension's
   // control, so that they are not warned twice about the same extension.
@@ -211,12 +211,12 @@ GetNtpOverriddenParams(Profile* profile) {
       std::move(dialog_message), icon);
 }
 
-base::Optional<ExtensionSettingsOverriddenDialog::Params>
+absl::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile* profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
   if (!extension)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We deliberately re-use the same preference that the bubble UI uses. This
   // way, users won't see the bubble or dialog UI if they've already
@@ -251,7 +251,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // as crazy as using filesystem: URLs as a search engine.
   if (!secondary_search.origin.is_empty() &&
       secondary_search.origin == search_url.GetOrigin()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Format the URL for display.

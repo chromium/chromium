@@ -15,7 +15,7 @@ using AuthMethodSwitchType = LoginAuthRecorder::AuthMethodSwitchType;
 
 namespace {
 
-base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPassword, current);
   switch (current) {
     case AuthMethod::kPin:
@@ -29,11 +29,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
     case AuthMethod::kPassword:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPin, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -46,11 +46,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kSmartlock, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -63,11 +63,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
+absl::optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     AuthMethod current) {
   DCHECK_NE(AuthMethod::kFingerprint, current);
   switch (current) {
@@ -81,11 +81,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kNothing, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -100,11 +100,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
       return AuthMethodSwitchType::kNothingToChallengeResponse;
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
+absl::optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
                                                     AuthMethod current) {
   DCHECK_NE(previous, current);
   switch (previous) {
@@ -120,7 +120,7 @@ base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
       return SwitchFromNothingTo(current);
     case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -163,7 +163,7 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
 
   if (last_auth_method_ != method) {
     // Record switching between unlock methods.
-    const base::Optional<AuthMethodSwitchType> switch_type =
+    const absl::optional<AuthMethodSwitchType> switch_type =
         FindSwitchType(last_auth_method_, method);
     if (switch_type) {
       base::UmaHistogramEnumeration(prefix + "Switched", *switch_type);

@@ -218,7 +218,7 @@ class ChromeFileSystemAccessPermissionContext
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,
                                    GrantType grant_type);
-  base::Optional<base::Value> GetPersistedPermission(
+  absl::optional<base::Value> GetPersistedPermission(
       const url::Origin& origin,
       const base::FilePath& path);
   bool HasPersistedPermission(const url::Origin& origin,

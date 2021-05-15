@@ -541,7 +541,7 @@ void ChromeInternalLogSource::PopulateInstallerBrandCode(
 void ChromeInternalLogSource::PopulateLastUpdateState(
     SystemLogsResponse* response) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const base::Optional<UpdateState> update_state = GetLastUpdateState();
+  const absl::optional<UpdateState> update_state = GetLastUpdateState();
   if (!update_state)
     return;  // There is nothing to include if no update check has completed.
 

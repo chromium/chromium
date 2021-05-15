@@ -70,7 +70,7 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
   return CreateDialogWebView(browser, GURL(chrome::kChromeUISigninErrorURL),
-                             kSigninErrorDialogHeight, base::nullopt);
+                             kSigninErrorDialogHeight, absl::nullopt);
 }
 
 // static
@@ -212,7 +212,7 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
     Browser* browser,
     const GURL& url,
     int dialog_height,
-    base::Optional<int> opt_width) {
+    absl::optional<int> opt_width) {
   int dialog_width = opt_width.value_or(kModalDialogWidth);
   views::WebView* web_view = new views::WebView(browser->profile());
   web_view->LoadInitialURL(url);

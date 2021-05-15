@@ -114,7 +114,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
   auto url_parses_successfully = [](const char* policy_template,
                                     const std::string& url) {
     std::string policy = base::StringPrintf(policy_template, url.c_str());
-    base::Optional<base::Value> policy_value = base::JSONReader::Read(
+    absl::optional<base::Value> policy_value = base::JSONReader::Read(
         policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!policy_value)
       return false;

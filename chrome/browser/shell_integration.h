@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
@@ -34,10 +34,10 @@ bool SetAsDefaultBrowser();
 // all OSs.
 bool SetAsDefaultProtocolClient(const std::string& protocol);
 
-// Maps protocols to handler app ids. A protocol with no app id (base::nullopt)
+// Maps protocols to handler app ids. A protocol with no app id (absl::nullopt)
 // will be handled by the browser which is useful for app protocols requiring
 // disambiguation.
-using AppProtocolMap = std::map<std::string, base::Optional<std::string>>;
+using AppProtocolMap = std::map<std::string, absl::optional<std::string>>;
 
 // Called with the outcome of an asynchronous app protocol operation.
 using AppProtocolWorkerCallback = base::OnceCallback<void(bool)>;

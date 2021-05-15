@@ -9,10 +9,10 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace lite_video {
 namespace features {
@@ -31,17 +31,17 @@ bool LiteVideoUseOptimizationGuide() {
       ::features::kLiteVideo, "use_optimization_guide", false);
 }
 
-base::Optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial() {
+absl::optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial() {
   if (!IsLiteVideoEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string lite_video_origin_hints_json =
       base::GetFieldTrialParamValueByFeature(::features::kLiteVideo,
                                              "lite_video_origin_hints");
   if (lite_video_origin_hints_json.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<base::Value> lite_video_origin_hints =
+  absl::optional<base::Value> lite_video_origin_hints =
       base::JSONReader::Read(lite_video_origin_hints_json);
 
   UMA_HISTOGRAM_BOOLEAN(
@@ -109,7 +109,7 @@ base::flat_set<std::string> GetLiteVideoPermanentBlocklist() {
   if (permanent_host_blocklist_json.empty())
     return {};
 
-  base::Optional<base::Value> permanent_host_blocklist_parsed =
+  absl::optional<base::Value> permanent_host_blocklist_parsed =
       base::JSONReader::Read(permanent_host_blocklist_json);
 
   if (!permanent_host_blocklist_parsed ||

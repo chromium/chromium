@@ -12,11 +12,11 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -134,8 +134,8 @@ class ForwardingDelegate : public message_center::NotificationDelegate {
       remote_delegate_->OnNotificationClosed(by_user);
   }
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (button_index) {
       // Chrome OS does not support inline reply. The button index comes out of
       // trusted ash-side message center UI code and is guaranteed not to be

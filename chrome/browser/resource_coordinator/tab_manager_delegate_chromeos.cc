@@ -342,7 +342,7 @@ void TabManagerDelegate::LowMemoryKill(
         &TabManagerDelegate::LowMemoryKillImpl, weak_ptr_factory_.GetWeakPtr(),
         now, reason, std::move(tab_discard_done)));
   } else {
-    LowMemoryKillImpl(now, reason, std::move(tab_discard_done), base::nullopt);
+    LowMemoryKillImpl(now, reason, std::move(tab_discard_done), absl::nullopt);
   }
 }
 
@@ -485,7 +485,7 @@ void TabManagerDelegate::AdjustOomPriorities() {
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Pass in nullopt if unable to get ARC processes.
-    AdjustOomPrioritiesImpl(base::nullopt);
+    AdjustOomPrioritiesImpl(absl::nullopt);
   }
 }
 

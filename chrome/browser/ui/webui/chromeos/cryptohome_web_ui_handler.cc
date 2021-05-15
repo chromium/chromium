@@ -77,7 +77,7 @@ void CryptohomeWebUIHandler::OnGetTpmStatus(
 }
 
 void CryptohomeWebUIHandler::OnIsMounted(
-    base::Optional<user_data_auth::IsMountedReply> reply) {
+    absl::optional<user_data_auth::IsMountedReply> reply) {
   bool mounted = false;
   if (reply.has_value()) {
     mounted = reply->is_mounted();
@@ -86,7 +86,7 @@ void CryptohomeWebUIHandler::OnIsMounted(
 }
 
 void CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady(
-    base::Optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply) {
+    absl::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply) {
   bool ready = false;
   if (reply.has_value()) {
     ready = reply->ready();

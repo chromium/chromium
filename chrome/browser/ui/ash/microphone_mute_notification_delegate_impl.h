@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 class AppCapabilityAccessCache;
@@ -27,12 +27,12 @@ class MicrophoneMuteNotificationDelegateImpl
   ~MicrophoneMuteNotificationDelegateImpl() override;
 
   // ash::MicrophoneMuteNotificationDelegate
-  base::Optional<std::u16string> GetAppAccessingMicrophone() override;
+  absl::optional<std::u16string> GetAppAccessingMicrophone() override;
 
  private:
   friend class MicrophoneMuteNotificationDelegateTest;
 
-  base::Optional<std::u16string> GetAppAccessingMicrophone(
+  absl::optional<std::u16string> GetAppAccessingMicrophone(
       apps::AppCapabilityAccessCache* capability_cache,
       apps::AppRegistryCache* registry_cache);
 

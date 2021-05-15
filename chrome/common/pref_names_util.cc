@@ -47,9 +47,9 @@ bool ParseFontNamePrefPath(const std::string& pref_path,
   return true;
 }
 
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs) {
+absl::optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs) {
   if (!prefs) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ui::CaptionStyle style;

@@ -129,7 +129,7 @@ void MojoChromePromptIPC::PromptUserCheckVersion(
     // deleted.
     (*chrome_prompt_service_)
         ->PromptUser(std::move(files_to_delete), std::move(registry_keys),
-                     base::nullopt, std::move(callback));
+                     absl::nullopt, std::move(callback));
   }
 }
 

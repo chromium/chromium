@@ -28,7 +28,7 @@ class ResizeHandleButton : public views::ImageButton {
  private:
   void SetImageForQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
 
-  base::Optional<OverlayWindowViews::WindowQuadrant> current_quadrant_;
+  absl::optional<OverlayWindowViews::WindowQuadrant> current_quadrant_;
 };
 
 }  // namespace views

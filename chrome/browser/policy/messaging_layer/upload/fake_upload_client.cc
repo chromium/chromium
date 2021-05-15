@@ -9,23 +9,23 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
 
-base::Optional<Priority> GetPriorityFromSequencingInformationValue(
+absl::optional<Priority> GetPriorityFromSequencingInformationValue(
     const base::Value& sequencing_information) {
-  const base::Optional<int> priority_result =
+  const absl::optional<int> priority_result =
       sequencing_information.FindIntKey("priority");
   if (!priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return Priority(priority_result.value());
 }
@@ -122,7 +122,7 @@ Status FakeUploadClient::EnqueueUpload(
   return Status::StatusOK();
 }
 
-void FakeUploadClient::OnUploadComplete(base::Optional<base::Value> response) {
+void FakeUploadClient::OnUploadComplete(absl::optional<base::Value> response) {
   if (!response.has_value()) {
     return;
   }

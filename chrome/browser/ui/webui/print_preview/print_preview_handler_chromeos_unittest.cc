@@ -84,7 +84,7 @@ class TestPrintServersManager : public chromeos::PrintServersManager {
 
  private:
   Observer* observer_ = nullptr;
-  base::Optional<std::vector<std::string>> print_server_ids_;
+  absl::optional<std::vector<std::string>> print_server_ids_;
   chromeos::PrintServersConfig print_servers_config_;
 };
 
@@ -166,7 +166,7 @@ class FakeLocalPrinter : public crosapi::mojom::LocalPrinter {
   friend class PrintPreviewHandlerChromeOSTest;
 
   mojo::Remote<crosapi::mojom::PrintServerObserver> remote_;
-  base::Optional<std::vector<std::string>> print_server_ids_;
+  absl::optional<std::vector<std::string>> print_server_ids_;
 };
 #endif
 

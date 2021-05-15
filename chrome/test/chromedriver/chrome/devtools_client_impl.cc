@@ -720,7 +720,7 @@ Status ParseInspectorError(const std::string& error_json) {
                error_message == kInspectorOpaqueOrigins) {
       return Status(kInvalidArgument, error_message);
     }
-    base::Optional<int> error_code = error_dict->FindIntPath("code");
+    absl::optional<int> error_code = error_dict->FindIntPath("code");
     if (error_code == kInvalidParamsInspectorCode)
       return Status(kInvalidArgument, error_message);
   }

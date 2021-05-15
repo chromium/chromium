@@ -77,7 +77,7 @@ class SaveAddressProfilePromptController {
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
-  base::Optional<AutofillProfile> original_profile_;
+  absl::optional<AutofillProfile> original_profile_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.

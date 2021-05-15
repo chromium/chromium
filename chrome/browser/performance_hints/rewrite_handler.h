@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -29,7 +29,7 @@ class RewriteHandler {
   // If |url| matches one of the configured URLs, return the inner URL included
   // in the query params. If the URL is invalid or doesn't match one of the
   // configured URLs, return nullopt.
-  base::Optional<GURL> HandleRewriteIfNecessary(const GURL& url) const;
+  absl::optional<GURL> HandleRewriteIfNecessary(const GURL& url) const;
 
   // Creates a RewriteHandler that handles URLs of the forms provided by the
   // config. If a syntax error prevents the config from being parsed, this will

@@ -189,7 +189,7 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
 
   // Callback for TriggeredGeneratePassword.
   MOCK_METHOD1(TriggeredGeneratePasswordReply,
-               void(const base::Optional<
+               void(const absl::optional<
                     autofill::password_generation::PasswordGenerationUIData>&));
 
   FakeMojoPasswordManagerDriver fake_driver_;
@@ -319,10 +319,10 @@ void PasswordGenerationAgentTest::SelectGenerationFallbackAndExpect(
     bool available) {
   if (available) {
     EXPECT_CALL(*this,
-                TriggeredGeneratePasswordReply(testing::Ne(base::nullopt)));
+                TriggeredGeneratePasswordReply(testing::Ne(absl::nullopt)));
   } else {
     EXPECT_CALL(*this,
-                TriggeredGeneratePasswordReply(testing::Eq(base::nullopt)));
+                TriggeredGeneratePasswordReply(testing::Eq(absl::nullopt)));
   }
   password_generation_->TriggeredGeneratePassword(base::BindOnce(
       &PasswordGenerationAgentTest::TriggeredGeneratePasswordReply,

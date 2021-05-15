@@ -204,7 +204,7 @@ void HoldingSpaceBrowserTestBase::RemoveItem(const HoldingSpaceItem* item) {
 }
 
 base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
-    const base::Optional<std::string>& extension) {
+    const absl::optional<std::string>& extension) {
   return ::ash::CreateFile(GetProfile(), extension.value_or("txt"));
 }
 

@@ -15,14 +15,14 @@
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                            base::Optional<std::string>,
-                            base::Optional<content::SmsFetchFailureType>)>
+    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                            absl::optional<std::string>,
+                            absl::optional<content::SmsFetchFailureType>)>
         callback) {
   // TODO(crbug.com/1015645): We should have a new failure type when the feature
   // is disabled or no device is available.
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     // kWebOTPCrossDevice will be disabled for a large number of users. There's
     // no need to call any cancel callback in such case.
     return base::NullCallback();
@@ -37,7 +37,7 @@ base::OnceClosure FetchRemoteSms(
       SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
   return ui_controller->FetchRemoteSms(origin, std::move(callback));
 #else
-  std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+  std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
   return base::NullCallback();
 #endif
 }

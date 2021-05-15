@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthUITest, ConditionalUI) {
   virtual_device_factory->SetCtap2Config(std::move(config));
   virtual_device_factory->mutable_state()->InjectResidentKey(
       std::vector<uint8_t>{1, 2, 3, 4}, "www.example.com",
-      std::vector<uint8_t>{6, 7, 8, 9}, /*user_name=*/base::nullopt,
-      /*user_display_name=*/base::nullopt);
+      std::vector<uint8_t>{6, 7, 8, 9}, /*user_name=*/absl::nullopt,
+      /*user_display_name=*/absl::nullopt);
   virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
   PageActionIconView* webauthn_icon =
       BrowserView::GetBrowserViewForBrowser(browser())

@@ -188,9 +188,9 @@ void MediaRouterMojoImpl::RouteResponseReceived(
     bool is_off_the_record,
     MediaRouteResponseCallback callback,
     bool is_join,
-    const base::Optional<MediaRoute>& media_route,
+    const absl::optional<MediaRoute>& media_route,
     mojom::RoutePresentationConnectionPtr connection,
-    const base::Optional<std::string>& error_text,
+    const absl::optional<std::string>& error_text,
     RouteRequestResult::ResultCode result_code) {
   DCHECK(!connection ||
          (connection->connection_remote && connection->connection_receiver));
@@ -300,7 +300,7 @@ void MediaRouterMojoImpl::JoinRoute(const MediaSource::Id& source_id,
                                     base::TimeDelta timeout,
                                     bool off_the_record) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForPresentation(presentation_id);
   if (!provider_id || !HasJoinableRoute()) {
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
@@ -332,7 +332,7 @@ void MediaRouterMojoImpl::ConnectRouteByRouteId(
     base::TimeDelta timeout,
     bool off_the_record) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
@@ -353,7 +353,7 @@ void MediaRouterMojoImpl::ConnectRouteByRouteId(
 
 void MediaRouterMojoImpl::TerminateRoute(const MediaRoute::Id& route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     MediaRouterMetrics::RecordJoinRouteResultCode(
@@ -369,7 +369,7 @@ void MediaRouterMojoImpl::TerminateRoute(const MediaRoute::Id& route_id) {
 
 void MediaRouterMojoImpl::DetachRoute(const MediaRoute::Id& route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -380,7 +380,7 @@ void MediaRouterMojoImpl::DetachRoute(const MediaRoute::Id& route_id) {
 void MediaRouterMojoImpl::SendRouteMessage(const MediaRoute::Id& route_id,
                                            const std::string& message) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -392,7 +392,7 @@ void MediaRouterMojoImpl::SendRouteBinaryMessage(
     const MediaRoute::Id& route_id,
     std::unique_ptr<std::vector<uint8_t>> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     return;
@@ -407,7 +407,7 @@ void MediaRouterMojoImpl::GetMediaController(
     mojo::PendingReceiver<mojom::MediaController> controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   auto* route = GetRoute(route_id);
-  base::Optional<MediaRouteProviderId> provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       GetProviderIdForRoute(route_id);
   if (!route || !provider_id ||
       route->controller_type() == RouteControllerType::kNone) {
@@ -758,7 +758,7 @@ void MediaRouterMojoImpl::RegisterRouteMessageObserver(
   bool should_listen = observer_list->empty();
   observer_list->AddObserver(observer);
   if (should_listen) {
-    base::Optional<MediaRouteProviderId> provider_id =
+    absl::optional<MediaRouteProviderId> provider_id =
         GetProviderIdForRoute(route_id);
     if (provider_id) {
       media_route_providers_[*provider_id]->StartListeningForRouteMessages(
@@ -780,7 +780,7 @@ void MediaRouterMojoImpl::UnregisterRouteMessageObserver(
   it->second->RemoveObserver(observer);
   if (it->second->empty()) {
     message_observers_.erase(route_id);
-    base::Optional<MediaRouteProviderId> provider_id =
+    absl::optional<MediaRouteProviderId> provider_id =
         GetProviderIdForRoute(route_id);
     if (provider_id) {
       media_route_providers_[*provider_id]->StopListeningForRouteMessages(
@@ -849,7 +849,7 @@ void MediaRouterMojoImpl::OnPresentationConnectionClosed(
 void MediaRouterMojoImpl::OnTerminateRouteResult(
     const MediaRoute::Id& route_id,
     MediaRouteProviderId provider_id,
-    const base::Optional<std::string>& error_text,
+    const absl::optional<std::string>& error_text,
     RouteRequestResult::ResultCode result_code) {
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(provider_id,
                                                              result_code);
@@ -985,7 +985,7 @@ void MediaRouterMojoImpl::BindToMojoReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-base::Optional<MediaRouteProviderId> MediaRouterMojoImpl::GetProviderIdForRoute(
+absl::optional<MediaRouteProviderId> MediaRouterMojoImpl::GetProviderIdForRoute(
     const MediaRoute::Id& route_id) {
   for (const auto& routes_query : routes_queries_) {
     MediaRoutesQuery* query = routes_query.second.get();
@@ -1000,17 +1000,17 @@ base::Optional<MediaRouteProviderId> MediaRouterMojoImpl::GetProviderIdForRoute(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<MediaRouteProviderId> MediaRouterMojoImpl::GetProviderIdForSink(
+absl::optional<MediaRouteProviderId> MediaRouterMojoImpl::GetProviderIdForSink(
     const MediaSink::Id& sink_id) {
   const MediaSink* sink = GetSinkById(sink_id);
-  return sink ? base::make_optional<MediaRouteProviderId>(sink->provider_id())
-              : base::nullopt;
+  return sink ? absl::make_optional<MediaRouteProviderId>(sink->provider_id())
+              : absl::nullopt;
 }
 
-base::Optional<MediaRouteProviderId>
+absl::optional<MediaRouteProviderId>
 MediaRouterMojoImpl::GetProviderIdForPresentation(
     const std::string& presentation_id) {
   for (const auto& routes_query : routes_queries_) {
@@ -1027,7 +1027,7 @@ MediaRouterMojoImpl::GetProviderIdForPresentation(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const MediaSink* MediaRouterMojoImpl::GetSinkById(
@@ -1108,14 +1108,14 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
     content::DesktopMediaID media_id) {
   if (!err.empty()) {
     std::move(mr_callback)
-        .Run(base::nullopt, nullptr, err,
+        .Run(absl::nullopt, nullptr, err,
              RouteRequestResult::DESKTOP_PICKER_FAILED);
     return;
   }
 
   if (media_id.is_null()) {
     std::move(mr_callback)
-        .Run(base::nullopt, nullptr, "User canceled capture dialog",
+        .Run(absl::nullopt, nullptr, "User canceled capture dialog",
              RouteRequestResult::CANCELLED);
     return;
   }
@@ -1152,9 +1152,9 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
           [](mojom::MediaRouteProvider::CreateRouteCallback inner_callback,
              base::WeakPtr<MediaRouterMojoImpl> self,
              const std::string& stream_id,
-             const base::Optional<media_router::MediaRoute>& route,
+             const absl::optional<media_router::MediaRoute>& route,
              mojom::RoutePresentationConnectionPtr connection,
-             const base::Optional<std::string>& error_text,
+             const absl::optional<std::string>& error_text,
              RouteRequestResult::ResultCode result_code) {
             if (self)
               self->pending_stream_request_.reset();

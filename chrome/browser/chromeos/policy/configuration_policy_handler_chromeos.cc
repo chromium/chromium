@@ -16,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -39,6 +38,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -49,22 +49,22 @@ using ::ash::MagnifierType;
 const char kSubkeyURL[] = "url";
 const char kSubkeyHash[] = "hash";
 
-base::Optional<std::string> GetSubkeyString(const base::Value& dict,
+absl::optional<std::string> GetSubkeyString(const base::Value& dict,
                                             policy::PolicyErrorMap* errors,
                                             const std::string& policy,
                                             const std::string& subkey) {
   const base::Value* policy_value = dict.FindKey(subkey);
   if (!policy_value) {
     errors->AddError(policy, subkey, IDS_POLICY_NOT_SPECIFIED_ERROR);
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (!policy_value->is_string()) {
     errors->AddError(policy, subkey, IDS_POLICY_TYPE_ERROR, "string");
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (policy_value->GetString().empty()) {
     errors->AddError(policy, subkey, IDS_POLICY_NOT_SPECIFIED_ERROR);
-    return base::nullopt;
+    return absl::nullopt;
   }
   return policy_value->GetString();
 }
@@ -134,9 +134,9 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     NOTREACHED();
     return false;
   }
-  base::Optional<std::string> url_string =
+  absl::optional<std::string> url_string =
       GetSubkeyString(*value, errors, policy, kSubkeyURL);
-  base::Optional<std::string> hash_string =
+  absl::optional<std::string> hash_string =
       GetSubkeyString(*value, errors, policy, kSubkeyHash);
   if (!url_string || !hash_string)
     return false;
@@ -263,7 +263,7 @@ void NetworkConfigurationPolicyHandler::PrepareForDisplaying(
   const PolicyMap::Entry* entry = policies->Get(policy_name());
   if (!entry)
     return;
-  base::Optional<base::Value> sanitized_config =
+  absl::optional<base::Value> sanitized_config =
       SanitizeNetworkConfig(entry->value());
 
   if (!sanitized_config.has_value())
@@ -282,16 +282,16 @@ NetworkConfigurationPolicyHandler::NetworkConfigurationPolicyHandler(
       pref_path_(pref_path) {}
 
 // static
-base::Optional<base::Value>
+absl::optional<base::Value>
 NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
     const base::Value* config) {
   if (!config->is_string())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::Value toplevel_dict =
       chromeos::onc::ReadDictionaryFromJson(config->GetString());
   if (!toplevel_dict.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Placeholder to insert in place of the filtered setting.
   const char kPlaceholder[] = "********";

@@ -92,7 +92,7 @@ WebAppControllerBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
   return new_browser;
 }
 
-base::Optional<AppId> WebAppControllerBrowserTestBase::FindAppWithUrlInScope(
+absl::optional<AppId> WebAppControllerBrowserTestBase::FindAppWithUrlInScope(
     const GURL& url) {
   return provider().registrar().FindAppWithUrlInScope(url);
 }

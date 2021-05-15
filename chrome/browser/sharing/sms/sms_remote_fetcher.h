@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -27,8 +27,8 @@ class Origin;
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                            base::Optional<std::string>,
-                            base::Optional<content::SmsFetchFailureType>)>);
+    base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                            absl::optional<std::string>,
+                            absl::optional<content::SmsFetchFailureType>)>);
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_

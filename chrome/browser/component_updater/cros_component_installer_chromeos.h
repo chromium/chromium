@@ -11,11 +11,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -192,7 +192,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   void FinishLoad(LoadCallback load_callback,
                   const base::TimeTicks start_time,
                   const std::string& name,
-                  base::Optional<base::FilePath> result);
+                  absl::optional<base::FilePath> result);
 
   // Registers component |configs| to be updated.
   void RegisterN(const std::vector<ComponentConfig>& configs);

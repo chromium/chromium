@@ -47,14 +47,14 @@ ExistingBaseSubMenuModel::~ExistingBaseSubMenuModel() = default;
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
     const std::u16string menu_text)
     : text(menu_text) {
-  image = base::nullopt;
+  image = absl::nullopt;
 }
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
     const std::u16string& menu_text,
     ui::ImageModel menu_image)
     : text(menu_text) {
-  image = base::Optional<ui::ImageModel>{menu_image};
+  image = absl::optional<ui::ImageModel>{menu_image};
 }
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(

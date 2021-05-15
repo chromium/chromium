@@ -318,7 +318,7 @@ void TetherService::UpdateEnabledState() {
   if (is_enabled != was_pref_enabled) {
     multidevice_setup_client_->SetFeatureEnabledState(
         chromeos::multidevice_setup::mojom::Feature::kInstantTethering,
-        is_enabled, base::nullopt /* auth_token */, base::DoNothing());
+        is_enabled, absl::nullopt /* auth_token */, base::DoNothing());
   } else {
     UpdateTetherTechnologyState();
   }

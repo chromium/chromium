@@ -339,8 +339,8 @@ bool FileTypeSupportedForDlp(const base::FilePath& path) {
 }
 
 enterprise_connectors::ContentAnalysisResponse
-SimpleContentAnalysisResponseForTesting(base::Optional<bool> dlp_success,
-                                        base::Optional<bool> malware_success) {
+SimpleContentAnalysisResponseForTesting(absl::optional<bool> dlp_success,
+                                        absl::optional<bool> malware_success) {
   enterprise_connectors::ContentAnalysisResponse response;
 
   if (dlp_success.has_value()) {

@@ -9,9 +9,9 @@
 #include <winhttp.h>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "chrome/updater/win/net/proxy_info.h"
 #include "chrome/updater/win/net/scoped_winttp_proxy_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -37,7 +37,7 @@ class ProxyConfiguration : public base::RefCounted<ProxyConfiguration> {
   ProxyConfiguration& operator=(const ProxyConfiguration&) = delete;
 
   int access_type() const;
-  base::Optional<ScopedWinHttpProxyInfo> GetProxyForUrl(
+  absl::optional<ScopedWinHttpProxyInfo> GetProxyForUrl(
       HINTERNET session_handle,
       const GURL& url) const;
 
@@ -48,7 +48,7 @@ class ProxyConfiguration : public base::RefCounted<ProxyConfiguration> {
   friend class base::RefCounted<ProxyConfiguration>;
 
   virtual int DoGetAccessType() const;
-  virtual base::Optional<ScopedWinHttpProxyInfo> DoGetProxyForUrl(
+  virtual absl::optional<ScopedWinHttpProxyInfo> DoGetProxyForUrl(
       HINTERNET session_handle,
       const GURL& url) const;
 
@@ -64,7 +64,7 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
  private:
   // Overrides for ProxyConfiguration.
   int DoGetAccessType() const override;
-  base::Optional<ScopedWinHttpProxyInfo> DoGetProxyForUrl(
+  absl::optional<ScopedWinHttpProxyInfo> DoGetProxyForUrl(
       HINTERNET session_handle,
       const GURL& url) const override;
 };
@@ -72,7 +72,7 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
 // Sets proxy info on a request handle, if WINHTTP_PROXY_INFO is provided.
 void SetProxyForRequest(
     const HINTERNET request_handle,
-    const base::Optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
+    const absl::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
 
 // Factory method for the proxy configuration strategy.
 scoped_refptr<ProxyConfiguration> GetProxyConfiguration();

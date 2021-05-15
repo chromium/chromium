@@ -531,7 +531,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 
 void RecentTabsSubMenuModel::BuildLocalTabItem(
     SessionID session_id,
-    base::Optional<tab_groups::TabGroupVisualData> visual_data,
+    absl::optional<tab_groups::TabGroupVisualData> visual_data,
     const std::u16string& title,
     const GURL& url,
     int curr_model_index) {

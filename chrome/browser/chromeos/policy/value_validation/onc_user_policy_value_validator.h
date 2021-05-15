@@ -21,7 +21,7 @@ class ONCUserPolicyValueValidator
 
  protected:
   // ONCPolicyValueValidatorBase:
-  base::Optional<std::string> GetONCStringFromPayload(
+  absl::optional<std::string> GetONCStringFromPayload(
       const enterprise_management::CloudPolicySettings& policy_payload)
       const override;
 

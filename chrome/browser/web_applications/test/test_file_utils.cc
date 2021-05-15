@@ -32,7 +32,7 @@ void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
 }
 
 void TestFileUtils::SetNextDeleteFileRecursivelyResult(
-    base::Optional<bool> delete_result) {
+    absl::optional<bool> delete_result) {
   delete_file_recursively_result_ = delete_result;
 }
 

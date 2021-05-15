@@ -43,7 +43,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
   bool IsTabPinned(int index) const override;
-  base::Optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
@@ -59,7 +59,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
@@ -68,7 +68,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,

@@ -7,7 +7,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,6 +22,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -195,10 +195,10 @@ class ConnectorsManagerConnectorPoliciesTest
   }
 
  protected:
-  base::Optional<AnalysisSettings> ExpectedAnalysisSettings(const char* pref,
+  absl::optional<AnalysisSettings> ExpectedAnalysisSettings(const char* pref,
                                                             const char* url) {
     if (pref == kEmptySettingsPref || url == kNoTagsUrl)
-      return base::nullopt;
+      return absl::nullopt;
 
     AnalysisSettings settings;
 

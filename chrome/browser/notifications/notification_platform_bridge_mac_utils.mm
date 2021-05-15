@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -20,6 +19,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -34,9 +34,9 @@ void DoProcessMacNotificationResponse(
     bool incognito,
     const GURL& origin,
     const std::string& notificationId,
-    const base::Optional<int>& actionIndex,
-    const base::Optional<std::u16string>& reply,
-    const base::Optional<bool>& byUser) {
+    const absl::optional<int>& actionIndex,
+    const absl::optional<std::u16string>& reply,
+    const absl::optional<bool>& byUser) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Profile ID can be empty for system notifications, which are not bound to a
@@ -222,7 +222,7 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
   NSNumber* notificationType =
       response[notification_constants::kNotificationType];
 
-  base::Optional<int> actionIndex;
+  absl::optional<int> actionIndex;
   if (buttonIndex.intValue !=
       notification_constants::kNotificationInvalidButtonIndex) {
     actionIndex = buttonIndex.intValue;
@@ -237,7 +237,7 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
                          notificationType.unsignedIntValue),
                      profileId, [isIncognito boolValue],
                      GURL(notificationOrigin), notificationId, actionIndex,
-                     base::nullopt /* reply */, true /* byUser */));
+                     absl::nullopt /* reply */, true /* byUser */));
 }
 
 bool MacOSSupportsXPCAlerts() {

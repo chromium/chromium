@@ -77,7 +77,7 @@ std::string GetBrand() {
 std::string GetRlzBrand() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  base::Optional<policy::MarketSegment> market_segment;
+  absl::optional<policy::MarketSegment> market_segment;
   if (connector->IsEnterpriseManaged())
     market_segment = connector->GetEnterpriseMarketSegment();
   // The rlz brand code may change over time (e.g. when device goes from

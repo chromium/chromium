@@ -76,17 +76,17 @@ class RobotsRulesParser {
 
   // Update the robots rules. This causes any pending check requests to be
   // processed immediately and called with the result.
-  void UpdateRobotsRules(const base::Optional<std::string>& rules);
+  void UpdateRobotsRules(const absl::optional<std::string>& rules);
 
   // Check whether the URL is allowed or disallowed by robots rules. When the
   // determination can be made immediately, the decision should be returned.
-  // Otherwise base::nullopt should be returned and the |callback| will be
+  // Otherwise absl::nullopt should be returned and the |callback| will be
   // added to |pending_check_requests_| and called when a decision can be made
   // like when rules are retrieved, or rule fetch timeout, etc.
   // The robots rules check will make use of the |url| path and query
   // parameters.The |url| origin, ref fragment, etc are immaterial. |routing_id|
   // is the render frame ID for which this URL is requested for.
-  base::Optional<CheckResult> CheckRobotsRules(int routing_id,
+  absl::optional<CheckResult> CheckRobotsRules(int routing_id,
                                                const GURL& url,
                                                CheckResultCallback callback);
 

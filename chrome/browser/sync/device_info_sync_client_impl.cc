@@ -56,14 +56,14 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
 }
 
 // syncer::DeviceInfoSyncClient:
-base::Optional<syncer::DeviceInfo::SharingInfo>
+absl::optional<syncer::DeviceInfo::SharingInfo>
 DeviceInfoSyncClientImpl::GetLocalSharingInfo() const {
   return SharingSyncPreference::GetLocalSharingInfoForSync(
       profile_->GetPrefs());
 }
 
 // syncer::DeviceInfoSyncClient:
-base::Optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
+absl::optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
     const {
   syncer::SyncInvalidationsService* service =
       SyncInvalidationsServiceFactory::GetForProfile(profile_);
@@ -71,13 +71,13 @@ base::Optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
     return service->GetFCMRegistrationToken();
   }
   // If the service is not enabled, then the registration token must be empty,
-  // not unknown (base::nullopt). This is needed to reset previous token if
+  // not unknown (absl::nullopt). This is needed to reset previous token if
   // the invalidations have been turned off.
   return std::string();
 }
 
 // syncer::DeviceInfoSyncClient:
-base::Optional<syncer::ModelTypeSet>
+absl::optional<syncer::ModelTypeSet>
 DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
   syncer::SyncInvalidationsService* service =
       SyncInvalidationsServiceFactory::GetForProfile(profile_);
@@ -85,17 +85,17 @@ DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
     return service->GetInterestedDataTypes();
   }
   // If the service is not enabled, then the list of types must be empty, not
-  // unknown (base::nullopt). This is needed to reset previous types if the
+  // unknown (absl::nullopt). This is needed to reset previous types if the
   // invalidations have been turned off.
   return syncer::ModelTypeSet();
 }
 
-base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
 #if defined(OS_ANDROID)
   return webauthn::authenticator::GetSyncDataIfRegistered();
 #else
-  return base::nullopt;
+  return absl::nullopt;
 #endif
 }
 

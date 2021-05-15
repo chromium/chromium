@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -29,6 +28,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -60,7 +60,7 @@ constexpr int kFailedMountRetries = 3;
 ////////////////////////////////////////////////////////////////////////////////
 // KioskProfileLoader::CryptohomedChecker ensures cryptohome daemon is up
 // and running by issuing an IsMounted call. If the call does not go through
-// and base::nullopt is not returned, it will retry after some time out and at
+// and absl::nullopt is not returned, it will retry after some time out and at
 // the maximum five times before it gives up. Upon success, it resumes the
 // launch by logging in as a kiosk mode account.
 
@@ -105,7 +105,7 @@ class KioskProfileLoader::CryptohomedChecker
   }
 
   void OnCryptohomeIsMounted(
-      base::Optional<user_data_auth::IsMountedReply> reply) {
+      absl::optional<user_data_auth::IsMountedReply> reply) {
     if (!reply.has_value()) {
       Retry();
       return;

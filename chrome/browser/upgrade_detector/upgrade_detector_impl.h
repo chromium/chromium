@@ -8,7 +8,6 @@
 #include <array>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/version.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/variations/service/variations_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -106,7 +106,7 @@ class UpgradeDetectorImpl : public UpgradeDetector,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::Optional<InstalledVersionPoller> installed_version_poller_;
+  absl::optional<InstalledVersionPoller> installed_version_poller_;
 
   // A timer used to periodically check if the build has become outdated.
   base::OneShotTimer outdated_build_timer_;

@@ -58,7 +58,7 @@ void ChildUserService::PauseWebActivity(const std::string& app_service_id) {
       app_time_controller_->web_time_enforcer();
   DCHECK(web_time_enforcer);
 
-  const base::Optional<app_time::AppLimit>& time_limit =
+  const absl::optional<app_time::AppLimit>& time_limit =
       app_time_controller_->app_registry()->GetWebTimeLimit();
   DCHECK(time_limit.has_value());
   DCHECK_EQ(time_limit->restriction(), app_time::AppRestriction::kTimeLimit);
@@ -81,11 +81,11 @@ void ChildUserService::ResumeWebActivity(const std::string& app_service_id) {
   web_time_enforcer->OnWebTimeLimitEnded();
 }
 
-base::Optional<base::TimeDelta> ChildUserService::GetTimeLimitForApp(
+absl::optional<base::TimeDelta> ChildUserService::GetTimeLimitForApp(
     const std::string& app_service_id,
     apps::mojom::AppType app_type) {
   if (!app_time_controller_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return app_time_controller_->GetTimeLimitForApp(app_service_id, app_type);
 }

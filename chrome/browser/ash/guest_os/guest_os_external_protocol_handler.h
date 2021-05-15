@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace guest_os {
 
 // Returns handler for |url| if one exists.
-base::Optional<GuestOsRegistryService::Registration> GetHandler(
+absl::optional<GuestOsRegistryService::Registration> GetHandler(
     Profile* profile,
     const GURL& url);
 

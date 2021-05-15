@@ -61,12 +61,12 @@ GURL GetApiUrl() {
 // the form: {"update":{"promos":{"middle": ""}}}, and true otherwise.
 // Additionally, there can be a "log_url" or "id" field in the promo. Those are
 // populated if found. They're not set for emergency promos. |data| will never
-// be base::nullopt if top level dictionary keys of "update" and "promos" are
+// be absl::nullopt if top level dictionary keys of "update" and "promos" are
 // present. Note: the "log_url" (if found), is resolved against
 // GetGoogleBaseUrl() to form a valid GURL.
 bool JsonToPromoData(const base::Value& value,
-                     base::Optional<PromoData>* data) {
-  *data = base::nullopt;
+                     absl::optional<PromoData>* data) {
+  *data = absl::nullopt;
 
   const base::DictionaryValue* dict = nullptr;
   if (!value.GetAsDictionary(&dict)) {
@@ -213,7 +213,7 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
     // This represents network errors (i.e. the server did not provide a
     // response).
     DVLOG(1) << "Request failed with error: " << simple_loader_->NetError();
-    PromoDataLoaded(Status::TRANSIENT_ERROR, base::nullopt);
+    PromoDataLoaded(Status::TRANSIENT_ERROR, absl::nullopt);
     return;
   }
 
@@ -235,11 +235,11 @@ void PromoService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     DVLOG(1) << "Parsing JSON failed: " << *result.error;
-    PromoDataLoaded(Status::FATAL_ERROR, base::nullopt);
+    PromoDataLoaded(Status::FATAL_ERROR, absl::nullopt);
     return;
   }
 
-  base::Optional<PromoData> data;
+  absl::optional<PromoData> data;
   PromoService::Status status;
 
   if (JsonToPromoData(*result.value, &data)) {
@@ -294,7 +294,7 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
 }
 
 void PromoService::PromoDataLoaded(Status status,
-                                   const base::Optional<PromoData>& data) {
+                                   const absl::optional<PromoData>& data) {
   // In case of transient errors, keep our cached data (if any), but still
   // notify observers of the finished load (attempt).
   if (status != Status::TRANSIENT_ERROR) {

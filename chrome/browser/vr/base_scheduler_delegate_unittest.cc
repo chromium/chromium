@@ -63,7 +63,7 @@ class SchedulerDelegateTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  base::Optional<base::ThreadTaskRunnerHandleOverrideForTesting>
+  absl::optional<base::ThreadTaskRunnerHandleOverrideForTesting>
       task_runner_handle_override_;
 };
 

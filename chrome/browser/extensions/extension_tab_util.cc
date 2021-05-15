@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,6 +57,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using content::NavigationEntry;
@@ -427,7 +427,7 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
 
   tab_object->group_id = -1;
   if (tab_strip) {
-    base::Optional<tab_groups::TabGroupId> group =
+    absl::optional<tab_groups::TabGroupId> group =
         tab_strip->GetTabGroupForTab(tab_index);
     if (group.has_value())
       tab_object->group_id = tab_groups_util::GetGroupId(group.value());

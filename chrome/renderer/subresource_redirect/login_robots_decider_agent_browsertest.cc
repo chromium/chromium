@@ -99,7 +99,7 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
     return login_robots_decider_agent_->redirect_result_;
   }
 
-  base::Optional<bool> is_pending_navigation_loggged_in() {
+  absl::optional<bool> is_pending_navigation_loggged_in() {
     return login_robots_decider_agent_->is_pending_navigation_loggged_in_;
   }
 

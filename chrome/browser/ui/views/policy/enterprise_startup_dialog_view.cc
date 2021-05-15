@@ -132,7 +132,7 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
 
 void EnterpriseStartupDialogView::DisplayErrorMessage(
     const std::u16string& error_message,
-    const base::Optional<std::u16string>& accept_button) {
+    const absl::optional<std::u16string>& accept_button) {
   ResetDialog(accept_button.has_value());
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon = std::make_unique<views::ImageView>();
@@ -264,7 +264,7 @@ void EnterpriseStartupDialogImpl::DisplayLaunchingInformationWithThrobber(
 
 void EnterpriseStartupDialogImpl::DisplayErrorMessage(
     const std::u16string& error_message,
-    const base::Optional<std::u16string>& accept_button) {
+    const absl::optional<std::u16string>& accept_button) {
   if (dialog_view_)
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
 }

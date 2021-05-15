@@ -9,10 +9,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;
 class Profile;

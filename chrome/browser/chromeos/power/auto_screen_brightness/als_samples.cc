@@ -29,11 +29,11 @@ void AmbientLightSampleBuffer::ClearBuffer() {
   samples_.clear();
 }
 
-base::Optional<AlsAvgStdDev> AmbientLightSampleBuffer::AverageAmbientWithStdDev(
+absl::optional<AlsAvgStdDev> AmbientLightSampleBuffer::AverageAmbientWithStdDev(
     base::TimeTicks now) {
   Prune(now);
   if (samples_.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   const size_t count = samples_.size();
   double avg = 0;
@@ -44,7 +44,7 @@ base::Optional<AlsAvgStdDev> AmbientLightSampleBuffer::AverageAmbientWithStdDev(
   }
 
   avg = avg / count;
-  return base::Optional<AlsAvgStdDev>(
+  return absl::optional<AlsAvgStdDev>(
       {avg, std::sqrt(stddev / count - avg * avg)});
 }
 

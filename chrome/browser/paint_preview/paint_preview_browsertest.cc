@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -30,6 +29,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -167,7 +167,7 @@ class PaintPreviewBrowserTest
         frame_proto.embedding_token_high(), frame_proto.embedding_token_low()));
     ASSERT_NE(it, recording_map->end());
 
-    base::Optional<SkpResult> result = std::move(it->second).Deserialize();
+    absl::optional<SkpResult> result = std::move(it->second).Deserialize();
     ASSERT_TRUE(result.has_value());
     EXPECT_NE(result->skp, nullptr);
     EXPECT_GE(result->skp->cullRect().width(), 0);

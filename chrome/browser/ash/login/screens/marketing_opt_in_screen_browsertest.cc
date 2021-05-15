@@ -139,7 +139,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   // Logs in as a normal user. Overridden by subclasses.
   virtual void PerformLogin();
 
-  base::Optional<MarketingOptInScreen::Result> screen_result_;
+  absl::optional<MarketingOptInScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  protected:

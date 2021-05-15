@@ -55,7 +55,7 @@ class PairingLostNotifierTest : public BrowserWithTestWindowTest {
     ASSERT_TRUE(IsNotificationVisible());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, kPairingLostNotificationId,
-        base::nullopt /* action_index */, base::nullopt /* reply */);
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
   }
 
   void SetWasPreviouslySetUpPreference(bool was_previously_set_up) {

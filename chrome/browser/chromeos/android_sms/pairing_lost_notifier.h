@@ -46,7 +46,7 @@ class PairingLostNotifier
 
   void ShowPairingLostNotification();
   void ClosePairingLostNotificationIfVisible();
-  void OnPairingLostNotificationClick(base::Optional<int> button_index);
+  void OnPairingLostNotificationClick(absl::optional<int> button_index);
 
   Profile* profile_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;

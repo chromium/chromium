@@ -107,7 +107,7 @@ class MultiDeviceSetupScreenTest : public OobeBaseTest {
         !Accepted);
   }
 
-  base::Optional<MultiDeviceSetupScreen::Result> screen_result_;
+  absl::optional<MultiDeviceSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:

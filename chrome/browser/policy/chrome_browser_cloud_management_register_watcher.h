@@ -11,11 +11,11 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserCloudManagementRegisterWatcherTest;
 
@@ -113,7 +113,7 @@ class ChromeBrowserCloudManagementRegisterWatcher
   std::unique_ptr<EnterpriseStartupDialog> dialog_;
 
   bool is_restart_needed_ = false;
-  base::Optional<bool> register_result_;
+  absl::optional<bool> register_result_;
 
   DialogCreationCallback dialog_creation_callback_;
 

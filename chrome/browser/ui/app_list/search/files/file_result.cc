@@ -49,7 +49,7 @@ std::string StripHostedFileExtensions(const std::string& filename) {
 
 // Helper function for calculating a file's relevance score. Will return a
 // default relevance score if the query is missing or the filename is empty.
-double CalculateRelevance(const base::Optional<TokenizedString>& query,
+double CalculateRelevance(const absl::optional<TokenizedString>& query,
                           const std::u16string& raw_title) {
   const TokenizedString title(raw_title, TokenizedString::Mode::kWords);
 
@@ -178,7 +178,7 @@ FileResult::FileResult(
     const base::FilePath& filepath,
     ResultType result_type,
     const std::u16string& query,
-    const base::Optional<chromeos::string_matching::TokenizedString>&
+    const absl::optional<chromeos::string_matching::TokenizedString>&
         tokenized_query,
     Type type,
     Profile* profile)

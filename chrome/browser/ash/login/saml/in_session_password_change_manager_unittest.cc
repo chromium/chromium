@@ -77,7 +77,7 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
   }
 
  protected:
-  base::Optional<Notification> Notification() {
+  absl::optional<Notification> Notification() {
     return NotificationDisplayServiceTester::Get()->GetNotification(
         "saml.password-expiry-notification");
   }

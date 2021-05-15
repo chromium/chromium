@@ -13,9 +13,9 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -42,10 +42,10 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
 
   static scoped_refptr<ChromeUpdateClientConfig> Create(
       content::BrowserContext* context,
-      base::Optional<GURL> url_override);
+      absl::optional<GURL> url_override);
 
   ChromeUpdateClientConfig(content::BrowserContext* context,
-                           base::Optional<GURL> url_override);
+                           absl::optional<GURL> url_override);
 
   double InitialDelay() const override;
   int NextCheckDelay() const override;
@@ -97,7 +97,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-  base::Optional<GURL> url_override_;
+  absl::optional<GURL> url_override_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeUpdateClientConfig);
 };

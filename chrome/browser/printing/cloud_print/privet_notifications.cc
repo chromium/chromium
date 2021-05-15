@@ -349,8 +349,8 @@ PrivetNotificationDelegate::~PrivetNotificationDelegate() {
 }
 
 void PrivetNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 

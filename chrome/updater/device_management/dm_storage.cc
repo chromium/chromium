@@ -12,13 +12,13 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_manager.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -189,7 +189,7 @@ std::unique_ptr<PolicyManagerInterface> DMStorage::GetOmahaPolicyManager() {
 }
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  base::Optional<base::FilePath> updater_versioned_path =
+  absl::optional<base::FilePath> updater_versioned_path =
       GetVersionedDirectory();
   if (!updater_versioned_path)
     return nullptr;

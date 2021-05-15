@@ -1293,7 +1293,7 @@ void UserSessionManager::InitProfilePreferences(
         IdentityManagerFactory::GetForProfile(profile);
     std::string gaia_id = user_context.GetGaiaID();
     if (gaia_id.empty()) {
-      base::Optional<AccountInfo> maybe_account_info =
+      absl::optional<AccountInfo> maybe_account_info =
           identity_manager
               ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                   user_context.GetAccountId().GetUserEmail());
@@ -1418,7 +1418,7 @@ void UserSessionManager::InitProfilePreferences(
     DCHECK(is_child ==
            (user_context.GetUserType() == user_manager::USER_TYPE_CHILD));
 
-    base::Optional<bool> is_under_advanced_protection;
+    absl::optional<bool> is_under_advanced_protection;
     if (IsOnlineSignin(user_context)) {
       is_under_advanced_protection = user_context.IsUnderAdvancedProtection();
     }
@@ -1881,7 +1881,7 @@ void UserSessionManager::MaybeLaunchSettings(Profile* profile) {
 }
 
 void UserSessionManager::OnRestoreActiveSessions(
-    base::Optional<SessionManagerClient::ActiveSessionsMap> sessions) {
+    absl::optional<SessionManagerClient::ActiveSessionsMap> sessions) {
   if (!sessions.has_value()) {
     LOG(ERROR) << "Could not get list of active user sessions after crash.";
     // If we could not get list of active user sessions it is safer to just

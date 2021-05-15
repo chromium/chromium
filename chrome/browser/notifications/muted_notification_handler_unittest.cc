@@ -7,10 +7,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class MockMutedNotificationHandlerDelegate
@@ -67,7 +67,7 @@ TEST_F(MutedNotificationHandlerTest, OnClickBody) {
               OnAction(MutedNotificationHandler::Action::kBodyClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/base::nullopt, /*reply=*/base::nullopt, callback.Get());
+      /*action_index=*/absl::nullopt, /*reply=*/absl::nullopt, callback.Get());
 }
 
 TEST_F(MutedNotificationHandlerTest, OnClickShow) {
@@ -77,5 +77,5 @@ TEST_F(MutedNotificationHandlerTest, OnClickShow) {
               OnAction(MutedNotificationHandler::Action::kShowClick));
   handler().OnClick(
       /*profile=*/nullptr, GURL(), /*notification_id=*/std::string(),
-      /*action_index=*/0, /*reply=*/base::nullopt, callback.Get());
+      /*action_index=*/0, /*reply=*/absl::nullopt, callback.Get());
 }

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/optional.h"
 #include "base/util/values/values_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -19,6 +18,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -66,7 +66,7 @@ class PermissionActionHistoryTest : public testing::Test {
   }
 
   std::vector<PermissionActionsHistory::Entry> GetHistory(
-      base::Optional<permissions::RequestType> type) {
+      absl::optional<permissions::RequestType> type) {
     if (type.has_value())
       return GetPermissionActionsHistory()->GetHistory(base::Time(),
                                                             type.value());
@@ -98,7 +98,7 @@ class PermissionActionHistoryTest : public testing::Test {
 };
 
 TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
-  auto all_entries = GetHistory(base::nullopt);
+  auto all_entries = GetHistory(absl::nullopt);
 
   EXPECT_EQ(7u, all_entries.size());
 
@@ -132,7 +132,7 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
 }
 
 TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
-  size_t general_count = GetHistory(base::nullopt).size();
+  size_t general_count = GetHistory(absl::nullopt).size();
   size_t notification_count =
       GetHistory(permissions::RequestType::kNotifications).size();
 
@@ -140,7 +140,7 @@ TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
       permissions::PermissionAction::GRANTED,
       permissions::RequestType::kNotifications);
 
-  EXPECT_EQ(general_count + 1, GetHistory(base::nullopt).size());
+  EXPECT_EQ(general_count + 1, GetHistory(absl::nullopt).size());
   EXPECT_EQ(notification_count + 1,
             GetHistory(permissions::RequestType::kNotifications).size());
 
@@ -148,7 +148,7 @@ TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
       permissions::PermissionAction::GRANTED,
       permissions::RequestType::kGeolocation);
 
-  EXPECT_EQ(general_count + 2, GetHistory(base::nullopt).size());
+  EXPECT_EQ(general_count + 2, GetHistory(absl::nullopt).size());
   EXPECT_EQ(notification_count + 1,
             GetHistory(permissions::RequestType::kNotifications).size());
 }
@@ -223,7 +223,7 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
     test.end += current_offset;
 
     GetPermissionActionsHistory()->ClearHistory(test.begin, test.end);
-    EXPECT_EQ(test.generic_count, GetHistory(base::nullopt).size());
+    EXPECT_EQ(test.generic_count, GetHistory(absl::nullopt).size());
     EXPECT_EQ(test.notifications_count,
               GetHistory(permissions::RequestType::kNotifications).size());
 

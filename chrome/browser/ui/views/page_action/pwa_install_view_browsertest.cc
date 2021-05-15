@@ -259,7 +259,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
                          }));
     run_loop.Run();
 
-    web_app::SetInstallBounceMetricTimeForTesting(base::nullopt);
+    web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);
 
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {

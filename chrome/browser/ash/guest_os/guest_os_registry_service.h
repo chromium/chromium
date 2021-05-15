@@ -147,7 +147,7 @@ class GuestOsRegistryService : public KeyedService {
       VmType vm_type) const;
 
   // Return null if |app_id| is not found in the registry.
-  base::Optional<GuestOsRegistryService::Registration> GetRegistration(
+  absl::optional<GuestOsRegistryService::Registration> GetRegistration(
       const std::string& app_id) const;
 
   // Constructs path to app icon for specific scale factor.

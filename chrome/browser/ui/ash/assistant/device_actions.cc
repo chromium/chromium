@@ -41,20 +41,20 @@ constexpr char kPackage[] = "package";
 constexpr char kLaunchFlags[] = "launchFlags";
 constexpr char kEndSuffix[] = "end";
 
-base::Optional<std::string> GetActivity(const std::string& package_name) {
+absl::optional<std::string> GetActivity(const std::string& package_name) {
   auto* prefs = ArcAppListPrefs::Get(ProfileManager::GetActiveUserProfile());
   if (!prefs) {
     LOG(ERROR) << "ArcAppListPrefs is not available.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string app_id = prefs->GetAppIdByPackageName(package_name);
 
   if (!app_id.empty()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    return base::Optional<std::string>(app_info->activity);
+    return absl::optional<std::string>(app_info->activity);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string GetLaunchIntent(const AndroidAppInfo& app_info) {
@@ -130,7 +130,7 @@ void DeviceActions::SetBluetoothEnabled(bool enabled) {
 
 void HandleScreenBrightnessCallback(
     DeviceActions::GetScreenBrightnessLevelCallback callback,
-    base::Optional<double> level) {
+    absl::optional<double> level) {
   if (level.has_value()) {
     std::move(callback).Run(true, level.value() / 100.0);
   } else {
@@ -227,11 +227,11 @@ void DeviceActions::RemoveAppListEventSubscriber(
   app_list_subscribers_.RemoveObserver(subscriber);
 }
 
-base::Optional<std::string> DeviceActions::GetAndroidAppLaunchIntent(
+absl::optional<std::string> DeviceActions::GetAndroidAppLaunchIntent(
     const AndroidAppInfo& app_info) {
   auto status = delegate_->GetAndroidAppStatus(app_info.package_name);
   if (status != AppStatus::kAvailable)
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetLaunchIntent(std::move(app_info));
 }

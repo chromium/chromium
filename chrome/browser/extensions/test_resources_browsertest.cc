@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -15,6 +14,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -26,7 +26,7 @@ constexpr int kSentinelValue = 42;
 
 // Returns the value of window.injectedSentinel from the active web contents of
 // |browser|.
-base::Optional<int> RetrieveSentinelValue(Browser* browser) {
+absl::optional<int> RetrieveSentinelValue(Browser* browser) {
   int result = 0;
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -34,7 +34,7 @@ base::Optional<int> RetrieveSentinelValue(Browser* browser) {
           web_contents,
           "domAutomationController.send(window.injectedSentinel);", &result)) {
     ADD_FAILURE() << "Failed to execute script.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return result;
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   ui_test_utils::NavigateToURL(browser(),
                                extension->GetResourceURL("page.html"));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ui_test_utils::NavigateToURL(browser(),
                                extension->GetResourceURL("page.html"));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestWithCustomTestResourcesLocation,
   ui_test_utils::NavigateToURL(browser(),
                                extension->GetResourceURL("page.html"));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }

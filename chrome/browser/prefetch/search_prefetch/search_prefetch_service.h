@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
@@ -18,6 +17,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class AutocompleteController;
@@ -121,7 +121,7 @@ class SearchPrefetchService : public KeyedService,
       const GURL& navigation_url);
 
   // Reports the status of a prefetch for a given search term.
-  base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
+  absl::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       std::u16string search_terms);
 
   // Calls |LoadFromPrefs()|.
@@ -166,7 +166,7 @@ class SearchPrefetchService : public KeyedService,
   base::TimeTicks last_error_time_ticks_;
 
   // The current state of the DSE.
-  base::Optional<TemplateURLData> template_url_service_data_;
+  absl::optional<TemplateURLData> template_url_service_data_;
 
   // A subscription to the omnibox log service to track when a navigation is
   // about to happen.

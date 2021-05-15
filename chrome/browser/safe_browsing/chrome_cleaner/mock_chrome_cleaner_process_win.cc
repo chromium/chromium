@@ -324,20 +324,20 @@ void MockChromeCleanerProcess::Options::SetReportedResults(
     case ItemsReporting::kUnsupported:
       // Defined as an optional object in which a registry keys vector is not
       // present.
-      registry_keys_ = base::Optional<std::vector<std::wstring>>();
+      registry_keys_ = absl::optional<std::vector<std::wstring>>();
       break;
 
     case ItemsReporting::kNotReported:
       // Defined as an optional object in which an empty registry keys vector is
       // present.
       registry_keys_ =
-          base::Optional<std::vector<std::wstring>>(absl::in_place);
+          absl::optional<std::vector<std::wstring>>(absl::in_place);
       break;
 
     case ItemsReporting::kReported:
       // Defined as an optional object in which a non-empty registry keys vector
       // is present.
-      registry_keys_ = base::Optional<std::vector<std::wstring>>({
+      registry_keys_ = absl::optional<std::vector<std::wstring>>({
           L"HKCU:32\\Software\\Some\\Unwanted Software",
           L"HKCU:32\\Software\\Another\\Unwanted Software",
       });

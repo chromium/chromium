@@ -466,7 +466,7 @@ void CloudPrintConnector::UpdateSettingsFromPrintersList(
     for (const auto& printer : printer_list->GetList()) {
       if (printer.is_dict()) {
         int xmpp_timeout = 0;
-        base::Optional<int> timeout =
+        absl::optional<int> timeout =
             printer.FindIntKey(kLocalSettingsPendingXmppValue);
         if (timeout) {
           xmpp_timeout = *timeout;

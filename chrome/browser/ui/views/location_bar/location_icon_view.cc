@@ -200,7 +200,7 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   if (!GetAnimateTextVisibilityChange() || suppress_animations)
     ResetSlideAnimation(should_show);
   else if (should_show)
-    AnimateIn(base::nullopt);
+    AnimateIn(absl::nullopt);
   else
     AnimateOut();
 }

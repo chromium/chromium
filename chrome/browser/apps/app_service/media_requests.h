@@ -17,16 +17,16 @@
 namespace apps {
 
 struct AccessingRequest {
-  AccessingRequest(base::Optional<bool> camera,
-                   base::Optional<bool> microphone);
+  AccessingRequest(absl::optional<bool> camera,
+                   absl::optional<bool> microphone);
   AccessingRequest(const AccessingRequest&) = delete;
   AccessingRequest& operator=(const AccessingRequest&) = delete;
   AccessingRequest(AccessingRequest&&);
   AccessingRequest& operator=(AccessingRequest&&);
   ~AccessingRequest();
 
-  base::Optional<bool> camera;
-  base::Optional<bool> microphone;
+  absl::optional<bool> camera;
+  absl::optional<bool> microphone;
 };
 
 // MediaRequests records the media access requests for each app, e.g. accessing
@@ -76,19 +76,19 @@ class MediaRequests {
       const std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeAddRequest(
+  absl::optional<bool> MaybeAddRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeRemoveRequest(
+  absl::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeRemoveRequest(
+  absl::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);

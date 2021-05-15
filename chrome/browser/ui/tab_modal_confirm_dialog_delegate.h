@@ -10,9 +10,9 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace content {
@@ -97,10 +97,10 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   virtual const char* GetCancelButtonIcon();
 
   // Allow the delegate to customize which button is default, and which is
-  // initially focused. If returning base::nullopt, the dialog uses default
+  // initially focused. If returning absl::nullopt, the dialog uses default
   // behavior.
-  virtual base::Optional<int> GetDefaultDialogButton();
-  virtual base::Optional<int> GetInitiallyFocusedButton();
+  virtual absl::optional<int> GetDefaultDialogButton();
+  virtual absl::optional<int> GetInitiallyFocusedButton();
 
  protected:
   TabModalConfirmDialogCloseDelegate* close_delegate() {

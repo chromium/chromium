@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,6 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -80,7 +80,7 @@ void DnsResolutionRoutine::CreateHostResolver() {
 void DnsResolutionRoutine::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
+             absl::nullopt);
 }
 
 void DnsResolutionRoutine::AttemptResolution() {
@@ -109,7 +109,7 @@ void DnsResolutionRoutine::AttemptResolution() {
 void DnsResolutionRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   receiver_.reset();
 
   bool success = result == net::OK && !resolved_addresses->empty() &&

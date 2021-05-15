@@ -72,7 +72,7 @@ class ChromeSigninClient
   void SetDiceMigrationCompleted() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Optional<account_manager::Account> GetInitialPrimaryAccount() override;
+  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
 #endif
 
   // Used in tests to override the URLLoaderFactory returned by

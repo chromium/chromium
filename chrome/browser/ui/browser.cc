@@ -22,7 +22,6 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/process/process_info.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -226,6 +225,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "net/base/filename_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -1239,7 +1239,7 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::TabGroupedStateChanged(
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
@@ -2664,7 +2664,7 @@ void Browser::SyncHistoryWithTabs(int index) {
                                         session_tab_helper->session_id(),
                                         tab_strip_model_->IsTabPinned(i));
 
-        base::Optional<tab_groups::TabGroupId> group_id =
+        absl::optional<tab_groups::TabGroupId> group_id =
             tab_strip_model_->GetTabGroupForTab(i);
         session_service->SetTabGroup(session_id(),
                                      session_tab_helper->session_id(),

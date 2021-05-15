@@ -85,7 +85,7 @@ bool ExternalInstallOptions::operator==(
 namespace {
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, const base::Optional<T>& optional) {
+std::ostream& operator<<(std::ostream& out, const absl::optional<T>& optional) {
   if (optional)
     out << *optional;
   else

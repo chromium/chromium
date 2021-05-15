@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -67,6 +66,7 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -452,7 +452,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
 scoped_refptr<update_client::UpdateClient>
 ChromeExtensionsBrowserClient::CreateUpdateClient(
     content::BrowserContext* context) {
-  base::Optional<GURL> override_url;
+  absl::optional<GURL> override_url;
   GURL update_url = extension_urls::GetWebstoreUpdateUrl();
   if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
     if (update_url.path() == kCrxUrlPath) {

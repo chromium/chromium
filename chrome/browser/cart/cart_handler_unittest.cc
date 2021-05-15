@@ -4,7 +4,6 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
@@ -17,6 +16,7 @@
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 void GetEvaluationMerchantCarts(
@@ -245,8 +245,8 @@ TEST_F(CartHandlerNtpModuleFakeDataTest, TestEnableFakeData) {
   // Remove fake data loaded by CartService::CartService.
   service_->DeleteCartsWithFakeData();
 
-  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, absl::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, kMockProtoB);
   task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
@@ -276,8 +276,8 @@ class CartHandlerNtpModuleTest : public CartHandlerTest {
 // Flaky, see crbug.com/1185497.
 TEST_F(CartHandlerNtpModuleTest, DISABLED_TestDisableFakeData) {
   base::RunLoop run_loop;
-  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, absl::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, kMockProtoB);
   task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
@@ -372,7 +372,7 @@ TEST_F(CartHandlerNtpModuleTest, TestDiscountDataWithoutFeature) {
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
-  service_->AddCart(kMockMerchantBKey, base::nullopt, merchant_proto);
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
   // Skip the welcome surface stage as discount is not showing for welcome
@@ -486,7 +486,7 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
-  service_->AddCart(kMockMerchantBKey, base::nullopt, merchant_proto);
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
   profile_.GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
                                   0);

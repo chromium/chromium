@@ -7,14 +7,14 @@
 
 #include <map>
 
-#include "base/optional.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A UKM entry consists of named metrics with int64_t values. Use a map to
 // specify expected metrics to test against an actual entry for tests.
 // A value of |nullopt| implies a value shouldn't exist for the given metric
 // name.
-using UkmMetricMap = std::map<const char*, base::Optional<int64_t>>;
+using UkmMetricMap = std::map<const char*, absl::optional<int64_t>>;
 using SourceUkmMetricMap =
     std::map<ukm::SourceId, std::pair<GURL, UkmMetricMap>>;
 

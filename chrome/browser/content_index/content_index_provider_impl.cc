@@ -183,7 +183,7 @@ void ContentIndexProviderImpl::OpenItem(
 }
 
 void ContentIndexProviderImpl::DidGetEntryToOpen(
-    base::Optional<content::ContentIndexEntry> entry) {
+    absl::optional<content::ContentIndexEntry> entry) {
   if (!entry)
     return;
 
@@ -247,7 +247,7 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
 
@@ -259,9 +259,9 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
 
 void ContentIndexProviderImpl::DidGetItem(
     SingleItemCallback callback,
-    base::Optional<content::ContentIndexEntry> entry) {
+    absl::optional<content::ContentIndexEntry> entry) {
   if (!entry)
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   else
     std::move(callback).Run(EntryToOfflineItem(*entry));
 }
@@ -395,6 +395,6 @@ void ContentIndexProviderImpl::RenameItem(const ContentId& id,
 
 void ContentIndexProviderImpl::ChangeSchedule(
     const ContentId& id,
-    base::Optional<OfflineItemSchedule> schedule) {
+    absl::optional<OfflineItemSchedule> schedule) {
   NOTREACHED();
 }

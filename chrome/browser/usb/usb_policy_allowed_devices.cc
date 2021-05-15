@@ -100,7 +100,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
         continue;
 
       auto requesting_origin = url::Origin::Create(GURL(urls[0]));
-      base::Optional<url::Origin> embedding_origin;
+      absl::optional<url::Origin> embedding_origin;
       if (urls.size() == 2 && !urls[1].empty())
         embedding_origin = url::Origin::Create(GURL(urls[1]));
 

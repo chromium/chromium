@@ -87,7 +87,7 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   return app_info;
 }
 
-base::Optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
+absl::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
     const std::string& abi_list) {
   arc::ArcFeatures arc_features;
   arc_features.build_props["ro.product.cpu.abilist"] = abi_list;
@@ -191,7 +191,7 @@ class WebApkInstallTaskTest : public testing::Test {
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
   WebApkResponseBuilder webapk_response_builder_;
   std::unique_ptr<webapk::WebApk> last_webapk_request_;
-  base::RepeatingCallback<base::Optional<arc::ArcFeatures>()>
+  base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
       arc_features_getter_;
 };
 

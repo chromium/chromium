@@ -417,10 +417,10 @@ void PasswordManagerPresenter::OnMovePasswordToAccountCompleted(
 void PasswordManagerPresenter::RequestPlaintextPassword(
     const std::string& sort_key,
     password_manager::PlaintextReason reason,
-    base::OnceCallback<void(base::Optional<std::u16string>)> callback) const {
+    base::OnceCallback<void(absl::optional<std::u16string>)> callback) const {
   auto it = password_map_.find(sort_key);
   if (it == password_map_.end()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

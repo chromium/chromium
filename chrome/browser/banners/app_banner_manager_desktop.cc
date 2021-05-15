@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +23,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -194,7 +194,7 @@ void AppBannerManagerDesktop::OnEngagementEvent(
 
 void AppBannerManagerDesktop::OnWebAppInstalled(
     const web_app::AppId& installed_app_id) {
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar().FindAppWithUrlInScope(validated_url_);
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==

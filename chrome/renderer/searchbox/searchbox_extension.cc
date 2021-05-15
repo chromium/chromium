@@ -174,12 +174,12 @@ base::Time ConvertDateValueToTime(v8::Value* value) {
   return base::Time::FromJsTime(v8::Date::Cast(value)->ValueOf());
 }
 
-base::Optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
+absl::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
   DCHECK(value);
   v8::MaybeLocal<v8::Int32> maybe_int =
       value->ToInt32(isolate->GetCurrentContext());
   if (maybe_int.IsEmpty())
-    return base::nullopt;
+    return absl::nullopt;
   return maybe_int.ToLocalChecked()->Value();
 }
 
@@ -227,10 +227,10 @@ bool ArrayToSkColor(v8::Isolate* isolate,
       !color->Get(context, 3).ToLocal(&a_value))
     return false;
 
-  base::Optional<int> r = CoerceToInt(isolate, *r_value);
-  base::Optional<int> g = CoerceToInt(isolate, *g_value);
-  base::Optional<int> b = CoerceToInt(isolate, *b_value);
-  base::Optional<int> a = CoerceToInt(isolate, *a_value);
+  absl::optional<int> r = CoerceToInt(isolate, *r_value);
+  absl::optional<int> g = CoerceToInt(isolate, *g_value);
+  absl::optional<int> b = CoerceToInt(isolate, *b_value);
+  absl::optional<int> a = CoerceToInt(isolate, *a_value);
 
   if (!r.has_value() || !g.has_value() || !b.has_value() || !a.has_value())
     return false;
@@ -890,7 +890,7 @@ bool NewTabPageBindings::GetAreShortcutsVisible() {
 void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
                                                v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  base::Optional<int> rid = CoerceToInt(isolate, *rid_value);
+  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();
@@ -921,7 +921,7 @@ void NewTabPageBindings::UndoMostVisitedDeletion(
     v8::Isolate* isolate,
     v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
-  base::Optional<int> rid = CoerceToInt(isolate, *rid_value);
+  absl::optional<int> rid = CoerceToInt(isolate, *rid_value);
   if (!rid.has_value())
     return;
   SearchBox* search_box = GetSearchBoxForCurrentContext();

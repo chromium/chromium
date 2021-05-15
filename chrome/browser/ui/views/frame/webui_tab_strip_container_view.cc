@@ -168,13 +168,13 @@ WebUITabStripDragDirection DragDirectionFromDelta(float delta) {
 
 // Converts a swipe gesture to a drag direction, or none if the swipe is neither
 // up nor down.
-base::Optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
+absl::optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
     const ui::GestureEvent* event) {
   if (event->details().swipe_down())
     return WebUITabStripDragDirection::kDown;
   if (event->details().swipe_up())
     return WebUITabStripDragDirection::kUp;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
@@ -682,12 +682,12 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
 }
 
 void WebUITabStripContainerView::EndDragToOpen(
-    base::Optional<WebUITabStripDragDirection> fling_direction) {
+    absl::optional<WebUITabStripDragDirection> fling_direction) {
   if (!current_drag_height_)
     return;
 
   const int final_drag_height = *current_drag_height_;
-  current_drag_height_ = base::nullopt;
+  current_drag_height_ = absl::nullopt;
 
   // If this wasn't a fling, determine whether to open or close based on
   // final height.
@@ -785,7 +785,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -
                                             time_at_open_.value());
-      time_at_open_ = base::nullopt;
+      time_at_open_ = absl::nullopt;
     }
 
     const double current_value = animation_.GetCurrentValue();

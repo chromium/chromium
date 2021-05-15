@@ -5,7 +5,6 @@
 #include "chrome/browser/predictors/network_hints_handler_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
@@ -14,6 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace predictors {
 

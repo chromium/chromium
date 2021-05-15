@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Context-specific text replacements for an in-product help bubble's
 // body text.
@@ -37,7 +37,7 @@ class FeaturePromoTextReplacements {
   std::u16string ApplyTo(int string_specifier) const;
 
  private:
-  base::Optional<std::u16string> string_replacement_;
+  absl::optional<std::u16string> string_replacement_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_

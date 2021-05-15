@@ -11,7 +11,6 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
@@ -19,6 +18,7 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
@@ -300,63 +300,63 @@ class InstallStageTracker : public KeyedService {
     ~InstallationData();
     InstallationData(const InstallationData&);
 
-    base::Optional<Stage> install_stage;
-    base::Optional<InstallCreationStage> install_creation_stage;
-    base::Optional<ExtensionDownloaderDelegate::Stage> downloading_stage;
-    base::Optional<ExtensionDownloaderDelegate::CacheStatus>
+    absl::optional<Stage> install_stage;
+    absl::optional<InstallCreationStage> install_creation_stage;
+    absl::optional<ExtensionDownloaderDelegate::Stage> downloading_stage;
+    absl::optional<ExtensionDownloaderDelegate::CacheStatus>
         downloading_cache_status;
-    base::Optional<FailureReason> failure_reason;
-    base::Optional<CrxInstallErrorDetail> install_error_detail;
+    absl::optional<FailureReason> failure_reason;
+    absl::optional<CrxInstallErrorDetail> install_error_detail;
     // Network error codes and fetch tries when applicable:
     // * failure_reason is CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED
     // * `downloading_stage` is DOWNLOAD_MANIFEST_RETRY or DOWNLOAD_CRX_RETRY.
-    base::Optional<int> network_error_code;
-    base::Optional<int> response_code;
-    base::Optional<int> fetch_tries;
+    absl::optional<int> network_error_code;
+    absl::optional<int> response_code;
+    absl::optional<int> fetch_tries;
     // Unpack failure reason in case of
     // CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE.
-    base::Optional<SandboxedUnpackerFailureReason> unpacker_failure_reason;
+    absl::optional<SandboxedUnpackerFailureReason> unpacker_failure_reason;
     // Type of extension, assigned during CRX installation process.
-    base::Optional<Manifest::Type> extension_type;
+    absl::optional<Manifest::Type> extension_type;
     // Error detail when the fetched manifest was invalid. This includes errors
     // occurred while parsing the manifest and errors occurred due to the
     // internal details of the parsed manifest.
-    base::Optional<ManifestInvalidError> manifest_invalid_error;
+    absl::optional<ManifestInvalidError> manifest_invalid_error;
     // Info field in the update manifest returned by the server when no update
     // is available.
-    base::Optional<NoUpdatesInfo> no_updates_info;
+    absl::optional<NoUpdatesInfo> no_updates_info;
     // Type of app status error received from update server when manifest was
     // fetched.
-    base::Optional<AppStatusError> app_status_error;
+    absl::optional<AppStatusError> app_status_error;
     // Time at which the download is started.
-    base::Optional<base::TimeTicks> download_manifest_started_time;
+    absl::optional<base::TimeTicks> download_manifest_started_time;
     // Time at which the update manifest is downloaded and successfully parsed
     // from the server.
-    base::Optional<base::TimeTicks> download_manifest_finish_time;
+    absl::optional<base::TimeTicks> download_manifest_finish_time;
     // See InstallationStage enum.
-    base::Optional<InstallationStage> installation_stage;
+    absl::optional<InstallationStage> installation_stage;
     // Time at which the download of CRX is started.
-    base::Optional<base::TimeTicks> download_CRX_started_time;
+    absl::optional<base::TimeTicks> download_CRX_started_time;
     // Time at which CRX is downloaded.
-    base::Optional<base::TimeTicks> download_CRX_finish_time;
+    absl::optional<base::TimeTicks> download_CRX_finish_time;
     // Time at which signature verification of CRX is started.
-    base::Optional<base::TimeTicks> verification_started_time;
+    absl::optional<base::TimeTicks> verification_started_time;
     // Time at which copying of extension archive into the working directory is
     // started.
-    base::Optional<base::TimeTicks> copying_started_time;
+    absl::optional<base::TimeTicks> copying_started_time;
     // Time at which unpacking of the extension archive is started.
-    base::Optional<base::TimeTicks> unpacking_started_time;
+    absl::optional<base::TimeTicks> unpacking_started_time;
     // Time at which the extension archive has been successfully unpacked and
     // the expectation checks before extension installation are started.
-    base::Optional<base::TimeTicks> checking_expectations_started_time;
+    absl::optional<base::TimeTicks> checking_expectations_started_time;
     // Time at which the extension has passed the expectation checks and the
     // installation is started.
-    base::Optional<base::TimeTicks> finalizing_started_time;
+    absl::optional<base::TimeTicks> finalizing_started_time;
     // Time at which the installation process is complete.
-    base::Optional<base::TimeTicks> installation_complete_time;
+    absl::optional<base::TimeTicks> installation_complete_time;
     // Detailed error description when extension failed to install with
     // SandboxedUnpackerFailureReason equal to UNPACKER_CLIENT FAILED.
-    base::Optional<std::u16string> unpacker_client_failed_error;
+    absl::optional<std::u16string> unpacker_client_failed_error;
   };
 
   class Observer : public base::CheckedObserver {

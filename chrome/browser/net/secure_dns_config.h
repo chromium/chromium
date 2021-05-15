@@ -7,10 +7,10 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Representation of a complete Secure DNS configuration.
 class SecureDnsConfig {
@@ -44,7 +44,7 @@ class SecureDnsConfig {
 
   // Identifies the SecureDnsMode corresponding to one of the above names, or
   // returns nullopt if the name is unrecognized.
-  static base::Optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
+  static absl::optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
   // Converts a secure DNS mode to one of the above names.
   static const char* ModeToString(net::SecureDnsMode mode);
 

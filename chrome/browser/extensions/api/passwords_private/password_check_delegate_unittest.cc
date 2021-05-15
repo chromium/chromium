@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -50,6 +49,7 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -180,7 +180,7 @@ PasswordForm MakeSavedAndroidPassword(
 auto ExpectInsecureCredential(
     const std::string& formatted_origin,
     const std::string& detailed_origin,
-    const base::Optional<std::string>& change_password_url,
+    const absl::optional<std::string>& change_password_url,
     const std::u16string& username) {
   auto change_password_url_field_matcher =
       change_password_url.has_value()
@@ -211,7 +211,7 @@ auto ExpectCompromisedInfo(
 auto ExpectCompromisedCredential(
     const std::string& formatted_origin,
     const std::string& detailed_origin,
-    const base::Optional<std::string>& change_password_url,
+    const absl::optional<std::string>& change_password_url,
     const std::u16string& username,
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
@@ -516,7 +516,7 @@ TEST_F(PasswordCheckDelegateTest, GetCompromisedCredentialsInjectsAndroid) {
               base::TimeDelta::FromDays(3), "3 days ago",
               api::passwords_private::COMPROMISE_TYPE_PHISHED),
           ExpectCompromisedCredential(
-              "App (com.example.app)", "com.example.app", base::nullopt,
+              "App (com.example.app)", "com.example.app", absl::nullopt,
               kUsername1, base::TimeDelta::FromDays(4), "4 days ago",
               api::passwords_private::COMPROMISE_TYPE_PHISHED),
           ExpectCompromisedCredential(
@@ -565,7 +565,7 @@ TEST_F(PasswordCheckDelegateTest, GetPlaintextInsecurePasswordRejectsWrongId) {
   // Purposefully set a wrong id and verify that trying to get a plaintext
   // password fails.
   credential.id = 1;
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
@@ -583,7 +583,7 @@ TEST_F(PasswordCheckDelegateTest,
   // Purposefully set a wrong signon realm and verify that trying to get a
   // plaintext password fails.
   credential.signon_realm = kExampleOrg;
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
@@ -601,7 +601,7 @@ TEST_F(PasswordCheckDelegateTest,
   // Purposefully set a wrong username and verify that trying to get a
   // plaintext password fails.
   credential.signon_realm = base::UTF16ToASCII(kUsername2);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
@@ -619,7 +619,7 @@ TEST_F(PasswordCheckDelegateTest,
   EXPECT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
   EXPECT_EQ(nullptr, credential.password);
 
-  base::Optional<InsecureCredential> opt_credential =
+  absl::optional<InsecureCredential> opt_credential =
       delegate().GetPlaintextInsecurePassword(std::move(credential));
   ASSERT_TRUE(opt_credential.has_value());
   EXPECT_EQ(0, opt_credential->id);

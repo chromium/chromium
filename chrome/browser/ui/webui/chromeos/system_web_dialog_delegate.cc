@@ -207,7 +207,7 @@ void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
   AdjustWidgetInitParams(&extra_params);
   dialog_window_ = chrome::ShowWebDialogWithParams(
       parent, browser_context, this,
-      base::make_optional<views::Widget::InitParams>(std::move(extra_params)));
+      absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
 }
 
 void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {

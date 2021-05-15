@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -45,6 +44,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/test_event_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 using MockReauthCallback = base::MockCallback<
@@ -472,7 +472,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   base::Time before_call = test_clipboard_->GetLastModifiedTime();
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(base::nullopt)));
+  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
       nullptr);
@@ -527,7 +527,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
       .WillOnce(Return(false));
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(base::nullopt)));
+  EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_VIEW, password_callback.Get(),
       nullptr);
@@ -593,7 +593,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
   EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
       .WillOnce(Return(false));
-  EXPECT_CALL(credential_callback, Run(Eq(base::nullopt)));
+  EXPECT_CALL(credential_callback, Run(Eq(absl::nullopt)));
 
   delegate.GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential(),
@@ -625,7 +625,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
       PasswordsPrivateDelegate::PlaintextInsecurePasswordCallback>
       credential_callback;
 
-  base::Optional<api::passwords_private::InsecureCredential> opt_credential;
+  absl::optional<api::passwords_private::InsecureCredential> opt_credential;
   EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
       .WillOnce(Return(true));
   EXPECT_CALL(credential_callback, Run).WillOnce(MoveArg(&opt_credential));

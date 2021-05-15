@@ -536,7 +536,7 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
 
     content::TextInputManagerTester tester_;
     std::unique_ptr<base::RunLoop> run_loop_;
-    base::Optional<uint32_t> last_composition_range_length_;
+    absl::optional<uint32_t> last_composition_range_length_;
     uint32_t expected_length_ = 0;
   };
 };

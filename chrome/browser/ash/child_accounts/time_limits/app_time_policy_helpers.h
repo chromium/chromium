@@ -8,8 +8,8 @@
 #include <map>
 #include <string>
 
-#include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -51,7 +51,7 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction);
 
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information.
-base::Optional<AppId> AppIdFromDict(const base::Value& dict);
+absl::optional<AppId> AppIdFromDict(const base::Value& dict);
 
 // Serializes AppId to the dictionary.
 base::Value AppIdToDict(const AppId& app_id);
@@ -59,25 +59,25 @@ base::Value AppIdToDict(const AppId& app_id);
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information in its entry keyed by
 // kAppInfoDict.
-base::Optional<AppId> AppIdFromAppInfoDict(const base::Value& dict);
+absl::optional<AppId> AppIdFromAppInfoDict(const base::Value& dict);
 
 // Deserializes AppLimit from |dict|.
 // Returns value if |dict| contains valid app limit information.
-base::Optional<AppLimit> AppLimitFromDict(const base::Value& dict);
+absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict);
 
 // Serializes AppLimit to the dictionary.
 base::Value AppLimitToDict(const AppLimit& limit);
 
 // Deserializes daily limits reset time from |dict|.
 // Returns value if |dict| contains valid reset time information.
-base::Optional<base::TimeDelta> ResetTimeFromDict(const base::Value& dict);
+absl::optional<base::TimeDelta> ResetTimeFromDict(const base::Value& dict);
 
 // Serializes daily limits reset to the dictionary.
 base::Value ResetTimeToDict(int hour, int minutes);
 
 // Deserializes activity reporting enabled boolean from |dict|.
 // Returns value if |dict| contains a valid entry.
-base::Optional<bool> ActivityReportingEnabledFromDict(const base::Value& dict);
+absl::optional<bool> ActivityReportingEnabledFromDict(const base::Value& dict);
 
 // Deserializes app limits data from the |dict|.
 // Will return empty map if |dict| is invalid.

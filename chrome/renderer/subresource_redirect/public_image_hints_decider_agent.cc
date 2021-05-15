@@ -46,12 +46,12 @@ bool PublicImageHintsDeciderAgent::IsMainFrame() const {
 
 void PublicImageHintsDeciderAgent::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   if (!IsMainFrame())
     return;
   // Clear the hints when a navigation starts, so that hints from previous
   // navigation do not apply in case the same renderframe is reused.
-  public_image_urls_ = base::nullopt;
+  public_image_urls_ = absl::nullopt;
 }
 
 void PublicImageHintsDeciderAgent::ReadyToCommitNavigation(
@@ -82,7 +82,7 @@ void PublicImageHintsDeciderAgent::SetCompressPublicImagesHints(
   RecordImageHintsUnavailableMetrics();
 }
 
-base::Optional<SubresourceRedirectResult>
+absl::optional<SubresourceRedirectResult>
 PublicImageHintsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {

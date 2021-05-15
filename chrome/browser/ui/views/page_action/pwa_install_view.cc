@@ -111,7 +111,7 @@ void PwaInstallView::UpdateImpl() {
 
   bool is_probably_promotable = manager->IsProbablyPromotableWebApp();
   if (is_probably_promotable && manager->MaybeConsumeInstallAnimation())
-    AnimateIn(base::nullopt);
+    AnimateIn(absl::nullopt);
   else
     ResetSlideAnimation(false);
 

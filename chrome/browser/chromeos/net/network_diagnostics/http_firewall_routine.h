@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,6 +16,7 @@
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -58,7 +58,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses);
+      const absl::optional<net::AddressList>& resolved_addresses);
 
   void SetNetworkContextForTesting(
       network::mojom::NetworkContext* network_context);

@@ -14,11 +14,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -111,8 +111,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
                                   std::u16string* title,
                                   std::u16string* body) override;
   bool RemoveSuggestion(int list_index) override;
-  void SetSelectedLine(base::Optional<int> selected_line) override;
-  base::Optional<int> selected_line() const override;
+  void SetSelectedLine(absl::optional<int> selected_line) override;
+  absl::optional<int> selected_line() const override;
   PopupType GetPopupType() const override;
 
   // Increase the selected line by 1, properly handling wrapping.
@@ -181,7 +181,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // The line that is currently selected by the user, null indicates that no
   // line is currently selected.
-  base::Optional<int> selected_line_;
+  absl::optional<int> selected_line_;
 
   base::WeakPtrFactory<AutofillPopupControllerImpl> weak_ptr_factory_{this};
 

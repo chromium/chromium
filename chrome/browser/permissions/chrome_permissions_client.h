@@ -50,17 +50,17 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
                         permissions::RequestType request_type,
                         permissions::PermissionAction action,
                         const GURL& origin,
-                        base::Optional<QuietUiReason> quiet_ui_reason) override;
-  base::Optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
+                        absl::optional<QuietUiReason> quiet_ui_reason) override;
+  absl::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
-  base::Optional<bool> HasPreviouslyAutoRevokedPermission(
+  absl::optional<bool> HasPreviouslyAutoRevokedPermission(
       content::BrowserContext* browser_context,
       const GURL& origin,
       ContentSettingsType permission) override;
-  base::Optional<url::Origin> GetAutoApprovalOrigin() override;
+  absl::optional<url::Origin> GetAutoApprovalOrigin() override;
   bool CanBypassEmbeddingOriginCheck(const GURL& requesting_origin,
                                      const GURL& embedding_origin) override;
-  base::Optional<GURL> OverrideCanonicalOrigin(
+  absl::optional<GURL> OverrideCanonicalOrigin(
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
 #if defined(OS_ANDROID)

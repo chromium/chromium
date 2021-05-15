@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
@@ -17,6 +16,7 @@
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -47,7 +47,7 @@ bool ObtainSignatureAlgorithms(
   }
   signature_algorithms->clear();
   for (auto ssl_algorithm : ssl_algorithms) {
-    base::Optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
+    absl::optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
         GetChallengeResponseKeyAlgorithmFromSsl(ssl_algorithm);
     if (algorithm)
       signature_algorithms->push_back(*algorithm);

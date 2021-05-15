@@ -70,13 +70,13 @@ void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
 }
 
 void FakeLorgnetteScannerManager::SetGetScannerCapabilitiesResponse(
-    const base::Optional<lorgnette::ScannerCapabilities>&
+    const absl::optional<lorgnette::ScannerCapabilities>&
         scanner_capabilities) {
   scanner_capabilities_ = scanner_capabilities;
 }
 
 void FakeLorgnetteScannerManager::SetScanResponse(
-    const base::Optional<std::vector<std::string>>& scan_data) {
+    const absl::optional<std::vector<std::string>>& scan_data) {
   scan_data_ = scan_data;
 }
 

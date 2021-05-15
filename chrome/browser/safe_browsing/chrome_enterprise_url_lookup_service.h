@@ -58,7 +58,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   void GetAccessToken(const GURL& url,
                       RTLookupRequestCallback request_callback,
                       RTLookupResponseCallback response_callback) override;
-  base::Optional<std::string> GetDMTokenString() const override;
+  absl::optional<std::string> GetDMTokenString() const override;
   std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
 

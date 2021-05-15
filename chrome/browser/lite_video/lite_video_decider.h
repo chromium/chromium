@@ -9,13 +9,13 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "chrome/browser/lite_video/lite_video_hint_cache.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blocklist {
@@ -31,7 +31,7 @@ class OptimizationMetadata;
 namespace lite_video {
 
 using LiteVideoHintCallback = base::OnceCallback<void(
-    base::Optional<LiteVideoHint> hint,
+    absl::optional<LiteVideoHint> hint,
     LiteVideoBlocklistReason blocklist_reason,
     optimization_guide::OptimizationGuideDecision opt_guide_decision)>;
 
@@ -86,7 +86,7 @@ class LiteVideoDecider
   // Update |user_blocklist_| that a rebuffer event consided an opt-out on the
   // mainframe and subframe URLs occurred.
   void DidMediaRebuffer(const GURL& mainframe_url,
-                        base::Optional<GURL> subframe_url,
+                        absl::optional<GURL> subframe_url,
                         bool opt_out);
 
   // Set the optimization guide decider used by |this| for testing only.
@@ -144,7 +144,7 @@ class LiteVideoDecider
 
   // The store of hints provided by the optimization guide keyed by mainframe
   // host. If the hint is empty, then the optimization guide returned kFalse.
-  base::HashingMRUCache<std::string, base::Optional<LiteVideoHint>>
+  base::HashingMRUCache<std::string, absl::optional<LiteVideoHint>>
       cached_opt_guide_hints_;
 
   // The set of hosts that are permanently blocked from having LiteVideos

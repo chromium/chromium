@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Reports metrics related to power (battery discharge, cpu time, etc.) to
 // understand what impacts Chrome's power consumption over an interval of time.
@@ -72,7 +72,7 @@ class PowerMetricsReporter
       base::TimeDelta sampling_interval,
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
-      base::Optional<int64_t> discharge_rate_during_interval,
+      absl::optional<int64_t> discharge_rate_during_interval,
       const std::vector<const char*>& suffixes);
 
   // Report CPU histograms based on data in |metrics| and suffixed based on
@@ -99,19 +99,19 @@ class PowerMetricsReporter
                   const performance_monitor::ProcessMonitor::Metrics& metrics,
                   base::TimeDelta interval_duration,
                   BatteryDischargeMode discharge_mode,
-                  base::Optional<int64_t> discharge_rate_during_interval) const;
+                  absl::optional<int64_t> discharge_rate_during_interval) const;
 
   void ReportUKMsAndHistograms(
       const performance_monitor::ProcessMonitor::Metrics& metrics,
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
-      base::Optional<int64_t> discharge_rate_during_interval) const;
+      absl::optional<int64_t> discharge_rate_during_interval) const;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
   // rate isn't valid, the returned value is nullopt and the reason is indicated
   // per BatteryDischargeMode.
-  std::pair<BatteryDischargeMode, base::Optional<int64_t>>
+  std::pair<BatteryDischargeMode, absl::optional<int64_t>>
   GetBatteryDischargeRateDuringInterval(
       const BatteryLevelProvider::BatteryState& new_battery_state,
       base::TimeDelta interval_duration);
@@ -125,7 +125,7 @@ class PowerMetricsReporter
   // Time that should elapse between calls to OnAggregatedMetricsSampled.
   base::TimeDelta desired_reporting_interval_;
 
-  BatteryLevelProvider::BatteryState battery_state_{0, 0, base::nullopt, false,
+  BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
                                                     base::TimeTicks::Now()};
 
   base::TimeTicks interval_begin_;

@@ -100,7 +100,7 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   }
 
   void OnDialAppInfoFetchError(DialAppDiscoveryService::PendingRequest* request,
-                               base::Optional<int> response_code,
+                               absl::optional<int> response_code,
                                const std::string& error_text) {
     request->OnDialAppInfoFetchError(error_text, response_code);
   }
@@ -140,7 +140,7 @@ TEST_F(DialAppDiscoveryServiceTest,
 
   EXPECT_CALL(*this, OnAppInfoFailure(sink_id, _,
                                       DialAppInfoResultCode::kNetworkError));
-  OnDialAppInfoFetchError(request, base::nullopt, "Temporarily throttled");
+  OnDialAppInfoFetchError(request, absl::nullopt, "Temporarily throttled");
 }
 
 TEST_F(DialAppDiscoveryServiceTest, TestFetchDialAppInfoFetchURLError) {

@@ -103,7 +103,7 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
   }
 }
 
-base::Optional<int> GetPixelSize(
+absl::optional<int> GetPixelSize(
     JNIEnv* env,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext,
     const ClientDimensionProto& proto) {
@@ -119,7 +119,7 @@ base::Optional<int> GetPixelSize(
     case ClientDimensionProto::kSizeInPixel:
       return proto.size_in_pixel();
     case ClientDimensionProto::SIZE_NOT_SET:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

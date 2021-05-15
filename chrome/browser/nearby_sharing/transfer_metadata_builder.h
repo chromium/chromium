@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TransferMetadataBuilder {
  public:
@@ -25,7 +25,7 @@ class TransferMetadataBuilder {
 
   TransferMetadataBuilder& set_status(TransferMetadata::Status status);
 
-  TransferMetadataBuilder& set_token(base::Optional<std::string> token);
+  TransferMetadataBuilder& set_token(absl::optional<std::string> token);
 
   TransferMetadata build() const;
 
@@ -33,7 +33,7 @@ class TransferMetadataBuilder {
   bool is_original_ = false;
   double progress_ = 0;
   TransferMetadata::Status status_ = TransferMetadata::Status::kInProgress;
-  base::Optional<std::string> token_;
+  absl::optional<std::string> token_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_TRANSFER_METADATA_BUILDER_H_

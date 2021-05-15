@@ -8,11 +8,11 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -57,7 +57,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Cache the last retrieved ICE servers.
-  base::Optional<std::vector<sharing::mojom::IceServerPtr>> ice_server_cache_;
+  absl::optional<std::vector<sharing::mojom::IceServerPtr>> ice_server_cache_;
   base::Time ice_server_cache_expiration_;
 
   base::WeakPtrFactory<TachyonIceConfigFetcher> weak_ptr_factory_{this};

@@ -366,7 +366,7 @@ TEST_F(BrowserUtilTest, MetadataMissingVersion) {
      "metadata_version": 1
    }
   )###";
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -380,7 +380,7 @@ TEST_F(BrowserUtilTest, MetadataVersionBadFormat) {
      "metadata_version": 1
    }
   )###";
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -394,7 +394,7 @@ TEST_F(BrowserUtilTest, MetadataOldVersion) {
      "metadata_version": 1
    }
   )###";
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_FALSE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }
@@ -408,7 +408,7 @@ TEST_F(BrowserUtilTest, MetadataNewVersion) {
      "metadata_version": 1
    }
   )###";
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(
       browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
 }

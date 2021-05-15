@@ -17,11 +17,11 @@ namespace {
 
 constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
 
-base::Optional<GURL> GetUrlOverride() {
+absl::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
                                  ->IsCommandLineSwitchSupported()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
@@ -33,7 +33,7 @@ base::Optional<GURL> GetUrlOverride() {
       VLOG(1) << "--reporting-connector-url is set to an invalid URL";
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -78,10 +78,10 @@ ReportingServiceSettings::ReportingServiceSettings(
   }
 }
 
-base::Optional<ReportingSettings>
+absl::optional<ReportingSettings>
 ReportingServiceSettings::GetReportingSettings() const {
   if (!IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   ReportingSettings settings;
 

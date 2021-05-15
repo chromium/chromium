@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -26,6 +25,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -232,7 +232,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
 
-    base::Optional<bool> has_v2_cable_extension;
+    absl::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasCableV1Extension)) {
       has_v2_cable_extension = false;
@@ -252,7 +252,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
         phones.emplace_back(name, /*contact_id=*/0, public_key);
       }
       model.set_cable_transport_info(has_v2_cable_extension, std::move(phones),
-                                     base::DoNothing(), base::nullopt);
+                                     base::DoNothing(), absl::nullopt);
     }
 
     model.StartFlow(std::move(transports_info),
@@ -358,7 +358,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), base::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
@@ -388,7 +388,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.AddObserver(&mock_observer);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), base::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false);
 
@@ -429,7 +429,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), base::nullopt);
+    model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false);
 
@@ -575,15 +575,15 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   static const uint8_t kAppParam[32] = {0};
   static const uint8_t kSignatureCounter[4] = {0};
   device::AuthenticatorData auth_data(kAppParam, /*flags=*/0, kSignatureCounter,
-                                      base::nullopt);
+                                      absl::nullopt);
   device::AuthenticatorGetAssertionResponse response_1(
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                base::nullopt),
+                                absl::nullopt),
       /*signature=*/{1});
   response_1.user_entity = user_1;
   device::AuthenticatorGetAssertionResponse response_2(
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                base::nullopt),
+                                absl::nullopt),
       /*signature=*/{2});
   response_2.user_entity = user_2;
 

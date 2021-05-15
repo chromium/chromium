@@ -98,7 +98,7 @@ void FixAccountConsistencyRequestHeader(
     int incognito_availibility,
     AccountConsistencyMethod account_consistency,
     std::string gaia_id,
-    const base::Optional<bool>& is_child_account,
+    const absl::optional<bool>& is_child_account,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_secondary_account_addition_allowed,
 #endif

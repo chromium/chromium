@@ -7,13 +7,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -172,12 +172,12 @@ class UkmPageLoadMetricsObserver
 
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
-  base::Optional<int64_t> GetRoundedSiteEngagementScore() const;
+  absl::optional<int64_t> GetRoundedSiteEngagementScore() const;
 
   // Returns whether third party cookie blocking is enabled for the committed
   // URL. This is only recorded for users who have prefs::kCookieControlsEnabled
   // set to true.
-  base::Optional<bool> GetThirdPartyCookieBlockingEnabled() const;
+  absl::optional<bool> GetThirdPartyCookieBlockingEnabled() const;
 
   // Records the metrics for the nostate prefetch to an event with UKM source ID
   // |source_id|.
@@ -239,20 +239,20 @@ class UkmPageLoadMetricsObserver
   // Network quality estimates.
   net::EffectiveConnectionType effective_connection_type_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-  base::Optional<int32_t> http_response_code_;
-  base::Optional<base::TimeDelta> http_rtt_estimate_;
-  base::Optional<base::TimeDelta> transport_rtt_estimate_;
-  base::Optional<int32_t> downstream_kbps_estimate_;
+  absl::optional<int32_t> http_response_code_;
+  absl::optional<base::TimeDelta> http_rtt_estimate_;
+  absl::optional<base::TimeDelta> transport_rtt_estimate_;
+  absl::optional<int32_t> downstream_kbps_estimate_;
 
   // Total CPU wall time used by the page while in the foreground.
   base::TimeDelta total_foreground_cpu_time_;
 
   // Load timing metrics of the main frame resource request.
   content::NavigationHandleTiming navigation_handle_timing_;
-  base::Optional<net::LoadTimingInfo> main_frame_timing_;
+  absl::optional<net::LoadTimingInfo> main_frame_timing_;
 
   // How the SiteInstance for the committed page was assigned a renderer.
-  base::Optional<content::SiteInstanceProcessAssignment>
+  absl::optional<content::SiteInstanceProcessAssignment>
       render_process_assignment_;
 
   // PAGE_TRANSITION_LINK is the default PageTransition value.
@@ -278,7 +278,7 @@ class UkmPageLoadMetricsObserver
   // Set to true if any main frame request in the redirect chain had cookies set
   // on the request. Set to false if there were no cookies set. Not set if we
   // didn't get a response from the CookieManager before recording metrics.
-  base::Optional<bool> main_frame_request_had_cookies_;
+  absl::optional<bool> main_frame_request_had_cookies_;
 
   // The browser context this navigation is operating in.
   content::BrowserContext* browser_context_ = nullptr;
@@ -314,7 +314,7 @@ class UkmPageLoadMetricsObserver
   base::TimeDelta total_foreground_duration_;
 
   // The connection info for the committed URL.
-  base::Optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
+  absl::optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 

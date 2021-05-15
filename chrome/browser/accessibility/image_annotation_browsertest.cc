@@ -167,7 +167,7 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   static bool return_ocr_results_;
   static bool return_label_results_;
   static std::map<std::string, std::string> custom_label_result_mapping_;
-  static base::Optional<image_annotation::mojom::AnnotateImageError>
+  static absl::optional<image_annotation::mojom::AnnotateImageError>
       return_error_code_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAnnotator);
@@ -180,7 +180,7 @@ bool FakeAnnotator::return_label_results_ = false;
 // static
 std::map<std::string, std::string> FakeAnnotator::custom_label_result_mapping_;
 // static
-base::Optional<image_annotation::mojom::AnnotateImageError>
+absl::optional<image_annotation::mojom::AnnotateImageError>
     FakeAnnotator::return_error_code_;
 
 // The fake ImageAnnotationService, which handles mojo calls from the renderer

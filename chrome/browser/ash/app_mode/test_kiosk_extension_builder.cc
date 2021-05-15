@@ -27,14 +27,14 @@ TestKioskExtensionBuilder::TestKioskExtensionBuilder(
 TestKioskExtensionBuilder::~TestKioskExtensionBuilder() = default;
 
 void TestKioskExtensionBuilder::AddSecondaryExtension(const std::string& id) {
-  secondary_extensions_.emplace_back(id, base::nullopt);
+  secondary_extensions_.emplace_back(id, absl::nullopt);
 }
 
 void TestKioskExtensionBuilder::AddSecondaryExtensionWithEnabledOnLaunch(
     const std::string& id,
     bool enabled_on_launch) {
   secondary_extensions_.emplace_back(id,
-                                     base::Optional<bool>(enabled_on_launch));
+                                     absl::optional<bool>(enabled_on_launch));
 }
 
 scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()

@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_commands {
 
@@ -57,7 +57,7 @@ enterprise_management::RemoteCommand_Type ClearBrowsingDataJob::GetType()
 
 bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root)
     return false;
 

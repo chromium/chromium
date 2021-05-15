@@ -116,26 +116,26 @@ class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
 
 struct ObserverMethodTestParam {
   blink::mojom::MediaStreamType stream_type;
-  base::Optional<media::mojom::DisplayMediaInformation> display_media_info;
+  absl::optional<media::mojom::DisplayMediaInformation> display_media_info;
   MockObserverSetExpectationsMethod observer_method;
   AccessorMethod accessor_method;
 };
 
 ObserverMethodTestParam kObserverMethodTestParams[] = {
     {blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-     /*display_media_info=*/base::nullopt,
+     /*display_media_info=*/absl::nullopt,
      &MockObserver::SetOnIsCapturingVideoChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingVideo},
     {blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-     /*display_media_info=*/base::nullopt,
+     /*display_media_info=*/absl::nullopt,
      &MockObserver::SetOnIsCapturingAudioChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingAudio},
     {blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
-     /*display_media_info=*/base::nullopt,
+     /*display_media_info=*/absl::nullopt,
      &MockObserver::SetOnIsBeingMirroredChangedExpectation,
      &MediaStreamCaptureIndicator::IsBeingMirrored},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-     /*display_media_info=*/base::nullopt,
+     /*display_media_info=*/absl::nullopt,
      &MockObserver::SetOnIsCapturingWindowChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingWindow},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 
-#include "base/optional.h"
 #include "chrome/browser/lite_video/lite_video_features.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -24,17 +24,17 @@ constexpr char kLiteVideoBlocklistKeySeparator[] = "_";
 // Returns the key for a navigation used for the rebuffer blocklist type.
 // The key format is "mainframe.com_subframe.com", if the navigation is the
 // mainframe navigation, the key omits subframe.com, e.g., "mainframe.com_"
-base::Optional<std::string> GetRebufferBlocklistKey(
+absl::optional<std::string> GetRebufferBlocklistKey(
     const GURL& mainframe_url,
-    base::Optional<GURL> subframe_url) {
+    absl::optional<GURL> subframe_url) {
   if (!IsURLValidForBlocklist(mainframe_url))
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!subframe_url)
     return mainframe_url.host() + kLiteVideoBlocklistKeySeparator;
 
   if (!IsURLValidForBlocklist(*subframe_url))
-    return base::nullopt;
+    return absl::nullopt;
   return mainframe_url.host() + kLiteVideoBlocklistKeySeparator +
          subframe_url->host();
 }
@@ -68,9 +68,9 @@ LiteVideoBlocklistReason LiteVideoUserBlocklist::IsLiteVideoAllowedOnNavigation(
   if (blocklist_reason != blocklist::BlocklistReason::kAllowed)
     return LiteVideoBlocklistReason::kNavigationBlocklisted;
 
-  base::Optional<std::string> rebuffer_key =
+  absl::optional<std::string> rebuffer_key =
       navigation_handle->IsInMainFrame()
-          ? GetRebufferBlocklistKey(navigation_url, base::nullopt)
+          ? GetRebufferBlocklistKey(navigation_url, absl::nullopt)
           : GetRebufferBlocklistKey(
                 navigation_handle->GetWebContents()->GetLastCommittedURL(),
                 navigation_url);
@@ -141,10 +141,10 @@ void LiteVideoUserBlocklist::AddNavigationToBlocklist(
 
 void LiteVideoUserBlocklist::AddRebufferToBlocklist(
     const GURL& mainframe_url,
-    base::Optional<GURL> subframe_url,
+    absl::optional<GURL> subframe_url,
     bool opt_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Optional<std::string> rebuffer_key =
+  absl::optional<std::string> rebuffer_key =
       GetRebufferBlocklistKey(mainframe_url, subframe_url);
   if (rebuffer_key) {
     AddEntry(*rebuffer_key, opt_out,

@@ -94,9 +94,9 @@ void PushMessagingRefresher::GotMessageFrom(const std::string& app_id) {
   }
 }
 
-base::Optional<PushMessagingAppIdentifier>
+absl::optional<PushMessagingAppIdentifier>
 PushMessagingRefresher::FindActiveAppIdentifier(const std::string& app_id) {
-  base::Optional<PushMessagingAppIdentifier> app_identifier;
+  absl::optional<PushMessagingAppIdentifier> app_identifier;
   RefreshMap::iterator refresh_map_it = refresh_map_.find(app_id);
   if (refresh_map_it != refresh_map_.end()) {
     RefreshInfo::iterator result =

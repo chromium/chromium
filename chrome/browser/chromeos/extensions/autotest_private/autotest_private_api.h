@@ -13,7 +13,6 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/display/display.h"
@@ -652,7 +652,7 @@ class AutotestPrivateSetAssistantEnabledFunction
   // will respond with an error.
   void Timeout();
 
-  base::Optional<bool> enabled_;
+  absl::optional<bool> enabled_;
   base::OneShotTimer timeout_timer_;
 };
 
@@ -692,7 +692,7 @@ class AutotestPrivateSendAssistantTextQueryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Called when the interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const base::Optional<std::string>& error);
+  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -716,7 +716,7 @@ class AutotestPrivateWaitForAssistantQueryStatusFunction
   ResponseAction Run() override;
 
   // Called when the current interaction finished with non-empty response.
-  void OnInteractionFinishedCallback(const base::Optional<std::string>& error);
+  void OnInteractionFinishedCallback(const absl::optional<std::string>& error);
 
   // Called when Assistant service fails to respond in a certain amount of
   // time. We will respond with an error.
@@ -1019,7 +1019,7 @@ class AutotestPrivateWaitForDisplayRotationFunction
   ResponseValue CheckScreenRotationAnimation();
 
   int64_t display_id_ = display::kInvalidDisplayId;
-  base::Optional<display::Display::Rotation> target_rotation_;
+  absl::optional<display::Display::Rotation> target_rotation_;
   // A reference to keep the instance alive while waiting for rotation.
   scoped_refptr<ExtensionFunction> self_;
 };

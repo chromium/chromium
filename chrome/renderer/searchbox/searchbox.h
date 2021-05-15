@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "chrome/common/search/search.mojom.h"
@@ -21,6 +20,7 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // The renderer-side implementation of the embeddedSearch API (see
@@ -250,7 +250,7 @@ class SearchBox : public content::RenderFrameObserver,
   // comparing most visited items.
   InstantMostVisitedInfo most_visited_info_;
   bool has_received_most_visited_;
-  base::Optional<NtpTheme> theme_;
+  absl::optional<NtpTheme> theme_;
 
   base::WeakPtrFactory<SearchBox> weak_ptr_factory_{this};
 

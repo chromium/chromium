@@ -99,7 +99,7 @@ TEST(GetPrinterIdTest, MissingPathDelimiter) {
 }
 
 TEST(ParseEndpointForPrinterIdTest, SimpleSanityTest) {
-  base::Optional<std::string> printer_id = ParseEndpointForPrinterId(
+  absl::optional<std::string> printer_id = ParseEndpointForPrinterId(
       std::string(kEndpointPrefix) + kDefaultPrinterId);
 
   EXPECT_TRUE(printer_id.has_value());

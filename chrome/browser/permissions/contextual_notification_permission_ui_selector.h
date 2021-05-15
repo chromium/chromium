@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_PERMISSIONS_CONTEXTUAL_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
 #include "components/permissions/notification_permission_ui_selector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 class PermissionRequest;
@@ -56,7 +56,7 @@ class ContextualNotificationPermissionUiSelector
       const url::Origin& origin,
       const CrowdDenyPreloadData::SiteReputation* reputation);
 
-  base::Optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
+  absl::optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
   DecisionMadeCallback callback_;
   base::WeakPtrFactory<ContextualNotificationPermissionUiSelector>
       weak_factory_{this};

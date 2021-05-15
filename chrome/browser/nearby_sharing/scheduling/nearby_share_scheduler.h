@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_NEARBY_SHARING_SCHEDULING_NEARBY_SHARE_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Schedules tasks and alerts the owner when a request is ready. Scheduling
 // begins after Start() is called, and scheduling is stopped via Stop().
@@ -41,12 +41,12 @@ class NearbyShareScheduler {
   virtual void Reschedule() = 0;
 
   // Returns the time of the last known successful request. If no request has
-  // succeeded, base::nullopt is returned.
-  virtual base::Optional<base::Time> GetLastSuccessTime() const = 0;
+  // succeeded, absl::nullopt is returned.
+  virtual absl::optional<base::Time> GetLastSuccessTime() const = 0;
 
-  // Returns the time until the next scheduled request. Returns base::nullopt if
+  // Returns the time until the next scheduled request. Returns absl::nullopt if
   // there is no request scheduled.
-  virtual base::Optional<base::TimeDelta> GetTimeUntilNextRequest() const = 0;
+  virtual absl::optional<base::TimeDelta> GetTimeUntilNextRequest() const = 0;
 
   // Returns true after the |callback_| has been alerted of a request but before
   // HandleResult() is invoked.

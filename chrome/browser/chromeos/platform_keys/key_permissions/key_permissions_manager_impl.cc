@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -34,6 +33,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -210,7 +210,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     UpdatePermissionsForKeyWithCorporateFlag(
         const std::string& public_key_spki_der,
-        base::Optional<bool> corporate_usage_allowed,
+        absl::optional<bool> corporate_usage_allowed,
         Status corporate_usage_retrieval_status) {
   if (corporate_usage_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't retrieve corporate usage flag for a key.";
@@ -426,7 +426,7 @@ void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
 void KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions(
     IsKeyAllowedForUsageCallback callback,
     KeyUsage usage,
-    const base::Optional<std::string>& serialized_key_permissions,
+    const absl::optional<std::string>& serialized_key_permissions,
     Status key_attribute_retrieval_status) {
   if (key_attribute_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Error while retrieving key permissions: "

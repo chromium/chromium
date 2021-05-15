@@ -30,7 +30,7 @@ class CurrentTabDesktopMediaList : public DesktopMediaListBase {
   // Otherwise, an empty Optional is sent back. In either case, |hash| is the
   // hash value of the frame that was handled.
   void OnCaptureHandled(uint32_t hash,
-                        const base::Optional<gfx::ImageSkia>& image);
+                        const absl::optional<gfx::ImageSkia>& image);
 
   // It's hard for tests to control what kind of image is given by the mock.
   // Normally it just returns the same thing again and again. To simulate a
@@ -45,7 +45,7 @@ class CurrentTabDesktopMediaList : public DesktopMediaListBase {
 
   // The hash of the last captured frame. Used to detect identical frames
   // and prevent needless rescaling.
-  base::Optional<uint32_t> last_hash_;
+  absl::optional<uint32_t> last_hash_;
 
   // The heavy lifting involved with rescaling images into thumbnails is
   // moved off of the UI thread and onto this task runner.

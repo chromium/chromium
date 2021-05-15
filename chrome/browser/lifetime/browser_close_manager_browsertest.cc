@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -64,6 +63,7 @@
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -226,7 +226,7 @@ class TestDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       download::DownloadDangerType danger_type,
       download::DownloadItem::MixedContentStatus mcs,
       const base::FilePath& intermediate_path,
-      base::Optional<download::DownloadSchedule> download_schedule,
+      absl::optional<download::DownloadSchedule> download_schedule,
       download::DownloadInterruptReason reason) {
     std::move(callback).Run(target_path, disp,
                             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL, mcs,

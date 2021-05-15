@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
@@ -25,6 +24,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 class CrOSComponentManager;
@@ -119,7 +119,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   bool GetActiveTabUrlSupported() const;
 
   using GetActiveTabUrlCallback =
-      base::OnceCallback<void(const base::Optional<GURL>&)>;
+      base::OnceCallback<void(const absl::optional<GURL>&)>;
   // Gets Url of the active tab from lacros if there is any.
   void GetActiveTabUrl(GetActiveTabUrlCallback callback);
 
@@ -321,12 +321,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // ID for the current Crosapi connection.
   // Available only when lacros-chrome is running.
-  base::Optional<CrosapiId> crosapi_id_;
-  base::Optional<CrosapiId> legacy_crosapi_id_;
+  absl::optional<CrosapiId> crosapi_id_;
+  absl::optional<CrosapiId> legacy_crosapi_id_;
 
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
-  base::Optional<BrowserServiceInfo> browser_service_;
+  absl::optional<BrowserServiceInfo> browser_service_;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

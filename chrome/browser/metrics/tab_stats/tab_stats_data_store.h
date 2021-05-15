@@ -10,12 +10,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "content/public/browser/visibility.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using mojom::LifecycleUnitDiscardReason;
 
@@ -113,7 +113,7 @@ class TabStatsDataStore : public TabStatsObserver {
   void ResetIntervalData(TabsStateDuringIntervalMap* interval_map);
 
   const TabsStats& tab_stats() const { return tab_stats_; }
-  base::Optional<TabID> GetTabIDForTesting(content::WebContents* web_contents);
+  absl::optional<TabID> GetTabIDForTesting(content::WebContents* web_contents);
   base::flat_map<content::WebContents*, TabID>* existing_tabs_for_testing() {
     return &existing_tabs_;
   }

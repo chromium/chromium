@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/sparse_histogram.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -30,6 +29,7 @@
 #include "base/win/windows_types.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -493,7 +493,7 @@ void ChromePromptChannel::HandlePromptUserRequest(
     files_to_delete.push_back(base::FilePath(file_path_wide));
   }
 
-  base::Optional<std::vector<std::wstring>> optional_registry_keys;
+  absl::optional<std::vector<std::wstring>> optional_registry_keys;
   if (request.registry_keys_size()) {
     std::vector<std::wstring> registry_keys;
     registry_keys.reserve(request.registry_keys_size());

@@ -372,7 +372,7 @@ class ProfileManager : public Profile::Delegate {
   // Searches for the latest active profile that respects |predicate|, already
   // loaded preferably. Returns nullopt if no existing profile respects all the
   // conditions.
-  base::Optional<base::FilePath> FindLastActiveProfile(
+  absl::optional<base::FilePath> FindLastActiveProfile(
       base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 #endif
 

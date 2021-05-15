@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -86,7 +86,7 @@ void LogPrinterSetup(const chromeos::Printer& printer,
 }
 
 // This runs on a ThreadPoolForegroundWorker and not the UI thread.
-base::Optional<PrinterSemanticCapsAndDefaults>
+absl::optional<PrinterSemanticCapsAndDefaults>
 FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
                                       const std::string& locale) {
   auto print_backend = PrintBackend::CreateInstance(locale);
@@ -97,13 +97,13 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
   crash_keys::ScopedPrinterInfo crash_key(
       print_backend->GetPrinterDriverInfo(printer_id));
 
-  auto caps = base::make_optional<PrinterSemanticCapsAndDefaults>();
+  auto caps = absl::make_optional<PrinterSemanticCapsAndDefaults>();
   if (print_backend->GetPrinterSemanticCapsAndDefaults(printer_id, &*caps) !=
       mojom::ResultCode::kSuccess) {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
     LOG(WARNING) << "Failed to get capabilities for " << printer_id;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return caps;
 }
@@ -116,7 +116,7 @@ void CapabilitiesFetchedFromService(
     LOG(WARNING) << "Failure fetching printer capabilities from service for "
                  << printer_id << " - error "
                  << printer_caps->get_result_code();
-    std::move(cb).Run(base::nullopt);
+    std::move(cb).Run(absl::nullopt);
     return;
   }
   VLOG(1) << "Successfully received printer capabilities from service for "
@@ -150,13 +150,13 @@ void OnPrinterInstalled(
     chromeos::CupsPrintersManager* printers_manager,
     const chromeos::Printer& printer,
     base::OnceCallback<
-        void(const base::Optional<PrinterSemanticCapsAndDefaults>&)> cb,
+        void(const absl::optional<PrinterSemanticCapsAndDefaults>&)> cb,
     chromeos::PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   LogPrinterSetup(printer, result);
   if (result != chromeos::PrinterSetupResult::kSuccess) {
-    std::move(cb).Run(base::nullopt);
+    std::move(cb).Run(absl::nullopt);
     return;
   }
   printers_manager->PrinterInstalled(printer, /*is_automatic=*/true);

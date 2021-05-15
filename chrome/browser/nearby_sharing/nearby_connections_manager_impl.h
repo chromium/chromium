@@ -48,7 +48,7 @@ class NearbyConnectionsManagerImpl
   void StopDiscovery() override;
   void Connect(std::vector<uint8_t> endpoint_info,
                const std::string& endpoint_id,
-               base::Optional<std::vector<uint8_t>> bluetooth_mac_address,
+               absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
                DataUsage data_usage,
                NearbyConnectionCallback callback) override;
   void Disconnect(const std::string& endpoint_id) override;
@@ -64,7 +64,7 @@ class NearbyConnectionsManagerImpl
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
-  base::Optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
 
@@ -132,7 +132,7 @@ class NearbyConnectionsManagerImpl
                      NearbyFileHandler::CreateFileResult result);
 
   // For metrics.
-  base::Optional<Medium> GetUpgradedMedium(
+  absl::optional<Medium> GetUpgradedMedium(
       const std::string& endpoint_id) const;
 
   chromeos::nearby::NearbyProcessManager* process_manager_;

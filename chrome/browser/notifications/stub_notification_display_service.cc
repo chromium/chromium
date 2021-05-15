@@ -48,7 +48,7 @@ StubNotificationDisplayService::GetDisplayedNotificationsForType(
   return notifications;
 }
 
-base::Optional<message_center::Notification>
+absl::optional<message_center::Notification>
 StubNotificationDisplayService::GetNotification(
     const std::string& notification_id) {
   auto iter = std::find_if(notifications_.begin(), notifications_.end(),
@@ -57,7 +57,7 @@ StubNotificationDisplayService::GetNotification(
                            });
 
   if (iter == notifications_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return iter->notification;
 }
@@ -79,8 +79,8 @@ StubNotificationDisplayService::GetMetadataForNotification(
 void StubNotificationDisplayService::SimulateClick(
     NotificationHandler::Type notification_type,
     const std::string& notification_id,
-    base::Optional<int> action_index,
-    base::Optional<std::u16string> reply) {
+    absl::optional<int> action_index,
+    absl::optional<std::u16string> reply) {
   auto iter = FindNotification(notification_type, notification_id);
   if (iter == notifications_.end())
     return;
@@ -230,9 +230,9 @@ void StubNotificationDisplayService::ProcessNotificationOperation(
     NotificationHandler::Type notification_type,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
-    const base::Optional<bool>& by_user) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
+    const absl::optional<bool>& by_user) {
   if (process_notification_operation_delegate_) {
     process_notification_operation_delegate_.Run(operation, notification_type,
                                                  origin, notification_id,

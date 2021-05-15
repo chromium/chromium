@@ -835,7 +835,7 @@ class CastV2PerformanceTest : public InProcessBrowserTest,
 
  protected:
   // Ensure best effort tasks are not required for this test to pass.
-  base::Optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  absl::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
       best_effort_fence_;
 
   // HTTPS server for loading pages from the test data dir.

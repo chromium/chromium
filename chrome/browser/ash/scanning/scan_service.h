@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -77,7 +77,7 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // LorgnetteScannerManager::GetScannerCapabilities().
   void OnScannerCapabilitiesReceived(
       GetScannerCapabilitiesCallback callback,
-      const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
+      const absl::optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Receives progress updates after calling LorgnetteScannerManager::Scan().
   // |page_number| indicates the page the |progress_percent| corresponds to.

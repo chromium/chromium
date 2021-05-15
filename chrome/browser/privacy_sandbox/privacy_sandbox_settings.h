@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -17,6 +16,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "net/cookies/cookie_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
 class PrefService;
@@ -68,7 +68,7 @@ class PrivacySandboxSettings : public KeyedService,
   // affect 1P and 3P contexts.
   bool IsFlocAllowedForContext(
       const GURL& url,
-      const base::Optional<url::Origin>& top_frame_origin) const;
+      const absl::optional<url::Origin>& top_frame_origin) const;
 
   // Returns the point in time from which history is eligible to be used when
   // calculating a user's FLoC ID. Reset when a user clears all cookies, or
@@ -215,7 +215,7 @@ class PrivacySandboxSettings : public KeyedService,
   // provided as a parameter to allow callers to cache it between calls.
   bool IsPrivacySandboxAllowedForContext(
       const GURL& url,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;
 
   // Inspects the current sync state and settings to determine if the Privacy

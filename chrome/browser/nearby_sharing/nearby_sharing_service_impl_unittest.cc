@@ -289,7 +289,7 @@ sharing::mojom::FramePtr GetValidIntroductionFrame() {
   sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
   mojo_v1frame->set_introduction(sharing::mojom::IntroductionFrame::New(
       std::move(mojo_file_metadatas), std::move(mojo_text_metadatas),
-      /*required_package=*/base::nullopt,
+      /*required_package=*/absl::nullopt,
       std::vector<sharing::mojom::WifiCredentialsMetadataPtr>()));
 
   sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
@@ -331,8 +331,8 @@ std::vector<std::unique_ptr<Attachment>> CreateTextAttachments(
   std::vector<std::unique_ptr<Attachment>> attachments;
   for (auto& text : texts) {
     attachments.push_back(std::make_unique<TextAttachment>(
-        TextAttachment::Type::kText, std::move(text), /*title=*/base::nullopt,
-        /*mime_type=*/base::nullopt));
+        TextAttachment::Type::kText, std::move(text), /*title=*/absl::nullopt,
+        /*mime_type=*/absl::nullopt));
   }
   return attachments;
 }
@@ -573,7 +573,7 @@ class NearbySharingServiceImplTest : public testing::Test {
                   nearby_share::mojom::Visibility::kAllContacts),
               GetNearbyShareTestEncryptedMetadataKey()));
     } else {
-      std::move(calls.back().callback).Run(base::nullopt);
+      std::move(calls.back().callback).Run(absl::nullopt);
     }
   }
 
@@ -645,7 +645,7 @@ class NearbySharingServiceImplTest : public testing::Test {
                 return;
               }
 
-              base::Optional<std::string> device_name;
+              absl::optional<std::string> device_name;
               if (!return_empty_device_name)
                 device_name = kDeviceName;
 
@@ -928,7 +928,7 @@ class NearbySharingServiceImplTest : public testing::Test {
             location::nearby::connections::mojom::PayloadStatus::kSuccess,
             /*total_bytes=*/strlen(kTextPayload),
             /*bytes_transferred=*/strlen(kTextPayload)),
-        /*upgraded_medium=*/base::nullopt);
+        /*upgraded_medium=*/absl::nullopt);
     success_run_loop.Run();
   }
 
@@ -2360,7 +2360,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
                 sharing::mojom::IntroductionFrame::New(
                     std::move(mojo_file_metadatas),
                     std::vector<sharing::mojom::TextMetadataPtr>(),
-                    /*required_package=*/base::nullopt,
+                    /*required_package=*/absl::nullopt,
                     std::vector<sharing::mojom::WifiCredentialsMetadataPtr>()));
 
             sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
@@ -2438,7 +2438,7 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
                 sharing::mojom::IntroductionFrame::New(
                     std::move(mojo_file_metadatas),
                     std::vector<sharing::mojom::TextMetadataPtr>(),
-                    /*required_package=*/base::nullopt,
+                    /*required_package=*/absl::nullopt,
                     std::vector<sharing::mojom::WifiCredentialsMetadataPtr>()));
 
             sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
@@ -2576,7 +2576,7 @@ TEST_F(NearbySharingServiceImplTest,
   // TODO(https://crbug.com/1122552) - Remove cleanups after bugfix
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::Optional<base::FilePath> path =
+    absl::optional<base::FilePath> path =
         fake_nearby_connections_manager_->GetRegisteredPayloadPath(
             kFilePayloadId);
     EXPECT_TRUE(path);
@@ -2629,7 +2629,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget) {
   // TODO(https://crbug.com/1122552) - Remove cleanups after bugfix
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::Optional<base::FilePath> path =
+    absl::optional<base::FilePath> path =
         fake_nearby_connections_manager_->GetRegisteredPayloadPath(
             kFilePayloadId);
     EXPECT_TRUE(path);
@@ -2699,7 +2699,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
             /*total_bytes=*/kPayloadSize,
             /*bytes_transferred=*/kPayloadSize);
     listener->OnStatusUpdate(std::move(payload),
-                             /*upgraded_medium=*/base::nullopt);
+                             /*upgraded_medium=*/absl::nullopt);
     run_loop_progress.Run();
 
     task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
@@ -2739,7 +2739,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
   listener->OnStatusUpdate(std::move(payload),
-                           /*upgraded_medium=*/base::nullopt);
+                           /*upgraded_medium=*/absl::nullopt);
   run_loop_success.Run();
 
   EXPECT_FALSE(
@@ -2819,7 +2819,7 @@ TEST_F(NearbySharingServiceImplTest,
             /*total_bytes=*/kPayloadSize,
             /*bytes_transferred=*/kPayloadSize);
     listener->OnStatusUpdate(std::move(payload),
-                             /*upgraded_medium=*/base::nullopt);
+                             /*upgraded_medium=*/absl::nullopt);
     run_loop_progress.Run();
 
     task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
@@ -2852,7 +2852,7 @@ TEST_F(NearbySharingServiceImplTest,
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
   listener->OnStatusUpdate(std::move(payload),
-                           /*upgraded_medium=*/base::nullopt);
+                           /*upgraded_medium=*/absl::nullopt);
   run_loop_success.Run();
 
   EXPECT_FALSE(
@@ -2862,7 +2862,7 @@ TEST_F(NearbySharingServiceImplTest,
   // File deletion runs in a ThreadPool.
   task_environment_.RunUntilIdle();
 
-  base::Optional<base::FilePath> file_path =
+  absl::optional<base::FilePath> file_path =
       fake_nearby_connections_manager_->GetRegisteredPayloadPath(
           kFilePayloadId);
   ASSERT_TRUE(file_path);
@@ -2926,7 +2926,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadFailed) {
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
   listener->OnStatusUpdate(std::move(payload),
-                           /*upgraded_medium=*/base::nullopt);
+                           /*upgraded_medium=*/absl::nullopt);
   run_loop_failure.Run();
 
   EXPECT_FALSE(
@@ -2936,7 +2936,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadFailed) {
   // File deletion runs in a ThreadPool.
   task_environment_.RunUntilIdle();
 
-  base::Optional<base::FilePath> file_path =
+  absl::optional<base::FilePath> file_path =
       fake_nearby_connections_manager_->GetRegisteredPayloadPath(
           kFilePayloadId);
   ASSERT_TRUE(file_path);
@@ -3000,7 +3000,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadCancelled) {
           /*total_bytes=*/kPayloadSize,
           /*bytes_transferred=*/kPayloadSize);
   listener->OnStatusUpdate(std::move(payload),
-                           /*upgraded_medium=*/base::nullopt);
+                           /*upgraded_medium=*/absl::nullopt);
   run_loop_failure.Run();
 
   EXPECT_FALSE(
@@ -3010,7 +3010,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadCancelled) {
   // File deletion runs in a ThreadPool.
   task_environment_.RunUntilIdle();
 
-  base::Optional<base::FilePath> file_path =
+  absl::optional<base::FilePath> file_path =
       fake_nearby_connections_manager_->GetRegisteredPayloadPath(
           kFilePayloadId);
   ASSERT_TRUE(file_path);

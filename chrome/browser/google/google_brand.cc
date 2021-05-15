@@ -9,12 +9,12 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "chrome/browser/mac/keystone_glue.h"
@@ -47,11 +47,11 @@ bool GetBrand(std::string* brand) {
   // Cache brand code value, since it is queried a lot and registry queries are
   // slow enough to actually affect top-level metrics like
   // Omnibox.CharTypedToRepaintLatency.
-  static const base::NoDestructor<base::Optional<std::string>> brand_code(
-      []() -> base::Optional<std::string> {
+  static const base::NoDestructor<absl::optional<std::string>> brand_code(
+      []() -> absl::optional<std::string> {
         std::wstring brandw;
         if (!GoogleUpdateSettings::GetBrand(&brandw))
-          return base::nullopt;
+          return absl::nullopt;
         return base::WideToASCII(brandw);
       }());
   if (!brand_code->has_value())

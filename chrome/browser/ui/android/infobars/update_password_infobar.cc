@@ -20,7 +20,7 @@ using base::android::JavaParamRef;
 
 UpdatePasswordInfoBar::UpdatePasswordInfoBar(
     std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
-    base::Optional<AccountInfo> account_info)
+    absl::optional<AccountInfo> account_info)
     : infobars::ConfirmInfoBar(std::move(delegate)) {
   account_info_ = account_info;
 }

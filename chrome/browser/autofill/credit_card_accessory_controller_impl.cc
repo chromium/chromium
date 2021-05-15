@@ -81,7 +81,7 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-base::Optional<autofill::AccessorySheetData>
+absl::optional<autofill::AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
   bool valid_manager = web_contents_->GetFocusedFrame() && GetManager();
   std::vector<UserInfo> info_to_add;
@@ -201,7 +201,7 @@ void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   } else {
     cards_cache_.clear();  // If cards cannot be filled, don't show them.
   }
-  base::Optional<AccessorySheetData> data = GetSheetData();
+  absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
     source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));
   } else {

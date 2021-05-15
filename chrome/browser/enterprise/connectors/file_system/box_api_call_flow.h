@@ -167,15 +167,15 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
 
   // Helper functions to read and delete the local file.
   // Task posted to ThreadPool to read the local file. Return type is
-  // base::Optional in case file is read successfully but the file content is
+  // absl::optional in case file is read successfully but the file content is
   // really empty.
-  static base::Optional<std::string> ReadFile(const base::FilePath& path);
+  static absl::optional<std::string> ReadFile(const base::FilePath& path);
   // Callback attached in PostReadFileTask(). Take in read file content and
   // kick off OAuth2CallFlow::Start().
   void OnFileRead(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      base::Optional<std::string> content);
+      absl::optional<std::string> content);
 
   const std::string folder_id_;
   const base::FilePath target_file_name_;

@@ -326,7 +326,7 @@ void OnSearchDriveFs(
     bool filter_dirs,
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback,
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   Profile* const profile =
       Profile::FromBrowserContext(function->browser_context());
   drive::DriveIntegrationService* integration_service =
@@ -385,7 +385,7 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
       std::move(query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          base::Optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+          absl::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
 }
 
 void UmaEmitSearchOutcome(

@@ -165,8 +165,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                     \
         .WillOnce(RunOnceCallback<4>(                                 \
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
-            /*response_error=*/base::nullopt,                         \
-            /*try_again_later_ms=*/base::nullopt, kInvalidationTopic, \
+            /*response_error=*/absl::nullopt,                         \
+            /*try_again_later_ms=*/absl::nullopt, kInvalidationTopic, \
             kChallenge, HASHING_ALGO, kDataToSign));                  \
   }
 
@@ -176,8 +176,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                     \
         .WillOnce(RunOnceCallback<4>(                                 \
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
-            /*response_error=*/base::nullopt,                         \
-            /*try_again_later_ms=*/base::nullopt, kInvalidationTopic, \
+            /*response_error=*/absl::nullopt,                         \
+            /*try_again_later_ms=*/absl::nullopt, kInvalidationTopic, \
             /*va_challenge=*/"", HASHING_ALGO, kDataToSign));         \
   }
 
@@ -187,7 +187,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                  \
         .WillOnce(RunOnceCallback<4>(                              \
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,     \
-            /*response_error=*/base::nullopt,                      \
+            /*response_error=*/absl::nullopt,                      \
             /*try_again_later_ms=*/(DELAY_MS), kInvalidationTopic, \
             /*va_challenge=*/"",                                   \
             enterprise_management::HashingAlgorithm::              \
@@ -201,8 +201,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                            \
         .WillOnce(RunOnceCallback<4>(                                        \
             policy::DeviceManagementStatus::DM_STATUS_REQUEST_INVALID,       \
-            /*response_error=*/base::nullopt,                                \
-            /*try_again_later_ms=*/base::nullopt, /*invalidation_topic=*/"", \
+            /*response_error=*/absl::nullopt,                                \
+            /*try_again_later_ms=*/absl::nullopt, /*invalidation_topic=*/"", \
             /*va_challenge=*/"",                                             \
             enterprise_management::HashingAlgorithm::                        \
                 HASHING_ALGORITHM_UNSPECIFIED,                               \
@@ -216,7 +216,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<4>(                                        \
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,               \
             /*response_error=*/CertProvisioningResponseError::CA_ERROR,      \
-            /*try_again_later_ms=*/base::nullopt, /*invalidation_topic=*/"", \
+            /*try_again_later_ms=*/absl::nullopt, /*invalidation_topic=*/"", \
             /*va_challenge=*/"",                                             \
             enterprise_management::HashingAlgorithm::                        \
                 HASHING_ALGORITHM_UNSPECIFIED,                               \
@@ -229,8 +229,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                            \
         .WillOnce(RunOnceCallback<4>(                                        \
             policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE, \
-            /*response_error=*/base::nullopt,                                \
-            /*try_again_later_ms=*/base::nullopt, /*invalidation_topic=*/"", \
+            /*response_error=*/absl::nullopt,                                \
+            /*try_again_later_ms=*/absl::nullopt, /*invalidation_topic=*/"", \
             /*va_challenge=*/"",                                             \
             enterprise_management::HashingAlgorithm::                        \
                 HASHING_ALGORITHM_UNSPECIFIED,                               \
@@ -243,8 +243,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                              \
         .WillOnce(RunOnceCallback<4>(policy::DeviceManagementStatus::          \
                                          DM_STATUS_SERVICE_ACTIVATION_PENDING, \
-                                     /*response_error=*/base::nullopt,         \
-                                     /*try_again_later_ms=*/base::nullopt,     \
+                                     /*response_error=*/absl::nullopt,         \
+                                     /*try_again_later_ms=*/absl::nullopt,     \
                                      /*invalidation_topic=*/"",                \
                                      /*va_challenge=*/"",                      \
                                      enterprise_management::HashingAlgorithm:: \
@@ -260,7 +260,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             policy::DeviceManagementStatus::                                 \
                 DM_STATUS_SUCCESS, /*response_error=*/                       \
             CertProvisioningResponseError::INCONSISTENT_DATA,                \
-            /*try_again_later_ms=*/base::nullopt, /*invalidation_topic=*/"", \
+            /*try_again_later_ms=*/absl::nullopt, /*invalidation_topic=*/"", \
             /*va_challenge=*/"",                                             \
             enterprise_management::HashingAlgorithm::                        \
                 HASHING_ALGORITHM_UNSPECIFIED,                               \
@@ -275,8 +275,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
     EXPECT_CALL(cloud_policy_client_, FINISH_CSR_FUNC)                        \
         .Times(1)                                                             \
         .WillOnce(RunOnceCallback<6>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, base::nullopt, \
-            base::nullopt));                                                  \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
+            absl::nullopt));                                                  \
   }
 
 #define EXPECT_FINISH_CSR_TRY_LATER(FINISH_CSR_FUNC, DELAY_MS)                \
@@ -284,7 +284,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
     EXPECT_CALL(cloud_policy_client_, FINISH_CSR_FUNC)                        \
         .Times(1)                                                             \
         .WillOnce(RunOnceCallback<6>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, base::nullopt, \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
             /*try_again_later_ms=*/(DELAY_MS)));                              \
   }
 
@@ -294,7 +294,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                              \
         .WillOnce(RunOnceCallback<6>(policy::DeviceManagementStatus::          \
                                          DM_STATUS_SERVICE_ACTIVATION_PENDING, \
-                                     base::nullopt, base::nullopt));           \
+                                     absl::nullopt, absl::nullopt));           \
   }
 
 #define EXPECT_DOWNLOAD_CERT_OK(DOWNLOAD_CERT_FUNC)                           \
@@ -302,8 +302,8 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
     EXPECT_CALL(cloud_policy_client_, DOWNLOAD_CERT_FUNC)                     \
         .Times(1)                                                             \
         .WillOnce(RunOnceCallback<4>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, base::nullopt, \
-            base::nullopt, kFakeCertificate));                                \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
+            absl::nullopt, kFakeCertificate));                                \
   }
 
 #define EXPECT_DOWNLOAD_CERT_SERVICE_ACTIVATION_PENDING(DOWNLOAD_CERT_FUNC)    \
@@ -312,7 +312,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                              \
         .WillOnce(RunOnceCallback<4>(policy::DeviceManagementStatus::          \
                                          DM_STATUS_SERVICE_ACTIVATION_PENDING, \
-                                     base::nullopt, base::nullopt,             \
+                                     absl::nullopt, absl::nullopt,             \
                                      kFakeCertificate));                       \
   }
 
@@ -321,7 +321,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
     EXPECT_CALL(cloud_policy_client_, DOWNLOAD_CERT_FUNC)                     \
         .Times(1)                                                             \
         .WillOnce(RunOnceCallback<4>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, base::nullopt, \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
             /*try_again_later_ms=*/(DELAY_MS), /*certificate=*/""));          \
   }
 

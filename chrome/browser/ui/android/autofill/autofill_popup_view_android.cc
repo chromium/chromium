@@ -54,8 +54,8 @@ void AutofillPopupViewAndroid::Hide() {
 }
 
 void AutofillPopupViewAndroid::OnSelectedRowChanged(
-    base::Optional<int> previous_row_selection,
-    base::Optional<int> current_row_selection) {}
+    absl::optional<int> previous_row_selection,
+    absl::optional<int> current_row_selection) {}
 
 void AutofillPopupViewAndroid::OnSuggestionsChanged() {
   if (java_object_.is_null())
@@ -112,9 +112,9 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
                                 controller_->IsRTL());
 }
 
-base::Optional<int32_t> AutofillPopupViewAndroid::GetAxUniqueId() {
+absl::optional<int32_t> AutofillPopupViewAndroid::GetAxUniqueId() {
   NOTIMPLEMENTED() << "See https://crbug.com/985927";
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillPopupViewAndroid::SuggestionSelected(

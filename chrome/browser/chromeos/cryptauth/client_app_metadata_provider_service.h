@@ -11,12 +11,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/system/sys_info.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -98,8 +98,8 @@ class ClientAppMetadataProviderService
   instance_id::InstanceIDProfileService* instance_id_profile_service_;
 
   bool instance_id_recreated_ = false;
-  base::Optional<std::string> pending_gcm_registration_id_;
-  base::Optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
+  absl::optional<std::string> pending_gcm_registration_id_;
+  absl::optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
   std::list<GetMetadataCallback> pending_callbacks_;
   base::WeakPtrFactory<ClientAppMetadataProviderService> weak_ptr_factory_{
       this};

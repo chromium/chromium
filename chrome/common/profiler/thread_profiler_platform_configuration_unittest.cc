@@ -73,7 +73,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_FALSE(config()->IsSupported(base::nullopt));
+  EXPECT_FALSE(config()->IsSupported(absl::nullopt));
 #elif defined(OS_ANDROID)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
@@ -81,7 +81,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_FALSE(config()->IsSupported(base::nullopt));
+  EXPECT_FALSE(config()->IsSupported(absl::nullopt));
 #else
 #if defined(OS_MAC)
   // Sampling profiler does not work on macOS 11.0 yet:
@@ -100,7 +100,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_EQ(on_default, config()->IsSupported(base::nullopt));
+  EXPECT_EQ(on_default, config()->IsSupported(absl::nullopt));
 #endif
 }
 
@@ -158,7 +158,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::STABLE));
 
   EXPECT_EQ((RelativePopulations{100, 0}),
-            config()->GetEnableRates(base::nullopt));
+            config()->GetEnableRates(absl::nullopt));
 #endif
 }
 

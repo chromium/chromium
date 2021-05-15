@@ -94,7 +94,7 @@ void SendTabToSelfIconView::UpdateImpl() {
       // Set label ahead of time to avoid announcing a useless alert (i.e.
       // "alert Send") to screenreaders.
       SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF));
-      AnimateIn(base::nullopt);
+      AnimateIn(absl::nullopt);
       initial_animation_state_ = AnimationState::kShowing;
       controller->SetInitialSendAnimationShown(true);
     }

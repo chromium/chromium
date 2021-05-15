@@ -31,14 +31,14 @@ class CastSessionClientImpl : public CastSessionClient,
   void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) override;
   void SendMediaStatusToClient(const base::Value& media_status,
-                               base::Optional<int> request_id) override;
+                               absl::optional<int> request_id) override;
   void CloseConnection(
       blink::mojom::PresentationConnectionCloseReason close_reason) override;
   void TerminateConnection() override;
   bool MatchesAutoJoinPolicy(url::Origin origin, int tab_id) const override;
   void SendErrorCodeToClient(int sequence_number,
                              CastInternalMessage::ErrorCode error_code,
-                             base::Optional<std::string> description) override;
+                             absl::optional<std::string> description) override;
   void SendErrorToClient(int sequence_number, base::Value error) override;
 
   // blink::mojom::PresentationConnection implementation

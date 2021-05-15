@@ -88,7 +88,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                                   base::Time to,
                                   std::set<GURL> restrict_urls = {}) {
     return DeletionInfo(history::DeletionTimeRange(from, to), false, {}, {},
-                        restrict_urls.empty() ? base::Optional<std::set<GURL>>()
+                        restrict_urls.empty() ? absl::optional<std::set<GURL>>()
                                               : restrict_urls);
   }
 

@@ -144,10 +144,10 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-base::Optional<content::DesktopMediaID> DesktopMediaListView::GetSelection() {
+absl::optional<content::DesktopMediaID> DesktopMediaListView::GetSelection() {
   DesktopMediaSourceView* view = GetSelectedView();
-  return view ? base::Optional<content::DesktopMediaID>(view->source_id())
-              : base::nullopt;
+  return view ? absl::optional<content::DesktopMediaID>(view->source_id())
+              : absl::nullopt;
 }
 
 DesktopMediaListController::SourceListListener*

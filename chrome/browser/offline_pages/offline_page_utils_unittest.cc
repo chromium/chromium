@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +44,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -123,7 +123,7 @@ class OfflinePageUtilsTest
     return result;
   }
 
-  base::Optional<int64_t> GetCachedOfflinePageSizeBetween(
+  absl::optional<int64_t> GetCachedOfflinePageSizeBetween(
       const base::Time& begin_time,
       const base::Time& end_time) {
     int64_t result;
@@ -136,7 +136,7 @@ class OfflinePageUtilsTest
     if (!OfflinePageUtils::GetCachedOfflinePageSizeBetween(
             profile(), base::BindLambdaForTesting(on_done), begin_time,
             end_time)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     run_loop.Run();
     return result;

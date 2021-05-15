@@ -75,7 +75,7 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
   void RunValueChangedCallbacks();
 
   // Creates a callback from |proto|.
-  base::Optional<InteractionCallback> CreateInteractionCallbackFromProto(
+  absl::optional<InteractionCallback> CreateInteractionCallbackFromProto(
       const CallbackProto& proto);
 
  private:

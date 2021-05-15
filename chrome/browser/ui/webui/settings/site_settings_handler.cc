@@ -619,7 +619,7 @@ void SiteSettingsHandler::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 void SiteSettingsHandler::OnObjectPermissionChanged(
-    base::Optional<ContentSettingsType> guard_content_settings_type,
+    absl::optional<ContentSettingsType> guard_content_settings_type,
     ContentSettingsType data_content_settings_type) {
   if (!guard_content_settings_type ||
       !site_settings::HasRegisteredGroupName(*guard_content_settings_type) ||

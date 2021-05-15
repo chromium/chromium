@@ -649,7 +649,7 @@ HRESULT ValidateResult(const base::Value& result, BSTR* status_text) {
   DCHECK(status_text);
 
   // Check the exit_code to see if any errors were detected by the GLS.
-  base::Optional<int> exit_code = result.FindIntKey(kKeyExitCode);
+  absl::optional<int> exit_code = result.FindIntKey(kKeyExitCode);
   if (exit_code.value() != kUiecSuccess) {
     switch (exit_code.value()) {
       case kUiecAbort:
@@ -2476,7 +2476,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   base::WideToUTF8(OLE2CW(authentication_info),
                    ::SysStringLen(authentication_info), &json_string);
 
-  base::Optional<base::Value> properties =
+  absl::optional<base::Value> properties =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
 
   SecurelyClearString(json_string);

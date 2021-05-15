@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {
@@ -19,11 +19,11 @@ using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
 
-base::Optional<TextSuggestion> ToTextSuggestion(
+absl::optional<TextSuggestion> ToTextSuggestion(
     const TextSuggestionCandidatePtr& candidate) {
   if (!candidate->is_multi_word()) {
     // TODO(crbug/1146266): Handle emoji suggestions
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return TextSuggestion{

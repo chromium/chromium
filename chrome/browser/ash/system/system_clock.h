@@ -83,7 +83,7 @@ class SystemClock : public chromeos::LoginState::Observer,
 
   void UpdateClockType();
 
-  base::Optional<base::HourClockType> scoped_hour_clock_type_;
+  absl::optional<base::HourClockType> scoped_hour_clock_type_;
 
   Profile* user_profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

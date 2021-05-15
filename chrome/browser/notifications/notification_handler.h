@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -60,8 +60,8 @@ class NotificationHandler {
   virtual void OnClick(Profile* profile,
                        const GURL& origin,
                        const std::string& notification_id,
-                       const base::Optional<int>& action_index,
-                       const base::Optional<std::u16string>& reply,
+                       const absl::optional<int>& action_index,
+                       const absl::optional<std::u16string>& reply,
                        base::OnceClosure completed_closure);
 
   // Called when notifications of the given origin have to be disabled.

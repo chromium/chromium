@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -20,6 +19,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -67,10 +67,10 @@ em::RemoteCommand GenerateCommandProto(
     base::TimeDelta age_of_command,
     base::TimeDelta idleness_cutoff,
     bool terminate_upon_input,
-    base::Optional<int32_t> id,
-    base::Optional<chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
+    absl::optional<int32_t> id,
+    absl::optional<chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum>
         command,
-    base::Optional<bool> include_output) {
+    absl::optional<bool> include_output) {
   em::RemoteCommand command_proto;
   command_proto.set_type(
       em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE);
@@ -94,7 +94,7 @@ em::RemoteCommand GenerateCommandProto(
 
 std::string CreateInteractivePayload(
     uint32_t progress_percent,
-    base::Optional<std::string> output,
+    absl::optional<std::string> output,
     chromeos::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum
         user_message) {
   base::Value root_dict(base::Value::Type::DICTIONARY);
@@ -114,7 +114,7 @@ std::string CreateInteractivePayload(
 
 std::string CreateNonInteractivePayload(
     uint32_t progress_percent,
-    base::Optional<std::string> output,
+    absl::optional<std::string> output,
     chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
     const std::string& status_message) {
   base::Value root_dict(base::Value::Type::DICTIONARY);
@@ -223,7 +223,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingId) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::TimeDelta::FromSeconds(30),
                            /*terminate_upon_input=*/false,
-                           /*id=*/base::nullopt,
+                           /*id=*/absl::nullopt,
                            chromeos::cros_healthd::mojom::
                                DiagnosticRoutineCommandEnum::kGetStatus,
                            /*include_output=*/true),
@@ -243,7 +243,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest, CommandPayloadMissingCommand) {
       GenerateCommandProto(kUniqueID, base::TimeTicks::Now() - test_start_time_,
                            base::TimeDelta::FromSeconds(30),
                            /*terminate_upon_input=*/false,
-                           /*id=*/1293, /*command=*/base::nullopt,
+                           /*id=*/1293, /*command=*/absl::nullopt,
                            /*include_output=*/true),
       nullptr));
 
@@ -265,7 +265,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
           /*terminate_upon_input=*/false,
           /*id=*/457658,
           chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum::kCancel,
-          /*include_output=*/base::nullopt),
+          /*include_output=*/absl::nullopt),
       nullptr));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
@@ -301,7 +301,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
                  EXPECT_TRUE(payload);
                  // TODO(crbug.com/1056323): Verify output.
                  EXPECT_EQ(CreateInteractivePayload(kProgressPercent,
-                                                    /*output=*/base::nullopt,
+                                                    /*output=*/absl::nullopt,
                                                     kUserMessage),
                            *payload);
                  run_loop.Quit();
@@ -339,7 +339,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
                  EXPECT_TRUE(payload);
                  // TODO(crbug.com/1056323): Verify output.
                  EXPECT_EQ(CreateNonInteractivePayload(kProgressPercent,
-                                                       /*output=*/base::nullopt,
+                                                       /*output=*/absl::nullopt,
                                                        kStatus, kStatusMessage),
                            *payload);
                  run_loop.Quit();

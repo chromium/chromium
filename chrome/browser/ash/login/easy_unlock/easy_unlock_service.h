@@ -223,7 +223,7 @@ class EasyUnlockService : public KeyedService {
   void SetProximityAuthDevices(
       const AccountId& account_id,
       const multidevice::RemoteDeviceRefList& remote_devices,
-      base::Optional<multidevice::RemoteDeviceRef> local_device);
+      absl::optional<multidevice::RemoteDeviceRef> local_device);
 
   bool will_authenticate_using_easy_unlock() const {
     return will_authenticate_using_easy_unlock_;

@@ -7,7 +7,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
@@ -17,6 +16,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;

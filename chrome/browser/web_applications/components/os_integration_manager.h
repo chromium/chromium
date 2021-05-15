@@ -131,7 +131,7 @@ class OsIntegrationManager {
   // Proxy calls for FileHandlerManager.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);
   const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id);
-  const base::Optional<GURL> GetMatchingFileHandlerURL(
+  const absl::optional<GURL> GetMatchingFileHandlerURL(
       const AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
   void MaybeUpdateFileHandlingOriginTrialExpiry(
@@ -141,7 +141,7 @@ class OsIntegrationManager {
   void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
 
   // Proxy calls for ProtocolHandlerManager.
-  virtual base::Optional<GURL> TranslateProtocolUrl(const AppId& app_id,
+  virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                                     const GURL& protocol_url);
 
   // Getter for testing FileHandlerManager

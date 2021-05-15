@@ -651,7 +651,7 @@ void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
     return;
   }
   active_directory_domain_join_config_.clear();
-  base::Optional<base::Value> options = base::JSONReader::Read(
+  absl::optional<base::Value> options = base::JSONReader::Read(
       unlocked_data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!options || !options->is_list()) {
     ShowError(IDS_AD_JOIN_CONFIG_NOT_PARSED, true);

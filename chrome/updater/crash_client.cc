@@ -10,11 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/prune_crash_reports.h"
@@ -55,7 +55,7 @@ bool CrashClient::InitializeDatabaseOnly() {
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  base::Optional<base::FilePath> database_path = GetVersionedDirectory();
+  absl::optional<base::FilePath> database_path = GetVersionedDirectory();
   if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;

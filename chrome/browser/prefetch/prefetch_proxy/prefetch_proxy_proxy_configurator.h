@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -16,6 +15,7 @@
 #include "net/base/proxy_server.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // Configures the use of the IP-masking CONNECT tunnel proxy for Isolated
@@ -58,7 +58,7 @@ class PrefetchProxyProxyConfigurator
   // Called when an error is detected by the CustomProxyConnectionObserver
   // implementation so that we can throttle requests to the proxy.
   void OnTunnelProxyConnectionError(
-      base::Optional<base::TimeDelta> retry_after);
+      absl::optional<base::TimeDelta> retry_after);
 
   // The headers used to setup the connect tunnel.
   net::HttpRequestHeaders connect_tunnel_headers_;
@@ -70,7 +70,7 @@ class PrefetchProxyProxyConfigurator
   const base::Clock* clock_;
 
   // If set, the prefetch proxy should not be used until this time.
-  base::Optional<base::Time> prefetch_proxy_not_available_until_;
+  absl::optional<base::Time> prefetch_proxy_not_available_until_;
 
   // The set of clients that will get updates about changes to the proxy config.
   mojo::RemoteSet<network::mojom::CustomProxyConfigClient>

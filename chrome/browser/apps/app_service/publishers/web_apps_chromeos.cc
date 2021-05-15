@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
@@ -64,6 +63,7 @@
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
@@ -511,7 +511,7 @@ void WebAppsChromeOs::OnRequestUpdate(int render_process_id,
     return;
   }
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
                                               /*window_only=*/false);
   if (!app_id.has_value()) {
@@ -538,7 +538,7 @@ void WebAppsChromeOs::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
 
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(
           profile(), web_contents->GetLastCommittedURL(),
           /*window_only=*/false);
@@ -615,7 +615,7 @@ void WebAppsChromeOs::MaybeAddWebPageNotifications(
 
   if (persistent_metadata) {
     // For persistent notifications, find the web app with the SW scope url.
-    base::Optional<web_app::AppId> app_id =
+    absl::optional<web_app::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(
             profile(), persistent_metadata->service_worker_scope,
             /*window_only=*/false);

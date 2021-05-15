@@ -93,7 +93,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
       continue;
     }
 
-    base::Optional<base::Time> retry_after = util::ValueToTime(element.second);
+    absl::optional<base::Time> retry_after = util::ValueToTime(element.second);
     if (!retry_after) {
       // This may happen in the case of corrupted prefs, or otherwise. Handle
       // gracefully.

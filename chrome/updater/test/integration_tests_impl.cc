@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -36,6 +35,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace test {
@@ -65,7 +65,7 @@ void ExpectVersionNotActive(const std::string& version) {
 
 void PrintLog(UpdaterScope scope) {
   std::string contents;
-  base::Optional<base::FilePath> path = GetDataDirPath(scope);
+  absl::optional<base::FilePath> path = GetDataDirPath(scope);
   EXPECT_TRUE(path);
   if (path &&
       base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
@@ -106,7 +106,7 @@ void CopyLog(const base::FilePath& src_dir) {
 }
 
 void RunWake(UpdaterScope scope, int expected_exit_code) {
-  const base::Optional<base::FilePath> installed_executable_path =
+  const absl::optional<base::FilePath> installed_executable_path =
       GetInstalledExecutablePath(scope);
   ASSERT_TRUE(installed_executable_path);
   EXPECT_TRUE(base::PathExists(*installed_executable_path));
@@ -131,7 +131,7 @@ void SetupFakeUpdaterPrefs(const base::Version& version) {
 
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
                                    const base::Version& version) {
-  const base::Optional<base::FilePath> folder_path =
+  const absl::optional<base::FilePath> folder_path =
       GetFakeUpdaterInstallFolderPath(scope, version);
   ASSERT_TRUE(folder_path);
   ASSERT_TRUE(base::CreateDirectory(*folder_path));

@@ -25,7 +25,7 @@ void ProtocolHandlerManager::Start() {
   DCHECK(app_registrar_);
 }
 
-base::Optional<GURL> ProtocolHandlerManager::TranslateProtocolUrl(
+absl::optional<GURL> ProtocolHandlerManager::TranslateProtocolUrl(
     const AppId& app_id,
     const GURL& protocol_url) const {
   std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
@@ -36,7 +36,7 @@ base::Optional<GURL> ProtocolHandlerManager::TranslateProtocolUrl(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<ProtocolHandler> ProtocolHandlerManager::GetHandlersFor(

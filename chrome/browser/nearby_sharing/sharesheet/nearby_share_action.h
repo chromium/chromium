@@ -55,8 +55,8 @@ class NearbyShareAction : public sharesheet::ShareAction,
  private:
   bool IsNearbyShareDisabledByPolicy();
 
-  base::Optional<bool> nearby_share_disabled_by_policy_for_testing_ =
-      base::nullopt;
+  absl::optional<bool> nearby_share_disabled_by_policy_for_testing_ =
+      absl::nullopt;
   views::WebView* web_view_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };

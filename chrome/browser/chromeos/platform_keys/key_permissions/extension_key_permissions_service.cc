@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "extensions/browser/state_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -159,7 +159,7 @@ void ExtensionKeyPermissionsService::CanUseKeyForSigning(
 void ExtensionKeyPermissionsService::CanUseKeyForSigningWithFlags(
     CanUseKeyForSigningCallback callback,
     bool sign_unlimited_allowed,
-    base::Optional<bool> is_corporate_key,
+    absl::optional<bool> is_corporate_key,
     Status is_corporate_key_status) {
   if (is_corporate_key_status != Status::kSuccess) {
     LOG(ERROR) << "Failed to check if the key is corporate: "

@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ChromeScreenshotGrabberBrowserTest, TakeScreenshot) {
 
   // Copy to clipboard button.
   display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                  std::string("screenshot"), 0, base::nullopt);
+                                  std::string("screenshot"), 0, absl::nullopt);
 
   RunLoop();
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);

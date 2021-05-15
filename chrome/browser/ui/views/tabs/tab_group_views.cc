@@ -67,7 +67,7 @@ gfx::Rect TabGroupViews::GetBounds() const {
 }
 
 const Tab* TabGroupViews::GetLastTabInGroup() const {
-  const base::Optional<int> last_tab =
+  const absl::optional<int> last_tab =
       tab_strip_->controller()->GetLastTabInGroup(group_);
   return last_tab.has_value() ? tab_strip_->tab_at(last_tab.value()) : nullptr;
 }

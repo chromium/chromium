@@ -57,7 +57,7 @@ class LauncherSearchProvider : public SearchProvider {
 
   base::TimeTicks query_start_time_;
 
-  base::Optional<chromeos::string_matching::TokenizedString>
+  absl::optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
 
   // The reference to profile to get LauncherSearchProvider service.

@@ -497,7 +497,7 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
   base::Value log_entries =
       base::Value::FromUniquePtrValue(std::move(log_entries_value_list));
   request_dict.SetKey(kRequestLogEntriesParameterName, std::move(log_entries));
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
 
   // Make the upload HTTP request.
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(

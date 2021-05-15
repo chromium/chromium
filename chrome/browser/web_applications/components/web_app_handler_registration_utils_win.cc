@@ -102,7 +102,7 @@ void UpdateAppRegistration(const web_app::AppId& app_id,
   std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::Optional<base::FilePath> app_launcher_path =
+  absl::optional<base::FilePath> app_launcher_path =
       web_app::CreateAppLauncherFile(
           app_name, app_name_extension,
           web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path,
@@ -208,14 +208,14 @@ std::wstring GetProgIdForApp(const base::FilePath& profile_path,
   return prog_id;
 }
 
-base::Optional<base::FilePath> CreateAppLauncherFile(
+absl::optional<base::FilePath> CreateAppLauncherFile(
     const std::wstring& app_name,
     const std::wstring& app_name_extension,
     const base::FilePath& web_app_path) {
   if (!base::CreateDirectory(web_app_path)) {
     DPLOG(ERROR) << "Unable to create web app dir";
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::FilePath icon_path =
@@ -238,7 +238,7 @@ base::Optional<base::FilePath> CreateAppLauncherFile(
                  << " app_specific_launcher_path: "
                  << app_specific_launcher_path;
     RecordRegistration(RegistrationResult::kFailToCopyFromGenericLauncher);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return app_specific_launcher_path;

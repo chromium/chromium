@@ -61,7 +61,7 @@ class BrowserCommandController : public CommandUpdater,
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
   void ExtensionStateChanged();
-  void TabKeyboardFocusChangedTo(base::Optional<int> index);
+  void TabKeyboardFocusChangedTo(absl::optional<int> index);
   void WebContentsFocusChanged();
 
   // Overriden from CommandUpdater:
@@ -192,7 +192,7 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands for tab keyboard focus state. If |target_index| is
   // populated, it is the index of the tab with focus; if it is not populated,
   // no tab has keyboard focus.
-  void UpdateCommandsForTabKeyboardFocus(base::Optional<int> target_index);
+  void UpdateCommandsForTabKeyboardFocus(absl::optional<int> target_index);
 
   // Updates commands that depend on whether web contents is focused or not.
   void UpdateCommandsForWebContentsFocus();

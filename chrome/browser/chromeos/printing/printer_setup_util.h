@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_SETUP_UTIL_H_
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
 using GetPrinterCapabilitiesCallback = base::OnceCallback<void(
-    const base::Optional<PrinterSemanticCapsAndDefaults>&)>;
+    const absl::optional<PrinterSemanticCapsAndDefaults>&)>;
 
 // Sets up a printer (if necessary) and runs a callback with the printer
 // capabilities once printer setup is complete. The callback is run

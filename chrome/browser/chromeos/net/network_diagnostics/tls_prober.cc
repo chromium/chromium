@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_util.h"
@@ -22,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -108,7 +108,7 @@ void TlsProber::OnHostResolutionComplete(
   DCHECK(network_context);
 
   network_context->CreateTCPConnectedSocket(
-      /*local_addr=*/base::nullopt,
+      /*local_addr=*/absl::nullopt,
       resolution_result.resolved_addresses.value(),
       /*options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
@@ -118,8 +118,8 @@ void TlsProber::OnHostResolutionComplete(
 
 void TlsProber::OnConnectComplete(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -157,7 +157,7 @@ void TlsProber::OnConnectComplete(
 void TlsProber::OnTlsUpgrade(int result,
                              mojo::ScopedDataPipeConsumerHandle receive_stream,
                              mojo::ScopedDataPipeProducerHandle send_stream,
-                             const base::Optional<net::SSLInfo>& ssl_info) {
+                             const absl::optional<net::SSLInfo>& ssl_info) {
   // |send_stream| and |receive_stream|, created on the TLS connection, fall out
   // of scope when this method completes.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

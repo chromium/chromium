@@ -276,8 +276,8 @@ std::wstring GetSelectedLanguage();
 
 // Securely clear a base::Value that may be a dictionary value that may
 // have a password field.
-void SecurelyClearDictionaryValue(base::Optional<base::Value>* value);
-void SecurelyClearDictionaryValueWithKey(base::Optional<base::Value>* value,
+void SecurelyClearDictionaryValue(absl::optional<base::Value>* value);
+void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
                                          const std::string& password_key);
 
 // Securely clear std::wstring and std::string.

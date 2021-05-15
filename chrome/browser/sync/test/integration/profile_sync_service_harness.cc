@@ -278,7 +278,7 @@ bool ProfileSyncServiceHarness::SetupSync() {
 bool ProfileSyncServiceHarness::SetupSyncNoWaitForCompletion(
     syncer::UserSelectableTypeSet selected_types) {
   return SetupSyncImpl(selected_types, EncryptionSetupMode::kNoEncryption,
-                       /*encryption_passphrase=*/base::nullopt);
+                       /*encryption_passphrase=*/absl::nullopt);
 }
 
 bool ProfileSyncServiceHarness::
@@ -300,7 +300,7 @@ bool ProfileSyncServiceHarness::
 bool ProfileSyncServiceHarness::SetupSyncImpl(
     syncer::UserSelectableTypeSet selected_types,
     EncryptionSetupMode encryption_mode,
-    const base::Optional<std::string>& passphrase) {
+    const absl::optional<std::string>& passphrase) {
   DCHECK(encryption_mode == EncryptionSetupMode::kNoEncryption ||
          passphrase.has_value());
 

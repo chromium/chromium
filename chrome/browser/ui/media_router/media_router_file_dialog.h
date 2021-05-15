@@ -128,7 +128,7 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
                                  void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-  // Returns a reason for failure if the file is not valid, or base::nullopt if
+  // Returns a reason for failure if the file is not valid, or absl::nullopt if
   // it passes validation. Has to be run on seperate thread.
   ValidationResult ValidateFile(const ui::SelectedFileInfo& file_info);
 
@@ -148,7 +148,7 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   // Pointer to the file last indicated by the system.
-  base::Optional<ui::SelectedFileInfo> selected_file_;
+  absl::optional<ui::SelectedFileInfo> selected_file_;
 
   // The object which all file system calls go through.
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;

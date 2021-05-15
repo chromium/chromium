@@ -122,13 +122,13 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
       kHatsSurveyTriggerSettingsPrivacy,
-      /*presupplied_trigger_id=*/base::nullopt,
+      /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
-      /*presupplied_trigger_id=*/base::nullopt,
+      /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
 
@@ -145,7 +145,7 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
 HatsService::SurveyConfig::SurveyConfig(
     const base::Feature* feature,
     const std::string& trigger,
-    const base::Optional<std::string>& presupplied_trigger_id,
+    const absl::optional<std::string>& presupplied_trigger_id,
     const std::vector<std::string>& product_specific_data_fields)
     : trigger(trigger),
       product_specific_data_fields(product_specific_data_fields) {
@@ -393,27 +393,27 @@ void HatsService::GetSurveyMetadataForTesting(
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
 
-  base::Optional<int> last_major_version =
+  absl::optional<int> last_major_version =
       pref_data->FindIntPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value())
     metadata->last_major_version = last_major_version;
 
-  base::Optional<base::Time> last_survey_started_time =
+  absl::optional<base::Time> last_survey_started_time =
       util::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value())
     metadata->last_survey_started_time = last_survey_started_time;
 
-  base::Optional<base::Time> any_last_survey_started_time =
+  absl::optional<base::Time> any_last_survey_started_time =
       util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
   if (any_last_survey_started_time.has_value())
     metadata->any_last_survey_started_time = any_last_survey_started_time;
 
-  base::Optional<bool> is_survey_full =
+  absl::optional<bool> is_survey_full =
       pref_data->FindBoolPath(GetIsSurveyFull(trigger));
   if (is_survey_full.has_value())
     metadata->is_survey_full = is_survey_full;
 
-  base::Optional<base::Time> last_survey_check_time =
+  absl::optional<base::Time> last_survey_check_time =
       util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value())
     metadata->last_survey_check_time = last_survey_check_time;
@@ -516,7 +516,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
 
   const base::DictionaryValue* pref_data =
       profile_->GetPrefs()->GetDictionary(prefs::kHatsSurveyMetadata);
-  base::Optional<int> last_major_version =
+  absl::optional<int> last_major_version =
       pref_data->FindIntPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value() &&
       static_cast<uint32_t>(*last_major_version) ==
@@ -536,7 +536,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
       return false;
     }
 
-    base::Optional<base::Time> last_survey_started_time = util::ValueToTime(
+    absl::optional<base::Time> last_survey_started_time = util::ValueToTime(
         pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
     if (last_survey_started_time.has_value()) {
       base::TimeDelta elapsed_time_since_last_start =
@@ -552,7 +552,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
     // The time any survey was started will always be equal or more recent than
     // the time a particular survey was started, so it is checked afterwards to
     // improve UMA logging.
-    base::Optional<base::Time> last_any_started_time =
+    absl::optional<base::Time> last_any_started_time =
         util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
     if (last_any_started_time.has_value()) {
       base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
@@ -567,7 +567,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
 
   // If an attempt to check with the HaTS servers whether a survey should be
   // delivered was made too recently, another survey cannot be shown.
-  base::Optional<base::Time> last_survey_check_time =
+  absl::optional<base::Time> last_survey_check_time =
       util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value()) {
     base::TimeDelta elapsed_time_since_last_check =
@@ -605,7 +605,7 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
   // duplicated checks since the survey won't change once it is full.
   const base::DictionaryValue* pref_data =
       profile_->GetPrefs()->GetDictionary(prefs::kHatsSurveyMetadata);
-  base::Optional<int> is_full =
+  absl::optional<int> is_full =
       pref_data->FindBoolPath(GetIsSurveyFull(trigger));
   if (is_full.has_value() && is_full) {
     std::move(failure_callback).Run();

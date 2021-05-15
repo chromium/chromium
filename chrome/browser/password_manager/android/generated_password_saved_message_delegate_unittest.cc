@@ -88,7 +88,7 @@ void GeneratedPasswordSavedMessageDelegateTest::SetUsernameAndPassword(
 
 void GeneratedPasswordSavedMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save) {
-  base::Optional<AccountInfo> account_info;
+  absl::optional<AccountInfo> account_info;
   account_info = AccountInfo();
   account_info.value().email = base::UTF16ToASCII(kAccountEmail);
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);

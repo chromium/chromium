@@ -94,8 +94,8 @@ class PasswordExpiryNotificationDelegate : public NotificationDelegate {
 
   // message_center::NotificationDelegate:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 };
 
 PasswordExpiryNotificationDelegate::PasswordExpiryNotificationDelegate() =
@@ -111,8 +111,8 @@ void PasswordExpiryNotificationDelegate::Close(bool by_user) {
 }
 
 void PasswordExpiryNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   bool clicked_on_button = button_index.has_value();
   if (clicked_on_button) {
     InSessionPasswordChangeManager::Get()->StartInSessionPasswordChange();

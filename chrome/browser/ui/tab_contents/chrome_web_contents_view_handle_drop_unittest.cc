@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -30,6 +29,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
  public:

@@ -190,9 +190,9 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
 }  // namespace
 
 ArcSupportHost::ErrorInfo::ErrorInfo(Error error)
-    : error(error), arg(base::nullopt) {}
+    : error(error), arg(absl::nullopt) {}
 ArcSupportHost::ErrorInfo::ErrorInfo(Error error,
-                                     const base::Optional<int>& arg)
+                                     const absl::optional<int>& arg)
     : error(error), arg(arg) {}
 ArcSupportHost::ErrorInfo::ErrorInfo(const ErrorInfo&) = default;
 ArcSupportHost::ErrorInfo& ArcSupportHost::ErrorInfo::operator=(

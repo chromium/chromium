@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +27,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -318,7 +318,7 @@ TEST_F(ScanServiceTest, NoCapabilities) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
   fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
-      base::nullopt);
+      absl::nullopt);
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
   auto caps = GetScannerCapabilities(scanners[0]->id);

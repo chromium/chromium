@@ -107,8 +107,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
       base::TimeDelta delay,
       const net::test_server::HttpRequest& request);
 
-  base::Optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  base::Optional<base::HistogramTester> histogram_tester_;
+  absl::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  absl::optional<base::HistogramTester> histogram_tester_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_

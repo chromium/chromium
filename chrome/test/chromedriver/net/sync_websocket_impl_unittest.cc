@@ -93,7 +93,7 @@ TEST_F(SyncWebSocketImplTest, DetermineRecipient) {
 
   // Getting message id and method
   base::DictionaryValue* message_dict;
-  base::Optional<base::Value> message_value = base::JSONReader::Read(message);
+  absl::optional<base::Value> message_value = base::JSONReader::Read(message);
   ASSERT_TRUE(message_value.has_value());
   ASSERT_TRUE(message_value->GetAsDictionary(&message_dict));
   std::string method;

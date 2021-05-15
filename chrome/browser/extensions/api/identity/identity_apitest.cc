@@ -398,10 +398,10 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
 
   void StartTokenKeyAccountAccessTokenRequest() override {
     if (auto_login_access_token_) {
-      base::Optional<std::string> access_token("access_token");
+      absl::optional<std::string> access_token("access_token");
       GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
       if (!login_access_token_result_) {
-        access_token = base::nullopt;
+        access_token = absl::nullopt;
         error = GoogleServiceAuthError(
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
       }
@@ -949,7 +949,7 @@ class GetAuthTokenFunctionTest
     return GetCachedToken(account_info, oauth_scopes_);
   }
 
-  base::Optional<std::string> GetCachedGaiaId() {
+  absl::optional<std::string> GetCachedGaiaId() {
     return id_api()->GetGaiaIdForExtension(extension_id_);
   }
 
@@ -3045,7 +3045,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunNewFunctionAndExpectSelectedUserId(
       const scoped_refptr<const extensions::Extension>& extension,
       const std::string& expected_selected_user_id,
-      const base::Optional<std::string> requested_account = base::nullopt) {
+      const absl::optional<std::string> requested_account = absl::nullopt) {
     auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
     func->set_extension(extension);
     RunFunctionAndExpectSelectedUserId(func, expected_selected_user_id,
@@ -3055,7 +3055,7 @@ class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
   void RunFunctionAndExpectSelectedUserId(
       const scoped_refptr<FakeGetAuthTokenFunction>& func,
       const std::string& expected_selected_user_id,
-      const base::Optional<std::string> requested_account = base::nullopt) {
+      const absl::optional<std::string> requested_account = absl::nullopt) {
     // Stops the function right before selected_user_id would be used.
     MockQueuedMintRequest queued_request;
     IdentityMintRequestQueue::MintType type =

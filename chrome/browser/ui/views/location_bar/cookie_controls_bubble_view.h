@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -14,6 +13,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
 
@@ -86,7 +86,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
 
   IntermediateStep intermediate_step_ = IntermediateStep::kNone;
 
-  base::Optional<int> blocked_cookies_;
+  absl::optional<int> blocked_cookies_;
 
   views::ImageView* header_view_ = nullptr;
   views::Label* text_ = nullptr;

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +45,7 @@
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 
@@ -72,7 +72,7 @@ class TestQuietNotificationPermissionUiSelector
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, base::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
   }
 
  private:
@@ -177,7 +177,7 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      origin, "A=B", base::Time::Now(), base::nullopt /* server_time */));
+      origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame())
       ->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,

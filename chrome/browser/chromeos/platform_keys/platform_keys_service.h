@@ -16,10 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class NSSCertDatabase;
@@ -87,14 +87,14 @@ using SetAttributeForKeyCallback = base::OnceCallback<void(Status status)>;
 // If the attribute value has been successfully retrieved, |attribute_value|
 // will contain the result. If an error occurs, |attribute_value| will be empty.
 using GetAttributeForKeyCallback =
-    base::OnceCallback<void(const base::Optional<std::string>& attribute_value,
+    base::OnceCallback<void(const absl::optional<std::string>& attribute_value,
                             Status status)>;
 
 // If the availability of the key on the provided token has been successfully
 // determined, |on_token| will contain the result. If an error occurs,
 // |on_token| will be empty and an error |status| will be returned.
 using IsKeyOnTokenCallback =
-    base::OnceCallback<void(base::Optional<bool> on_token, Status status)>;
+    base::OnceCallback<void(absl::optional<bool> on_token, Status status)>;
 
 // An observer that gets notified when the PlatformKeysService is being shut
 // down.
@@ -149,7 +149,7 @@ class PlatformKeysService : public KeyedService {
   // that |token_id| (or in none of the available tokens if |token_id| is not
   // specified), the operation aborts. |callback| will be invoked with the
   // signature or an error status.
-  virtual void SignRSAPKCS1Digest(base::Optional<TokenId> token_id,
+  virtual void SignRSAPKCS1Digest(absl::optional<TokenId> token_id,
                                   const std::string& data,
                                   const std::string& public_key_spki_der,
                                   HashAlgorithm hash_algorithm,
@@ -162,7 +162,7 @@ class PlatformKeysService : public KeyedService {
   // The size of |data| (number of octets) must be smaller than k - 11, where k
   // is the key size in octets. |callback| will be invoked with the signature or
   // an error status.
-  virtual void SignRSAPKCS1Raw(base::Optional<TokenId> token_id,
+  virtual void SignRSAPKCS1Raw(absl::optional<TokenId> token_id,
                                const std::string& data,
                                const std::string& public_key_spki_der,
                                SignCallback callback) = 0;
@@ -172,7 +172,7 @@ class PlatformKeysService : public KeyedService {
   // none of the available tokens if |token_id| is not specified), the operation
   // aborts. |callback| will be invoked with the ECDSA signature or an error
   // status.
-  virtual void SignECDSADigest(base::Optional<TokenId> token_id,
+  virtual void SignECDSADigest(absl::optional<TokenId> token_id,
                                const std::string& data,
                                const std::string& public_key_spki_der,
                                HashAlgorithm hash_algorithm,
@@ -252,7 +252,7 @@ class PlatformKeysService : public KeyedService {
   // |public_key_spki_der| only if the key is in |token_id|. |callback| will be
   // invoked on the UI thread when getting the attribute is done, possibly with
   // an error message. In case no value was set for |attribute_type|, an error
-  // |status| and base::nullopt |attribute_value| will be returned.
+  // |status| and absl::nullopt |attribute_value| will be returned.
   virtual void GetAttributeForKey(TokenId token_id,
                                   const std::string& public_key_spki_der,
                                   KeyAttributeType attribute_type,
@@ -260,7 +260,7 @@ class PlatformKeysService : public KeyedService {
 
   // Determines if |public_key_spki_der| resides on |token_id|. |callback| will
   // be invoked on the UI thread with the result. If an error occurred, an error
-  // |status| will be returned and base::nullopt |on_token| will be returned.
+  // |status| will be returned and absl::nullopt |on_token| will be returned.
   virtual void IsKeyOnToken(TokenId token_id,
                             const std::string& public_key_spki_der,
                             IsKeyOnTokenCallback callback) = 0;
@@ -332,16 +332,16 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void GenerateECKey(TokenId token_id,
                      const std::string& named_curve,
                      GenerateKeyCallback callback) override;
-  void SignRSAPKCS1Digest(base::Optional<TokenId> token_id,
+  void SignRSAPKCS1Digest(absl::optional<TokenId> token_id,
                           const std::string& data,
                           const std::string& public_key_spki_der,
                           HashAlgorithm hash_algorithm,
                           SignCallback callback) override;
-  void SignRSAPKCS1Raw(base::Optional<TokenId> token_id,
+  void SignRSAPKCS1Raw(absl::optional<TokenId> token_id,
                        const std::string& data,
                        const std::string& public_key_spki_der,
                        SignCallback callback) override;
-  void SignECDSADigest(base::Optional<TokenId> token_id,
+  void SignECDSADigest(absl::optional<TokenId> token_id,
                        const std::string& data,
                        const std::string& public_key_spki_der,
                        HashAlgorithm hash_algorithm,

@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
     sub_menu_model->ActivatedAt(device_id);
 
     CheckLastReceiver(*device);
-    base::Optional<std::string> expected_number =
+    absl::optional<std::string> expected_number =
         ExtractPhoneNumberForClickToCall(GetProfile(0), kTextWithPhoneNumber);
     ASSERT_TRUE(expected_number.has_value());
     CheckLastSharingMessageSent(expected_number.value());
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {
   EXPECT_EQ(expected_enabled, ShouldOfferClickToCallForURL(browser()->profile(),
                                                            GURL(kPhoneLink)));
 
-  base::Optional<std::string> extracted =
+  absl::optional<std::string> extracted =
       ExtractPhoneNumberForClickToCall(browser()->profile(), kPhoneNumber);
   if (expected_enabled)
     EXPECT_EQ(kPhoneNumber, extracted.value());

@@ -398,8 +398,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
       chrome::NOTIFICATION_APP_TERMINATING,
       content::NotificationService::AllSources());
   display_service_tester->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                        notifications[0].id(), base::nullopt,
-                                        base::nullopt);
+                                        notifications[0].id(), absl::nullopt,
+                                        absl::nullopt);
   exit_waiter.Wait();
 }
 

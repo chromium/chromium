@@ -406,7 +406,7 @@ std::unique_ptr<net::test_server::HttpResponse> WaitForJsonRequest(
   // Basic sanity checks on the request.
   EXPECT_EQ("/pkp", request.relative_url);
   EXPECT_EQ("POST", request.method_string);
-  base::Optional<base::Value> value = base::JSONReader::Read(request.content);
+  absl::optional<base::Value> value = base::JSONReader::Read(request.content);
   EXPECT_TRUE(value);
 
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, quit_closure);
@@ -1694,7 +1694,7 @@ class CertificateTransparencySSLUITest : public CertVerifierBrowserTest {
   }
   ~CertificateTransparencySSLUITest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -5403,7 +5403,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, RestoreHasSSLState) {
       tab->GetController().GetLastCommittedEntry();
   std::unique_ptr<content::NavigationEntry> restored_entry =
       content::NavigationController::CreateNavigationEntry(
-          url, content::Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD,
+          url, content::Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
           false, std::string(), tab->GetBrowserContext(),
           nullptr /* blob_url_loader_factory */);
   restored_entry->SetPageState(entry->GetPageState());
@@ -8991,9 +8991,9 @@ IN_PROC_BROWSER_TEST_F(SSLUIAutoReloadTest, AutoReloadDisabled) {
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
 
   auto* reloader = error_page::NetErrorAutoReloader::FromWebContents(tab);
-  const base::Optional<base::OneShotTimer>& timer =
+  const absl::optional<base::OneShotTimer>& timer =
       reloader->next_reload_timer_for_testing();
-  EXPECT_EQ(base::nullopt, timer);
+  EXPECT_EQ(absl::nullopt, timer);
 }
 
 class SSLUITestWithEnhancedProtectionMessage : public SSLUITest {

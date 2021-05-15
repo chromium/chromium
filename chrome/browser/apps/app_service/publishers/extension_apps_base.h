@@ -168,7 +168,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   static bool ShouldShow(const extensions::Extension* extension,
                          Profile* profile);
 
-  void PopulateIntentFilters(const base::Optional<GURL>& app_scope,
+  void PopulateIntentFilters(const absl::optional<GURL>& app_scope,
                              std::vector<mojom::IntentFilterPtr>* target);
   virtual apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                                       apps::mojom::Readiness readiness) = 0;

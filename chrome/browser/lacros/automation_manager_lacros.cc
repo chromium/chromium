@@ -82,7 +82,7 @@ void AutomationManagerLacros::DispatchActionResult(
 }
 void AutomationManagerLacros::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const base::Optional<gfx::Rect>& rect) {
+    const absl::optional<gfx::Rect>& rect) {
   // TODO(https://crbug.com/1185764): Implement me.
 }
 

@@ -167,7 +167,7 @@ TEST_F(TimeLimitNotifierTest, RescheduleLockNotifications) {
 
 TEST_F(TimeLimitNotifierTest, NoOverriePolicyUpdateNotification) {
   notifier_.ShowPolicyUpdateNotification(
-      TimeLimitNotifier::LimitType::kOverride, base::nullopt);
+      TimeLimitNotifier::LimitType::kOverride, absl::nullopt);
 
   EXPECT_FALSE(
       HasPolicyUpdateNotification(TimeLimitNotifier::LimitType::kOverride));
@@ -175,13 +175,13 @@ TEST_F(TimeLimitNotifierTest, NoOverriePolicyUpdateNotification) {
 
 TEST_F(TimeLimitNotifierTest, ShowPolicyUpdateNotifications) {
   notifier_.ShowPolicyUpdateNotification(
-      TimeLimitNotifier::LimitType::kScreenTime, base::nullopt);
+      TimeLimitNotifier::LimitType::kScreenTime, absl::nullopt);
   notifier_.ShowPolicyUpdateNotification(TimeLimitNotifier::LimitType::kBedTime,
-                                         base::nullopt);
+                                         absl::nullopt);
   base::Time lock_time;
   ASSERT_TRUE(base::Time::FromUTCString("1 Jan 2019 22:00 PST", &lock_time));
   notifier_.ShowPolicyUpdateNotification(
-      TimeLimitNotifier::LimitType::kOverride, base::make_optional(lock_time));
+      TimeLimitNotifier::LimitType::kOverride, absl::make_optional(lock_time));
 
   EXPECT_TRUE(
       HasPolicyUpdateNotification(TimeLimitNotifier::LimitType::kScreenTime));

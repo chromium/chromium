@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -44,7 +44,7 @@ class ImportantSitesUtil {
     double engagement_score = 0;
     int32_t reason_bitfield = 0;
     // Only set if the domain belongs to an installed app.
-    base::Optional<std::string> app_name;
+    absl::optional<std::string> app_name;
   };
 
   // Do not change the values here, as they are used for UMA histograms.

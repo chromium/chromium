@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -26,6 +25,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -273,8 +273,8 @@ void DownloadShelfView::ConfigureButtonForTheme(views::MdTextButton* button) {
 
   // If COLOR_DOWNLOAD_SHELF is not customized, just use the default button bg
   // and text colors.
-  base::Optional<SkColor> bg_color;
-  base::Optional<SkColor> text_color;
+  absl::optional<SkColor> bg_color;
+  absl::optional<SkColor> text_color;
   if (tp->HasCustomColor(ThemeProperties::COLOR_DOWNLOAD_SHELF)) {
     // For custom themes, we have to make up a background color for the
     // button. Use a slight tint of the shelf background.

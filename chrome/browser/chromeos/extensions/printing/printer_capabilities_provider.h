@@ -11,8 +11,8 @@
 #include "base/callback_forward.h"
 #include "base/containers/mru_cache.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class CupsPrintersManager;
@@ -30,7 +30,7 @@ namespace extensions {
 class PrinterCapabilitiesProvider {
  public:
   using GetPrinterCapabilitiesCallback = base::OnceCallback<void(
-      base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities)>;
+      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities)>;
 
   PrinterCapabilitiesProvider(
       chromeos::CupsPrintersManager* printers_manager,
@@ -54,7 +54,7 @@ class PrinterCapabilitiesProvider {
   void OnCapabilitiesFetched(
       const std::string& printer_id,
       GetPrinterCapabilitiesCallback callback,
-      base::Optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
+      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
 
   chromeos::CupsPrintersManager* const printers_manager_;
   std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer_;

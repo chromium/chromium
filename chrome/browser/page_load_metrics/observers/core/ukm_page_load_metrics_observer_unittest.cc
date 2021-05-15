@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/metrics/metrics_hashes.h"
-#include "base/optional.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
@@ -50,6 +49,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 using content::NavigationSimulator;
@@ -713,7 +713,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
     tester()->SimulateTimingUpdate(timing);
 
     timing.paint_timing->largest_contentful_paint->largest_text_paint =
-        base::Optional<base::TimeDelta>();
+        absl::optional<base::TimeDelta>();
     timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 0;
     PopulateRequiredTimingFields(&timing);
 

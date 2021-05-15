@@ -12,10 +12,10 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -52,9 +52,9 @@ class DeviceCommandStartCRDSessionJob::ResultPayload
     : public RemoteCommandJob::ResultPayload {
  public:
   ResultPayload(ResultCode result_code,
-                const base::Optional<std::string>& access_code,
-                const base::Optional<base::TimeDelta>& time_delta,
-                const base::Optional<std::string>& error_message);
+                const absl::optional<std::string>& access_code,
+                const absl::optional<base::TimeDelta>& time_delta,
+                const absl::optional<std::string>& error_message);
   ~ResultPayload() override {}
 
   static std::unique_ptr<ResultPayload> CreateSuccessPayload(
@@ -74,9 +74,9 @@ class DeviceCommandStartCRDSessionJob::ResultPayload
 
 DeviceCommandStartCRDSessionJob::ResultPayload::ResultPayload(
     ResultCode result_code,
-    const base::Optional<std::string>& access_code,
-    const base::Optional<base::TimeDelta>& time_delta,
-    const base::Optional<std::string>& error_message) {
+    const absl::optional<std::string>& access_code,
+    const absl::optional<base::TimeDelta>& time_delta,
+    const absl::optional<std::string>& error_message) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetKey(kResultCodeFieldName, base::Value(result_code));
   if (error_message && !error_message.value().empty())
@@ -94,16 +94,16 @@ std::unique_ptr<DeviceCommandStartCRDSessionJob::ResultPayload>
 DeviceCommandStartCRDSessionJob::ResultPayload::CreateSuccessPayload(
     const std::string& access_code) {
   return std::make_unique<ResultPayload>(ResultCode::SUCCESS, access_code,
-                                         base::nullopt /*time_delta*/,
-                                         base::nullopt /* error_message */);
+                                         absl::nullopt /*time_delta*/,
+                                         absl::nullopt /* error_message */);
 }
 
 std::unique_ptr<DeviceCommandStartCRDSessionJob::ResultPayload>
 DeviceCommandStartCRDSessionJob::ResultPayload::CreateNonIdlePayload(
     const base::TimeDelta& time_delta) {
   return std::make_unique<ResultPayload>(
-      ResultCode::FAILURE_NOT_IDLE, base::nullopt /* access_code */, time_delta,
-      base::nullopt /* error_message */);
+      ResultCode::FAILURE_NOT_IDLE, absl::nullopt /* access_code */, time_delta,
+      absl::nullopt /* error_message */);
 }
 
 std::unique_ptr<DeviceCommandStartCRDSessionJob::ResultPayload>
@@ -113,8 +113,8 @@ DeviceCommandStartCRDSessionJob::ResultPayload::CreateErrorPayload(
   DCHECK(result_code != ResultCode::SUCCESS);
   DCHECK(result_code != ResultCode::FAILURE_NOT_IDLE);
   return std::make_unique<ResultPayload>(
-      result_code, base::nullopt /* access_code */,
-      base::nullopt /*time_delta*/, error_message);
+      result_code, absl::nullopt /* access_code */,
+      absl::nullopt /*time_delta*/, error_message);
 }
 
 std::unique_ptr<std::string>
@@ -135,7 +135,7 @@ DeviceCommandStartCRDSessionJob::GetType() const {
 
 bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
     const std::string& command_payload) {
-  base::Optional<base::Value> root(base::JSONReader::Read(command_payload));
+  absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
   if (!root)
     return false;
   if (!root->is_dict())

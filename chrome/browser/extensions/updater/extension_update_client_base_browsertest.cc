@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -20,6 +19,7 @@
 #include "extensions/browser/updater/update_service.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -34,7 +34,7 @@ class TestChromeUpdateClientConfig
   TestChromeUpdateClientConfig(content::BrowserContext* context,
                                const std::vector<GURL>& update_url,
                                const std::vector<GURL>& ping_url)
-      : extensions::ChromeUpdateClientConfig(context, base::nullopt),
+      : extensions::ChromeUpdateClientConfig(context, absl::nullopt),
         update_url_(update_url),
         ping_url_(ping_url) {}
 

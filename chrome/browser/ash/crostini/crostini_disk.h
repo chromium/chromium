@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -93,7 +93,7 @@ void OnListVmDisks(
     OnceDiskInfoCallback callback,
     std::string vm_name,
     int64_t free_space,
-    base::Optional<vm_tools::concierge::ListVmDisksResponse> response);
+    absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
 // Given a minimum, currently selected and maximum value, constructs a range of
 // DiskSliderTicks spanning from min to max. Ensures that one of the ticks
@@ -117,7 +117,7 @@ void ResizeCrostiniDisk(Profile* profile,
 // crostini_disk or tests.
 void OnResize(
     base::OnceCallback<void(bool)> callback,
-    base::Optional<vm_tools::concierge::ResizeDiskImageResponse> response);
+    absl::optional<vm_tools::concierge::ResizeDiskImageResponse> response);
 
 // Splits the range between |min_size| and |available_space| into enough
 // evenly-spaced intervals you can use them as ticks on a slider. Will return an

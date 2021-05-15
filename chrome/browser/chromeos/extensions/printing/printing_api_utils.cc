@@ -43,7 +43,7 @@ idl::PrinterSource PrinterSourceToIdl(chromeos::Printer::Source source) {
 
 bool DoesPrinterMatchDefaultPrinterRules(
     const chromeos::Printer& printer,
-    const base::Optional<DefaultPrinterRules>& rules) {
+    const absl::optional<DefaultPrinterRules>& rules) {
   if (!rules.has_value())
     return false;
   return (rules->kind.empty() || rules->kind == kLocal) &&
@@ -55,15 +55,15 @@ bool DoesPrinterMatchDefaultPrinterRules(
 
 }  // namespace
 
-base::Optional<DefaultPrinterRules> GetDefaultPrinterRules(
+absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules) {
   if (default_destination_selection_rules.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<base::Value> default_destination_selection_rules_value =
+  absl::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules);
   if (!default_destination_selection_rules_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   DefaultPrinterRules default_printer_rules;
   const std::string* kind =
@@ -83,7 +83,7 @@ base::Optional<DefaultPrinterRules> GetDefaultPrinterRules(
 
 idl::Printer PrinterToIdl(
     const chromeos::Printer& printer,
-    const base::Optional<DefaultPrinterRules>& default_printer_rules,
+    const absl::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks) {
   idl::Printer idl_printer;
   idl_printer.id = printer.id();
@@ -231,7 +231,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
   if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode()))
     return false;
 
-  base::Optional<bool> is_color =
+  absl::optional<bool> is_color =
       ::printing::IsColorModelSelected(settings.color());
   bool color_mode_selected = is_color.has_value() && is_color.value();
   if (!color_mode_selected &&

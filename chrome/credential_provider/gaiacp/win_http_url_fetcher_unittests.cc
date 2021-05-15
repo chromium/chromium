@@ -42,7 +42,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   request.SetIntKey("request-int-key", 1234);
   base::TimeDelta request_timeout =
       base::TimeDelta::FromMilliseconds(timeout_in_millis);
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
 
   base::Value expected_result(base::Value::Type::DICTIONARY);
   expected_result.SetStringKey("response-str-key", "response-str-value");
@@ -119,7 +119,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
               request_data.headers.at("Authorization").find(access_token));
     ASSERT_EQ(1u, request_data.headers.count(header1));
     ASSERT_EQ(header1_value, request_data.headers.at(header1));
-    base::Optional<base::Value> body_value =
+    absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
     ASSERT_EQ(request, body_value.value());
   }

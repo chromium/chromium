@@ -55,8 +55,8 @@ class DialActivityManagerTest : public testing::Test {
   ~DialActivityManagerTest() override = default;
 
   void TestLaunchApp(const DialActivity& activity,
-                     const base::Optional<std::string>& launch_parameter,
-                     const base::Optional<GURL>& app_instance_url) {
+                     const absl::optional<std::string>& launch_parameter,
+                     const absl::optional<GURL>& app_instance_url) {
     manager_.SetExpectedRequest(activity.launch_info.app_launch_url, "POST",
                                 launch_parameter ? *launch_parameter : "foo");
     LaunchApp(activity.route.media_route_id(), launch_parameter);
@@ -66,7 +66,7 @@ class DialActivityManagerTest : public testing::Test {
 
     // Pending launch request, no-op.
     EXPECT_CALL(manager_, OnFetcherCreated()).Times(0);
-    LaunchApp(activity.route.media_route_id(), base::nullopt);
+    LaunchApp(activity.route.media_route_id(), absl::nullopt);
     LaunchApp(activity.route.media_route_id(), "bar");
 
     auto response_head = network::mojom::URLResponseHead::New();
@@ -87,11 +87,11 @@ class DialActivityManagerTest : public testing::Test {
 
     // App already launched, no-op.
     EXPECT_CALL(manager_, OnFetcherCreated()).Times(0);
-    LaunchApp(activity.route.media_route_id(), base::nullopt);
+    LaunchApp(activity.route.media_route_id(), absl::nullopt);
   }
 
   void LaunchApp(const MediaRoute::Id& route_id,
-                 const base::Optional<std::string>& launch_parameter) {
+                 const absl::optional<std::string>& launch_parameter) {
     CustomDialLaunchMessageBody message(true, launch_parameter);
     manager_.LaunchApp(
         route_id, message,
@@ -108,7 +108,7 @@ class DialActivityManagerTest : public testing::Test {
   }
 
   MOCK_METHOD2(OnStopAppResult,
-               void(const base::Optional<std::string>&,
+               void(const absl::optional<std::string>&,
                     RouteRequestResult::ResultCode));
 
   std::unique_ptr<DialActivity> FailToStopApp() {
@@ -118,11 +118,11 @@ class DialActivityManagerTest : public testing::Test {
     CHECK(activity);
     manager_.AddActivity(*activity);
 
-    TestLaunchApp(*activity, base::nullopt, base::nullopt);
+    TestLaunchApp(*activity, absl::nullopt, absl::nullopt);
 
     GURL app_instance_url =
         GURL(activity->launch_info.app_launch_url.spec() + "/run");
-    manager_.SetExpectedRequest(app_instance_url, "DELETE", base::nullopt);
+    manager_.SetExpectedRequest(app_instance_url, "DELETE", absl::nullopt);
     StopApp(activity->route.media_route_id());
 
     loader_factory_.AddResponse(
@@ -194,7 +194,7 @@ TEST_F(DialActivityManagerTest, LaunchApp) {
 
   GURL app_instance_url =
       GURL(sink_.dial_data().app_url.spec() + "/YouTube/app_instance");
-  TestLaunchApp(*activity, base::nullopt, app_instance_url);
+  TestLaunchApp(*activity, absl::nullopt, app_instance_url);
 }
 
 TEST_F(DialActivityManagerTest, LaunchAppLaunchParameter) {
@@ -218,7 +218,7 @@ TEST_F(DialActivityManagerTest, LaunchAppFails) {
 
   manager_.SetExpectedRequest(activity->launch_info.app_launch_url, "POST",
                               "foo");
-  LaunchApp(activity->route.media_route_id(), base::nullopt);
+  LaunchApp(activity->route.media_route_id(), absl::nullopt);
 
   loader_factory_.AddResponse(
       activity->launch_info.app_launch_url,
@@ -241,11 +241,11 @@ TEST_F(DialActivityManagerTest, StopApp) {
 
   GURL app_instance_url =
       GURL(sink_.dial_data().app_url.spec() + "/YouTube/app_instance");
-  TestLaunchApp(*activity, base::nullopt, app_instance_url);
+  TestLaunchApp(*activity, absl::nullopt, app_instance_url);
 
   auto can_stop = manager_.CanStopApp(activity->route.media_route_id());
   EXPECT_EQ(can_stop.second, RouteRequestResult::OK);
-  manager_.SetExpectedRequest(app_instance_url, "DELETE", base::nullopt);
+  manager_.SetExpectedRequest(app_instance_url, "DELETE", absl::nullopt);
   StopApp(activity->route.media_route_id());
   testing::Mock::VerifyAndClearExpectations(this);
 
@@ -256,7 +256,7 @@ TEST_F(DialActivityManagerTest, StopApp) {
   loader_factory_.AddResponse(app_instance_url,
                               network::mojom::URLResponseHead::New(), "",
                               network::URLLoaderCompletionStatus());
-  EXPECT_CALL(*this, OnStopAppResult(testing::Eq(base::nullopt),
+  EXPECT_CALL(*this, OnStopAppResult(testing::Eq(absl::nullopt),
                                      RouteRequestResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -270,17 +270,17 @@ TEST_F(DialActivityManagerTest, StopAppUseFallbackURL) {
   ASSERT_TRUE(activity);
   manager_.AddActivity(*activity);
 
-  TestLaunchApp(*activity, base::nullopt, base::nullopt);
+  TestLaunchApp(*activity, absl::nullopt, absl::nullopt);
 
   GURL app_instance_url =
       GURL(activity->launch_info.app_launch_url.spec() + "/run");
-  manager_.SetExpectedRequest(app_instance_url, "DELETE", base::nullopt);
+  manager_.SetExpectedRequest(app_instance_url, "DELETE", absl::nullopt);
   StopApp(activity->route.media_route_id());
 
   loader_factory_.AddResponse(app_instance_url,
                               network::mojom::URLResponseHead::New(), "",
                               network::URLLoaderCompletionStatus());
-  EXPECT_CALL(*this, OnStopAppResult(testing::Eq(base::nullopt),
+  EXPECT_CALL(*this, OnStopAppResult(testing::Eq(absl::nullopt),
                                      RouteRequestResult::OK));
   base::RunLoop().RunUntilIdle();
 

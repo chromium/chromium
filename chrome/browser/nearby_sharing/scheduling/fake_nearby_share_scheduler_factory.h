@@ -9,12 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_expiration_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareScheduler;
 class PrefService;

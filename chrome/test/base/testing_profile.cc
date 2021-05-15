@@ -252,8 +252,8 @@ TestingProfile::TestingProfile(
     std::unique_ptr<policy::PolicyService> policy_service,
     TestingFactories testing_factories,
     const std::string& profile_name,
-    base::Optional<bool> override_policy_connector_is_managed,
-    base::Optional<OTRProfileID> otr_profile_id)
+    absl::optional<bool> override_policy_connector_is_managed,
+    absl::optional<OTRProfileID> otr_profile_id)
     : prefs_(std::move(prefs)),
       original_profile_(parent),
       guest_session_(guest_session),
@@ -1114,7 +1114,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
       allows_browser_windows_, is_new_profile_, supervised_user_id_,
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_, base::Optional<OTRProfileID>());
+      override_policy_connector_is_managed_, absl::optional<OTRProfileID>());
 }
 
 TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
@@ -1140,7 +1140,7 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_,
-      base::Optional<OTRProfileID>(otr_profile_id));
+      absl::optional<OTRProfileID>(otr_profile_id));
 }
 
 TestingProfile* TestingProfile::Builder::BuildIncognito(

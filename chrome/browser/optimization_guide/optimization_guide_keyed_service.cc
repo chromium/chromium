@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -36,6 +35,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -257,12 +257,12 @@ void OptimizationGuideKeyedService::RegisterOptimizationTargets(
     const std::vector<optimization_guide::proto::OptimizationTarget>&
         optimization_targets) {
   std::vector<std::pair<optimization_guide::proto::OptimizationTarget,
-                        base::Optional<optimization_guide::proto::Any>>>
+                        absl::optional<optimization_guide::proto::Any>>>
       optimization_targets_and_metadata;
   for (optimization_guide::proto::OptimizationTarget optimization_target :
        optimization_targets) {
     optimization_targets_and_metadata.emplace_back(
-        std::make_pair(optimization_target, base::nullopt));
+        std::make_pair(optimization_target, absl::nullopt));
   }
   prediction_manager_->RegisterOptimizationTargets(
       optimization_targets_and_metadata);
@@ -284,7 +284,7 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
 
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::Optional<optimization_guide::proto::Any>& model_metadata,
+    const absl::optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   prediction_manager_->AddObserverForOptimizationTargetModel(
       optimization_target, model_metadata, observer);
@@ -311,7 +311,7 @@ OptimizationGuideKeyedService::CanApplyOptimization(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   optimization_guide::OptimizationTypeDecision optimization_type_decision =
-      hints_manager_->CanApplyOptimization(url, /*navigation_id=*/base::nullopt,
+      hints_manager_->CanApplyOptimization(url, /*navigation_id=*/absl::nullopt,
                                            optimization_type,
                                            optimization_metadata);
   base::UmaHistogramEnumeration(
@@ -339,7 +339,7 @@ void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
 void OptimizationGuideKeyedService::AddHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
-    const base::Optional<optimization_guide::OptimizationMetadata>& metadata) {
+    const absl::optional<optimization_guide::OptimizationMetadata>& metadata) {
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 
@@ -354,7 +354,7 @@ void OptimizationGuideKeyedService::Shutdown() {
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::Optional<optimization_guide::proto::Any>& model_metadata,
+    const absl::optional<optimization_guide::proto::Any>& model_metadata,
     const base::FilePath& file_path) {
   prediction_manager_->OverrideTargetModelFileForTesting(
       optimization_target, model_metadata, file_path);

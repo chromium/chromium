@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -30,6 +29,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/scrollbar_size.h"
@@ -254,7 +254,7 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                              base::TimeTicks::Now() - start_time,
                              base::TimeDelta::FromMilliseconds(1),
                              base::TimeDelta::FromSeconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap, base::nullopt);
+  StoreThumbnail(CaptureType::kCopyFromView, bitmap, absl::nullopt);
 }
 
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
@@ -265,7 +265,7 @@ void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         const SkBitmap& bitmap,
-                                        base::Optional<uint64_t> frame_id) {
+                                        absl::optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
   if (bitmap.drawsNothing())

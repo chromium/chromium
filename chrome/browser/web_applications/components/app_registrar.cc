@@ -131,7 +131,7 @@ std::map<AppId, GURL> AppRegistrar::GetExternallyInstalledApps(
   return installed_apps;
 }
 
-base::Optional<AppId> AppRegistrar::LookupExternalAppId(
+absl::optional<AppId> AppRegistrar::LookupExternalAppId(
     const GURL& install_url) const {
   return ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
       .LookupAppId(install_url);
@@ -176,7 +176,7 @@ extensions::BookmarkAppRegistrar* AppRegistrar::AsBookmarkAppRegistrar() {
 }
 
 GURL AppRegistrar::GetAppScope(const AppId& app_id) const {
-  base::Optional<GURL> scope = GetAppScopeInternal(app_id);
+  absl::optional<GURL> scope = GetAppScopeInternal(app_id);
   if (scope)
     return *scope;
   if (base::FeatureList::IsEnabled(
@@ -187,11 +187,11 @@ GURL AppRegistrar::GetAppScope(const AppId& app_id) const {
   return GetAppStartUrl(app_id).GetWithoutFilename();
 }
 
-base::Optional<AppId> AppRegistrar::FindAppWithUrlInScope(
+absl::optional<AppId> AppRegistrar::FindAppWithUrlInScope(
     const GURL& url) const {
   const std::string url_path = url.spec();
 
-  base::Optional<AppId> best_app_id;
+  absl::optional<AppId> best_app_id;
   size_t best_app_path_length = 0U;
   bool best_app_is_shortcut = true;
 
@@ -252,12 +252,12 @@ std::vector<AppId> AppRegistrar::FindAppsInScope(const GURL& scope) const {
   return in_scope;
 }
 
-base::Optional<AppId> AppRegistrar::FindInstalledAppWithUrlInScope(
+absl::optional<AppId> AppRegistrar::FindInstalledAppWithUrlInScope(
     const GURL& url,
     bool window_only) const {
   const std::string url_path = url.spec();
 
-  base::Optional<AppId> best_app_id;
+  absl::optional<AppId> best_app_id;
   size_t best_app_path_length = 0U;
   bool best_app_is_shortcut = true;
 

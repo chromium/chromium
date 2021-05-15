@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -20,6 +19,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -53,7 +53,7 @@ class FamilyUserDeviceMetricsTest
       embedded_test_server(),
       this,
       /*should_launch_browser=*/false,
-      /*account_id=*/base::nullopt,
+      /*account_id=*/absl::nullopt,
       /*include_initial_user=*/IsUserExisting()};
 
   // MixinBasedInProcessBrowserTest:

@@ -69,8 +69,8 @@ const char kConnectionIdParam[] = "connectionId";
 
 static bool ParseNotification(const std::string& json,
                               std::string* method,
-                              base::Optional<base::Value>* params) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+                              absl::optional<base::Value>* params) {
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value || !value->is_dict())
     return false;
 
@@ -88,15 +88,15 @@ static bool ParseNotification(const std::string& json,
 static bool ParseResponse(const std::string& json,
                           int* command_id,
                           int* error_code) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value || !value->is_dict())
     return false;
-  base::Optional<int> command_id_opt = value->FindIntKey(kIdParam);
+  absl::optional<int> command_id_opt = value->FindIntKey(kIdParam);
   if (!command_id_opt)
     return false;
   *command_id = *command_id_opt;
 
-  base::Optional<int> error_value = value->FindIntPath(kErrorCodePath);
+  absl::optional<int> error_value = value->FindIntPath(kErrorCodePath);
   if (error_value)
     *error_code = *error_value;
 
@@ -168,7 +168,7 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(
         base::BindOnce(&PortForwardingHostResolver::OnComplete,
                        base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
  private:
@@ -180,7 +180,7 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+      const absl::optional<net::AddressList>& resolved_addresses) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     if (result < 0) {
@@ -562,14 +562,14 @@ void PortForwardingController::Connection::OnFrameRead(
     return;
 
   std::string method;
-  base::Optional<base::Value> params;
+  absl::optional<base::Value> params;
   if (!ParseNotification(message, &method, &params))
     return;
 
   if (method != kAcceptedEvent || !params)
     return;
 
-  base::Optional<int> port = params->FindIntKey(kPortParam);
+  absl::optional<int> port = params->FindIntKey(kPortParam);
   if (!port)
     return;
   const std::string* connection_id = params->FindStringKey(kConnectionIdParam);

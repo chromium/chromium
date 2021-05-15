@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -56,11 +56,11 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual bool RemoveSuggestion(int index) = 0;
 
   // Change which line is currently selected by the user.
-  virtual void SetSelectedLine(base::Optional<int> selected_line) = 0;
+  virtual void SetSelectedLine(absl::optional<int> selected_line) = 0;
 
   // Returns the index of the selected line. A line is "selected" when it is
   // hovered or has keyboard focus.
-  virtual base::Optional<int> selected_line() const = 0;
+  virtual absl::optional<int> selected_line() const = 0;
 
   // Returns the popup type corresponding to the controller.
   virtual PopupType GetPopupType() const = 0;

@@ -179,7 +179,7 @@ TEST_F(FileHandlerManagerTest, NoHandlersRegistered) {
 
   // Returns nullopt when no file handlers are registered.
   const base::FilePath path(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
@@ -191,7 +191,7 @@ TEST_F(FileHandlerManagerTest, NoLaunchFilesPassed) {
                                             {{"application/foo", {".foo"}}});
 
   // Returns nullopt when no launch files are passed.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {}));
 }
 
@@ -217,7 +217,7 @@ TEST_F(FileHandlerManagerTest, SingleInvalidExtensionSingleExtensionHandler) {
 
   // Returns nullopt on single invalid extension.
   const base::FilePath path(FILE_PATH_LITERAL("file.bar"));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
@@ -260,7 +260,7 @@ TEST_F(FileHandlerManagerTest, PartialExtensionMatch) {
   // Returns nullopt on partial extension match.
   const base::FilePath path1(FILE_PATH_LITERAL("file.foo"));
   const base::FilePath path2(FILE_PATH_LITERAL("file.bar"));
-  EXPECT_EQ(base::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
+  EXPECT_EQ(absl::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
                                app_id, {path1, path2}));
 }
 
@@ -273,7 +273,7 @@ TEST_F(FileHandlerManagerTest, SingleFileWithoutExtension) {
 
   // Returns nullopt where a file has no extension.
   const base::FilePath path(FILE_PATH_LITERAL("file"));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             file_handler_manager().GetMatchingFileHandlerURL(app_id, {path}));
 }
 
@@ -287,7 +287,7 @@ TEST_F(FileHandlerManagerTest, FileWithoutExtensionAmongMultipleFiles) {
   // Returns nullopt where one file has no extension while others do.
   const base::FilePath path1(FILE_PATH_LITERAL("file"));
   const base::FilePath path2(FILE_PATH_LITERAL("file.foo"));
-  EXPECT_EQ(base::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
+  EXPECT_EQ(absl::nullopt, file_handler_manager().GetMatchingFileHandlerURL(
                                app_id, {path1, path2}));
 }
 

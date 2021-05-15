@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
@@ -47,6 +46,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 // TODO(crbug.com/826982): life cycle events. Extensions can be installed and
@@ -665,9 +665,9 @@ bool ExtensionAppsBase::ShouldShow(const extensions::Extension* extension,
 }
 
 void ExtensionAppsBase::PopulateIntentFilters(
-    const base::Optional<GURL>& app_scope,
+    const absl::optional<GURL>& app_scope,
     std::vector<mojom::IntentFilterPtr>* target) {
-  if (app_scope != base::nullopt) {
+  if (app_scope != absl::nullopt) {
     target->push_back(apps_util::CreateIntentFilterForUrlScope(
         app_scope.value(),
         base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));

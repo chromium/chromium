@@ -63,7 +63,7 @@ class ProfilePickerTurnSyncOnDelegate : public DiceTurnSyncOnHelper::Delegate,
   // the metrics.
   void FinishSyncConfirmation(
       LoginUIService::SyncConfirmationUIClosedResult result,
-      base::Optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome);
+      absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome);
 
   // Shows the enterprise welcome screen.
   void ShowEnterpriseWelcome(EnterpriseProfileWelcomeUI::ScreenType type);

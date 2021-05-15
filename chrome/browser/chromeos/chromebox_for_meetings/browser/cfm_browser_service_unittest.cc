@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace cfm {

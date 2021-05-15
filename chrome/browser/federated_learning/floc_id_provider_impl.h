@@ -92,7 +92,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
-      const base::Optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin) const override;
 
   void MaybeRecordFlocToUkm(ukm::SourceId source_id) override;
 
@@ -144,7 +144,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
                                         uint64_t sim_hash,
                                         base::Time history_begin_time,
                                         base::Time history_end_time,
-                                        base::Optional<uint64_t> final_hash,
+                                        absl::optional<uint64_t> final_hash,
                                         base::Version version);
 
   // Abandon any scheduled task, and schedule a new compute-floc task with

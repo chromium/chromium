@@ -244,7 +244,7 @@ enum ThirdPartyFeaturesStatus {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
-    base::Optional<ThirdPartyConflictsManager::State>
+    absl::optional<ThirdPartyConflictsManager::State>
         third_party_conflicts_manager_state) {
   // The ThirdPartyConflictsManager instance exists if we have its state.
   if (third_party_conflicts_manager_state.has_value()) {
@@ -345,7 +345,7 @@ void OnConflictsDataFetched(
 void OnModuleDataFetched(ConflictsDataFetcher::OnConflictsDataFetchedCallback
                              on_conflicts_data_fetched_callback,
                          base::DictionaryValue results,
-                         base::Optional<ThirdPartyConflictsManager::State>
+                         absl::optional<ThirdPartyConflictsManager::State>
                              third_party_conflicts_manager_state) {
   OnConflictsDataFetched(
       std::move(on_conflicts_data_fetched_callback), std::move(results),

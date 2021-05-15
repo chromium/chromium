@@ -54,7 +54,7 @@ TEST(CloudPrintPrinterListTest, Parsing) {
   CloudPrintPrinterList::DeviceList devices;
   EXPECT_CALL(delegate, OnDeviceListReady(_)).WillOnce(SaveArg<0>(&devices));
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(kSampleSuccessResponseOAuth);
   ASSERT_TRUE(value);
   const base::DictionaryValue* dictionary = NULL;

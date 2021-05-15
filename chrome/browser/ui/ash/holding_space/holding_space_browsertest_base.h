@@ -70,7 +70,7 @@ class HoldingSpaceBrowserTestBase
   // extension. If extension is omitted, the created file will have an extension
   // of `.txt`. Returns the file path of the created file.
   base::FilePath CreateFile(
-      const base::Optional<std::string>& extension = base::nullopt);
+      const absl::optional<std::string>& extension = absl::nullopt);
 
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();

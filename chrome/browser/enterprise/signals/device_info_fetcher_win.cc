@@ -67,8 +67,8 @@ std::string GetComputerName() {
 
 // Retrieves the state of the screen locking feature from the screen saver
 // settings.
-base::Optional<bool> GetScreenLockStatus() {
-  base::Optional<bool> status;
+absl::optional<bool> GetScreenLockStatus() {
+  absl::optional<bool> status;
   BOOL value = FALSE;
   if (::SystemParametersInfo(SPI_GETSCREENSAVESECURE, 0, &value, 0))
     status = static_cast<bool>(value);
@@ -76,8 +76,8 @@ base::Optional<bool> GetScreenLockStatus() {
 }
 
 // Checks if locking is enabled at the currently active power scheme.
-base::Optional<bool> GetConsoleLockStatus() {
-  base::Optional<bool> status;
+absl::optional<bool> GetConsoleLockStatus() {
+  absl::optional<bool> status;
   SYSTEM_POWER_STATUS sps;
   // https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-getsystempowerstatus
   // Retrieves the power status of the system. The status indicates whether the
@@ -122,11 +122,11 @@ base::Optional<bool> GetConsoleLockStatus() {
 // Gets cumulative screen locking policy based on the screen saver and console
 // lock status.
 SettingValue GetScreenlockSecured() {
-  const base::Optional<bool> screen_lock_status = GetScreenLockStatus();
+  const absl::optional<bool> screen_lock_status = GetScreenLockStatus();
   if (screen_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
-  const base::Optional<bool> console_lock_status = GetConsoleLockStatus();
+  const absl::optional<bool> console_lock_status = GetConsoleLockStatus();
   if (console_lock_status.value_or(false))
     return SettingValue::ENABLED;
 
@@ -138,8 +138,8 @@ SettingValue GetScreenlockSecured() {
 }
 
 // Returns the volume where the Windows OS is installed.
-base::Optional<std::wstring> GetOsVolume() {
-  base::Optional<std::wstring> volume;
+absl::optional<std::wstring> GetOsVolume() {
+  absl::optional<std::wstring> volume;
   base::FilePath windows_dir;
   if (base::PathService::Get(base::DIR_WINDOWS, &windows_dir) &&
       windows_dir.IsAbsolute()) {
@@ -194,7 +194,7 @@ bool GetPropVariantAsInt64(PROPVARIANT variant, int64_t* out_value) {
 SettingValue GetDiskEncrypted() {
   // |volume| has to be a |wstring| because SHCreateItemFromParsingName() only
   // accepts |PCWSTR| which is |wchar_t*|.
-  base::Optional<std::wstring> volume = GetOsVolume();
+  absl::optional<std::wstring> volume = GetOsVolume();
   if (!volume.has_value())
     return SettingValue::UNKNOWN;
 

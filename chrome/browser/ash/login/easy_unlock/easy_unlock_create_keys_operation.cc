@@ -362,7 +362,7 @@ void EasyUnlockCreateKeysOperation::OnGetSystemSalt(
 void EasyUnlockCreateKeysOperation::OnKeyCreated(
     size_t index,
     const Key& user_key,
-    base::Optional<::user_data_auth::AddKeyReply> reply) {
+    absl::optional<::user_data_auth::AddKeyReply> reply) {
   DCHECK_EQ(key_creation_index_, index);
   cryptohome::MountError return_code = cryptohome::MOUNT_ERROR_FATAL;
   if (reply.has_value())

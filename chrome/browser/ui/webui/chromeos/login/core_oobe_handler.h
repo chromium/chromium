@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_source.h"
 
 namespace base {
@@ -159,7 +159,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // tpm_firmware_update in settings.
   void HandleToggleResetScreenCallback(
       bool is_reset_allowed,
-      base::Optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
+      absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
 
   // When keyboard_utils.js arrow key down event is reached, raise it
   // to tab/shift-tab event.

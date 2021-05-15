@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/common/extensions/api/printing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -37,12 +37,12 @@ struct DefaultPrinterRules {
 // Parses the string containing
 // |prefs::kPrintPreviewDefaultDestinationSelectionRules| value and returns
 // default printer selection rules in the form declared above.
-base::Optional<DefaultPrinterRules> GetDefaultPrinterRules(
+absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules);
 
 api::printing::Printer PrinterToIdl(
     const chromeos::Printer& printer,
-    const base::Optional<DefaultPrinterRules>& default_printer_rules,
+    const absl::optional<DefaultPrinterRules>& default_printer_rules,
     const base::flat_map<std::string, int>& recently_used_ranks);
 
 api::printing::PrinterStatus PrinterStatusToIdl(

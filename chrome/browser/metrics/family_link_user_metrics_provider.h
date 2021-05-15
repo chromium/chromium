@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 class ChromeUserMetricsExtension;
@@ -75,7 +75,7 @@ class FamilyLinkUserMetricsProvider
 
   // Cache the log segment because it won't change during the session once
   // assigned.
-  base::Optional<LogSegment> log_segment_;
+  absl::optional<LogSegment> log_segment_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_

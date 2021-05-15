@@ -147,13 +147,13 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
     app->add_mime_types(mime_type);
 
   service()->UpdateApplicationList(app_list);
-  base::Optional<GuestOsRegistryService::Registration> result =
+  absl::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->DesktopFileId(), desktop_file_id);
   EXPECT_EQ(
       result->VmType(),
-      base::make_optional(
+      absl::make_optional(
           GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA));
   EXPECT_EQ(result->VmName(), vm_name);
   EXPECT_EQ(result->ContainerName(), container_name);
@@ -322,7 +322,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
           testing::ElementsAre(app_id)));
   service()->UpdateApplicationList(app_list);
 
-  base::Optional<GuestOsRegistryService::Registration> result =
+  absl::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   base::Time install_time = test_clock_.Now();
   EXPECT_EQ(result->InstallTime(), install_time);
@@ -435,7 +435,7 @@ TEST_F(GuestOsRegistryServiceTest, IsScaledReturnFalseWhenNotSet) {
   ApplicationList app_list =
       crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
   service()->UpdateApplicationList(app_list);
-  base::Optional<GuestOsRegistryService::Registration> registration =
+  absl::optional<GuestOsRegistryService::Registration> registration =
       service()->GetRegistration(app_id);
   EXPECT_TRUE(registration.has_value());
   EXPECT_FALSE(registration.value().IsScaled());
@@ -448,7 +448,7 @@ TEST_F(GuestOsRegistryServiceTest, SetScaledWorks) {
       crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
   service()->UpdateApplicationList(app_list);
   service()->SetAppScaled(app_id, true);
-  base::Optional<GuestOsRegistryService::Registration> registration =
+  absl::optional<GuestOsRegistryService::Registration> registration =
       service()->GetRegistration(app_id);
   EXPECT_TRUE(registration.has_value());
   EXPECT_TRUE(registration.value().IsScaled());
@@ -479,7 +479,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationKeywords) {
   }
   service()->UpdateApplicationList(app_list);
 
-  base::Optional<GuestOsRegistryService::Registration> result =
+  absl::optional<GuestOsRegistryService::Registration> result =
       service()->GetRegistration(app_id);
   g_browser_process->SetApplicationLocale("");
   EXPECT_EQ(result->Keywords(), keywords[""]);
@@ -504,9 +504,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExec) {
   app_list.mutable_apps(0)->set_exec(exec);
   service()->UpdateApplicationList(app_list);
 
-  base::Optional<GuestOsRegistryService::Registration> result_valid_exec =
+  absl::optional<GuestOsRegistryService::Registration> result_valid_exec =
       service()->GetRegistration(app_id_valid_exec);
-  base::Optional<GuestOsRegistryService::Registration> result_no_exec =
+  absl::optional<GuestOsRegistryService::Registration> result_no_exec =
       service()->GetRegistration(app_id_no_exec);
   EXPECT_EQ(result_valid_exec->Exec(), exec);
   EXPECT_EQ(result_no_exec->Exec(), "");
@@ -525,9 +525,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExecutableFileName) {
   app_list.mutable_apps(0)->set_executable_file_name(executable_file_name);
   service()->UpdateApplicationList(app_list);
 
-  base::Optional<GuestOsRegistryService::Registration> result_valid_exec =
+  absl::optional<GuestOsRegistryService::Registration> result_valid_exec =
       service()->GetRegistration(app_id_valid_exec);
-  base::Optional<GuestOsRegistryService::Registration> result_no_exec =
+  absl::optional<GuestOsRegistryService::Registration> result_no_exec =
       service()->GetRegistration(app_id_no_exec);
   EXPECT_EQ(result_valid_exec->ExecutableFileName(), executable_file_name);
   EXPECT_EQ(result_no_exec->ExecutableFileName(), "");
@@ -548,9 +548,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetPackageId) {
   app_list.mutable_apps(0)->set_package_id(package_id);
   service()->UpdateApplicationList(app_list);
 
-  base::Optional<GuestOsRegistryService::Registration> result_valid_package_id =
+  absl::optional<GuestOsRegistryService::Registration> result_valid_package_id =
       service()->GetRegistration(app_id_valid_package_id);
-  base::Optional<GuestOsRegistryService::Registration> result_no_package_id =
+  absl::optional<GuestOsRegistryService::Registration> result_no_package_id =
       service()->GetRegistration(app_id_no_package_id);
   EXPECT_EQ(result_valid_package_id->PackageId(), package_id);
   EXPECT_EQ(result_no_package_id->PackageId(), "");

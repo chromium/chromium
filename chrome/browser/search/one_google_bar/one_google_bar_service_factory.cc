@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +20,7 @@
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // static
 OneGoogleBarService* OneGoogleBarServiceFactory::GetForProfile(

@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/cart/cart_db.h"
@@ -17,6 +16,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FetchDiscountWorker;
 
@@ -48,7 +48,7 @@ class CartService : public history::HistoryServiceObserver,
   void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
   void AddCart(const std::string& domain,
-               const base::Optional<GURL>& cart_url,
+               const absl::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
   // Delete the cart from certain domain in the cart service.
   void DeleteCart(const std::string& domain);
@@ -135,7 +135,7 @@ class CartService : public history::HistoryServiceObserver,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to handle adding a cart.
   void OnAddCart(const std::string& domain,
-                 const base::Optional<GURL>& cart_url,
+                 const absl::optional<GURL>& cart_url,
                  cart_db::ChromeCartContentProto proto,
                  bool success,
                  std::vector<CartDB::KeyAndValue> proto_pairs);
@@ -154,8 +154,8 @@ class CartService : public history::HistoryServiceObserver,
   history::HistoryService* history_service_;
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-  base::Optional<base::Value> domain_name_mapping_;
-  base::Optional<base::Value> domain_cart_url_mapping_;
+  absl::optional<base::Value> domain_name_mapping_;
+  absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };

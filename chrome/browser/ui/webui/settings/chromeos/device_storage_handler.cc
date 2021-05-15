@@ -244,7 +244,7 @@ void StorageHandler::OnMountEvent(
 void StorageHandler::OnSizeCalculated(
     const calculator::SizeCalculator::CalculationType& calculation_type,
     int64_t total_bytes,
-    const base::Optional<int64_t>& available_bytes) {
+    const absl::optional<int64_t>& available_bytes) {
   if (available_bytes) {
     UpdateSizeStat(calculation_type, total_bytes, available_bytes.value());
   } else {

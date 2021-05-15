@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/chromeos/policy/status_collector/activity_storage.h"
 #include "chrome/browser/chromeos/policy/status_collector/affiliated_session_service.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -35,7 +35,7 @@ namespace policy {
 class AppInfoGenerator : public apps::InstanceRegistry::Observer,
                          public AffiliatedSessionService::Observer {
  public:
-  using Result = base::Optional<std::vector<enterprise_management::AppInfo>>;
+  using Result = absl::optional<std::vector<enterprise_management::AppInfo>>;
 
   explicit AppInfoGenerator(
       base::TimeDelta max_stored_past_activity_interval,

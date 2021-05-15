@@ -513,13 +513,13 @@ void AppPlatformMetrics::InitRunningDuration() {
       continue;
     }
 
-    base::Optional<base::TimeDelta> unreported_duration =
+    absl::optional<base::TimeDelta> unreported_duration =
         util::ValueToTimeDelta(running_duration_update->FindPath(key));
     if (unreported_duration.has_value()) {
       running_duration_[app_type_name] = unreported_duration.value();
     }
 
-    base::Optional<int> count = activated_count_update->FindIntPath(key);
+    absl::optional<int> count = activated_count_update->FindIntPath(key);
     if (count.has_value()) {
       activated_count_[app_type_name] = count.value();
     }

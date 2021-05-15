@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Represents a text attachment.
 class TextAttachment : public Attachment {
@@ -18,8 +18,8 @@ class TextAttachment : public Attachment {
 
   TextAttachment(Type type,
                  std::string text_body,
-                 base::Optional<std::string> text_title,
-                 base::Optional<std::string> mime_type);
+                 absl::optional<std::string> text_title,
+                 absl::optional<std::string> mime_type);
   TextAttachment(int64_t id, Type type, std::string text_title, int64_t size);
   TextAttachment(const TextAttachment&);
   TextAttachment(TextAttachment&&);

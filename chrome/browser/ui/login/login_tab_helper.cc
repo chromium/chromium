@@ -217,7 +217,7 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
 void LoginTabHelper::HandleCredentials(
-    const base::Optional<net::AuthCredentials>& credentials) {
+    const absl::optional<net::AuthCredentials>& credentials) {
   login_handler_.reset();
   url_for_login_handler_ = GURL();
 

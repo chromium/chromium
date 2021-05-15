@@ -7,7 +7,6 @@
 #include <iterator>
 #include <memory>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -17,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 
@@ -27,14 +27,14 @@ struct App {
   std::string vm_name = "vm";
   std::string container_name = "container";
   std::string app_name;
-  base::Optional<std::string> startup_wm_class;
-  base::Optional<bool> startup_notify;
-  base::Optional<bool> no_display;
+  absl::optional<std::string> startup_wm_class;
+  absl::optional<bool> startup_notify;
+  absl::optional<bool> no_display;
 };
 
 struct WindowIds {
-  base::Optional<std::string> app_id;
-  base::Optional<std::string> startup_id;
+  absl::optional<std::string> app_id;
+  absl::optional<std::string> startup_id;
 };
 
 std::string GenAppId(const App& app) {

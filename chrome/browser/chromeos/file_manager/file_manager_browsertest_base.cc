@@ -22,7 +22,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -113,6 +112,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
@@ -1177,7 +1177,7 @@ class DriveFsTestVolume : public TestVolume {
                                           base::Unretained(this)));
   }
 
-  base::Optional<drivefs::mojom::DialogResult> last_dialog_result() {
+  absl::optional<drivefs::mojom::DialogResult> last_dialog_result() {
     return last_dialog_result_;
   }
 
@@ -1280,7 +1280,7 @@ class DriveFsTestVolume : public TestVolume {
     last_dialog_result_ = result;
   }
 
-  base::Optional<drivefs::mojom::DialogResult> last_dialog_result_;
+  absl::optional<drivefs::mojom::DialogResult> last_dialog_result_;
 
   // Profile associated with this volume: not owned.
   Profile* profile_ = nullptr;
@@ -2427,14 +2427,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(value.GetString("notificationId", &notification_id));
 
     const std::string delegate_id = extension_id + "-" + notification_id;
-    base::Optional<message_center::Notification> notification =
+    absl::optional<message_center::Notification> notification =
         display_service_->GetNotification(delegate_id);
     EXPECT_TRUE(notification);
 
     int index;
     ASSERT_TRUE(value.GetInteger("index", &index));
     display_service_->SimulateClick(NotificationHandler::Type::EXTENSION,
-                                    delegate_id, index, base::nullopt);
+                                    delegate_id, index, absl::nullopt);
     return;
   }
 
@@ -2735,7 +2735,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getLastDriveDialogResult") {
-    base::Optional<drivefs::mojom::DialogResult> result =
+    absl::optional<drivefs::mojom::DialogResult> result =
         drive_volume_->last_dialog_result();
     base::JSONWriter::Write(
         base::Value(result ? static_cast<int32_t>(result.value()) : -1),

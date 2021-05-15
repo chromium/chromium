@@ -81,9 +81,9 @@ base::DictionaryValue GetBackgroundInfoAsDict(
     const std::string& attribution_line_1,
     const std::string& attribution_line_2,
     const GURL& action_url,
-    const base::Optional<std::string>& collection_id,
-    const base::Optional<std::string>& resume_token,
-    const base::Optional<int> refresh_timestamp) {
+    const absl::optional<std::string>& collection_id,
+    const absl::optional<std::string>& resume_token,
+    const absl::optional<int> refresh_timestamp) {
   base::DictionaryValue background_info;
   background_info.SetKey(kNtpCustomBackgroundURL,
                          base::Value(background_url.spec()));
@@ -456,7 +456,7 @@ void InstantService::SetCustomBackgroundInfo(
   background_updated_timestamp_ = base::TimeTicks::Now();
 
   if (!collection_id.empty() && is_backdrop_collection) {
-    background_service_->FetchNextCollectionImage(collection_id, base::nullopt);
+    background_service_->FetchNextCollectionImage(collection_id, absl::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
     const GURL& thumbnail_url =
         background_service_->GetThumbnailUrl(background_url);
@@ -466,7 +466,7 @@ void InstantService::SetCustomBackgroundInfo(
 
     base::DictionaryValue background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
-        base::nullopt, base::nullopt, base::nullopt);
+        absl::nullopt, absl::nullopt, absl::nullopt);
     pref_service_->Set(prefs::kNtpCustomBackgroundDict, background_info);
   } else {
     pref_service_->ClearPref(prefs::kNtpCustomBackgroundDict);

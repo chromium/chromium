@@ -26,7 +26,7 @@ class TestMetricsReportingObserver : public MetricsReportingObserver {
     ++change_metrics_reporting_count_;
   }
 
-  base::Optional<bool> metrics_reporting_enabled_;
+  absl::optional<bool> metrics_reporting_enabled_;
   int change_metrics_reporting_count_ = 0;
 };
 

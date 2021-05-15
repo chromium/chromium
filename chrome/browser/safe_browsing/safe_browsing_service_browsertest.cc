@@ -1047,9 +1047,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWithAutoReloadTest,
   EXPECT_TRUE(ShowingInterstitialPage());
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* reloader = error_page::NetErrorAutoReloader::FromWebContents(contents);
-  const base::Optional<base::OneShotTimer>& timer =
+  const absl::optional<base::OneShotTimer>& timer =
       reloader->next_reload_timer_for_testing();
-  EXPECT_EQ(base::nullopt, timer);
+  EXPECT_EQ(absl::nullopt, timer);
 }
 
 // Parameterised fixture to permit running the same test for Window and Worker

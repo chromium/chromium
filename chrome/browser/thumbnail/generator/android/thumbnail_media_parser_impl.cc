@@ -169,7 +169,7 @@ void ThumbnailMediaParserImpl::RetrieveEncodedVideoFrame() {
 void ThumbnailMediaParserImpl::OnVideoFrameRetrieved(
     bool success,
     chrome::mojom::VideoFrameDataPtr video_frame_data,
-    const base::Optional<media::VideoDecoderConfig>& config) {
+    const absl::optional<media::VideoDecoderConfig>& config) {
   if (!success) {
     RecordVideoThumbnailEvent(VideoThumbnailEvent::kVideoFrameExtractionFailed);
     OnError(MediaParserEvent::kVideoThumbnailFailed);

@@ -37,12 +37,12 @@ BrowserTabsModelProviderImpl::~BrowserTabsModelProviderImpl() {
   multidevice_setup_client_->RemoveObserver(this);
 }
 
-base::Optional<std::string> BrowserTabsModelProviderImpl::GetSessionName()
+absl::optional<std::string> BrowserTabsModelProviderImpl::GetSessionName()
     const {
   const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
       host_device_with_status = multidevice_setup_client_->GetHostStatus();
   if (!host_device_with_status.second)
-    return base::nullopt;
+    return absl::nullopt;
   // The pii_free_name field of the device matches the session name for
   // sync.
   return host_device_with_status.second->pii_free_name();
@@ -65,7 +65,7 @@ void BrowserTabsModelProviderImpl::TriggerRefresh() {
 }
 
 void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
-  base::Optional<std::string> session_name = GetSessionName();
+  absl::optional<std::string> session_name = GetSessionName();
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service_->GetOpenTabsUIDelegate();
   // Tab sync is disabled or no valid |pii_free_name_|.
@@ -119,7 +119,7 @@ void BrowserTabsModelProviderImpl::InvalidateWeakPtrsAndClearTabMetadata(
 }
 
 void BrowserTabsModelProviderImpl::OnMetadataFetched(
-    base::Optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
+    absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>
         metadata) {
   // The operation to fetch metadata was cancelled.
   if (!metadata)

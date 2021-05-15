@@ -43,7 +43,7 @@ class ScopedXPCServiceMock {
     // code under test. Will not be populated before that request is issued.
     // If the remote object is requested via .remoteObjectProxy rather than
     // remoteObjectProxyWithErrorHandler:, this field is never populated.
-    base::Optional<base::mac::ScopedBlock<void (^)(NSError*)>>
+    absl::optional<base::mac::ScopedBlock<void (^)(NSError*)>>
         xpc_error_handler;
 
     explicit RemoteObjectMockRecord(base::scoped_nsprotocol<id> mock_ptr);

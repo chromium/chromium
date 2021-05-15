@@ -164,7 +164,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (params.open_pwa_window_if_possible) {
-    base::Optional<web_app::AppId> app_id =
+    absl::optional<web_app::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
                                                 /*window_only=*/true);
     if (app_id) {
@@ -493,7 +493,7 @@ void Navigate(NavigateParams* params) {
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/1096345): Remove this code after we integrate with intent
   // handling.
-  const base::Optional<web_app::SystemAppType> capturing_system_app_type =
+  const absl::optional<web_app::SystemAppType> capturing_system_app_type =
       web_app::GetCapturingSystemAppForURL(params->initiating_profile,
                                            params->url);
   if (capturing_system_app_type &&

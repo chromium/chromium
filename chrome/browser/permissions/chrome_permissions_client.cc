@@ -224,7 +224,7 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::RequestType request_type,
     permissions::PermissionAction action,
     const GURL& origin,
-    base::Optional<QuietUiReason> quiet_ui_reason) {
+    absl::optional<QuietUiReason> quiet_ui_reason) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   PermissionActionsHistory::GetForProfile(profile)->RecordAction(action,
@@ -246,23 +246,23 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromePermissionsClient::HadThreeConsecutiveNotificationPermissionDenies(
     content::BrowserContext* browser_context) {
   if (!QuietNotificationPermissionUiConfig::IsAdaptiveActivationDryRunEnabled())
-    return base::nullopt;
+    return absl::nullopt;
   return Profile::FromBrowserContext(browser_context)
       ->GetPrefs()
       ->GetBoolean(prefs::kHadThreeConsecutiveNotificationPermissionDenies);
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
     content::BrowserContext* browser_context,
     const GURL& origin,
     ContentSettingsType permission) {
   if (permission != ContentSettingsType::NOTIFICATIONS) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -270,7 +270,7 @@ ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
       HasPreviouslyRevokedPermission(profile, origin);
 }
 
-base::Optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
+absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In web kiosk mode, all permission requests are auto-approved for the origin
   // of the main app.
@@ -285,7 +285,7 @@ base::Optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
     return url::Origin::Create(app_data->install_url());
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
@@ -299,7 +299,7 @@ bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
          requesting_origin.SchemeIs(extensions::kExtensionScheme);
 }
 
-base::Optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
+absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   if (embedding_origin.GetOrigin() ==
@@ -319,7 +319,7 @@ base::Optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     return requesting_origin;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 #if defined(OS_ANDROID)

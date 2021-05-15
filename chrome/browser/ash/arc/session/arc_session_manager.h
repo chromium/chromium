@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
@@ -24,6 +23,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_stop_reason.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
@@ -291,8 +291,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
 
   // Getter for |vm_info_|.
-  // If ARCVM is not running, return base::nullopt.
-  const base::Optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
+  // If ARCVM is not running, return absl::nullopt.
+  const absl::optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
 
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
@@ -362,7 +362,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // If not requested, just skipping the data removal, and moves to
   // MaybeReenableArc() directly.
   void MaybeStartArcDataRemoval();
-  void OnArcDataRemoved(base::Optional<bool> success);
+  void OnArcDataRemoved(absl::optional<bool> success);
 
   // On ARC session stopped and/or data removal completion, this is called
   // so that, if necessary, ARC session is restarted.
@@ -437,11 +437,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcAppIdProviderImpl app_id_provider_;
 
   // The content of /var/lib/misc/arc_salt. Empty if the file doesn't exist.
-  base::Optional<std::string> arc_salt_on_disk_;
+  absl::optional<std::string> arc_salt_on_disk_;
 
-  base::Optional<bool> property_files_expansion_result_;
+  absl::optional<bool> property_files_expansion_result_;
 
-  base::Optional<vm_tools::concierge::VmInfo> vm_info_;
+  absl::optional<vm_tools::concierge::VmInfo> vm_info_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};

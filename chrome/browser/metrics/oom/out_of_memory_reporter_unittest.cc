@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/run_loop.h"
@@ -41,6 +40,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -188,7 +188,7 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
  protected:
   base::ShadowingAtExitManager at_exit_;
 
-  base::Optional<GURL> last_oom_url_;
+  absl::optional<GURL> last_oom_url_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 
  private:

@@ -7,9 +7,9 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "components/arc/mojom/auth.mojom.h"
 #include "components/arc/session/arc_stop_reason.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 enum class ProvisioningStatus;
@@ -29,26 +29,26 @@ class ArcProvisioningResult {
   ~ArcProvisioningResult();
 
   // Returns gms sign-in error if sign-in result has it.
-  base::Optional<mojom::GMSSignInError> gms_sign_in_error() const;
+  absl::optional<mojom::GMSSignInError> gms_sign_in_error() const;
 
   // Returns gms check-in error if sign-in result has it.
-  base::Optional<mojom::GMSCheckInError> gms_check_in_error() const;
+  absl::optional<mojom::GMSCheckInError> gms_check_in_error() const;
 
   // Returns cloud provision flow error if sign-in result has it.
-  base::Optional<mojom::CloudProvisionFlowError> cloud_provision_flow_error()
+  absl::optional<mojom::CloudProvisionFlowError> cloud_provision_flow_error()
       const;
 
   // Returns the error of signin_result coming from ARC.
   const mojom::ArcSignInError* sign_in_error() const;
 
   // Returns general sign-in error if result has it.
-  base::Optional<mojom::GeneralSignInError> general_error() const;
+  absl::optional<mojom::GeneralSignInError> general_error() const;
 
   // Returns true if provisioning was successful.
   bool is_success() const;
 
   // Returns the reason for ARC stopped event if it exists.
-  base::Optional<ArcStopReason> stop_reason() const;
+  absl::optional<ArcStopReason> stop_reason() const;
 
   // Returns true if ARC provisioning timed out in Chrome.
   bool is_timedout() const;

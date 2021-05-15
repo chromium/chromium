@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -28,19 +28,19 @@ class ShillLogSource : public SystemLogsSource {
   void Fetch(SysLogsSourceCallback callback) override;
 
  private:
-  void OnGetManagerProperties(base::Optional<base::Value> result);
+  void OnGetManagerProperties(absl::optional<base::Value> result);
   void OnGetDevice(const std::string& device_path,
-                   base::Optional<base::Value> properties);
+                   absl::optional<base::Value> properties);
   void AddDeviceAndRequestIPConfigs(const std::string& device_path,
                                     const base::Value& properties);
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
-                     base::Optional<base::Value> properties);
+                     absl::optional<base::Value> properties);
   void AddIPConfig(const std::string& device_path,
                    const std::string& ip_config_path,
                    const base::Value& properties);
   void OnGetService(const std::string& service_path,
-                    base::Optional<base::Value> properties);
+                    absl::optional<base::Value> properties);
   // Scrubs |properties| for PII data based on the |object_path|. Also expands
   // UIData from JSON into a dictionary if present.
   base::Value ScrubAndExpandProperties(const std::string& object_path,

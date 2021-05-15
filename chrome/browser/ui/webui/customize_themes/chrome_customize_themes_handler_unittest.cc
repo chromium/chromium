@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -33,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 
@@ -235,7 +235,7 @@ TEST_F(ChromeCustomizeThemesHandlerTest, InstallThirdPartyTheme) {
       test_data_dir.AppendASCII("extensions/theme_minimal/manifest.json");
   std::string config_contents;
   ASSERT_TRUE(base::ReadFileToString(manifest_path, &config_contents));
-  base::Optional<base::Value> manifest =
+  absl::optional<base::Value> manifest =
       base::JSONReader::Read(config_contents);
   ASSERT_TRUE(manifest.has_value());
 

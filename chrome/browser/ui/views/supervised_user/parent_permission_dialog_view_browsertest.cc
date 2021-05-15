@@ -271,7 +271,7 @@ class ParentPermissionDialogViewTest
   scoped_refptr<const extensions::Extension> test_extension_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-  base::Optional<NextDialogAction> next_dialog_action_;
+  absl::optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests that a plain dialog widget is shown using the TestBrowserUi

@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "chrome/browser/download/download_confirmation_reason.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_schedule.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -53,7 +53,7 @@ class DownloadTargetDeterminerDelegate {
   using ConfirmationCallback = base::OnceCallback<void(
       DownloadConfirmationResult,
       const base::FilePath& virtual_path,
-      base::Optional<download::DownloadSchedule> download_schedule)>;
+      absl::optional<download::DownloadSchedule> download_schedule)>;
 
   // Callback to be invoked when DetermineLocalPath() completes. The argument
   // should be the determined local path. It should be non-empty on success. If

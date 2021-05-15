@@ -96,7 +96,7 @@ bool BrowserLiveTabContext::IsTabPinned(int index) const {
   return browser_->tab_strip_model()->IsTabPinned(index);
 }
 
-base::Optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
+absl::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
     int index) const {
   return browser_->tab_strip_model()->GetTabGroupForTab(index);
 }
@@ -134,7 +134,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
@@ -189,7 +189,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
 sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,

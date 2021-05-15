@@ -11,7 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -25,9 +25,9 @@ class ViewHandlerAndroid {
 
   base::WeakPtr<ViewHandlerAndroid> GetWeakPtr();
 
-  // Returns the view associated with |view_identifier| or base::nullopt if
+  // Returns the view associated with |view_identifier| or absl::nullopt if
   // there is no such view.
-  base::Optional<base::android::ScopedJavaGlobalRef<jobject>> GetView(
+  absl::optional<base::android::ScopedJavaGlobalRef<jobject>> GetView(
       const std::string& view_identifier) const;
 
   // Adds a view to the set of managed views.

@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
@@ -49,6 +48,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
@@ -607,7 +607,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // the manager and retried later.
   void InstallationFromExternalFileFinished(
       const std::string& extension_id,
-      const base::Optional<CrxInstallError>& error);
+      const absl::optional<CrxInstallError>& error);
 
   const base::CommandLine* command_line_ = nullptr;
 

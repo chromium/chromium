@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process_iterator.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
@@ -24,6 +23,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -37,10 +37,10 @@ class ArcBridgeService;
 //
 // Call RequestAppProcessList() / RequestSystemProcessList() on the main UI
 // thread to get a list of all ARC app / system processes. It returns
-// base::Optional<vector<arc::ArcProcess>>, which includes pid <-> nspid
+// absl::optional<vector<arc::ArcProcess>>, which includes pid <-> nspid
 // mapping. Example:
 //   void OnUpdateProcessList(
-//       base::Optional<vector<arc::ArcProcess>> processes) {
+//       absl::optional<vector<arc::ArcProcess>> processes) {
 //     if (!processes) {
 //         // Arc process service is not ready.
 //        return;
@@ -72,7 +72,7 @@ class ArcProcessService : public KeyedService,
   static ArcProcessService* GetForBrowserContext(
       content::BrowserContext* context);
 
-  using OptionalArcProcessList = base::Optional<std::vector<ArcProcess>>;
+  using OptionalArcProcessList = absl::optional<std::vector<ArcProcess>>;
   using RequestProcessListCallback =
       base::OnceCallback<void(OptionalArcProcessList)>;
   using RequestMemoryInfoCallback =
@@ -95,7 +95,7 @@ class ArcProcessService : public KeyedService,
 
   // If ARC IPC is ready for the process list request, the result is returned
   // as the argument of |callback|. Otherwise, |callback| is called with
-  // base::nullopt.
+  // absl::nullopt.
   // The process list maybe stale of up to |kProcessSnapshotRefreshTime|.
   void RequestAppProcessList(RequestProcessListCallback callback);
   void RequestSystemProcessList(RequestProcessListCallback callback);

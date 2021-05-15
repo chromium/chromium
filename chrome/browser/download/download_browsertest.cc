@@ -2703,7 +2703,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   // the download request.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-  base::Optional<network::ResourceRequest::TrustedParams> trusted_params;
+  absl::optional<network::ResourceRequest::TrustedParams> trusted_params;
   net::SiteForCookies site_for_cookies;
 
   base::RunLoop request_waiter;
@@ -2791,7 +2791,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   // the download request.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-  base::Optional<network::ResourceRequest::TrustedParams> trusted_params;
+  absl::optional<network::ResourceRequest::TrustedParams> trusted_params;
   net::SiteForCookies site_for_cookies;
 
   base::RunLoop request_waiter;
@@ -2863,7 +2863,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   // the download request.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-  base::Optional<network::ResourceRequest::TrustedParams> trusted_params;
+  absl::optional<network::ResourceRequest::TrustedParams> trusted_params;
   net::SiteForCookies site_for_cookies;
 
   base::RunLoop request_waiter;
@@ -2953,7 +2953,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   // the download request.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-  base::Optional<network::ResourceRequest::TrustedParams> trusted_params;
+  absl::optional<network::ResourceRequest::TrustedParams> trusted_params;
   net::SiteForCookies site_for_cookies;
 
   base::RunLoop request_waiter;
@@ -4735,7 +4735,7 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
           false /* allow_metered */, false /* opened */, current_time,
           false /* transient */,
           std::vector<download::DownloadItem::ReceivedSlice>(),
-          base::nullopt /*download_schedule*/, nullptr /* download_entry */));
+          absl::nullopt /*download_schedule*/, nullptr /* download_entry */));
 
   download::DownloadItem* download = coordinator->GetDownloadByGuid(guid);
   content::DownloadManager* manager = DownloadManagerForBrowser(browser());

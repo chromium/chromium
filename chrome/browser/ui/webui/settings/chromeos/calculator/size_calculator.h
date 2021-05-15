@@ -52,7 +52,7 @@ class SizeCalculator {
     virtual void OnSizeCalculated(
         const CalculationType& item_id,
         int64_t total_bytes,
-        const base::Optional<int64_t>& available_bytes) = 0;
+        const absl::optional<int64_t>& available_bytes) = 0;
   };
 
   // Total number of storage items.
@@ -78,7 +78,7 @@ class SizeCalculator {
   // Notify the StorageHandler about the calculated storage item size
   void NotifySizeCalculated(
       int64_t total_bytes,
-      const base::Optional<int64_t>& available_bytes = base::nullopt);
+      const absl::optional<int64_t>& available_bytes = absl::nullopt);
 
   // Item id.
   const CalculationType calculation_type_;
@@ -278,7 +278,7 @@ class OtherUsersSizeCalculator : public SizeCalculator {
 
   // Callback to update the sizes of the other users.
   void OnGetOtherUserSize(
-      base::Optional<::user_data_auth::GetAccountDiskUsageReply> reply);
+      absl::optional<::user_data_auth::GetAccountDiskUsageReply> reply);
 
   // The list of other users whose directory sizes will be accumulated as the
   // size of "Other users".

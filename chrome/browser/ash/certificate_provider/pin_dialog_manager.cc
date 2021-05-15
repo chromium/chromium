@@ -22,7 +22,7 @@ PinDialogManager::~PinDialogManager() = default;
 void PinDialogManager::AddSignRequestId(
     const std::string& extension_id,
     int sign_request_id,
-    const base::Optional<AccountId>& authenticating_user_account_id) {
+    const absl::optional<AccountId>& authenticating_user_account_id) {
   ExtensionNameRequestIdPair key(extension_id, sign_request_id);
   sign_requests_.insert(
       std::make_pair(key, SignRequestState(/*begin_time=*/base::Time::Now(),
@@ -182,7 +182,7 @@ void PinDialogManager::RemovePinDialogHost(
 
 PinDialogManager::SignRequestState::SignRequestState(
     base::Time begin_time,
-    const base::Optional<AccountId>& authenticating_user_account_id)
+    const absl::optional<AccountId>& authenticating_user_account_id)
     : begin_time(begin_time),
       authenticating_user_account_id(authenticating_user_account_id) {}
 

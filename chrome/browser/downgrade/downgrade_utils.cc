@@ -53,7 +53,7 @@ bool MoveWithoutFallback(const base::FilePath& source,
 #endif
 }
 
-base::Optional<int> MoveContents(const base::FilePath& source,
+absl::optional<int> MoveContents(const base::FilePath& source,
                                  const base::FilePath& target,
                                  ExclusionPredicate exclusion_predicate) {
   // Implementation note: moving is better than deleting in this case since it
@@ -64,7 +64,7 @@ base::Optional<int> MoveContents(const base::FilePath& source,
   // containing directory be moved or deleted.
   if (!base::CreateDirectory(target)) {
     PLOG(ERROR) << target;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int failure_count = 0;

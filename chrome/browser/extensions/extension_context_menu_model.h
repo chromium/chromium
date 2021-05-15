@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
@@ -177,7 +177,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
-  base::Optional<ContextMenuAction> action_taken_;
+  absl::optional<ContextMenuAction> action_taken_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModel);
 };

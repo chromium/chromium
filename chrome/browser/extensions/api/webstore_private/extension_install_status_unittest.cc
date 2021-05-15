@@ -61,7 +61,7 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    base::Optional<base::Value> settings =
+    absl::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings);
     SetPolicy(pref_names::kExtensionManagement,

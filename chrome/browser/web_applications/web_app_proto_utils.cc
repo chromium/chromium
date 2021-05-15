@@ -10,13 +10,13 @@ namespace web_app {
 
 namespace {
 
-base::Optional<blink::mojom::ManifestImageResource_Purpose>
+absl::optional<blink::mojom::ManifestImageResource_Purpose>
 SyncPurposeToBlinkPurpose(sync_pb::WebAppIconInfo_Purpose purpose) {
   switch (purpose) {
     // Treat UNSPECIFIED purpose as invalid. It means a new purpose was added
     // that this client does not understand.
     case sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED:
-      return base::nullopt;
+      return absl::nullopt;
     case sync_pb::WebAppIconInfo_Purpose_ANY:
       return blink::mojom::ManifestImageResource_Purpose::ANY;
     case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
@@ -40,7 +40,7 @@ sync_pb::WebAppIconInfo_Purpose BlinkPurposeToSyncPurpose(
 
 }  // namespace
 
-base::Optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
+absl::optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
     const char* container_name_for_logging,
     RepeatedIconInfosProto icon_infos_proto) {
   std::vector<WebApplicationIconInfo> icon_infos;
@@ -52,20 +52,20 @@ base::Optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
 
     if (!icon_info_proto.has_url()) {
       DLOG(ERROR) << container_name_for_logging << " IconInfo has missing url";
-      return base::nullopt;
+      return absl::nullopt;
     }
     icon_info.url = GURL(icon_info_proto.url());
     if (!icon_info.url.is_valid()) {
       DLOG(ERROR) << container_name_for_logging << " IconInfo has invalid url: "
                   << icon_info.url.possibly_invalid_spec();
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     if (icon_info_proto.has_purpose()) {
-      base::Optional<blink::mojom::ManifestImageResource_Purpose> opt_purpose =
+      absl::optional<blink::mojom::ManifestImageResource_Purpose> opt_purpose =
           SyncPurposeToBlinkPurpose(icon_info_proto.purpose());
       if (!opt_purpose.has_value())
-        return base::nullopt;
+        return absl::nullopt;
       icon_info.purpose = opt_purpose.value();
     } else {
       // Treat unset purpose as ANY so that old data without the field is
@@ -115,7 +115,7 @@ sync_pb::WebAppIconInfo WebAppIconInfoToSyncProto(
   return icon_info_proto;
 }
 
-base::Optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
+absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
     const sync_pb::WebAppSpecifics& sync_proto) {
   WebApp::SyncFallbackData parsed_sync_fallback_data;
 
@@ -129,14 +129,14 @@ base::Optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
     if (!parsed_sync_fallback_data.scope.is_valid()) {
       DLOG(ERROR) << "WebAppSpecifics scope has invalid url: "
                   << parsed_sync_fallback_data.scope.possibly_invalid_spec();
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
-  base::Optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
+  absl::optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
       ParseWebAppIconInfos("WebAppSpecifics", sync_proto.icon_infos());
   if (!parsed_icon_infos.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   parsed_sync_fallback_data.icon_infos = std::move(parsed_icon_infos.value());
 

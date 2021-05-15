@@ -56,7 +56,7 @@ void AddOmniboxColorMixers(ui::ColorProvider* provider, bool high_contrast) {
     const auto results_icon = [minimum_contrast](ui::ColorId text_id,
                                                  ui::ColorId background_id) {
       return ui::BlendForMinContrast(ui::DeriveDefaultIconColor(text_id),
-                                     background_id, base::nullopt,
+                                     background_id, absl::nullopt,
                                      minimum_contrast);
     };
     mixer[kColorOmniboxResultsIcon] =
@@ -73,7 +73,7 @@ void AddOmniboxColorMixers(ui::ColorProvider* provider, bool high_contrast) {
                                                  ui::ColorId background_id) {
       return ui::BlendForMinContrast(
           foreground_id, foreground_id,
-          ui::BlendForMinContrast(background_id, background_id, base::nullopt,
+          ui::BlendForMinContrast(background_id, background_id, absl::nullopt,
                                   minimum_contrast),
           minimum_contrast);
     };
@@ -110,7 +110,7 @@ void AddOmniboxColorMixers(ui::ColorProvider* provider, bool high_contrast) {
               ui::BlendTowardMaxContrast(kColorOmniboxText, 0x18),
               ui::BlendForMinContrast(std::move(transform),
                                       kColorOmniboxBackgroundHovered,
-                                      base::nullopt, minimum_contrast));
+                                      absl::nullopt, minimum_contrast));
         };
     mixer[kColorOmniboxSecurityChipDangerous] =
         security_chip_color(gfx::kGoogleRed600);

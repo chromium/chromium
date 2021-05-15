@@ -83,14 +83,14 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
   if (result != SharingSendMessageResult::kSuccessful) {
     // TODO(crbug.com/1015645): We should have a new category for remote
     // failures.
-    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     return;
   }
 
   DCHECK(response);
   DCHECK(response->has_sms_fetch_response());
   if (response->sms_fetch_response().has_failure_type()) {
-    std::move(callback).Run(base::nullopt, base::nullopt,
+    std::move(callback).Run(absl::nullopt, absl::nullopt,
                             static_cast<content::SmsFetchFailureType>(
                                 response->sms_fetch_response().failure_type()));
     return;
@@ -102,7 +102,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
 
   std::move(callback).Run(std::move(origin_list),
                           response->sms_fetch_response().one_time_code(),
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
@@ -114,7 +114,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
     // No devices available to call.
     // TODO(crbug.com/1015645): We should have a new category for remote
     // failures.
-    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+    std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
     return base::NullCallback();
   }
 

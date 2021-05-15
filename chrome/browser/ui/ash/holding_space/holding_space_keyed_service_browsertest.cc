@@ -107,7 +107,7 @@ drivefs::mojom::FileChangePtr CreateDriveFsChange(
 // Creates a txt file at the path of the downloads mount point for `profile`.
 base::FilePath CreateTextFile(
     const base::FilePath& root_path,
-    const base::Optional<std::string>& relative_path) {
+    const absl::optional<std::string>& relative_path) {
   const base::FilePath path =
       root_path.Append(relative_path.value_or(base::StringPrintf(
           "%s.txt", base::UnguessableToken::Create().ToString().c_str())));
@@ -416,12 +416,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   // Verify that items are removed when their backing files are deleted.
   const auto* holding_space_item_to_delete = AddHoldingSpaceItem(
       browser()->profile(), CreateTextFile(GetTestMountPoint(),
-                                           /*relative_path=*/base::nullopt));
+                                           /*relative_path=*/absl::nullopt));
 
   // Verify that items are removed when their backing files are moved.
   const auto* holding_space_item_to_move = AddHoldingSpaceItem(
       browser()->profile(), CreateTextFile(GetTestMountPoint(),
-                                           /*relative_path=*/base::nullopt));
+                                           /*relative_path=*/absl::nullopt));
 
   RemoveHoldingSpaceItemViaClosure(
       holding_space_item_to_delete, base::BindLambdaForTesting([&]() {
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
   // Add an item to holding space.
   base::FilePath src =
-      CreateTextFile(GetTestMountPoint(), /*relative_path=*/base::nullopt);
+      CreateTextFile(GetTestMountPoint(), /*relative_path=*/absl::nullopt);
   auto* item = AddHoldingSpaceItem(browser()->profile(), src);
 
   // Verify the item exists in the model.
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
   EXPECT_EQ(item->file_path(), src);
 
   base::FilePath dst =
-      CreateTextFile(GetTestMountPoint(), /*relative_path=*/base::nullopt);
+      CreateTextFile(GetTestMountPoint(), /*relative_path=*/absl::nullopt);
 
   // Prep a batch of `changes` to indicate that `src` has moved to `dst`. Note
   // the consistent `stable_id` to link the `kDelete` with the `kCreate` change.
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
   // Add another holding space item, pointing to `src` in `src_dir`.
   base::FilePath src_dir = GetTestMountPoint().Append("src/");
-  src = CreateTextFile(src_dir, /*relative_path=*/base::nullopt);
+  src = CreateTextFile(src_dir, /*relative_path=*/absl::nullopt);
   item = AddHoldingSpaceItem(browser()->profile(), src);
 
   // Verify the item exists in the model.
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
   const base::FilePath file_path =
       CreateTextFile(GetTestMountPoint(),
-                     /*relative_path=*/base::nullopt);
+                     /*relative_path=*/absl::nullopt);
   const GURL url =
       holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
   storage::FileSystemURL file_system_url =

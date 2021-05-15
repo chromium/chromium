@@ -85,7 +85,7 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
       IdentityManagerFactory::GetForProfile(GetProfile());
   if (!identity_manager)
     return gfx::Image();
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));

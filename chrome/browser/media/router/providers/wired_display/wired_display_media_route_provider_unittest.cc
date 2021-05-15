@@ -35,12 +35,12 @@ namespace {
 class MockCallback {
  public:
   MOCK_METHOD4(CreateRoute,
-               void(const base::Optional<MediaRoute>& route,
+               void(const absl::optional<MediaRoute>& route,
                     mojom::RoutePresentationConnectionPtr connection,
-                    const base::Optional<std::string>& error,
+                    const absl::optional<std::string>& error,
                     RouteRequestResult::ResultCode result));
   MOCK_METHOD2(TerminateRoute,
-               void(const base::Optional<std::string>& error,
+               void(const absl::optional<std::string>& error,
                     RouteRequestResult::ResultCode result));
 };
 
@@ -315,10 +315,10 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
   base::RunLoop().RunUntilIdle();
 
   // Create a route for |presentation_id|.
-  EXPECT_CALL(callback, CreateRoute(_, _, base::Optional<std::string>(),
+  EXPECT_CALL(callback, CreateRoute(_, _, absl::optional<std::string>(),
                                     RouteRequestResult::OK))
       .WillOnce(WithArg<0>(
-          Invoke([&presentation_id](const base::Optional<MediaRoute>& route) {
+          Invoke([&presentation_id](const absl::optional<MediaRoute>& route) {
             EXPECT_TRUE(route.has_value());
             EXPECT_EQ(route->media_route_id(), presentation_id);
             EXPECT_EQ(route->description(), "Presenting (www.example.com)");
@@ -341,7 +341,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
   base::RunLoop().RunUntilIdle();
 
   // Terminate the route.
-  EXPECT_CALL(callback, TerminateRoute(base::Optional<std::string>(),
+  EXPECT_CALL(callback, TerminateRoute(absl::optional<std::string>(),
                                        RouteRequestResult::OK));
   EXPECT_CALL(*receiver_creator_.receiver(), Terminate());
   EXPECT_CALL(router_,

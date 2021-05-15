@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -73,7 +73,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
                     net::EmbeddedTestServer* embedded_test_server,
                     InProcessBrowserTest* test_base,
                     bool should_launch_browser = true,
-                    base::Optional<AccountId> account_id = base::nullopt,
+                    absl::optional<AccountId> account_id = absl::nullopt,
                     bool include_initial_user = true,
                     // TODO(crbug/1112885): Remove this parameter.
                     bool use_local_policy_server = true);

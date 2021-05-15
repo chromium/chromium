@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
@@ -17,7 +17,7 @@ class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
   ~MetricEvaluatorsHelperWin() override;
 
   // MetricEvaluatorsHelper:
-  base::Optional<int> GetFreePhysicalMemoryMb() override;
+  absl::optional<int> GetFreePhysicalMemoryMb() override;
 
  private:
   friend class MetricEvaluatorsHelperWinTest;

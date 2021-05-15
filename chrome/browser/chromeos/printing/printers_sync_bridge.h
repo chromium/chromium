@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/observer_list_threadsafe.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class PrinterSpecifics;
@@ -35,10 +35,10 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -59,7 +59,7 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
   // Returns all printers stored in the database and synced.
   std::vector<sync_pb::PrinterSpecifics> GetAllPrinters() const;
   // Returns the printer with |id| from storage if it could be found.
-  base::Optional<sync_pb::PrinterSpecifics> GetPrinter(
+  absl::optional<sync_pb::PrinterSpecifics> GetPrinter(
       const std::string& id) const;
   // Returns whether or not the printer with |id| is contained in the storage.
   bool HasPrinter(const std::string& id) const;

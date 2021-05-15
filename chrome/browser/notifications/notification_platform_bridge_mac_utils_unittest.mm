@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 using message_center::Notification;
@@ -41,7 +41,7 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
       const std::string& origin,
       message_center::NotificationType type,
       int progress,
-      const base::Optional<std::string>& contextMessage) {
+      const absl::optional<std::string>& contextMessage) {
     GURL url(origin);
 
     Notification notification(
@@ -90,7 +90,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest, TestCreateNotificationTitle) {
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdTitle = CreateMacNotificationTitle(notification);
   EXPECT_EQ(u"Title", createdTitle);
 }
@@ -100,7 +100,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_PROGRESS, /*progress=*/50,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdTitle = CreateMacNotificationTitle(notification);
   EXPECT_EQ(u"50% - Title", createdTitle);
 }
@@ -110,7 +110,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/false, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(u"moe.example.com", createdContext);
@@ -121,7 +121,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(u"moe.example.com", createdContext);
@@ -145,7 +145,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle",
       "https://thisisareallyreallyreaaalllyyylongorigin.moe.example.com/",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/false, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(u"example.com", createdContext);
@@ -163,7 +163,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://thisisalongorigin.moe.co.uk",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(u"moe.co.uk", createdContext);
@@ -179,7 +179,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
   Notification notification = CreateNotification(
       "Title", "Subtitle", "https://thisisareallylongorigin.moe.co.uk",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
-      /*contextMessage=*/base::nullopt);
+      /*contextMessage=*/absl::nullopt);
   std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(u"moe.co.uk", createdContext);

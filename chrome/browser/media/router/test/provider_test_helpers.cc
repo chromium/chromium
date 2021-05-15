@@ -65,7 +65,7 @@ TestDialURLFetcher::~TestDialURLFetcher() = default;
 
 void TestDialURLFetcher::Start(const GURL& url,
                                const std::string& method,
-                               const base::Optional<std::string>& post_data,
+                               const absl::optional<std::string>& post_data,
                                int max_retries,
                                bool set_origin_header) {
   DoStart(url, method, post_data, max_retries);
@@ -99,7 +99,7 @@ std::unique_ptr<DialURLFetcher> TestDialActivityManager::CreateFetcher(
 void TestDialActivityManager::SetExpectedRequest(
     const GURL& url,
     const std::string& method,
-    const base::Optional<std::string>& post_data) {
+    const absl::optional<std::string>& post_data) {
   EXPECT_CALL(*this, OnFetcherCreated());
   expected_url_ = url;
   expected_method_ = method;

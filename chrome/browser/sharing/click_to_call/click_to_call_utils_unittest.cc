@@ -59,7 +59,7 @@ class ClickToCallUtilsTest : public testing::Test {
         use_incognito_profile
             ? profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true)
             : &profile_;
-    base::Optional<std::string> phone_number =
+    absl::optional<std::string> phone_number =
         ExtractPhoneNumberForClickToCall(profile_to_use, selection_text);
     EXPECT_FALSE(phone_number.has_value())
         << " Found phone number: " << phone_number.value()
@@ -160,9 +160,9 @@ TEST_F(ClickToCallUtilsTest,
   expectations.emplace("78.0.3904.108", "78.0.3904.108");
 
   for (auto& expectation : expectations) {
-    base::Optional<std::string> phone_number =
+    absl::optional<std::string> phone_number =
         ExtractPhoneNumberForClickToCall(&profile_, expectation.first);
-    ASSERT_NE(base::nullopt, phone_number);
+    ASSERT_NE(absl::nullopt, phone_number);
     EXPECT_EQ(expectation.second, phone_number.value());
   }
 }
@@ -192,19 +192,19 @@ TEST_F(ClickToCallUtilsTest,
 
 TEST_F(ClickToCallUtilsTest, SelectionText_Length) {
   // Expect text length of 30 to pass.
-  EXPECT_NE(base::nullopt, ExtractPhoneNumberForClickToCall(
+  EXPECT_NE(absl::nullopt, ExtractPhoneNumberForClickToCall(
                                &profile_, " +1 2 3 4 5 6 7 8 9 0 1 2 3 45"));
   // Expect text length of 31 to fail.
-  EXPECT_EQ(base::nullopt, ExtractPhoneNumberForClickToCall(
+  EXPECT_EQ(absl::nullopt, ExtractPhoneNumberForClickToCall(
                                &profile_, " +1 2 3 4 5 6 7 8 9 0 1 2 3 4 5"));
 }
 
 TEST_F(ClickToCallUtilsTest, SelectionText_Digits) {
   // Expect text with 15 digits to pass.
-  EXPECT_NE(base::nullopt,
+  EXPECT_NE(absl::nullopt,
             ExtractPhoneNumberForClickToCall(&profile_, "+123456789012345"));
   // Expect text with 16 digits to fail.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             ExtractPhoneNumberForClickToCall(&profile_, "+1234567890123456"));
 }
 

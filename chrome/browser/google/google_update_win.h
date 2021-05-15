@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "google_update/google_update_idl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {
@@ -123,12 +123,12 @@ struct UpdateState {
   HRESULT hresult = S_OK;
 
   // If present, the process exit code from the failed run of the installer.
-  base::Optional<int> installer_exit_code;
+  absl::optional<int> installer_exit_code;
 };
 
 // Returns the state from the most recent completed update check or no value if
 // no such check has taken place.
-base::Optional<UpdateState> GetLastUpdateState();
+absl::optional<UpdateState> GetLastUpdateState();
 
 // A type of callback supplied by tests to provide a custom IGoogleUpdate3Web
 // implementation (see src/google_update/google_update_idl.idl).

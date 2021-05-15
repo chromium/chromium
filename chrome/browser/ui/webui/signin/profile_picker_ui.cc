@@ -71,7 +71,7 @@ bool IsSignInProfileCreationFlowSupported() {
 std::string GetManagedDeviceDisclaimer() {
   if (!base::FeatureList::IsEnabled(features::kSignInProfileCreationEnterprise))
     return std::string();
-  base::Optional<std::string> device_manager =
+  absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
   if (!device_manager)
     return std::string();

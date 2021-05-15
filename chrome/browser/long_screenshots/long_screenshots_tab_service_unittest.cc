@@ -181,7 +181,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
       base::BindOnce(&FileManager::CreateOrGetDirectory, file_manager, key,
                      false),
       base::BindOnce(
-          [](base::FilePath* out, const base::Optional<base::FilePath>& path) {
+          [](base::FilePath* out, const absl::optional<base::FilePath>& path) {
             EXPECT_TRUE(path.has_value());
             *out = path.value();
           },
@@ -203,7 +203,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
       base::BindOnce(&FileManager::CreateOrGetDirectory, file_manager, key,
                      false),
       base::BindOnce(
-          [](base::FilePath* out, const base::Optional<base::FilePath>& path) {
+          [](base::FilePath* out, const absl::optional<base::FilePath>& path) {
             EXPECT_TRUE(path.has_value());
             *out = path.value();
           },

@@ -247,7 +247,7 @@ void CRDHostDelegate::PostMessageFromNativeHost(
     const std::string& message_string) {
   CRD_DVLOG(1) << "Received message from CRD host: " << message_string;
 
-  base::Optional<base::Value> message = base::JSONReader::Read(message_string);
+  absl::optional<base::Value> message = base::JSONReader::Read(message_string);
   if (!message) {
     OnProtocolBroken("Message is invalid JSON");
     return;
@@ -369,7 +369,7 @@ void CRDHostDelegate::OnStateReceivedAccessCode(const base::Value& message) {
   }
 
   const std::string* access_code = message.FindStringKey(remoting::kAccessCode);
-  base::Optional<int> code_lifetime =
+  absl::optional<int> code_lifetime =
       message.FindIntKey(remoting::kAccessCodeLifetime);
   if (!access_code || !code_lifetime) {
     OnProtocolBroken("Can not obtain access code");

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_FAKE_HIERARCHY_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_FAKE_HIERARCHY_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace settings {
@@ -29,11 +29,11 @@ class FakeHierarchy : public Hierarchy {
       mojom::SearchResultIcon icon,
       mojom::SearchResultDefaultRank default_rank,
       const std::string& url_path_with_parameters,
-      base::Optional<mojom::Subpage> parent_subpage = base::nullopt);
+      absl::optional<mojom::Subpage> parent_subpage = absl::nullopt);
   void AddSettingMetadata(
       mojom::Section section,
       mojom::Setting setting,
-      base::Optional<mojom::Subpage> parent_subpage = base::nullopt);
+      absl::optional<mojom::Subpage> parent_subpage = absl::nullopt);
 
  private:
   // Hierarchy:

@@ -108,12 +108,12 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
       blink::ProtocolHandlerSecurityLevel::kStrict;
   value->GetString("protocol", &protocol);
   value->GetString("url", &url);
-  base::Optional<base::Time> time_value =
+  absl::optional<base::Time> time_value =
       util::ValueToTime(value->FindKey("last_modified"));
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
-  base::Optional<int> security_level_value =
+  absl::optional<int> security_level_value =
       value->FindIntPath("security_level");
   if (security_level_value) {
     security_level =

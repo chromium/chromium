@@ -26,33 +26,33 @@ const std::vector<test::ImpressionTestData> kSingleClientImpressionTestData = {
     {SchedulerClientType::kTest1,
      2 /* current_max_daily_show */,
      {} /* impressions */,
-     base::nullopt /* suppression_info */,
+     absl::nullopt /* suppression_info */,
      0 /* negative_events_count */,
-     base::nullopt /* negative_event_ts */,
-     base::nullopt /* last_shown_ts */}};
+     absl::nullopt /* negative_event_ts */,
+     absl::nullopt /* last_shown_ts */}};
 
 const std::vector<test::ImpressionTestData> kClientsImpressionTestData = {
     {SchedulerClientType::kTest1,
      2 /* current_max_daily_show */,
      {} /* impressions */,
-     base::nullopt /* suppression_info */,
+     absl::nullopt /* suppression_info */,
      0 /* negative_events_count */,
-     base::nullopt /* negative_event_ts */,
-     base::nullopt /* last_shown_ts */},
+     absl::nullopt /* negative_event_ts */,
+     absl::nullopt /* last_shown_ts */},
     {SchedulerClientType::kTest2,
      5 /* current_max_daily_show */,
      {} /* impressions */,
-     base::nullopt /* suppression_info */,
+     absl::nullopt /* suppression_info */,
      0 /* negative_events_count */,
-     base::nullopt /* negative_event_ts */,
-     base::nullopt /* last_shown_ts */},
+     absl::nullopt /* negative_event_ts */,
+     absl::nullopt /* last_shown_ts */},
     {SchedulerClientType::kTest3,
      1 /* current_max_daily_show */,
      {} /* impressions */,
-     base::nullopt /* suppression_info */,
+     absl::nullopt /* suppression_info */,
      0 /* negative_events_count */,
-     base::nullopt /* negative_event_ts */,
-     base::nullopt /* last_shown_ts */}};
+     absl::nullopt /* negative_event_ts */,
+     absl::nullopt /* last_shown_ts */}};
 
 struct TestData {
   // Impression data as the input.
@@ -133,8 +133,8 @@ class DisplayDeciderTest : public testing::Test {
   NotificationEntry CreateNotification(
       SchedulerClientType type,
       const std::string& guid,
-      base::Optional<base::TimeDelta> deliver_time_start_delta,
-      base::Optional<base::TimeDelta> deliver_time_end_delta) {
+      absl::optional<base::TimeDelta> deliver_time_start_delta,
+      absl::optional<base::TimeDelta> deliver_time_end_delta) {
     NotificationEntry entry(type, guid);
     if (deliver_time_start_delta.has_value())
       entry.schedule_params.deliver_time_start =
@@ -188,7 +188,7 @@ TEST_F(DisplayDeciderTest, OutOfDeliverTimeWindow) {
                          base::TimeDelta() - base::TimeDelta::FromDays(2),
                          base::TimeDelta() - base::TimeDelta::FromDays(1));
   auto entry2 = CreateNotification(SchedulerClientType::kTest2, "guid2",
-                                   base::nullopt, base::nullopt);
+                                   absl::nullopt, absl::nullopt);
 
   TestData data{kSingleClientImpressionTestData,
                 {entry0, entry1, entry2},

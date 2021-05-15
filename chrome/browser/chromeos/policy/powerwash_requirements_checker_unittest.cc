@@ -206,13 +206,13 @@ TEST_F(PowerwashRequirementsCheckerTest, ShowsCorrectNotificationsForArc) {
     // normal one.
     auto error_notification = notification_service.GetNotification(
         "arc_powerwash_request_cryptohome_error");
-    EXPECT_NE(base::nullopt, error_notification);
+    EXPECT_NE(absl::nullopt, error_notification);
     EXPECT_THAT(base::UTF16ToUTF8(error_notification->message()),
                 HasSubstr("Google Play"));
 
     auto notification = notification_service.GetNotification(
         "arc_powerwash_request_instead_of_run");
-    EXPECT_EQ(base::nullopt, notification);
+    EXPECT_EQ(absl::nullopt, notification);
   }
 
   SetupCryptohomeRequiresPowerwash(true);
@@ -224,11 +224,11 @@ TEST_F(PowerwashRequirementsCheckerTest, ShowsCorrectNotificationsForArc) {
     // Cryptohome state is available. Show normal notification.
     auto error_notification = notification_service.GetNotification(
         "arc_powerwash_request_cryptohome_error");
-    EXPECT_EQ(base::nullopt, error_notification);
+    EXPECT_EQ(absl::nullopt, error_notification);
 
     auto notification = notification_service.GetNotification(
         "arc_powerwash_request_instead_of_run");
-    EXPECT_NE(base::nullopt, notification);
+    EXPECT_NE(absl::nullopt, notification);
     EXPECT_THAT(base::UTF16ToUTF8(notification->message()),
                 HasSubstr("Google Play"));
   }
@@ -252,13 +252,13 @@ TEST_F(PowerwashRequirementsCheckerTest, ShowsCorrectNotificationForCrostini) {
     // normal one.
     auto error_notification = notification_service.GetNotification(
         "crostini_powerwash_request_cryptohome_error");
-    EXPECT_NE(base::nullopt, error_notification);
+    EXPECT_NE(absl::nullopt, error_notification);
     EXPECT_THAT(base::UTF16ToUTF8(error_notification->message()),
                 HasSubstr("Linux"));
 
     auto notification = notification_service.GetNotification(
         "crostini_powerwash_request_instead_of_run");
-    EXPECT_EQ(base::nullopt, notification);
+    EXPECT_EQ(absl::nullopt, notification);
   }
 
   SetupCryptohomeRequiresPowerwash(true);
@@ -270,11 +270,11 @@ TEST_F(PowerwashRequirementsCheckerTest, ShowsCorrectNotificationForCrostini) {
     // Cryptohome state is available. Show normal notification.
     auto error_notification = notification_service.GetNotification(
         "crostini_powerwash_request_cryptohome_error");
-    EXPECT_EQ(base::nullopt, error_notification);
+    EXPECT_EQ(absl::nullopt, error_notification);
 
     auto notification = notification_service.GetNotification(
         "crostini_powerwash_request_instead_of_run");
-    EXPECT_NE(base::nullopt, notification);
+    EXPECT_NE(absl::nullopt, notification);
     EXPECT_THAT(base::UTF16ToUTF8(notification->message()), HasSubstr("Linux"));
   }
 }

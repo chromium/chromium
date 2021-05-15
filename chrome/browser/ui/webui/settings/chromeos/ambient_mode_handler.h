@@ -9,10 +9,10 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 struct AmbientSettings;
@@ -104,12 +104,12 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   // the callers:
   //   1. |kGooglePhotos|: ambientMode/photos?topicSource=0
   //   2. |kArtGallery|:   ambientMode/photos?topicSource=1
-  //   3. base::nullopt:   ambientMode/
+  //   3. absl::nullopt:   ambientMode/
   void RequestSettingsAndAlbums(
-      base::Optional<ash::AmbientModeTopicSource> topic_source);
+      absl::optional<ash::AmbientModeTopicSource> topic_source);
   void OnSettingsAndAlbumsFetched(
-      base::Optional<ash::AmbientModeTopicSource> topic_source,
-      const base::Optional<ash::AmbientSettings>& settings,
+      absl::optional<ash::AmbientModeTopicSource> topic_source,
+      const absl::optional<ash::AmbientSettings>& settings,
       ash::PersonalAlbums personal_albums);
 
   // The |settings_| could be stale when the albums in Google Photos changes.
@@ -135,16 +135,16 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
 
   // Local settings which may contain changes from WebUI but have not sent to
   // server.
-  base::Optional<ash::AmbientSettings> settings_;
+  absl::optional<ash::AmbientSettings> settings_;
 
   // The cached settings from the server. Should be the same as the server side.
   // This value will be updated when RequestSettingsAndAlbums() and
   // UpdateSettings() return successfully.
   // If UpdateSettings() fails, will restore to this value.
-  base::Optional<ash::AmbientSettings> cached_settings_;
+  absl::optional<ash::AmbientSettings> cached_settings_;
 
   // A temporary settings sent to the server in UpdateSettings().
-  base::Optional<ash::AmbientSettings> settings_sent_for_update_;
+  absl::optional<ash::AmbientSettings> settings_sent_for_update_;
 
   ash::PersonalAlbums personal_albums_;
 
@@ -155,7 +155,7 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   bool has_pending_fetch_request_ = false;
 
   // The topic source in the latest RequestSettingsAndAlbums().
-  base::Optional<ash::AmbientModeTopicSource> last_fetch_request_topic_source_;
+  absl::optional<ash::AmbientModeTopicSource> last_fetch_request_topic_source_;
 
   // Whether the Settings updating is ongoing.
   bool is_updating_backend_ = false;

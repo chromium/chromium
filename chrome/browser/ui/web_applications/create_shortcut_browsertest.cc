@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
-    base::Optional<int> install_source = GetIntWebAppPref(
+    absl::optional<int> install_source = GetIntWebAppPref(
         profile()->GetPrefs(), app_id, kLatestWebAppInstallSource);
     EXPECT_TRUE(install_source.has_value());
     EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),

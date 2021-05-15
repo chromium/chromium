@@ -657,7 +657,7 @@ class ModelFileObserver : public OptimizationTargetModelObserver {
   }
 
   void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                          const base::Optional<proto::Any>& model_metadata,
+                          const absl::optional<proto::Any>& model_metadata,
                           const base::FilePath& file_path) override {
     if (file_received_callback_)
       std::move(file_received_callback_).Run(optimization_target, file_path);
@@ -699,7 +699,7 @@ class PredictionManagerModelDownloadingBrowserTest
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/base::nullopt, model_file_observer_.get());
+            /*model_metadata=*/absl::nullopt, model_file_observer_.get());
   }
 
  private:

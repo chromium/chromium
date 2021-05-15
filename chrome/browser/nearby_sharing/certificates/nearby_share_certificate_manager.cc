@@ -32,15 +32,15 @@ void NearbyShareCertificateManager::Stop() {
   OnStop();
 }
 
-base::Optional<NearbyShareEncryptedMetadataKey>
+absl::optional<NearbyShareEncryptedMetadataKey>
 NearbyShareCertificateManager::EncryptPrivateCertificateMetadataKey(
     nearby_share::mojom::Visibility visibility) {
-  base::Optional<NearbySharePrivateCertificate> cert =
+  absl::optional<NearbySharePrivateCertificate> cert =
       GetValidPrivateCertificate(visibility);
   if (!cert)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<NearbyShareEncryptedMetadataKey> encrypted_key =
+  absl::optional<NearbyShareEncryptedMetadataKey> encrypted_key =
       cert->EncryptMetadataKey();
 
   // Every salt consumed to encrypt the metadata encryption key is tracked by
@@ -51,26 +51,26 @@ NearbyShareCertificateManager::EncryptPrivateCertificateMetadataKey(
   return encrypted_key;
 }
 
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 NearbyShareCertificateManager::SignWithPrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::span<const uint8_t> payload) const {
-  base::Optional<NearbySharePrivateCertificate> cert =
+  absl::optional<NearbySharePrivateCertificate> cert =
       GetValidPrivateCertificate(visibility);
   if (!cert)
-    return base::nullopt;
+    return absl::nullopt;
 
   return cert->Sign(payload);
 }
 
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 NearbyShareCertificateManager::HashAuthenticationTokenWithPrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::span<const uint8_t> authentication_token) const {
-  base::Optional<NearbySharePrivateCertificate> cert =
+  absl::optional<NearbySharePrivateCertificate> cert =
       GetValidPrivateCertificate(visibility);
   if (!cert)
-    return base::nullopt;
+    return absl::nullopt;
 
   return cert->HashAuthenticationToken(authentication_token);
 }

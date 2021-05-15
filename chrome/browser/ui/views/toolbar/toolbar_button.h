@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
@@ -67,7 +67,7 @@ class ToolbarButton : public views::LabelButton,
   // highlight directly without any animation. To clear the previous highlight
   // (also using an animation), call this function with both parameters empty.
   void SetHighlight(const std::u16string& highlight_text,
-                    base::Optional<SkColor> highlight_color);
+                    absl::optional<SkColor> highlight_color);
 
   // Sets the leading margin when the browser is maximized and updates layout to
   // make the focus rectangle centered.
@@ -100,8 +100,8 @@ class ToolbarButton : public views::LabelButton,
   virtual void UpdateIcon();
 
   // Gets/Sets |layout_insets_|, see comment there.
-  base::Optional<gfx::Insets> GetLayoutInsets() const;
-  void SetLayoutInsets(const base::Optional<gfx::Insets>& insets);
+  absl::optional<gfx::Insets> GetLayoutInsets() const;
+  void SetLayoutInsets(const absl::optional<gfx::Insets>& insets);
 
   // views::LabelButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -188,7 +188,7 @@ class ToolbarButton : public views::LabelButton,
 
     // Starts a fade-in animation using the provided |highlight color| or using
     // a default color if not set.
-    void Show(base::Optional<SkColor> highlight_color);
+    void Show(absl::optional<SkColor> highlight_color);
 
     // Starts a fade-out animation. A no-op if the fade-out animation is
     // currently in progress or not shown.
@@ -199,10 +199,10 @@ class ToolbarButton : public views::LabelButton,
     // influences the alpha channel). Returns no value if there is no such color
     // and we should use the default text color / paint no border / paint no
     // background / use the default ink-drop base color.
-    base::Optional<SkColor> GetTextColor() const;
-    base::Optional<SkColor> GetBorderColor() const;
-    base::Optional<SkColor> GetBackgroundColor() const;
-    base::Optional<SkColor> GetInkDropBaseColor() const;
+    absl::optional<SkColor> GetTextColor() const;
+    absl::optional<SkColor> GetBorderColor() const;
+    absl::optional<SkColor> GetBackgroundColor() const;
+    absl::optional<SkColor> GetInkDropBaseColor() const;
 
     void AnimationEnded(const gfx::Animation* animation) override;
     void AnimationProgressed(const gfx::Animation* animation) override;
@@ -221,7 +221,7 @@ class ToolbarButton : public views::LabelButton,
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
     // set, uses the default ToolbarButton ink drop.
-    base::Optional<SkColor> highlight_color_;
+    absl::optional<SkColor> highlight_color_;
 
     // Animation for showing the highlight color (in border, text, and
     // background) when it becomes non-empty and hiding it when it becomes empty
@@ -285,13 +285,13 @@ class ToolbarButton : public views::LabelButton,
 
   // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
   // Reacts to theme changes using default colors.
-  base::Optional<VectorIcons> vector_icons_;
+  absl::optional<VectorIcons> vector_icons_;
 
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
   // outside the toolbar.
-  base::Optional<gfx::Insets> layout_insets_;
+  absl::optional<gfx::Insets> layout_insets_;
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
@@ -314,7 +314,7 @@ class ToolbarButton : public views::LabelButton,
   // If either |last_border_color_| or |last_paint_insets_| have changed since
   // the last update to |border_| it must be recalculated  to match current
   // values.
-  base::Optional<SkColor> last_border_color_;
+  absl::optional<SkColor> last_border_color_;
   gfx::Insets last_paint_insets_;
 
   base::CallbackListSubscription subscription_ =
@@ -327,7 +327,7 @@ class ToolbarButton : public views::LabelButton,
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
-VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, LayoutInsets)
+VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, LayoutInsets)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)

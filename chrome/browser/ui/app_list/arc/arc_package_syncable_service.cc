@@ -133,7 +133,7 @@ void ArcPackageSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
   wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 ArcPackageSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -188,7 +188,7 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
     sync_items_[local_package_name] = std::move(sync_item);
   }
   sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ArcPackageSyncableService::StopSyncing(syncer::ModelType type) {
@@ -203,7 +203,7 @@ void ArcPackageSyncableService::StopSyncing(syncer::ModelType type) {
   pending_uninstall_items_.clear();
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 ArcPackageSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
@@ -233,7 +233,7 @@ ArcPackageSyncableService::ProcessSyncChanges(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ArcPackageSyncableService::SyncStarted() {

@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace chromeos {

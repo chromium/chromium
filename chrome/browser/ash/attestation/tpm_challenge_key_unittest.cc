@@ -89,7 +89,7 @@ class CallbackObserver {
   }
 
   base::RunLoop loop_;
-  base::Optional<TpmChallengeKeyResult> result_;
+  absl::optional<TpmChallengeKeyResult> result_;
 };
 
 TEST_F(TpmChallengeKeyTest, PrepareKeyFailed) {

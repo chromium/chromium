@@ -163,7 +163,7 @@ TEST_F(InstalledVersionPollerTest, TestUpgrade) {
                    Eq(BuildState::UpdateType::kNormalUpdate)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(base::Optional<base::Version>(GetUpgradeVersion()))),
+                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
           Property(&BuildState::critical_version, IsFalse()))));
   task_environment_.FastForwardBy(
       InstalledVersionPoller::kDefaultPollingInterval);
@@ -193,7 +193,7 @@ TEST_F(InstalledVersionPollerTest, TestUpgradeThenDowngrade) {
                    Eq(BuildState::UpdateType::kNormalUpdate)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(base::Optional<base::Version>(GetUpgradeVersion()))),
+                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
           Property(&BuildState::critical_version, IsFalse()))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
@@ -231,10 +231,10 @@ TEST_F(InstalledVersionPollerTest, TestCriticalUpgrade) {
                    Eq(BuildState::UpdateType::kNormalUpdate)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(base::Optional<base::Version>(GetUpgradeVersion()))),
+                   Eq(absl::optional<base::Version>(GetUpgradeVersion()))),
           Property(&BuildState::critical_version, IsTrue()),
           Property(&BuildState::critical_version,
-                   Eq(base::Optional<base::Version>(GetCriticalVersion()))))));
+                   Eq(absl::optional<base::Version>(GetCriticalVersion()))))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
   task_environment_.RunUntilIdle();
@@ -274,7 +274,7 @@ TEST_F(InstalledVersionPollerTest, TestRollback) {
                    Eq(BuildState::UpdateType::kEnterpriseRollback)),
           Property(&BuildState::installed_version, IsTrue()),
           Property(&BuildState::installed_version,
-                   Eq(base::Optional<base::Version>(GetRollbackVersion()))),
+                   Eq(absl::optional<base::Version>(GetRollbackVersion()))),
           Property(&BuildState::critical_version, IsFalse()))));
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());

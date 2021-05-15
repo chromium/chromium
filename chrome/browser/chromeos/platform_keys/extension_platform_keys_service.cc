@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -39,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using crosapi::mojom::KeystoreBinaryResult;
@@ -188,7 +188,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   void OnKeyRegisteredForCorporateUsage(platform_keys::Status status) {
     if (status == platform_keys::Status::kSuccess) {
-      std::move(callback_).Run(public_key_spki_der_, /*error=*/base::nullopt);
+      std::move(callback_).Run(public_key_spki_der_, /*error=*/absl::nullopt);
       DoStep();
       return;
     }
@@ -324,7 +324,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // multiple times, also updates the permission to prevent any future signing
   // operation of that extension using that same key. If an error occurs, an
   // error status is passed to |callback|.
-  SignTask(base::Optional<platform_keys::TokenId> token_id,
+  SignTask(absl::optional<platform_keys::TokenId> token_id,
            const std::string& data,
            const std::string& public_key_spki_der,
            platform_keys::KeyType key_type,
@@ -475,7 +475,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   Step next_step_ = Step::GET_EXTENSION_PERMISSIONS;
 
-  base::Optional<platform_keys::TokenId> token_id_;
+  absl::optional<platform_keys::TokenId> token_id_;
   const std::string data_;
   const std::string public_key_spki_der_;
 
@@ -847,7 +847,7 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 }
 
 void ExtensionPlatformKeysService::SignDigest(
-    base::Optional<platform_keys::TokenId> token_id,
+    absl::optional<platform_keys::TokenId> token_id,
     const std::string& data,
     const std::string& public_key_spki_der,
     platform_keys::KeyType key_type,
@@ -861,7 +861,7 @@ void ExtensionPlatformKeysService::SignDigest(
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
-    base::Optional<platform_keys::TokenId> token_id,
+    absl::optional<platform_keys::TokenId> token_id,
     const std::string& data,
     const std::string& public_key_spki_der,
     const std::string& extension_id,

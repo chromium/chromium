@@ -418,7 +418,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount) {
 
   // Check that the share was saved.
   SmbPersistedShareRegistry registry(profile_);
-  base::Optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+  absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   ASSERT_TRUE(info);
   EXPECT_EQ(info->share_url().ToString(), kShareUrl);
   EXPECT_EQ(info->display_name(), kDisplayName);
@@ -490,7 +490,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
 
   // Check that the share was saved.
   SmbPersistedShareRegistry registry(profile_);
-  base::Optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+  absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   ASSERT_TRUE(info);
   EXPECT_EQ(info->share_url().ToString(), kShareUrl);
   EXPECT_EQ(info->display_name(), kDisplayName);
@@ -561,7 +561,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
 
   // Check that the share was saved.
   SmbPersistedShareRegistry registry(ad_profile_);
-  base::Optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+  absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   ASSERT_TRUE(info);
   EXPECT_EQ(info->share_url().ToString(), kShareUrl);
   EXPECT_EQ(info->display_name(), kDisplayName);
@@ -691,7 +691,7 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
   run_loop2.Run();
 
   SmbPersistedShareRegistry registry(profile_);
-  base::Optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
+  absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
   EXPECT_TRUE(registry.GetAll().empty());
 }

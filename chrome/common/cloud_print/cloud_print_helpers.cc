@@ -189,7 +189,7 @@ GURL GetUrlForGetAuthCode(const GURL& cloud_print_server_url,
 
 base::Value ParseResponseJSON(const std::string& response_data,
                               bool* succeeded) {
-  base::Optional<base::Value> message_value =
+  absl::optional<base::Value> message_value =
       base::JSONReader::Read(response_data);
   if (!message_value || !message_value->is_dict())
     return base::Value();

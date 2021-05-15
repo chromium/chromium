@@ -65,7 +65,7 @@ void MediaHistoryUI::GetMediaHistoryPlaybackRows(
 void MediaHistoryUI::GetMediaHistoryPlaybackSessionRows(
     GetMediaHistoryPlaybackSessionRowsCallback callback) {
   return GetMediaHistoryService()->GetPlaybackSessions(
-      base::nullopt, base::nullopt, std::move(callback));
+      absl::nullopt, absl::nullopt, std::move(callback));
 }
 
 media_history::MediaHistoryKeyedService*

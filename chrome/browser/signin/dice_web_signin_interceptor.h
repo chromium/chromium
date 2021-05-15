@@ -11,13 +11,13 @@
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace base {
@@ -218,7 +218,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // in |entry|.
   // In some cases the outcome cannot be fully computed synchronously, when this
   // happens, the signin interception is highly likely (but not guaranteed).
-  base::Optional<SigninInterceptionHeuristicOutcome> GetHeuristicOutcome(
+  absl::optional<SigninInterceptionHeuristicOutcome> GetHeuristicOutcome(
       bool is_new_account,
       bool is_sync_signin,
       const std::string& email,
@@ -278,7 +278,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Called when the new profile is created or loaded from disk.
   // `profile_color` is set as theme color for the profile ; it should be
   // nullopt if the profile is not new (loaded from disk).
-  void OnNewSignedInProfileCreated(base::Optional<SkColor> profile_color,
+  void OnNewSignedInProfileCreated(absl::optional<SkColor> profile_color,
                                    Profile* new_profile);
 
   // Called when the new browser is created after interception. Passed as

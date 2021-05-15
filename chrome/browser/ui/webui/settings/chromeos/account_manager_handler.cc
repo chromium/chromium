@@ -81,7 +81,7 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 
 void ShowToast(const std::string& id, const std::u16string& message) {
   ash::ToastManager::Get()->Show(ash::ToastData(
-      id, message, kToastDurationMs, /*dismiss_text=*/base::nullopt));
+      id, message, kToastDurationMs, /*dismiss_text=*/absl::nullopt));
 }
 
 class AccountBuilder {
@@ -298,7 +298,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
       continue;
     }
 
-    base::Optional<AccountInfo> maybe_account_info =
+    absl::optional<AccountInfo> maybe_account_info =
         identity_manager_
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId(
                 account_key.id);

@@ -64,7 +64,7 @@ void EasyUnlockGetKeysOperation::GetKeyData() {
 }
 
 void EasyUnlockGetKeysOperation::OnGetKeyData(
-    base::Optional<user_data_auth::GetKeyDataReply> reply) {
+    absl::optional<user_data_auth::GetKeyDataReply> reply) {
   cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
   std::vector<cryptohome::KeyDefinition> key_definitions =
       user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);

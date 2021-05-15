@@ -289,7 +289,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     EXPECT_TRUE(share_target.params.files.empty());
   }
 
-  manifest.share_target = base::nullopt;
+  manifest.share_target = absl::nullopt;
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_FALSE(web_app_info.share_target.has_value());
 }

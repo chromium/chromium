@@ -88,7 +88,7 @@ class UiControllerAndroid : public ControllerObserver {
                      std::unique_ptr<TriggerContext> trigger_context,
                      Metrics::DropOutReason dropout_reason);
   // Returns the size of the window.
-  base::Optional<std::pair<int, int>> GetWindowSize() const;
+  absl::optional<std::pair<int, int>> GetWindowSize() const;
   // Returns the screen's orientation.
   ClientContextProto::ScreenOrientation GetScreenOrientation() const;
 

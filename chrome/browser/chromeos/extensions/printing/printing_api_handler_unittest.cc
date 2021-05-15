@@ -168,7 +168,7 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
-  base::Optional<base::Value> ticket_value = base::JSONReader::Read(ticket);
+  absl::optional<base::Value> ticket_value = base::JSONReader::Read(ticket);
   DCHECK(ticket_value.has_value());
   EXPECT_TRUE(api::printer_provider::PrintJob::Ticket::Populate(
       ticket_value.value(), &request.job.ticket));
@@ -307,9 +307,9 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   }
 
   void OnJobSubmitted(base::RepeatingClosure run_loop_closure,
-                      base::Optional<api::printing::SubmitJobStatus> status,
+                      absl::optional<api::printing::SubmitJobStatus> status,
                       std::unique_ptr<std::string> job_id,
-                      base::Optional<std::string> error) {
+                      absl::optional<std::string> error) {
     submit_job_status_ = status;
     job_id_ = std::move(job_id);
     error_ = error;
@@ -318,13 +318,13 @@ class PrintingAPIHandlerUnittest : public testing::Test {
 
   void OnPrinterInfoRetrieved(
       base::RepeatingClosure run_loop_closure,
-      base::Optional<base::Value> capabilities,
-      base::Optional<api::printing::PrinterStatus> printer_status,
-      base::Optional<std::string> error) {
+      absl::optional<base::Value> capabilities,
+      absl::optional<api::printing::PrinterStatus> printer_status,
+      absl::optional<std::string> error) {
     if (capabilities)
       capabilities_ = capabilities.value().Clone();
     else
-      capabilities_ = base::nullopt;
+      capabilities_ = absl::nullopt;
     printer_status_ = printer_status;
     error_ = error;
     run_loop_closure.Run();
@@ -341,11 +341,11 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   chromeos::TestCupsWrapper* cups_wrapper_;
   std::unique_ptr<PrintingAPIHandler> printing_api_handler_;
   scoped_refptr<const Extension> extension_;
-  base::Optional<api::printing::SubmitJobStatus> submit_job_status_;
+  absl::optional<api::printing::SubmitJobStatus> submit_job_status_;
   std::unique_ptr<std::string> job_id_;
-  base::Optional<base::Value> capabilities_;
-  base::Optional<api::printing::PrinterStatus> printer_status_;
-  base::Optional<std::string> error_;
+  absl::optional<base::Value> capabilities_;
+  absl::optional<api::printing::PrinterStatus> printer_status_;
+  absl::optional<std::string> error_;
 
  private:
   // Resets |disable_pdf_flattening_for_testing| back to false automatically
@@ -746,7 +746,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob) {
 }
 
 TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidId) {
-  base::Optional<std::string> error =
+  absl::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, "job_id");
 
   ASSERT_TRUE(error.has_value());
@@ -762,7 +762,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidId_OtherExtension) {
   print_job_manager_->CreatePrintJob(print_job.get());
 
   // Try to cancel print job from other extension.
-  base::Optional<std::string> error = printing_api_handler_->CancelJob(
+  absl::optional<std::string> error = printing_api_handler_->CancelJob(
       kExtensionId2,
       chromeos::CupsPrintJob::CreateUniqueId(kPrinterId, kJobId));
 
@@ -793,7 +793,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob_InvalidState) {
       print_job_controller_->GetCupsPrintJob(*job_id_));
 
   // Try to cancel already completed print job.
-  base::Optional<std::string> error =
+  absl::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, *job_id_);
 
   ASSERT_TRUE(error.has_value());
@@ -819,7 +819,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob) {
   run_loop.Run();
 
   // Cancel started print job.
-  base::Optional<std::string> error =
+  absl::optional<std::string> error =
       printing_api_handler_->CancelJob(kExtensionId, *job_id_);
 
   EXPECT_FALSE(error.has_value());

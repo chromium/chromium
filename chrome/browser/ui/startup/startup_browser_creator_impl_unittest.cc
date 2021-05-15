@@ -421,6 +421,6 @@ TEST(StartupBrowserCreatorImplTest, ShouldLaunch) {
       base::CommandLine(base::CommandLine::NO_PROGRAM)));
 
   // Restore the global testing set up.
-  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(base::nullopt);
+  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(absl::nullopt);
 #endif
 }

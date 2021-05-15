@@ -9,12 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/downgrade/snapshot_file_collector.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace downgrade {
 
@@ -82,7 +82,7 @@ TEST(UserDataDowngradeTests, GetSnapshotToRestore) {
   }
 
   EXPECT_EQ(GetSnapshotToRestore(base::Version("9"), user_data_dir.GetPath()),
-            base::nullopt);
+            absl::nullopt);
   EXPECT_EQ(
       *GetSnapshotToRestore(base::Version("10.1.0"), user_data_dir.GetPath()),
       base::Version("10.0.0"));

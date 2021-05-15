@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -25,10 +25,10 @@ namespace subresource_redirect {
 // Holds the robots rules for one origin. Fetches the robots rules on creation.
 class OriginRobotsRules {
  public:
-  // The callback to send the received robots rules. base::nullopt will be sent
+  // The callback to send the received robots rules. absl::nullopt will be sent
   // when rule fetch fails.
   using RobotsRulesReceivedCallback =
-      base::OnceCallback<void(base::Optional<std::string>)>;
+      base::OnceCallback<void(absl::optional<std::string>)>;
 
   // The callback to notify 4xx, 5xx response codes. Sends the response code and
   // retry-after response header.
@@ -67,7 +67,7 @@ class OriginRobotsRules {
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   // The received robots rules. Set when rules fetch completes successfully.
-  base::Optional<std::string> robots_rules_;
+  absl::optional<std::string> robots_rules_;
 
   // Holds the robots rules fetcher state. Exists only when fetch is in
   // progress.

@@ -319,7 +319,7 @@ void CertificateProviderService::RequestSignatureBySpki(
     const std::string& subject_public_key_info,
     uint16_t algorithm,
     base::span<const uint8_t> input,
-    const base::Optional<AccountId>& authenticating_user_account_id,
+    const absl::optional<AccountId>& authenticating_user_account_id,
     net::SSLPrivateKey::SignCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_currently_provided = false;
@@ -442,7 +442,7 @@ void CertificateProviderService::RequestSignatureFromExtension(
     const scoped_refptr<net::X509Certificate>& certificate,
     uint16_t algorithm,
     base::span<const uint8_t> input,
-    const base::Optional<AccountId>& authenticating_user_account_id,
+    const absl::optional<AccountId>& authenticating_user_account_id,
     net::SSLPrivateKey::SignCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

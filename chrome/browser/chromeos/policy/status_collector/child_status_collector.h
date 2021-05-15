@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -137,7 +137,7 @@ class ChildStatusCollector : public StatusCollector,
   int64_t last_reported_end_timestamp_ = 0;
 
   // The parameters associated with last app activity report.
-  base::Optional<ash::app_time::AppActivityReportInterface::ReportParams>
+  absl::optional<ash::app_time::AppActivityReportInterface::ReportParams>
       last_report_params_;
 
   base::RepeatingTimer update_child_usage_timer_;

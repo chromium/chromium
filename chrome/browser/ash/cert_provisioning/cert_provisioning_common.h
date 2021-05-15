@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare KeyPermissionsManager
 // after //chrom/browser/chromeos/platform_keys is moved to ash.
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
@@ -88,7 +88,7 @@ const char kCertProfilePolicyVersionKey[] = "policy_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
 
 struct CertProfile {
-  static base::Optional<CertProfile> MakeFromValue(const base::Value& value);
+  static absl::optional<CertProfile> MakeFromValue(const base::Value& value);
 
   CertProfile();
   // For tests.

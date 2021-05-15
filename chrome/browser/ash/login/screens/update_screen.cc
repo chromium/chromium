@@ -448,7 +448,7 @@ void UpdateScreen::SetUpdateStatusMessage(int percent,
 void UpdateScreen::UpdateBatteryWarningVisibility() {
   if (!view_)
     return;
-  const base::Optional<power_manager::PowerSupplyProperties>& proto =
+  const absl::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;

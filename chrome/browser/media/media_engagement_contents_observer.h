@@ -153,7 +153,7 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     // The clock is owned by |service_| which already owns |this|.
     base::Clock* clock_;
 
-    base::Optional<base::Time> start_time_;
+    absl::optional<base::Time> start_time_;
     base::TimeDelta recorded_time_;
   };
 
@@ -163,12 +163,12 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     ~PlayerState();
     PlayerState(PlayerState&&);
 
-    base::Optional<bool> muted;
-    base::Optional<bool> playing;           // Currently playing.
-    base::Optional<bool> significant_size;  // The video track has at least
+    absl::optional<bool> muted;
+    absl::optional<bool> playing;           // Currently playing.
+    absl::optional<bool> significant_size;  // The video track has at least
                                             // a certain frame size.
-    base::Optional<bool> has_audio;         // The media has an audio track.
-    base::Optional<bool> has_video;         // The media has a video track.
+    absl::optional<bool> has_audio;         // The media has an audio track.
+    absl::optional<bool> has_video;         // The media has a video track.
 
     // The engagement score of the origin at playback has been recorded
     // to a histogram.

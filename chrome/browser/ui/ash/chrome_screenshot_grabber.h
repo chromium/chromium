@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/snapshot/screenshot_grabber.h"
@@ -71,7 +71,7 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
   // a future patch. It is intended to be both mojo proxyable, and usable as a
   // callback from ScreenshotGrabber.
   void OnTookScreenshot(const base::Time& screenshot_time,
-                        const base::Optional<int>& display_num,
+                        const absl::optional<int>& display_num,
                         const ScreenshotArea& area,
                         ui::ScreenshotResult result,
                         scoped_refptr<base::RefCountedMemory> png_data);

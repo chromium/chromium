@@ -45,7 +45,7 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
  public:
   using SharingDeviceList = std::vector<std::unique_ptr<syncer::DeviceInfo>>;
   using NotificationActionCallback =
-      base::RepeatingCallback<void(base::Optional<int> button, bool closed)>;
+      base::RepeatingCallback<void(absl::optional<int> button, bool closed)>;
 
   enum class State {
     // Device is unregistered with FCM and Sharing is unavailable.

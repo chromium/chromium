@@ -8,8 +8,8 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 FakeTCPConnectedSocket::FakeTCPConnectedSocket() = default;
 
@@ -30,7 +30,7 @@ void FakeTCPConnectedSocket::UpgradeToTLS(
   std::move(callback).Run(tls_upgrade_code_,
                           mojo::ScopedDataPipeConsumerHandle(),
                           mojo::ScopedDataPipeProducerHandle(),
-                          /*ssl_info=*/base::nullopt);
+                          /*ssl_info=*/absl::nullopt);
 }
 
 void FakeTCPConnectedSocket::SetSendBufferSize(

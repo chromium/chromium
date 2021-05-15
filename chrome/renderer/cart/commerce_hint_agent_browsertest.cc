@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
-  service_->AddCart(kMockExample, base::nullopt, kMockExampleProto);
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
   WaitForCartCount(kExpectedExampleFallbackCart);
 
   NavigateToURL("https://www.guitarcenter.com/");
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
-  service_->AddCart(kMockAmazon, base::nullopt, kMockAmazonProto);
+  service_->AddCart(kMockAmazon, absl::nullopt, kMockAmazonProto);
   WaitForCartCount(kExpectedAmazon);
 
   NavigateToURL("http://amazon.com/");
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
-  service_->AddCart(kMockExample, base::nullopt, kMockExampleProto);
+  service_->AddCart(kMockExample, absl::nullopt, kMockExampleProto);
   WaitForCartCount(kExpectedExampleFallbackCart);
 
   NavigateToURL("https://www.guitarcenter.com/purchase.html");

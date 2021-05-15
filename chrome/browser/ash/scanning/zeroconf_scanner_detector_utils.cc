@@ -68,7 +68,7 @@ std::string CreateDeviceName(const std::string& name,
 
 }  // namespace
 
-base::Optional<chromeos::Scanner> CreateSaneAirscanScanner(
+absl::optional<chromeos::Scanner> CreateSaneAirscanScanner(
     const std::string& name,
     const std::string& service_type,
     const std::string& rs,
@@ -81,7 +81,7 @@ base::Optional<chromeos::Scanner> CreateSaneAirscanScanner(
   const std::string device_name =
       CreateDeviceName(name, scheme, rs, ip_address, port);
   if (device_name.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   chromeos::Scanner scanner;
   scanner.display_name = name;

@@ -111,7 +111,7 @@ base::span<const uint8_t> JavaByteArrayToSpan(
 // the span is not of the correct length. Be aware that the reference for |data|
 // must outlive the span.
 template <size_t N>
-base::Optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
+absl::optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
     JNIEnv* env,
     const JavaParamRef<jbyteArray>& data) {
   static_assert(N != 0,
@@ -119,12 +119,12 @@ base::Optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
                 "inputs will always be rejected here.");
 
   if (data.is_null()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const size_t data_len = env->GetArrayLength(data);
   if (data_len != N) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const jbyte* data_bytes = env->GetByteArrayElements(data, /*iscopy=*/nullptr);
   return base::as_bytes(base::make_span<N>(data_bytes, data_len));
@@ -141,7 +141,7 @@ struct GlobalData {
   // reserved so that functions can still return that to indicate an error.
   jlong instance_num = 1;
 
-  base::Optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
+  absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
 
@@ -155,18 +155,18 @@ struct GlobalData {
   // pending_make_credential_callback holds the callback that the
   // |Authenticator| expects to be run once a makeCredential operation has
   // completed.
-  base::Optional<
+  absl::optional<
       device::cablev2::authenticator::Platform::MakeCredentialCallback>
       pending_make_credential_callback;
   // pending_get_assertion_callback holds the callback that the
   // |Authenticator| expects to be run once a getAssertion operation has
   // completed.
-  base::Optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
+  absl::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
       pending_get_assertion_callback;
 
   // usb_callback holds the callback that receives data from a USB connection.
-  base::Optional<
-      base::RepeatingCallback<void(base::Optional<base::span<const uint8_t>>)>>
+  absl::optional<
+      base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>>
       usb_callback;
 
   // pending_event holds a cloud message while we are waiting for the user to
@@ -306,7 +306,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
                                      static_cast<int>(status));
   }
 
-  void OnCompleted(base::Optional<Error> maybe_error) override {
+  void OnCompleted(absl::optional<Error> maybe_error) override {
     LOG(ERROR) << __func__ << " "
                << (maybe_error ? static_cast<int>(*maybe_error) : -1);
 
@@ -374,7 +374,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
  private:
   JNIEnv* const env_;
   ScopedJavaGlobalRef<jobject> cable_authenticator_;
-  base::Optional<base::ElapsedTimer> tunnel_server_connect_time_;
+  absl::optional<base::ElapsedTimer> tunnel_server_connect_time_;
 
   // is_usb_ is true if this object was created in order to respond to a client
   // connected over USB.
@@ -400,7 +400,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 
   // GetCallback returns callback which will be called repeatedly with data from
   // the USB connection, forwarded via the Java code.
-  base::RepeatingCallback<void(base::Optional<base::span<const uint8_t>>)>
+  base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>
   GetCallback() {
     return base::BindRepeating(&USBTransport::OnData,
                                weak_factory_.GetWeakPtr());
@@ -418,7 +418,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
   }
 
  private:
-  void OnData(base::Optional<base::span<const uint8_t>> data) {
+  void OnData(absl::optional<base::span<const uint8_t>> data) {
     if (!data) {
       callback_.Run(Disconnected::kDisconnected);
     } else {
@@ -513,7 +513,7 @@ static jlong JNI_CableAuthenticator_StartQR(
 
   GlobalData& global_data = GetGlobalData();
   const std::string& qr_string = ConvertJavaStringToUTF8(qr_url);
-  base::Optional<device::cablev2::qr::Components> decoded_qr(
+  absl::optional<device::cablev2::qr::Components> decoded_qr(
       device::cablev2::qr::Parse(qr_string));
   if (!decoded_qr) {
     FIDO_LOG(ERROR) << "Failed to decode QR: " << qr_string;
@@ -532,7 +532,7 @@ static jlong JNI_CableAuthenticator_StartQR(
           global_data.network_context, *global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
           decoded_qr->peer_identity,
-          link ? global_data.registration->contact_id() : base::nullopt);
+          link ? global_data.registration->contact_id() : absl::nullopt);
 
   return ++global_data.instance_num;
 }
@@ -545,7 +545,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
 
   constexpr size_t kDataSize =
       device::kP256X962Length + device::cablev2::kQRSecretSize;
-  const base::Optional<base::span<const uint8_t, kDataSize>> server_link_data =
+  const absl::optional<base::span<const uint8_t, kDataSize>> server_link_data =
       JavaByteArrayToFixedSpan<kDataSize>(env, server_link_data_java);
   // validateServerLinkData should have been called to check this already.
   CHECK(server_link_data);
@@ -562,7 +562,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
       global_data.network_context, dummy_root_secret, dummy_authenticator_name,
       server_link_data
           ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>(),
-      server_link_data->subspan<0, device::kP256X962Length>(), base::nullopt);
+      server_link_data->subspan<0, device::kP256X962Length>(), absl::nullopt);
 
   return ++global_data.instance_num;
 }
@@ -577,7 +577,7 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
   std::unique_ptr<device::cablev2::authenticator::Registration::Event> event =
       std::move(global_data.pending_event);
 
-  base::Optional<base::span<const uint8_t>> maybe_contact_id;
+  absl::optional<base::span<const uint8_t>> maybe_contact_id;
   if (event->source ==
       device::cablev2::authenticator::Registration::Type::LINKING) {
     // If the event if from linking then the contact_id must be ready because
@@ -708,7 +708,7 @@ static void JNI_USBHandler_OnUSBData(JNIEnv* env,
   }
 
   if (!usb_data) {
-    global_data.usb_callback->Run(base::nullopt);
+    global_data.usb_callback->Run(absl::nullopt);
   } else {
     global_data.usb_callback->Run(JavaByteArrayToSpan(env, usb_data));
   }

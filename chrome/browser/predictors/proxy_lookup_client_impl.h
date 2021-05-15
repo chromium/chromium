@@ -7,9 +7,9 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -43,7 +43,7 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
   // network::mojom::ProxyLookupClient:
   void OnProxyLookupComplete(
       int32_t net_error,
-      const base::Optional<net::ProxyInfo>& proxy_info) override;
+      const absl::optional<net::ProxyInfo>& proxy_info) override;
 
  private:
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};

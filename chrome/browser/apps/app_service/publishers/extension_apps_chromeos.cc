@@ -407,7 +407,7 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     return;
   }
 
-  base::Optional<web_app::AppId> web_app_id =
+  absl::optional<web_app::AppId> web_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
                                               /*window_only=*/false);
   if (web_app_id.has_value()) {

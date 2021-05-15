@@ -97,7 +97,7 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
           policy::DeviceManagementService::JobConfiguration::
               TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER,
           GetClientId(), /*critical=*/false,
-          policy::DMAuth::FromDMToken(dm_token_), /*oauth_token=*/base::nullopt,
+          policy::DMAuth::FromDMToken(dm_token_), /*oauth_token=*/absl::nullopt,
           url_loader_factory_for_testing()
               ? url_loader_factory_for_testing()
               : g_browser_process->system_network_context_manager()

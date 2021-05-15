@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -49,7 +49,7 @@ class ZeroStateDriveProvider : public SearchProvider,
 
  private:
   void OnFilePathsLocated(
-      base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
   std::unique_ptr<FileResult> MakeListResult(const base::FilePath& filepath,
                                              const float relevance);
@@ -64,7 +64,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   // The most recent results retrieved from |item_suggested_cache_|. This is
   // updated on a call to Start and is used only to store the results until
   // OnFilePathsLocated has finished.
-  base::Optional<ItemSuggestCache::Results> cache_results_;
+  absl::optional<ItemSuggestCache::Results> cache_results_;
 
   base::TimeTicks query_start_time_;
 
@@ -73,7 +73,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   const bool suggested_files_enabled_;
 
   // The normalizer normalizes the relevance scores of Results
-  base::Optional<ScoreNormalizer> normalizer_;
+  absl::optional<ScoreNormalizer> normalizer_;
 
   // Whether we have sent at least one request to ItemSuggest to warm up the
   // results cache.

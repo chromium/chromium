@@ -59,7 +59,7 @@ constexpr char kSecondaryAccountNotificationIdSuffix[] = "/secondary-account";
 bool g_ignore_sync_errors_for_test_ = false;
 
 void HandleDeviceAccountReauthNotificationClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   chrome::AttemptUserExit();
 }
 
@@ -296,7 +296,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 }
 
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   if (profile_->IsChild() && !profile_->GetPrefs()->GetBoolean(
                                  prefs::kEduCoexistenceArcMigrationCompleted)) {
     if (!chromeos::AccountManagerWelcomeDialog::

@@ -81,7 +81,7 @@ class PreinstalledWebAppManagerBrowserTest
   }
 
   // Mocks "icon.png" as available in the config's directory.
-  base::Optional<InstallResultCode> SyncPreinstalledAppConfig(
+  absl::optional<InstallResultCode> SyncPreinstalledAppConfig(
       const GURL& install_url,
       base::StringPiece app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
@@ -103,11 +103,11 @@ class PreinstalledWebAppManagerBrowserTest
     EXPECT_TRUE(json_parse_result.value)
         << "JSON parse error: " << json_parse_result.error_message;
     if (!json_parse_result.value)
-      return base::nullopt;
+      return absl::nullopt;
     app_configs.push_back(*std::move(json_parse_result.value));
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
-    base::Optional<InstallResultCode> code;
+    absl::optional<InstallResultCode> code;
     base::RunLoop sync_run_loop;
     WebAppProvider::Get(browser()->profile())
         ->preinstalled_web_app_manager()
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       })";
   std::string app_config = base::ReplaceStringPlaceholders(
       kAppConfigTemplate, {GetAppUrl().spec()}, nullptr);
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config), base::nullopt);
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config), absl::nullopt);
 }
 
 // The offline manifest JSON config functionality is only available on Chrome
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // previous PRE_ launch and sync.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
                                       kOnlyForNewUsersConfig),
-            base::nullopt);
+            absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {

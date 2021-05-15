@@ -109,7 +109,7 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
   TabStrip* const tab_strip = browser_view_->tabstrip();
 
   const bool active = ShouldPaintAsActive(active_state);
-  const base::Optional<int> bg_id =
+  const absl::optional<int> bg_id =
       tab_strip->GetCustomBackgroundId(active_state);
   if (bg_id.has_value()) {
     // If the theme has a custom tab background image, assume tab shapes are
@@ -185,7 +185,7 @@ SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
       GetFrameThemeProvider()->GetColor(color_id), GetFrameColor());
 }
 
-base::Optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
+absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
   const bool incognito = browser_view_->GetIncognito();
@@ -207,7 +207,7 @@ base::Optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
       tp->HasCustomImage(id) || (!active && tp->HasCustomImage(active_id)) ||
       tp->HasCustomImage(IDR_THEME_FRAME) ||
       (incognito && tp->HasCustomImage(IDR_THEME_FRAME_INCOGNITO));
-  return has_custom_image ? base::make_optional(id) : base::nullopt;
+  return has_custom_image ? absl::make_optional(id) : absl::nullopt;
 }
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}

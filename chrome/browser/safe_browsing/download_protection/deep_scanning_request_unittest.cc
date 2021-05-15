@@ -220,7 +220,7 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   void ValidateDefaultSettings(
-      const base::Optional<enterprise_connectors::AnalysisSettings>& settings) {
+      const absl::optional<enterprise_connectors::AnalysisSettings>& settings) {
     ASSERT_TRUE(settings.has_value());
 
     enterprise_connectors::AnalysisSettings default_settings;
@@ -242,7 +242,7 @@ class DeepScanningRequestTest : public testing::Test {
 
   void SetLastResult(DownloadCheckResult result) { last_result_ = result; }
 
-  base::Optional<enterprise_connectors::AnalysisSettings> settings() {
+  absl::optional<enterprise_connectors::AnalysisSettings> settings() {
     return DeepScanningRequest::ShouldUploadBinary(&item_);
   }
 

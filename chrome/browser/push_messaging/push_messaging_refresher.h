@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "content/public/browser/push_messaging_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 
 // This class enables push subscription refreshes as defined in the docs:
@@ -49,7 +49,7 @@ class PushMessagingRefresher {
 
   // If a subscription was refreshed, we accept the old subscription for
   // a moment after refresh
-  base::Optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
+  absl::optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
       const std::string& app_id);
 
   base::WeakPtr<PushMessagingRefresher> GetWeakPtr();

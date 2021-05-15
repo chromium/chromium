@@ -8,10 +8,10 @@
 #include <set>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace login_detection {
 
@@ -42,9 +42,9 @@ class PasswordStoreSites : public password_manager::PasswordStore::Observer,
   // The password store |this| is observing site entries from.
   scoped_refptr<password_manager::PasswordStore> password_store_;
 
-  // Set of sites saved in the password store. Will be base::nullopt until the
+  // Set of sites saved in the password store. Will be absl::nullopt until the
   // sites are retrieved the fist time.
-  base::Optional<std::set<std::string>> password_sites_;
+  absl::optional<std::set<std::string>> password_sites_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

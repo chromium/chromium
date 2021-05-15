@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 
@@ -35,12 +35,12 @@ class AlertIndicator : public views::ImageView {
 
   // Returns the current TabAlertState except, while the indicator image is
   // fading out, returns the prior TabAlertState.
-  base::Optional<TabAlertState> showing_alert_state() const {
+  absl::optional<TabAlertState> showing_alert_state() const {
     return showing_alert_state_;
   }
 
   // Calls ResetImages() and starts fade animations as appropriate.
-  void TransitionToAlertState(base::Optional<TabAlertState> next_state);
+  void TransitionToAlertState(absl::optional<TabAlertState> next_state);
 
   // Called when the parent tab's button color changes.  Determines whether
   // ResetImages() needs to be called.
@@ -59,10 +59,10 @@ class AlertIndicator : public views::ImageView {
   void ResetImage(TabAlertState state);
 
   Tab* const parent_tab_;
-  base::Optional<TabAlertState> alert_state_;
+  absl::optional<TabAlertState> alert_state_;
   std::unique_ptr<gfx::AnimationDelegate> fade_animation_delegate_;
   std::unique_ptr<gfx::Animation> fade_animation_;
-  base::Optional<TabAlertState> showing_alert_state_;
+  absl::optional<TabAlertState> showing_alert_state_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_H_
