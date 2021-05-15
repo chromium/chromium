@@ -187,6 +187,26 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
     return;
   }
 
+  url::Origin sw_origin = url::Origin::Create(sw_scope);
+  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
+      GetDevTools(sw_origin);
+  if (dev_tools) {
+    std::map<std::string, std::string> data = {
+        {"Merchant Top Origin", event_data->top_origin.spec()},
+        {"Merchant Payment Request Origin",
+         event_data->payment_request_origin.spec()},
+        {"Method Name", method},
+        {"Payment Handler Name", app_name},
+        {"Service Worker JavaScript File URL", sw_js_url.spec()},
+        {"Service Worker Scope", sw_scope.spec()},
+        {"Service Worker Uses Cache", sw_use_cache ? "true" : "false"},
+    };
+    dev_tools->LogBackgroundServiceEvent(
+        /*service_worker_registration_id=*/-1, sw_origin,
+        DevToolsBackgroundService::kPaymentHandler, "Install payment handler",
+        /*instance_id=*/event_data->payment_request_id, data);
+  }
+
   std::string string_encoded_icon;
   if (!app_icon.empty()) {
     gfx::Image decoded_image = gfx::Image::CreateFrom1xBitmap(app_icon);
@@ -201,9 +221,9 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
       payment_request_web_contents_, app_name, string_encoded_icon, sw_js_url,
       sw_scope, sw_use_cache, method, supported_delegations,
       base::BindOnce(&PaymentAppProviderImpl::OnInstallPaymentApp,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     url::Origin::Create(sw_scope), std::move(event_data),
-                     std::move(registration_id_callback), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), sw_origin,
+                     std::move(event_data), std::move(registration_id_callback),
+                     std::move(callback)));
 }
 
 void PaymentAppProviderImpl::UpdatePaymentAppIcon(
@@ -383,6 +403,19 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
     int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
+
+  scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools =
+      GetDevTools(sw_origin);
+  if (dev_tools) {
+    std::map<std::string, std::string> data = {
+        {"Payment Handler Install Success",
+         registration_id >= 0 ? "true" : "false"},
+    };
+    dev_tools->LogBackgroundServiceEvent(
+        registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
+        "Install payment handler result",
+        /*instance_id=*/event_data->payment_request_id, data);
+  }
 
   if (registration_id >= 0) {
     std::move(registration_id_callback).Run(registration_id);
