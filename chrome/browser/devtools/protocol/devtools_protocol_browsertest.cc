@@ -6,9 +6,15 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
@@ -16,6 +22,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -286,4 +296,74 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   EXPECT_EQ(security_state_issue_ids->GetList().size(), 0u);
 
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
+}
+
+namespace {
+
+class ExtensionProtocolTest : public DevToolsProtocolTest {
+ protected:
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    Profile* profile = browser()->profile();
+    extension_service_ =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extension_registry_ = extensions::ExtensionRegistry::Get(profile);
+  }
+
+  content::WebContents* web_contents() override {
+    return background_web_contents_;
+  }
+
+  const extensions::Extension* LoadExtension(base::FilePath extension_path) {
+    extensions::TestExtensionRegistryObserver observer(extension_registry_);
+    extensions::UnpackedInstaller::Create(extension_service_)
+        ->Load(extension_path);
+    observer.WaitForExtensionLoaded();
+
+    const extensions::Extension* extension = nullptr;
+    for (const auto& enabled_extension :
+         extension_registry_->enabled_extensions()) {
+      if (enabled_extension->path() == extension_path) {
+        extension = enabled_extension.get();
+        break;
+      }
+    }
+    CHECK(extension) << "Failed to find loaded extension " << extension_path;
+    auto* process_manager =
+        extensions::ProcessManager::Get(browser()->profile());
+    extensions::ExtensionHost* host =
+        process_manager->GetBackgroundHostForExtension(extension->id());
+    background_web_contents_ = host->host_contents();
+    return extension;
+  }
+
+  void ReloadExtension(const std::string extension_id) {
+    extensions::TestExtensionRegistryObserver observer(extension_registry_);
+    extension_service_->ReloadExtension(extension_id);
+    observer.WaitForExtensionLoaded();
+  }
+
+ private:
+  extensions::ExtensionService* extension_service_;
+  extensions::ExtensionRegistry* extension_registry_;
+  content::WebContents* background_web_contents_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions")
+          .AppendASCII("simple_background_page");
+  auto* extension = LoadExtension(extension_path);
+  ASSERT_TRUE(extension);
+  Attach();
+  ReloadExtension(extension->id());
+  base::DictionaryValue params;
+  params.SetStringPath("categories", "-*");
+  SendCommandSync("Tracing.start", std::move(params));
+  SendCommand("Tracing.end");
+  base::Value tracing_complete = WaitForNotification("Tracing.tracingComplete");
 }

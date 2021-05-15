@@ -342,8 +342,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       session->GetClient()->MayReadLocalFiles()));
   session->AddHandler(std::make_unique<protocol::SecurityHandler>());
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
-    session->AddHandler(std::make_unique<protocol::TracingHandler>(
-        frame_tree_node_, GetIOContext()));
+    session->AddHandler(
+        std::make_unique<protocol::TracingHandler>(GetIOContext()));
   }
   session->AddHandler(std::make_unique<protocol::LogHandler>());
 #if !defined(OS_ANDROID)
