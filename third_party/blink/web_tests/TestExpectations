@@ -5695,6 +5695,7 @@ crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-ani
 crbug.com/1008483 external/wpt/css/css-transforms/preserve-3d-flat-grouping-properties-containing-block.tentative.html [ Failure ]
 crbug.com/1008483 external/wpt/css/css-transforms/3d-rendering-context-and-abspos.html [ Failure ]
 crbug.com/1008483 external/wpt/css/css-transforms/3d-rendering-context-and-fixpos.html [ Failure ]
+crbug.com/1008483 external/wpt/css/css-transforms/transform3d-sorting-004.html [ Failure ]
 
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-behavior.tentative.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Pass ]
@@ -5703,12 +5704,21 @@ crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/back
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/preserve-3d-flat-grouping-properties-containing-block.tentative.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-and-abspos.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/3d-rendering-context-and-fixpos.html [ Pass ]
+crbug.com/1008483 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-sorting-004.html [ Pass ]
 crbug.com/1008483 virtual/transform-interop/compositing/geometry/require-own-backing-recalc-order.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/compositing/overflow/scroll-parent-with-non-stacking-context-composited-ancestor.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/paint/invalidation/stacking-context-lost.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/paint/invalidation/multicol/multicol-as-paint-container.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Failure ]
 crbug.com/1008483 virtual/transform-interop/transforms/3d/point-mapping/3d-point-mapping-2.html [ Failure ]
+
+crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-003.html [ Failure ]
+crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-004.html [ Failure ]
+crbug.com/943503 external/wpt/css/css-transforms/transform3d-perspective-005.html [ Failure ]
+
+crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-003.html [ Pass ]
+crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-004.html [ Pass ]
+crbug.com/943503 virtual/transform-interop/external/wpt/css/css-transforms/transform3d-perspective-005.html [ Pass ]
 
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-non-integer-innerwidth.html [ Crash Timeout ]
