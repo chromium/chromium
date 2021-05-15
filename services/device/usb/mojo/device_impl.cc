@@ -382,7 +382,7 @@ void DeviceImpl::GenericTransferIn(uint8_t endpoint_number,
 }
 
 void DeviceImpl::GenericTransferOut(uint8_t endpoint_number,
-                                    const std::vector<uint8_t>& data,
+                                    base::span<const uint8_t> data,
                                     uint32_t timeout,
                                     GenericTransferOutCallback callback) {
   if (!device_handle_) {

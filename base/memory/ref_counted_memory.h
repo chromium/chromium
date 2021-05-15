@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -81,6 +82,7 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
 
   // Constructs a RefCountedBytes object by copying from |initializer|.
   explicit RefCountedBytes(const std::vector<unsigned char>& initializer);
+  explicit RefCountedBytes(base::span<const unsigned char> initializer);
 
   // Constructs a RefCountedBytes object by copying |size| bytes from |p|.
   RefCountedBytes(const unsigned char* p, size_t size);

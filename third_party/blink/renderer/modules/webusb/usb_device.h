@@ -9,10 +9,9 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -76,44 +75,25 @@ class USBDevice : public ScriptWrappable,
                                   unsigned length);
   ScriptPromise controlTransferOut(ScriptState*,
                                    const USBControlTransferParameters* setup);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise controlTransferOut(ScriptState* script_state,
-                                   const USBControlTransferParameters* setup,
-                                   const V8BufferSource* data);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise controlTransferOut(ScriptState*,
                                    const USBControlTransferParameters* setup,
-                                   const ArrayBufferOrArrayBufferView& data);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                                   const DOMArrayPiece& data);
   ScriptPromise clearHalt(ScriptState*,
                           String direction,
                           uint8_t endpoint_number);
   ScriptPromise transferIn(ScriptState*,
                            uint8_t endpoint_number,
                            unsigned length);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise transferOut(ScriptState* script_state,
-                            uint8_t endpoint_number,
-                            const V8BufferSource* data);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise transferOut(ScriptState*,
                             uint8_t endpoint_number,
-                            const ArrayBufferOrArrayBufferView& data);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+                            const DOMArrayPiece& data);
   ScriptPromise isochronousTransferIn(ScriptState*,
                                       uint8_t endpoint_number,
                                       Vector<unsigned> packet_lengths);
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  ScriptPromise isochronousTransferOut(ScriptState* script_state,
-                                       uint8_t endpoint_number,
-                                       const V8BufferSource* data,
-                                       Vector<unsigned> packet_lengths);
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise isochronousTransferOut(ScriptState*,
                                        uint8_t endpoint_number,
-                                       const ArrayBufferOrArrayBufferView& data,
+                                       const DOMArrayPiece& data,
                                        Vector<unsigned> packet_lengths);
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise reset(ScriptState*);
 
   // ExecutionContextLifecycleObserver interface.
@@ -172,7 +152,7 @@ class USBDevice : public ScriptWrappable,
   void AsyncTransferIn(ScriptPromiseResolver*,
                        device::mojom::blink::UsbTransferStatus,
                        const Vector<uint8_t>&);
-  void AsyncTransferOut(unsigned,
+  void AsyncTransferOut(uint32_t transfer_length,
                         ScriptPromiseResolver*,
                         device::mojom::blink::UsbTransferStatus);
   void AsyncIsochronousTransferIn(

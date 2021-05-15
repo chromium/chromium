@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -90,7 +91,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                          uint32_t timeout,
                          GenericTransferInCallback callback) override;
   void GenericTransferOut(uint8_t endpoint_number,
-                          const std::vector<uint8_t>& data,
+                          base::span<const uint8_t> data,
                           uint32_t timeout,
                           GenericTransferOutCallback callback) override;
   void IsochronousTransferIn(uint8_t endpoint_number,

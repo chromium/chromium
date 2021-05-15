@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -238,7 +239,7 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
   }
 
   void GenericTransferOut(uint8_t endpoint_number,
-                          const std::vector<uint8_t>& buffer,
+                          base::span<const uint8_t> buffer,
                           uint32_t timeout,
                           GenericTransferOutCallback callback) override {
     if (remaining_body_length_ == 0) {

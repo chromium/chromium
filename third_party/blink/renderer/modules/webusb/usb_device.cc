@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -95,82 +96,27 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
   }
 }
 
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool ConvertBufferSource(const V8BufferSource* buffer_source,
+bool ConvertBufferSource(const DOMArrayPiece& buffer_source,
                          Vector<uint8_t>* vector,
                          ScriptPromiseResolver* resolver) {
-  DCHECK(buffer_source);
-  DOMArrayBuffer* array_buffer = nullptr;
-  void* data = nullptr;
-  size_t size = 0;
-  switch (buffer_source->GetContentType()) {
-    case V8BufferSource::ContentType::kArrayBuffer:
-      array_buffer = buffer_source->GetAsArrayBuffer();
-      data = array_buffer->Data();
-      size = array_buffer->ByteLength();
-      break;
-    case V8BufferSource::ContentType::kArrayBufferView: {
-      const auto& array_buffer_view = buffer_source->GetAsArrayBufferView();
-      array_buffer = array_buffer_view->buffer();
-      data = array_buffer_view->BaseAddress();
-      size = array_buffer_view->byteLength();
-      break;
-    }
-  }
+  DCHECK(!buffer_source.IsNull());
 
-  if (array_buffer->IsDetached()) {
+  if (buffer_source.IsDetached()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
     return false;
   }
-  if (size > std::numeric_limits<wtf_size_t>::max()) {
+
+  if (buffer_source.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kDataError, kBufferTooBig));
     return false;
   }
 
-  vector->Append(static_cast<uint8_t*>(data), static_cast<wtf_size_t>(size));
+  vector->Append(buffer_source.Bytes(),
+                 static_cast<wtf_size_t>(buffer_source.ByteLength()));
   return true;
 }
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
-                         Vector<uint8_t>* vector,
-                         ScriptPromiseResolver* resolver) {
-  DCHECK(!buffer_source.IsNull());
-  if (buffer_source.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = buffer_source.GetAsArrayBuffer();
-    if (array_buffer->IsDetached()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-      return false;
-    }
-    if (array_buffer->ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kDataError, kBufferTooBig));
-      return false;
-    }
-
-    vector->Append(static_cast<uint8_t*>(array_buffer->Data()),
-                   static_cast<wtf_size_t>(array_buffer->ByteLength()));
-  } else {
-    DOMArrayBufferView* view = buffer_source.GetAsArrayBufferView().Get();
-    if (!view->buffer() || view->buffer()->IsDetached()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-      return false;
-    }
-    if (view->byteLength() > std::numeric_limits<wtf_size_t>::max()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kDataError, kBufferTooBig));
-      return false;
-    }
-
-    vector->Append(static_cast<uint8_t*>(view->BaseAddress()),
-                   static_cast<wtf_size_t>(view->byteLength()));
-  }
-  return true;
-}
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
 }  // namespace
 
@@ -441,12 +387,7 @@ ScriptPromise USBDevice::controlTransferOut(
 ScriptPromise USBDevice::controlTransferOut(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const V8BufferSource* data
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const ArrayBufferOrArrayBufferView& data
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
+    const DOMArrayPiece& data) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureNoDeviceOrInterfaceChangeInProgress(resolver))
@@ -511,25 +452,30 @@ ScriptPromise USBDevice::transferIn(ScriptState* script_state,
 
 ScriptPromise USBDevice::transferOut(ScriptState* script_state,
                                      uint8_t endpoint_number,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                     const V8BufferSource* data
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-                                     const ArrayBufferOrArrayBufferView& data
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-) {
+                                     const DOMArrayPiece& data) {
+  DCHECK(!data.IsNull());
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   if (!EnsureEndpointAvailable(false /* out */, endpoint_number, resolver))
     return promise;
 
-  Vector<uint8_t> buffer;
-  if (!ConvertBufferSource(data, &buffer, resolver))
+  if (data.IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
     return promise;
+  }
 
-  unsigned transfer_length = buffer.size();
+  if (data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError, kBufferTooBig));
+    return promise;
+  }
+
+  unsigned transfer_length = static_cast<uint32_t>(data.ByteLength());
   device_requests_.insert(resolver);
   device_->GenericTransferOut(
-      endpoint_number, buffer, 0,
+      endpoint_number, base::make_span(data.Bytes(), data.ByteLength()), 0,
       WTF::Bind(&USBDevice::AsyncTransferOut, WrapPersistent(this),
                 transfer_length, WrapPersistent(resolver)));
   return promise;
@@ -554,11 +500,7 @@ ScriptPromise USBDevice::isochronousTransferIn(
 ScriptPromise USBDevice::isochronousTransferOut(
     ScriptState* script_state,
     uint8_t endpoint_number,
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const V8BufferSource* data,
-#else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    const ArrayBufferOrArrayBufferView& data,
-#endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
+    const DOMArrayPiece& data,
     Vector<unsigned> packet_lengths) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -1028,7 +970,7 @@ void USBDevice::AsyncTransferIn(ScriptPromiseResolver* resolver,
   }
 }
 
-void USBDevice::AsyncTransferOut(unsigned transfer_length,
+void USBDevice::AsyncTransferOut(uint32_t transfer_length,
                                  ScriptPromiseResolver* resolver,
                                  UsbTransferStatus status) {
   if (!MarkRequestComplete(resolver))

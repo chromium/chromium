@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/containers/span.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -107,14 +106,14 @@ class MockUsbMojoDevice : public mojom::UsbDevice {
                void(uint8_t, uint32_t, uint32_t, GenericTransferInCallback*));
 
   void GenericTransferOut(uint8_t endpoint_number,
-                          const std::vector<uint8_t>& data,
+                          base::span<const uint8_t> data,
                           uint32_t timeout,
                           GenericTransferOutCallback callback) override {
     GenericTransferOutInternal(endpoint_number, data, timeout, &callback);
   }
   MOCK_METHOD4(GenericTransferOutInternal,
                void(uint8_t,
-                    const std::vector<uint8_t>&,
+                    base::span<const uint8_t>,
                     uint32_t,
                     GenericTransferOutCallback*));
 

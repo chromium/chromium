@@ -4,6 +4,7 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
@@ -288,7 +289,9 @@ interface UsbDevice {
   // |timeout| specifies the request timeout in milliseconds. A timeout of 0
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
-  GenericTransferOut(uint8 endpoint_number, array<uint8> data, uint32 timeout)
+  GenericTransferOut(uint8 endpoint_number,
+                     mojo_base.mojom.ReadOnlyBuffer data,
+                     uint32 timeout)
       => (UsbTransferStatus status);
 
   // Initiates an inbound isochronous transfer request on a specific endpoint.
