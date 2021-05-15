@@ -60,7 +60,7 @@ void MeasureTPMAvailability() {
               SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
               SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
           };
-          base::Optional<SignatureVerifier::SignatureAlgorithm> algo =
+          absl::optional<SignatureVerifier::SignatureAlgorithm> algo =
               provider->SelectAlgorithm(kAllAlgorithms);
           if (algo) {
             switch (*algo) {

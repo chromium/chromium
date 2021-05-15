@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 
@@ -47,7 +47,7 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // during signing.
   //
   // Note: this may take a second or more to run.
-  virtual base::Optional<std::vector<uint8_t>> SignSlowly(
+  virtual absl::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) = 0;
 };
 
@@ -59,7 +59,7 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // SelectAlgorithm returns which signature algorithm from
   // |acceptable_algorithms| would be used if |acceptable_algorithms| was passed
   // to |GenerateSigningKeySlowly|.
-  virtual base::Optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+  virtual absl::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) = 0;
 
