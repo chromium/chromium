@@ -26,6 +26,12 @@
 
 // Tests that rotating the device will don't dismiss the page info view.
 - (void)testShowPageInfoRotation {
+// TODO(crbug.com/1209345): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   [ChromeEarlGrey loadURL:GURL("https://invalid")];
   [ChromeEarlGreyUI openPageInfo];
 

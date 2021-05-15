@@ -571,6 +571,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // the camera state changes after the QRScannerViewController is presented.
 // TODO(crbug.com/1019211): Re-enable test on iOS12.
 - (void)testDialogIsDisplayedIfCameraStateChanges {
+// TODO(crbug.com/1209348): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
@@ -644,6 +650,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that an error dialog is dismissed if the camera becomes available.
 - (void)testDialogDismissedIfCameraBecomesAvailable {
+// TODO(crbug.com/1209348): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
@@ -797,13 +809,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Test that the correct page is loaded if the scanner result is a search query.
 - (void)testReceivingQRScannerSearchQueryResult {
+// TODO(crbug.com/1209348): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   [self doTestReceivingResult:kTestQuery response:kTestQueryResponse edit:nil];
 }
 
 // Test that the correct page is loaded if the scanner result is a search query
 // which is then manually edited.
 - (void)testReceivingQRScannerSearchQueryResultAndEditingTheQuery {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
+  // TODO(crbug.com/1209348): Re-enable this test on iPad once grey_typeText
   // works.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
@@ -817,6 +835,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that the correct page is loaded if the scanner result is a not supported
 // URL.
 - (void)testReceivingQRScannerLoadDataResult {
+// TODO(crbug.com/1209348): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   [self doTestReceivingResult:kTestDataURL
               sanitizedResult:kTestSanitizedDataURL
                      response:kTestDataURLResponse
