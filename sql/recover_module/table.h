@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/optional.h"
 #include "sql/recover_module/parsing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {

@@ -143,7 +143,7 @@ void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
          BlobStatus status) {
         if (status != BlobStatus::DONE) {
           DCHECK(BlobStatusIsError(status));
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
@@ -151,26 +151,26 @@ void BlobImpl::ReadSideData(ReadSideDataCallback callback) {
         // Currently side data is supported only for blobs with a single entry.
         const auto& items = snapshot->items();
         if (items.size() != 1) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
         const auto& item = items[0];
         if (item->type() != BlobDataItem::Type::kReadableDataHandle) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
 
         int32_t body_size = item->data_handle()->GetSideDataSize();
         if (body_size == 0) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
           return;
         }
         item->data_handle()->ReadSideData(base::BindOnce(
             [](ReadSideDataCallback callback, int result,
                mojo_base::BigBuffer buffer) {
               if (result < 0) {
-                std::move(callback).Run(base::nullopt);
+                std::move(callback).Run(absl::nullopt);
                 return;
               }
               std::move(callback).Run(std::move(buffer));
@@ -194,7 +194,7 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
 
         if (status != BlobStatus::DONE) {
           DCHECK(BlobStatusIsError(status));
-          std::move(callback).Run(0, base::nullopt);
+          std::move(callback).Run(0, absl::nullopt);
           return;
         }
 
@@ -203,13 +203,13 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
         // time.
         const auto& items = snapshot->items();
         if (items.size() != 1) {
-          std::move(callback).Run(handle->size(), base::nullopt);
+          std::move(callback).Run(handle->size(), absl::nullopt);
           return;
         }
 
         const auto& item = items[0];
         if (item->type() != BlobDataItem::Type::kFile) {
-          std::move(callback).Run(handle->size(), base::nullopt);
+          std::move(callback).Run(handle->size(), absl::nullopt);
           return;
         }
 
@@ -222,7 +222,7 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
 
         struct SizeAndTime {
           uint64_t size;
-          base::Optional<base::Time> time;
+          absl::optional<base::Time> time;
         };
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -230,7 +230,7 @@ void BlobImpl::CaptureSnapshot(CaptureSnapshotCallback callback) {
                 [](const base::FilePath& path) {
                   base::File::Info info;
                   if (!base::GetFileInfo(path, &info))
-                    return SizeAndTime{0, base::nullopt};
+                    return SizeAndTime{0, absl::nullopt};
                   return SizeAndTime{info.size, info.last_modified};
                 },
                 item->path()),

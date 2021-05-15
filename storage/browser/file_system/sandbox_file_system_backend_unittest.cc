@@ -189,7 +189,7 @@ TEST_P(SandboxFileSystemBackendTest, EnumerateOrigins) {
   size_t temporary_actual_size = 0;
   size_t persistent_actual_size = 0;
 
-  base::Optional<url::Origin> current;
+  absl::optional<url::Origin> current;
   while ((current = enumerator->Next()).has_value()) {
     SCOPED_TRACE(testing::Message()
                  << "EnumerateOrigin " << current->Serialize());

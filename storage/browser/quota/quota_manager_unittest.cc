@@ -441,7 +441,7 @@ class QuotaManagerImplTest : public testing::Test {
     usage_ = global_usage;
   }
 
-  void DidGetEvictionOrigin(const base::Optional<url::Origin>& origin) {
+  void DidGetEvictionOrigin(const absl::optional<url::Origin>& origin) {
     eviction_origin_ = origin;
     DCHECK(!origin.has_value() || !origin->GetURL().is_empty());
   }
@@ -511,7 +511,7 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota() const { return quota_; }
   int64_t total_space() const { return total_space_; }
   int64_t available_space() const { return available_space_; }
-  const base::Optional<url::Origin>& eviction_origin() const {
+  const absl::optional<url::Origin>& eviction_origin() const {
     return eviction_origin_;
   }
   const std::set<url::Origin>& modified_origins() const {
@@ -553,7 +553,7 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota_;
   int64_t total_space_;
   int64_t available_space_;
-  base::Optional<url::Origin> eviction_origin_;
+  absl::optional<url::Origin> eviction_origin_;
   std::set<url::Origin> modified_origins_;
   StorageType modified_origins_type_;
   QuotaTableEntries quota_entries_;
@@ -2887,7 +2887,7 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForOrigin_Disable) {
 
   base::RunLoop run_loop3;
   handle2->OverrideQuotaForOrigin(
-      origin, base::nullopt,
+      origin, absl::nullopt,
       base::BindLambdaForTesting([&]() { run_loop3.Quit(); }));
   run_loop3.Run();
 

@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   void OverrideQuotaForOrigin(
       int handle_id,
       url::Origin origin,
-      base::Optional<int64_t> quota_size,
+      absl::optional<int64_t> quota_size,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
   void WithdrawOverridesForHandle(int handle_id);

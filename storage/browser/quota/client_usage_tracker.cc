@@ -314,13 +314,13 @@ void ClientUsageTracker::GetUsageForOrigins(
   }
 
   // Fire the sentinel as we've now called GetOriginUsage for all clients.
-  accumulator.Run(base::nullopt, 0);
+  accumulator.Run(absl::nullopt, 0);
 }
 
 void ClientUsageTracker::AccumulateOriginUsage(
     AccumulateInfo* info,
     const std::string& host,
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     int64_t usage) {
   DCHECK_GT(info->pending_jobs, 0U);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

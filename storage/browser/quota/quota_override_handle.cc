@@ -30,7 +30,7 @@ QuotaOverrideHandle::~QuotaOverrideHandle() {
 
 void QuotaOverrideHandle::OverrideQuotaForOrigin(
     url::Origin origin,
-    base::Optional<int64_t> quota_size,
+    absl::optional<int64_t> quota_size,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!id_.has_value()) {
@@ -50,7 +50,7 @@ void QuotaOverrideHandle::OverrideQuotaForOrigin(
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!id_.has_value());
-  id_ = base::make_optional(id);
+  id_ = absl::make_optional(id);
 
   for (auto& callback : override_callback_queue_) {
     std::move(callback).Run();

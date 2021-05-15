@@ -251,7 +251,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
   void WriteBlobToFile(mojo::PendingRemote<::blink::mojom::Blob> blob,
                        const base::FilePath& path,
                        bool flush_on_write,
-                       base::Optional<base::Time> last_modified,
+                       absl::optional<base::Time> last_modified,
                        WriteBlobToFileCallback callback) override;
 
   base::FilePath profile_directory_;

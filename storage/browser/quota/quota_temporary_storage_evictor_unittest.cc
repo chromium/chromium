@@ -72,7 +72,7 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
                          int64_t global_quota,
                          GetOriginCallback callback) override {
     if (origin_order_.empty())
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
     else
       std::move(callback).Run(origin_order_.front());
   }
@@ -167,8 +167,8 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   }
 
   void TaskForRepeatedEvictionTest(
-      const std::pair<base::Optional<url::Origin>, int64_t>& origin_to_be_added,
-      const base::Optional<url::Origin>& origin_to_be_accessed,
+      const std::pair<absl::optional<url::Origin>, int64_t>& origin_to_be_added,
+      const absl::optional<url::Origin>& origin_to_be_accessed,
       int expected_usage_after_first,
       int expected_usage_after_second) {
     EXPECT_GE(4, num_get_usage_and_quota_for_eviction_);
@@ -276,7 +276,7 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
           weak_factory_.GetWeakPtr(),
-          std::make_pair(ToOrigin("http://www.e.com"), e_size), base::nullopt,
+          std::make_pair(ToOrigin("http://www.e.com"), e_size), absl::nullopt,
           initial_total_size - d_size,
           initial_total_size - d_size + e_size - c_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
@@ -308,8 +308,8 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   quota_eviction_handler()->set_task_for_get_usage_and_quota(
       base::BindRepeating(
           &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(), std::make_pair(base::nullopt, 0),
-          base::nullopt, initial_total_size - d_size,
+          weak_factory_.GetWeakPtr(), std::make_pair(absl::nullopt, 0),
+          absl::nullopt, initial_total_size - d_size,
           initial_total_size - d_size));
   EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
   // disable_timer_for_testing();

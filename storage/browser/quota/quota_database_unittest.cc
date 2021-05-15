@@ -204,7 +204,7 @@ TEST_P(QuotaDatabaseTest, OriginLastAccessTimeLRU) {
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
 
   std::set<url::Origin> exceptions;
-  base::Optional<url::Origin> origin;
+  absl::optional<url::Origin> origin;
   EXPECT_TRUE(db.GetLRUOrigin(kTemp, exceptions, nullptr, &origin));
   EXPECT_FALSE(origin.has_value());
 
@@ -274,7 +274,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_TRUE(LazyOpen(&db, /*create_if_needed=*/true));
 
   std::set<url::Origin> exceptions;
-  base::Optional<int64_t> bucket_id;
+  absl::optional<int64_t> bucket_id;
   EXPECT_TRUE(db.GetLRUBucket(kTemp, exceptions, nullptr, &bucket_id));
   EXPECT_FALSE(bucket_id.has_value());
 

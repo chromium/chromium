@@ -224,7 +224,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
 }
 
 void QuotaTemporaryStorageEvictor::OnGotEvictionOrigin(
-    const base::Optional<url::Origin>& origin) {
+    const absl::optional<url::Origin>& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!origin.has_value()) {

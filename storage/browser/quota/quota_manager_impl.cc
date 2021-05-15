@@ -111,7 +111,7 @@ bool SetPersistentHostQuotaOnDBThread(const std::string& host,
 bool GetLRUOriginOnDBThread(StorageType type,
                             const std::set<url::Origin>& exceptions,
                             SpecialStoragePolicy* policy,
-                            base::Optional<url::Origin>* origin,
+                            absl::optional<url::Origin>* origin,
                             QuotaDatabase* database) {
   DCHECK(database);
   database->GetLRUOrigin(type, exceptions, policy, origin);
@@ -230,7 +230,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
                             bool is_unlimited,
                             bool is_session_only,
                             bool is_incognito,
-                            base::Optional<int64_t> quota_override_size,
+                            absl::optional<int64_t> quota_override_size,
                             UsageAndQuotaForDevtoolsCallback callback)
       : QuotaTask(manager),
         origin_(origin),
@@ -385,7 +385,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   int64_t desired_host_quota_ = 0;
   int64_t host_usage_ = 0;
   const bool is_override_enabled_;
-  base::Optional<int64_t> quota_override_size_;
+  absl::optional<int64_t> quota_override_size_;
   blink::mojom::UsageBreakdownPtr host_usage_breakdown_;
   QuotaSettings settings_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -987,7 +987,7 @@ void QuotaManagerImpl::GetUsageAndQuotaForDevtools(
       type == StorageType::kTemporary && special_storage_policy_ &&
       special_storage_policy_->IsStorageSessionOnly(origin.GetURL());
 
-  base::Optional<int64_t> quota_override = GetQuotaOverrideForOrigin(origin);
+  absl::optional<int64_t> quota_override = GetQuotaOverrideForOrigin(origin);
 
   UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
       this, origin, type, IsStorageUnlimited(origin, type), is_session_only,
@@ -1020,7 +1020,7 @@ void QuotaManagerImpl::GetUsageAndQuota(const url::Origin& origin,
       type == StorageType::kTemporary && special_storage_policy_ &&
       special_storage_policy_->IsStorageSessionOnly(origin.GetURL());
 
-  base::Optional<int64_t> quota_override = GetQuotaOverrideForOrigin(origin);
+  absl::optional<int64_t> quota_override = GetQuotaOverrideForOrigin(origin);
 
   UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
       this, origin, type, IsStorageUnlimited(origin, type), is_session_only,
@@ -1579,7 +1579,7 @@ void QuotaManagerImpl::SetStoragePressureCallback(
   if (origin_for_pending_storage_pressure_callback_.has_value()) {
     storage_pressure_callback_.Run(
         std::move(origin_for_pending_storage_pressure_callback_.value()));
-    origin_for_pending_storage_pressure_callback_ = base::nullopt;
+    origin_for_pending_storage_pressure_callback_ = absl::nullopt;
   }
 }
 
@@ -1591,7 +1591,7 @@ int QuotaManagerImpl::GetOverrideHandleId() {
 void QuotaManagerImpl::OverrideQuotaForOrigin(
     int handle_id,
     const url::Origin& origin,
-    base::Optional<int64_t> quota_size) {
+    absl::optional<int64_t> quota_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (quota_size.has_value()) {
     DCHECK_GE(next_override_handle_id_, handle_id);
@@ -1623,11 +1623,11 @@ void QuotaManagerImpl::WithdrawOverridesForHandle(int handle_id) {
   }
 }
 
-base::Optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForOrigin(
+absl::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForOrigin(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::Contains(devtools_overrides_, origin)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return devtools_overrides_[origin].quota_size;
 }
@@ -1735,7 +1735,7 @@ std::set<url::Origin> QuotaManagerImpl::GetEvictionOriginExceptions() {
 
 void QuotaManagerImpl::DidGetEvictionOrigin(
     GetOriginCallback callback,
-    const base::Optional<url::Origin>& origin) {
+    const absl::optional<url::Origin>& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Make sure the returned origin is (still) not in the origin_in_use_ set
   // and has not been accessed since we posted the task.
@@ -1743,7 +1743,7 @@ void QuotaManagerImpl::DidGetEvictionOrigin(
   if (origin.has_value() &&
       (base::Contains(origins_in_use_, *origin) ||
        base::Contains(access_notified_origins_, *origin))) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   } else {
     std::move(callback).Run(origin);
   }
@@ -1813,11 +1813,11 @@ void QuotaManagerImpl::GetLRUOrigin(StorageType type,
   DCHECK(lru_origin_callback_.is_null());
   lru_origin_callback_ = std::move(callback);
   if (db_disabled_) {
-    std::move(lru_origin_callback_).Run(base::nullopt);
+    std::move(lru_origin_callback_).Run(absl::nullopt);
     return;
   }
 
-  auto origin = std::make_unique<base::Optional<url::Origin>>();
+  auto origin = std::make_unique<absl::optional<url::Origin>>();
   auto* origin_ptr = origin.get();
   PostTaskAndReplyWithResultForDBThread(
       FROM_HERE,
@@ -1852,7 +1852,7 @@ void QuotaManagerImpl::DidSetPersistentHostQuota(const std::string& host,
 }
 
 void QuotaManagerImpl::DidGetLRUOrigin(
-    std::unique_ptr<base::Optional<url::Origin>> origin,
+    std::unique_ptr<absl::optional<url::Origin>> origin,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(success);
@@ -1863,7 +1863,7 @@ void QuotaManagerImpl::DidGetLRUOrigin(
 namespace {
 void DidGetSettingsThreadAdapter(base::TaskRunner* task_runner,
                                  OptionalQuotaSettingsCallback callback,
-                                 base::Optional<QuotaSettings> settings) {
+                                 absl::optional<QuotaSettings> settings) {
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(settings)));
 }
@@ -1892,7 +1892,7 @@ void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {
                                         weak_factory_.GetWeakPtr()))));
 }
 
-void QuotaManagerImpl::DidGetSettings(base::Optional<QuotaSettings> settings) {
+void QuotaManagerImpl::DidGetSettings(absl::optional<QuotaSettings> settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!settings) {
     settings = settings_;

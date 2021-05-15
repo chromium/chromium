@@ -21,12 +21,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
 #include "sql/statement_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct sqlite3;
 struct sqlite3_stmt;
@@ -580,7 +580,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // declare its blocking execution scope (see https://www.crbug/934302).
   void InitScopedBlockingCall(
       const base::Location& from_here,
-      base::Optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+      absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
     if (!in_memory_)
       scoped_blocking_call->emplace(from_here, base::BlockingType::MAY_BLOCK);
   }
@@ -650,7 +650,7 @@ class COMPONENT_EXPORT(SQL) Database {
     // declare its blocking execution scope (see https://www.crbug/934302).
     void InitScopedBlockingCall(
         const base::Location& from_here,
-        base::Optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+        absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
       if (database_)
         database_->InitScopedBlockingCall(from_here, scoped_blocking_call);
     }

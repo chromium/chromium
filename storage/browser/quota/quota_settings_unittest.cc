@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +16,7 @@
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 
@@ -42,14 +42,14 @@ class QuotaSettingsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(data_dir_.CreateUniqueTempDir()); }
 
   // Synchronous proxy to GetNominalDynamicSettings().
-  base::Optional<QuotaSettings> GetSettings(
+  absl::optional<QuotaSettings> GetSettings(
       bool is_incognito,
       QuotaDeviceInfoHelper* device_info_helper) {
-    base::Optional<QuotaSettings> quota_settings;
+    absl::optional<QuotaSettings> quota_settings;
     base::RunLoop run_loop;
     GetNominalDynamicSettings(
         profile_path(), is_incognito, device_info_helper,
-        base::BindLambdaForTesting([&](base::Optional<QuotaSettings> settings) {
+        base::BindLambdaForTesting([&](absl::optional<QuotaSettings> settings) {
           quota_settings = std::move(settings);
           run_loop.Quit();
         }));
@@ -79,7 +79,7 @@ class QuotaSettingsIncognitoTest : public QuotaSettingsTest {
   }
 
   void GetAndTestSettings(const int64_t physical_memory_amount) {
-    base::Optional<QuotaSettings> settings =
+    absl::optional<QuotaSettings> settings =
         GetSettings(true, &device_info_helper_);
     ASSERT_TRUE(settings.has_value());
     EXPECT_LE(
@@ -99,7 +99,7 @@ TEST_F(QuotaSettingsTest, Default) {
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
       .WillByDefault(::testing::Return(2000));
 
-  base::Optional<QuotaSettings> settings =
+  absl::optional<QuotaSettings> settings =
       GetSettings(false, &device_info_helper);
   ASSERT_TRUE(settings.has_value());
   // 1600 = 2000 * default PoolSizeRatio (0.8)
@@ -121,7 +121,7 @@ TEST_F(QuotaSettingsTest, FeatureParamsWithLargeFixedQuota) {
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
       .WillByDefault(::testing::Return(2000));
 
-  base::Optional<QuotaSettings> settings =
+  absl::optional<QuotaSettings> settings =
       GetSettings(false, &device_info_helper);
   ASSERT_TRUE(settings.has_value());
 
@@ -143,7 +143,7 @@ TEST_F(QuotaSettingsTest, FeatureParamsWithSmallFixedQuota) {
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
       .WillByDefault(::testing::Return(2000));
 
-  base::Optional<QuotaSettings> settings =
+  absl::optional<QuotaSettings> settings =
       GetSettings(false, &device_info_helper);
   ASSERT_TRUE(settings.has_value());
 
@@ -162,7 +162,7 @@ TEST_F(QuotaSettingsTest, FeatureParamsWithoutFixedQuota) {
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
       .WillByDefault(::testing::Return(2000));
 
-  base::Optional<QuotaSettings> settings =
+  absl::optional<QuotaSettings> settings =
       GetSettings(false, &device_info_helper);
   ASSERT_TRUE(settings.has_value());
 

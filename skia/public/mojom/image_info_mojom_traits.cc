@@ -5,8 +5,8 @@
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 
 namespace mojo {
@@ -164,24 +164,24 @@ uint32_t StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::height(
 }
 
 // static
-base::Optional<std::vector<float>>
+absl::optional<std::vector<float>>
 StructTraits<skia::mojom::ImageInfoDataView,
              SkImageInfo>::color_transfer_function(const SkImageInfo& info) {
   SkColorSpace* color_space = info.colorSpace();
   if (!color_space)
-    return base::nullopt;
+    return absl::nullopt;
   skcms_TransferFunction fn;
   color_space->transferFn(&fn);
   return std::vector<float>({fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f});
 }
 
 // static
-base::Optional<std::vector<float>>
+absl::optional<std::vector<float>>
 StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_to_xyz_matrix(
     const SkImageInfo& info) {
   SkColorSpace* color_space = info.colorSpace();
   if (!color_space)
-    return base::nullopt;
+    return absl::nullopt;
   skcms_Matrix3x3 to_xyz_matrix;
   CHECK(color_space->toXYZD50(&to_xyz_matrix));
 

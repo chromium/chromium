@@ -25,7 +25,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,6 +38,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
@@ -289,7 +289,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   int GetOverrideHandleId();
   void OverrideQuotaForOrigin(int handle_id,
                               const url::Origin& origin,
-                              base::Optional<int64_t> quota_size);
+                              absl::optional<int64_t> quota_size);
   // Called when a DevTools client releases all overrides, however, overrides
   // will not be disabled for any origins for which there are other DevTools
   // clients/QuotaOverrideHandle with an active override.
@@ -450,7 +450,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   std::set<url::Origin> GetEvictionOriginExceptions();
   void DidGetEvictionOrigin(GetOriginCallback callback,
-                            const base::Optional<url::Origin>& origin);
+                            const absl::optional<url::Origin>& origin);
 
   // QuotaEvictionHandler.
   void GetEvictionOrigin(blink::mojom::StorageType type,
@@ -470,10 +470,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                  QuotaCallback callback,
                                  const int64_t* new_quota,
                                  bool success);
-  void DidGetLRUOrigin(std::unique_ptr<base::Optional<url::Origin>> origin,
+  void DidGetLRUOrigin(std::unique_ptr<absl::optional<url::Origin>> origin,
                        bool success);
   void GetQuotaSettings(QuotaSettingsCallback callback);
-  void DidGetSettings(base::Optional<QuotaSettings> settings);
+  void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
   void DidGetStorageCapacity(
@@ -498,7 +498,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // TODO(crbug.com/1102433): Define and explain StoragePressure in the README.
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
-  base::Optional<int64_t> GetQuotaOverrideForOrigin(const url::Origin&);
+  absl::optional<int64_t> GetQuotaOverrideForOrigin(const url::Origin&);
 
   void PostTaskAndReplyWithResultForDBThread(
       const base::Location& from_here,
@@ -519,7 +519,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   bool db_disabled_;
   bool eviction_disabled_;
-  base::Optional<url::Origin> origin_for_pending_storage_pressure_callback_;
+  absl::optional<url::Origin> origin_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
   mutable std::unique_ptr<QuotaDatabase> database_;

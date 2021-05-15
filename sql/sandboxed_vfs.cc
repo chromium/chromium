@@ -165,7 +165,7 @@ int SandboxedVfs::Delete(const char* full_path, int sync_dir) {
 
 int SandboxedVfs::Access(const char* full_path, int flags, int& result) {
   DCHECK(full_path);
-  base::Optional<PathAccessInfo> access =
+  absl::optional<PathAccessInfo> access =
       delegate_->GetPathAccess(base::FilePath::FromUTF8Unsafe(full_path));
   if (!access) {
     result = 0;

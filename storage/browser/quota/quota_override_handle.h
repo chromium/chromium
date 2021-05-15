@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaOverrideHandle {
   QuotaOverrideHandle(const QuotaOverrideHandle&) = delete;
 
   void OverrideQuotaForOrigin(url::Origin origin,
-                              base::Optional<int64_t> quota_size,
+                              absl::optional<int64_t> quota_size,
                               base::OnceClosure callback);
 
  private:
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaOverrideHandle {
 
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::Optional<int> id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<int> id_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<base::OnceClosure> override_callback_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

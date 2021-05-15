@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool GetLRUOrigin(blink::mojom::StorageType type,
                     const std::set<url::Origin>& exceptions,
                     SpecialStoragePolicy* special_storage_policy,
-                    base::Optional<url::Origin>* origin);
+                    absl::optional<url::Origin>* origin);
 
   // Sets `bucket_id` to the least recently used bucket from origins not
   // included in `exceptions` and not granted special unlimited storage right.
@@ -150,7 +150,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool GetLRUBucket(blink::mojom::StorageType type,
                     const std::set<url::Origin>& exceptions,
                     SpecialStoragePolicy* special_storage_policy,
-                    base::Optional<int64_t>* bucket_id);
+                    absl::optional<int64_t>* bucket_id);
 
   // TODO(crbug.com/1202167): Remove once all usages have been updated to use
   // GetBucketsModifiedBetween. Populates `origins` with the ones that have had

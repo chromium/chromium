@@ -268,7 +268,7 @@ QuotaManagerProxy::GetQuotaOverrideHandle() {
 void QuotaManagerProxy::OverrideQuotaForOrigin(
     int handle_id,
     url::Origin origin,
-    base::Optional<int64_t> quota_size,
+    absl::optional<int64_t> quota_size,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {

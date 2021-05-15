@@ -75,9 +75,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
    public:
     virtual ~OriginEnumerator() {}
 
-    // Returns the next origin.  Returns base::nullopt if there are no more
+    // Returns the next origin.  Returns absl::nullopt if there are no more
     // origins.
-    virtual base::Optional<url::Origin> Next() = 0;
+    virtual absl::optional<url::Origin> Next() = 0;
 
     // Returns the current origin's information.
     virtual bool HasFileSystemType(FileSystemType type) const = 0;

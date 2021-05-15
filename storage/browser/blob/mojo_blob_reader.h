@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoBlobReader {
 
     // Called if DidCalculateSize returned |REQUEST_SIDE_DATA|, with the side
     // data associated with the blob being read, if any.
-    virtual void DidReadSideData(base::Optional<mojo_base::BigBuffer> data) {}
+    virtual void DidReadSideData(absl::optional<mojo_base::BigBuffer> data) {}
 
     // Called whenever some amount of data is read from the blob and about to be
     // written to the data pipe.

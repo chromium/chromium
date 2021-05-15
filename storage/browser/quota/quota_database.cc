@@ -541,7 +541,7 @@ bool QuotaDatabase::DeleteBucketInfo(const int64_t bucket_id) {
 bool QuotaDatabase::GetLRUOrigin(StorageType type,
                                  const std::set<url::Origin>& exceptions,
                                  SpecialStoragePolicy* special_storage_policy,
-                                 base::Optional<url::Origin>* origin) {
+                                 absl::optional<url::Origin>* origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(origin);
   if (!LazyOpen(false))
@@ -582,7 +582,7 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
 bool QuotaDatabase::GetLRUBucket(StorageType type,
                                  const std::set<url::Origin>& exceptions,
                                  SpecialStoragePolicy* special_storage_policy,
-                                 base::Optional<int64_t>* bucket_id) {
+                                 absl::optional<int64_t>* bucket_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(bucket_id);
   if (!LazyOpen(false))

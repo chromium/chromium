@@ -222,11 +222,11 @@ class ObfuscatedOriginEnumerator
   ~ObfuscatedOriginEnumerator() override = default;
 
   // Returns the next origin.  Returns empty if there are no more origins.
-  base::Optional<url::Origin> Next() override {
+  absl::optional<url::Origin> Next() override {
     OriginRecord record;
     if (origins_.empty()) {
       current_ = record;
-      return base::nullopt;
+      return absl::nullopt;
     }
     record = origins_.back();
     origins_.pop_back();

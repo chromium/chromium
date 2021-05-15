@@ -10,9 +10,9 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "storage/browser/quota/quota_device_info_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -60,9 +60,9 @@ struct QuotaSettings {
 
 // Function type used to return the settings in response to a
 // GetQuotaSettingsFunc invocation. If the embedder cannot
-// produce a settings values, base::nullopt can be returned.
+// produce a settings values, absl::nullopt can be returned.
 using OptionalQuotaSettingsCallback =
-    base::OnceCallback<void(base::Optional<QuotaSettings>)>;
+    base::OnceCallback<void(absl::optional<QuotaSettings>)>;
 
 // Function type used to query the embedder about the quota manager settings.
 // This function is invoked on the UI thread.

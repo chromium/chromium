@@ -38,7 +38,7 @@ FileErrorOr<base::File::Info> DoGetFileInfo(
     return base::File::FILE_ERROR_NOT_FOUND;
   }
 
-  base::Optional<base::File::Info> info =
+  absl::optional<base::File::Info> info =
       shared_filesystem_proxy->data->GetFileInfo(path);
   if (!info.has_value()) {
     return base::File::FILE_ERROR_FAILED;

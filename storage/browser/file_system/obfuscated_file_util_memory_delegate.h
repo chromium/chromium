@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
 
   // Parses the given path into a decomposed path and performs validity checks
   // and normalization. Returns an empty value if checks fail.
-  base::Optional<DecomposedPath> ParsePath(const base::FilePath& path);
+  absl::optional<DecomposedPath> ParsePath(const base::FilePath& path);
 
   // Creates or opens a file specified in |dp|.
   void CreateOrOpenInternal(const DecomposedPath& dp, int file_flags);

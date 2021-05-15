@@ -1604,7 +1604,7 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
   enumerator = ofu()->CreateOriginEnumerator();
   EXPECT_TRUE(enumerator.get());
   std::set<Origin> origins_found;
-  base::Optional<url::Origin> enumerator_origin;
+  absl::optional<url::Origin> enumerator_origin;
   while ((enumerator_origin = enumerator->Next()).has_value()) {
     origins_found.insert(enumerator_origin.value());
     SCOPED_TRACE(testing::Message()
