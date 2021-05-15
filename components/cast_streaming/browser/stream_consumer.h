@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_STREAM_CONSUMER_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -70,6 +71,9 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
 
   // Remaining bytes to write from |pending_buffer_| to |data_pipe_|.
   size_t pending_buffer_remaining_bytes_ = 0;
+
+  // Offset for frames playout time. This is initialized by the first frame.
+  base::TimeDelta playout_offset_ = base::TimeDelta::Max();
 
   // Closure called on every new frame.
   base::RepeatingClosure on_new_frame_;

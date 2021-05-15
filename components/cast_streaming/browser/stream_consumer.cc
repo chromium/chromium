@@ -5,7 +5,6 @@
 #include "components/cast_streaming/browser/stream_consumer.h"
 
 #include "base/logging.h"
-#include "base/time/time.h"
 #include "media/base/media_util.h"
 
 namespace cast_streaming {
@@ -145,6 +144,13 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
           .ToTimeSinceOrigin<std::chrono::microseconds>(
               receiver_->rtp_timebase())
           .count());
+
+  // Some senders do not send an initial playout time of 0. To work around this,
+  // a playout offset is added here.
+  if (playout_offset_ == base::TimeDelta::Max()) {
+    playout_offset_ = playout_time;
+  }
+  playout_time -= playout_offset_;
 
   DVLOG(3) << "[ssrc:" << receiver_->ssrc() << "] "
            << "Received new frame. Timestamp: " << playout_time
