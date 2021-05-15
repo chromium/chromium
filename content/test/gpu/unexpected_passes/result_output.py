@@ -87,29 +87,48 @@ function OnClickHighlighted() {
   OnClickImpl(this);
 }
 
-// Get an initial list of all highlighted_collapsible_groups.
-let highlighted_collapsible_groups = document.getElementsByClassName(
-    "highlighted_collapsible_group");
-let highlighted_list = [];
-for (elem of highlighted_collapsible_groups) {
-  highlighted_list.push(elem);
-}
+// Repeatedly bubble up the highlighted_collapsible_group class as long as all
+// siblings are highlighted.
+let found_element_to_convert = false;
+do {
+  found_element_to_convert = false;
+  // Get an initial list of all highlighted_collapsible_groups.
+  let highlighted_collapsible_groups = document.getElementsByClassName(
+      "highlighted_collapsible_group");
+  let highlighted_list = [];
+  for (elem of highlighted_collapsible_groups) {
+    highlighted_list.push(elem);
+  }
 
-// Bubble up the highlighted_collapsible_group class.
-while (highlighted_list.length) {
-  elem = highlighted_list.shift();
-  if (elem.tagName == 'BODY') {
-    continue;
+  // Bubble up the highlighted_collapsible_group class.
+  while (highlighted_list.length) {
+    elem = highlighted_list.shift();
+    if (elem.tagName == 'BODY') {
+      continue;
+    }
+    if (elem.classList.contains("content")) {
+      highlighted_list.push(elem.previousElementSibling);
+      continue;
+    }
+    if (elem.classList.contains("collapsible_group")) {
+      found_element_to_convert = true;
+      elem.classList.add("highlighted_collapsible_group");
+      elem.classList.remove("collapsible_group");
+    }
+
+    sibling_elements = elem.parentElement.children;
+    let found_non_highlighted_group = false;
+    for (e of sibling_elements) {
+      if (e.classList.contains("collapsible_group")) {
+        found_non_highlighted_group = true;
+        break
+      }
+    }
+    if (!found_non_highlighted_group) {
+      highlighted_list.push(elem.parentElement);
+    }
   }
-  if (elem.classList.contains("content")) {
-    highlighted_list.push(elem.previousElementSibling);
-  }
-  if (elem.classList.contains("collapsible_group")) {
-    elem.classList.add("highlighted_collapsible_group");
-    elem.classList.remove("collapsible_group");
-  }
-  highlighted_list.push(elem.parentElement);
-}
+} while (found_element_to_convert);
 
 // Apply OnClick listeners so [highlighted_]collapsible_groups properly
 // shrink/expand.
