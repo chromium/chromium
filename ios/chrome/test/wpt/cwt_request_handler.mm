@@ -175,7 +175,7 @@ CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
 
 CWTRequestHandler::~CWTRequestHandler() = default;
 
-base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
+absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     const std::string& command,
     net::test_server::HttpMethod http_method,
     const std::string& request_content) {
@@ -197,11 +197,11 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kChromeVersionInfoCommand)
       return GetVersionInfo();
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    base::Optional<base::Value> content =
+    absl::optional<base::Value> content =
         base::JSONReader::Read(request_content);
     if (!content || !content->is_dict()) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -243,7 +243,7 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowRectCommand)
       return SetWindowRect(*content);
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_DELETE) {
@@ -258,16 +258,16 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowCommand)
       return CloseTargetTab();
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
 CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
   std::string command = request.GetURL().ExtractFileName();
-  base::Optional<base::Value> result =
+  absl::optional<base::Value> result =
       ProcessCommand(command, request.method, request.content);
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -535,7 +535,7 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
                             kWebDriverScriptTimeoutMessage);
   }
 
-  base::Optional<base::Value> result =
+  absl::optional<base::Value> result =
       base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json));
   DCHECK(result);
   return std::move(*result);

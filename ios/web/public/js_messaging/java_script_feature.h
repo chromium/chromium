@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -152,14 +152,14 @@ class JavaScriptFeature {
 
   // Returns the script message handler name which this feature will receive
   // messages from JavaScript. Returning null will not register any handler.
-  virtual base::Optional<std::string> GetScriptMessageHandlerName() const;
+  virtual absl::optional<std::string> GetScriptMessageHandlerName() const;
 
   using ScriptMessageHandler =
       base::RepeatingCallback<void(WebState* web_state,
                                    const ScriptMessage& message)>;
   // Returns the script message handler callback if
   // |GetScriptMessageHandlerName()| returns a handler name.
-  base::Optional<ScriptMessageHandler> GetScriptMessageHandler() const;
+  absl::optional<ScriptMessageHandler> GetScriptMessageHandler() const;
 
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 

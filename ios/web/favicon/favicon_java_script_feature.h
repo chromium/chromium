@@ -16,7 +16,7 @@ class FaviconJavaScriptFeature : public JavaScriptFeature {
 
  private:
   // JavaScriptFeature:
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

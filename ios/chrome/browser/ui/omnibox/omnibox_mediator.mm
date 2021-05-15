@@ -94,7 +94,7 @@ const CGFloat kOmniboxIconSize = 16;
 
 - (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType
                              answerType:
-                                 (base::Optional<SuggestionAnswer::AnswerType>)
+                                 (absl::optional<SuggestionAnswer::AnswerType>)
                                      answerType
                              faviconURL:(GURL)faviconURL {
   UIImage* image = GetOmniboxSuggestionIconForAutocompleteMatchType(

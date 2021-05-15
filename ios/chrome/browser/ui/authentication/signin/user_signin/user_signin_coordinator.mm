@@ -335,7 +335,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   // display the equal visual weight distribution UI.
   for (ChromeIdentity* identity :
        identityService->GetAllIdentities(prefService)) {
-    base::Optional<bool> hasMinorModeRestriction =
+    absl::optional<bool> hasMinorModeRestriction =
         identityService->IsSubjectToMinorModeRestrictions(identity);
     if (hasMinorModeRestriction && hasMinorModeRestriction.value()) {
       return YES;

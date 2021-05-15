@@ -303,7 +303,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
   EXPECT_TRUE(aead.Open(decoded_message_ciphertext, decoded_message_iv,
                         /*additional_data=*/"", &message_plaintext));
 
-  base::Optional<base::Value> parsed_function_result =
+  absl::optional<base::Value> parsed_function_result =
       base::JSONReader::Read(function_plaintext, false);
   EXPECT_TRUE(parsed_function_result.has_value());
   ASSERT_TRUE(parsed_function_result.value().is_dict());
@@ -320,17 +320,17 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
   ASSERT_EQ(function_params.size(), decrypted_parameters->GetList().size());
   EXPECT_EQ(plaintext_param, decrypted_parameters->GetList()[0].GetString());
 
-  base::Optional<base::Value> parsed_message_result =
+  absl::optional<base::Value> parsed_message_result =
       base::JSONReader::Read(message_plaintext, false);
   EXPECT_TRUE(parsed_message_result.has_value());
   ASSERT_TRUE(parsed_message_result.value().is_dict());
 
-  base::Optional<int> decrypted_message_id =
+  absl::optional<int> decrypted_message_id =
       parsed_message_result.value().FindIntKey("messageId");
   ASSERT_TRUE(decrypted_message_id.has_value());
   EXPECT_EQ(decrypted_message_id.value(), initial_message_id);
 
-  base::Optional<bool> decrypted_respond_with_result =
+  absl::optional<bool> decrypted_respond_with_result =
       parsed_message_result.value().FindBoolKey("replyWithResult");
   ASSERT_TRUE(decrypted_respond_with_result.has_value());
   EXPECT_FALSE(decrypted_respond_with_result.value());
@@ -382,12 +382,12 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionRespondWithResult) {
   EXPECT_TRUE(aead.Open(decoded_message_ciphertext, decoded_message_iv,
                         /*additional_data=*/"", &message_plaintext));
 
-  base::Optional<base::Value> parsed_result =
+  absl::optional<base::Value> parsed_result =
       base::JSONReader::Read(message_plaintext, false);
   EXPECT_TRUE(parsed_result.has_value());
   ASSERT_TRUE(parsed_result.value().is_dict());
 
-  base::Optional<bool> decrypted_respond_with_result =
+  absl::optional<bool> decrypted_respond_with_result =
       parsed_result.value().FindBoolKey("replyWithResult");
   ASSERT_TRUE(decrypted_respond_with_result.has_value());
   EXPECT_TRUE(decrypted_respond_with_result.value());

@@ -27,7 +27,7 @@ TEST_F(WebClientTest, PrepareErrorPage) {
                           code:NSURLErrorNotConnectedToInternet
                       userInfo:@{NSLocalizedDescriptionKey : description}];
 
-  base::Optional<net::SSLInfo> info = base::nullopt;
+  absl::optional<net::SSLInfo> info = absl::nullopt;
   __block bool callback_called = false;
   __block NSString* html = nil;
   web_client.PrepareErrorPage(/*web_state*/ nullptr, GURL::EmptyGURL(), error,

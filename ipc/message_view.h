@@ -20,18 +20,18 @@ class COMPONENT_EXPORT(IPC_MOJOM) MessageView {
   MessageView();
   MessageView(
       base::span<const uint8_t> bytes,
-      base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles);
+      absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles);
   MessageView(MessageView&&);
   ~MessageView();
 
   MessageView& operator=(MessageView&&);
 
   base::span<const uint8_t> bytes() const { return bytes_; }
-  base::Optional<std::vector<mojo::native::SerializedHandlePtr>> TakeHandles();
+  absl::optional<std::vector<mojo::native::SerializedHandlePtr>> TakeHandles();
 
  private:
   base::span<const uint8_t> bytes_;
-  base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles_;
+  absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageView);
 };

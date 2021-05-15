@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class ChromeIdentity;
 @protocol ChromeIdentityBrowserOpener;
@@ -227,7 +227,7 @@ class ChromeIdentityService {
   // Chrome should apply minor mode restrictions to |identity|.
   // This value will have a refresh period of 24 hours, meaning that at
   // retrieval it may be stale or unpopulated, in the case of a fresh install.
-  virtual base::Optional<bool> IsSubjectToMinorModeRestrictions(
+  virtual absl::optional<bool> IsSubjectToMinorModeRestrictions(
       ChromeIdentity* identity);
 
   // Returns the MDM device status associated with |user_info|.

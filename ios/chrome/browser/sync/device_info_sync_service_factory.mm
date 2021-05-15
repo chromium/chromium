@@ -52,35 +52,35 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
+  absl::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
   GetPhoneAsASecurityKeyInfo() const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<std::string> GetFCMRegistrationToken() const override {
+  absl::optional<std::string> GetFCMRegistrationToken() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetFCMRegistrationToken();
     }
     // If the service is not enabled, then the registration token must be empty,
-    // not unknown (base::nullopt). This is needed to reset previous token if
+    // not unknown (absl::nullopt). This is needed to reset previous token if
     // the invalidations have been turned off.
     return std::string();
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  absl::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
-    // unknown (base::nullopt). This is needed to reset previous types if the
+    // unknown (absl::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
     return syncer::ModelTypeSet();
   }

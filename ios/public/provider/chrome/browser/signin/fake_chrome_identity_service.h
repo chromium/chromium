@@ -54,7 +54,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   virtual UIImage* GetCachedAvatarForIdentity(
       ChromeIdentity* identity) override;
 
-  virtual base::Optional<bool> IsSubjectToMinorModeRestrictions(
+  virtual absl::optional<bool> IsSubjectToMinorModeRestrictions(
       ChromeIdentity* identity) override;
 
   virtual void GetHostedDomainForIdentity(

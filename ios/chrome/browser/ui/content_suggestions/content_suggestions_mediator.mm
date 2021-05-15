@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/ntp_snippets/category.h"
@@ -56,6 +55,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -459,7 +459,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   ContentSuggestionsCategoryWrapper* wrapper =
       [self categoryWrapperForSectionInfo:sectionInfo];
 
-  base::Optional<ntp_snippets::CategoryInfo> categoryInfo =
+  absl::optional<ntp_snippets::CategoryInfo> categoryInfo =
       self.contentService->GetCategoryInfo([wrapper category]);
 
   if (!categoryInfo) {
@@ -777,7 +777,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Adds the section information for |category| in
 // self.sectionInformationByCategory.
 - (void)addSectionInformationForCategory:(ntp_snippets::Category)category {
-  base::Optional<ntp_snippets::CategoryInfo> categoryInfo =
+  absl::optional<ntp_snippets::CategoryInfo> categoryInfo =
       self.contentService->GetCategoryInfo(category);
 
   BOOL expanded = [self isCategoryExpanded:category];

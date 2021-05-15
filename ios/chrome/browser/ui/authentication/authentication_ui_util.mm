@@ -40,7 +40,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
-  base::Optional<AccountInfo> account_info =
+  absl::optional<AccountInfo> account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   std::string hosted_domain = account_info.has_value()

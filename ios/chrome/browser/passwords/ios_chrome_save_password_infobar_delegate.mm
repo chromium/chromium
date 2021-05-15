@@ -98,7 +98,7 @@ void RecordDismissalMetrics(
         infobar_response);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        infobar_response, /*user_state=*/base::nullopt);
+        infobar_response, /*user_state=*/absl::nullopt);
   }
 }
 

@@ -299,10 +299,10 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
   return FakeGetHostedDomainForIdentity(identity);
 }
 
-base::Optional<bool>
+absl::optional<bool>
 FakeChromeIdentityService::IsSubjectToMinorModeRestrictions(
     ChromeIdentity* identity) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void FakeChromeIdentityService::SetUpForIntegrationTests() {}

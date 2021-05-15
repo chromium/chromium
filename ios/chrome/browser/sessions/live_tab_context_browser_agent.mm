@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,10 +70,10 @@ bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
   return false;
 }
 
-base::Optional<tab_groups::TabGroupId>
+absl::optional<tab_groups::TabGroupId>
 LiveTabContextBrowserAgent::GetTabGroupForTab(int index) const {
   // Not supported by iOS.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const tab_groups::TabGroupVisualData*
@@ -111,7 +111,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
@@ -130,7 +130,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
 
 sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,

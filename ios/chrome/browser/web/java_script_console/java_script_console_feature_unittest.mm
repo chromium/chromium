@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
@@ -16,6 +15,7 @@
 #include "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,13 +59,13 @@ class FakeJavaScriptConsoleFeatureDelegate
       web::WebState* web_state,
       web::WebFrame* sender_frame,
       const JavaScriptConsoleMessage& message) override {
-    last_received_message_ = base::Optional<JavaScriptConsoleMessage>(
+    last_received_message_ = absl::optional<JavaScriptConsoleMessage>(
         JavaScriptConsoleMessage(message));
     last_received_web_frame_ = sender_frame;
     last_received_web_state_ = web_state;
   }
 
-  base::Optional<JavaScriptConsoleMessage> last_received_message_;
+  absl::optional<JavaScriptConsoleMessage> last_received_message_;
   web::WebFrame* last_received_web_frame_ = nullptr;
   web::WebState* last_received_web_state_ = nullptr;
 };

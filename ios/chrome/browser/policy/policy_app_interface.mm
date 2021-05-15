@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -20,6 +19,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,7 +47,7 @@ NSString* SerializeValue(const base::Value* value) {
 // Takes a JSON-encoded string representing a |base::Value|, and deserializes
 // into a |base::Value| pointer. If nullptr is given, returns a pointer to a
 // |base::Value| of type NONE.
-base::Optional<base::Value> DeserializeValue(NSString* json_value) {
+absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   if (!json_value) {
     return base::Value(base::Value::Type::NONE);
   }
@@ -57,8 +57,8 @@ base::Optional<base::Value> DeserializeValue(NSString* json_value) {
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(/*error_code=*/nullptr,
                                /*error_message=*/nullptr);
-  return value ? base::make_optional<base::Value>(std::move(*value))
-               : base::nullopt;
+  return value ? absl::make_optional<base::Value>(std::move(*value))
+               : absl::nullopt;
 }
 }
 
@@ -86,7 +86,7 @@ base::Optional<base::Value> DeserializeValue(NSString* json_value) {
 }
 
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey {
-  base::Optional<base::Value> value = DeserializeValue(jsonValue);
+  absl::optional<base::Value> value = DeserializeValue(jsonValue);
   policy::PolicyMap values;
   values.Set(base::SysNSStringToUTF8(policyKey), policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,

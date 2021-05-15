@@ -24,7 +24,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
@@ -55,6 +54,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
@@ -344,8 +344,8 @@ TEST_F(IPCChannelMojoTest, NoImplicitChannelClosure) {
 
   // NOTE: We can't create a RunLoop before Init() is called, but we have to set
   // the default ProcessErrorCallback (which we want to reference the RunLoop)
-  // before Init() launches a child process. Hence the base::Optional here.
-  base::Optional<base::RunLoop> wait_for_error_loop;
+  // before Init() launches a child process. Hence the absl::optional here.
+  absl::optional<base::RunLoop> wait_for_error_loop;
   bool process_error_received = false;
   mojo::SetDefaultProcessErrorHandler(
       base::BindLambdaForTesting([&](const std::string&) {

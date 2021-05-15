@@ -347,7 +347,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
 
   if (!params.in_background()) {
-    LoadUrlInNewTabImpl(params, base::nullopt);
+    LoadUrlInNewTabImpl(params, absl::nullopt);
   } else {
     __block void* hint = nullptr;
     __block UrlLoadParams saved_params = params;
@@ -369,7 +369,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
 }
 
 void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                                                 base::Optional<void*> hint) {
+                                                 absl::optional<void*> hint) {
   web::WebState* parent_web_state = nullptr;
   if (params.append_to == kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();

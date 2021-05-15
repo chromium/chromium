@@ -12,13 +12,13 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -68,7 +68,7 @@ class SafeBrowsingQueryManager
     // Whether an error page should be shown for the URL.
     bool show_error_page = false;
     // The UnsafeResource created for the URL check, if any.
-    base::Optional<security_interstitials::UnsafeResource> resource;
+    absl::optional<security_interstitials::UnsafeResource> resource;
   };
 
   // Observer class for the query manager.

@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/optional.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Describes an object that accepts a left image for the omnibox. The left image
 // is used for showing the current selected suggestion icon, when the
@@ -21,7 +21,7 @@
 // answer). Favicons are only used for non-search match types.
 - (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType
                              answerType:
-                                 (base::Optional<SuggestionAnswer::AnswerType>)
+                                 (absl::optional<SuggestionAnswer::AnswerType>)
                                      answerType
                              faviconURL:(GURL)faviconURL;
 

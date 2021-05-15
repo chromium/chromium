@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/mac/foundation_util.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/session_id.h"
@@ -43,6 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -68,7 +68,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
     NOTREACHED();
   }
 
-  base::Optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
+  absl::optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
                                                 int index) override {
     auto tab = std::make_unique<Tab>();
     int entry_count =
@@ -79,7 +79,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
       tab->navigations[i] = entry;
     }
     entries_.push_front(std::move(tab));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   void BrowserClosing(sessions::LiveTabContext* context) override {

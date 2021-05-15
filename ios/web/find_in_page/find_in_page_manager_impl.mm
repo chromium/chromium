@@ -152,7 +152,7 @@ bool FindInPageManagerImpl::CanSearchContent() {
 void FindInPageManagerImpl::ProcessFindInPageResult(
     const std::string& frame_id,
     const int unique_id,
-    base::Optional<int> result_matches) {
+    absl::optional<int> result_matches) {
   if (unique_id != last_find_request_.GetRequestId()) {
     // New find was started or current find was stopped.
     return;

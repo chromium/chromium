@@ -59,7 +59,7 @@ void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
   CallJavaScriptFunction(main_frame, "imageFetch.getImageData", parameters);
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 ImageFetchJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }

@@ -43,7 +43,7 @@ namespace bookmark_utils_ios {
 
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
-base::Optional<NodeSet> FindNodesByIds(bookmarks::BookmarkModel* model,
+absl::optional<NodeSet> FindNodesByIds(bookmarks::BookmarkModel* model,
                                        const std::set<int64_t>& ids) {
   DCHECK(model);
   NodeSet nodes;
@@ -59,7 +59,7 @@ base::Optional<NodeSet> FindNodesByIds(bookmarks::BookmarkModel* model,
   }
 
   if (ids.size() != nodes.size())
-    return base::nullopt;
+    return absl::nullopt;
 
   return nodes;
 }

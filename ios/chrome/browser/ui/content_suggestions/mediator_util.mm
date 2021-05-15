@@ -80,7 +80,7 @@ ContentSuggestionsItem* ConvertSuggestion(
 }
 
 ContentSuggestionsSectionInformation* SectionInformationFromCategoryInfo(
-    const base::Optional<ntp_snippets::CategoryInfo>& categoryInfo,
+    const absl::optional<ntp_snippets::CategoryInfo>& categoryInfo,
     const ntp_snippets::Category& category,
     const BOOL expanded) {
   ContentSuggestionsSectionInformation* sectionInfo =

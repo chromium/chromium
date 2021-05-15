@@ -152,7 +152,7 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
     const std::u16string& pasted_text,
     size_t selected_line,
     base::TimeTicks match_selection_timestamp,
-    base::Optional<GURL> optional_gurl) {
+    absl::optional<GURL> optional_gurl) {
   if (!optional_gurl) {
     return;
   }
@@ -174,7 +174,7 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
     const std::u16string& pasted_text,
     size_t selected_line,
     base::TimeTicks match_selection_timestamp,
-    base::Optional<std::u16string> optional_text) {
+    absl::optional<std::u16string> optional_text) {
   if (!optional_text) {
     return;
   }
@@ -183,7 +183,7 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
 
   ClipboardProvider* clipboard_provider =
       model()->autocomplete_controller()->clipboard_provider();
-  base::Optional<AutocompleteMatch> new_match =
+  absl::optional<AutocompleteMatch> new_match =
       clipboard_provider->NewClipboardTextMatch(text);
 
   if (!new_match) {
@@ -201,7 +201,7 @@ void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
     const std::u16string& pasted_text,
     size_t selected_line,
     base::TimeTicks match_selection_timestamp,
-    base::Optional<gfx::Image> optional_image) {
+    absl::optional<gfx::Image> optional_image) {
   ClipboardProvider* clipboard_provider =
       model()->autocomplete_controller()->clipboard_provider();
   clipboard_provider->NewClipboardImageMatch(
@@ -218,7 +218,7 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
     const std::u16string& pasted_text,
     size_t selected_line,
     base::TimeTicks match_selection_timestamp,
-    base::Optional<AutocompleteMatch> optional_match) {
+    absl::optional<AutocompleteMatch> optional_match) {
   if (!optional_match) {
     return;
   }
@@ -808,7 +808,7 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 void OmniboxViewIOS::OnSelectedMatchImageChanged(
     bool has_match,
     AutocompleteMatchType::Type match_type,
-    base::Optional<SuggestionAnswer::AnswerType> answer_type,
+    absl::optional<SuggestionAnswer::AnswerType> answer_type,
     GURL favicon_url) {
   if (has_match) {
     [left_image_consumer_ setLeftImageForAutocompleteType:match_type

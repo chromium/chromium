@@ -55,7 +55,7 @@ class FindInPageManagerImpl : public FindInPageManager,
   // null, then does nothing more.
   void ProcessFindInPageResult(const std::string& frame_id,
                                const int request_id,
-                               base::Optional<int> result);
+                               absl::optional<int> result);
   // Calls delegate DidHighlightMatches() method if |delegate_| is set and
   // starts a FindInPageNext find. Called when the last frame returns results
   // from a Find request.

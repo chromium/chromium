@@ -196,7 +196,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   // becuase the DOM element details were not yet available.
   BOOL _contextMenuNeedsDisplay;
   // Parameters for the context menu, populated by the element fetcher.
-  base::Optional<web::ContextMenuParams> _contextMenuParams;
+  absl::optional<web::ContextMenuParams> _contextMenuParams;
 }
 
 @synthesize webView = _webView;

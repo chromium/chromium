@@ -6,9 +6,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +29,7 @@ class PolicyDecisionStateTrackerTest : public PlatformTest {
   }
 
   PolicyDecisionStateTracker policy_decision_state_tracker_;
-  base::Optional<WebStatePolicyDecider::PolicyDecision> policy_decision_;
+  absl::optional<WebStatePolicyDecider::PolicyDecision> policy_decision_;
 };
 
 // Tests the case where every decision received is to allow the navigation, and
@@ -303,7 +303,7 @@ class PolicyDecisionStateTrackerDestructionTest : public PlatformTest {
   }
 
   std::unique_ptr<PolicyDecisionStateTracker> policy_decision_state_tracker_;
-  base::Optional<WebStatePolicyDecider::PolicyDecision> policy_decision_;
+  absl::optional<WebStatePolicyDecider::PolicyDecision> policy_decision_;
 };
 
 // Tests the case where no decisions have been received by the time the

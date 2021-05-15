@@ -61,7 +61,7 @@ FindInPageJavaScriptFeature::~FindInPageJavaScriptFeature() = default;
 bool FindInPageJavaScriptFeature::Search(
     WebFrame* frame,
     const std::string& query,
-    base::OnceCallback<void(base::Optional<int>)> callback) {
+    base::OnceCallback<void(absl::optional<int>)> callback) {
   std::vector<base::Value> params;
   params.push_back(base::Value(query));
   params.push_back(base::Value(kFindInPageFindTimeout));
@@ -74,7 +74,7 @@ bool FindInPageJavaScriptFeature::Search(
 
 void FindInPageJavaScriptFeature::Pump(
     WebFrame* frame,
-    base::OnceCallback<void(base::Optional<int>)> callback) {
+    base::OnceCallback<void(absl::optional<int>)> callback) {
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindInPageFindTimeout));
   CallJavaScriptFunction(
@@ -101,9 +101,9 @@ void FindInPageJavaScriptFeature::Stop(WebFrame* frame) {
 }
 
 void FindInPageJavaScriptFeature::ProcessSearchResult(
-    base::OnceCallback<void(const base::Optional<int>)> callback,
+    base::OnceCallback<void(const absl::optional<int>)> callback,
     const base::Value* result) {
-  base::Optional<int> match_count;
+  absl::optional<int> match_count;
   if (result && result->is_double()) {
     // Valid match number returned. If not, match count will be 0 in order to
     // zero-out count from previous find.

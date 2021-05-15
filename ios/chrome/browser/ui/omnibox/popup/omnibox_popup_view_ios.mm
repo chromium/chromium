@@ -57,13 +57,13 @@ void OmniboxPopupViewIOS::UpdateEditViewIcon() {
   if (model_->selected_line() == OmniboxPopupModel::kNoMatch) {
     delegate_->OnSelectedMatchImageChanged(/*has_match=*/false,
                                            AutocompleteMatchType::NUM_TYPES,
-                                           base::nullopt, GURL());
+                                           absl::nullopt, GURL());
     return;
   }
 
   const AutocompleteMatch& match = result.match_at(model_->selected_line());
 
-  base::Optional<SuggestionAnswer::AnswerType> optAnswerType = base::nullopt;
+  absl::optional<SuggestionAnswer::AnswerType> optAnswerType = absl::nullopt;
   if (match.answer && match.answer->type() > 0 &&
       match.answer->type() <
           SuggestionAnswer::AnswerType::ANSWER_TYPE_TOTAL_COUNT) {

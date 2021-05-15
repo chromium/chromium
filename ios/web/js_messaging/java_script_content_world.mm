@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
@@ -17,6 +16,7 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/mac/url_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -201,7 +201,7 @@ void JavaScriptContentWorld::ScriptMessageReceived(
   }
 
   NSURL* ns_url = script_message.frameInfo.request.URL;
-  base::Optional<GURL> url;
+  absl::optional<GURL> url;
   if (ns_url) {
     url = net::GURLWithNSURL(ns_url);
   }

@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "components/ntp_snippets/category_info.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/status.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 class Category;
@@ -39,7 +39,7 @@ ContentSuggestionsItem* ConvertSuggestion(
 // Returns a SectionInformation for a |category|, filled with the
 // |categoryInfo| and |expanded|.
 ContentSuggestionsSectionInformation* SectionInformationFromCategoryInfo(
-    const base::Optional<ntp_snippets::CategoryInfo>& categoryInfo,
+    const absl::optional<ntp_snippets::CategoryInfo>& categoryInfo,
     const ntp_snippets::Category& category,
     const BOOL expanded);
 

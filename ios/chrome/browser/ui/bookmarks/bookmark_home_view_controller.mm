@@ -1829,7 +1829,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                   if (!strongSelf)
                     return;
 
-                  base::Optional<std::set<const BookmarkNode*>> nodesFromIds =
+                  absl::optional<std::set<const BookmarkNode*>> nodesFromIds =
                       bookmark_utils_ios::FindNodesByIds(strongSelf.bookmarks,
                                                          nodeIds);
                   if (nodesFromIds)
@@ -1987,7 +1987,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                   BookmarkHomeViewController* strongSelf = weakSelf;
                   if (!strongSelf)
                     return;
-                  base::Optional<std::set<const bookmarks::BookmarkNode*>>
+                  absl::optional<std::set<const bookmarks::BookmarkNode*>>
                       nodesFromIds = bookmark_utils_ios::FindNodesByIds(
                           strongSelf.bookmarks, nodeIds);
                   if (nodesFromIds) {

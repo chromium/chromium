@@ -66,7 +66,7 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   // it to a separate function makes it safer not to capture state that can
   // become invalid when creating the asynchronous task).
   void LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                           base::Optional<void*> hint);
+                           absl::optional<void*> hint);
 
   __weak id<URLLoadingDelegate> delegate_;
   Browser* browser_;

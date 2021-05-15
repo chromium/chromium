@@ -32,14 +32,14 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
   // necessary before match count is available.
   bool Search(WebFrame* frame,
               const std::string& query,
-              base::OnceCallback<void(base::Optional<int>)> callback);
+              base::OnceCallback<void(absl::optional<int>)> callback);
 
   // Continues an ongoing search started with |Search| which hasn't yet
   // completed. |callback| returns the number of search results found or
   // |kFindInPagePending| if more calls to |Pump| are necessary before match
   // count is available.
   void Pump(WebFrame* frame,
-            base::OnceCallback<void(base::Optional<int>)> callback);
+            base::OnceCallback<void(absl::optional<int>)> callback);
 
   // Selects the given match at |index| in |frame|. |callback| is called with
   // the dictionary value results from the selection.
@@ -57,7 +57,7 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
   // Processes the JavaScript |result| to extract the match count and send it
   // to |callback|.
   void ProcessSearchResult(
-      base::OnceCallback<void(const base::Optional<int>)> callback,
+      base::OnceCallback<void(const absl::optional<int>)> callback,
       const base::Value* result);
 
   FindInPageJavaScriptFeature();

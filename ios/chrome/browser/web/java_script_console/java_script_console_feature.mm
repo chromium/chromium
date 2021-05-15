@@ -47,7 +47,7 @@ void JavaScriptConsoleFeature::SetDelegate(
   delegate_ = delegate;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 JavaScriptConsoleFeature::GetScriptMessageHandlerName() const {
   return kConsoleScriptHandlerName;
 }

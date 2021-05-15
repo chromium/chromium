@@ -164,7 +164,7 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
 
     observer_.Bind(std::move(observer));
 
-    std::move(callback).Run(net::OK, base::nullopt, base::nullopt,
+    std::move(callback).Run(net::OK, absl::nullopt, absl::nullopt,
                             std::move(receive_consumer_handle),
                             std::move(send_producer_handle));
   }

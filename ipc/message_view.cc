@@ -12,7 +12,7 @@ MessageView::MessageView() = default;
 
 MessageView::MessageView(
     base::span<const uint8_t> bytes,
-    base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles)
+    absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles)
     : bytes_(bytes), handles_(std::move(handles)) {}
 
 MessageView::MessageView(MessageView&&) = default;
@@ -21,7 +21,7 @@ MessageView::~MessageView() = default;
 
 MessageView& MessageView::operator=(MessageView&&) = default;
 
-base::Optional<std::vector<mojo::native::SerializedHandlePtr>>
+absl::optional<std::vector<mojo::native::SerializedHandlePtr>>
 MessageView::TakeHandles() {
   return std::move(handles_);
 }

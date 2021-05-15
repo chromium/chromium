@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_
 
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Storage object that holds a copy of an UnsafeResource while its allow list
 // decision is pending.  Once the pending decision for a resource is committed
@@ -70,9 +70,9 @@ class PendingUnsafeResourceStorage {
 
   // The resource being stored.  Contains no value after the pending decision
   // has been either allowed or disallowed.
-  base::Optional<security_interstitials::UnsafeResource> resource_;
+  absl::optional<security_interstitials::UnsafeResource> resource_;
   // The observer for |resource_|'s pending decision.
-  base::Optional<ResourcePolicyObserver> policy_observer_;
+  absl::optional<ResourcePolicyObserver> policy_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_

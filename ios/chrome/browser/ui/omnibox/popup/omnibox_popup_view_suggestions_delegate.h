@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_VIEW_SUGGESTIONS_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_VIEW_SUGGESTIONS_DELEGATE_H_
 
-#include "base/optional.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct AutocompleteMatch;
 class AutocompleteResult;
@@ -24,7 +24,7 @@ class OmniboxPopupViewSuggestionsDelegate {
   virtual void OnSelectedMatchImageChanged(
       bool has_match,
       AutocompleteMatchType::Type match_type,
-      base::Optional<SuggestionAnswer::AnswerType> answer_type,
+      absl::optional<SuggestionAnswer::AnswerType> answer_type,
       GURL favicon_url) = 0;
 
   // Called when results are updated.

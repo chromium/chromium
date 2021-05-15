@@ -649,7 +649,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(base::Optional<gfx::Image> optionalImage) {
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
         if (!optionalImage) {
           return;
         }
@@ -667,7 +667,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   [self.delegate locationBarVisitCopyLinkTapped];
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
-      base::BindOnce(^(base::Optional<GURL> optionalURL) {
+      base::BindOnce(^(absl::optional<GURL> optionalURL) {
         if (!optionalURL) {
           return;
         }
@@ -685,7 +685,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(base::Optional<std::u16string> optionalText) {
+      base::BindOnce(^(absl::optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

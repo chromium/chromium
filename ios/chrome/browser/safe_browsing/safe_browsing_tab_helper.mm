@@ -126,7 +126,7 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameServerRedirect() {
   if (previous_main_frame_query_) {
     pending_main_frame_redirect_chain_.push_back(
         std::move(*previous_main_frame_query_));
-    previous_main_frame_query_ = base::nullopt;
+    previous_main_frame_query_ = absl::nullopt;
   }
 }
 
@@ -262,7 +262,7 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleMainFrameResponsePolicy(
   if (previous_main_frame_query_) {
     // The previous query was never added to a redirect chain, so the current
     // query is not a redirect.
-    previous_main_frame_query_ = base::nullopt;
+    previous_main_frame_query_ = absl::nullopt;
     pending_main_frame_redirect_chain_.clear();
   }
 
@@ -320,7 +320,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
   // URL's callback with the overall decision.
   auto& response_callback = pending_main_frame_query_->response_callback;
   if (!response_callback.is_null()) {
-    base::Optional<web::WebStatePolicyDecider::PolicyDecision>
+    absl::optional<web::WebStatePolicyDecider::PolicyDecision>
         overall_decision = MainFrameRedirectChainDecision();
     if (overall_decision) {
       std::move(response_callback).Run(*overall_decision);
@@ -386,7 +386,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   }
 }
 
-base::Optional<web::WebStatePolicyDecider::PolicyDecision>
+absl::optional<web::WebStatePolicyDecider::PolicyDecision>
 SafeBrowsingTabHelper::PolicyDecider::MainFrameRedirectChainDecision() {
   if (pending_main_frame_query_->decision &&
       pending_main_frame_query_->decision->ShouldCancelNavigation()) {
@@ -396,11 +396,11 @@ SafeBrowsingTabHelper::PolicyDecider::MainFrameRedirectChainDecision() {
   // If some query has received a decision to cancel the navigation or if
   // every query has received a decision to allow the navigation, there is
   // enough information to make an overall decision.
-  base::Optional<web::WebStatePolicyDecider::PolicyDecision> decision =
+  absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision =
       pending_main_frame_query_->decision;
   for (auto& query : pending_main_frame_redirect_chain_) {
     if (!query.decision) {
-      decision = base::nullopt;
+      decision = absl::nullopt;
     } else if (query.decision->ShouldCancelNavigation()) {
       decision = query.decision;
       break;

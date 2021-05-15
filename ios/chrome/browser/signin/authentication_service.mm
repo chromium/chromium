@@ -322,7 +322,7 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
   // from the SSO library and that hosted_domain is set (should be the proper
   // hosted domain or kNoHostedDomainFound that are both non-empty strings).
   CHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
-  const base::Optional<AccountInfo> account_info =
+  const absl::optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
               account_id);
@@ -601,7 +601,7 @@ bool AuthenticationService::IsAuthenticated() const {
 }
 
 bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
-  base::Optional<AccountInfo> primary_account_info =
+  absl::optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));

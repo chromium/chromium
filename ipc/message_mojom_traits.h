@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "ipc/ipc.mojom-shared.h"
 #include "ipc/message_view.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -20,7 +20,7 @@ template <>
 class StructTraits<IPC::mojom::MessageDataView, IPC::MessageView> {
  public:
   static base::span<const uint8_t> bytes(IPC::MessageView& view);
-  static base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles(
+  static absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles(
       IPC::MessageView& view);
 
   static bool Read(IPC::mojom::MessageDataView data, IPC::MessageView* out);

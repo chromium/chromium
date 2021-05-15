@@ -97,7 +97,7 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
 bool IOSChromeNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get())
     return false;

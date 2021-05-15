@@ -75,7 +75,7 @@ class ApplicationBreadcrumbsLogger {
       persistent_storage_manager_;
 
   // Used to avoid logging the same orientation twice.
-  base::Optional<UIDeviceOrientation> last_orientation_;
+  absl::optional<UIDeviceOrientation> last_orientation_;
 };
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_APPLICATION_BREADCRUMBS_LOGGER_H_

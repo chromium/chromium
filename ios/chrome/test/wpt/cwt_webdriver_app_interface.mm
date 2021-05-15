@@ -213,7 +213,7 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
       "(%s).call(null, %s)", base::SysNSStringToUTF8(function).c_str(),
       scriptCompletionHandler.c_str());
 
-  __block base::Optional<base::Value> messageValue;
+  __block absl::optional<base::Value> messageValue;
   const web::WebState::ScriptCommandCallback callback =
       base::BindRepeating(^(const base::DictionaryValue& value, const GURL&,
                             /*interacted*/ bool,

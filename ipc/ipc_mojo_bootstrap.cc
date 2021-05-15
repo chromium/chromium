@@ -329,7 +329,7 @@ class ChannelAssociatedGroupController
 
   void CloseEndpointHandle(
       mojo::InterfaceId id,
-      const base::Optional<mojo::DisconnectReason>& reason) override {
+      const absl::optional<mojo::DisconnectReason>& reason) override {
     if (!mojo::IsValidInterfaceId(id))
       return;
     {
@@ -492,12 +492,12 @@ class ChannelAssociatedGroupController
       handle_created_ = true;
     }
 
-    const base::Optional<mojo::DisconnectReason>& disconnect_reason() const {
+    const absl::optional<mojo::DisconnectReason>& disconnect_reason() const {
       return disconnect_reason_;
     }
 
     void set_disconnect_reason(
-        const base::Optional<mojo::DisconnectReason>& disconnect_reason) {
+        const absl::optional<mojo::DisconnectReason>& disconnect_reason) {
       disconnect_reason_ = disconnect_reason;
     }
 
@@ -666,7 +666,7 @@ class ChannelAssociatedGroupController
     bool closed_ = false;
     bool peer_closed_ = false;
     bool handle_created_ = false;
-    base::Optional<mojo::DisconnectReason> disconnect_reason_;
+    absl::optional<mojo::DisconnectReason> disconnect_reason_;
     mojo::InterfaceEndpointClient* client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
@@ -784,7 +784,7 @@ class ChannelAssociatedGroupController
     DCHECK(endpoint->task_runner() && endpoint->client());
     if (endpoint->task_runner()->RunsTasksInCurrentSequence() && !force_async) {
       mojo::InterfaceEndpointClient* client = endpoint->client();
-      base::Optional<mojo::DisconnectReason> reason(
+      absl::optional<mojo::DisconnectReason> reason(
           endpoint->disconnect_reason());
 
       base::AutoUnlock unlocker(lock_);
@@ -993,7 +993,7 @@ class ChannelAssociatedGroupController
   // mojo::PipeControlMessageHandlerDelegate:
   bool OnPeerAssociatedEndpointClosed(
       mojo::InterfaceId id,
-      const base::Optional<mojo::DisconnectReason>& reason) override {
+      const absl::optional<mojo::DisconnectReason>& reason) override {
     DCHECK(thread_checker_.CalledOnValidThread());
 
     scoped_refptr<ChannelAssociatedGroupController> keepalive(this);

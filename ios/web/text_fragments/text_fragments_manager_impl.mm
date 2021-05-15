@@ -171,9 +171,9 @@ void TextFragmentsManagerImpl::DidReceiveJavaScriptResponse(
   }
 
   // Log success metrics.
-  base::Optional<double> optional_fragment_count =
+  absl::optional<double> optional_fragment_count =
       response.FindDoublePath("result.fragmentsCount");
-  base::Optional<double> optional_success_count =
+  absl::optional<double> optional_success_count =
       response.FindDoublePath("result.successCount");
 
   // Since the response can't be trusted, don't log metrics if the results look

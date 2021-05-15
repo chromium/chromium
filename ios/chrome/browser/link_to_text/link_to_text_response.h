@@ -41,7 +41,7 @@ class WebState;
 // Error which occurred when trying to generate a link. Empty when |payload|
 // has a value.
 @property(nonatomic, readonly)
-    base::Optional<shared_highlighting::LinkGenerationError>
+    absl::optional<shared_highlighting::LinkGenerationError>
         error;
 
 // Source ID for the associated WebState.

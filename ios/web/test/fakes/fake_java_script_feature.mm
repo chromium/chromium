@@ -78,7 +78,7 @@ void FakeJavaScriptFeature::GetErrorCount(
                          base::TimeDelta::FromSeconds(kGetErrorCountTimeout));
 }
 
-base::Optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
+absl::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
     const {
   return std::string(kFakeJavaScriptFeatureScriptHandlerName);
 }

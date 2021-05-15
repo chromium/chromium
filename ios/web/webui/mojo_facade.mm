@@ -96,7 +96,7 @@ void MojoFacade::HandleMojoBindInterface(base::Value args) {
   const std::string* interface_name = args.FindStringKey("interfaceName");
   CHECK(interface_name);
 
-  base::Optional<int> raw_handle = args.FindIntKey("requestHandle");
+  absl::optional<int> raw_handle = args.FindIntKey("requestHandle");
   CHECK(raw_handle.has_value());
 
   mojo::ScopedMessagePipeHandle handle(
@@ -106,7 +106,7 @@ void MojoFacade::HandleMojoBindInterface(base::Value args) {
 }
 
 void MojoFacade::HandleMojoHandleClose(base::Value args) {
-  base::Optional<int> handle = args.FindIntKey("handle");
+  absl::optional<int> handle = args.FindIntKey("handle");
   CHECK(handle.has_value());
 
   mojo::Handle(*handle).Close();
@@ -127,7 +127,7 @@ base::Value MojoFacade::HandleMojoCreateMessagePipe(base::Value args) {
 }
 
 base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value args) {
-  base::Optional<int> handle = args.FindIntKey("handle");
+  absl::optional<int> handle = args.FindIntKey("handle");
   CHECK(handle.has_value());
 
   const base::Value* handles_list =
@@ -200,11 +200,11 @@ base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value args) {
 }
 
 base::Value MojoFacade::HandleMojoHandleWatch(base::Value args) {
-  base::Optional<int> handle = args.FindIntKey("handle");
+  absl::optional<int> handle = args.FindIntKey("handle");
   CHECK(handle.has_value());
-  base::Optional<int> signals = args.FindIntKey("signals");
+  absl::optional<int> signals = args.FindIntKey("signals");
   CHECK(signals.has_value());
-  base::Optional<int> callback_id = args.FindIntKey("callbackId");
+  absl::optional<int> callback_id = args.FindIntKey("callbackId");
   CHECK(callback_id.has_value());
 
   mojo::SimpleWatcher::ReadyCallback callback = base::BindRepeating(
@@ -224,7 +224,7 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value args) {
 }
 
 void MojoFacade::HandleMojoWatcherCancel(base::Value args) {
-  base::Optional<int> watch_id = args.FindIntKey("watchId");
+  absl::optional<int> watch_id = args.FindIntKey("watchId");
   CHECK(watch_id.has_value());
   watchers_.erase(*watch_id);
 }

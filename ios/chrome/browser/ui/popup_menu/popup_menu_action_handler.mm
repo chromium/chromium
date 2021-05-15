@@ -186,7 +186,7 @@ using base::UserMetricsAction;
       ClipboardRecentContent* clipboardRecentContent =
           ClipboardRecentContent::GetInstance();
       clipboardRecentContent->GetRecentImageFromClipboard(
-          base::BindOnce(^(base::Optional<gfx::Image> image) {
+          base::BindOnce(^(absl::optional<gfx::Image> image) {
             // Sometimes, the image can be nil even though the clipboard said it
             // had an image. This most likely a UIKit issue, but practice
             // defensive coding.
@@ -202,7 +202,7 @@ using base::UserMetricsAction;
       ClipboardRecentContent* clipboardRecentContent =
           ClipboardRecentContent::GetInstance();
       clipboardRecentContent->GetRecentTextFromClipboard(
-          base::BindOnce(^(base::Optional<std::u16string> optional_text) {
+          base::BindOnce(^(absl::optional<std::u16string> optional_text) {
             if (!optional_text) {
               return;
             }
@@ -217,7 +217,7 @@ using base::UserMetricsAction;
       ClipboardRecentContent* clipboardRecentContent =
           ClipboardRecentContent::GetInstance();
       clipboardRecentContent->GetRecentURLFromClipboard(
-          base::BindOnce(^(base::Optional<GURL> optional_url) {
+          base::BindOnce(^(absl::optional<GURL> optional_url) {
             if (!optional_url) {
               return;
             }

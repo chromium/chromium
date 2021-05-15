@@ -21,7 +21,7 @@ class PrintJavaScriptFeature : public web::JavaScriptFeature {
   PrintJavaScriptFeature& operator=(const PrintJavaScriptFeature&) = delete;
 
   // JavaScriptFeature:
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 };

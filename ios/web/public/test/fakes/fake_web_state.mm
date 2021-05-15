@@ -395,7 +395,7 @@ std::u16string FakeWebState::GetLastExecutedJavascript() const {
   return last_executed_javascript_;
 }
 
-base::Optional<WebState::ScriptCommandCallback>
+absl::optional<WebState::ScriptCommandCallback>
 FakeWebState::GetLastAddedCallback() const {
   return last_added_callback_;
 }

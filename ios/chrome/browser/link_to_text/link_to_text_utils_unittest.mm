@@ -28,12 +28,12 @@ TEST_F(LinkToTextUtilsTest, ParseStatus) {
        ++i) {
     LinkGenerationOutcome expected_outcome =
         static_cast<LinkGenerationOutcome>(i);
-    base::Optional<double> status = static_cast<double>(i);
+    absl::optional<double> status = static_cast<double>(i);
     EXPECT_EQ(expected_outcome, ParseStatus(status).value());
   }
 
   // Invalid values.
-  EXPECT_FALSE(ParseStatus(base::nullopt).has_value());
+  EXPECT_FALSE(ParseStatus(absl::nullopt).has_value());
   EXPECT_FALSE(ParseStatus(-1).has_value());
   EXPECT_FALSE(
       ParseStatus(static_cast<int>(LinkGenerationOutcome::kMaxValue) + 1)
@@ -49,7 +49,7 @@ TEST_F(LinkToTextUtilsTest, ParseRect) {
   rect_value.SetDoubleKey("width", expected_rect.size.width);
   rect_value.SetDoubleKey("height", expected_rect.size.height);
 
-  base::Optional<CGRect> opt_rect = ParseRect(&rect_value);
+  absl::optional<CGRect> opt_rect = ParseRect(&rect_value);
   ASSERT_TRUE(opt_rect.has_value());
   EXPECT_TRUE(CGRectEqualToRect(expected_rect, opt_rect.value()));
 
@@ -88,7 +88,7 @@ TEST_F(LinkToTextUtilsTest, ParseURL) {
   EXPECT_FALSE(ParseURL(&invalid_url_str).has_value());
 
   std::string valid_url_str = "https://www.example.com/";
-  base::Optional<GURL> valid_url = ParseURL(&valid_url_str);
+  absl::optional<GURL> valid_url = ParseURL(&valid_url_str);
   EXPECT_TRUE(valid_url.has_value());
   EXPECT_EQ(GURL(valid_url_str).spec(), valid_url.value().spec());
 }

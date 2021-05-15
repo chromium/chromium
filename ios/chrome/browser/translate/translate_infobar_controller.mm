@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metrics/metrics_log.h"
 #include "components/strings/grit/components_strings.h"
@@ -34,6 +33,7 @@
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_delegate.h"
 #import "ios/chrome/browser/ui/translate/translate_notification_delegate.h"
 #import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 

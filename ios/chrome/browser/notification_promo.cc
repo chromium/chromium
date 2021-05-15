@@ -110,17 +110,17 @@ void NotificationPromo::InitFromJson(base::Value promo) {
     promo_payload_ = payload->Clone();
   }
 
-  base::Optional<int> max_views = promo.FindIntKey("max_views");
+  absl::optional<int> max_views = promo.FindIntKey("max_views");
   if (max_views.has_value())
     max_views_ = max_views.value();
   DVLOG(1) << "max_views_ " << max_views_;
 
-  base::Optional<int> max_seconds = promo.FindIntKey("max_seconds");
+  absl::optional<int> max_seconds = promo.FindIntKey("max_seconds");
   if (max_seconds.has_value())
     max_seconds_ = max_seconds.value();
   DVLOG(1) << "max_seconds_ " << max_seconds_;
 
-  base::Optional<int> promo_id = promo.FindIntKey("promo_id");
+  absl::optional<int> promo_id = promo.FindIntKey("promo_id");
   if (promo_id.has_value())
     promo_id_ = promo_id.value();
   DVLOG(1) << "promo_id_ " << promo_id_;

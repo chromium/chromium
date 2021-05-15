@@ -151,7 +151,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostNonOtr) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::nullopt,
+                              /*info=*/absl::nullopt,
                               /*navigation_id=*/0, std::move(callback));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
@@ -178,7 +178,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostNonOtr) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::nullopt,
+                              /*info=*/absl::nullopt,
                               /*navigation_id=*/0, std::move(callback));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
@@ -205,7 +205,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostOtr) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/true,
-                              /*info=*/base::nullopt,
+                              /*info=*/absl::nullopt,
                               /*navigation_id=*/0, std::move(callback));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
@@ -232,7 +232,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostOtr) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
                               /*is_off_the_record=*/true,
-                              /*info=*/base::nullopt,
+                              /*info=*/absl::nullopt,
                               /*navigation_id=*/0, std::move(callback));
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
@@ -251,8 +251,8 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   info.is_fatal_cert_error = false;
   info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
-  base::Optional<net::SSLInfo> ssl_info =
-      base::make_optional<net::SSLInfo>(info);
+  absl::optional<net::SSLInfo> ssl_info =
+      absl::make_optional<net::SSLInfo>(info);
   ChromeWebClient web_client;
   NSError* error =
       [NSError errorWithDomain:NSURLErrorDomain
@@ -332,7 +332,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*info=*/absl::optional<net::SSLInfo>(),
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);
@@ -370,7 +370,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlError) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*info=*/absl::optional<net::SSLInfo>(),
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);
@@ -411,7 +411,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*info=*/absl::optional<net::SSLInfo>(),
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);
@@ -450,7 +450,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLegacyTLSError) {
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*info=*/absl::optional<net::SSLInfo>(),
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);
@@ -484,7 +484,7 @@ TEST_F(ChromeWebClientTest,
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
                               /*is_off_the_record=*/false,
-                              /*info=*/base::Optional<net::SSLInfo>(),
+                              /*info=*/absl::optional<net::SSLInfo>(),
                               /*navigation_id=*/0, std::move(callback));
 
   EXPECT_TRUE(callback_called);

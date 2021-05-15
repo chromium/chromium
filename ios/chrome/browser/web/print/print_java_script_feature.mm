@@ -31,7 +31,7 @@ PrintJavaScriptFeature::PrintJavaScriptFeature()
 
 PrintJavaScriptFeature::~PrintJavaScriptFeature() = default;
 
-base::Optional<std::string>
+absl::optional<std::string>
 PrintJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }

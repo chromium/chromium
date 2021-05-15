@@ -78,7 +78,7 @@ class NotificationPromoTest : public PlatformTest {
 
     std::string json_with_end_date(
         base::ReplaceStringPlaceholders(json, replacements, NULL));
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(json_with_end_date);
     ASSERT_TRUE(value.has_value());
     ASSERT_TRUE(value.value().is_dict());

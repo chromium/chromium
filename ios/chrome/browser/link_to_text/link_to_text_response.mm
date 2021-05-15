@@ -99,7 +99,7 @@ using shared_highlighting::TextFragment;
                                                        latency:latency];
   }
 
-  base::Optional<LinkGenerationOutcome> outcome =
+  absl::optional<LinkGenerationOutcome> outcome =
       link_to_text::ParseStatus(value->FindDoubleKey("status"));
   if (!outcome.has_value()) {
     return [self linkToTextResponseWithUnknownErrorAndSourceID:sourceID
@@ -116,10 +116,10 @@ using shared_highlighting::TextFragment;
 
   // Attempts to parse a payload from the response.
   NSString* title = tab_util::GetTabTitle(webState);
-  base::Optional<TextFragment> fragment =
+  absl::optional<TextFragment> fragment =
       TextFragment::FromValue(value->FindKey("fragment"));
   const std::string* selectedText = value->FindStringKey("selectedText");
-  base::Optional<CGRect> sourceRect =
+  absl::optional<CGRect> sourceRect =
       link_to_text::ParseRect(value->FindKey("selectionRect"));
 
   // All values must be present to have a valid payload.
@@ -130,7 +130,7 @@ using shared_highlighting::TextFragment;
   }
 
   GURL baseURL = webState->GetLastCommittedURL();
-  base::Optional<GURL> canonicalURL =
+  absl::optional<GURL> canonicalURL =
       link_to_text::ParseURL(value->FindStringKey("canonicalUrl"));
 
   // Use the canonical URL as base when it exists, and only on HTTPS pages.

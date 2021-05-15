@@ -36,7 +36,7 @@ bool BrowserSigninPolicyHandler::CheckPolicySettings(
   if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
-  base::Optional<int> optional_int_value = value->GetIfInt();
+  absl::optional<int> optional_int_value = value->GetIfInt();
   if (optional_int_value) {
     const int int_value = optional_int_value.value();
     if (int_value == static_cast<int>(BrowserSigninMode::kForced)) {
@@ -55,7 +55,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!value)
     return;
 
-  base::Optional<int> optional_int_value = value->GetIfInt();
+  absl::optional<int> optional_int_value = value->GetIfInt();
   if (!optional_int_value)
     return;
 

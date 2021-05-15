@@ -147,15 +147,15 @@ JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
 
-base::Optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
+absl::optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
     const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<JavaScriptFeature::ScriptMessageHandler>
+absl::optional<JavaScriptFeature::ScriptMessageHandler>
 JavaScriptFeature::GetScriptMessageHandler() const {
   if (!GetScriptMessageHandlerName()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,

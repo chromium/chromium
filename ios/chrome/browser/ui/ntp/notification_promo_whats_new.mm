@@ -298,7 +298,7 @@ void NotificationPromoWhatsNew::InjectFakePromo(const std::string& promo_id,
   std::string promo_json_filled_in =
       base::ReplaceStringPlaceholders(promo_json, replacements, nullptr);
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(promo_json_filled_in);
   DCHECK(value.has_value());
   DCHECK(value.value().is_dict());

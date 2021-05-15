@@ -27,7 +27,7 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   static PasswordProtectionJavaScriptFeature* GetInstance();
 
   // JavaScriptFeature:
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

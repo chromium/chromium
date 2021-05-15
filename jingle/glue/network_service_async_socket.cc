@@ -189,8 +189,8 @@ void NetworkServiceAsyncSocket::ProcessConnectDone(
     mojo::PendingReceiver<network::mojom::SocketObserver>
         socket_observer_receiver,
     int status,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_NE(status, net::ERR_IO_PENDING);

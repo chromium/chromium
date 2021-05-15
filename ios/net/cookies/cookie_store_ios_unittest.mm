@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
@@ -26,6 +25,7 @@
 #include "net/cookies/cookie_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -247,7 +247,7 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   // for same key if cookie value changed.  Document CookieStoreIOS compat.
   std::unique_ptr<CanonicalCookie> non_equiv_cookie =
       CanonicalCookie::Create(kTestCookieURLFooBar, "abc=wfg", not_now,
-                              base::nullopt /* server_time */);
+                              absl::nullopt /* server_time */);
   base::RunLoop run_loop;
   store_->DeleteCanonicalCookieAsync(
       *non_equiv_cookie, base::BindLambdaForTesting([&](uint32_t deleted) {
@@ -271,7 +271,7 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   // Now delete equivalent one with non-matching ctime.
   std::unique_ptr<CanonicalCookie> equiv_cookie =
       CanonicalCookie::Create(kTestCookieURLFooBar, "abc=def", not_now,
-                              base::nullopt /* server_time */);
+                              absl::nullopt /* server_time */);
 
   base::RunLoop run_loop3;
   store_->DeleteCanonicalCookieAsync(
@@ -337,7 +337,7 @@ TEST_F(CookieStoreIOSTest, GetAllCookies) {
   // Add a cookie.
   auto canonical_cookie = net::CanonicalCookie::Create(
       kTestCookieURLFooBar, "a=b", base::Time::Now(),
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie),
                                         kTestCookieURLFooBar,
                                         net::CookieOptions::MakeAllInclusive(),

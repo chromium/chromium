@@ -30,12 +30,12 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/util/type_safety/id_type.h"
 #include "build/build_config.h"
 #include "ipc/ipc_param_traits.h"
 #include "ipc/ipc_sync_message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -1030,8 +1030,8 @@ struct ParamTraits<std::unique_ptr<P>> {
 };
 
 template <class P>
-struct ParamTraits<base::Optional<P>> {
-  typedef base::Optional<P> param_type;
+struct ParamTraits<absl::optional<P>> {
+  typedef absl::optional<P> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     const bool is_set = static_cast<bool>(p);
     WriteParam(m, is_set);
