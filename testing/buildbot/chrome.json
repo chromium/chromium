@@ -2754,7 +2754,39 @@
       "symupload",
       "strip_chrome_binary"
     ],
-    "gtest_tests": [],
+    "gtest_tests": [
+      {
+        "args": [
+          "--board=eve",
+          "--flash"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "lacros_smoke_tast_tests_eve",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_type": "eve",
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "lacros_smoke_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        }
+      }
+    ],
     "isolated_scripts": [
       {
         "isolate_name": "chrome_sizes",

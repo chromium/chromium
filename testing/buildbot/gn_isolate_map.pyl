@@ -1139,6 +1139,13 @@
     "label": "//chrome/test:lacros_chrome_unittests",
     "type": "console_test_launcher",
   },
+  "lacros_smoke_tast_tests": {
+    "label": "//chromeos/lacros:lacros_smoke_tast_tests",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "lacros_version_metadata": {
     "label": "//build/lacros:lacros_version_metadata",
     "type": "additional_compile_target",

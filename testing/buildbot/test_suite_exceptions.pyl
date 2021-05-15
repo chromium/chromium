@@ -1905,18 +1905,6 @@
       },
     },
   },
-  # TODO(crbug.com/1198252): Remove once Lacros Tast tests flakiness is fixed.
-  'lacros_smoke_tast_tests_amd64-generic': {
-    'remove_from': [
-      'lacros-amd64-generic-rel',
-    ],
-  },
-  # TODO(crbug.com/1198252): Remove once Lacros Tast tests flakiness is fixed.
-  'lacros_smoke_tast_tests_eve': {
-    'remove_from': [
-      'lacros-amd64-generic-chrome',
-    ],
-  },
   'maps_pixel_passthrough_test': {
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
