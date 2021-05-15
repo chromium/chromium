@@ -15,13 +15,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-cart_db::ChromeCartContentProto BuildProto(const char* domain,
-                                           const char* merchant_url,
-                                           const double timestamp) {
+cart_db::ChromeCartContentProto BuildProto(
+    const char* domain,
+    const char* merchant_url,
+    const double timestamp,
+    const std::vector<std::string>& raw_merchant_offers) {
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(merchant_url);
   proto.set_timestamp(timestamp);
+  for (const std::string& offer : raw_merchant_offers) {
+    proto.add_product_infos()->set_product_id(offer);
+  }
   return proto;
 }
 using ShoppingCarts =
@@ -32,6 +37,8 @@ const char kMockMerchantCartURLA[] = "https://www.foo.com/cart";
 const char kMockMerchantAHighestDiscountString[] = "Up to $10 off";
 const int kMockMerchantALastTimestamp = 1;
 const int kThirtyMinutesInSeconds = 1800;
+const char kMockMerchantARawOfferIdOne[] = "offerId1";
+const char kMockMerchantARawOfferIdTwo[] = "offerId2";
 
 const char kEndpointResponse[] =
     "{ "
@@ -48,7 +55,7 @@ const char kEndpointResponse[] =
     "            \"percentOff\": 10 "
     "            }, "
     "          \"merchantRuleId\": \"1\", "
-    "          \"rawMerchantOfferId\": \"offerID\"  "
+    "          \"rawMerchantOfferId\": \"offerId1\"  "
     "        }, "
     "        { "
     "          \"ruleId\": \"1\", "
@@ -60,7 +67,7 @@ const char kEndpointResponse[] =
     "            } "
     "          }, "
     "          \"merchantRuleId\": \"1\", "
-    "          \"rawMerchantOfferId\": \"offerID\"  "
+    "          \"rawMerchantOfferId\": \"offerId2\"  "
     "        } "
     "      ] "
     "    } "
@@ -102,8 +109,10 @@ class CartDiscountFetcherTest {
 
 TEST(CartDiscountFetcherTest, TestGeneratePostData) {
   ShoppingCarts shoppingcartA = {
-      {kMockMerchantA, BuildProto(kMockMerchantA, kMockMerchantCartURLA,
-                                  kMockMerchantALastTimestamp)}};
+      {kMockMerchantA,
+       BuildProto(kMockMerchantA, kMockMerchantCartURLA,
+                  kMockMerchantALastTimestamp,
+                  {kMockMerchantARawOfferIdOne, kMockMerchantARawOfferIdTwo})}};
 
   // Expected json string:
   // "{"
@@ -114,8 +123,8 @@ TEST(CartDiscountFetcherTest, TestGeneratePostData) {
   // "        \"cartUrl\": \"www.foo.com/cart\","
   // "      },"
   // "      \"rawMerchantOffers\": ["
-  // "        \"offer1\","
-  // "        \"offer2\}"
+  // "        \"offerId1\","
+  // "        \"offerId2\}"
   // "      ]"
   // "    }"
   // "  ]"
@@ -123,7 +132,7 @@ TEST(CartDiscountFetcherTest, TestGeneratePostData) {
   std::string expected =
       "{\"carts\":[{\"cartAbandonedTimeMinutes\":30,\"merchantIdentifier\":{"
       "\"cartUrl\":\"https://www.foo.com/"
-      "cart\"},\"rawMerchantOffers\":[\"offer1\",\"offer2\"]}]}";
+      "cart\"},\"rawMerchantOffers\":[\"offerId1\",\"offerId2\"]}]}";
 
   int abandondTimeInSeconds =
       kMockMerchantALastTimestamp + kThirtyMinutesInSeconds;  // 30 Minutes
