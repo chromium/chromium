@@ -75,7 +75,7 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLog) {
   EXPECT_FATAL_FAILURE(
       static_loop.Run(),
       "Run() timed out. Timeout set at "
-      "TestBody@../../base/test/scoped_run_loop_timeout_unittest.cc:70.\n"
+      "TestBody@base/test/scoped_run_loop_timeout_unittest.cc:70.\n"
       "I like kittens!");
 }
 

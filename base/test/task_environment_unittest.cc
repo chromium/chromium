@@ -885,7 +885,7 @@ TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
         static_on_timeout_cb.Run(FROM_HERE),
         "RunLoop::Run() timed out. Timeout set at "
         // We don't test the line number but it would be present.
-        "TaskEnvironment@../../base/test/task_environment.cc:");
+        "TaskEnvironment@base/test/task_environment.cc:");
   }
 
   EXPECT_EQ(ScopedRunLoopTimeout::GetTimeoutForCurrentThread(),
