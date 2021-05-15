@@ -61,31 +61,31 @@ std::pair<std::string, Item> TokenParam(std::string key, std::string value) {
 const struct ItemTestCase {
   const char* name;
   const char* raw;
-  const base::Optional<Item> expected;  // nullopt if parse error is expected.
+  const absl::optional<Item> expected;  // nullopt if parse error is expected.
   const char* canonical;  // nullptr if parse error is expected, or if canonical
                           // format is identical to raw.
 } item_test_cases[] = {
     // Token
-    {"bad token - item", "abc$@%!", base::nullopt},
+    {"bad token - item", "abc$@%!", absl::nullopt},
     {"leading whitespace", " foo", Token("foo"), "foo"},
     {"trailing whitespace", "foo ", Token("foo"), "foo"},
     {"leading asterisk", "*foo", Token("*foo")},
     // Number
     {"long integer", "999999999999999", Integer(999999999999999L)},
     {"long negative integer", "-999999999999999", Integer(-999999999999999L)},
-    {"too long integer", "1000000000000000", base::nullopt},
-    {"negative too long integer", "-1000000000000000", base::nullopt},
+    {"too long integer", "1000000000000000", absl::nullopt},
+    {"negative too long integer", "-1000000000000000", absl::nullopt},
     {"integral decimal", "1.0", Item(1.0)},
     // String
     {"basic string", "\"foo\"", Item("foo")},
-    {"non-ascii string", "\"f\xC3\xBC\xC3\xBC\"", base::nullopt},
+    {"non-ascii string", "\"f\xC3\xBC\xC3\xBC\"", absl::nullopt},
     // Additional tests
     {"valid quoting containing \\n", "\"\\\\n\"", Item("\\n")},
     {"valid quoting containing \\t", "\"\\\\t\"", Item("\\t")},
     {"valid quoting containing \\x", "\"\\\\x61\"", Item("\\x61")},
-    {"c-style hex escape in string", "\"\\x61\"", base::nullopt},
+    {"c-style hex escape in string", "\"\\x61\"", absl::nullopt},
     {"valid quoting containing \\u", "\"\\\\u0061\"", Item("\\u0061")},
-    {"c-style unicode escape in string", "\"\\u0061\"", base::nullopt},
+    {"c-style unicode escape in string", "\"\\u0061\"", absl::nullopt},
 };
 
 const ItemTestCase sh09_item_test_cases[] = {
@@ -93,29 +93,29 @@ const ItemTestCase sh09_item_test_cases[] = {
     {"large integer", "9223372036854775807", Integer(9223372036854775807L)},
     {"large negative integer", "-9223372036854775807",
      Integer(-9223372036854775807L)},
-    {"too large integer", "9223372036854775808", base::nullopt},
-    {"too large negative integer", "-9223372036854775808", base::nullopt},
+    {"too large integer", "9223372036854775808", absl::nullopt},
+    {"too large negative integer", "-9223372036854775808", absl::nullopt},
     // Byte Sequence
     {"basic binary", "*aGVsbG8=*", Item("hello", Item::kByteSequenceType)},
     {"empty binary", "**", Item("", Item::kByteSequenceType)},
     {"bad paddding", "*aGVsbG8*", Item("hello", Item::kByteSequenceType),
      "*aGVsbG8=*"},
-    {"bad end delimiter", "*aGVsbG8=", base::nullopt},
-    {"extra whitespace", "*aGVsb G8=*", base::nullopt},
-    {"extra chars", "*aGVsbG!8=*", base::nullopt},
-    {"suffix chars", "*aGVsbG8=!*", base::nullopt},
+    {"bad end delimiter", "*aGVsbG8=", absl::nullopt},
+    {"extra whitespace", "*aGVsb G8=*", absl::nullopt},
+    {"extra chars", "*aGVsbG!8=*", absl::nullopt},
+    {"suffix chars", "*aGVsbG8=!*", absl::nullopt},
     {"non-zero pad bits", "*iZ==*", Item("\x89", Item::kByteSequenceType),
      "*iQ==*"},
     {"non-ASCII binary", "*/+Ah*", Item("\xFF\xE0!", Item::kByteSequenceType)},
-    {"base64url binary", "*_-Ah*", base::nullopt},
-    {"token with leading asterisk", "*foo", base::nullopt},
+    {"base64url binary", "*_-Ah*", absl::nullopt},
+    {"token with leading asterisk", "*foo", absl::nullopt},
 };
 
 // For Structured Headers Draft 15
 const struct ParameterizedItemTestCase {
   const char* name;
   const char* raw;
-  const base::Optional<ParameterizedItem>
+  const absl::optional<ParameterizedItem>
       expected;           // nullopt if parse error is expected.
   const char* canonical;  // nullptr if parse error is expected, or if canonical
                           // format is identical to raw.
@@ -143,11 +143,11 @@ const struct ParameterizedItemTestCase {
      {{Token("text/html"), {Param("a", 1L)}}},
      "text/html;a=1"},
     {"whitespace before = parameterised item", "text/html, text/plain;q =0.5",
-     base::nullopt},
+     absl::nullopt},
     {"whitespace after = parameterised item", "text/html, text/plain;q= 0.5",
-     base::nullopt},
+     absl::nullopt},
     {"whitespace before ; parameterised item", "text/html, text/plain ;q=0.5",
-     base::nullopt},
+     absl::nullopt},
     {"whitespace after ; parameterised item",
      "text/plain; q=0.5",
      {{Token("text/plain"), {DoubleParam("q", 0.5)}}},
@@ -163,7 +163,7 @@ const struct ParameterizedItemTestCase {
 const struct ListTestCase {
   const char* name;
   const char* raw;
-  const base::Optional<List> expected;  // nullopt if parse error is expected.
+  const absl::optional<List> expected;  // nullopt if parse error is expected.
   const char* canonical;  // nullptr if parse error is expected, or if canonical
                           // format is identical to raw.
 } list_test_cases[] = {
@@ -206,7 +206,7 @@ const struct ListTestCase {
      {{{{{Integer(1L), {}}, {Integer(2L), {}}}, {BooleanParam("a", true)}},
        {{{Integer(42L), {}}, {Integer(43L), {}}}, {BooleanParam("b", true)}}}}},
     {"extra whitespace before semicolon in parameters on inner list member",
-     "(a;b ;c b)", base::nullopt},
+     "(a;b ;c b)", absl::nullopt},
     {"extra whitespace between parameters on inner list member",
      "(a;b; c b)",
      {{{{{Token("a"), {BooleanParam("b", true), BooleanParam("c", true)}},
@@ -214,7 +214,7 @@ const struct ListTestCase {
         {}}}},
      "(a;b;c b)"},
     {"extra whitespace before semicolon in parameters on inner list",
-     "(a b);c ;d, (e)", base::nullopt},
+     "(a b);c ;d, (e)", absl::nullopt},
     {"extra whitespace between parameters on inner list",
      "(a b);c; d, (e)",
      {{{{{Token("a"), {}}, {Token("b"), {}}},
@@ -227,7 +227,7 @@ const struct ListTestCase {
 const struct DictionaryTestCase {
   const char* name;
   const char* raw;
-  const base::Optional<Dictionary>
+  const absl::optional<Dictionary>
       expected;           // nullopt if parse error is expected.
   const char* canonical;  // nullptr if parse error is expected, or if canonical
                           // format is identical to raw.
@@ -236,7 +236,7 @@ const struct DictionaryTestCase {
      "en=\"Applepie\", da=:aGVsbG8=:",
      {Dictionary{{{"en", {Item("Applepie"), {}}},
                   {"da", {Item("hello", Item::kByteSequenceType), {}}}}}}},
-    {"tab separated dictionary", "a=1\t,\tb=2", base::nullopt},
+    {"tab separated dictionary", "a=1\t,\tb=2", absl::nullopt},
     {"missing value with params dictionary",
      "a=1, b;foo=9, c=3",
      {Dictionary{{{"a", {Integer(1L), {}}},
@@ -265,7 +265,7 @@ const struct DictionaryTestCase {
 TEST(StructuredHeaderTest, ParseBareItem) {
   for (const auto& c : item_test_cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<Item> result = ParseBareItem(c.raw);
+    absl::optional<Item> result = ParseBareItem(c.raw);
     EXPECT_EQ(result, c.expected);
   }
 }
@@ -274,7 +274,7 @@ TEST(StructuredHeaderTest, ParseBareItem) {
 TEST(StructuredHeaderTest, ParseItem) {
   for (const auto& c : parameterized_item_test_cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<ParameterizedItem> result = ParseItem(c.raw);
+    absl::optional<ParameterizedItem> result = ParseItem(c.raw);
     EXPECT_EQ(result, c.expected);
   }
 }
@@ -286,7 +286,7 @@ TEST(StructuredHeaderTest, ParseItem) {
 TEST(StructuredHeaderTest, ParseSH09Item) {
   for (const auto& c : sh09_item_test_cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<ListOfLists> result = ParseListOfLists(c.raw);
+    absl::optional<ListOfLists> result = ParseListOfLists(c.raw);
     if (c.expected.has_value()) {
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(result->size(), 1UL);
@@ -304,7 +304,7 @@ TEST(StructuredHeaderTest, ParseSH09Item) {
 TEST(StructuredHeaderTest, SH09HighPrecisionFloats) {
   // These values are exactly representable in binary floating point, so no
   // accuracy issues are expected in this test.
-  base::Optional<ListOfLists> result =
+  absl::optional<ListOfLists> result =
       ParseListOfLists("1.03125;-1.03125;12345678901234.5;-12345678901234.5");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result,
@@ -349,7 +349,7 @@ TEST(StructuredHeaderTest, ParseListOfLists) {
   };
   for (const auto& c : cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<ListOfLists> result = ParseListOfLists(c.raw);
+    absl::optional<ListOfLists> result = ParseListOfLists(c.raw);
     if (!c.expected.empty()) {
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(*result, c.expected);
@@ -401,7 +401,7 @@ TEST(StructuredHeaderTest, ParseParameterisedList) {
   };
   for (const auto& c : cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<ParameterisedList> result = ParseParameterisedList(c.raw);
+    absl::optional<ParameterisedList> result = ParseParameterisedList(c.raw);
     if (c.expected.empty()) {
       EXPECT_FALSE(result.has_value());
       continue;
@@ -419,7 +419,7 @@ TEST(StructuredHeaderTest, ParseParameterisedList) {
 TEST(StructuredHeaderTest, ParseList) {
   for (const auto& c : list_test_cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<List> result = ParseList(c.raw);
+    absl::optional<List> result = ParseList(c.raw);
     EXPECT_EQ(result, c.expected);
   }
 }
@@ -428,7 +428,7 @@ TEST(StructuredHeaderTest, ParseList) {
 TEST(StructuredHeaderTest, ParseDictionary) {
   for (const auto& c : dictionary_test_cases) {
     SCOPED_TRACE(c.name);
-    base::Optional<Dictionary> result = ParseDictionary(c.raw);
+    absl::optional<Dictionary> result = ParseDictionary(c.raw);
     EXPECT_EQ(result, c.expected);
   }
 }
@@ -439,7 +439,7 @@ TEST(StructuredHeaderTest, SerializeItem) {
   for (const auto& c : item_test_cases) {
     SCOPED_TRACE(c.name);
     if (c.expected) {
-      base::Optional<std::string> result = SerializeItem(*c.expected);
+      absl::optional<std::string> result = SerializeItem(*c.expected);
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(result.value(), std::string(c.canonical ? c.canonical : c.raw));
     }
@@ -450,7 +450,7 @@ TEST(StructuredHeaderTest, SerializeParameterizedItem) {
   for (const auto& c : parameterized_item_test_cases) {
     SCOPED_TRACE(c.name);
     if (c.expected) {
-      base::Optional<std::string> result = SerializeItem(*c.expected);
+      absl::optional<std::string> result = SerializeItem(*c.expected);
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(result.value(), std::string(c.canonical ? c.canonical : c.raw));
     }
@@ -487,7 +487,7 @@ TEST(StructuredHeaderTest, UnserializableTokens) {
   };
   for (const auto& bad_token : bad_tokens) {
     SCOPED_TRACE(bad_token.name);
-    base::Optional<std::string> serialization =
+    absl::optional<std::string> serialization =
         SerializeItem(Token(bad_token.value));
     EXPECT_FALSE(serialization.has_value()) << *serialization;
   }
@@ -519,7 +519,7 @@ TEST(StructuredHeaderTest, UnserializableKeys) {
   };
   for (const auto& bad_key : bad_keys) {
     SCOPED_TRACE(bad_key.name);
-    base::Optional<std::string> serialization =
+    absl::optional<std::string> serialization =
         SerializeItem(ParameterizedItem("a", {{bad_key.value, "a"}}));
     EXPECT_FALSE(serialization.has_value()) << *serialization;
   }
@@ -540,7 +540,7 @@ TEST(StructuredHeaderTest, UnserializableStrings) {
   };
   for (const auto& bad_string : bad_strings) {
     SCOPED_TRACE(bad_string.name);
-    base::Optional<std::string> serialization =
+    absl::optional<std::string> serialization =
         SerializeItem(Item(bad_string.value));
     EXPECT_FALSE(serialization.has_value()) << *serialization;
   }
@@ -599,7 +599,7 @@ TEST(StructuredHeaderTest, SerializeUnparseableDecimals) {
   };
   for (const auto& test_case : float_test_cases) {
     SCOPED_TRACE(test_case.name);
-    base::Optional<std::string> serialization =
+    absl::optional<std::string> serialization =
         SerializeItem(Item(test_case.value));
     EXPECT_TRUE(serialization.has_value());
     EXPECT_EQ(*serialization, test_case.canonical);
@@ -610,7 +610,7 @@ TEST(StructuredHeaderTest, SerializeList) {
   for (const auto& c : list_test_cases) {
     SCOPED_TRACE(c.name);
     if (c.expected) {
-      base::Optional<std::string> result = SerializeList(*c.expected);
+      absl::optional<std::string> result = SerializeList(*c.expected);
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(result.value(), std::string(c.canonical ? c.canonical : c.raw));
     }
@@ -637,7 +637,7 @@ TEST(StructuredHeaderTest, UnserializableLists) {
   };
   for (const auto& bad_list : bad_lists) {
     SCOPED_TRACE(bad_list.name);
-    base::Optional<std::string> serialization = SerializeList(bad_list.value);
+    absl::optional<std::string> serialization = SerializeList(bad_list.value);
     EXPECT_FALSE(serialization.has_value()) << *serialization;
   }
 }
@@ -646,7 +646,7 @@ TEST(StructuredHeaderTest, SerializeDictionary) {
   for (const auto& c : dictionary_test_cases) {
     SCOPED_TRACE(c.name);
     if (c.expected) {
-      base::Optional<std::string> result = SerializeDictionary(*c.expected);
+      absl::optional<std::string> result = SerializeDictionary(*c.expected);
       EXPECT_TRUE(result.has_value());
       EXPECT_EQ(result.value(), std::string(c.canonical ? c.canonical : c.raw));
     }
@@ -735,7 +735,7 @@ TEST(StructuredHeaderTest, UnserializableDictionary) {
   };
   for (const auto& bad_dictionary : bad_dictionaries) {
     SCOPED_TRACE(bad_dictionary.name);
-    base::Optional<std::string> serialization =
+    absl::optional<std::string> serialization =
         SerializeDictionary(bad_dictionary.value);
     EXPECT_FALSE(serialization.has_value()) << *serialization;
   }

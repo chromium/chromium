@@ -8,7 +8,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -21,6 +20,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
@@ -156,7 +156,7 @@ TEST(DnsConfigServicePosixTest, CreateAndDestroy) {
 TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   struct __res_state res;
   InitializeResState(&res);
-  base::Optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
+  absl::optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
   CloseResState(&res);
   ASSERT_TRUE(config.has_value());
   EXPECT_TRUE(config->IsValid());

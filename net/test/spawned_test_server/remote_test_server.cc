@@ -75,7 +75,7 @@ std::string ReadSpawnerUrlFromConfig() {
   if (!ReadFileToString(config_path, &config_json))
     LOG(FATAL) << "Failed to read " << config_path.value();
 
-  base::Optional<base::Value> config = base::JSONReader::Read(config_json);
+  absl::optional<base::Value> config = base::JSONReader::Read(config_json);
   if (!config)
     LOG(FATAL) << "Failed to parse " << config_path.value();
 

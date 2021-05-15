@@ -1754,7 +1754,7 @@ class ReportingHeaderParserStructuredHeaderTest
   void ParseHeader(const NetworkIsolationKey& network_isolation_key,
                    const url::Origin& origin,
                    const std::string& header_string) {
-    base::Optional<Dictionary> header_dict =
+    absl::optional<Dictionary> header_dict =
         structured_headers::ParseDictionary(header_string);
 
     if (header_dict) {

@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -47,6 +46,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -513,7 +513,7 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
       ClientSocketPool::GroupId(
           key.host_port_pair(), ClientSocketPool::SocketType::kSsl,
           key.privacy_mode(), NetworkIsolationKey(), SecureDnsPolicy::kAllow),
-      socket_params, base::nullopt /* proxy_annotation_tag */, MEDIUM,
+      socket_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),
       http_session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,

@@ -264,7 +264,7 @@ void CheckHPKPReport(
     const scoped_refptr<X509Certificate>& served_certificate_chain,
     const scoped_refptr<X509Certificate>& validated_certificate_chain,
     const HashValueVector& known_pins) {
-  base::Optional<base::Value> value = base::JSONReader::Read(report);
+  absl::optional<base::Value> value = base::JSONReader::Read(report);
   ASSERT_TRUE(value.has_value());
   const base::Value& report_dict = value.value();
   ASSERT_TRUE(report_dict.is_dict());
@@ -273,11 +273,11 @@ void CheckHPKPReport(
   ASSERT_TRUE(report_hostname);
   EXPECT_EQ(host_port_pair.host(), *report_hostname);
 
-  base::Optional<int> report_port = report_dict.FindIntKey("port");
+  absl::optional<int> report_port = report_dict.FindIntKey("port");
   ASSERT_TRUE(report_port.has_value());
   EXPECT_EQ(host_port_pair.port(), report_port.value());
 
-  base::Optional<bool> report_include_subdomains =
+  absl::optional<bool> report_include_subdomains =
       report_dict.FindBoolKey("include-subdomains");
   ASSERT_TRUE(report_include_subdomains.has_value());
   EXPECT_EQ(include_subdomains, report_include_subdomains.value());

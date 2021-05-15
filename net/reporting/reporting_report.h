@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {

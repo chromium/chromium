@@ -64,7 +64,7 @@ void WebSocketTransportClientSocketPool::UnlockEndpoint(
 int WebSocketTransportClientSocketPool::RequestSocket(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
     RespectLimits respect_limits,
@@ -130,7 +130,7 @@ int WebSocketTransportClientSocketPool::RequestSocket(
 void WebSocketTransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
     const NetLogWithSource& net_log) {
   NOTIMPLEMENTED();
@@ -498,7 +498,7 @@ WebSocketTransportClientSocketPool::ConnectJobDelegate::connect_job_net_log() {
 WebSocketTransportClientSocketPool::StalledRequest::StalledRequest(
     const GroupId& group_id,
     const scoped_refptr<SocketParams>& params,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,

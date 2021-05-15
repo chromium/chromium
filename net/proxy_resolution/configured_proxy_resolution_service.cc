@@ -322,7 +322,7 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
 
 // Returns NetLog parameters describing a proxy configuration change.
 base::Value NetLogProxyConfigChangedParams(
-    const base::Optional<ProxyConfigWithAnnotation>* old_config,
+    const absl::optional<ProxyConfigWithAnnotation>* old_config,
     const ProxyConfigWithAnnotation* new_config) {
   base::Value dict(base::Value::Type::DICTIONARY);
   // The "old_config" is optional -- the first notification will not have
@@ -1341,9 +1341,9 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   init_proxy_resolver_.reset();
   SuspendAllPendingRequests();
   resolver_.reset();
-  config_ = base::nullopt;
+  config_ = absl::nullopt;
   if (reset_fetched_config)
-    fetched_config_ = base::nullopt;
+    fetched_config_ = absl::nullopt;
   current_state_ = STATE_NONE;
 
   return previous_state;

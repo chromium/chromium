@@ -8564,7 +8564,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
       EXPECT_EQ(407, response->headers->response_code());
       EXPECT_EQ(10, response->headers->GetContentLength());
       EXPECT_EQ(HttpVersion(1, 1), response->headers->GetHttpVersion());
-      base::Optional<AuthChallengeInfo> auth_challenge =
+      absl::optional<AuthChallengeInfo> auth_challenge =
           response->auth_challenge;
       ASSERT_TRUE(auth_challenge.has_value());
       EXPECT_TRUE(auth_challenge->is_proxy);

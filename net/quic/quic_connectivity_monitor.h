@@ -108,7 +108,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   //   related packet write error,
   // - ends immediately by the detection of path recovery or a network change.
   // Use clamped math to cap number of sessions at INT_MAX.
-  base::Optional<base::ClampedNumeric<int>>
+  absl::optional<base::ClampedNumeric<int>>
       num_sessions_active_during_current_speculative_connectivity_failure_;
   // Total number of sessions that has been degraded before any recovery,
   // including no longer active sessions.

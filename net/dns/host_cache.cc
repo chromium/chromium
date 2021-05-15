@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -23,6 +22,7 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -56,7 +56,7 @@ const char kHostnameResultsKey[] = "hostname_results";
 const char kHostPortsKey[] = "host_ports";
 
 bool AddressListFromListValue(const base::Value* value,
-                              base::Optional<AddressList>* out_list) {
+                              absl::optional<AddressList>* out_list) {
   if (!value) {
     out_list->reset();
     return true;
@@ -76,7 +76,7 @@ bool AddressListFromListValue(const base::Value* value,
 }
 
 template <typename T>
-void MergeLists(base::Optional<T>* target, const base::Optional<T>& source) {
+void MergeLists(absl::optional<T>* target, const absl::optional<T>& source) {
   if (target->has_value() && source) {
     target->value().insert(target->value().end(), source.value().begin(),
                            source.value().end());
@@ -129,7 +129,7 @@ HostCache::Key::Key(Key&& key) = default;
 
 HostCache::Entry::Entry(int error,
                         Source source,
-                        base::Optional<base::TimeDelta> ttl)
+                        absl::optional<base::TimeDelta> ttl)
     : error_(error),
       source_(source),
       ttl_(ttl.value_or(base::TimeDelta::FromSeconds(-1))) {
@@ -144,11 +144,11 @@ HostCache::Entry::Entry(Entry&& entry) = default;
 
 HostCache::Entry::~Entry() = default;
 
-base::Optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
+absl::optional<base::TimeDelta> HostCache::Entry::GetOptionalTtl() const {
   if (has_ttl())
     return ttl();
   else
-    return base::nullopt;
+    return absl::nullopt;
 }
 
 // static
@@ -246,10 +246,10 @@ HostCache::Entry::Entry(const HostCache::Entry& entry,
 
 HostCache::Entry::Entry(
     int error,
-    const base::Optional<AddressList>& addresses,
-    base::Optional<std::vector<std::string>>&& text_records,
-    base::Optional<std::vector<HostPortPair>>&& hostnames,
-    base::Optional<std::vector<bool>>&& experimental_results,
+    const absl::optional<AddressList>& addresses,
+    absl::optional<std::vector<std::string>>&& text_records,
+    absl::optional<std::vector<HostPortPair>>&& hostnames,
+    absl::optional<std::vector<bool>>&& experimental_results,
     Source source,
     base::TimeTicks expires,
     int network_changes)
@@ -545,7 +545,7 @@ void HostCache::Set(const Key& key,
   if (it != entries_.end()) {
     preserve_pin = HasActivePin(it->second);
 
-    base::Optional<AddressListDeltaType> addresses_delta;
+    absl::optional<AddressListDeltaType> addresses_delta;
     if (entry.addresses() || it->second.addresses()) {
       if (entry.addresses() && it->second.addresses()) {
         addresses_delta = FindAddressListDeltaType(
@@ -558,7 +558,7 @@ void HostCache::Set(const Key& key,
     // For non-address results, delta is only considered for whole-list
     // equality. The meaning of partial list equality varies too much depending
     // on the context of a DNS record.
-    base::Optional<AddressListDeltaType> nonaddress_delta;
+    absl::optional<AddressListDeltaType> nonaddress_delta;
     if (entry.text_records() || it->second.text_records() ||
         entry.hostnames() || it->second.hostnames()) {
       if (entry.text_records() == it->second.text_records() &&
@@ -730,7 +730,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     const std::string* hostname_ptr = entry_dict.FindStringKey(kHostnameKey);
     const std::string* expiration_ptr =
         entry_dict.FindStringKey(kExpirationKey);
-    base::Optional<int> maybe_flags = entry_dict.FindIntKey(kFlagsKey);
+    absl::optional<int> maybe_flags = entry_dict.FindIntKey(kFlagsKey);
     if (hostname_ptr == nullptr || expiration_ptr == nullptr ||
         !maybe_flags.has_value()) {
       return false;
@@ -744,13 +744,13 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     // TODO(crbug.com/846423): Remove kAddressFamilyKey support after a enough
     // time has passed to minimize loss-of-persistence impact from backwards
     // incompatibility.
-    base::Optional<int> maybe_dns_query_type =
+    absl::optional<int> maybe_dns_query_type =
         entry_dict.FindIntKey(kDnsQueryTypeKey);
     DnsQueryType dns_query_type;
     if (maybe_dns_query_type.has_value()) {
       dns_query_type = static_cast<DnsQueryType>(maybe_dns_query_type.value());
     } else {
-      base::Optional<int> maybe_address_family =
+      absl::optional<int> maybe_address_family =
           entry_dict.FindIntKey(kAddressFamilyKey);
       if (!maybe_address_family.has_value()) {
         return false;
@@ -781,7 +781,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     const base::Value* text_records_value = nullptr;
     const base::Value* hostname_records_value = nullptr;
     const base::Value* host_ports_value = nullptr;
-    base::Optional<int> maybe_error = entry_dict.FindIntKey(kNetErrorKey);
+    absl::optional<int> maybe_error = entry_dict.FindIntKey(kNetErrorKey);
     if (maybe_error.has_value()) {
       error = maybe_error.value();
     } else {
@@ -804,12 +804,12 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
         tick_clock_->NowTicks() -
         (base::Time::Now() - base::Time::FromInternalValue(time_internal));
 
-    base::Optional<AddressList> address_list;
+    absl::optional<AddressList> address_list;
     if (!AddressListFromListValue(addresses_value, &address_list)) {
       return false;
     }
 
-    base::Optional<std::vector<std::string>> text_records;
+    absl::optional<std::vector<std::string>> text_records;
     if (text_records_value) {
       text_records.emplace();
       for (const base::Value& value : text_records_value->GetList()) {
@@ -819,7 +819,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       }
     }
 
-    base::Optional<std::vector<HostPortPair>> hostname_records;
+    absl::optional<std::vector<HostPortPair>> hostname_records;
     if (hostname_records_value) {
       DCHECK(host_ports_value);
       if (hostname_records_value->GetList().size() !=
@@ -843,7 +843,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     }
 
     // We do not intend to serialize experimental results with the host cache.
-    base::Optional<std::vector<bool>> experimental_results;
+    absl::optional<std::vector<bool>> experimental_results;
 
     // Assume an empty address list if we have an address type and no results.
     if (IsAddressType(dns_query_type) && !address_list && !text_records &&
@@ -894,7 +894,7 @@ std::unique_ptr<HostCache> HostCache::CreateDefaultCache() {
 bool HostCache::EvictOneEntry(base::TimeTicks now) {
   DCHECK_LT(0u, entries_.size());
 
-  base::Optional<net::HostCache::EntryMap::iterator> oldest_it;
+  absl::optional<net::HostCache::EntryMap::iterator> oldest_it;
   for (auto it = entries_.begin(); it != entries_.end(); ++it) {
     const Entry& entry = it->second;
     if (HasActivePin(entry)) {

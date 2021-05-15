@@ -414,7 +414,7 @@ TEST(NetLogTest, NetLogTwoObservers) {
 
   // Add event and make sure both observers receive it at their respective log
   // levels.
-  base::Optional<int> param;
+  absl::optional<int> param;
   AddEvent(&net_log);
   ASSERT_EQ(1U, observer[0].GetNumValues());
   param = observer[0].GetValue(0)->FindIntKey("params");

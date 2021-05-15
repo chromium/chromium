@@ -81,7 +81,7 @@ URLFetcherCore::URLFetcherCore(
       delegate_(d),
       delegate_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       load_flags_(LOAD_NORMAL),
-      allow_credentials_(base::nullopt),
+      allow_credentials_(absl::nullopt),
       response_code_(URLFetcher::RESPONSE_CODE_INVALID),
       url_request_data_key_(nullptr),
       was_cached_(false),
@@ -217,7 +217,7 @@ void URLFetcherCore::SetLoadFlags(int load_flags) {
 }
 
 void URLFetcherCore::SetAllowCredentials(bool allow_credentials) {
-  allow_credentials_ = base::make_optional<bool>(allow_credentials);
+  allow_credentials_ = absl::make_optional<bool>(allow_credentials);
 }
 
 int URLFetcherCore::GetLoadFlags() const {
@@ -249,7 +249,7 @@ void URLFetcherCore::SetRequestContext(
 }
 
 void URLFetcherCore::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   DCHECK(!initiator_.has_value());
   initiator_ = initiator;
 }

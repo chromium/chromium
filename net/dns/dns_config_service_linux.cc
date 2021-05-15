@@ -26,7 +26,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
@@ -34,6 +33,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/nsswitch_reader.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -56,13 +56,13 @@ constexpr base::FilePath::CharType kFilePathResolv[] = _PATH_RESCONF;
 
 constexpr base::FilePath::CharType kFilePathNsswitch[] = _PATH_NSSWITCH_CONF;
 
-base::Optional<DnsConfig> ConvertResStateToDnsConfig(
+absl::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
   if (!(res.options & RES_INIT))
-    return base::nullopt;
+    return absl::nullopt;
 
   static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
                     std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
@@ -82,10 +82,10 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
       addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
       addr_len = sizeof *res._u._ext.nsaddrs[i];
     } else {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!ipe.FromSockAddr(addr, addr_len))
-      return base::nullopt;
+      return absl::nullopt;
     dns_config.nameservers.push_back(ipe);
   }
 
@@ -121,12 +121,12 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   if (dns_config.nameservers.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // If any name server is 0.0.0.0, assume the configuration is invalid.
   for (const IPEndPoint& nameserver : dns_config.nameservers) {
     if (nameserver.address().IsZero())
-      return base::nullopt;
+      return absl::nullopt;
   }
   return dns_config;
 }
@@ -221,7 +221,7 @@ enum class IncompatibleNsswitchReason {
 
 void RecordIncompatibleNsswitchReason(
     IncompatibleNsswitchReason reason,
-    base::Optional<NsswitchReader::Service> service_token) {
+    absl::optional<NsswitchReader::Service> service_token) {
   UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
                             reason);
   if (service_token) {
@@ -271,7 +271,7 @@ bool IsNsswitchConfigCompatible(
         if (!files_found) {
           RecordIncompatibleNsswitchReason(
               IncompatibleNsswitchReason::kFilesMissing,
-              /*service_token=*/base::nullopt);
+              /*service_token=*/absl::nullopt);
           return false;
         }
         // Chrome will always stop if DNS finds a result or will otherwise
@@ -339,7 +339,7 @@ bool IsNsswitchConfigCompatible(
   }
 
   RecordIncompatibleNsswitchReason(IncompatibleNsswitchReason::kDnsMissing,
-                                   /*service_token=*/base::nullopt);
+                                   /*service_token=*/absl::nullopt);
   return false;
 }
 
@@ -479,7 +479,7 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
   // on worker thread.
   DnsConfigServiceLinux* const service_;
   // Written/accessed in DoWork, read in OnWorkFinished, no locking necessary.
-  base::Optional<DnsConfig> dns_config_;
+  absl::optional<DnsConfig> dns_config_;
   std::unique_ptr<ResolvReader> resolv_reader_;
   std::unique_ptr<NsswitchReader> nsswitch_reader_;
 };

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -19,6 +18,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class BigEndianReader;
@@ -79,10 +79,10 @@ NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
 // DNS name compression (see RFC 1035, section 4.1.4) is disallowed and
 // considered malformed. To handle a potentially compressed name, in a
 // DnsResponse object, use DnsRecordParser::ReadName().
-NET_EXPORT base::Optional<std::string> DnsDomainToString(
+NET_EXPORT absl::optional<std::string> DnsDomainToString(
     base::StringPiece dns_name,
     bool require_complete = false);
-NET_EXPORT base::Optional<std::string> DnsDomainToString(
+NET_EXPORT absl::optional<std::string> DnsDomainToString(
     base::BigEndianReader& reader,
     bool require_complete = false);
 

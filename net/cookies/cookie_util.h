@@ -159,7 +159,7 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 // `initiator` is the origin ultimately responsible for getting the request
 // issued. It may be different from `site_for_cookies`.
 //
-// base::nullopt for `initiator` denotes that the navigation was initiated by
+// absl::nullopt for `initiator` denotes that the navigation was initiated by
 // the user directly interacting with the browser UI, e.g. entering a URL
 // or selecting a bookmark.
 //
@@ -184,7 +184,7 @@ NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForRequest(const std::string& http_method,
                                  const std::vector<GURL>& url_chain,
                                  const SiteForCookies& site_for_cookies,
-                                 const base::Optional<url::Origin>& initiator,
+                                 const absl::optional<url::Origin>& initiator,
                                  bool is_main_frame_navigation,
                                  bool force_ignore_site_for_cookies);
 
@@ -194,7 +194,7 @@ ComputeSameSiteContextForRequest(const std::string& http_method,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const base::Optional<url::Origin>& initiator,
+                                   const absl::optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies);
 
 // Determines which of the cookies for the request URL can be set from a network
@@ -212,7 +212,7 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForResponse(const std::vector<GURL>& url_chain,
                                   const SiteForCookies& site_for_cookies,
-                                  const base::Optional<url::Origin>& initiator,
+                                  const absl::optional<url::Origin>& initiator,
                                   bool is_main_frame_navigation,
                                   bool force_ignore_site_for_cookies);
 

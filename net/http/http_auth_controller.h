@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -18,6 +17,7 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -123,7 +123,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   bool NeedsHTTP11() const;
 
   // Swaps the authentication challenge info into |other|.
-  void TakeAuthInfo(base::Optional<AuthChallengeInfo>* other);
+  void TakeAuthInfo(absl::optional<AuthChallengeInfo>* other);
 
   bool IsAuthSchemeDisabled(HttpAuth::Scheme scheme) const;
   void DisableAuthScheme(HttpAuth::Scheme scheme);
@@ -219,7 +219,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   std::string auth_token_;
 
   // Contains information about the auth challenge.
-  base::Optional<AuthChallengeInfo> auth_info_;
+  absl::optional<AuthChallengeInfo> auth_info_;
 
   // True if we've used the username:password embedded in the URL.  This
   // makes sure we use the embedded identity only once for the transaction,

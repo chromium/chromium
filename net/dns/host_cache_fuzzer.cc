@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/dns/host_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -31,7 +31,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Attempt to read a JSON list from the fuzzed string.
   base::StringPiece data_view(reinterpret_cast<const char*>(data), size);
-  base::Optional<base::Value> value = base::JSONReader::Read(data_view);
+  absl::optional<base::Value> value = base::JSONReader::Read(data_view);
   if (!value || !value->is_list())
     return 0;
   const base::ListValue& list_input = base::Value::AsListValue(*value);

@@ -13,9 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/thread_annotations.h"
 #include "sql/meta_table.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -93,9 +93,9 @@ class SQLitePersistentStoreBackendBase
   // Embedder-specific database upgrade statements. Returns the version number
   // that the database ends up at, or returns nullopt on error. This is called
   // during MigrateDatabaseSchema() which is called during InitializeDatabase(),
-  // and returning |base::nullopt| will cause the initialization process to fail
+  // and returning |absl::nullopt| will cause the initialization process to fail
   // and stop.
-  virtual base::Optional<int> DoMigrateDatabaseSchema() = 0;
+  virtual absl::optional<int> DoMigrateDatabaseSchema() = 0;
 
   // Initializes the desired table(s) of the database, e.g. by creating them or
   // checking that they already exist. Returns whether the tables exist.

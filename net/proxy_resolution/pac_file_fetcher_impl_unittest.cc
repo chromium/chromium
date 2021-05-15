@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -53,6 +52,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -158,7 +158,7 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const net::IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override {
     return OK;
   }
 

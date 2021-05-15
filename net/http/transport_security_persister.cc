@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,6 +25,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cert/x509_certificate.h"
 #include "net/http/transport_security_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -144,10 +144,10 @@ void DeserializeSTSData(const base::Value& sts_list,
       continue;
 
     const std::string* hostname = sts_entry.FindStringKey(kHostname);
-    base::Optional<bool> sts_include_subdomains =
+    absl::optional<bool> sts_include_subdomains =
         sts_entry.FindBoolKey(kStsIncludeSubdomains);
-    base::Optional<double> sts_observed = sts_entry.FindDoubleKey(kStsObserved);
-    base::Optional<double> expiry = sts_entry.FindDoubleKey(kExpiry);
+    absl::optional<double> sts_observed = sts_entry.FindDoubleKey(kStsObserved);
+    absl::optional<double> expiry = sts_entry.FindDoubleKey(kExpiry);
     const std::string* mode = sts_entry.FindStringKey(kMode);
 
     if (!hostname || !sts_include_subdomains.has_value() ||
@@ -235,11 +235,11 @@ void DeserializeExpectCTData(const base::Value& ct_list,
     const std::string* hostname = ct_entry.FindStringKey(kHostname);
     const base::Value* network_isolation_key_value =
         ct_entry.FindKey(kNetworkIsolationKey);
-    base::Optional<double> expect_ct_last_observed =
+    absl::optional<double> expect_ct_last_observed =
         ct_entry.FindDoubleKey(kExpectCTObserved);
-    base::Optional<double> expect_ct_expiry =
+    absl::optional<double> expect_ct_expiry =
         ct_entry.FindDoubleKey(kExpectCTExpiry);
-    base::Optional<bool> expect_ct_enforce =
+    absl::optional<bool> expect_ct_enforce =
         ct_entry.FindBoolKey(kExpectCTEnforce);
     const std::string* expect_ct_report_uri =
         ct_entry.FindStringKey(kExpectCTReportUri);
@@ -370,11 +370,11 @@ bool TransportSecurityPersister::LoadEntries(const std::string& serialized) {
 
 bool TransportSecurityPersister::Deserialize(const std::string& serialized,
                                              TransportSecurityState* state) {
-  base::Optional<base::Value> value = base::JSONReader::Read(serialized);
+  absl::optional<base::Value> value = base::JSONReader::Read(serialized);
   if (!value || !value->is_dict())
     return false;
 
-  base::Optional<int> version = value->FindIntKey(kVersionKey);
+  absl::optional<int> version = value->FindIntKey(kVersionKey);
 
   // Stop if the data is out of date (or in the previous format that didn't have
   // a version number).

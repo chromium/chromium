@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -34,9 +34,9 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
    public:
     // Called on loading new config, including the initial read once the first
     // valid config has been read. If a config read encounters errors or an
-    // invalid config is read, will be invoked with |base::nullopt|. Only
+    // invalid config is read, will be invoked with |absl::nullopt|. Only
     // invoked when |config| changes.
-    virtual void OnSystemDnsConfigChanged(base::Optional<DnsConfig> config) = 0;
+    virtual void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) = 0;
   };
 
   SystemDnsConfigChangeNotifier();

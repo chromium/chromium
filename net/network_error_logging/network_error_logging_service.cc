@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -28,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/reporting/reporting_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -479,7 +479,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     }
 
     bool success = (type == OK) && !IsHttpError(details);
-    const base::Optional<double> sampling_fraction =
+    const absl::optional<double> sampling_fraction =
         SampleAndReturnFraction(*policy, success);
     if (!sampling_fraction.has_value())
       return;
@@ -528,7 +528,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
           RequestOutcome::kDiscardedIPAddressMismatch);
       return;
     }
-    const base::Optional<double> sampling_fraction =
+    const absl::optional<double> sampling_fraction =
         SampleAndReturnFraction(*policy, details.success);
     if (!sampling_fraction.has_value()) {
       RecordSignedExchangeRequestOutcome(
@@ -823,7 +823,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   // Returns a valid value of matching fraction iff the event should be sampled.
-  base::Optional<double> SampleAndReturnFraction(const NelPolicy& policy,
+  absl::optional<double> SampleAndReturnFraction(const NelPolicy& policy,
                                                  bool success) const {
     const double sampling_fraction =
         success ? policy.success_fraction : policy.failure_fraction;
@@ -831,12 +831,12 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // Sampling fractions are often either 0.0 or 1.0, so in those cases we
     // can avoid having to call RandDouble().
     if (sampling_fraction <= 0.0)
-      return base::nullopt;
+      return absl::nullopt;
     if (sampling_fraction >= 1.0)
       return sampling_fraction;
 
     if (base::RandDouble() >= sampling_fraction)
-      return base::nullopt;
+      return absl::nullopt;
     return sampling_fraction;
   }
 

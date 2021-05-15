@@ -94,7 +94,7 @@ int WebSocketHttp2HandshakeStream::SendRequest(
 
   if (!session_) {
     const int rv = ERR_CONNECTION_CLOSED;
-    OnFailure("Connection closed before sending request.", rv, base::nullopt);
+    OnFailure("Connection closed before sending request.", rv, absl::nullopt);
     return rv;
   }
 
@@ -103,7 +103,7 @@ int WebSocketHttp2HandshakeStream::SendRequest(
   IPEndPoint address;
   int result = session_->GetPeerAddress(&address);
   if (result != OK) {
-    OnFailure("Error getting IP address.", result, base::nullopt);
+    OnFailure("Error getting IP address.", result, absl::nullopt);
     return result;
   }
   http_response_info_->remote_endpoint = address;
@@ -317,7 +317,7 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
     result_ = HandshakeResult::HTTP2_FAILED;
 
   OnFailure(std::string("Stream closed with error: ") + ErrorToString(status),
-            status, base::nullopt);
+            status, absl::nullopt);
 
   if (callback_)
     std::move(callback_).Run(status);
@@ -386,14 +386,14 @@ int WebSocketHttp2HandshakeStream::ValidateUpgradeResponse(
 
   const int rv = ERR_INVALID_RESPONSE;
   OnFailure("Error during WebSocket handshake: " + failure_message, rv,
-            base::nullopt);
+            absl::nullopt);
   return rv;
 }
 
 void WebSocketHttp2HandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
-    base::Optional<int> response_code) {
+    absl::optional<int> response_code) {
   stream_request_->OnFailure(message, net_error, response_code);
 }
 

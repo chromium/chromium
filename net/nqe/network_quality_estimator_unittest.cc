@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -47,6 +46,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -563,10 +563,10 @@ TEST_F(NetworkQualityEstimatorTest, QuicObservations) {
   TestNetworkQualityEstimator estimator(variation_params);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_TCP,
-      base::TimeDelta::FromMilliseconds(10), base::nullopt);
+      base::TimeDelta::FromMilliseconds(10), absl::nullopt);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC,
-      base::TimeDelta::FromMilliseconds(10), base::nullopt);
+      base::TimeDelta::FromMilliseconds(10), absl::nullopt);
   histogram_tester.ExpectBucketCount("NQE.RTT.ObservationSource",
                                      NETWORK_QUALITY_OBSERVATION_SOURCE_TCP, 1);
   histogram_tester.ExpectBucketCount(
@@ -590,7 +590,7 @@ TEST_F(NetworkQualityEstimatorTest,
   TestNetworkQualityEstimator estimator(variation_params);
   estimator.OnUpdatedTransportRTTAvailable(
       SocketPerformanceWatcherFactory::PROTOCOL_QUIC,
-      base::TimeDelta::FromMilliseconds(10), base::nullopt);
+      base::TimeDelta::FromMilliseconds(10), absl::nullopt);
   histogram_tester.ExpectBucketCount(
       "NQE.RTT.ObservationSource", NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC, 1);
   histogram_tester.ExpectTotalCount("NQE.EndToEndRTT.OnECTComputation", 1);
@@ -3078,7 +3078,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_CheckSignalStrength) {
   estimator.SetTickClockForTesting(&tick_clock);
 
   base::HistogramTester histogram_tester;
-  base::Optional<int32_t> signal_strength =
+  absl::optional<int32_t> signal_strength =
       estimator.GetCurrentSignalStrengthWithThrottling();
 
   signal_strength = estimator.GetCurrentSignalStrengthWithThrottling();
@@ -3135,7 +3135,7 @@ TEST_F(NetworkQualityEstimatorTest, CheckSignalStrengthDisabledByDefault) {
 
   estimator.SetTickClockForTesting(&tick_clock);
 
-  base::Optional<int32_t> signal_strength =
+  absl::optional<int32_t> signal_strength =
       estimator.GetCurrentSignalStrengthWithThrottling();
   EXPECT_FALSE(signal_strength);
 

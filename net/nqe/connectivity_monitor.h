@@ -13,12 +13,12 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/url_request/url_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE ConnectivityMonitor
 
   // Returns the amount of time since the ConnectivityMonitor first observed the
   // current lapse in connectivity, if any.
-  base::Optional<base::TimeDelta> GetTimeSinceLastFailureForTesting();
+  absl::optional<base::TimeDelta> GetTimeSinceLastFailureForTesting();
 
   // Registers a callback to hook into any time an activity deadline is reached.
   void SetNextDeadlineCallbackForTesting(base::OnceClosure callback);
@@ -109,7 +109,7 @@ class NET_EXPORT_PRIVATE ConnectivityMonitor
 
   std::set<const URLRequest*> active_requests_;
   base::CancelableOnceClosure next_activity_deadline_;
-  base::Optional<base::TimeTicks> time_last_failure_observed_;
+  absl::optional<base::TimeTicks> time_last_failure_observed_;
 
   NetworkChangeNotifier::ConnectionType current_connection_type_;
 

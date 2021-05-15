@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -16,6 +15,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_vary_data.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Pickle;
@@ -223,7 +223,7 @@ class NET_EXPORT HttpResponseInfo {
 
   // If the response headers indicate a 401 or 407 failure, then this structure
   // will contain additional information about the authentication challenge.
-  base::Optional<AuthChallengeInfo> auth_challenge;
+  absl::optional<AuthChallengeInfo> auth_challenge;
 
   // The SSL client certificate request info.
   // TODO(wtc): does this really belong in HttpResponseInfo?  I put it here

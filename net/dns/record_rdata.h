@@ -14,12 +14,12 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace net {
@@ -311,9 +311,9 @@ class NET_EXPORT IntegrityRecordRdata : public RecordRdata {
   // Postcondition: |IsIntact()| is true.
   static IntegrityRecordRdata Random();
 
-  // Serialize |this| using the INTEGRITY wire format. Returns |base::nullopt|
+  // Serialize |this| using the INTEGRITY wire format. Returns |absl::nullopt|
   // when |!IsIntact()|.
-  base::Optional<std::vector<uint8_t>> Serialize() const;
+  absl::optional<std::vector<uint8_t>> Serialize() const;
 
   // Precondition: |IsIntact()|.
   const Nonce& nonce() const {

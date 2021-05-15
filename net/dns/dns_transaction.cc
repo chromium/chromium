@@ -24,7 +24,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -76,6 +75,7 @@
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -1200,7 +1200,7 @@ class DnsTransactionImpl : public DnsTransaction,
     net_log_.EndEventWithNetErrorCode(NetLogEventType::DNS_TRANSACTION,
                                       result.rv);
 
-    base::Optional<std::string> doh_provider_id;
+    absl::optional<std::string> doh_provider_id;
     if (secure_ && result.attempt) {
       size_t server_index = result.attempt->server_index();
       doh_provider_id = GetDohProviderIdForHistogramFromDohConfig(
@@ -1381,7 +1381,7 @@ class DnsTransactionImpl : public DnsTransaction,
 
   // Begins query for the current name. Makes the first attempt.
   AttemptResult StartQuery() {
-    base::Optional<std::string> dotted_qname =
+    absl::optional<std::string> dotted_qname =
         DnsDomainToString(qnames_.front());
     net_log_.BeginEventWithStringParams(
         NetLogEventType::DNS_TRANSACTION_QUERY, "qname",

@@ -125,7 +125,7 @@ class MockHostResolverBase
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,
       const NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   std::unique_ptr<MdnsListener> CreateMdnsListener(
@@ -139,7 +139,7 @@ class MockHostResolverBase
   int LoadIntoCache(
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,
-      const base::Optional<ResolveHostParameters>& optional_parameters);
+      const absl::optional<ResolveHostParameters>& optional_parameters);
 
   // Returns true if there are pending requests that can be resolved by invoking
   // ResolveAllPending().
@@ -197,14 +197,14 @@ class MockHostResolverBase
   }
 
   // Returns the NetworkIsolationKey passed in to the last call to Resolve() (or
-  // base::nullopt if Resolve() hasn't been called yet).
-  const base::Optional<NetworkIsolationKey>&
+  // absl::nullopt if Resolve() hasn't been called yet).
+  const absl::optional<NetworkIsolationKey>&
   last_request_network_isolation_key() {
     return last_request_network_isolation_key_;
   }
 
   // Returns the SecureDnsPolicy of the last call to Resolve() (or
-  // base::nullopt if Resolve() hasn't been called yet).
+  // absl::nullopt if Resolve() hasn't been called yet).
   SecureDnsPolicy last_secure_dns_policy() const {
     return last_secure_dns_policy_;
   }
@@ -262,7 +262,7 @@ class MockHostResolverBase
       HostResolverSource source,
       HostResolver::ResolveHostParameters::CacheUsage cache_usage,
       AddressList* addresses,
-      base::Optional<HostCache::EntryStaleness>* stale_info);
+      absl::optional<HostCache::EntryStaleness>* stale_info);
   // Resolve via |proc_|.
   int ResolveProc(const HostPortPair& host,
                   const NetworkIsolationKey& network_isolation_key,
@@ -275,7 +275,7 @@ class MockHostResolverBase
   void RemoveCancelledListener(MdnsListenerImpl* listener);
 
   RequestPriority last_request_priority_;
-  base::Optional<NetworkIsolationKey> last_request_network_isolation_key_;
+  absl::optional<NetworkIsolationKey> last_request_network_isolation_key_;
   SecureDnsPolicy last_secure_dns_policy_;
   bool synchronous_mode_;
   bool ondemand_mode_;
@@ -510,7 +510,7 @@ class HangingHostResolver : public HostResolver {
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,
       const NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
 
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;

@@ -9,10 +9,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace mojom {
@@ -138,10 +138,10 @@ class NET_EXPORT NetworkIsolationKey {
   // Getters for the top frame and frame sites. These accessors are primarily
   // intended for IPC calls, and to be able to create an IsolationInfo from a
   // NetworkIsolationKey.
-  const base::Optional<SchemefulSite>& GetTopFrameSite() const {
+  const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
-  const base::Optional<SchemefulSite>& GetFrameSite() const {
+  const absl::optional<SchemefulSite>& GetFrameSite() const {
     return frame_site_;
   }
 
@@ -175,7 +175,7 @@ class NET_EXPORT NetworkIsolationKey {
 
   // SchemefulSite::Serialize() is not const, as it may initialize the nonce.
   // Need this to call it on a const |site|.
-  static base::Optional<std::string> SerializeSiteWithNonce(
+  static absl::optional<std::string> SerializeSiteWithNonce(
       const SchemefulSite& site);
 
   // Whether opaque origins cause the key to be transient. Always false, unless
@@ -183,10 +183,10 @@ class NET_EXPORT NetworkIsolationKey {
   bool opaque_and_non_transient_ = false;
 
   // The origin/etld+1 of the top frame of the page making the request.
-  base::Optional<SchemefulSite> top_frame_site_;
+  absl::optional<SchemefulSite> top_frame_site_;
 
   // The origin/etld+1 of the frame that initiates the request.
-  base::Optional<SchemefulSite> frame_site_;
+  absl::optional<SchemefulSite> frame_site_;
 };
 
 }  // namespace net

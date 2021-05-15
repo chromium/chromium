@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/numerics/safe_math.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -60,6 +59,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsOk;
 
@@ -298,8 +298,8 @@ class TestSocketFactory : public MockClientSocketFactory {
     explicit RemoteNameserver(DnsOverHttpsServerConfig secure_nameserver)
         : secure_nameserver(secure_nameserver) {}
 
-    base::Optional<IPEndPoint> insecure_nameserver;
-    base::Optional<DnsOverHttpsServerConfig> secure_nameserver;
+    absl::optional<IPEndPoint> insecure_nameserver;
+    absl::optional<DnsOverHttpsServerConfig> secure_nameserver;
   };
 
   std::vector<RemoteNameserver> remote_endpoints_;
@@ -360,7 +360,7 @@ class TransactionHelper {
   void OnTransactionComplete(DnsTransaction* t,
                              int rv,
                              const DnsResponse* response,
-                             base::Optional<std::string> doh_provider_id) {
+                             absl::optional<std::string> doh_provider_id) {
     EXPECT_FALSE(completed_);
     EXPECT_EQ(transaction_.get(), t);
 
@@ -2411,7 +2411,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
       config_.dns_over_https_servers[0].server_template));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
-      base::nullopt /* server_time */);
+      absl::nullopt /* server_time */);
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,

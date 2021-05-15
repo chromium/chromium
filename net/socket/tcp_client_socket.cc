@@ -278,7 +278,7 @@ int TCPClientSocket::DoConnect() {
 int TCPClientSocket::DoConnectComplete(int result) {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(result);
-    start_connect_attempt_ = base::nullopt;
+    start_connect_attempt_ = absl::nullopt;
     connect_attempt_timer_.Stop();
   }
 
@@ -335,7 +335,7 @@ void TCPClientSocket::Disconnect() {
 void TCPClientSocket::DoDisconnect() {
   if (start_connect_attempt_) {
     EmitConnectAttemptHistograms(ERR_ABORTED);
-    start_connect_attempt_ = base::nullopt;
+    start_connect_attempt_ = absl::nullopt;
     connect_attempt_timer_.Stop();
   }
 
@@ -589,7 +589,7 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
     UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
   }
 
-  base::Optional<base::TimeDelta> transport_rtt = base::nullopt;
+  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
   if (network_quality_estimator_)
     transport_rtt = network_quality_estimator_->GetTransportRTT();
 
@@ -625,7 +625,7 @@ base::TimeDelta TCPClientSocket::GetConnectAttemptTimeout() {
   if (!base::FeatureList::IsEnabled(features::kTimeoutTcpConnectAttempt))
     return base::TimeDelta::Max();
 
-  base::Optional<base::TimeDelta> transport_rtt = base::nullopt;
+  absl::optional<base::TimeDelta> transport_rtt = absl::nullopt;
   if (network_quality_estimator_)
     transport_rtt = network_quality_estimator_->GetTransportRTT();
 

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -15,6 +14,7 @@
 #include "net/quic/platform/impl/quic_flags_impl.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 DEFINE_QUIC_COMMAND_LINE_FLAG(bool, foo, false, "An old silent pond...");
 DEFINE_QUIC_COMMAND_LINE_FLAG(int32_t, bar, 123, "A frog jumps into the pond,");

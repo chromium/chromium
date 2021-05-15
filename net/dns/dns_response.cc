@@ -13,7 +13,6 @@
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
@@ -23,6 +22,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -271,7 +271,7 @@ DnsResponse::DnsResponse(
     const std::vector<DnsResourceRecord>& answers,
     const std::vector<DnsResourceRecord>& authority_records,
     const std::vector<DnsResourceRecord>& additional_records,
-    const base::Optional<DnsQuery>& query,
+    const absl::optional<DnsQuery>& query,
     uint8_t rcode,
     bool validate_records) {
   bool has_query = query.has_value();
@@ -407,7 +407,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
     return false;
   }
 
-  base::Optional<std::string> dotted_qname = DnsDomainToString(query.qname());
+  absl::optional<std::string> dotted_qname = DnsDomainToString(query.qname());
   if (!dotted_qname.has_value())
     return false;
   dotted_qnames_.push_back(std::move(dotted_qname).value());
@@ -459,9 +459,9 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   return true;
 }
 
-base::Optional<uint16_t> DnsResponse::id() const {
+absl::optional<uint16_t> DnsResponse::id() const {
   if (!id_available_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::NetToHost16(header()->id);
 }
@@ -562,7 +562,7 @@ bool DnsResponse::WriteRecord(base::BigEndianWriter* writer,
 
 bool DnsResponse::WriteAnswer(base::BigEndianWriter* writer,
                               const DnsResourceRecord& answer,
-                              const base::Optional<DnsQuery>& query,
+                              const absl::optional<DnsQuery>& query,
                               bool validate_record) {
   // Generally assumed to be a mistake if we write answers that don't match the
   // query type, except CNAME answers which can always be added.

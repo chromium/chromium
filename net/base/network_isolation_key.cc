@@ -15,7 +15,7 @@ namespace net {
 
 namespace {
 
-std::string GetSiteDebugString(const base::Optional<SchemefulSite>& site) {
+std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
   return site ? site->GetDebugString() : "null";
 }
 
@@ -87,9 +87,9 @@ std::string NetworkIsolationKey::ToString() const {
   if (IsOpaque()) {
     // This key is opaque but not transient.
 
-    base::Optional<std::string> serialized_top_frame_site =
+    absl::optional<std::string> serialized_top_frame_site =
         SerializeSiteWithNonce(top_frame_site_.value());
-    base::Optional<std::string> serialized_frame_site =
+    absl::optional<std::string> serialized_frame_site =
         SerializeSiteWithNonce(frame_site_.value());
 
     // SerializeSiteWithNonce() can't fail for valid origins, and only valid
@@ -140,14 +140,14 @@ bool NetworkIsolationKey::ToValue(base::Value* out_value) const {
   if (IsTransient())
     return false;
 
-  base::Optional<std::string> top_frame_value =
+  absl::optional<std::string> top_frame_value =
       SerializeSiteWithNonce(*top_frame_site_);
   if (!top_frame_value)
     return false;
   *out_value = base::Value(base::Value::Type::LIST);
   out_value->Append(std::move(*top_frame_value));
 
-  base::Optional<std::string> frame_value =
+  absl::optional<std::string> frame_value =
       SerializeSiteWithNonce(*frame_site_);
   if (!frame_value)
     return false;
@@ -171,7 +171,7 @@ bool NetworkIsolationKey::FromValue(
   if (list.size() != 2 || !list[0].is_string() || !list[1].is_string())
     return false;
 
-  base::Optional<SchemefulSite> top_frame_site =
+  absl::optional<SchemefulSite> top_frame_site =
       SchemefulSite::DeserializeWithNonce(list[0].GetString());
   if (!top_frame_site)
     return false;
@@ -181,7 +181,7 @@ bool NetworkIsolationKey::FromValue(
   // |opaque_and_non_transient_| must be true.
   bool opaque_and_non_transient = top_frame_site->opaque();
 
-  base::Optional<SchemefulSite> frame_site =
+  absl::optional<SchemefulSite> frame_site =
       SchemefulSite::DeserializeWithNonce(list[1].GetString());
   if (!frame_site)
     return false;
@@ -212,7 +212,7 @@ bool NetworkIsolationKey::IsOpaque() const {
   return top_frame_site_->opaque() || frame_site_->opaque();
 }
 
-base::Optional<std::string> NetworkIsolationKey::SerializeSiteWithNonce(
+absl::optional<std::string> NetworkIsolationKey::SerializeSiteWithNonce(
     const SchemefulSite& site) {
   return *(const_cast<SchemefulSite&>(site).SerializeWithNonce());
 }

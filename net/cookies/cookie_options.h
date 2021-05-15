@@ -10,10 +10,10 @@
 #include <ostream>
 #include <set>
 
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {

@@ -17,13 +17,13 @@
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_stream.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -199,7 +199,7 @@ class NET_EXPORT WebSocketChannel {
   // failure to the event interface. May delete |this|.
   void OnConnectFailure(const std::string& message,
                         int net_error,
-                        base::Optional<int> response_code);
+                        absl::optional<int> response_code);
 
   // SSL certificate error callback from
   // WebSocketStream::CreateAndConnectStream(). Forwards the request to the
@@ -217,7 +217,7 @@ class NET_EXPORT WebSocketChannel {
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials);
+                     absl::optional<AuthCredentials>* credentials);
 
   // Sets |state_| to |new_state| and updates UMA if necessary.
   void SetState(State new_state);

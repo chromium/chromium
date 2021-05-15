@@ -372,7 +372,7 @@ bool BaseTestServer::SetAndParseServerData(const std::string& server_data,
 
   server_data_ = std::move(parsed_json.value);
 
-  base::Optional<int> port_value = server_data_->FindIntKey("port");
+  absl::optional<int> port_value = server_data_->FindIntKey("port");
   if (!port_value) {
     LOG(ERROR) << "Could not find port value";
     return false;

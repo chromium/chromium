@@ -19,7 +19,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -35,6 +34,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"  // TODO(willchan): Reconsider this.
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -151,14 +151,14 @@ class NET_EXPORT HttpServerProperties
     // indicates unknown. The difference between false and not set only matters
     // when loading from disk, when an initialized false value will take
     // priority over a not set value.
-    base::Optional<bool> supports_spdy;
+    absl::optional<bool> supports_spdy;
 
     // True if the server has previously indicated it required HTTP/1.1. Unlike
     // other fields, not persisted to disk.
-    base::Optional<bool> requires_http11;
+    absl::optional<bool> requires_http11;
 
-    base::Optional<AlternativeServiceInfoVector> alternative_services;
-    base::Optional<ServerNetworkStats> server_network_stats;
+    absl::optional<AlternativeServiceInfoVector> alternative_services;
+    absl::optional<ServerNetworkStats> server_network_stats;
   };
 
   struct NET_EXPORT ServerInfoMapKey {

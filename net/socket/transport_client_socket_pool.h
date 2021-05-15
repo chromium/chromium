@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/address_list.h"
@@ -40,6 +39,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trace_event {
@@ -103,7 +103,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
         RespectLimits respect_limits,
         Flags flags,
         scoped_refptr<SocketParams> socket_params,
-        const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+        const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         const NetLogWithSource& net_log);
 
     ~Request();
@@ -118,7 +118,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     RespectLimits respect_limits() const { return respect_limits_; }
     Flags flags() const { return flags_; }
     SocketParams* socket_params() const { return socket_params_.get(); }
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag()
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag()
         const {
       return proxy_annotation_tag_;
     }
@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const RespectLimits respect_limits_;
     const Flags flags_;
     const scoped_refptr<SocketParams> socket_params_;
-    const base::Optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
+    const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
     ConnectJob* job_;
@@ -158,7 +158,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     virtual std::unique_ptr<ConnectJob> NewConnectJob(
         ClientSocketPool::GroupId group_id,
         scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-        const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+        const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         RequestPriority request_priority,
         SocketTag socket_tag,
         ConnectJob::Delegate* delegate) const = 0;
@@ -204,7 +204,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,
@@ -215,7 +215,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   void RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
@@ -461,8 +461,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const Request* BindRequestToConnectJob(ConnectJob* connect_job);
 
     // Finds the request, if any, bound to |connect_job|, and returns the
-    // BoundRequest or base::nullopt if there was none.
-    base::Optional<BoundRequest> FindAndRemoveBoundRequestForConnectJob(
+    // BoundRequest or absl::nullopt if there was none.
+    absl::optional<BoundRequest> FindAndRemoveBoundRequestForConnectJob(
         ConnectJob* connect_job);
 
     // Finds the bound request, if any, corresponding to |client_socket_handle|

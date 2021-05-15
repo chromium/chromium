@@ -121,7 +121,7 @@ class TestURLFetcher : public URLFetcher {
                              const std::string& value) override;
   void SetRequestContext(
       URLRequestContextGetter* request_context_getter) override;
-  void SetInitiator(const base::Optional<url::Origin>& initiator) override;
+  void SetInitiator(const absl::optional<url::Origin>& initiator) override;
   void SetURLRequestUserData(
       const void* key,
       const CreateDataCallback& create_data_callback) override;

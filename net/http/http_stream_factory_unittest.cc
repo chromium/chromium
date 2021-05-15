@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -84,6 +83,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // This file can be included from net/http even though
@@ -441,7 +441,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       ClientSocketPool::RespectLimits respect_limits,
@@ -456,7 +456,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   void RequestSockets(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
       const NetLogWithSource& net_log) override {
     last_num_streams_ = num_sockets;
@@ -1779,7 +1779,7 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
         SecureDnsPolicy::kAllow);
     int rv = connection->Init(
-        group_id, socket_params, base::nullopt /* proxy_annotation_tag */,
+        group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
         session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,

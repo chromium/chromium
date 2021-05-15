@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -24,6 +23,7 @@
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -120,7 +120,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 base::Optional<int> response_code);
+                 absl::optional<int> response_code);
 
   HandshakeResult result_;
 

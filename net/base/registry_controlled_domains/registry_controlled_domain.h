@@ -117,9 +117,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -208,7 +208,7 @@ NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
                                  PrivateRegistryFilter filter);
 // Note: this returns false if |origin2| is not set.
 NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
-                                 const base::Optional<url::Origin>& origin2,
+                                 const absl::optional<url::Origin>& origin2,
                                  PrivateRegistryFilter filter);
 NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,

@@ -69,7 +69,7 @@ class TestConnectJob : public ConnectJob {
   int ConnectInternal() override {
     SetSocket(std::unique_ptr<StreamSocket>(new MockTCPClientSocket(
                   AddressList(), net_log().net_log(), &socket_data_provider_)),
-              base::nullopt /* dns_aliases */);
+              absl::nullopt /* dns_aliases */);
     return socket()->Connect(base::BindOnce(
         &TestConnectJob::NotifyDelegateOfCompletion, base::Unretained(this)));
   }

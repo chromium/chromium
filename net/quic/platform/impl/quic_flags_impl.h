@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/export_template.h"
-#include "base/optional.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_flags.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) \
   QUIC_EXPORT_PRIVATE extern type FLAGS_##flag;
@@ -155,7 +155,7 @@ struct QUIC_EXPORT_PRIVATE QuicParseCommandLineFlagsResult {
   ~QuicParseCommandLineFlagsResult();
 
   std::vector<std::string> non_flag_args;
-  base::Optional<int> exit_status;
+  absl::optional<int> exit_status;
 };
 
 QUIC_EXPORT_PRIVATE QuicParseCommandLineFlagsResult

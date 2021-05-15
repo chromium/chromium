@@ -32,11 +32,11 @@ IPAddress FuchsiaIpAddressToIPAddress(const fuchsia::net::IpAddress& address) {
 }  // namespace
 
 // static
-base::Optional<InterfaceProperties> InterfaceProperties::VerifyAndCreate(
+absl::optional<InterfaceProperties> InterfaceProperties::VerifyAndCreate(
     fuchsia::net::interfaces::Properties properties) {
   if (!internal::VerifyCompleteInterfaceProperties(properties))
-    return base::nullopt;
-  return base::make_optional(InterfaceProperties(std::move(properties)));
+    return absl::nullopt;
+  return absl::make_optional(InterfaceProperties(std::move(properties)));
 }
 
 InterfaceProperties::InterfaceProperties(
@@ -168,7 +168,7 @@ bool VerifyCompleteInterfaceProperties(
   return true;
 }
 
-base::Optional<ExistingInterfaceProperties> GetExistingInterfaces(
+absl::optional<ExistingInterfaceProperties> GetExistingInterfaces(
     const fuchsia::net::interfaces::WatcherSyncPtr& watcher) {
   ExistingInterfaceProperties existing_interfaces;
   for (;;) {
@@ -176,16 +176,16 @@ base::Optional<ExistingInterfaceProperties> GetExistingInterfaces(
     zx_status_t status = watcher->Watch(&event);
     if (status != ZX_OK) {
       ZX_LOG(ERROR, status) << "GetExistingInterfaces: Watch() failed";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     switch (event.Which()) {
       case fuchsia::net::interfaces::Event::Tag::kExisting: {
-        base::Optional<InterfaceProperties> interface =
+        absl::optional<InterfaceProperties> interface =
             InterfaceProperties::VerifyAndCreate(std::move(event.existing()));
         if (!interface) {
           LOG(ERROR) << "GetExistingInterfaces: Invalid kExisting event.";
-          return base::nullopt;
+          return absl::nullopt;
         }
         uint64_t id = interface->id();
         existing_interfaces.emplace_back(id, std::move(*interface));
@@ -197,7 +197,7 @@ base::Optional<ExistingInterfaceProperties> GetExistingInterfaces(
         return existing_interfaces;
       default:
         LOG(ERROR) << "GetExistingInterfaces: Unexpected event received.";
-        return base::nullopt;
+        return absl::nullopt;
     }
   }
 }
@@ -212,7 +212,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 
   // TODO(crbug.com/1131238): Use NetworkChangeNotifier's cached interface
   // list.
-  base::Optional<internal::ExistingInterfaceProperties> existing_interfaces =
+  absl::optional<internal::ExistingInterfaceProperties> existing_interfaces =
       internal::GetExistingInterfaces(watcher);
   if (!existing_interfaces)
     return false;

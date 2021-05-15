@@ -37,11 +37,11 @@ bool ValidateSameSite(const url::Origin& origin,
 // 0-argument constructor. Additionally, |opaque_and_non_transient| can only be
 // true if both origins are opaque and |site_for_cookies| is null.
 bool IsConsistent(IsolationInfo::RequestType request_type,
-                  const base::Optional<url::Origin>& top_frame_origin,
-                  const base::Optional<url::Origin>& frame_origin,
+                  const absl::optional<url::Origin>& top_frame_origin,
+                  const absl::optional<url::Origin>& frame_origin,
                   const SiteForCookies& site_for_cookies,
                   bool opaque_and_non_transient,
-                  base::Optional<std::set<SchemefulSite>> party_context) {
+                  absl::optional<std::set<SchemefulSite>> party_context) {
   // Check for the default-constructed case.
   if (!top_frame_origin) {
     return request_type == IsolationInfo::RequestType::kOther &&
@@ -92,11 +92,11 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
 
 IsolationInfo::IsolationInfo()
     : IsolationInfo(RequestType::kOther,
-                    base::nullopt,
-                    base::nullopt,
+                    absl::nullopt,
+                    absl::nullopt,
                     SiteForCookies(),
                     false /* opaque_and_non_transient */,
-                    base::nullopt) {}
+                    absl::nullopt) {}
 
 IsolationInfo::IsolationInfo(const IsolationInfo&) = default;
 IsolationInfo::IsolationInfo(IsolationInfo&&) = default;
@@ -116,14 +116,14 @@ IsolationInfo IsolationInfo::CreateTransient() {
   url::Origin opaque_origin;
   return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
                        SiteForCookies(), false /* opaque_and_non_transient */,
-                       base::nullopt /* party_context */);
+                       absl::nullopt /* party_context */);
 }
 
 IsolationInfo IsolationInfo::CreateOpaqueAndNonTransient() {
   url::Origin opaque_origin;
   return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
                        SiteForCookies(), true /* opaque_and_non_transient */,
-                       base::nullopt /* party_context */);
+                       absl::nullopt /* party_context */);
 }
 
 IsolationInfo IsolationInfo::Create(
@@ -131,7 +131,7 @@ IsolationInfo IsolationInfo::Create(
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
     const SiteForCookies& site_for_cookies,
-    base::Optional<std::set<SchemefulSite>> party_context) {
+    absl::optional<std::set<SchemefulSite>> party_context) {
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
                        site_for_cookies, false /* opaque_and_non_transient */,
                        std::move(party_context));
@@ -161,20 +161,20 @@ IsolationInfo IsolationInfo::CreatePartial(
 
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
                        SiteForCookies(), opaque_and_non_transient,
-                       base::nullopt /* party_context */);
+                       absl::nullopt /* party_context */);
 }
 
-base::Optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
+absl::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
     RequestType request_type,
-    const base::Optional<url::Origin>& top_frame_origin,
-    const base::Optional<url::Origin>& frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& frame_origin,
     const SiteForCookies& site_for_cookies,
     bool opaque_and_non_transient,
-    base::Optional<std::set<SchemefulSite>> party_context) {
+    absl::optional<std::set<SchemefulSite>> party_context) {
   if (!IsConsistent(request_type, top_frame_origin, frame_origin,
                     site_for_cookies, opaque_and_non_transient,
                     party_context)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return IsolationInfo(request_type, top_frame_origin, frame_origin,
                        site_for_cookies, opaque_and_non_transient,
@@ -221,11 +221,11 @@ IsolationInfo IsolationInfo::ToDoUseTopFrameOriginAsWell(
 
 IsolationInfo::IsolationInfo(
     RequestType request_type,
-    const base::Optional<url::Origin>& top_frame_origin,
-    const base::Optional<url::Origin>& frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& frame_origin,
     const SiteForCookies& site_for_cookies,
     bool opaque_and_non_transient,
-    base::Optional<std::set<SchemefulSite>> party_context)
+    absl::optional<std::set<SchemefulSite>> party_context)
     : request_type_(request_type),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
@@ -239,7 +239,7 @@ IsolationInfo::IsolationInfo(
       opaque_and_non_transient_(opaque_and_non_transient),
       party_context_(party_context.has_value() &&
                              party_context->size() > kPartyContextMaxSize
-                         ? base::nullopt
+                         ? absl::nullopt
                          : party_context) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,
                       site_for_cookies_, opaque_and_non_transient_,

@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -76,7 +76,7 @@ class NET_EXPORT SchemefulSite {
   static bool FromWire(const url::Origin& site_as_origin, SchemefulSite* out);
 
   // Creates a SchemefulSite iff the passed-in origin has a registerable domain.
-  static base::Optional<SchemefulSite> CreateIfHasRegisterableDomain(
+  static absl::optional<SchemefulSite> CreateIfHasRegisterableDomain(
       const url::Origin&);
 
   // If the scheme is ws or wss, it is converted to http or https, respectively.
@@ -158,13 +158,13 @@ class NET_EXPORT SchemefulSite {
 
   // Deserializes a string obtained from `SerializeWithNonce()` to a
   // `SchemefulSite`. Returns nullopt if the value was invalid in any way.
-  static base::Optional<SchemefulSite> DeserializeWithNonce(
+  static absl::optional<SchemefulSite> DeserializeWithNonce(
       const std::string& value);
 
   // Returns a serialized version of `site_as_origin_`. For an opaque
   // `site_as_origin_`, this serializes with the nonce.  See
   // `url::origin::SerializeWithNonce()` for usage information.
-  base::Optional<std::string> SerializeWithNonce();
+  absl::optional<std::string> SerializeWithNonce();
 
   // Returns whether `this` and `other` share a host or registrable domain.
   // Should NOT be used to check equality or equivalence. This is only used

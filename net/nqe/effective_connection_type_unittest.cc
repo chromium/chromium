@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -48,7 +48,7 @@ TEST(EffectiveConnectionTypeTest, Slow2GTypeConversion) {
   // GetEffectiveConnectionTypeForName should return Slow2G as effective
   // connection type for both the deprecated and the current string
   // representation.
-  base::Optional<EffectiveConnectionType> type =
+  absl::optional<EffectiveConnectionType> type =
       GetEffectiveConnectionTypeForName("Slow2G");
   EXPECT_EQ(EFFECTIVE_CONNECTION_TYPE_SLOW_2G, type.value());
 

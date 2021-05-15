@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -45,10 +45,10 @@ class NET_EXPORT_PRIVATE HttpssvcExperimentDomainCache {
   bool ListContainsDomain(
       const std::string& domain_list,
       base::StringPiece domain,
-      base::Optional<base::flat_set<std::string>>& in_out_cached_list);
+      absl::optional<base::flat_set<std::string>>& in_out_cached_list);
 
-  base::Optional<base::flat_set<std::string>> experimental_list_;
-  base::Optional<base::flat_set<std::string>> control_list_;
+  absl::optional<base::flat_set<std::string>> experimental_list_;
+  absl::optional<base::flat_set<std::string>> control_list_;
 };
 
 // Translate an RCODE value to the |HttpssvcDnsRcode| enum, which is used for
@@ -68,7 +68,7 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   HttpssvcMetrics(HttpssvcMetrics&&) = delete;
 
   // May be called many times.
-  void SaveForAddressQuery(base::Optional<std::string> doh_provider_id,
+  void SaveForAddressQuery(absl::optional<std::string> doh_provider_id,
                            base::TimeDelta resolve_time,
                            enum HttpssvcDnsRcode rcode);
 
@@ -77,11 +77,11 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   void SaveAddressQueryFailure();
 
   // Must only be called once.
-  void SaveForIntegrity(base::Optional<std::string> doh_provider_id,
+  void SaveForIntegrity(absl::optional<std::string> doh_provider_id,
                         enum HttpssvcDnsRcode rcode,
                         const std::vector<bool>& condensed_records,
                         base::TimeDelta integrity_resolve_time);
-  void SaveForHttps(base::Optional<std::string> doh_provider_id,
+  void SaveForHttps(absl::optional<std::string> doh_provider_id,
                     enum HttpssvcDnsRcode rcode,
                     const std::vector<bool>& condensed_records,
                     base::TimeDelta https_resolve_time);
@@ -98,23 +98,23 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   void RecordExpectIntactMetrics();
   void RecordExpectNoerrorMetrics();
 
-  void set_doh_provider_id(base::Optional<std::string> doh_provider_id);
+  void set_doh_provider_id(absl::optional<std::string> doh_provider_id);
 
   const bool expect_intact_;
   // RecordIntegrityMetrics() will do nothing when |disqualified_| is true.
   bool disqualified_ = false;
   bool already_recorded_ = false;
-  base::Optional<std::string> doh_provider_id_;
-  base::Optional<enum HttpssvcDnsRcode> rcode_integrity_;
-  base::Optional<enum HttpssvcDnsRcode> rcode_https_;
+  absl::optional<std::string> doh_provider_id_;
+  absl::optional<enum HttpssvcDnsRcode> rcode_integrity_;
+  absl::optional<enum HttpssvcDnsRcode> rcode_https_;
   size_t num_integrity_records_ = 0;
   size_t num_https_records_ = 0;
-  base::Optional<bool> is_integrity_intact_;
-  base::Optional<bool> is_https_parsable_;
+  absl::optional<bool> is_integrity_intact_;
+  absl::optional<bool> is_https_parsable_;
   // We never make multiple INTEGRITY or HTTPS queries per DnsTask, so we only
   // need one TimeDelta for each qtype.
-  base::Optional<base::TimeDelta> integrity_resolve_time_;
-  base::Optional<base::TimeDelta> https_resolve_time_;
+  absl::optional<base::TimeDelta> integrity_resolve_time_;
+  absl::optional<base::TimeDelta> https_resolve_time_;
   std::vector<base::TimeDelta> address_resolve_times_;
 };
 

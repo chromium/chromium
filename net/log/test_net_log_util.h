@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/log/net_log_event_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;
@@ -75,14 +75,14 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
 
 // The following methods return a parameter of the given type at the given path,
 // or nullopt if there is none.
-base::Optional<std::string> GetOptionalStringValueFromParams(
+absl::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
     base::StringPiece path);
-base::Optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
                                                        base::StringPiece path);
-base::Optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
                                                       base::StringPiece path);
-base::Optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
+absl::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
 
 // Same as the *Optional* versions above, except will add a Gtest failure if the
 // value was not present, and then return some default.

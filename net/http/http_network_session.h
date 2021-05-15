@@ -20,7 +20,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/buildflag.h"
 #include "net/base/host_mapping_rules.h"
@@ -36,6 +35,7 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -119,7 +119,7 @@ class NET_EXPORT HttpNetworkSession {
     // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
     // The same frame will be sent out on all connections to prevent the retry
     // logic from hiding broken servers.
-    base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+    absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
     // If set, the HEADERS frame carrying a request without body will not have
     // the END_STREAM flag set.  The stream will be closed by a subsequent empty
     // DATA frame with END_STREAM.  Does not affect bidirectional or proxy

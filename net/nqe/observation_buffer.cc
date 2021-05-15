@@ -71,7 +71,7 @@ void ObservationBuffer::AddObservation(const Observation& observation) {
   DCHECK_LE(observations_.size(), params_->observation_buffer_size());
 }
 
-base::Optional<int32_t> ObservationBuffer::GetPercentile(
+absl::optional<int32_t> ObservationBuffer::GetPercentile(
     base::TimeTicks begin_timestamp,
     int32_t current_signal_strength,
     int percentile,
@@ -94,7 +94,7 @@ base::Optional<int32_t> ObservationBuffer::GetPercentile(
   }
 
   if (weighted_observations.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   double desired_weight = percentile / 100.0 * total_weight;
 

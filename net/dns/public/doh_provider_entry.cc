@@ -45,7 +45,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
                            {"NL"} /* display_countries */,
                            LoggingLevel::kNormal),
       new DohProviderEntry(
-          "CleanBrowsingAdult", base::nullopt /* provider_id_for_histogram */,
+          "CleanBrowsingAdult", absl::nullopt /* provider_id_for_histogram */,
           {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",
            "2a0d:2a00:2::1"},
           {"adult-filter-dns.cleanbrowsing.org"} /* dot_hostnames */,
@@ -65,7 +65,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           true /* display_globally */, {} /* display_countries */,
           LoggingLevel::kNormal),
       new DohProviderEntry(
-          "CleanBrowsingSecure", base::nullopt /* provider_id_for_histogram */,
+          "CleanBrowsingSecure", absl::nullopt /* provider_id_for_histogram */,
           {"185.228.168.9", "185.228.169.9", "2a0d:2a00:1::2",
            "2a0d:2a00:2::2"},
           {"security-filter-dns.cleanbrowsing.org"} /* dot_hostnames */,
@@ -86,7 +86,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           true /* display_globally */, {} /* display_countries */,
           LoggingLevel::kExtra),
       new DohProviderEntry(
-          "Comcast", base::nullopt /* provider_id_for_histogram */,
+          "Comcast", absl::nullopt /* provider_id_for_histogram */,
           {"75.75.75.75", "75.75.76.76", "2001:558:feed::1",
            "2001:558:feed::2"},
           {"dot.xfinity.com"} /* dns_over_tls_hostnames */,
@@ -107,7 +107,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
       // disables EDNS Client Subnet (ECS) handling in order to match the
       // behavior of the upgraded-from classic DNS server.
       new DohProviderEntry(
-          "Dnssb", base::nullopt /* provider_id_for_histogram */,
+          "Dnssb", absl::nullopt /* provider_id_for_histogram */,
           {"185.222.222.222", "185.184.222.222", "2a09::", "2a09::1"},
           {"dns.sb"} /* dns_over_tls_hostnames */,
           "https://doh.dns.sb/dns-query?no_ecs=true{&dns}", "" /* ui_name */,
@@ -132,7 +132,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
                            true /* display_globally */,
                            {} /* display_countries */, LoggingLevel::kExtra),
       new DohProviderEntry(
-          "GoogleDns64", base::nullopt /* provider_id_for_histogram */,
+          "GoogleDns64", absl::nullopt /* provider_id_for_histogram */,
           {"2001:4860:4860::64", "2001:4860:4860::6464"},
           {"dns64.dns.google"} /* dns_over_tls_hostnames */,
           "https://dns64.dns.google/dns-query{?dns}", "" /* ui_name */,
@@ -164,7 +164,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
                            true /* display_globally */,
                            {} /* display_countries */, LoggingLevel::kNormal),
       new DohProviderEntry(
-          "OpenDNSFamily", base::nullopt /* provider_id_for_histogram */,
+          "OpenDNSFamily", absl::nullopt /* provider_id_for_histogram */,
           {"208.67.222.123", "208.67.220.123", "2620:119:35::123",
            "2620:119:53::123"},
           {""} /* dns_over_tls_hostnames */,
@@ -173,14 +173,14 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           false /* display_globally */, {} /* display_countries */,
           LoggingLevel::kNormal),
       new DohProviderEntry(
-          "Quad9Cdn", base::nullopt /* provider_id_for_histogram */,
+          "Quad9Cdn", absl::nullopt /* provider_id_for_histogram */,
           {"9.9.9.11", "149.112.112.11", "2620:fe::11", "2620:fe::fe:11"},
           {"dns11.quad9.net"} /* dns_over_tls_hostnames */,
           "https://dns11.quad9.net/dns-query", "" /* ui_name */,
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */, LoggingLevel::kNormal),
       new DohProviderEntry(
-          "Quad9Insecure", base::nullopt /* provider_id_for_histogram */,
+          "Quad9Insecure", absl::nullopt /* provider_id_for_histogram */,
           {"9.9.9.10", "149.112.112.10", "2620:fe::10", "2620:fe::fe:10"},
           {"dns10.quad9.net"} /* dns_over_tls_hostnames */,
           "https://dns10.quad9.net/dns-query", "" /* ui_name */,
@@ -195,7 +195,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           true /* display_globally */, {} /* display_countries */,
           LoggingLevel::kExtra),
       new DohProviderEntry(
-          "Quickline", base::nullopt /* provider_id_for_histogram */,
+          "Quickline", absl::nullopt /* provider_id_for_histogram */,
           {"212.60.61.246", "212.60.63.246", "2001:1a88:10:ffff::1",
            "2001:1a88:10:ffff::2"},
           {"dot.quickline.ch"} /* dns_over_tls_hostnames */,
@@ -203,7 +203,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */, LoggingLevel::kNormal),
       new DohProviderEntry(
-          "Spectrum1", base::nullopt /* provider_id_for_histogram */,
+          "Spectrum1", absl::nullopt /* provider_id_for_histogram */,
           {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
            "2001:1998:0f00:0002::1"},
           {""} /* dns_over_tls_hostnames */,
@@ -211,7 +211,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */, LoggingLevel::kNormal),
       new DohProviderEntry(
-          "Spectrum2", base::nullopt /* provider_id_for_histogram */,
+          "Spectrum2", absl::nullopt /* provider_id_for_histogram */,
           {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
            "2001:1998:0f00:0002::1"},
           {""} /* dns_over_tls_hostnames */,
@@ -219,7 +219,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "" /* privacy_policy */, false /* display_globally */,
           {} /* display_countries */, LoggingLevel::kNormal),
       new DohProviderEntry(
-          "Switch", base::nullopt /* provider_id_for_histogram */,
+          "Switch", absl::nullopt /* provider_id_for_histogram */,
           {"130.59.31.251", "130.59.31.248", "2001:620:0:ff::2",
            "2001:620:0:ff::3"},
           {"dns.switch.ch"} /* dns_over_tls_hostnames */,
@@ -233,7 +233,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
 // static
 DohProviderEntry DohProviderEntry::ConstructForTesting(
     std::string provider,
-    base::Optional<DohProviderIdForHistogram> provider_id_for_histogram,
+    absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
     std::set<base::StringPiece> ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,
@@ -256,7 +256,7 @@ DohProviderEntry::~DohProviderEntry() = default;
 
 DohProviderEntry::DohProviderEntry(
     std::string provider,
-    base::Optional<DohProviderIdForHistogram> provider_id_for_histogram,
+    absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
     std::set<base::StringPiece> ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
     std::string dns_over_https_template,

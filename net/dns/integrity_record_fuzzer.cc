@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -25,10 +25,10 @@ base::StringPiece MakeStringPiece(const std::vector<uint8_t>& vec) {
 void ParseThenSerializeProperty(const std::vector<uint8_t>& data) {
   auto parsed = IntegrityRecordRdata::Create(MakeStringPiece(data));
   CHECK(parsed);
-  base::Optional<std::vector<uint8_t>> maybe_serialized = parsed->Serialize();
+  absl::optional<std::vector<uint8_t>> maybe_serialized = parsed->Serialize();
   // Since |data| is chosen by a fuzzer, the record's digest is unlikely to
   // match its nonce. As a result, |parsed->IsIntact()| may be false, and thus
-  // |parsed->Serialize()| may be |base::nullopt|.
+  // |parsed->Serialize()| may be |absl::nullopt|.
   CHECK_EQ(parsed->IsIntact(), !!maybe_serialized);
   if (maybe_serialized) {
     CHECK(data == *maybe_serialized);
@@ -45,7 +45,7 @@ void SerializeThenParseProperty(const std::vector<uint8_t>& data) {
   // Build an IntegrityRecordRdata by treating |data| as a nonce.
   IntegrityRecordRdata record(data);
   CHECK(record.IsIntact());
-  base::Optional<std::vector<uint8_t>> maybe_serialized = record.Serialize();
+  absl::optional<std::vector<uint8_t>> maybe_serialized = record.Serialize();
   CHECK(maybe_serialized.has_value());
 
   // Parsing |serialized| always produces a record identical to the original.

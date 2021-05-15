@@ -22,7 +22,7 @@ class InterfaceProperties final {
  public:
   // Creates an |InterfaceProperties| if |properties| are valid complete
   // properties as reported by |VerifyCompleteInterfaceProperties|.
-  static base::Optional<InterfaceProperties> VerifyAndCreate(
+  static absl::optional<InterfaceProperties> VerifyAndCreate(
       fuchsia::net::interfaces::Properties properties);
   InterfaceProperties(InterfaceProperties&& interface);
   InterfaceProperties& operator=(InterfaceProperties&& interface);
@@ -76,9 +76,9 @@ bool VerifyCompleteInterfaceProperties(
 // Consumes events describing existing interfaces from |watcher| and
 // returns a vector of interface Id & properties pairs.  |watcher| must
 // be a newly-connected Watcher channel.
-// Returns base::nullopt if any protocol error is encountered, e.g.
+// Returns absl::nullopt if any protocol error is encountered, e.g.
 // |watcher| supplies an invalid event, or disconnects.
-base::Optional<internal::ExistingInterfaceProperties> GetExistingInterfaces(
+absl::optional<internal::ExistingInterfaceProperties> GetExistingInterfaces(
     const fuchsia::net::interfaces::WatcherSyncPtr& watcher);
 
 }  // namespace internal

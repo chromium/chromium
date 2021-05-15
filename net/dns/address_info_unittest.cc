@@ -96,7 +96,7 @@ std::unique_ptr<addrinfo> MakeHints(AddressFamily address_family,
 }
 
 TEST(AddressInfoTest, Failure) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
@@ -112,7 +112,7 @@ TEST(AddressInfoTest, Failure) {
 #if defined(OS_WIN)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureWin) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
@@ -129,7 +129,7 @@ TEST(AddressInfoTest, FailureWin) {
 #if defined(OS_ANDROID)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureAndroid) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
@@ -144,7 +144,7 @@ TEST(AddressInfoTest, FailureAndroid) {
 #endif  // OS_ANDROID
 
 TEST(AddressInfoTest, Canonical) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   std::tie(ai, err, os_error) =
@@ -156,11 +156,11 @@ TEST(AddressInfoTest, Canonical) {
   EXPECT_EQ(err, OK);
   EXPECT_EQ(os_error, 0);
   EXPECT_THAT(ai->GetCanonicalName(),
-              base::Optional<std::string>("canonical.bar.com"));
+              absl::optional<std::string>("canonical.bar.com"));
 }
 
 TEST(AddressInfoTest, Iteration) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   std::tie(ai, err, os_error) =
@@ -196,7 +196,7 @@ TEST(AddressInfoTest, Iteration) {
 }
 
 TEST(AddressInfoTest, IsAllLocalhostOfOneFamily) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   std::tie(ai, err, os_error) =
@@ -211,7 +211,7 @@ TEST(AddressInfoTest, IsAllLocalhostOfOneFamily) {
 }
 
 TEST(AddressInfoTest, IsAllLocalhostOfOneFamilyFalse) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   std::tie(ai, err, os_error) =
@@ -226,7 +226,7 @@ TEST(AddressInfoTest, IsAllLocalhostOfOneFamilyFalse) {
 }
 
 TEST(AddressInfoTest, CreateAddressList) {
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err;
   int os_error;
   std::tie(ai, err, os_error) =

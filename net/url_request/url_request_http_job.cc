@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -79,6 +78,7 @@
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
@@ -729,9 +729,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   }
 
   base::Time response_date;
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   if (GetResponseHeaders()->GetDateValue(&response_date))
-    server_time = base::make_optional(response_date);
+    server_time = absl::make_optional(response_date);
 
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();
@@ -792,7 +792,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
         request_->url(), cookie_string, base::Time::Now(), server_time,
         &returned_status);
 
-    base::Optional<CanonicalCookie> cookie_to_return = base::nullopt;
+    absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
     if (returned_status.IsInclude()) {
       DCHECK(cookie);
       // Make a copy of the cookie if we successfully made one.
@@ -824,7 +824,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
 void URLRequestHttpJob::OnSetCookieResult(
     const CookieOptions& options,
-    base::Optional<CanonicalCookie> cookie,
+    absl::optional<CanonicalCookie> cookie,
     std::string cookie_string,
     CookieAccessResult access_result) {
   if (request_->net_log().IsCapturing()) {
@@ -944,7 +944,7 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
       // |URLRequestHttpJob::OnHeadersReceivedCallback()| or
       // |NetworkDelegate::URLRequestDestroyed()| has been called.
       OnCallToDelegate(NetLogEventType::NETWORK_DELEGATE_HEADERS_RECEIVED);
-      preserve_fragment_on_redirect_url_ = base::nullopt;
+      preserve_fragment_on_redirect_url_ = absl::nullopt;
       IPEndPoint endpoint;
       if (transaction_)
         transaction_->GetRemoteEndpoint(&endpoint);

@@ -11,7 +11,6 @@
 
 #include "base/big_endian.h"
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -1251,7 +1251,7 @@ TEST(DnsResponseWriteTest, SingleARecordAnswer) {
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */,
-                       {} /* additional records */, base::nullopt);
+                       {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   std::string expected_response(response_data, sizeof(response_data));
@@ -1286,7 +1286,7 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithFinalDotInName) {
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */,
-                       {} /* additional records */, base::nullopt);
+                       {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   std::string expected_response(response_data, sizeof(response_data));
@@ -1322,7 +1322,7 @@ TEST(DnsResponseWriteTest, SingleARecordAnswerWithQuestion) {
   ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
   OptRecordRdata opt_rdata;
   opt_rdata.AddOpt(OptRecordRdata::Opt(255, "\xde\xad\xbe\xef"));
-  base::Optional<DnsQuery> query;
+  absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA, &opt_rdata);
   net::DnsResourceRecord answer;
   answer.name = dotted_name;
@@ -1385,7 +1385,7 @@ TEST(DnsResponseWriteTest,
   writer.WriteU16(dns_protocol::kTypeA);                // qtype
   writer.WriteU16(dns_protocol::kClassIN);              // qclass
   // buf contains 10 extra zero bytes.
-  base::Optional<DnsQuery> query;
+  absl::optional<DnsQuery> query;
   query.emplace(buf);
   query->Parse(buf_size);
   net::DnsResourceRecord answer;
@@ -1434,7 +1434,7 @@ TEST(DnsResponseWriteTest, SingleQuadARecordAnswer) {
   std::vector<DnsResourceRecord> answers(1, answer);
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, {} /* additional records */,
-                       base::nullopt);
+                       absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   std::string expected_response(response_data, sizeof(response_data));
@@ -1479,7 +1479,7 @@ TEST(DnsResponseWriteTest,
   std::string dotted_name("www.example.com");
   std::string dns_name;
   ASSERT_TRUE(DNSDomainFromDot(dotted_name, &dns_name));
-  base::Optional<DnsQuery> query;
+  absl::optional<DnsQuery> query;
   query.emplace(0x1234 /* id */, dns_name, dns_protocol::kTypeA);
   net::DnsResourceRecord answer;
   answer.name = dotted_name;
@@ -1549,7 +1549,7 @@ TEST(DnsResponseWriteTest, TwoAnswersWithAAndQuadARecords) {
   answers[1] = answer2;
   DnsResponse response(0x1234 /* id */, true /* is_authoritative*/, answers,
                        {} /* authority_records */, {} /* additional records */,
-                       base::nullopt);
+                       absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   std::string expected_response(response_data, sizeof(response_data));
@@ -1584,7 +1584,7 @@ TEST(DnsResponseWriteTest, AnswerWithAuthorityRecord) {
   std::vector<DnsResourceRecord> authority_records(1, record);
   DnsResponse response(0x1235 /* response_id */, true /* is_authoritative*/,
                        {} /* answers */, authority_records,
-                       {} /* additional records */, base::nullopt);
+                       {} /* additional records */, absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   std::string expected_response(response_data, sizeof(response_data));
@@ -1604,7 +1604,7 @@ TEST(DnsResponseWriteTest, AnswerWithRcode) {
   };
   DnsResponse response(0x1212 /* response_id */, false /* is_authoritative*/,
                        {} /* answers */, {} /* authority_records */,
-                       {} /* additional records */, base::nullopt,
+                       {} /* additional records */, absl::nullopt,
                        dns_protocol::kRcodeNXDOMAIN);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
@@ -1629,7 +1629,7 @@ TEST(DnsResponseWriteTest, AAAAQuestionAndCnameAnswer) {
   answer.SetOwnedRdata(dns_name);
   std::vector<DnsResourceRecord> answers(1, answer);
 
-  base::Optional<DnsQuery> query(absl::in_place, 114 /* id */, dns_name,
+  absl::optional<DnsQuery> query(absl::in_place, 114 /* id */, dns_name,
                                  dns_protocol::kTypeAAAA);
 
   DnsResponse response(114 /* response_id */, true /* is_authoritative*/,
@@ -1657,7 +1657,7 @@ TEST(DnsResponseWriteTest, WrittenResponseCanBeParsed) {
   std::vector<DnsResourceRecord> additional_records(1, additional_record);
   DnsResponse response(0x1234 /* response_id */, true /* is_authoritative*/,
                        answers, {} /* authority_records */, additional_records,
-                       base::nullopt);
+                       absl::nullopt);
   ASSERT_NE(nullptr, response.io_buffer());
   EXPECT_TRUE(response.IsValid());
   EXPECT_THAT(response.id(), testing::Optional(0x1234));

@@ -112,11 +112,11 @@ bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
   return true;
 }
 
-base::Optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
+absl::optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
     const url::Origin& origin) {
   ObtainASiteResult result = ObtainASite(origin);
   if (!result.used_registerable_domain)
-    return base::nullopt;
+    return absl::nullopt;
   return SchemefulSite(std::move(result));
 }
 
@@ -164,15 +164,15 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 }
 
 // static
-base::Optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
+absl::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     const std::string& value) {
-  base::Optional<url::Origin> result = url::Origin::Deserialize(value);
+  absl::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
-    return base::nullopt;
+    return absl::nullopt;
   return SchemefulSite(result.value());
 }
 
-base::Optional<std::string> SchemefulSite::SerializeWithNonce() {
+absl::optional<std::string> SchemefulSite::SerializeWithNonce() {
   return site_as_origin_.SerializeWithNonceAndInitIfNeeded();
 }
 

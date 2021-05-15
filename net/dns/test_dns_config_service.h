@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "net/dns/dns_config_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -45,7 +45,7 @@ class TestDnsConfigService : public DnsConfigService {
   }
 
  private:
-  base::Optional<DnsConfig> config_for_refresh_;
+  absl::optional<DnsConfig> config_for_refresh_;
 };
 
 }  // namespace net

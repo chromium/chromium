@@ -69,7 +69,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnSettingsReceived();
   void OnHeadersComplete();
   void OnConnectStreamClosed();
-  void OnDatagramProcessed(base::Optional<quic::MessageStatus> status);
+  void OnDatagramProcessed(absl::optional<quic::MessageStatus> status);
 
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady() override;

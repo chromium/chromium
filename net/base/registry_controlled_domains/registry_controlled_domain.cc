@@ -380,7 +380,7 @@ bool SameDomainOrHost(const url::Origin& origin1,
 }
 
 bool SameDomainOrHost(const url::Origin& origin1,
-                      const base::Optional<url::Origin>& origin2,
+                      const absl::optional<url::Origin>& origin2,
                       PrivateRegistryFilter filter) {
   return origin2.has_value() &&
          SameDomainOrHost(origin1, origin2.value(), filter);

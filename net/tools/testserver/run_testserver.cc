@@ -51,7 +51,7 @@ int main(int argc, const char* argv[]) {
   }
 
   // If populated, EmbeddedTestServer is used instead of the SpawnedTestServer.
-  base::Optional<net::test_server::EmbeddedTestServer::Type>
+  absl::optional<net::test_server::EmbeddedTestServer::Type>
       embedded_test_server_type;
 
   net::SpawnedTestServer::Type server_type;

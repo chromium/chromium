@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
@@ -20,6 +19,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -143,9 +143,9 @@ int InitSocketPoolHelper(
   if ((request_load_flags & LOAD_IGNORE_LIMITS) != 0)
     respect_limits = ClientSocketPool::RespectLimits::DISABLED;
 
-  base::Optional<NetworkTrafficAnnotationTag> proxy_annotation =
-      proxy_info.is_direct() ? base::nullopt
-                             : base::Optional<NetworkTrafficAnnotationTag>(
+  absl::optional<NetworkTrafficAnnotationTag> proxy_annotation =
+      proxy_info.is_direct() ? absl::nullopt
+                             : absl::optional<NetworkTrafficAnnotationTag>(
                                    proxy_info.traffic_annotation());
   if (num_preconnect_streams) {
     pool->RequestSockets(connection_group, std::move(socket_params),

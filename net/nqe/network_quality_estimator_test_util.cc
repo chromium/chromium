@@ -206,7 +206,7 @@ bool TestNetworkQualityEstimator::GetRecentRTT(
                                                rtt, observations_count);
 }
 
-base::Optional<base::TimeDelta> TestNetworkQualityEstimator::GetTransportRTT()
+absl::optional<base::TimeDelta> TestNetworkQualityEstimator::GetTransportRTT()
     const {
   if (start_time_null_transport_rtt_)
     return start_time_null_transport_rtt_;
@@ -297,7 +297,7 @@ void TestNetworkQualityEstimator::
     observer.OnEffectiveConnectionTypeChanged(type);
 }
 
-base::Optional<net::EffectiveConnectionType>
+absl::optional<net::EffectiveConnectionType>
 TestNetworkQualityEstimator::GetOverrideECT() const {
   return effective_connection_type_;
 }
@@ -327,7 +327,7 @@ nqe::internal::NetworkID TestNetworkQualityEstimator::GetCurrentNetworkID()
                                   INT32_MIN);
 }
 
-base::Optional<int32_t>
+absl::optional<int32_t>
 TestNetworkQualityEstimator::GetCurrentSignalStrengthWithThrottling() {
   if (current_cellular_signal_strength_) {
     return current_cellular_signal_strength_;

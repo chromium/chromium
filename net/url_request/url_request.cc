@@ -372,7 +372,7 @@ HttpResponseHeaders* URLRequest::response_headers() const {
   return response_info_.headers.get();
 }
 
-const base::Optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
+const absl::optional<AuthChallengeInfo>& URLRequest::auth_challenge_info()
     const {
   return response_info_.auth_challenge;
 }
@@ -453,7 +453,7 @@ void URLRequest::set_first_party_url_policy(
   first_party_url_policy_ = first_party_url_policy;
 }
 
-void URLRequest::set_initiator(const base::Optional<url::Origin>& initiator) {
+void URLRequest::set_initiator(const absl::optional<url::Origin>& initiator) {
   DCHECK(!is_pending_);
   DCHECK(!initiator.has_value() || initiator.value().opaque() ||
          initiator.value().GetURL().is_valid());
@@ -826,8 +826,8 @@ void URLRequest::NotifyResponseStarted(int net_error) {
 }
 
 void URLRequest::FollowDeferredRedirect(
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers) {
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
   DCHECK(job_.get());
   DCHECK_EQ(OK, status_);
 
@@ -911,8 +911,8 @@ void URLRequest::PrepareToRestart() {
 
 void URLRequest::Redirect(
     const RedirectInfo& redirect_info,
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers) {
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers) {
   // This method always succeeds. Whether |job_| is allowed to redirect to
   // |redirect_info| is checked in URLRequestJob::CanFollowRedirect, before
   // NotifyReceivedRedirect. This means the delegate can assume that, if it

@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -58,13 +58,13 @@ size_t DeterminePaddingSize(size_t unpadded_size,
   }
 }
 
-base::Optional<OptRecordRdata> AddPaddingIfNecessary(
+absl::optional<OptRecordRdata> AddPaddingIfNecessary(
     const OptRecordRdata* opt_rdata,
     DnsQuery::PaddingStrategy padding_strategy,
     size_t no_opt_buffer_size) {
   // If no input OPT record rdata and no padding, no OPT record rdata needed.
   if (!opt_rdata && padding_strategy == DnsQuery::PaddingStrategy::NONE)
-    return base::nullopt;
+    return absl::nullopt;
 
   OptRecordRdata merged_opt_rdata;
   if (opt_rdata)
@@ -101,12 +101,12 @@ DnsQuery::DnsQuery(uint16_t id,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
 #if DCHECK_IS_ON()
-  base::Optional<std::string> dotted_name = DnsDomainToString(qname);
+  absl::optional<std::string> dotted_name = DnsDomainToString(qname);
   DCHECK(dotted_name && !dotted_name.value().empty());
 #endif  // DCHECK_IS_ON()
 
   size_t buffer_size = kHeaderSize + QuestionSize(qname_size_);
-  base::Optional<OptRecordRdata> merged_opt_rdata =
+  absl::optional<OptRecordRdata> merged_opt_rdata =
       AddPaddingIfNecessary(opt_rdata, padding_strategy, buffer_size);
   if (merged_opt_rdata)
     buffer_size += OptRecordSize(&merged_opt_rdata.value());

@@ -509,7 +509,7 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   // Cookie with unspecified SameSite.
   auto cookie =
       CanonicalCookie::Create(GURL("https://www.example.com"), "cookie=1",
-                              base::Time::Now(), base::nullopt);
+                              base::Time::Now(), absl::nullopt);
 
   {
     // With SameSite features off.

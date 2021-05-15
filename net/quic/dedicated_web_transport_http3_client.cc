@@ -140,8 +140,8 @@ class DedicatedWebTransportHttp3ClientSession
   void OnDatagramProcessed(
       absl::optional<quic::MessageStatus> status) override {
     client_->OnDatagramProcessed(
-        status.has_value() ? base::Optional<quic::MessageStatus>(*status)
-                           : base::Optional<quic::MessageStatus>());
+        status.has_value() ? absl::optional<quic::MessageStatus>(*status)
+                           : absl::optional<quic::MessageStatus>());
   }
 
  private:
@@ -335,7 +335,7 @@ int DedicatedWebTransportHttp3Client::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      HostPortPair::FromURL(url_), isolation_key_, net_log_, base::nullopt);
+      HostPortPair::FromURL(url_), isolation_key_, net_log_, absl::nullopt);
   return resolve_host_request_->Start(base::BindOnce(
       &DedicatedWebTransportHttp3Client::DoLoop, base::Unretained(this)));
 }
@@ -647,7 +647,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
-    base::Optional<quic::MessageStatus> status) {
+    absl::optional<quic::MessageStatus> status) {
   visitor_->OnDatagramProcessed(status);
 }
 

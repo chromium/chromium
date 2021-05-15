@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/ip_endpoint.h"
@@ -30,6 +29,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -191,8 +191,8 @@ class NET_EXPORT URLRequestJob {
   virtual void ContinueDespiteLastError();
 
   void FollowDeferredRedirect(
-      const base::Optional<std::vector<std::string>>& removed_headers,
-      const base::Optional<net::HttpRequestHeaders>& modified_headers);
+      const absl::optional<std::vector<std::string>>& removed_headers,
+      const absl::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Returns true if the Job is done producing response data and has called
   // NotifyDone on the request.
@@ -380,8 +380,8 @@ class NET_EXPORT URLRequestJob {
   // given redirect destination.
   void FollowRedirect(
       const RedirectInfo& redirect_info,
-      const base::Optional<std::vector<std::string>>& removed_headers,
-      const base::Optional<net::HttpRequestHeaders>& modified_headers);
+      const absl::optional<std::vector<std::string>>& removed_headers,
+      const absl::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Called after every raw read. If |bytes_read| is > 0, this indicates
   // a successful read of |bytes_read| unfiltered bytes. If |bytes_read|
@@ -438,7 +438,7 @@ class NET_EXPORT URLRequestJob {
 
   // Set when a redirect is deferred. Redirects are deferred after validity
   // checks are performed, so this field must not be modified.
-  base::Optional<RedirectInfo> deferred_redirect_info_;
+  absl::optional<RedirectInfo> deferred_redirect_info_;
 
   // Non-null if ReadRawData() returned ERR_IO_PENDING, and the read has not
   // completed.

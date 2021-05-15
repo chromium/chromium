@@ -13,12 +13,12 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "net/base/net_export.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/network_quality_observation.h"
 #include "net/nqe/network_quality_observation_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // signal strength. |result| must not be null. If |observations_count| is not
   // null, then it is set to the number of observations that were available
   // in the observation buffer for computing the percentile.
-  base::Optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
+  absl::optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
                                         int32_t current_signal_strength,
                                         int percentile,
                                         size_t* observations_count) const;

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
@@ -42,6 +41,7 @@
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::Test;
 using testing::StrictMock;

@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
@@ -35,6 +34,7 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trace_event {
@@ -143,7 +143,7 @@ class NET_EXPORT SpdySessionPool
                   size_t session_max_recv_window_size,
                   int session_max_queued_capped_frames,
                   const spdy::SettingsMap& initial_settings,
-                  const base::Optional<GreasedHttp2Frame>& greased_http2_frame,
+                  const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
                   bool http2_end_stream_with_data_frame,
                   bool enable_priority_update,
                   SpdySessionPool::TimeFunc time_func,
@@ -462,7 +462,7 @@ class NET_EXPORT SpdySessionPool
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame. See
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-  const base::Optional<GreasedHttp2Frame> greased_http2_frame_;
+  const absl::optional<GreasedHttp2Frame> greased_http2_frame_;
 
   // If set, the HEADERS frame carrying a request without body will not have the
   // END_STREAM flag set.  The stream will be closed by a subsequent empty DATA

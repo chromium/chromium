@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -48,6 +47,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -308,9 +308,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Note: the initiator can be null for browser-initiated top level
   // navigations. This is different from a unique Origin (e.g. in sandboxed
   // iframes).
-  const base::Optional<url::Origin>& initiator() const { return initiator_; }
+  const absl::optional<url::Origin>& initiator() const { return initiator_; }
   // This method may only be called before Start().
-  void set_initiator(const base::Optional<url::Origin>& initiator);
+  void set_initiator(const absl::optional<url::Origin>& initiator);
 
   // The request method, as an uppercase string.  "GET" is the default value.
   // The request method may only be changed before Start() is called and
@@ -472,7 +472,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Get the SSL connection info.
   const SSLInfo& ssl_info() const { return response_info_.ssl_info; }
 
-  const base::Optional<AuthChallengeInfo>& auth_challenge_info() const;
+  const absl::optional<AuthChallengeInfo>& auth_challenge_info() const;
 
   // Gets timing information related to the request.  Events that have not yet
   // occurred are left uninitialized.  After a second request starts, due to
@@ -610,8 +610,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // |modified_headers| are changes applied to the request headers after
   // updating them for the redirect.
   void FollowDeferredRedirect(
-      const base::Optional<std::vector<std::string>>& removed_headers,
-      const base::Optional<net::HttpRequestHeaders>& modified_headers);
+      const absl::optional<std::vector<std::string>>& removed_headers,
+      const absl::optional<net::HttpRequestHeaders>& modified_headers);
 
   // One of the following two methods should be called in response to an
   // OnAuthRequired() callback (and only then).
@@ -698,13 +698,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return accepted_stream_types_->contains(type);
   }
 
-  const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+  const absl::optional<base::flat_set<net::SourceStream::SourceType>>&
   accepted_stream_types() const {
     return accepted_stream_types_;
   }
 
   void set_accepted_stream_types(
-      const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+      const absl::optional<base::flat_set<net::SourceStream::SourceType>>&
           types) {
     if (types) {
       DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_NONE));
@@ -788,8 +788,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // applied to the request headers after updating them for the redirect.
   void Redirect(
       const RedirectInfo& redirect_info,
-      const base::Optional<std::vector<std::string>>& removed_headers,
-      const base::Optional<net::HttpRequestHeaders>& modified_headers);
+      const absl::optional<std::vector<std::string>>& removed_headers,
+      const absl::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Called by URLRequestJob to allow interception when a redirect occurs.
   void NotifyReceivedRedirect(const RedirectInfo& redirect_info,
@@ -892,7 +892,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;
-  base::Optional<url::Origin> initiator_;
+  absl::optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;
   std::string method_;  // "GET", "POST", etc. Should be all uppercase.
   std::string referrer_;
@@ -994,7 +994,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  base::Optional<base::flat_set<net::SourceStream::SourceType>>
+  absl::optional<base::flat_set<net::SourceStream::SourceType>>
       accepted_stream_types_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;

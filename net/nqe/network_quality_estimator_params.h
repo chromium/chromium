@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -80,7 +80,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   // the effective connection type that has been forced. Forced ECT can be
   // forced based on |connection_type| (e.g. Slow-2G on cellular, and default on
   // other connection type).
-  base::Optional<EffectiveConnectionType> GetForcedEffectiveConnectionType(
+  absl::optional<EffectiveConnectionType> GetForcedEffectiveConnectionType(
       NetworkChangeNotifier::ConnectionType connection_type);
 
   void SetForcedEffectiveConnectionType(
@@ -290,7 +290,7 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const double throughput_hanging_requests_cwnd_size_multiplier_;
   const double weight_multiplier_per_second_;
   const double weight_multiplier_per_signal_strength_level_;
-  base::Optional<EffectiveConnectionType> forced_effective_connection_type_;
+  absl::optional<EffectiveConnectionType> forced_effective_connection_type_;
   const bool forced_effective_connection_type_on_cellular_only_;
   bool persistent_cache_reading_enabled_;
   const base::TimeDelta min_socket_watcher_notification_interval_;

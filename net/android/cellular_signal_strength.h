@@ -8,8 +8,8 @@
 #include <jni.h>
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -22,7 +22,7 @@ namespace cellular_signal_strength {
 // empty value is returned. If the signal strength value returned by platform
 // API is less than 0, this method returns 0. If the platform API returns a
 // value larger than 4, then this method returns 4.
-NET_EXPORT_PRIVATE base::Optional<int32_t> GetSignalStrengthLevel();
+NET_EXPORT_PRIVATE absl::optional<int32_t> GetSignalStrengthLevel();
 
 }  // namespace cellular_signal_strength
 

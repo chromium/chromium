@@ -120,19 +120,19 @@ class ContextHostResolver::WrappedResolveHostRequest
     return inner_request_->Start(std::move(callback));
   }
 
-  const base::Optional<AddressList>& GetAddressResults() const override {
+  const absl::optional<AddressList>& GetAddressResults() const override {
     if (!inner_request_) {
-      static base::NoDestructor<base::Optional<AddressList>> nullopt_result;
+      static base::NoDestructor<absl::optional<AddressList>> nullopt_result;
       return *nullopt_result;
     }
 
     return inner_request_->GetAddressResults();
   }
 
-  const base::Optional<std::vector<std::string>>& GetTextResults()
+  const absl::optional<std::vector<std::string>>& GetTextResults()
       const override {
     if (!inner_request_) {
-      static const base::NoDestructor<base::Optional<std::vector<std::string>>>
+      static const base::NoDestructor<absl::optional<std::vector<std::string>>>
           nullopt_result;
       return *nullopt_result;
     }
@@ -140,10 +140,10 @@ class ContextHostResolver::WrappedResolveHostRequest
     return inner_request_->GetTextResults();
   }
 
-  const base::Optional<std::vector<HostPortPair>>& GetHostnameResults()
+  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
       const override {
     if (!inner_request_) {
-      static const base::NoDestructor<base::Optional<std::vector<HostPortPair>>>
+      static const base::NoDestructor<absl::optional<std::vector<HostPortPair>>>
           nullopt_result;
       return *nullopt_result;
     }
@@ -151,10 +151,10 @@ class ContextHostResolver::WrappedResolveHostRequest
     return inner_request_->GetHostnameResults();
   }
 
-  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
+  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
       const override {
     if (!inner_request_) {
-      static const base::NoDestructor<base::Optional<std::vector<std::string>>>
+      static const base::NoDestructor<absl::optional<std::vector<std::string>>>
           nullopt_result;
       return *nullopt_result;
     }
@@ -169,10 +169,10 @@ class ContextHostResolver::WrappedResolveHostRequest
     return inner_request_->GetResolveErrorInfo();
   }
 
-  const base::Optional<HostCache::EntryStaleness>& GetStaleInfo()
+  const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
     if (!inner_request_) {
-      static const base::NoDestructor<base::Optional<HostCache::EntryStaleness>>
+      static const base::NoDestructor<absl::optional<HostCache::EntryStaleness>>
           nullopt_result;
       return *nullopt_result;
     }
@@ -296,7 +296,7 @@ ContextHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkIsolationKey& network_isolation_key,
     const NetLogWithSource& source_net_log,
-    const base::Optional<ResolveHostParameters>& optional_parameters) {
+    const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>

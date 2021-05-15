@@ -118,7 +118,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
 
   void OnFailChannel(const std::string& message,
                      int net_error,
-                     base::Optional<int> response_code) override;
+                     absl::optional<int> response_code) override;
 
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override;
@@ -134,7 +134,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials) override;
+                     absl::optional<AuthCredentials>* credentials) override;
 
  private:
   void QuitNestedEventLoop();
@@ -193,7 +193,7 @@ void ConnectTestingEventInterface::OnDropChannel(bool was_clean,
 void ConnectTestingEventInterface::OnFailChannel(
     const std::string& message,
     int net_error,
-    base::Optional<int> response_code) {
+    absl::optional<int> response_code) {
   failed_ = true;
   failure_message_ = message;
   QuitNestedEventLoop();
@@ -219,8 +219,8 @@ int ConnectTestingEventInterface::OnAuthRequired(
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const AuthCredentials*)> callback,
-    base::Optional<AuthCredentials>* credentials) {
-  *credentials = base::nullopt;
+    absl::optional<AuthCredentials>* credentials) {
+  *credentials = absl::nullopt;
   return OK;
 }
 

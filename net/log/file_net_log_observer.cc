@@ -201,7 +201,7 @@ class FileNetLogObserver::FileWriter {
   // If max_event_file_size == kNoLimit, then no limit is enforced.
   FileWriter(const base::FilePath& log_path,
              const base::FilePath& inprogress_dir_path,
-             base::Optional<base::File> pre_existing_log_file,
+             absl::optional<base::File> pre_existing_log_file,
              uint64_t max_event_file_size,
              size_t total_num_event_files,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -336,7 +336,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBounded(
     NetLogCaptureMode capture_mode,
     std::unique_ptr<base::Value> constants) {
   return CreateInternal(log_path, SiblingInprogressDirectory(log_path),
-                        base::nullopt, max_total_size, kDefaultNumFiles,
+                        absl::nullopt, max_total_size, kDefaultNumFiles,
                         capture_mode, std::move(constants));
 }
 
@@ -344,7 +344,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateUnbounded(
     const base::FilePath& log_path,
     NetLogCaptureMode capture_mode,
     std::unique_ptr<base::Value> constants) {
-  return CreateInternal(log_path, base::FilePath(), base::nullopt, kNoLimit,
+  return CreateInternal(log_path, base::FilePath(), absl::nullopt, kNoLimit,
                         kDefaultNumFiles, capture_mode, std::move(constants));
 }
 
@@ -356,7 +356,7 @@ FileNetLogObserver::CreateBoundedPreExisting(
     NetLogCaptureMode capture_mode,
     std::unique_ptr<base::Value> constants) {
   return CreateInternal(base::FilePath(), inprogress_dir_path,
-                        base::make_optional<base::File>(std::move(output_file)),
+                        absl::make_optional<base::File>(std::move(output_file)),
                         max_total_size, kDefaultNumFiles, capture_mode,
                         std::move(constants));
 }
@@ -367,7 +367,7 @@ FileNetLogObserver::CreateUnboundedPreExisting(
     NetLogCaptureMode capture_mode,
     std::unique_ptr<base::Value> constants) {
   return CreateInternal(base::FilePath(), base::FilePath(),
-                        base::make_optional<base::File>(std::move(output_file)),
+                        absl::make_optional<base::File>(std::move(output_file)),
                         kNoLimit, kDefaultNumFiles, capture_mode,
                         std::move(constants));
 }
@@ -433,14 +433,14 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBoundedForTests(
     NetLogCaptureMode capture_mode,
     std::unique_ptr<base::Value> constants) {
   return CreateInternal(log_path, SiblingInprogressDirectory(log_path),
-                        base::nullopt, max_total_size, total_num_event_files,
+                        absl::nullopt, max_total_size, total_num_event_files,
                         capture_mode, std::move(constants));
 }
 
 std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
     const base::FilePath& log_path,
     const base::FilePath& inprogress_dir_path,
-    base::Optional<base::File> pre_existing_log_file,
+    absl::optional<base::File> pre_existing_log_file,
     uint64_t max_total_size,
     size_t total_num_event_files,
     NetLogCaptureMode capture_mode,
@@ -545,7 +545,7 @@ FileNetLogObserver::WriteQueue::~WriteQueue() = default;
 FileNetLogObserver::FileWriter::FileWriter(
     const base::FilePath& log_path,
     const base::FilePath& inprogress_dir_path,
-    base::Optional<base::File> pre_existing_log_file,
+    absl::optional<base::File> pre_existing_log_file,
     uint64_t max_event_file_size,
     size_t total_num_event_files,
     scoped_refptr<base::SequencedTaskRunner> task_runner)

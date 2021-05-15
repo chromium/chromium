@@ -190,10 +190,10 @@ void ConnectivityMonitor::SetReportCallbackForTesting(
   report_callback_for_testing_ = std::move(callback);
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 ConnectivityMonitor::GetTimeSinceLastFailureForTesting() {
   if (!time_last_failure_observed_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::TimeTicks::Now() - *time_last_failure_observed_;
 }
@@ -212,7 +212,7 @@ void ConnectivityMonitor::OnNetworkMadeDefault(
 #if defined(OS_ANDROID)
   NetworkChangeType change_type = NetworkChangeType::kNoEarlyActivation;
   if (mobile_network_request_) {
-    const base::Optional<NetworkChangeNotifier::NetworkHandle>&
+    const absl::optional<NetworkChangeNotifier::NetworkHandle>&
         activated_network = mobile_network_request_->activated_network();
     if (!activated_network) {
       change_type = NetworkChangeType::kEarlyActivationOfUnknownNetwork;

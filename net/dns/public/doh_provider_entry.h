@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -60,7 +60,7 @@ struct NET_EXPORT DohProviderEntry {
   std::string provider;
   // A provider_id_for_histogram is required for entries that are intended to
   // be visible in the UI.
-  base::Optional<DohProviderIdForHistogram> provider_id_for_histogram;
+  absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;
   std::set<IPAddress> ip_addresses;
   std::set<std::string> dns_over_tls_hostnames;
   std::string dns_over_https_template;
@@ -77,7 +77,7 @@ struct NET_EXPORT DohProviderEntry {
 
   static DohProviderEntry ConstructForTesting(
       std::string provider,
-      base::Optional<DohProviderIdForHistogram> provider_id_for_histogram,
+      absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,
@@ -96,7 +96,7 @@ struct NET_EXPORT DohProviderEntry {
  private:
   DohProviderEntry(
       std::string provider,
-      base::Optional<DohProviderIdForHistogram> provider_id_for_histogram,
+      absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
       std::string dns_over_https_template,

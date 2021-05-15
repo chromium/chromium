@@ -54,7 +54,7 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
       const HostPortPair& host,
       const NetworkIsolationKey& network_isolation_key,
       const NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   HostCache* GetHostCache() override;

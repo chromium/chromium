@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -20,6 +19,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -49,7 +49,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // the config is stabilized and ready to be read.
   explicit DnsConfigService(
       base::FilePath::StringPieceType hosts_file_path,
-      base::Optional<base::TimeDelta> config_change_delay =
+      absl::optional<base::TimeDelta> config_change_delay =
           base::TimeDelta::FromMilliseconds(50));
   virtual ~DnsConfigService();
 
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     //
     // Override if needed to implement platform-specific behavior, e.g. for a
     // platform-specific HOSTS format.
-    virtual base::Optional<DnsHosts> ReadHosts();
+    virtual absl::optional<DnsHosts> ReadHosts();
 
     // Adds any necessary additional entries to the given `DnsHosts`. Returns
     // false on failure. Will be called on a separate blockable ThreadPool
@@ -146,7 +146,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     // running on worker thread.
     DnsConfigService* const service_;
     // Written in DoWork, read in OnWorkFinished, no locking necessary.
-    base::Optional<DnsHosts> hosts_;
+    absl::optional<DnsHosts> hosts_;
 
     const base::FilePath hosts_file_path_;
   };
@@ -198,7 +198,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Set when |timer_| expires.
   bool last_sent_empty_;
 
-  const base::Optional<base::TimeDelta> config_change_delay_;
+  const absl::optional<base::TimeDelta> config_change_delay_;
   const base::FilePath hosts_file_path_;
 
   // Created only if needed in ReadHostsNow() to avoid creating unnecessarily if

@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -37,6 +36,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -181,14 +181,14 @@ ExtractionError ExtractResponseRecords(
     const DnsResponse& response,
     uint16_t result_qtype,
     std::vector<std::unique_ptr<const RecordParsed>>* out_records,
-    base::Optional<base::TimeDelta>* out_response_ttl,
+    absl::optional<base::TimeDelta>* out_response_ttl,
     std::vector<std::string>* out_aliases) {
   DCHECK_EQ(response.question_count(), 1u);
   DCHECK(out_records);
   DCHECK(out_response_ttl);
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
 
   DnsRecordParser parser = response.Parser();
 
@@ -285,7 +285,7 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
   DCHECK(out_results);
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   std::vector<std::string> aliases;
   ExtractionError extraction_error = ExtractResponseRecords(
       response, address_qtype, &records, &response_ttl, &aliases);
@@ -349,7 +349,7 @@ ExtractionError ExtractTxtResults(const DnsResponse& response,
   DCHECK(out_results);
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   ExtractionError extraction_error =
       ExtractResponseRecords(response, dns_protocol::kTypeTXT, &records,
                              &response_ttl, nullptr /* out_aliases */);
@@ -378,7 +378,7 @@ ExtractionError ExtractPointerResults(const DnsResponse& response,
   DCHECK(out_results);
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   ExtractionError extraction_error =
       ExtractResponseRecords(response, dns_protocol::kTypePTR, &records,
                              &response_ttl, nullptr /* out_aliases */);
@@ -410,7 +410,7 @@ ExtractionError ExtractServiceResults(const DnsResponse& response,
   DCHECK(out_results);
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   ExtractionError extraction_error =
       ExtractResponseRecords(response, dns_protocol::kTypeSRV, &records,
                              &response_ttl, nullptr /* out_aliases */);
@@ -444,7 +444,7 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
                                         HostCache::Entry* out_results) {
   DCHECK(out_results);
 
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   std::vector<std::unique_ptr<const RecordParsed>> records;
   ExtractionError extraction_error = ExtractResponseRecords(
       response, dns_protocol::kExperimentalTypeIntegrity, &records,
@@ -492,7 +492,7 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
                                     HostCache::Entry* out_results) {
   DCHECK(out_results);
 
-  base::Optional<base::TimeDelta> response_ttl;
+  absl::optional<base::TimeDelta> response_ttl;
   std::vector<std::unique_ptr<const RecordParsed>> records;
   ExtractionError extraction_error =
       ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,

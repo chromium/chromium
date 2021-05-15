@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -44,6 +43,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_context_storage.h"
 #include "net/url_request/url_request_interceptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace net {
@@ -311,7 +311,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   }
 
   void set_preserve_fragment_on_redirect_url(
-      const base::Optional<GURL>& preserve_fragment_on_redirect_url) {
+      const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
     preserve_fragment_on_redirect_url_ = preserve_fragment_on_redirect_url;
   }
 
@@ -355,7 +355,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
   void OnResponseStarted(URLRequest* request, int net_error) override;
   void OnCompleted(URLRequest* request, bool started, int net_error) override;
@@ -381,7 +381,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   GURL redirect_on_headers_received_url_;
   // URL to mark as retaining its fragment if redirected to at the
   // OnHeadersReceived() stage.
-  base::Optional<GURL> preserve_fragment_on_redirect_url_;
+  absl::optional<GURL> preserve_fragment_on_redirect_url_;
 
   int last_error_;
   int error_count_;

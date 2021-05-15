@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -574,16 +574,16 @@ struct NET_EXPORT ParsedAuthorityKeyIdentifier {
   ParsedAuthorityKeyIdentifier& operator=(ParsedAuthorityKeyIdentifier&& other);
 
   // The keyIdentifier, which is an OCTET STRING.
-  base::Optional<der::Input> key_identifier;
+  absl::optional<der::Input> key_identifier;
 
   // The authorityCertIssuer, which should be a GeneralNames, but this is not
   // enforced by ParseAuthorityKeyIdentifier.
-  base::Optional<der::Input> authority_cert_issuer;
+  absl::optional<der::Input> authority_cert_issuer;
 
   // The DER authorityCertSerialNumber, which should be a
   // CertificateSerialNumber (an INTEGER) but this is not enforced by
   // ParseAuthorityKeyIdentifier.
-  base::Optional<der::Input> authority_cert_serial_number;
+  absl::optional<der::Input> authority_cert_serial_number;
 };
 
 // Parses the value of an authorityKeyIdentifier extension. Returns true on

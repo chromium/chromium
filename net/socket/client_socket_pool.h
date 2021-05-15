@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
@@ -24,6 +23,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -250,7 +250,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   virtual int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,
@@ -272,7 +272,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   virtual void RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
       const NetLogWithSource& net_log) = 0;
 
@@ -367,7 +367,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       GroupId group_id,
       scoped_refptr<SocketParams> socket_params,
       const ProxyServer& proxy_server,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       bool is_for_websockets,
       const CommonConnectJobParams* common_connect_job_params,
       RequestPriority request_priority,

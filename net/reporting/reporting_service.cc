@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,6 +23,7 @@
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_uploader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -111,7 +111,7 @@ class ReportingServiceImpl : public ReportingService {
     if (header_string.size() == 0 || header_string.size() > kMaxSHSize)
       return;
 
-    base::Optional<structured_headers::Dictionary> header_dict =
+    absl::optional<structured_headers::Dictionary> header_dict =
         structured_headers::ParseDictionary(header_string);
     if (!header_dict) {
       DVLOG(1) << "Error processing Reporting-Endpoints header string: "

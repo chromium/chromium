@@ -455,9 +455,9 @@ IntegrityRecordRdata IntegrityRecordRdata::Random() {
   return IntegrityRecordRdata(std::move(nonce));
 }
 
-base::Optional<std::vector<uint8_t>> IntegrityRecordRdata::Serialize() const {
+absl::optional<std::vector<uint8_t>> IntegrityRecordRdata::Serialize() const {
   if (!is_intact_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Create backing buffer and writer.

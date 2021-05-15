@@ -36,7 +36,7 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
 
 bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   return false;
 }
@@ -44,7 +44,7 @@ bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
 FirstPartySetsContextType
 TestCookieAccessDelegate::ComputeFirstPartySetsContextType(
     const net::SchemefulSite& site,
-    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   return FirstPartySetsContextType::kUnknown;
 }

@@ -81,7 +81,7 @@ class RegistryReader {
 
   ~RegistryReader() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
-  base::Optional<DnsSystemSettings::RegString> ReadString(
+  absl::optional<DnsSystemSettings::RegString> ReadString(
       const wchar_t name[]) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DnsSystemSettings::RegString reg_string;
@@ -99,10 +99,10 @@ class RegistryReader {
     if (result == ERROR_FILE_NOT_FOUND)
       return reg_string;
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<DnsSystemSettings::RegDword> ReadDword(
+  absl::optional<DnsSystemSettings::RegDword> ReadDword(
       const wchar_t name[]) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DnsSystemSettings::RegDword reg_dword;
@@ -120,7 +120,7 @@ class RegistryReader {
     if (result == ERROR_FILE_NOT_FOUND)
       return reg_dword;
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  private:
@@ -152,26 +152,26 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> ReadIpHelper(
   return out;
 }
 
-base::Optional<DnsSystemSettings::DevolutionSetting> ReadDevolutionSetting(
+absl::optional<DnsSystemSettings::DevolutionSetting> ReadDevolutionSetting(
     const RegistryReader& reader) {
   DnsSystemSettings::DevolutionSetting setting;
 
-  base::Optional<DnsSystemSettings::RegDword> reg_value =
+  absl::optional<DnsSystemSettings::RegDword> reg_value =
       reader.ReadDword(L"UseDomainNameDevolution");
   if (!reg_value)
-    return base::nullopt;
+    return absl::nullopt;
   setting.enabled = reg_value.value();
 
   reg_value = reader.ReadDword(L"DomainNameDevolutionLevel");
   if (!reg_value)
-    return base::nullopt;
+    return absl::nullopt;
   setting.level = reg_value.value();
 
   return setting;
 }
 
 // Reads DnsSystemSettings from IpHelper and registry.
-base::Optional<DnsSystemSettings> ReadSystemSettings() {
+absl::optional<DnsSystemSettings> ReadSystemSettings() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DnsSystemSettings settings;
@@ -180,7 +180,7 @@ base::Optional<DnsSystemSettings> ReadSystemSettings() {
       ReadIpHelper(GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_UNICAST |
                    GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_FRIENDLY_NAME);
   if (!settings.addresses.get())
-    return base::nullopt;
+    return absl::nullopt;
 
   RegistryReader tcpip_reader(kTcpipPath);
   RegistryReader tcpip6_reader(kTcpip6Path);
@@ -188,47 +188,47 @@ base::Optional<DnsSystemSettings> ReadSystemSettings() {
   RegistryReader policy_reader(kPolicyPath);
   RegistryReader primary_dns_suffix_reader(kPrimaryDnsSuffixPath);
 
-  base::Optional<DnsSystemSettings::RegString> reg_string =
+  absl::optional<DnsSystemSettings::RegString> reg_string =
       policy_reader.ReadString(L"SearchList");
   if (!reg_string)
-    return base::nullopt;
+    return absl::nullopt;
   settings.policy_search_list = std::move(reg_string).value();
 
   reg_string = tcpip_reader.ReadString(L"SearchList");
   if (!reg_string)
-    return base::nullopt;
+    return absl::nullopt;
   settings.tcpip_search_list = std::move(reg_string).value();
 
   reg_string = tcpip_reader.ReadString(L"Domain");
   if (!reg_string)
-    return base::nullopt;
+    return absl::nullopt;
   settings.tcpip_domain = std::move(reg_string).value();
 
-  base::Optional<DnsSystemSettings::DevolutionSetting> devolution_setting =
+  absl::optional<DnsSystemSettings::DevolutionSetting> devolution_setting =
       ReadDevolutionSetting(policy_reader);
   if (!devolution_setting)
-    return base::nullopt;
+    return absl::nullopt;
   settings.policy_devolution = devolution_setting.value();
 
   devolution_setting = ReadDevolutionSetting(dnscache_reader);
   if (!devolution_setting)
-    return base::nullopt;
+    return absl::nullopt;
   settings.dnscache_devolution = devolution_setting.value();
 
   devolution_setting = ReadDevolutionSetting(tcpip_reader);
   if (!devolution_setting)
-    return base::nullopt;
+    return absl::nullopt;
   settings.tcpip_devolution = devolution_setting.value();
 
-  base::Optional<DnsSystemSettings::RegDword> reg_dword =
+  absl::optional<DnsSystemSettings::RegDword> reg_dword =
       policy_reader.ReadDword(L"AppendToMultiLabelName");
   if (!reg_dword)
-    return base::nullopt;
+    return absl::nullopt;
   settings.append_to_multi_label_name = reg_dword.value();
 
   reg_string = primary_dns_suffix_reader.ReadString(L"PrimaryDnsSuffix");
   if (!reg_string) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   settings.primary_dns_suffix = std::move(reg_string).value();
 
@@ -541,7 +541,7 @@ std::vector<std::string> ParseSearchList(base::WStringPiece value) {
   return output;
 }
 
-base::Optional<DnsConfig> ConvertSettingsToDnsConfig(
+absl::optional<DnsConfig> ConvertSettingsToDnsConfig(
     const DnsSystemSettings& settings) {
   bool uses_vpn = false;
 
@@ -579,7 +579,7 @@ base::Optional<DnsConfig> ConvertSettingsToDnsConfig(
           ipe = IPEndPoint(ipe.address(), dns_protocol::kDefaultPort);
         dns_config.nameservers.push_back(ipe);
       } else {
-        return base::nullopt;
+        return absl::nullopt;
       }
     }
 
@@ -594,7 +594,7 @@ base::Optional<DnsConfig> ConvertSettingsToDnsConfig(
   }
 
   if (dns_config.nameservers.empty())
-    return base::nullopt;  // No point continuing.
+    return absl::nullopt;  // No point continuing.
 
   // Windows always tries a multi-label name "as is" before using suffixes.
   dns_config.ndots = 1;
@@ -698,7 +698,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
   ~ConfigReader() override {}
 
   void DoWork() override {
-    base::Optional<DnsSystemSettings> settings = ReadSystemSettings();
+    absl::optional<DnsSystemSettings> settings = ReadSystemSettings();
     if (settings.has_value())
       dns_config_ = ConvertSettingsToDnsConfig(settings.value());
   }
@@ -719,7 +719,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
 
   DnsConfigServiceWin* service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
-  base::Optional<DnsConfig> dns_config_;
+  absl::optional<DnsConfig> dns_config_;
 };
 
 // Extension of DnsConfigService::HostsReader that fills in localhost and local
@@ -745,7 +745,7 @@ class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
 
 DnsConfigServiceWin::DnsConfigServiceWin()
     : DnsConfigService(GetHostsPath().value(),
-                       base::nullopt /* config_change_delay */) {
+                       absl::nullopt /* config_change_delay */) {
   // Allow constructing on one sequence and living on another.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

@@ -51,7 +51,7 @@ int NetworkDelegate::NotifyHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::NotifyHeadersReceived");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(original_response_headers);
@@ -119,7 +119,7 @@ bool NetworkDelegate::CanSetCookie(const URLRequest& request,
 bool NetworkDelegate::ForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin) const {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::ForcePrivacyMode");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return OnForcePrivacyMode(url, site_for_cookies, top_frame_origin);

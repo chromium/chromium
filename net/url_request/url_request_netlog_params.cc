@@ -34,7 +34,7 @@ base::Value NetLogURLRequestStartParams(
     PrivacyMode privacy_mode,
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     int64_t upload_id) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("url", url.possibly_invalid_spec());

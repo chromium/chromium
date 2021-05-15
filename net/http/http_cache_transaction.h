@@ -601,7 +601,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // and modifies the members for future transactions. Then,
   // WriteResponseInfoToEntry() writes |updated_prefetch_response_| to the cache
   // entry if it is populated, or |response_| otherwise. Finally,
-  // WriteResponseInfoToEntry() resets this to base::nullopt.
+  // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
   const HttpResponseInfo* new_response_;

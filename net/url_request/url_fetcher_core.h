@@ -97,7 +97,7 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   // URL
   // will be considered the "first-party" when applying cookie blocking policy
   // to requests, and treated as the request's initiator.
-  void SetInitiator(const base::Optional<url::Origin>& initiator);
+  void SetInitiator(const absl::optional<url::Origin>& initiator);
   // Set the key and data callback that is used when setting the user
   // data on any URLRequest objects this object creates.
   void SetURLRequestUserData(
@@ -249,13 +249,13 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   std::unique_ptr<URLRequest> request_;  // The actual request this wraps
   int load_flags_;                   // Flags for the load operation
   // Whether credentials are sent along with the request.
-  base::Optional<bool> allow_credentials_;
+  absl::optional<bool> allow_credentials_;
   int response_code_;                // HTTP status code for the request
   scoped_refptr<IOBuffer> buffer_;
                                      // Read buffer
   scoped_refptr<URLRequestContextGetter> request_context_getter_;
                                      // Cookie/cache info for the request
-  base::Optional<url::Origin> initiator_;  // The request's initiator
+  absl::optional<url::Origin> initiator_;  // The request's initiator
   // The user data to add to each newly-created URLRequest.
   const void* url_request_data_key_;
   URLFetcher::CreateDataCallback url_request_create_data_callback_;

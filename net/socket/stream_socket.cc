@@ -13,9 +13,9 @@ void StreamSocket::SetBeforeConnectCallback(
   NOTREACHED();
 }
 
-base::Optional<base::StringPiece> StreamSocket::GetPeerApplicationSettings()
+absl::optional<base::StringPiece> StreamSocket::GetPeerApplicationSettings()
     const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StreamSocket::GetSSLCertRequestInfo(

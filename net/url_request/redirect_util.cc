@@ -17,8 +17,8 @@ void RedirectUtil::UpdateHttpRequest(
     const GURL& original_url,
     const std::string& original_method,
     const RedirectInfo& redirect_info,
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers,
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers,
     HttpRequestHeaders* request_headers,
     bool* should_clear_upload) {
   DCHECK(request_headers);
@@ -84,14 +84,14 @@ void RedirectUtil::UpdateHttpRequest(
 }
 
 // static
-base::Optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
+absl::optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
     const HttpResponseHeaders* response_headers) {
   if (!response_headers)
-    return base::nullopt;
+    return absl::nullopt;
   std::string referrer_policy_header;
   if (!response_headers->GetNormalizedHeader("Referrer-Policy",
                                              &referrer_policy_header)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return referrer_policy_header;
 }

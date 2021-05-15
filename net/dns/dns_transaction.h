@@ -87,7 +87,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   typedef base::OnceCallback<void(DnsTransaction* transaction,
                                   int neterror,
                                   const DnsResponse* response,
-                                  base::Optional<std::string> doh_provider_id)>
+                                  absl::optional<std::string> doh_provider_id)>
       CallbackType;
 
   DnsTransactionFactory();

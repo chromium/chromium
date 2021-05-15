@@ -9,7 +9,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "net/base/backoff_entry_serializer_fuzzer_input.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -50,10 +50,10 @@ class ProtoTranslator {
     return base::TimeTicks() +
            base::TimeDelta::FromMicroseconds(input_.now_ticks());
   }
-  base::Optional<base::Value> serialized_entry() const {
+  absl::optional<base::Value> serialized_entry() const {
     json_proto::JsonProtoConverter converter;
     std::string json_array = converter.Convert(input_.serialized_entry());
-    base::Optional<base::Value> value = base::JSONReader::Read(json_array);
+    absl::optional<base::Value> value = base::JSONReader::Read(json_array);
     return value;
   }
 
@@ -91,7 +91,7 @@ class MockClock : public base::TickClock {
 // we check that the parsed BackoffEntry values are equivalent.
 void TestDeserialize(const ProtoTranslator& translator) {
   // Attempt to convert the json_proto.ArrayValue to a base::Value.
-  base::Optional<base::Value> value = translator.serialized_entry();
+  absl::optional<base::Value> value = translator.serialized_entry();
   if (!value)
     return;
   DCHECK(value->is_list());

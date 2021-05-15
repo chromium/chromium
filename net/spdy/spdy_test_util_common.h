@@ -232,7 +232,7 @@ struct SpdySessionDependencies {
   SpdySession::TimeFunc time_func;
   bool enable_http2_alternative_service;
   bool enable_websocket_over_http2;
-  base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+  absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;
   NetLog* net_log;
   bool disable_idle_sockets_close_on_memory_pressure;

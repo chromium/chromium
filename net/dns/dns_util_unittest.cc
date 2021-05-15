@@ -11,11 +11,11 @@
 
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -135,10 +135,10 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyIncomplete) {
               testing::Optional(Eq("")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
   base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
   EXPECT_EQ(DnsDomainToString(reader1, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 }
 
 // Test `require_complete` functionality given an input with terminating zero-
@@ -172,10 +172,10 @@ TEST_F(DNSUtilTest, DnsDomainToStringNotComplete) {
               testing::Optional(Eq("boo.test")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
   base::BigEndianReader reader2(dns_name.c_str(), dns_name.size());
   EXPECT_EQ(DnsDomainToString(reader2, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
@@ -188,10 +188,10 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
               testing::Optional(Eq("")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
   base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
   EXPECT_EQ(DnsDomainToString(reader1, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 
   dns_name += '\0';
 
@@ -205,16 +205,16 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectCompression) {
   std::string dns_name = CreateNamePointer(152);
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 
   dns_name = "\005hello";
   dns_name += CreateNamePointer(152);
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader1), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader1), absl::nullopt);
 }
 
 // Test that extra input past the terminating zero-length label are ignored.
@@ -242,15 +242,15 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleExcessInput) {
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTruncatedNames) {
   std::string dns_name = "\07cheese";
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 
   dns_name = "\006cheesy\05test";
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader1), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader1), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSingleLabel) {
@@ -259,9 +259,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSingleLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSecondLabel) {
@@ -271,9 +271,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSecondLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSingleLabel) {
@@ -282,9 +282,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSingleLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSecondLabel) {
@@ -294,9 +294,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSecondLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 #if CHAR_MIN < 0
@@ -313,9 +313,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectCharMinLabels) {
     }
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 #endif  // if CHAR_MIN < 0
 
@@ -332,9 +332,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongName) {
   }
   ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
@@ -351,9 +351,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   ASSERT_EQ(dns_name.size(),
             static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
@@ -371,9 +371,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
   ASSERT_EQ(dns_name.size(),
             static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
@@ -391,9 +391,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
   ASSERT_EQ(dns_name.size(),
             static_cast<size_t>(dns_protocol::kMaxNameLength + 2));
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, IsValidDNSDomain) {

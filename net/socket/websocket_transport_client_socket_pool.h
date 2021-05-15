@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
@@ -23,6 +22,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/ssl_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trace_event {
@@ -60,7 +60,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,
@@ -71,7 +71,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   void RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
@@ -146,7 +146,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     StalledRequest(
         const GroupId& group_id,
         const scoped_refptr<SocketParams>& params,
-        const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+        const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         RequestPriority priority,
         ClientSocketHandle* handle,
         CompletionOnceCallback callback,
@@ -157,7 +157,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
 
     const GroupId group_id;
     const scoped_refptr<SocketParams> params;
-    const base::Optional<NetworkTrafficAnnotationTag> proxy_annotation_tag;
+    const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag;
     const RequestPriority priority;
     ClientSocketHandle* const handle;
     CompletionOnceCallback callback;

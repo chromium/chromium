@@ -123,34 +123,34 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
   return i;
 }
 
-base::Optional<std::string> GetOptionalStringValueFromParams(
+absl::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
     base::StringPiece path) {
   if (!entry.params.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* result = entry.params.FindStringPath(path);
   if (!result)
-    return base::nullopt;
+    return absl::nullopt;
 
   return *result;
 }
 
-base::Optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
                                                        base::StringPiece path) {
   if (!entry.params.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
   return entry.params.FindBoolPath(path);
 }
 
-base::Optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
                                                       base::StringPiece path) {
   if (!entry.params.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
   return entry.params.FindIntPath(path);
 }
 
-base::Optional<int> GetOptionalNetErrorCodeFromParams(
+absl::optional<int> GetOptionalNetErrorCodeFromParams(
     const NetLogEntry& entry) {
   return GetOptionalIntegerValueFromParams(entry, "net_error");
 }

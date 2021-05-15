@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -72,12 +72,12 @@ struct NET_EXPORT SSLServerConfig {
   // cipher_suite_for_testing, if set, causes the server to only support the
   // specified cipher suite in TLS 1.2 and below. This should only be used in
   // unit tests.
-  base::Optional<uint16_t> cipher_suite_for_testing;
+  absl::optional<uint16_t> cipher_suite_for_testing;
 
   // signature_algorithm_for_testing, if set, causes the server to only support
   // the specified signature algorithm in TLS 1.2 and below. This should only be
   // used in unit tests.
-  base::Optional<uint16_t> signature_algorithm_for_testing;
+  absl::optional<uint16_t> signature_algorithm_for_testing;
 
   // curves_for_testing, if not empty, specifies the list of NID values (e.g.
   // NID_X25519) to configure as supported curves for the TLS connection.

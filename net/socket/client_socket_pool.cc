@@ -160,7 +160,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     GroupId group_id,
     scoped_refptr<SocketParams> socket_params,
     const ProxyServer& proxy_server,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     RequestPriority request_priority,

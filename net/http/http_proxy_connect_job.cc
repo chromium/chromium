@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +37,7 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -286,7 +286,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   if (!network_quality_estimator)
     return default_alternate_timeout;
 
-  base::Optional<base::TimeDelta> http_rtt_estimate =
+  absl::optional<base::TimeDelta> http_rtt_estimate =
       network_quality_estimator->GetHttpRTT();
   if (!http_rtt_estimate)
     return default_alternate_timeout;
@@ -797,7 +797,7 @@ void HttpProxyConnectJob::OnTimedOutInternal() {
 
 int HttpProxyConnectJob::HandleConnectResult(int result) {
   if (result == OK)
-    SetSocket(std::move(transport_socket_), base::nullopt /* dns_aliases */);
+    SetSocket(std::move(transport_socket_), absl::nullopt /* dns_aliases */);
   return result;
 }
 

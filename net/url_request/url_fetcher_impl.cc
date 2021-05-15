@@ -90,7 +90,7 @@ void URLFetcherImpl::SetRequestContext(
 }
 
 void URLFetcherImpl::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   core_->SetInitiator(initiator);
 }
 

@@ -9,12 +9,12 @@
 #include <utility>
 
 #include "base/big_endian.h"
-#include "base/optional.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -322,7 +322,7 @@ TEST(RecordRdataTest, IntegrityParseSerializeInverseProperty) {
   IntegrityRecordRdata record(IntegrityRecordRdata::Random());
 
   EXPECT_TRUE(record.IsIntact());
-  base::Optional<std::vector<uint8_t>> serialized = record.Serialize();
+  absl::optional<std::vector<uint8_t>> serialized = record.Serialize();
   EXPECT_TRUE(serialized);
 
   std::unique_ptr<IntegrityRecordRdata> reparsed =
@@ -336,7 +336,7 @@ TEST(RecordRdataTest, IntegrityEmptyNonceCornerCase) {
   IntegrityRecordRdata record(empty_nonce);
   EXPECT_TRUE(record.IsIntact());
 
-  base::Optional<std::vector<uint8_t>> serialized = record.Serialize();
+  absl::optional<std::vector<uint8_t>> serialized = record.Serialize();
   EXPECT_TRUE(serialized);
   std::unique_ptr<IntegrityRecordRdata> reparsed =
       IntegrityRecordRdata::Create(MakeStringPiece(*serialized));
@@ -349,12 +349,12 @@ TEST(RecordRdataTest, IntegrityEmptyNonceCornerCase) {
 TEST(RecordRdataTest, IntegrityMoveConstructor) {
   IntegrityRecordRdata record_a(IntegrityRecordRdata::Random());
   EXPECT_TRUE(record_a.IsIntact());
-  base::Optional<std::vector<uint8_t>> serialized_a = record_a.Serialize();
+  absl::optional<std::vector<uint8_t>> serialized_a = record_a.Serialize();
   EXPECT_TRUE(serialized_a);
 
   IntegrityRecordRdata record_b = std::move(record_a);
   EXPECT_TRUE(record_b.IsIntact());
-  base::Optional<std::vector<uint8_t>> serialized_b = record_b.Serialize();
+  absl::optional<std::vector<uint8_t>> serialized_b = record_b.Serialize();
   EXPECT_TRUE(serialized_b);
 
   EXPECT_EQ(serialized_a, serialized_b);
@@ -369,7 +369,7 @@ TEST(RecordRdataTest, IntegrityRandomRecordsDiffer) {
 TEST(RecordRdataTest, IntegritySerialize) {
   IntegrityRecordRdata record({'A'});
   EXPECT_TRUE(record.IsIntact());
-  const base::Optional<std::vector<uint8_t>> serialized = record.Serialize();
+  const absl::optional<std::vector<uint8_t>> serialized = record.Serialize();
   EXPECT_TRUE(serialized);
 
   // Expected payload contains the SHA256 hash of 'A'. For the lazy:

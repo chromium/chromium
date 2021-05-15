@@ -88,7 +88,7 @@ SpdySessionPool::SpdySessionPool(
     size_t session_max_recv_window_size,
     int session_max_queued_capped_frames,
     const spdy::SettingsMap& initial_settings,
-    const base::Optional<GreasedHttp2Frame>& greased_http2_frame,
+    const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
     SpdySessionPool::TimeFunc time_func,

@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -19,6 +18,7 @@
 #include "net/cookies/cookie_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -306,12 +306,12 @@ TEST(CookieUtilTest, SimulatedCookieSource) {
     std::vector<std::unique_ptr<CanonicalCookie>> cookies;
     // It shouldn't depend on the cookie's secureness or actual source scheme.
     cookies.push_back(CanonicalCookie::Create(
-        insecure_url, test.cookie, base::Time::Now(), base::nullopt));
+        insecure_url, test.cookie, base::Time::Now(), absl::nullopt));
     cookies.push_back(CanonicalCookie::Create(
-        secure_url, test.cookie, base::Time::Now(), base::nullopt));
+        secure_url, test.cookie, base::Time::Now(), absl::nullopt));
     cookies.push_back(
         CanonicalCookie::Create(secure_url, test.cookie + "; Secure",
-                                base::Time::Now(), base::nullopt));
+                                base::Time::Now(), absl::nullopt));
     for (const auto& cookie : cookies) {
       GURL simulated_source =
           cookie_util::SimulatedCookieSource(*cookie, test.source_scheme);
@@ -456,7 +456,7 @@ class CookieUtilComputeSameSiteContextTest
     return cross_site_sfc;
   }
 
-  std::vector<base::Optional<url::Origin>> GetAllInitiators() const {
+  std::vector<absl::optional<url::Origin>> GetAllInitiators() const {
     return {kBrowserInitiated,   kOpaqueInitiator,
             kSiteInitiator,      kSecureSiteInitiator,
             kCrossSiteInitiator, kSecureCrossSiteInitiator,
@@ -464,8 +464,8 @@ class CookieUtilComputeSameSiteContextTest
             kUnrelatedInitiator};
   }
 
-  std::vector<base::Optional<url::Origin>> GetSameSiteInitiators() const {
-    std::vector<base::Optional<url::Origin>> same_site_initiators{
+  std::vector<absl::optional<url::Origin>> GetSameSiteInitiators() const {
+    std::vector<absl::optional<url::Origin>> same_site_initiators{
         kBrowserInitiated, kSiteInitiator, kSubdomainInitiator};
     // If schemeless, the cross-scheme origins are also same-site.
     if (!IsSchemeful()) {
@@ -475,11 +475,11 @@ class CookieUtilComputeSameSiteContextTest
     return same_site_initiators;
   }
 
-  std::vector<base::Optional<url::Origin>> GetCrossSiteInitiators() const {
-    std::vector<base::Optional<url::Origin>> cross_site_initiators;
-    std::vector<base::Optional<url::Origin>> same_site_initiators =
+  std::vector<absl::optional<url::Origin>> GetCrossSiteInitiators() const {
+    std::vector<absl::optional<url::Origin>> cross_site_initiators;
+    std::vector<absl::optional<url::Origin>> same_site_initiators =
         GetSameSiteInitiators();
-    for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+    for (const absl::optional<url::Origin>& initiator : GetAllInitiators()) {
       if (!base::Contains(same_site_initiators, initiator))
         cross_site_initiators.push_back(initiator);
     }
@@ -553,23 +553,23 @@ class CookieUtilComputeSameSiteContextTest
   const SiteForCookies kSecureCrossSiteForCookies =
       SiteForCookies::FromUrl(kSecureCrossSiteUrl);
   // Initiator origin.
-  const base::Optional<url::Origin> kBrowserInitiated = base::nullopt;
-  const base::Optional<url::Origin> kOpaqueInitiator =
-      base::make_optional(url::Origin());
-  const base::Optional<url::Origin> kSiteInitiator =
-      base::make_optional(url::Origin::Create(kSiteUrl));
-  const base::Optional<url::Origin> kSecureSiteInitiator =
-      base::make_optional(url::Origin::Create(kSecureSiteUrl));
-  const base::Optional<url::Origin> kCrossSiteInitiator =
-      base::make_optional(url::Origin::Create(kCrossSiteUrl));
-  const base::Optional<url::Origin> kSecureCrossSiteInitiator =
-      base::make_optional(url::Origin::Create(kSecureCrossSiteUrl));
-  const base::Optional<url::Origin> kSubdomainInitiator =
-      base::make_optional(url::Origin::Create(kSubdomainUrl));
-  const base::Optional<url::Origin> kSecureSubdomainInitiator =
-      base::make_optional(url::Origin::Create(kSecureSubdomainUrl));
-  const base::Optional<url::Origin> kUnrelatedInitiator =
-      base::make_optional(url::Origin::Create(GURL("https://unrelated.test/")));
+  const absl::optional<url::Origin> kBrowserInitiated = absl::nullopt;
+  const absl::optional<url::Origin> kOpaqueInitiator =
+      absl::make_optional(url::Origin());
+  const absl::optional<url::Origin> kSiteInitiator =
+      absl::make_optional(url::Origin::Create(kSiteUrl));
+  const absl::optional<url::Origin> kSecureSiteInitiator =
+      absl::make_optional(url::Origin::Create(kSecureSiteUrl));
+  const absl::optional<url::Origin> kCrossSiteInitiator =
+      absl::make_optional(url::Origin::Create(kCrossSiteUrl));
+  const absl::optional<url::Origin> kSecureCrossSiteInitiator =
+      absl::make_optional(url::Origin::Create(kSecureCrossSiteUrl));
+  const absl::optional<url::Origin> kSubdomainInitiator =
+      absl::make_optional(url::Origin::Create(kSubdomainUrl));
+  const absl::optional<url::Origin> kSecureSubdomainInitiator =
+      absl::make_optional(url::Origin::Create(kSecureSubdomainUrl));
+  const absl::optional<url::Origin> kUnrelatedInitiator =
+      absl::make_optional(url::Origin::Create(GURL("https://unrelated.test/")));
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -581,7 +581,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, UrlAndSiteForCookiesCrossSite) {
   for (const GURL& url : GetSameSiteUrls()) {
     for (const SiteForCookies& site_for_cookies :
          GetCrossSiteSitesForCookies()) {
-      for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+      for (const absl::optional<url::Origin>& initiator : GetAllInitiators()) {
         for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                           url, site_for_cookies, initiator,
@@ -642,7 +642,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, SiteForCookiesNotSchemefullySame) {
 
   for (const GURL& url : GetSameSiteUrls()) {
     for (const SiteForCookies& site_for_cookies : sites_for_cookies) {
-      for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+      for (const absl::optional<url::Origin>& initiator : GetAllInitiators()) {
         for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                           url, site_for_cookies, initiator,
@@ -683,7 +683,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGet) {
     for (const SiteForCookies& site_for_cookies :
          GetSameSiteSitesForCookies()) {
       // Cross-site initiator -> it's same-site lax.
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetCrossSiteInitiators()) {
         EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                         url, site_for_cookies, initiator,
@@ -692,7 +692,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptGet) {
       }
 
       // Same-site initiator -> it's same-site strict.
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetSameSiteInitiators()) {
         EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                         url, site_for_cookies, initiator,
@@ -757,7 +757,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
     for (const SiteForCookies& site_for_cookies :
          GetSameSiteSitesForCookies()) {
       // Same-Site initiator -> it's same-site strict.
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetSameSiteInitiators()) {
         for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
           for (bool is_main_frame_navigation :
@@ -772,7 +772,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
       }
 
       // Cross-Site initiator -> it's same-site lax iff the method is safe.
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetCrossSiteInitiators()) {
         // For main frame navigations, the context is Lax (or Lax-unsafe).
         for (const std::string& method : {"GET", "HEAD"}) {
@@ -1008,12 +1008,12 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
     std::vector<SiteForCookies> sites_for_cookies =
         test_case.site_for_cookies_is_same_site ? GetSameSiteSitesForCookies()
                                                 : GetCrossSiteSitesForCookies();
-    std::vector<base::Optional<url::Origin>> initiators =
+    std::vector<absl::optional<url::Origin>> initiators =
         test_case.initiator_is_same_site ? GetSameSiteInitiators()
                                          : GetCrossSiteInitiators();
     for (const std::vector<GURL>& url_chain : url_chains) {
       for (const SiteForCookies& site_for_cookies : sites_for_cookies) {
-        for (const base::Optional<url::Origin>& initiator : initiators) {
+        for (const absl::optional<url::Origin>& initiator : initiators) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           test_case.method, url_chain, site_for_cookies,
                           initiator, false /* is_main_frame_navigation */,
@@ -1090,7 +1090,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
          GetSameSiteSitesForCookies()) {
       // For main frame navigations, setting all SameSite cookies is allowed
       // regardless of initiator.
-      for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+      for (const absl::optional<url::Origin>& initiator : GetAllInitiators()) {
         if (!CanBeMainFrameNavigation(url, site_for_cookies))
           break;
         EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
@@ -1103,7 +1103,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
       // For non-main-frame-navigation requests, the context should be lax iff
       // the initiator is same-site, and cross-site otherwise. If the old
       // (incorrect) behavior is in effect, it is always lax.
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetSameSiteInitiators()) {
         EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                         {url}, site_for_cookies, initiator,
@@ -1111,7 +1111,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
                         false /* force_ignore_site_for_cookies */),
                     ContextTypeIs(ContextType::SAME_SITE_LAX));
       }
-      for (const base::Optional<url::Origin>& initiator :
+      for (const absl::optional<url::Origin>& initiator :
            GetCrossSiteInitiators()) {
         ContextType incorrectly_lax = IsBugfix1166211Enabled()
                                           ? ContextType::CROSS_SITE
@@ -1188,7 +1188,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_WebSocketSchemes) {
   // (ws/wss requests cannot be main frame navigations.)
 
   // Same-site initiators.
-  for (const base::Optional<url::Origin>& initiator : GetSameSiteInitiators()) {
+  for (const absl::optional<url::Origin>& initiator : GetSameSiteInitiators()) {
     EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                     {kWsUrl}, kSiteForCookies, initiator,
                     false /* is_main_frame_navigation */,
@@ -1196,7 +1196,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_WebSocketSchemes) {
                 ContextTypeIs(ContextType::SAME_SITE_LAX));
   }
   // Cross-site initiators.
-  for (const base::Optional<url::Origin>& initiator :
+  for (const absl::optional<url::Origin>& initiator :
        GetCrossSiteInitiators()) {
     ContextType incorrectly_lax = IsBugfix1166211Enabled()
                                       ? ContextType::CROSS_SITE
@@ -1240,12 +1240,12 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
     std::vector<SiteForCookies> sites_for_cookies =
         test_case.site_for_cookies_is_same_site ? GetSameSiteSitesForCookies()
                                                 : GetCrossSiteSitesForCookies();
-    std::vector<base::Optional<url::Origin>> initiators =
+    std::vector<absl::optional<url::Origin>> initiators =
         test_case.initiator_is_same_site ? GetSameSiteInitiators()
                                          : GetCrossSiteInitiators();
     for (const std::vector<GURL>& url_chain : url_chains) {
       for (const SiteForCookies& site_for_cookies : sites_for_cookies) {
-        for (const base::Optional<url::Origin>& initiator : initiators) {
+        for (const absl::optional<url::Origin>& initiator : initiators) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                           url_chain, site_for_cookies, initiator,
                           false /* is_main_frame_navigation */,
@@ -1319,7 +1319,7 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
   // (STRICT for get or LAX for set).
   for (const GURL& url : GetAllUrls()) {
     for (const SiteForCookies& site_for_cookies : GetAllSitesForCookies()) {
-      for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+      for (const absl::optional<url::Origin>& initiator : GetAllInitiators()) {
         for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForScriptGet(
                           url, site_for_cookies, initiator,

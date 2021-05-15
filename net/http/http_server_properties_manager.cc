@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/tick_clock.h"
@@ -21,6 +20,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_hostname_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -66,7 +66,7 @@ const char kBrokenCountKey[] = "broken_count";
 // services. Also checks if an alternative service for the same canonical suffix
 // has already been saved, and if so, returns an empty list.
 AlternativeServiceInfoVector GetAlternativeServiceToPersist(
-    const base::Optional<AlternativeServiceInfoVector>& alternative_services,
+    const absl::optional<AlternativeServiceInfoVector>& alternative_services,
     const HttpServerProperties::ServerInfoMapKey& server_info_key,
     base::Time now,
     const HttpServerPropertiesManager::GetCannonicalSuffix&
@@ -237,7 +237,7 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_CACHE,
                     [&] { return http_server_properties_dict->Clone(); });
-  base::Optional<int> maybe_version_number =
+  absl::optional<int> maybe_version_number =
       http_server_properties_dict->FindIntKey(kVersionKey);
   if (!maybe_version_number.has_value() ||
       *maybe_version_number != kVersionNumber) {
@@ -364,7 +364,7 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
   // Read broken-count and add an entry for |alt_service| into
   // |recently_broken_alternative_services|.
   if (broken_alt_svc_entry_dict.FindKey(kBrokenCountKey)) {
-    base::Optional<int> broken_count =
+    absl::optional<int> broken_count =
         broken_alt_svc_entry_dict.FindIntKey(kBrokenCountKey);
     if (!broken_count.has_value()) {
       DVLOG(1) << "Recently broken alternative service has malformed "
@@ -488,7 +488,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceDict(
   alternative_service->host = host;
 
   // Port is mandatory.
-  base::Optional<int> maybe_port = dict.FindIntKey(kPortKey);
+  absl::optional<int> maybe_port = dict.FindIntKey(kPortKey);
   if (!maybe_port.has_value() || !IsPortValid(maybe_port.value())) {
     DVLOG(1) << "Malformed alternative service port under: " << parsing_under;
     return false;
@@ -630,7 +630,7 @@ void HttpServerPropertiesManager::ParseNetworkStats(
   if (!server_network_stats_dict) {
     return;
   }
-  base::Optional<int> maybe_srtt =
+  absl::optional<int> maybe_srtt =
       server_network_stats_dict->FindIntKey(kSrttKey);
   if (!maybe_srtt.has_value()) {
     DVLOG(1) << "Malformed ServerNetworkStats for server: "

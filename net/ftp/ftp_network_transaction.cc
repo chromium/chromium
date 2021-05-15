@@ -665,7 +665,7 @@ int FtpNetworkTransaction::DoCtrlResolveHost() {
   // and should go away soon.
   resolve_request_ =
       resolver_->CreateRequest(HostPortPair::FromURL(request_->url),
-                               NetworkIsolationKey(), net_log_, base::nullopt);
+                               NetworkIsolationKey(), net_log_, absl::nullopt);
   return resolve_request_->Start(base::BindOnce(
       &FtpNetworkTransaction::OnIOComplete, base::Unretained(this)));
 }

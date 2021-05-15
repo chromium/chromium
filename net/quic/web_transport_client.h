@@ -7,13 +7,13 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/network_isolation_key.h"
 #include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quic/quic_transport/web_transport_fingerprint_proof_verifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,7 +67,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(
-      base::Optional<quic::MessageStatus> status) = 0;
+      absl::optional<quic::MessageStatus> status) = 0;
 };
 
 // Parameters that determine the way WebTransport session is established.

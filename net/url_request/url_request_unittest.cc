@@ -35,7 +35,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -148,6 +147,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT) && !defined(OS_ANDROID)
@@ -455,7 +455,7 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
 
   // Resets the callbacks and |stage_blocked_for_callback_|.
   void Reset();
@@ -561,7 +561,7 @@ int BlockingNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   // TestNetworkDelegate always completes synchronously.
   CHECK_NE(ERR_IO_PENDING,
            TestNetworkDelegate::OnHeadersReceived(
@@ -873,8 +873,8 @@ TEST_F(URLRequestTest, RecordsReferrerHistogramAgainOnRedirect) {
       static_cast<int>(
           ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerPolicyForRequest.CrossOrigin",
@@ -907,8 +907,8 @@ TEST_F(URLRequestTest, RecordsReferrrerWithInformativePath) {
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin",
       /* Check the count of the "true" bucket in the boolean histogram. */ true,
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", true, 1);
@@ -938,8 +938,8 @@ TEST_F(URLRequestTest, RecordsReferrerWithInformativeQuery) {
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin",
       /* Check the count of the "true" bucket in the boolean histogram. */ true,
       1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", true, 1);
@@ -967,8 +967,8 @@ TEST_F(URLRequestTest, RecordsReferrerWithoutInformativePathOrQuery) {
   d.RunUntilRedirect();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin", false, 1);
-  req->FollowDeferredRedirect(/*removed_headers=*/base::nullopt,
-                              /*modified_headers=*/base::nullopt);
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
   d.RunUntilComplete();
   histograms.ExpectUniqueSample(
       "Net.URLRequest.ReferrerHasInformativePath.SameOrigin", false, 1);
@@ -1717,13 +1717,13 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
 
   auto cookie1 = CanonicalCookie::Create(url, "AlreadySetCookie=1;Secure",
                                          base::Time::Now(),
-                                         base::nullopt /* server_time */);
+                                         absl::nullopt /* server_time */);
   delayed_cm->SetCanonicalCookieAsync(std::move(cookie1), url,
                                       net::CookieOptions::MakeAllInclusive(),
                                       CookieStore::SetCookiesCallback());
   auto cookie2 = CanonicalCookie::Create(url, "AlreadySetCookie=1;Secure",
                                          base::Time::Now(),
-                                         base::nullopt /* server_time */);
+                                         absl::nullopt /* server_time */);
   cm->SetCanonicalCookieAsync(std::move(cookie2), url,
                               net::CookieOptions::MakeAllInclusive(),
                               CookieStore::SetCookiesCallback());
@@ -3406,7 +3406,7 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
 
  private:
   std::string fixed_date_;
@@ -3420,7 +3420,7 @@ int FixedDateNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   HttpResponseHeaders* new_response_headers =
       new HttpResponseHeaders(original_response_headers->raw_headers());
 
@@ -4000,8 +4000,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequest) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
     EXPECT_EQ(OK, d.request_status());
     EXPECT_EQ(ProxyServer(ProxyServer::SCHEME_HTTP,
@@ -4049,8 +4049,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestSynchronously) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
@@ -4108,8 +4108,8 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateRedirectRequestPost) {
     EXPECT_EQ(redirect_url, GURL(location));
 
     // Let the request finish.
-    r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+    r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(OK, d.request_status());
@@ -4851,7 +4851,7 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override {
     // TestNetworkDelegate always completes synchronously.
     CHECK_NE(ERR_IO_PENDING,
              TestNetworkDelegate::OnHeadersReceived(
@@ -4939,8 +4939,8 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
     if (cancel_stage_ == CANCEL_ON_RECEIVED_REDIRECT)
       return;
     if (!defer_redirect) {
-      request->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                      base::nullopt /* modified_headers */);
+      request->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                      absl::nullopt /* modified_headers */);
     }
   }
 
@@ -6725,8 +6725,8 @@ TEST_F(URLRequestTestHTTP, CacheRedirect) {
     EXPECT_EQ(0, d.response_started_count());
     EXPECT_TRUE(req->was_cached());
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                base::nullopt /* modified_headers */);
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
     EXPECT_EQ(1, d.received_redirect_count());
     EXPECT_EQ(1, d.response_started_count());
@@ -7000,8 +7000,8 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect) {
 
     EXPECT_EQ(1, d.received_redirect_count());
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                                base::nullopt /* modified_headers */);
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
@@ -7054,7 +7054,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect_ModifiedHeaders) {
     modified_headers.SetHeader("Header2", "");
     modified_headers.SetHeader("Header3", "Value3");
 
-    req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
                                 modified_headers);
     d.RunUntilComplete();
 
@@ -7103,7 +7103,7 @@ TEST_F(URLRequestTestHTTP, DeferredRedirect_RemovedHeaders) {
     // Keep Header1 and remove Header2.
     std::vector<std::string> removed_headers({"Header2"});
     req->FollowDeferredRedirect(removed_headers,
-                                base::nullopt /* modified_headers */);
+                                absl::nullopt /* modified_headers */);
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
@@ -7749,7 +7749,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
   {
     GURL url = test_server.GetURL("/");
     auto cookie1 = CanonicalCookie::Create(url, "cookienosamesite=1",
-                                           base::Time::Now(), base::nullopt);
+                                           base::Time::Now(), absl::nullopt);
     base::RunLoop run_loop;
     CookieAccessResult access_result;
     cm.SetCanonicalCookieAsync(
@@ -7791,7 +7791,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
   {
     GURL url = test_server.GetURL("/");
     auto cookie2 = CanonicalCookie::Create(url, "cookiewithpath=1;path=/foo",
-                                           base::Time::Now(), base::nullopt);
+                                           base::Time::Now(), absl::nullopt);
     base::RunLoop run_loop;
     // Note: cookie1 from the previous testcase is still in the cookie store.
     CookieAccessResult access_result;
@@ -7936,7 +7936,7 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
         std::make_unique<CookieMonster>(nullptr, nullptr);
     auto another_cookie = CanonicalCookie::Create(
         url_requiring_auth_wo_cookies, "another_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */);
     cm->SetCanonicalCookieAsync(std::move(another_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
@@ -7968,7 +7968,7 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
     auto one_more_cookie = CanonicalCookie::Create(
         url_requiring_auth_wo_cookies, "one_more_cookie=true",
-        base::Time::Now(), base::nullopt /* server_time */);
+        base::Time::Now(), absl::nullopt /* server_time */);
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
@@ -8315,7 +8315,7 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
 
     // Check maybe_stored_cookies on second round trip (and clearing from the
     // first).
-    request->FollowDeferredRedirect(base::nullopt, base::nullopt);
+    request->FollowDeferredRedirect(absl::nullopt, absl::nullopt);
     delegate.RunUntilComplete();
     EXPECT_THAT(delegate.request_status(), IsOk());
 
@@ -8347,7 +8347,7 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
         std::make_unique<CookieMonster>(nullptr, nullptr);
     auto another_cookie = CanonicalCookie::Create(
         original_url, "another_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */);
     cm->SetCanonicalCookieAsync(std::move(another_cookie), original_url,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
@@ -8376,13 +8376,13 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     cm->DeleteAllAsync(CookieStore::DeleteCallback());
     auto one_more_cookie = CanonicalCookie::Create(
         original_url_wo_cookie, "one_more_cookie=true", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */);
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 original_url_wo_cookie,
                                 net::CookieOptions::MakeAllInclusive(),
                                 CookieStore::SetCookiesCallback());
 
-    request->FollowDeferredRedirect(base::nullopt, base::nullopt);
+    request->FollowDeferredRedirect(absl::nullopt, absl::nullopt);
     delegate.RunUntilComplete();
     EXPECT_THAT(delegate.request_status(), IsOk());
 
@@ -8740,8 +8740,8 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
       std::make_unique<TestScopedURLInterceptor>(redirect_url, std::move(job));
 
   // Should trigger |job| to be started.
-  req->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                              base::nullopt /* modified_headers */);
+  req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                              absl::nullopt /* modified_headers */);
   d.RunUntilComplete();
   EXPECT_EQ(LOW, job_priority);
 }
@@ -12230,8 +12230,8 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksWithRedirect) {
 
   raw_req_headers = HttpRawRequestHeaders();
   raw_resp_headers = nullptr;
-  r->FollowDeferredRedirect(base::nullopt /* removed_headers */,
-                            base::nullopt /* modified_headers */);
+  r->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                            absl::nullopt /* modified_headers */);
   delegate.RunUntilComplete();
   EXPECT_TRUE(raw_req_headers.FindHeaderForTest("X-Foo", &value));
   EXPECT_EQ("bar", value);

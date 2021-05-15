@@ -13,11 +13,11 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class BigEndianWriter;
@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
               const std::vector<DnsResourceRecord>& answers,
               const std::vector<DnsResourceRecord>& authority_records,
               const std::vector<DnsResourceRecord>& additional_records,
-              const base::Optional<DnsQuery>& query,
+              const absl::optional<DnsQuery>& query,
               uint8_t rcode = dns_protocol::kRcodeNOERROR,
               bool validate_records = true);
 
@@ -176,7 +176,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // nullopt if the ID is unknown. The ID will only be known if the response is
   // successfully constructed from data or if InitParse...() has been able to
   // parse at least as far as the ID (not necessarily a fully successful parse).
-  base::Optional<uint16_t> id() const;
+  absl::optional<uint16_t> id() const;
 
   // Returns true if response is valid, that is, after successful InitParse, or
   // after successful construction of a new response from data.
@@ -224,7 +224,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
                    bool validate_record);
   bool WriteAnswer(base::BigEndianWriter* writer,
                    const DnsResourceRecord& answer,
-                   const base::Optional<DnsQuery>& query,
+                   const absl::optional<DnsQuery>& query,
                    bool validate_record);
 
   // Convenience for header access.

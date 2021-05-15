@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -63,8 +63,8 @@ struct NET_EXPORT SSLConfig {
   // If specified, the minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined above.) If
   // unspecified, values from the SSLConfigService are used.
-  base::Optional<uint16_t> version_min_override;
-  base::Optional<uint16_t> version_max_override;
+  absl::optional<uint16_t> version_min_override;
+  absl::optional<uint16_t> version_max_override;
 
   // Whether early data is enabled on this connection. Note that early data has
   // weaker security properties than normal data and changes the

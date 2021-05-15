@@ -100,7 +100,7 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
     bool using_ssl,
     const HostPortPair& endpoint,
     const ProxyServer& proxy_server,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
     const SSLConfig* ssl_config_for_proxy,
     bool force_tunnel,
@@ -228,7 +228,7 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
 
 void ConnectJob::SetSocket(
     std::unique_ptr<StreamSocket> socket,
-    base::Optional<std::vector<std::string>> dns_aliases) {
+    absl::optional<std::vector<std::string>> dns_aliases) {
   if (socket) {
     net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
     if (dns_aliases)
@@ -277,7 +277,7 @@ void ConnectJob::LogConnectCompletion(int net_error) {
 
 void ConnectJob::OnTimeout() {
   // Make sure the socket is NULL before calling into |delegate|.
-  SetSocket(nullptr, base::nullopt /* dns_aliases */);
+  SetSocket(nullptr, absl::nullopt /* dns_aliases */);
 
   OnTimedOutInternal();
 

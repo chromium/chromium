@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -46,6 +45,7 @@
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -96,7 +96,7 @@ class MockClientSocketHandleFactory {
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
             SecureDnsPolicy::kAllow),
         scoped_refptr<ClientSocketPool::SocketParams>(),
-        base::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
+        absl::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
         ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
     return socket_handle;
@@ -120,7 +120,7 @@ class TestConnectDelegate : public WebSocketStream::ConnectDelegate {
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {}
   void OnFailure(const std::string& failure_message,
                  int net_error,
-                 base::Optional<int> response_code) override {}
+                 absl::optional<int> response_code) override {}
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override {}
   void OnSSLCertificateError(
@@ -133,8 +133,8 @@ class TestConnectDelegate : public WebSocketStream::ConnectDelegate {
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& host_port_pair,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials) override {
-    *credentials = base::nullopt;
+                     absl::optional<AuthCredentials>* credentials) override {
+    *credentials = absl::nullopt;
     return OK;
   }
 };
@@ -150,7 +150,7 @@ class MockWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
   MOCK_METHOD3(OnFailure,
                void(const std::string& message,
                     int net_error,
-                    base::Optional<int> response_code));
+                    absl::optional<int> response_code));
 };
 
 class WebSocketHandshakeStreamCreateHelperTest

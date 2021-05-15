@@ -37,7 +37,7 @@ std::string ComputeMethodForRedirect(const std::string& method,
 // policy that should be used for the request.
 ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
     ReferrerPolicy original_referrer_policy,
-    const base::Optional<std::string>& referrer_policy_header) {
+    const absl::optional<std::string>& referrer_policy_header) {
   ReferrerPolicy new_policy = original_referrer_policy;
   std::vector<base::StringPiece> policy_tokens;
   if (referrer_policy_header) {
@@ -122,7 +122,7 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     const std::string& original_referrer,
     int http_status_code,
     const GURL& new_location,
-    const base::Optional<std::string>& referrer_policy_header,
+    const absl::optional<std::string>& referrer_policy_header,
     bool insecure_scheme_was_upgraded,
     bool copy_fragment,
     bool is_signed_exchange_fallback_redirect) {

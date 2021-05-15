@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/address_list.h"
@@ -28,6 +27,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -182,7 +182,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
       bool using_ssl,
       const HostPortPair& endpoint,
       const ProxyServer& proxy_server,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
       const SSLConfig* ssl_config_for_proxy,
       bool force_tunnel,
@@ -287,7 +287,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
 
   void SetSocket(std::unique_ptr<StreamSocket> socket,
-                 base::Optional<std::vector<std::string>> dns_aliases);
+                 absl::optional<std::vector<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,

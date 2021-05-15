@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -29,14 +29,14 @@ class RedirectUtil {
       const GURL& original_url,
       const std::string& original_method,
       const RedirectInfo& redirect_info,
-      const base::Optional<std::vector<std::string>>& removed_headers,
-      const base::Optional<net::HttpRequestHeaders>& modified_headers,
+      const absl::optional<std::vector<std::string>>& removed_headers,
+      const absl::optional<net::HttpRequestHeaders>& modified_headers,
       HttpRequestHeaders* request_headers,
       bool* should_clear_upload);
 
   // Returns the the "normalized" value of Referrer-Policy header if available.
-  // Otherwise returns base::nullopt.
-  NET_EXPORT static base::Optional<std::string> GetReferrerPolicyHeader(
+  // Otherwise returns absl::nullopt.
+  NET_EXPORT static absl::optional<std::string> GetReferrerPolicyHeader(
       const HttpResponseHeaders* response_headers);
 };
 

@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/android/network_library.h"
@@ -27,6 +26,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace internal {
@@ -164,7 +164,7 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
   // on worker thread.
   DnsConfigServiceAndroid* const service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  base::Optional<DnsConfig> dns_config_;
+  absl::optional<DnsConfig> dns_config_;
 };
 
 DnsConfigServiceAndroid::DnsConfigServiceAndroid()

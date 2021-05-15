@@ -418,7 +418,7 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
   ASSERT_TRUE(event->params.is_dict());
-  EXPECT_EQ(base::nullopt, event->params.FindBoolKey("is_ev_attempt"));
+  EXPECT_EQ(absl::nullopt, event->params.FindBoolKey("is_ev_attempt"));
 
   event = std::find_if(++event, events.end(), [](const auto& e) {
     return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;

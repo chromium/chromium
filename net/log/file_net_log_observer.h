@@ -12,9 +12,9 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -126,7 +126,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   static std::unique_ptr<FileNetLogObserver> CreateInternal(
       const base::FilePath& log_path,
       const base::FilePath& inprogress_dir_path,
-      base::Optional<base::File> pre_existing_out_file,
+      absl::optional<base::File> pre_existing_out_file,
       uint64_t max_total_size,
       size_t total_num_event_files,
       NetLogCaptureMode capture_mode,

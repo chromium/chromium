@@ -121,7 +121,7 @@ void TestURLFetcher::SetRequestContext(
 }
 
 void TestURLFetcher::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {}
+    const absl::optional<url::Origin>& initiator) {}
 
 void TestURLFetcher::SetURLRequestUserData(
     const void* key,

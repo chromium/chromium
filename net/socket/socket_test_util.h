@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -45,6 +44,7 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -489,7 +489,7 @@ struct SSLSocketDataProvider {
   NextProto next_proto;
 
   // Result for GetPeerApplicationSettings().
-  base::Optional<std::string> peer_application_settings;
+  absl::optional<std::string> peer_application_settings;
 
   // Result for GetSSLInfo().
   SSLInfo ssl_info;
@@ -497,15 +497,15 @@ struct SSLSocketDataProvider {
   // Result for GetSSLCertRequestInfo().
   SSLCertRequestInfo* cert_request_info;
 
-  base::Optional<NextProtoVector> next_protos_expected_in_ssl_config;
+  absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
-  base::Optional<bool> expected_send_client_cert;
+  absl::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
-  base::Optional<HostPortPair> expected_host_and_port;
-  base::Optional<NetworkIsolationKey> expected_network_isolation_key;
-  base::Optional<bool> expected_disable_legacy_crypto;
+  absl::optional<HostPortPair> expected_host_and_port;
+  absl::optional<NetworkIsolationKey> expected_network_isolation_key;
+  absl::optional<bool> expected_disable_legacy_crypto;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;
@@ -980,7 +980,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   int GetLocalAddress(IPEndPoint* address) const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
-  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
@@ -1192,7 +1192,7 @@ class ClientSocketPoolTest {
         new TestSocketRequest(&request_order_, &completion_count_));
     requests_.push_back(base::WrapUnique(request));
     int rv = request->handle()->Init(
-        group_id, socket_params, base::nullopt /* proxy_annotation_tag */,
+        group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
         priority, SocketTag(), respect_limits, request->callback(),
         ClientSocketPool::ProxyAuthCallback(), socket_pool, NetLogWithSource());
     if (rv != ERR_IO_PENDING)
@@ -1293,7 +1293,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,

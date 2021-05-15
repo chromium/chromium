@@ -4,7 +4,6 @@
 
 #include "net/cookies/canonical_cookie.h"
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -15,6 +14,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -182,7 +182,7 @@ TEST(CanonicalCookieTest, Constructor) {
 TEST(CanonicalCookie, CreationCornerCases) {
   base::Time creation_time = base::Time::Now();
   std::unique_ptr<CanonicalCookie> cookie;
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   // Space in name.
   cookie = CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
@@ -216,7 +216,7 @@ TEST(CanonicalCookieTest, Create) {
   GURL url("http://www.example.com/test/foo.html");
   GURL https_url("https://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::unique_ptr<CanonicalCookie> cookie(
       CanonicalCookie::Create(url, "A=2", creation_time, server_time));
@@ -345,7 +345,7 @@ TEST(CanonicalCookieTest, CreateNonStandardSameSite) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
   std::unique_ptr<CanonicalCookie> cookie;
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   // Non-standard value for the SameSite attribute.
   cookie = CanonicalCookie::Create(url, "A=2; SameSite=NonStandard", now,
@@ -363,7 +363,7 @@ TEST(CanonicalCookieTest, CreateSameSiteInCrossSiteContexts) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
   std::unique_ptr<CanonicalCookie> cookie;
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   // A cookie can be created from any SameSiteContext regardless of SameSite
   // value (it is upon setting the cookie that the SameSiteContext comes into
@@ -382,7 +382,7 @@ TEST(CanonicalCookieTest, CreateSameSiteInCrossSiteContexts) {
 TEST(CanonicalCookieTest, CreateHttpOnly) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieInclusionStatus status;
 
   // An HttpOnly cookie can be created.
@@ -395,7 +395,7 @@ TEST(CanonicalCookieTest, CreateHttpOnly) {
 TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieInclusionStatus status;
 
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
@@ -409,7 +409,7 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   GURL url("http://www.example.com/test/foo.html");
   GURL https_url("https://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   CookieInclusionStatus status;
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
@@ -455,7 +455,7 @@ TEST(CanonicalCookieTest, CreateSameParty) {
 TEST(CanonicalCookieTest, CreateWithMaxAge) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   // Max-age with positive integer.
   std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
@@ -538,7 +538,7 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
 TEST(CanonicalCookieTest, EmptyExpiry) {
   GURL url("http://www7.ipdl.inpit.go.jp/Tokujitu/tjkta.ipdl?N0000=108");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::string cookie_line =
       "ACSTM=20130308043820420042; path=/; domain=ipdl.inpit.go.jp; Expires=";
@@ -757,7 +757,7 @@ TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
 TEST(CanonicalCookieTest, IsDomainMatch) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::unique_ptr<CanonicalCookie> cookie(
       CanonicalCookie::Create(url, "A=2", creation_time, server_time));
@@ -788,7 +788,7 @@ TEST(CanonicalCookieTest, IsDomainMatch) {
 
 TEST(CanonicalCookieTest, IsOnPath) {
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::unique_ptr<CanonicalCookie> cookie(CanonicalCookie::Create(
       GURL("http://www.example.com"), "A=2", creation_time, server_time));
@@ -947,7 +947,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL) {
   GURL url("http://www.example.com");
   base::Time creation_time = base::Time::Now();
   CookieOptions options = CookieOptions::MakeAllInclusive();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::unique_ptr<CanonicalCookie> cookie(
       CanonicalCookie::Create(url, "A=2", creation_time, server_time));
@@ -1136,7 +1136,7 @@ void VerifyIncludeForRequestURLTestCases(
 
     base::Time creation_time = base::Time::Now() - test.creation_time_delta;
     std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
-        url, test.cookie_line, creation_time, base::nullopt /* server_time */);
+        url, test.cookie_line, creation_time, absl::nullopt /* server_time */);
     EXPECT_EQ(test.expected_samesite, cookie->SameSite());
 
     CookieOptions request_options;
@@ -1521,7 +1521,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
 TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
   GURL url("https://www.example.com");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieOptions options;
   std::unique_ptr<CanonicalCookie> cookie;
 
@@ -1613,7 +1613,7 @@ TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
 TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
   GURL url("https://www.example.com");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieOptions options;
 
   // SameSite is not specified.
@@ -1683,7 +1683,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
 TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   GURL url("http://www.not-secure.com/foo");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieOptions options;
   options.set_exclude_httponly();
   options.set_same_site_cookie_context(CookieOptions::SameSiteCookieContext(
@@ -1743,7 +1743,7 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
 TEST(CanonicalCookieTest, PartialCompare) {
   GURL url("http://www.example.com");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   std::unique_ptr<CanonicalCookie> cookie(
       CanonicalCookie::Create(url, "a=b", creation_time, server_time));
   std::unique_ptr<CanonicalCookie> cookie_different_path(
@@ -1772,7 +1772,7 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
   GURL https_url("https://www.example.test");
   GURL http_url("http://www.example.test");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   CookieInclusionStatus status;
 
   // A __Secure- cookie must be Secure.
@@ -1807,7 +1807,7 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   GURL https_url("https://www.example.test");
   GURL http_url("http://www.example.test");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   std::string domain = https_url.host();
   CookieInclusionStatus status;
 
@@ -1883,7 +1883,7 @@ TEST(CanonicalCookieTest, CanCreateSecureCookiesFromAnyScheme) {
   GURL http_url("http://www.example.com");
   GURL https_url("https://www.example.com");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   std::unique_ptr<CanonicalCookie> http_cookie_no_secure(
       CanonicalCookie::Create(http_url, "a=b", creation_time, server_time));
@@ -2193,7 +2193,7 @@ TEST(CanonicalCookieTest, TestPrefixHistograms) {
   const char kCookiePrefixBlockedHistogram[] = "Cookie.CookiePrefixBlocked";
   GURL https_url("https://www.example.test");
   base::Time creation_time = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
 
   EXPECT_FALSE(CanonicalCookie::Create(https_url, "__Host-A=B;", creation_time,
                                        server_time));
@@ -2241,7 +2241,7 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
   GURL url("https://example.com/");
   base::Time now = base::Time::Now();
-  base::Optional<base::Time> server_time = base::nullopt;
+  absl::optional<base::Time> server_time = absl::nullopt;
   MatchCookieLineToVector("", cookies);
 
   cookies.push_back(CanonicalCookie::Create(url, "A=B", now, server_time));

@@ -28,7 +28,7 @@ MappedHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkIsolationKey& network_isolation_key,
     const NetLogWithSource& source_net_log,
-    const base::Optional<ResolveHostParameters>& optional_parameters) {
+    const absl::optional<ResolveHostParameters>& optional_parameters) {
   HostPortPair rewritten = host;
   rules_.RewriteHost(&rewritten);
 

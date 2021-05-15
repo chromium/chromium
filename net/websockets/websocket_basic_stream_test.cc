@@ -15,7 +15,6 @@
 
 #include "base/big_endian.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/privacy_mode.h"
@@ -30,6 +29,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -149,7 +149,7 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
         SecureDnsPolicy::kAllow);
     transport_socket->Init(
-        group_id, null_params, base::nullopt /* proxy_annotation_tag */, MEDIUM,
+        group_id, null_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
         SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
         NetLogWithSource());

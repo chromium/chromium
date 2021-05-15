@@ -13,13 +13,13 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -29,7 +29,7 @@ const base::TimeDelta DnsConfigService::kInvalidationTimeout =
 
 DnsConfigService::DnsConfigService(
     base::FilePath::StringPieceType hosts_file_path,
-    base::Optional<base::TimeDelta> config_change_delay)
+    absl::optional<base::TimeDelta> config_change_delay)
     : watch_failed_(false),
       have_config_(false),
       have_hosts_(false),
@@ -98,13 +98,13 @@ DnsConfigService::HostsReader::HostsReader(
 
 DnsConfigService::HostsReader::~HostsReader() = default;
 
-base::Optional<DnsHosts> DnsConfigService::HostsReader::ReadHosts() {
+absl::optional<DnsHosts> DnsConfigService::HostsReader::ReadHosts() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DCHECK(!hosts_file_path_.empty());
   DnsHosts dns_hosts;
   if (!ParseHostsFile(hosts_file_path_, &dns_hosts))
-    return base::nullopt;
+    return absl::nullopt;
 
   return dns_hosts;
 }

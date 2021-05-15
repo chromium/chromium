@@ -160,7 +160,7 @@ TEST(SchemefulSiteTest, SchemeWithNetworkHost) {
   ASSERT_TRUE(IsStandardSchemeWithNetworkHost("network"));
   ASSERT_FALSE(IsStandardSchemeWithNetworkHost("non-network"));
 
-  base::Optional<SchemefulSite> network_host_site =
+  absl::optional<SchemefulSite> network_host_site =
       SchemefulSite::CreateIfHasRegisterableDomain(
           url::Origin::Create(GURL("network://site.example.test:1337")));
   EXPECT_TRUE(network_host_site.has_value());
@@ -169,7 +169,7 @@ TEST(SchemefulSiteTest, SchemeWithNetworkHost) {
   EXPECT_EQ("example.test",
             network_host_site->GetInternalOriginForTesting().host());
 
-  base::Optional<SchemefulSite> non_network_host_site_null =
+  absl::optional<SchemefulSite> non_network_host_site_null =
       SchemefulSite::CreateIfHasRegisterableDomain(
           url::Origin::Create(GURL("non-network://site.example.test")));
   EXPECT_FALSE(non_network_host_site_null.has_value());
@@ -227,7 +227,7 @@ TEST(SchemefulSiteTest, SerializationConsistent) {
     SCOPED_TRACE(site.GetDebugString());
     EXPECT_FALSE(site.GetInternalOriginForTesting().opaque());
 
-    base::Optional<SchemefulSite> deserialized_site =
+    absl::optional<SchemefulSite> deserialized_site =
         SchemefulSite::Deserialize(site.Serialize());
     EXPECT_TRUE(deserialized_site);
     EXPECT_EQ(site, deserialized_site);
@@ -241,7 +241,7 @@ TEST(SchemefulSiteTest, OpaqueSerialization) {
       SchemefulSite(GURL("data:text/html,<body>Hello World</body>"))};
 
   for (auto& site : kTestSites) {
-    base::Optional<SchemefulSite> deserialized_site =
+    absl::optional<SchemefulSite> deserialized_site =
         SchemefulSite::DeserializeWithNonce(*site.SerializeWithNonce());
     EXPECT_TRUE(deserialized_site);
     EXPECT_EQ(site, *deserialized_site);
@@ -294,7 +294,7 @@ TEST(SchemefulSiteTest, CreateIfHasRegisterableDomain) {
        }) {
     url::Origin origin = url::Origin::Create(GURL(site));
     EXPECT_EQ(SchemefulSite::CreateIfHasRegisterableDomain(origin),
-              base::nullopt)
+              absl::nullopt)
         << "site = \"" << site << "\"";
   }
 }

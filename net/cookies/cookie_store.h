@@ -14,13 +14,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "net/cookies/cookie_options.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -94,6 +93,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pem.h"
@@ -1003,7 +1003,7 @@ std::vector<uint16_t> GetTLSVersions() {
           SSL_PROTOCOL_VERSION_TLS1_2, SSL_PROTOCOL_VERSION_TLS1_3};
 }
 
-base::Optional<SpawnedTestServer::SSLOptions::TLSMaxVersion>
+absl::optional<SpawnedTestServer::SSLOptions::TLSMaxVersion>
 ProtocolVersionToSpawnedTestServer(uint16_t version) {
   switch (version) {
     case SSL_PROTOCOL_VERSION_TLS1:
@@ -1014,10 +1014,10 @@ ProtocolVersionToSpawnedTestServer(uint16_t version) {
       return SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2;
     case SSL_PROTOCOL_VERSION_TLS1_3:
       // SpawnedTestServer does not support TLS 1.3.
-      return base::nullopt;
+      return absl::nullopt;
     default:
       ADD_FAILURE() << "Unknown version " << version;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

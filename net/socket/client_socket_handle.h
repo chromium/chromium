@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -28,6 +27,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -85,7 +85,7 @@ class NET_EXPORT ClientSocketHandle {
   int Init(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       ClientSocketPool::RespectLimits respect_limits,

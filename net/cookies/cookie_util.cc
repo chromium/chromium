@@ -105,7 +105,7 @@ bool SaturatedTimeFromUTCExploded(const base::Time::Exploded& exploded,
 std::pair<ContextType, bool> ComputeSameSiteContext(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     bool is_http,
     bool is_main_frame_navigation,
     bool compute_schemefully) {
@@ -167,7 +167,7 @@ std::pair<ContextType, bool> ComputeSameSiteContext(
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     bool is_http,
     bool is_main_frame_navigation) {
   CookieOptions::SameSiteCookieContext same_site_context;
@@ -534,7 +534,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
     const std::string& http_method,
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
   // Set SameSiteCookieContext according to the rules laid out in
@@ -593,7 +593,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const base::Optional<url::Origin>& initiator,
+                                   const absl::optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies) {
   if (force_ignore_site_for_cookies)
     return CookieOptions::SameSiteCookieContext::MakeInclusive();
@@ -615,7 +615,7 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
   if (force_ignore_site_for_cookies)
@@ -650,7 +650,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForScriptSet(
   // with the url. We don't check the redirect chain for script access to
   // cookies (only the URL itself).
   return ComputeSameSiteContextForSet(
-      {url}, site_for_cookies, base::nullopt /* initiator */,
+      {url}, site_for_cookies, absl::nullopt /* initiator */,
       false /* is_http */, false /* is_main_frame_navigation */);
 }
 
@@ -711,7 +711,7 @@ CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
       cookie_access_delegate->IsContextSamePartyWithSite(
           request_site,
           force_ignore_top_frame_party
-              ? base::nullopt
+              ? absl::nullopt
               : isolation_info.network_isolation_key().GetTopFrameSite(),
           isolation_info.party_context().value())) {
     return CookieOptions::SamePartyCookieContextType::kSameParty;
@@ -745,7 +745,7 @@ FirstPartySetsContextType ComputeFirstPartySetsContextType(
     return cookie_access_delegate->ComputeFirstPartySetsContextType(
         request_site,
         force_ignore_top_frame_party
-            ? base::nullopt
+            ? absl::nullopt
             : isolation_info.network_isolation_key().GetTopFrameSite(),
         isolation_info.party_context().value());
   }

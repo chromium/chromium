@@ -19,7 +19,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/numerics/clamped_math.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -34,6 +33,7 @@
 #include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/log/net_log_capture_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;
@@ -108,12 +108,12 @@ class NET_EXPORT HostCache {
       SOURCE_HOSTS,
     };
 
-    // |ttl=base::nullopt| for unknown TTL.
+    // |ttl=absl::nullopt| for unknown TTL.
     template <typename T>
     Entry(int error,
           T&& results,
           Source source,
-          base::Optional<base::TimeDelta> ttl)
+          absl::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
           ttl_(ttl ? ttl.value() : base::TimeDelta::FromSeconds(-1)) {
@@ -124,12 +124,12 @@ class NET_EXPORT HostCache {
     // Use when |ttl| is unknown.
     template <typename T>
     Entry(int error, T&& results, Source source)
-        : Entry(error, std::forward<T>(results), source, base::nullopt) {}
+        : Entry(error, std::forward<T>(results), source, absl::nullopt) {}
 
     // For errors with no |results|.
     Entry(int error,
           Source source,
-          base::Optional<base::TimeDelta> ttl = base::nullopt);
+          absl::optional<base::TimeDelta> ttl = absl::nullopt);
 
     Entry(const Entry& entry);
     Entry(Entry&& entry);
@@ -144,28 +144,28 @@ class NET_EXPORT HostCache {
              error_ != ERR_HOST_RESOLVER_QUEUE_TOO_LARGE;
     }
     void set_error(int error) { error_ = error; }
-    const base::Optional<AddressList>& addresses() const { return addresses_; }
-    void set_addresses(const base::Optional<AddressList>& addresses) {
+    const absl::optional<AddressList>& addresses() const { return addresses_; }
+    void set_addresses(const absl::optional<AddressList>& addresses) {
       addresses_ = addresses;
     }
-    const base::Optional<std::vector<std::string>>& text_records() const {
+    const absl::optional<std::vector<std::string>>& text_records() const {
       return text_records_;
     }
     void set_text_records(
-        base::Optional<std::vector<std::string>> text_records) {
+        absl::optional<std::vector<std::string>> text_records) {
       text_records_ = std::move(text_records);
     }
-    const base::Optional<std::vector<HostPortPair>>& hostnames() const {
+    const absl::optional<std::vector<HostPortPair>>& hostnames() const {
       return hostnames_;
     }
-    void set_hostnames(base::Optional<std::vector<HostPortPair>> hostnames) {
+    void set_hostnames(absl::optional<std::vector<HostPortPair>> hostnames) {
       hostnames_ = std::move(hostnames);
     }
-    const base::Optional<std::vector<bool>>& experimental_results() const {
+    const absl::optional<std::vector<bool>>& experimental_results() const {
       return experimental_results_;
     }
     void set_experimental_results(
-        base::Optional<std::vector<bool>> experimental_results) {
+        absl::optional<std::vector<bool>> experimental_results) {
       experimental_results_ = std::move(experimental_results);
     }
     bool pinned() const { return pinned_; }
@@ -174,7 +174,7 @@ class NET_EXPORT HostCache {
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
     base::TimeDelta ttl() const { return ttl_; }
-    base::Optional<base::TimeDelta> GetOptionalTtl() const;
+    absl::optional<base::TimeDelta> GetOptionalTtl() const;
     void set_ttl(base::TimeDelta ttl) { ttl_ = ttl; }
 
     base::TimeTicks expires() const { return expires_; }
@@ -208,10 +208,10 @@ class NET_EXPORT HostCache {
           int network_changes);
 
     Entry(int error,
-          const base::Optional<AddressList>& addresses,
-          base::Optional<std::vector<std::string>>&& text_results,
-          base::Optional<std::vector<HostPortPair>>&& hostnames,
-          base::Optional<std::vector<bool>>&& experimental_results,
+          const absl::optional<AddressList>& addresses,
+          absl::optional<std::vector<std::string>>&& text_results,
+          absl::optional<std::vector<HostPortPair>>&& hostnames,
+          absl::optional<std::vector<bool>>&& experimental_results,
           Source source,
           base::TimeTicks expires,
           int network_changes);
@@ -259,10 +259,10 @@ class NET_EXPORT HostCache {
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;
-    base::Optional<AddressList> addresses_;
-    base::Optional<std::vector<std::string>> text_records_;
-    base::Optional<std::vector<HostPortPair>> hostnames_;
-    base::Optional<std::vector<bool>> experimental_results_;
+    absl::optional<AddressList> addresses_;
+    absl::optional<std::vector<std::string>> text_records_;
+    absl::optional<std::vector<HostPortPair>> hostnames_;
+    absl::optional<std::vector<bool>> experimental_results_;
     // Where results were obtained (e.g. DNS lookup, hosts file, etc).
     Source source_ = SOURCE_UNKNOWN;
     // If true, this entry cannot be evicted from the cache until after the next

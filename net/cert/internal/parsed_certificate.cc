@@ -295,7 +295,7 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::CreateInternal(
 
     // Subject Key Identifier.
     if (result->GetExtension(SubjectKeyIdentifierOid(), &extension)) {
-      result->subject_key_identifier_ = base::make_optional<der::Input>();
+      result->subject_key_identifier_ = absl::make_optional<der::Input>();
       if (!ParseSubjectKeyIdentifier(
               extension.value, &result->subject_key_identifier_.value())) {
         errors->AddError(kFailedParsingSubjectKeyIdentifier);
@@ -306,7 +306,7 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::CreateInternal(
     // Authority Key Identifier.
     if (result->GetExtension(AuthorityKeyIdentifierOid(), &extension)) {
       result->authority_key_identifier_ =
-          base::make_optional<ParsedAuthorityKeyIdentifier>();
+          absl::make_optional<ParsedAuthorityKeyIdentifier>();
       if (!ParseAuthorityKeyIdentifier(
               extension.value, &result->authority_key_identifier_.value())) {
         errors->AddError(kFailedParsingAuthorityKeyIdentifier);

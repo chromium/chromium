@@ -73,11 +73,11 @@ AddressInfo::AddressInfoAndResult AddressInfo::Get(
       err = ERR_NAME_RESOLUTION_FAILED;
 #endif
 
-    return AddressInfoAndResult(base::Optional<AddressInfo>(), err, os_error);
+    return AddressInfoAndResult(absl::optional<AddressInfo>(), err, os_error);
   }
 
   return AddressInfoAndResult(
-      base::Optional<AddressInfo>(AddressInfo(ai, std::move(getter))), OK, 0);
+      absl::optional<AddressInfo>(AddressInfo(ai, std::move(getter))), OK, 0);
 }
 
 AddressInfo::AddressInfo(AddressInfo&& other)
@@ -107,10 +107,10 @@ AddressInfo::const_iterator AddressInfo::end() const {
   return const_iterator(nullptr);
 }
 
-base::Optional<std::string> AddressInfo::GetCanonicalName() const {
+absl::optional<std::string> AddressInfo::GetCanonicalName() const {
   return (ai_->ai_canonname != nullptr)
-             ? base::Optional<std::string>(std::string(ai_->ai_canonname))
-             : base::Optional<std::string>();
+             ? absl::optional<std::string>(std::string(ai_->ai_canonname))
+             : absl::optional<std::string>();
 }
 
 bool AddressInfo::IsAllLocalhostOfOneFamily() const {

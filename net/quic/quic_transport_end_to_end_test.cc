@@ -45,7 +45,7 @@ class MockVisitor : public WebTransportClientVisitor {
   MOCK_METHOD1(OnDatagramReceived, void(base::StringPiece));
   MOCK_METHOD0(OnCanCreateNewOutgoingBidirectionalStream, void());
   MOCK_METHOD0(OnCanCreateNewOutgoingUnidirectionalStream, void());
-  MOCK_METHOD1(OnDatagramProcessed, void(base::Optional<quic::MessageStatus>));
+  MOCK_METHOD1(OnDatagramProcessed, void(absl::optional<quic::MessageStatus>));
 };
 
 // A clock that only mocks out WallNow(), but uses real Now() and

@@ -9,10 +9,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 #include "net/der/tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 namespace net {
@@ -122,14 +122,14 @@ class NET_EXPORT Parser {
   // something else, then |out| is set to nullopt and the input is not
   // advanced. Like ReadTagAndValue, it returns false if the encoding is
   // invalid and does not advance the input.
-  bool ReadOptionalTag(Tag tag, base::Optional<Input>* out) WARN_UNUSED_RESULT;
+  bool ReadOptionalTag(Tag tag, absl::optional<Input>* out) WARN_UNUSED_RESULT;
 
   // If the current tag in the input is |tag|, it puts the corresponding value
   // in |out|, sets |was_present| to true, and advances the input to the next
   // TLV. If the current tag is something else, then |was_present| is set to
   // false and the input is not advanced. Like ReadTagAndValue, it returns
   // false if the encoding is invalid and does not advance the input.
-  // DEPRECATED: use the base::Optional version above in new code.
+  // DEPRECATED: use the absl::optional version above in new code.
   // TODO(mattm): convert the existing callers and remove this override.
   bool ReadOptionalTag(Tag tag,
                        Input* out,

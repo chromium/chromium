@@ -23,9 +23,9 @@ namespace {
 // Generate a compact representation for the first IP in |address_list|. For
 // IPv4, all 32 bits are used and for IPv6, the first 64 bits are used as the
 // remote host identifier.
-base::Optional<IPHash> CalculateIPHash(const AddressList& address_list) {
+absl::optional<IPHash> CalculateIPHash(const AddressList& address_list) {
   if (address_list.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   const IPAddress& ip_addr = address_list.front().address();
 

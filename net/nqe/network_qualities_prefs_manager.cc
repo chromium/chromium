@@ -9,11 +9,11 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -44,7 +44,7 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::DictionaryValue* value) {
         it.second.GetAsString(&effective_connection_type_string);
     DCHECK(effective_connection_type_available);
 
-    base::Optional<EffectiveConnectionType> effective_connection_type =
+    absl::optional<EffectiveConnectionType> effective_connection_type =
         GetEffectiveConnectionTypeForName(effective_connection_type_string);
     DCHECK(effective_connection_type.has_value());
 

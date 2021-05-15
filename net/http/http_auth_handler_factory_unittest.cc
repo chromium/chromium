@@ -317,7 +317,7 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
       const std::string* scheme = entries[0].params.FindStringKey("scheme");
       ASSERT_NE(nullptr, scheme);
       EXPECT_STRCASEEQ(test_case.expected_scheme, scheme->data());
-      base::Optional<int> net_error = entries[0].params.FindIntKey("net_error");
+      absl::optional<int> net_error = entries[0].params.FindIntKey("net_error");
       if (test_case.expected_net_error) {
         ASSERT_TRUE(net_error.has_value());
         EXPECT_EQ(test_case.expected_net_error, net_error.value());

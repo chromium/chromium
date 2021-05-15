@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -41,6 +40,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -281,7 +281,7 @@ class SQLitePersistentCookieStore::Backend
   }
 
   // Database upgrade statements.
-  base::Optional<int> DoMigrateDatabaseSchema() override;
+  absl::optional<int> DoMigrateDatabaseSchema() override;
 
   class PendingOperation {
    public:
@@ -965,21 +965,21 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
   return ok;
 }
 
-base::Optional<int>
+absl::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
   if (cur_version == 9) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return base::nullopt;
+      return absl::nullopt;
 
     if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute("DROP INDEX IF EXISTS domain"))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute("DROP INDEX IF EXISTS is_transient"))
-      return base::nullopt;
+      return absl::nullopt;
 
     if (!CreateV10Schema(db())) {
       // Not clear what good a false return here will do since the calling
@@ -988,7 +988,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       // InitTable() just returns true if the table exists, so if
       // EnsureDatabaseVersion() fails, initting the table won't do any
       // further good.  Fix?
-      return base::nullopt;
+      return absl::nullopt;
     }
     // If any cookies violate the new uniqueness constraints (no two
     // cookies with the same (name, domain, path)), pick the newer version,
@@ -1002,10 +1002,10 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
             "       secure, httponly, last_access_utc, has_expires, "
             "       persistent, priority, encrypted_value, firstpartyonly "
             "FROM cookies_old ORDER BY creation_utc ASC")) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!db()->Execute("DROP TABLE cookies_old"))
-      return base::nullopt;
+      return absl::nullopt;
     ++cur_version;
     meta_table()->SetVersionNumber(cur_version);
     meta_table()->SetCompatibleVersionNumber(
@@ -1018,15 +1018,15 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   if (cur_version == 10) {
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return base::nullopt;
+      return absl::nullopt;
 
     // Copy the data into a new table, renaming the firstpartyonly column to
     // samesite.
     if (!db()->Execute("DROP TABLE IF EXISTS cookies_old; "
                        "ALTER TABLE cookies RENAME TO cookies_old"))
-      return base::nullopt;
+      return absl::nullopt;
     if (!CreateV11Schema(db()))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute(
             "INSERT INTO cookies "
             "(creation_utc, host_key, name, value, path, expires_utc, "
@@ -1036,10 +1036,10 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
             "       is_secure, is_httponly, last_access_utc, has_expires, "
             "       is_persistent, priority, encrypted_value, firstpartyonly "
             "FROM cookies_old")) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!db()->Execute("DROP TABLE cookies_old"))
-      return base::nullopt;
+      return absl::nullopt;
 
     // Update stored SameSite values of kCookieSameSiteNoRestriction into
     // kCookieSameSiteUnspecified.
@@ -1048,7 +1048,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         CookieSameSiteToDBCookieSameSite(CookieSameSite::UNSPECIFIED),
         CookieSameSiteToDBCookieSameSite(CookieSameSite::NO_RESTRICTION)));
     if (!db()->Execute(update_stmt.c_str()))
-      return base::nullopt;
+      return absl::nullopt;
 
     ++cur_version;
     meta_table()->SetVersionNumber(cur_version);
@@ -1061,14 +1061,14 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV12");
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return base::nullopt;
+      return absl::nullopt;
 
     std::string update_stmt(
         base::StringPrintf("ALTER TABLE cookies ADD COLUMN source_scheme "
                            "INTEGER NOT NULL DEFAULT %d;",
                            static_cast<int>(CookieSourceScheme::kUnset)));
     if (!db()->Execute(update_stmt.c_str()))
-      return base::nullopt;
+      return absl::nullopt;
 
     ++cur_version;
     meta_table()->SetVersionNumber(cur_version);
@@ -1088,7 +1088,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (!transaction.Begin()) {
       base::UmaHistogramTimes(kMigrationFailureHistogram,
                               base::TimeTicks::Now() - start_time);
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     std::string update_stmt(
@@ -1100,7 +1100,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (!db()->Execute(update_stmt.c_str())) {
       base::UmaHistogramTimes(kMigrationFailureHistogram,
                               base::TimeTicks::Now() - start_time);
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     ++cur_version;
@@ -1116,7 +1116,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return base::nullopt;
+      return absl::nullopt;
 
 #if defined(OS_WIN)
     // Migration is only needed on Windows. On other platforms, this is a no-op.
@@ -1134,7 +1134,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
                                    "rowid=?"));
 
       if (!select_statement.is_valid() || !update_statement.is_valid())
-        return base::nullopt;
+        return absl::nullopt;
 
       bool okay = true;
 
@@ -1164,7 +1164,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         update_statement.BindString(0, entry.second);
         update_statement.BindInt64(1, entry.first);
         if (!update_statement.Run())
-          return base::nullopt;
+          return absl::nullopt;
       }
 
       UMA_HISTOGRAM_BOOLEAN("Cookie.MigratedEncryptionKeySuccess", okay);
@@ -1181,7 +1181,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
   // Put future migration cases here.
 
-  return base::make_optional(cur_version);
+  return absl::make_optional(cur_version);
 }
 
 void SQLitePersistentCookieStore::Backend::AddCookie(

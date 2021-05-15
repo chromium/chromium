@@ -102,7 +102,7 @@ std::string FixupProxyHostScheme(ProxyServer::Scheme scheme,
 }
 
 ProxyConfigWithAnnotation GetConfigOrDirect(
-    const base::Optional<ProxyConfigWithAnnotation>& optional_config) {
+    const absl::optional<ProxyConfigWithAnnotation>& optional_config) {
   if (optional_config)
     return optional_config.value();
 
@@ -143,7 +143,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVar(
                                      result_server);
 }
 
-base::Optional<ProxyConfigWithAnnotation>
+absl::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
   ProxyConfig config;
 
@@ -214,7 +214,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromEnv() {
     return !no_proxy.empty()
                ? ProxyConfigWithAnnotation(
                      config, NetworkTrafficAnnotationTag(traffic_annotation_))
-               : base::Optional<ProxyConfigWithAnnotation>();
+               : absl::optional<ProxyConfigWithAnnotation>();
   }
   // Note that this uses "suffix" matching. So a bypass of "google.com"
   // is understood to mean a bypass of "*google.com".
@@ -1039,7 +1039,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   return false;
 }
 
-base::Optional<ProxyConfigWithAnnotation>
+absl::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   ProxyConfig config;
 
@@ -1047,7 +1047,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   if (!setting_getter_->GetString(SettingGetter::PROXY_MODE, &mode)) {
     // We expect this to always be set, so if we don't see it then we probably
     // have a gsettings problem, and so we don't have a valid proxy config.
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (mode == "none") {
     // Specifically specifies no proxy.
@@ -1066,7 +1066,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
           pac_url_str = "file://" + pac_url_str;
         GURL pac_url(pac_url_str);
         if (!pac_url.is_valid())
-          return base::nullopt;
+          return absl::nullopt;
         config.set_pac_url(pac_url);
         return ProxyConfigWithAnnotation(
             config, NetworkTrafficAnnotationTag(traffic_annotation_));
@@ -1079,7 +1079,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
   if (mode != "manual") {
     // Mode is unrecognized.
-    return base::nullopt;
+    return absl::nullopt;
   }
   bool use_http_proxy;
   if (setting_getter_->GetBool(SettingGetter::PROXY_USE_HTTP_PROXY,
@@ -1143,7 +1143,7 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
   if (config.proxy_rules().empty()) {
     // Manual mode but we couldn't parse any rules.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Check for authentication, just so we can warn.
@@ -1184,8 +1184,8 @@ ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
 
 ProxyConfigServiceLinux::Delegate::Delegate(
     std::unique_ptr<base::Environment> env_var_getter,
-    base::Optional<std::unique_ptr<SettingGetter>> setting_getter,
-    base::Optional<NetworkTrafficAnnotationTag> traffic_annotation)
+    absl::optional<std::unique_ptr<SettingGetter>> setting_getter,
+    absl::optional<NetworkTrafficAnnotationTag> traffic_annotation)
     : env_var_getter_(std::move(env_var_getter)) {
   if (traffic_annotation) {
     traffic_annotation_ =
@@ -1256,7 +1256,7 @@ void ProxyConfigServiceLinux::Delegate::SetUpAndFetchInitialConfig(
   // does so even if the proxy mode is set to auto, which would
   // mislead us.
 
-  cached_config_ = base::nullopt;
+  cached_config_ = absl::nullopt;
   if (setting_getter_ && setting_getter_->Init(glib_task_runner)) {
     cached_config_ = GetConfigFromSettings();
   }
@@ -1352,7 +1352,7 @@ void ProxyConfigServiceLinux::Delegate::OnCheckProxyConfigSettings() {
   scoped_refptr<base::SequencedTaskRunner> required_loop =
       setting_getter_->GetNotificationTaskRunner();
   DCHECK(!required_loop.get() || required_loop->RunsTasksInCurrentSequence());
-  base::Optional<ProxyConfigWithAnnotation> new_config =
+  absl::optional<ProxyConfigWithAnnotation> new_config =
       GetConfigFromSettings();
 
   // See if it is different from what we had before.
@@ -1373,7 +1373,7 @@ void ProxyConfigServiceLinux::Delegate::OnCheckProxyConfigSettings() {
 }
 
 void ProxyConfigServiceLinux::Delegate::SetNewProxyConfig(
-    const base::Optional<ProxyConfigWithAnnotation>& new_config) {
+    const absl::optional<ProxyConfigWithAnnotation>& new_config) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   VLOG(1) << "Proxy configuration changed";
   cached_config_ = new_config;
@@ -1410,8 +1410,8 @@ void ProxyConfigServiceLinux::Delegate::OnDestroy() {
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux()
     : delegate_(new Delegate(base::Environment::Create(),
-                             base::nullopt,
-                             base::nullopt)) {}
+                             absl::nullopt,
+                             absl::nullopt)) {}
 
 ProxyConfigServiceLinux::~ProxyConfigServiceLinux() {
   delegate_->PostDestroyTask();
@@ -1421,7 +1421,7 @@ ProxyConfigServiceLinux::ProxyConfigServiceLinux(
     std::unique_ptr<base::Environment> env_var_getter,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : delegate_(new Delegate(std::move(env_var_getter),
-                             base::nullopt,
+                             absl::nullopt,
                              traffic_annotation)) {}
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux(

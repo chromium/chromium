@@ -94,9 +94,9 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
     rules->AddRule("local.com", "127.0.0.1");
     mock_host_resolver_.set_rules(rules.get());
     mock_host_resolver_.LoadIntoCache(HostPortPair("example.com", 80),
-                                      NetworkIsolationKey(), base::nullopt);
+                                      NetworkIsolationKey(), absl::nullopt);
     mock_host_resolver_.LoadIntoCache(HostPortPair("local.com", 80),
-                                      NetworkIsolationKey(), base::nullopt);
+                                      NetworkIsolationKey(), absl::nullopt);
     context->set_host_resolver(&mock_host_resolver_);
   }
 
@@ -209,7 +209,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
     rules->AddRule(kUrl.host(), "1.2.3.4");
     mock_host_resolver.set_rules(rules.get());
     mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                     NetworkIsolationKey(), base::nullopt);
+                                     NetworkIsolationKey(), absl::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
     // kNetworkIsolationKey.
@@ -217,7 +217,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
     rules->AddRule(kUrl.host(), "127.0.0.1");
     mock_host_resolver.set_rules(rules.get());
     mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                     kNetworkIsolationKey, base::nullopt);
+                                     kNetworkIsolationKey, absl::nullopt);
 
     ASSERT_FALSE(
         throughput_analyzer.disable_throughput_measurements_for_testing());

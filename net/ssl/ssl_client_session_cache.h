@@ -15,13 +15,13 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/optional.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace base {
@@ -54,7 +54,7 @@ class NET_EXPORT SSLClientSessionCache {
     bool operator<(const Key& other) const;
 
     HostPortPair server;
-    base::Optional<IPAddress> dest_ip_addr;
+    absl::optional<IPAddress> dest_ip_addr;
     NetworkIsolationKey network_isolation_key;
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
     bool disable_legacy_crypto = false;

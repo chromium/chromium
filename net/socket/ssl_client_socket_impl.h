@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -33,6 +32,7 @@
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -86,7 +86,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   bool WasEverUsed() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
-  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
   void ClearConnectionAttempts() override {}
@@ -161,7 +161,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // Returns a session cache key for this socket.
   SSLClientSessionCache::Key GetSessionCacheKey(
-      base::Optional<IPAddress> dest_ip_addr) const;
+      absl::optional<IPAddress> dest_ip_addr) const;
 
   // Returns true if renegotiations are allowed.
   bool IsRenegotiationAllowed() const;

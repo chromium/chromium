@@ -6,16 +6,16 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 namespace {
 
 TEST(CellularSignalStrengthAndroidTest, SignalStrengthLevelTest) {
-  base::Optional<int32_t> signal_strength =
+  absl::optional<int32_t> signal_strength =
       android::cellular_signal_strength::GetSignalStrengthLevel();
 
   // Signal strength is unavailable if the device does not have an active

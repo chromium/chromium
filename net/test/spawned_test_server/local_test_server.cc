@@ -99,7 +99,7 @@ bool LocalTestServer::StartInBackground() {
     return false;
   }
 
-  base::Optional<std::vector<base::FilePath>> python_path = GetPythonPath();
+  absl::optional<std::vector<base::FilePath>> python_path = GetPythonPath();
   if (!python_path) {
     LOG(ERROR) << "Could not get Python path.";
     return false;
@@ -164,12 +164,12 @@ bool LocalTestServer::Init(const base::FilePath& document_root) {
   return true;
 }
 
-base::Optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
+absl::optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
     const {
   base::FilePath third_party_dir;
   if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &third_party_dir)) {
     LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
-    return base::nullopt;
+    return absl::nullopt;
   }
   third_party_dir = third_party_dir.AppendASCII("third_party");
 

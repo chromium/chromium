@@ -92,7 +92,7 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override {
     return OK;
   }
 

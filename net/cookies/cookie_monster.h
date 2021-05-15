@@ -23,7 +23,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -35,6 +34,7 @@
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_store.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {

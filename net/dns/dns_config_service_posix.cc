@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -27,6 +26,7 @@
 #include "net/dns/dns_hosts.h"
 #include "net/dns/notify_watcher_mac.h"
 #include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "net/dns/dns_config_watcher_mac.h"
@@ -87,11 +87,11 @@ class DnsConfigWatcher {
 };
 #endif  // defined(OS_IOS)
 
-base::Optional<DnsConfig> ReadDnsConfig() {
+absl::optional<DnsConfig> ReadDnsConfig() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  base::Optional<DnsConfig> dns_config;
+  absl::optional<DnsConfig> dns_config;
 // TODO(fuchsia): Use res_ninit() when it's implemented on Fuchsia.
 #if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
   // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
@@ -118,7 +118,7 @@ base::Optional<DnsConfig> ReadDnsConfig() {
 #if defined(OS_MAC)
   if (!DnsConfigWatcher::CheckDnsConfig(
           dns_config->unhandled_options /* out_unhandled_options */)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif  // defined(OS_MAC)
   // Override |fallback_period| value to match default setting on Windows.
@@ -201,7 +201,7 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   // on worker thread.
   DnsConfigServicePosix* const service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
-  base::Optional<DnsConfig> dns_config_;
+  absl::optional<DnsConfig> dns_config_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfigReader);
 };
@@ -241,13 +241,13 @@ void DnsConfigServicePosix::CreateReader() {
   config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
 }
 
-base::Optional<DnsConfig> ConvertResStateToDnsConfig(
+absl::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
   if (!(res.options & RES_INIT))
-    return base::nullopt;
+    return absl::nullopt;
 
 #if defined(OS_APPLE) || defined(OS_FREEBSD)
   union res_sockaddr_union addresses[MAXNS];
@@ -259,7 +259,7 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
     if (!ipe.FromSockAddr(
             reinterpret_cast<const struct sockaddr*>(&addresses[i]),
             sizeof addresses[i])) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     dns_config.nameservers.push_back(ipe);
   }
@@ -282,10 +282,10 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
       addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
       addr_len = sizeof *res._u._ext.nsaddrs[i];
     } else {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!ipe.FromSockAddr(addr, addr_len))
-      return base::nullopt;
+      return absl::nullopt;
     dns_config.nameservers.push_back(ipe);
   }
 #else   // !(defined(OS_CHROMEOS) || defined(OS_APPLE) || defined(OS_FREEBSD))
@@ -295,7 +295,7 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
     if (!ipe.FromSockAddr(
             reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]),
             sizeof res.nsaddr_list[i])) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     dns_config.nameservers.push_back(ipe);
   }
@@ -333,13 +333,13 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
   }
 
   if (dns_config.nameservers.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   // If any name server is 0.0.0.0, assume the configuration is invalid.
   // TODO(szym): Measure how often this happens. http://crbug.com/125599
   for (const IPEndPoint& nameserver : dns_config.nameservers) {
     if (nameserver.address().IsZero())
-      return base::nullopt;
+      return absl::nullopt;
   }
   return dns_config;
 }

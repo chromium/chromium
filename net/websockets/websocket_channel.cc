@@ -242,7 +242,7 @@ class WebSocketChannel::ConnectDelegate
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 base::Optional<int> response_code) override {
+                 absl::optional<int> response_code) override {
     creator_->OnConnectFailure(message, net_error, response_code);
     // |this| has been deleted.
   }
@@ -266,7 +266,7 @@ class WebSocketChannel::ConnectDelegate
                      scoped_refptr<HttpResponseHeaders> headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     base::Optional<AuthCredentials>* credentials) override {
+                     absl::optional<AuthCredentials>* credentials) override {
     return creator_->OnAuthRequired(auth_info, std::move(headers),
                                     remote_endpoint, std::move(callback),
                                     credentials);
@@ -476,7 +476,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     // TODO(ricea): Kill the renderer (this error should have been caught by
     // Javascript).
     event_interface_->OnFailChannel("Invalid scheme", ERR_FAILED,
-                                    base::nullopt);
+                                    absl::nullopt);
     // |this| is deleted here.
     return;
   }
@@ -513,7 +513,7 @@ void WebSocketChannel::OnConnectSuccess(
 
 void WebSocketChannel::OnConnectFailure(const std::string& message,
                                         int net_error,
-                                        base::Optional<int> response_code) {
+                                        absl::optional<int> response_code) {
   DCHECK_EQ(CONNECTING, state_);
 
   // Copy the message before we delete its owner.
@@ -541,7 +541,7 @@ int WebSocketChannel::OnAuthRequired(
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const AuthCredentials*)> callback,
-    base::Optional<AuthCredentials>* credentials) {
+    absl::optional<AuthCredentials>* credentials) {
   return event_interface_->OnAuthRequired(
       auth_info, std::move(response_headers), remote_endpoint,
       std::move(callback), credentials);
@@ -961,7 +961,7 @@ void WebSocketChannel::FailChannel(const std::string& message,
   // handshake.
   stream_->Close();
   SetState(CLOSED);
-  event_interface_->OnFailChannel(message, ERR_FAILED, base::nullopt);
+  event_interface_->OnFailChannel(message, ERR_FAILED, absl::nullopt);
 }
 
 ChannelState WebSocketChannel::SendClose(uint16_t code,

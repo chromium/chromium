@@ -9,12 +9,12 @@
 
 #include "base/check.h"
 #include "base/memory/free_deleter.h"
-#include "base/optional.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -177,7 +177,7 @@ TEST(DnsConfigServiceWinTest, ConvertAdapterAddresses) {
       expected_nameservers.push_back(IPEndPoint(ip, port));
     }
 
-    base::Optional<DnsConfig> config =
+    absl::optional<DnsConfig> config =
         internal::ConvertSettingsToDnsConfig(settings);
     bool expected_success = !expected_nameservers.empty();
     EXPECT_EQ(expected_success, config.has_value());
@@ -432,7 +432,7 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
     internal::DnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_name_resolution_policy = t.have_nrpt;
-    base::Optional<DnsConfig> config =
+    absl::optional<DnsConfig> config =
         internal::ConvertSettingsToDnsConfig(settings);
     ASSERT_TRUE(config.has_value());
     EXPECT_EQ(t.unhandled_options, config->unhandled_options);

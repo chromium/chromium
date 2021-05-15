@@ -116,7 +116,7 @@ struct NET_EXPORT_PRIVATE DnsSystemSettings {
 
 // Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
 // a valid config could not be determined.
-base::Optional<DnsConfig> NET_EXPORT_PRIVATE
+absl::optional<DnsConfig> NET_EXPORT_PRIVATE
 ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
 
 // Service for reading and watching Windows system DNS settings. This object is

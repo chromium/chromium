@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +20,7 @@
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -96,7 +96,7 @@ class SetCookieCallback : public CookieTestCallback {
                  const GURL& gurl,
                  const std::string& cookie_line) {
     auto cookie = CanonicalCookie::Create(gurl, cookie_line, base::Time::Now(),
-                                          base::nullopt /* server_time */);
+                                          absl::nullopt /* server_time */);
     cm->SetCanonicalCookieAsync(
         std::move(cookie), gurl, options_,
         base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)));

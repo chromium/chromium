@@ -16,7 +16,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "net/dns/dns_client.h"
@@ -27,6 +26,7 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/socket/socket_test_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -291,7 +291,7 @@ struct MockDnsClientRule {
 
   struct Result {
     explicit Result(ResultType type,
-                    base::Optional<DnsResponse> response = base::nullopt);
+                    absl::optional<DnsResponse> response = absl::nullopt);
     explicit Result(DnsResponse response);
     Result(Result&& result);
     ~Result();
@@ -299,7 +299,7 @@ struct MockDnsClientRule {
     Result& operator=(Result&& result);
 
     ResultType type;
-    base::Optional<DnsResponse> response;
+    absl::optional<DnsResponse> response;
   };
 
   // If |delay| is true, matching transactions will be delayed until triggered
@@ -387,7 +387,7 @@ class MockDnsClient : public DnsClient {
   bool FallbackFromSecureTransactionPreferred(
       ResolveContext* resolve_context) const override;
   bool FallbackFromInsecureTransactionPreferred() const override;
-  bool SetSystemConfig(base::Optional<DnsConfig> system_config) override;
+  bool SetSystemConfig(absl::optional<DnsConfig> system_config) override;
   bool SetConfigOverrides(DnsConfigOverrides config_overrides) override;
   void ReplaceCurrentSession() override;
   DnsSession* GetCurrentSession() override;
@@ -397,7 +397,7 @@ class MockDnsClient : public DnsClient {
   AddressSorter* GetAddressSorter() override;
   void IncrementInsecureFallbackFailures() override;
   void ClearInsecureFallbackFailures() override;
-  base::Optional<DnsConfig> GetSystemConfigForTesting() const override;
+  absl::optional<DnsConfig> GetSystemConfigForTesting() const override;
   DnsConfigOverrides GetConfigOverridesForTesting() const override;
   void SetTransactionFactoryForTesting(
       std::unique_ptr<DnsTransactionFactory> factory) override;
@@ -422,7 +422,7 @@ class MockDnsClient : public DnsClient {
   MockDnsTransactionFactory* factory() { return factory_.get(); }
 
  private:
-  base::Optional<DnsConfig> BuildEffectiveConfig();
+  absl::optional<DnsConfig> BuildEffectiveConfig();
   scoped_refptr<DnsSession> BuildSession();
 
   bool insecure_enabled_ = false;
@@ -438,10 +438,10 @@ class MockDnsClient : public DnsClient {
   bool force_doh_server_available_ = true;
 
   MockClientSocketFactory socket_factory_;
-  base::Optional<DnsConfig> config_;
+  absl::optional<DnsConfig> config_;
   scoped_refptr<DnsSession> session_;
   DnsConfigOverrides overrides_;
-  base::Optional<DnsConfig> effective_config_;
+  absl::optional<DnsConfig> effective_config_;
   std::unique_ptr<MockDnsTransactionFactory> factory_;
   std::unique_ptr<AddressSorter> address_sorter_;
 };

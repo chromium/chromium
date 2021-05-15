@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
@@ -84,7 +84,7 @@ class NET_EXPORT CanonicalCookie {
       const GURL& url,
       const std::string& cookie_line,
       const base::Time& creation_time,
-      base::Optional<base::Time> server_time,
+      absl::optional<base::Time> server_time,
       CookieInclusionStatus* status = nullptr);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
@@ -449,7 +449,7 @@ class NET_EXPORT CanonicalCookie {
 // canonical cookie object may not be available.
 struct NET_EXPORT CookieAndLineWithAccessResult {
   CookieAndLineWithAccessResult();
-  CookieAndLineWithAccessResult(base::Optional<CanonicalCookie> cookie,
+  CookieAndLineWithAccessResult(absl::optional<CanonicalCookie> cookie,
                                 std::string cookie_string,
                                 CookieAccessResult access_result);
   CookieAndLineWithAccessResult(
@@ -463,7 +463,7 @@ struct NET_EXPORT CookieAndLineWithAccessResult {
 
   ~CookieAndLineWithAccessResult();
 
-  base::Optional<CanonicalCookie> cookie;
+  absl::optional<CanonicalCookie> cookie;
   std::string cookie_string;
   CookieAccessResult access_result;
 };

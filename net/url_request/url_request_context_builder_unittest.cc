@@ -232,7 +232,7 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       context->host_resolver()->CreateRequest(
           HostPortPair("example.com", 1234), NetworkIsolationKey(),
-          NetLogWithSource(), base::nullopt);
+          NetLogWithSource(), absl::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
   ASSERT_TRUE(mock_host_resolver->has_pending_requests());

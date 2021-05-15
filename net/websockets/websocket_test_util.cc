@@ -263,7 +263,7 @@ int DummyConnectDelegate::OnAuthRequired(
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& host_port_pair,
     base::OnceCallback<void(const AuthCredentials*)> callback,
-    base::Optional<AuthCredentials>* credentials) {
+    absl::optional<AuthCredentials>* credentials) {
   return OK;
 }
 

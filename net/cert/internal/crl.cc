@@ -91,7 +91,7 @@ bool ParseCrlTbsCertList(const der::Input& tbs_tlv, ParsedCrlTbsCertList* out) {
 
   //         version                 Version OPTIONAL,
   //                                      -- if present, MUST be v2
-  base::Optional<der::Input> version_der;
+  absl::optional<der::Input> version_der;
   if (!tbs_parser.ReadOptionalTag(der::kInteger, &version_der))
     return false;
   if (version_der.has_value()) {
@@ -132,7 +132,7 @@ bool ParseCrlTbsCertList(const der::Input& tbs_tlv, ParsedCrlTbsCertList* out) {
       return false;
     out->next_update = next_update_time;
   } else {
-    out->next_update = base::nullopt;
+    out->next_update = absl::nullopt;
   }
 
   //         revokedCertificates     SEQUENCE OF SEQUENCE  { ... } OPTIONAL,
@@ -146,7 +146,7 @@ bool ParseCrlTbsCertList(const der::Input& tbs_tlv, ParsedCrlTbsCertList* out) {
       return false;
     out->revoked_certificates_tlv = revoked_certificates_tlv;
   } else {
-    out->revoked_certificates_tlv = base::nullopt;
+    out->revoked_certificates_tlv = absl::nullopt;
   }
 
   //         crlExtensions           [0]  EXPLICIT Extensions OPTIONAL
@@ -190,7 +190,7 @@ bool ParseIssuingDistributionPoint(
     return false;
 
   //  distributionPoint          [0] DistributionPointName OPTIONAL,
-  base::Optional<der::Input> distribution_point;
+  absl::optional<der::Input> distribution_point;
   if (!idp_parser.ReadOptionalTag(
           der::kTagContextSpecific | der::kTagConstructed | 0,
           &distribution_point)) {
@@ -202,7 +202,7 @@ bool ParseIssuingDistributionPoint(
     der::Parser dp_name_parser(*distribution_point);
     //        fullName                [0]     GeneralNames,
     //        nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
-    base::Optional<der::Input> der_full_name;
+    absl::optional<der::Input> der_full_name;
     if (!dp_name_parser.ReadOptionalTag(
             der::kTagContextSpecific | der::kTagConstructed | 0,
             &der_full_name)) {
@@ -227,7 +227,7 @@ bool ParseIssuingDistributionPoint(
   *out_only_contains_cert_type = ContainedCertsType::ANY_CERTS;
 
   //  onlyContainsUserCerts      [1] BOOLEAN DEFAULT FALSE,
-  base::Optional<der::Input> only_contains_user_certs;
+  absl::optional<der::Input> only_contains_user_certs;
   if (!idp_parser.ReadOptionalTag(der::kTagContextSpecific | 1,
                                   &only_contains_user_certs)) {
     return false;
@@ -242,7 +242,7 @@ bool ParseIssuingDistributionPoint(
   }
 
   //  onlyContainsCACerts        [2] BOOLEAN DEFAULT FALSE,
-  base::Optional<der::Input> only_contains_ca_certs;
+  absl::optional<der::Input> only_contains_ca_certs;
   if (!idp_parser.ReadOptionalTag(der::kTagContextSpecific | 2,
                                   &only_contains_ca_certs)) {
     return false;
@@ -275,7 +275,7 @@ bool ParseIssuingDistributionPoint(
 CRLRevocationStatus GetCRLStatusForCert(
     const der::Input& cert_serial,
     CrlVersion crl_version,
-    const base::Optional<der::Input>& revoked_certificates_tlv) {
+    const absl::optional<der::Input>& revoked_certificates_tlv) {
   if (!revoked_certificates_tlv.has_value()) {
     // RFC 5280 Section 5.1.2.6: "When there are no revoked certificates, the
     // revoked certificates list MUST be absent."

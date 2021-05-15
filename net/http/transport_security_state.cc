@@ -22,7 +22,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,6 +44,7 @@
 #include "net/http/http_security_headers.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -1194,7 +1194,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
     // An entry matches if it is either an exact match, or if it is a prefix
     // match and the includeSubDomains directive was included.
     if (i == 0 || j->second.include_subdomains) {
-      base::Optional<std::string> dotted_name =
+      absl::optional<std::string> dotted_name =
           DnsDomainToString(host_sub_chunk);
       if (!dotted_name)
         return false;
@@ -1240,7 +1240,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
     // implement HPKP, so this logic is only used via AddHPKP(), reachable from
     // Cronet.
     if (i == 0 || j->second.include_subdomains) {
-      base::Optional<std::string> dotted_name =
+      absl::optional<std::string> dotted_name =
           DnsDomainToString(host_sub_chunk);
       if (!dotted_name)
         return false;

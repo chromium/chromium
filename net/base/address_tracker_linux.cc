@@ -13,12 +13,12 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/current_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "net/base/network_interfaces_linux.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -327,7 +327,7 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
   char buffer[4096];
   bool first_loop = true;
   {
-    base::Optional<base::ScopedBlockingCall> blocking_call;
+    absl::optional<base::ScopedBlockingCall> blocking_call;
     if (tracking_) {
       // If the loop below takes a long time to run, a new thread should added
       // to the current thread pool to ensure forward progress of all tasks.

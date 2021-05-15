@@ -19,10 +19,10 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/ssl/ssl_client_cert_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -378,7 +378,7 @@ class BaseTestServer {
   HostPortPair host_port_pair_;
 
   // Holds the data sent from the server (e.g., port number).
-  base::Optional<base::Value> server_data_;
+  absl::optional<base::Value> server_data_;
 
   // If |type_| is TYPE_HTTPS or TYPE_WSS, the TLS settings to use for the test
   // server.

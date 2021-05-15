@@ -180,7 +180,7 @@ int SystemHostResolverCall(const std::string& host,
     !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   DnsReloaderMaybeReload();
 #endif
-  base::Optional<AddressInfo> ai;
+  absl::optional<AddressInfo> ai;
   int err = 0;
   int os_error = 0;
   std::tie(ai, err, os_error) = AddressInfo::Get(host, hints);

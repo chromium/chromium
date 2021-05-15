@@ -103,7 +103,7 @@ NetworkIsolationKeyToString(const NetworkIsolationKey& network_isolation_key,
 bool WARN_UNUSED_RESULT
 NetworkIsolationKeyFromString(const std::string& string,
                               NetworkIsolationKey* out_network_isolation_key) {
-  base::Optional<base::Value> value = base::JSONReader::Read(string);
+  absl::optional<base::Value> value = base::JSONReader::Read(string);
   if (!value)
     return false;
 
@@ -209,7 +209,7 @@ class SQLitePersistentReportingAndNelStore::Backend
 
   // SQLitePersistentStoreBackendBase implementation
   bool CreateDatabaseSchema() override;
-  base::Optional<int> DoMigrateDatabaseSchema() override;
+  absl::optional<int> DoMigrateDatabaseSchema() override;
   void DoCommit() override;
 
   // Commit a pending operation pertaining to a NEL policy.
@@ -720,7 +720,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::CreateDatabaseSchema() {
   return true;
 }
 
-base::Optional<int>
+absl::optional<int>
 SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
 
@@ -735,15 +735,15 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
   if (cur_version == 1) {
     sql::Transaction transaction(db());
     if (!transaction.Begin())
-      return base::nullopt;
+      return absl::nullopt;
 
     // Migrate NEL policies table.
     if (!db()->Execute("DROP TABLE IF EXISTS nel_policies_old; "
                        "ALTER TABLE nel_policies RENAME TO nel_policies_old")) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!CreateV2NelPoliciesSchema(db()))
-      return base::nullopt;
+      return absl::nullopt;
     // clang-format off
     // The "report_to" field is renamed to "group_name" for consistency with
     // the other tables.
@@ -759,18 +759,18 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       "FROM nel_policies_old" ;
     // clang-format on
     if (!db()->Execute(nel_policies_migrate_stmt.c_str()))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute("DROP TABLE nel_policies_old"))
-      return base::nullopt;
+      return absl::nullopt;
 
     // Migrate Reporting endpoints table.
     if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoints_old; "
                        "ALTER TABLE reporting_endpoints RENAME TO "
                        "reporting_endpoints_old")) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!CreateV2ReportingEndpointsSchema(db()))
-      return base::nullopt;
+      return absl::nullopt;
     // clang-format off
     std::string reporting_endpoints_migrate_stmt =
       "INSERT INTO reporting_endpoints (nik,  origin_scheme, origin_host, "
@@ -780,18 +780,18 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       "FROM reporting_endpoints_old" ;
     // clang-format on
     if (!db()->Execute(reporting_endpoints_migrate_stmt.c_str()))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute("DROP TABLE reporting_endpoints_old"))
-      return base::nullopt;
+      return absl::nullopt;
 
     // Migrate Reporting endpoint groups table.
     if (!db()->Execute("DROP TABLE IF EXISTS reporting_endpoint_groups_old; "
                        "ALTER TABLE reporting_endpoint_groups RENAME TO "
                        "reporting_endpoint_groups_old")) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (!CreateV2ReportingEndpointGroupsSchema(db()))
-      return base::nullopt;
+      return absl::nullopt;
     // clang-format off
     std::string reporting_endpoint_groups_migrate_stmt =
       "INSERT INTO reporting_endpoint_groups (nik,  origin_scheme, "
@@ -803,9 +803,9 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       "FROM reporting_endpoint_groups_old" ;
     // clang-format on
     if (!db()->Execute(reporting_endpoint_groups_migrate_stmt.c_str()))
-      return base::nullopt;
+      return absl::nullopt;
     if (!db()->Execute("DROP TABLE reporting_endpoint_groups_old"))
-      return base::nullopt;
+      return absl::nullopt;
 
     ++cur_version;
     meta_table()->SetVersionNumber(cur_version);
@@ -816,7 +816,7 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
 
   // Future database upgrade statements go here.
 
-  return base::make_optional(cur_version);
+  return absl::make_optional(cur_version);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {

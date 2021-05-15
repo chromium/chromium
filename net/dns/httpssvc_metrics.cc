@@ -44,7 +44,7 @@ HttpssvcExperimentDomainCache::~HttpssvcExperimentDomainCache() = default;
 bool HttpssvcExperimentDomainCache::ListContainsDomain(
     const std::string& domain_list,
     base::StringPiece domain,
-    base::Optional<base::flat_set<std::string>>& in_out_cached_list) {
+    absl::optional<base::flat_set<std::string>>& in_out_cached_list) {
   if (!in_out_cached_list) {
     in_out_cached_list = base::SplitString(
         domain_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -76,7 +76,7 @@ HttpssvcMetrics::~HttpssvcMetrics() {
 }
 
 void HttpssvcMetrics::SaveForAddressQuery(
-    base::Optional<std::string> new_doh_provider_id,
+    absl::optional<std::string> new_doh_provider_id,
     base::TimeDelta resolve_time,
     enum HttpssvcDnsRcode rcode) {
   set_doh_provider_id(new_doh_provider_id);
@@ -92,7 +92,7 @@ void HttpssvcMetrics::SaveAddressQueryFailure() {
 }
 
 void HttpssvcMetrics::SaveForIntegrity(
-    base::Optional<std::string> new_doh_provider_id,
+    absl::optional<std::string> new_doh_provider_id,
     enum HttpssvcDnsRcode rcode_integrity,
     const std::vector<bool>& condensed_records,
     base::TimeDelta integrity_resolve_time) {
@@ -117,7 +117,7 @@ void HttpssvcMetrics::SaveForIntegrity(
   integrity_resolve_time_ = integrity_resolve_time;
 }
 
-void HttpssvcMetrics::SaveForHttps(base::Optional<std::string> doh_provider_id,
+void HttpssvcMetrics::SaveForHttps(absl::optional<std::string> doh_provider_id,
                                    enum HttpssvcDnsRcode rcode,
                                    const std::vector<bool>& condensed_records,
                                    base::TimeDelta https_resolve_time) {
@@ -143,7 +143,7 @@ void HttpssvcMetrics::SaveForHttps(base::Optional<std::string> doh_provider_id,
 }
 
 void HttpssvcMetrics::set_doh_provider_id(
-    base::Optional<std::string> new_doh_provider_id) {
+    absl::optional<std::string> new_doh_provider_id) {
   // "Other" never gets updated.
   if (doh_provider_id_.has_value() && *doh_provider_id_ == "Other")
     return;

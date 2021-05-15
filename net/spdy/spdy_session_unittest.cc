@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -59,6 +58,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using net::test::IsError;
@@ -2161,7 +2161,7 @@ bool NetLogSourceFromEventParameters(const base::Value* event_params,
     *source = NetLogSource();
     return false;
   }
-  base::Optional<int> opt_int;
+  absl::optional<int> opt_int;
   opt_int = source_dict->FindIntKey("id");
   if (!opt_int) {
     *source = NetLogSource();
@@ -3645,7 +3645,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
                 SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                 callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
                 pool, NetLogWithSource()));
@@ -3735,7 +3735,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
                 SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                 callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
                 pool, NetLogWithSource()));
@@ -3816,7 +3816,7 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                absl::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
                 SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                 callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
                 pool, NetLogWithSource()));
@@ -6116,7 +6116,7 @@ TEST_F(SpdySessionTest, GreaseFrameTypeAfterSettings) {
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
   session_deps_.greased_http2_frame =
-      base::Optional<net::SpdySessionPool::GreasedHttp2Frame>(
+      absl::optional<net::SpdySessionPool::GreasedHttp2Frame>(
           {type, flags, payload});
 
   // Connection preface.

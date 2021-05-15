@@ -12,7 +12,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
@@ -28,6 +27,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -109,7 +109,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   bool WasEverUsed() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
-  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
   void ClearConnectionAttempts() override {}
@@ -576,10 +576,10 @@ NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
 }
 
-base::Optional<base::StringPiece>
+absl::optional<base::StringPiece>
 SSLServerContextImpl::SocketImpl::GetPeerApplicationSettings() const {
   if (!SSL_has_application_settings(ssl_.get())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const uint8_t* out_data;

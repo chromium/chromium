@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -28,6 +27,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/url_request/url_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_WIN)
@@ -188,7 +188,7 @@ class NetworkChangeNotifier::SystemDnsConfigObserver
  public:
   virtual ~SystemDnsConfigObserver() = default;
 
-  void OnSystemDnsConfigChanged(base::Optional<DnsConfig> config) override {
+  void OnSystemDnsConfigChanged(absl::optional<DnsConfig> config) override {
     NotifyObserversOfDNSChange();
   }
 };

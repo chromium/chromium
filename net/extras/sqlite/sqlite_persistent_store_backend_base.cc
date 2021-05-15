@@ -187,7 +187,7 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
 
   // |cur_version| is the version that the database ends up at, after all the
   // database upgrade statements.
-  base::Optional<int> cur_version = DoMigrateDatabaseSchema();
+  absl::optional<int> cur_version = DoMigrateDatabaseSchema();
   if (!cur_version.has_value())
     return false;
 

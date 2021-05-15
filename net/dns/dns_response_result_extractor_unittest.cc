@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -22,6 +21,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -468,7 +468,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsSrvResponses) {
   EXPECT_THAT(results.error(), test::IsOk());
 
   // Expect ordered by priority, and random within a priority.
-  base::Optional<std::vector<HostPortPair>> result_hosts = results.hostnames();
+  absl::optional<std::vector<HostPortPair>> result_hosts = results.hostnames();
   ASSERT_THAT(
       result_hosts,
       testing::Optional(testing::UnorderedElementsAre(

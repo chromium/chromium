@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -37,7 +37,7 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
       });
 
   fuchsia::net::interfaces::WatcherSyncPtr watcher = handle.BindSync();
-  base::Optional<internal::ExistingInterfaceProperties> interfaces =
+  absl::optional<internal::ExistingInterfaceProperties> interfaces =
       internal::GetExistingInterfaces(watcher);
   if (!interfaces)
     return;
@@ -107,7 +107,7 @@ void NetworkChangeNotifierFuchsia::OnInterfacesEvent(
 void NetworkChangeNotifierFuchsia::OnInterfaceAdded(
     fuchsia::net::interfaces::Properties properties) {
   uint64_t id = properties.id();
-  base::Optional<internal::InterfaceProperties> cache_entry =
+  absl::optional<internal::InterfaceProperties> cache_entry =
       internal::InterfaceProperties::VerifyAndCreate(std::move(properties));
   if (!cache_entry) {
     OnWatcherError("OnInterfaceAdded: incomplete interface properties.");
