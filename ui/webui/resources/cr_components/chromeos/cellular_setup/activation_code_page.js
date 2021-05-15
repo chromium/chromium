@@ -196,7 +196,7 @@ Polymer({
   detached() {
     this.stopStream_(this.stream_);
     if (this.qrCodeDetectorTimer_) {
-      clearTimeout(this.qrCodeDetectorTimer_);
+      this.clearQrCodeDetectorTimer_();
     }
     this.mediaDevices_.removeEventListener(
         'devicechange', this.updateCameraCount_.bind(this));
@@ -262,6 +262,13 @@ Polymer({
   },
 
   /**
+   * @returns {?number}
+   */
+  getQrCodeDetectorTimerForTest() {
+    return this.qrCodeDetectorTimer_;
+  },
+
+  /**
    * @return {string}
    * @private
    */
@@ -301,7 +308,7 @@ Polymer({
   startScanning_() {
     const oldStream = this.stream_;
     if (this.qrCodeDetectorTimer_) {
-      clearTimeout(this.qrCodeDetectorTimer_);
+      this.clearQrCodeDetectorTimer_();
     }
 
     const useUserFacingCamera =
@@ -353,7 +360,7 @@ Polymer({
             const frame = await capturer.grabFrame();
             const activationCode = await this.detectActivationCode_(frame);
             if (activationCode) {
-              clearTimeout(this.qrCodeDetectorTimer_);
+              this.clearQrCodeDetectorTimer_();
               this.activationCode = activationCode;
               this.stopStream_(this.stream_);
               this.state_ = PageState.SCANNING_SUCCESS;
@@ -389,6 +396,12 @@ Polymer({
   onActivationCodeChanged_() {
     const activationCode = this.validateActivationCode_(this.activationCode);
     this.fire('activation-code-updated', {activationCode: activationCode});
+  },
+
+  /** @private */
+  clearQrCodeDetectorTimer_() {
+    clearTimeout(this.qrCodeDetectorTimer_);
+    this.qrCodeDetectorTimer_ = null;
   },
 
   /**
@@ -439,6 +452,11 @@ Polymer({
       this.showError = false;
     }
     if (this.state_ === PageState.MANUAL_ENTRY) {
+      // Clear |qrCodeDetectorTimer_| before closing video stream, prevents
+      // image capturer from going into an inactive state and throwing errors
+      // when |grabFrame()| is called.
+      this.clearQrCodeDetectorTimer_();
+
       // Wait for the video element to be hidden by isUiElementHidden() before
       // stopping the stream or the user will see a flash.
       Polymer.RenderStatus.afterNextRender(this, () => {
@@ -469,9 +487,16 @@ Polymer({
   onKeyDown_(e) {
     if (e.key === 'Enter') {
       this.fire('forward-navigation-requested');
-    } else {
-      this.state_ = PageState.MANUAL_ENTRY;
     }
+
+    // Prevents barcode detector video from closing if user tabs through
+    // window. We should only close barcode detector window if user
+    // types in activation code input.
+    if (e.key === 'Tab') {
+      return;
+    }
+
+    this.state_ = PageState.MANUAL_ENTRY;
     e.stopPropagation();
   },
 

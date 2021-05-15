@@ -364,4 +364,59 @@ suite('CrComponentsActivationCodePageTest', function() {
         // There should be no error displayed on the input.
         assertFalse(input.invalid);
       });
+
+  test('Tabbing does not close video stream', async function() {
+    await flushAsync();
+    const startScanningButton = activationCodePage.$$('#startScanningButton');
+    const getVideo = () => activationCodePage.$$('#video');
+    const input = activationCodePage.$$('#activationCode');
+
+    assertTrue(!!startScanningButton);
+    assertTrue(!!getVideo());
+    assertTrue(getVideo().hidden);
+    assertTrue(!!input);
+
+    // Click the start scanning button.
+    startScanningButton.click();
+    await flushAsync();
+
+    assertFalse(getVideo().hidden);
+
+    // Simulate keyboard 'Tab' key press.
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
+    await flushAsync();
+
+    assertFalse(getVideo().hidden);
+
+    // Simulate keyboard 'A' key press.
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'KeyA'}));
+    await flushAsync();
+
+    assertTrue(getVideo().hidden);
+  });
+
+  test(
+      'Clear qr code detection timeout when video is hidden', async function() {
+        await flushAsync();
+        const startScanningButton =
+            activationCodePage.$$('#startScanningButton');
+        const getVideo = () => activationCodePage.$$('#video');
+
+        assertTrue(!!startScanningButton);
+        assertTrue(!!getVideo());
+        assertTrue(getVideo().hidden);
+
+        // Click the start scanning button.
+        startScanningButton.click();
+        await flushAsync();
+
+        assertFalse(getVideo().hidden);
+        assertTrue(!!activationCodePage.getQrCodeDetectorTimerForTest());
+
+        // Mock camera scanning a code.
+        await intervalFunction();
+        await flushAsync();
+
+        assertFalse(!!activationCodePage.getQrCodeDetectorTimerForTest());
+      });
 });

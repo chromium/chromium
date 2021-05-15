@@ -41,7 +41,13 @@ let shouldBarcodeDetectionFail = false;
  * @implements {ImageCapture}
  */
 /* #export */ class FakeImageCapture {
-  constructor(mediaStream) {}
+  constructor(mediaStream) {
+    this.track = {
+      readyState: 'live',
+      enabled: true,
+      muted: false,
+    };
+  }
 
   /** @override */
   grabFrame() {
