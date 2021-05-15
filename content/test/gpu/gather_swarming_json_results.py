@@ -16,7 +16,11 @@ import argparse
 import json
 import logging
 import sys
-import urllib2
+
+if sys.version_info[0] == 2:
+  import urllib2 as ulib
+else:
+  import urllib.request as ulib
 
 
 def GetBuildData(method, request):
@@ -30,11 +34,13 @@ def GetBuildData(method, request):
   headers = {'content-type': 'application/json', 'accept': 'application/json'}
   logging.debug('Making request:')
   logging.debug('%s', request)
-  url = urllib2.Request(
+  if not isinstance(request, bytes):
+    request = request.encode('utf-8')
+  url = ulib.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
-  conn = urllib2.urlopen(url)
-  result = conn.read()
+  conn = ulib.urlopen(url)
+  result = conn.read().decode('utf-8')
   conn.close()
   # Result is a multi-line string the first line of which is
   # deliberate garbage and the rest of which is a JSON payload.
@@ -80,29 +86,11 @@ def GetJsonForLatestGreenBuildSteps(bot):
   return builds[0]
 
 
-def JsonLoadStrippingUnicode(url):
-  def StripUnicode(obj):
-    if isinstance(obj, unicode):
-      try:
-        return obj.encode('ascii')
-      except UnicodeEncodeError:
-        return obj
-
-    if isinstance(obj, list):
-      return map(StripUnicode, obj)
-
-    if isinstance(obj, dict):
-      new_obj = type(obj)(
-          (StripUnicode(k), StripUnicode(v)) for k, v in obj.iteritems())
-      return new_obj
-
-    return obj
-
-  # The following fails with Python 2.7.6, but succeeds with Python 2.7.14.
-  conn = urllib2.urlopen(url + '?format=raw')
+def JsonLoadFromUrl(url):
+  conn = ulib.urlopen(url + '?format=raw')
   result = conn.read()
   conn.close()
-  return StripUnicode(json.loads(result))
+  return json.loads(result)
 
 
 def FindStepLogURL(steps, step_name, log_name):
@@ -125,7 +113,7 @@ def ExtractTestTimes(node, node_name, dest, delim):
   if 'times' in node:
     dest[node_name] = sum(node['times']) / len(node['times'])
   else:
-    for k in node.iterkeys():
+    for k in node.keys():
       if isinstance(node[k], dict):
         test_name = node_name + delim + k if node_name else k
         ExtractTestTimes(node[k], test_name, dest, delim)
@@ -149,7 +137,7 @@ def GatherResults(bot, build, step):
         'Unable to find json.output from step starting with %s' % step)
   logging.debug('json.output for step starting with %s: %s', step, json_output)
 
-  merged_json = JsonLoadStrippingUnicode(json_output)
+  merged_json = JsonLoadFromUrl(json_output)
   extracted_times = {'times': {}}
   ExtractTestTimes(merged_json['tests'], '', extracted_times['times'],
                    merged_json['path_delimiter'])

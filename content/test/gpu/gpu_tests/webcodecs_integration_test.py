@@ -6,7 +6,6 @@ from __future__ import print_function
 
 import os
 import sys
-import time
 
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util

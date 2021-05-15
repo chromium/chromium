@@ -6,11 +6,15 @@ from __future__ import print_function
 
 import json
 import logging
-import mock
 import os
 import sys
 import tempfile
 import unittest
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from telemetry.testing import fakes
 from telemetry.testing import browser_test_runner
@@ -122,7 +126,7 @@ class BrowserStartFailureTest(_BaseSampleIntegrationTest):
     cls._test_state['num_browser_starts'] += 1
     if cls._test_state['num_browser_crashes'] < 2:
       cls._test_state['num_browser_crashes'] += 1
-      raise
+      raise Exception('Fake browser crash')
 
   @classmethod
   def Name(cls):

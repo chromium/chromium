@@ -4,9 +4,13 @@
 
 from __future__ import print_function
 
+import sys
 import unittest
 
-import mock
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from unexpected_passes import data_types
 
@@ -89,9 +93,6 @@ class ResultUnittest(unittest.TestCase):
                               'build_id')
     self.assertNotEqual(r, other)
     other = data_types.Result('test', ['tag1'], 'Pass', 'pixel_tests',
-                              'build_id')
-    self.assertNotEqual(r, other)
-    other = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
                               'build_id')
     self.assertNotEqual(r, other)
     other = data_types.Result('test', ['tag1', 'tag2'], 'Failure',
@@ -258,8 +259,8 @@ class MapTypeUnittest(unittest.TestCase):
     """Tests that iterating to BuilderStepMap works as expected."""
     test_expectation_map = self._GetSampleTestExpectationMap()
     expected_values = []
-    for test_name, expectation_map in test_expectation_map.iteritems():
-      for expectation, builder_map in expectation_map.iteritems():
+    for test_name, expectation_map in test_expectation_map.items():
+      for expectation, builder_map in expectation_map.items():
         expected_values.append((test_name, expectation, builder_map))
     returned_values = []
     for (test_name, expectation,

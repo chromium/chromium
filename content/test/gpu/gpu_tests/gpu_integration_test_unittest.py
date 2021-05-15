@@ -9,19 +9,25 @@ from __future__ import print_function
 
 import json
 import os
+import sys
 import unittest
-import mock
+import tempfile
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
+
+import six
+
 import gpu_project_config
 import run_gpu_integration_test
-import tempfile
 
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 from gpu_tests import webgl_conformance_integration_test
-
-import mock
 
 from py_utils import tempfile_ext
 
@@ -484,7 +490,7 @@ def _ExtractTestResults(test_result):
   def _IsLeafNode(node):
     test_dict = node[1]
     return ('expected' in test_dict
-            and isinstance(test_dict['expected'], basestring))
+            and isinstance(test_dict['expected'], six.string_types))
 
   node_queues = []
   for t in test_result['tests']:
@@ -505,3 +511,7 @@ def _ExtractTestResults(test_result):
         node_queues.append(
             ('%s%s%s' % (full_test_name, delimiter, k), test_dict[k]))
   return successes, failures, skips
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

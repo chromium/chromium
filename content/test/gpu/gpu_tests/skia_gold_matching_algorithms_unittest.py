@@ -63,3 +63,7 @@ class SobelMatchingAlgorithmTest(unittest.TestCase):
       algo.SobelMatchingAlgorithm(1, 2, 256)
     with self.assertRaises(RuntimeError):
       algo.SobelMatchingAlgorithm(1, 2, 255)
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

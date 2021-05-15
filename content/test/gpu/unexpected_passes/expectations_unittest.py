@@ -7,10 +7,15 @@ from __future__ import print_function
 import collections
 import copy
 import os
+import sys
 import tempfile
 import unittest
 
-import mock
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
+
 from pyfakefs import fake_filesystem_unittest
 
 import validate_tag_consistency

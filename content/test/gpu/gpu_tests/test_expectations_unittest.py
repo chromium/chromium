@@ -4,13 +4,19 @@
 
 from __future__ import print_function
 
-import gpu_project_config
 import inspect
 import itertools
-import mock
 import os
 import re
+import sys
 import unittest
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
+
+import gpu_project_config
 
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
@@ -322,10 +328,10 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         expectations.parse_tagged_list(f.read())
 
         # remove non webgl extension expectations
-        for test in expectations.individual_exps.keys():
+        for test in list(expectations.individual_exps.keys()):
           if not test.lower().startswith('webglextension'):
             expectations.individual_exps.pop(test)
-        for test in expectations.glob_exps.keys():
+        for test in list(expectations.glob_exps.keys()):
           if not test.lower().startswith('webglextension'):
             expectations.glob_exps.pop(test)
 
@@ -491,7 +497,7 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
                          'a/c/* [ Failure ]\n')
     options = gpu_helper.GetMockArgs()
     test_class = gpu_integration_test.GpuIntegrationTest
-    with tempfile_ext.NamedTemporaryFile() as expectations_file,            \
+    with tempfile_ext.NamedTemporaryFile(mode='w') as expectations_file,    \
          mock.patch.object(
              test_class, 'GenerateGpuTests', return_value=[('a/b/c', ())]), \
          mock.patch.object(
@@ -562,3 +568,7 @@ def testDriverVersionComparision(self):
   self.assertTrue(
       gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'eq',
                                            '25.20.100.7000', 'win', 'intel'))
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

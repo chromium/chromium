@@ -56,6 +56,9 @@ class ParameterSet(object):
             and self.edge_threshold == other.edge_threshold
             and self.ignored_border_thickness == other.ignored_border_thickness)
 
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
   def __hash__(self):
     return hash((self.max_diff, self.delta_threshold, self.edge_threshold,
                  self.ignored_border_thickness))

@@ -61,7 +61,7 @@ def SetDisplayCustomProfile(device_id, profile_url):
   result = ColorSyncDeviceSetCustomProfiles(kColorSyncDisplayDeviceClass,
                                             device_id, profile_info)
   if result != True:
-    raise
+    raise Exception('Failed to set display custom profile')
 
 
 # Returns the URL for the system's sRGB color profile.
@@ -79,7 +79,7 @@ def GetDisplaysToProfileURLMap():
   online_display_list_result = Quartz.CGGetOnlineDisplayList(32, None, None)
   error = online_display_list_result[0]
   if error != Quartz.kCGErrorSuccess:
-    raise
+    raise Exception('Failed to get online displays from Quartz')
   online_displays = online_display_list_result[1]
   for display_id in online_displays:
     device_info = ColorSyncDeviceCopyDeviceInfo(

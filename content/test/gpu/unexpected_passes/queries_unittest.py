@@ -7,9 +7,13 @@ from __future__ import print_function
 import copy
 import json
 import subprocess
+import sys
 import unittest
 
-import mock
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from unexpected_passes import data_types
 from unexpected_passes import multiprocessing_utils

@@ -14,7 +14,6 @@ from PIL import Image
 import requests
 import shutil
 import subprocess
-import sys
 import tempfile
 
 from gold_inexact_matching import parameter_set
@@ -242,7 +241,7 @@ class BaseParameterOptimizer(object):
           '%s/json/debug/digestsbytestname/%s/%s' %
           (self._gold_url, self._args.corpus, self._test_name))
       self._DownloadImagesForTraceGrouping()
-    for grouping, digests in self._images.iteritems():
+    for grouping, digests in self._images.items():
       logging.info('Found %d images for group %s', len(digests), grouping)
       logging.debug('Digests: %r', digests)
 
@@ -284,7 +283,7 @@ class BaseParameterOptimizer(object):
     # The digests can be empty (which we don't care about) or duplicated, so
     # convert to a set and filter out the empty strings.
     filtered_traces = {}
-    for trace, digests in self._expectations.iteritems():
+    for trace, digests in self._expectations.items():
       filtered_digests = set(digests)
       filtered_digests.discard('')
       if not filtered_digests:
@@ -360,7 +359,7 @@ class BaseParameterOptimizer(object):
     max_num_pixels = -1
     max_max_delta = -1
 
-    for resolution, digest_list in self._images.iteritems():
+    for resolution, digest_list in self._images.items():
       logging.debug('Resolution/trace: %s, digests: %s', resolution,
                     digest_list)
       cmds = [
@@ -433,6 +432,8 @@ def RunCommandAndExtractData(cmd):
     per-channel delta sum in the comparison.
   """
   output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  if not isinstance(output, str):
+    output = output.decode('utf-8')
   success = False
   num_pixels = 0
   max_delta = 0

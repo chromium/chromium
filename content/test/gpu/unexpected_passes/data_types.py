@@ -7,6 +7,8 @@ from __future__ import print_function
 
 import fnmatch
 
+import six
+
 
 class Expectation(object):
   """Container for a test expectation.
@@ -40,6 +42,9 @@ class Expectation(object):
             and self.tags == other.tags
             and self.expected_results == other.expected_results
             and self.bug == other.bug)
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
 
   def __hash__(self):
     return hash((self.test, self.tags, self.expected_results, self.bug))
@@ -92,6 +97,9 @@ class Result(object):
             and self.actual_result == other.actual_result
             and self.step == other.step and self.build_id == other.build_id)
 
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
   def __hash__(self):
     return hash(
         (self.test, self.tags, self.actual_result, self.step, self.build_id))
@@ -132,6 +140,9 @@ class BuildStats(object):
             and self.total_builds == other.total_builds
             and self.failure_links == other.failure_links)
 
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
 
 def BuildLinkFromBuildId(build_id):
   return 'http://ci.chromium.org/b/%s' % build_id
@@ -154,9 +165,9 @@ class BaseTypedMap(dict):
     if args:
       assert len(args) == 1
       other = dict(args[0])
-      for k, v in other.iteritems():
+      for k, v in other.items():
         self[k] = v
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
       self[k] = v
 
   def setdefault(self, key, value=None):
@@ -187,10 +198,10 @@ class BaseTypedMap(dict):
       step_name, build_stats).
     """
     if self._value_type() == value_type:
-      for k, v in self.iteritems():
+      for k, v in self.items():
         yield k, v
     else:
-      for k, v in self.iteritems():
+      for k, v in self.items():
         for nested_value in v.IterToValueType(value_type):
           yield (k, ) + nested_value
 
@@ -268,12 +279,12 @@ class BuilderStepMap(BaseTypedMap):
       builds, or passed some of the time.
     """
     retval = {}
-    for builder_name, step_map in self.iteritems():
+    for builder_name, step_map in self.items():
       fully_passed = StepBuildStatsMap()
       never_passed = StepBuildStatsMap()
       partially_passed = StepBuildStatsMap()
 
-      for step_name, stats in step_map.iteritems():
+      for step_name, stats in step_map.items():
         if stats.did_fully_pass:
           assert step_name not in fully_passed
           fully_passed[step_name] = stats
@@ -308,4 +319,4 @@ class StepBuildStatsMap(BaseTypedMap):
 
 
 def IsStringType(s):
-  return isinstance(s, str) or isinstance(s, unicode)
+  return isinstance(s, six.string_types)

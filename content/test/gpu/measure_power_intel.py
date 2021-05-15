@@ -53,10 +53,8 @@ import logging
 import optparse
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
-import time
 
 try:
   from selenium import webdriver

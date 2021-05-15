@@ -204,12 +204,14 @@ class GpuIntegrationTest(
     # to push the fetch of the first tab into the lower retry loop
     # without breaking Telemetry's unit tests, and that hook is used
     # to implement the gpu_integration_test_unittests.
+    last_exception = Exception()
     for x in range(1, _START_BROWSER_RETRIES + 1):  # Index from 1 instead of 0.
       try:
         super(GpuIntegrationTest, cls).StartBrowser()
         cls.tab = cls.browser.tabs[0]
         return
-      except Exception:  # pylint: disable=broad-except
+      except Exception as e:  # pylint: disable=broad-except
+        last_exception = e
         logging.exception('Browser start failed (attempt %d of %d). Backtrace:',
                           x, _START_BROWSER_RETRIES)
         # If we are on the last try and there is an exception take a screenshot
@@ -228,7 +230,7 @@ class GpuIntegrationTest(
           cls.StopBrowser()
     # Re-raise the last exception thrown. Only happens if all the retries
     # fail.
-    raise
+    raise last_exception
 
   @classmethod
   def _RestartBrowser(cls, reason):

@@ -9,6 +9,8 @@ from gpu_tests import gpu_integration_test
 import os
 import sys
 
+import six
+
 
 class InfoCollectionTestArgs(object):
   """Struct-like class for passing args to an InfoCollection test."""
@@ -140,10 +142,8 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def _ValueToStr(value):
-    if isinstance(value, str):
+    if isinstance(value, six.string_types):
       return value
-    if isinstance(value, unicode):
-      return str(value)
     if isinstance(value, bool):
       return 'supported' if value else 'unsupported'
     assert False

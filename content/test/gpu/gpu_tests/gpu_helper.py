@@ -6,8 +6,12 @@ from __future__ import print_function
 
 import os
 import re
-import mock
 import sys
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.
