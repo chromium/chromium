@@ -52,6 +52,11 @@ extern const base::Feature kClientSideDetectionModelTag;
 // disabled.
 extern const base::Feature kClientSideDetectionModelHighMemoryTag;
 
+// The parameter name used for getting the tag values from client side detection
+// features, `kClientSideDetectionModelTag` and
+// `kClientSideDetectionModelHighMemoryTag`.
+const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
+
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 

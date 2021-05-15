@@ -186,6 +186,17 @@ base::ListValue GetFeatureStatusList() {
     if (feature_status.show_state)
       AddFeatureAndAvailability(feature_status.feature, &param_list);
   }
+
+  // Manually add experimental features that we want param values for.
+  param_list.Append(base::Value(variations::GetVariationParamValueByFeature(
+      safe_browsing::kClientSideDetectionModelTag,
+      kClientSideDetectionTagParamName)));
+  param_list.Append(base::Value(kClientSideDetectionModelTag.name));
+  param_list.Append(base::Value(variations::GetVariationParamValueByFeature(
+      safe_browsing::kClientSideDetectionModelHighMemoryTag,
+      kClientSideDetectionTagParamName)));
+  param_list.Append(base::Value(kClientSideDetectionModelHighMemoryTag.name));
+
   return param_list;
 }
 
@@ -194,13 +205,13 @@ bool GetShouldFillOldPhishGuardProto() {
 }
 
 std::string GetClientSideDetectionTag() {
-  constexpr char kTagParamName[] = "reporter_omaha_tag";
   constexpr char kMemoryThresholdParamName[] = "memory_threshold_mb";
   const int kDefaultMemoryThresholdMB = 4096;
   if (base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionModelTag)) {
     return variations::GetVariationParamValueByFeature(
-        safe_browsing::kClientSideDetectionModelTag, kTagParamName);
+        safe_browsing::kClientSideDetectionModelTag,
+        kClientSideDetectionTagParamName);
   } else if (base::FeatureList::IsEnabled(
                  safe_browsing::kClientSideDetectionModelHighMemoryTag)) {
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
@@ -208,7 +219,8 @@ std::string GetClientSideDetectionTag() {
         kMemoryThresholdParamName, kDefaultMemoryThresholdMB);
     if (base::SysInfo::AmountOfPhysicalMemoryMB() >= memory_threshold_mb) {
       return variations::GetVariationParamValueByFeature(
-          safe_browsing::kClientSideDetectionModelHighMemoryTag, kTagParamName);
+          safe_browsing::kClientSideDetectionModelHighMemoryTag,
+          kClientSideDetectionTagParamName);
     }
   }
 
