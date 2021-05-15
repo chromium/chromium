@@ -1781,6 +1781,13 @@ static LayoutUnit ComputeContentSize(
 
   if (mode == NGLineBreakerMode::kMinContent &&
       can_compute_max_size_from_min_size) {
+    if (node.IsSVGText()) {
+      *max_size_out = result;
+      return result;
+      // The following DCHECK_EQ() doesn't work well for SVG <text> because
+      // it has glyph-split NGInlineItemResults. The sum of NGInlineItem
+      // widths and the sum of NGInlineItemResult widths can be different.
+    }
     *max_size_out = max_size_from_min_size.Finish(items_data.items.end());
     // Check the max size matches to the value computed from 2 pass.
 #if DCHECK_IS_ON()
