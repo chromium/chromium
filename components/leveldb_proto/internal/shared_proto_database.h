@@ -132,7 +132,8 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabase
   void OnGetGlobalMetadata(bool corruption,
                            bool success,
                            std::unique_ptr<SharedDBMetadataProto> proto);
-  void OnFinishCorruptionCountWrite(bool success);
+  void OnWriteMetadataAtInit(bool success);
+  void OnDestroySharedDatabase(bool success);
   void InitDatabase();
   void OnDatabaseInit(bool create_if_missing, Enums::InitStatus status);
   void CheckCorruptionAndRunInitCallback(

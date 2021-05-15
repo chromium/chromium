@@ -62,7 +62,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
     kFailureNoSharedDBProviderUniqueFailed = 26,
     kSuccessNoSharedDBProviderUniqueSucceeded = 27,
     kFailureUniqueDbMissingClearSharedFailed = 28,
-    kMaxValue = kFailureUniqueDbMissingClearSharedFailed,
+    kDeletedSharedDbOnRepeatedFailures = 29,
+    kDeletionOfSharedDbFailed = 30,
+    kMaxValue = kDeletionOfSharedDbFailed,
   };
 
   static void RecordInitState(ProtoDatabaseInitState state);

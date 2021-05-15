@@ -65174,6 +65174,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="27"
       label="Success: No shared DB provider provided, using unique"/>
   <int value="28" label="Failed: Unique DB missing, shared deletion failed"/>
+  <int value="29" label="Deleted shared db on repeated failures"/>
+  <int value="30" label="Failed to deleted shared db on repeated failures"/>
 </enum>
 
 <enum name="ProvisionalLoadEvent">

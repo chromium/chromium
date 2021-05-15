@@ -25,7 +25,15 @@ namespace {
 
 const base::FilePath::CharType kMetadataDatabasePath[] =
     FILE_PATH_LITERAL("metadata");
+
+// Number of attempts within a session to open the metadata database. The most
+// common errors observed from metrics are IO errors and retries would help
+// reduce this. After retries the shared db initialization will fail.
 const int kMaxInitMetaDatabaseAttempts = 3;
+
+// The number of consecutive failures when opening shared db after which the db
+// is destroyed and created again.
+const int kMaxSharedDbFailuresBeforeDestroy = 5;
 
 const char kGlobalMetadataKey[] = "__global";
 
@@ -287,22 +295,8 @@ void SharedProtoDatabase::ProcessInitRequests(Enums::InitStatus status) {
   }
 }
 
-// We allow some number of attempts to be made to initialize the metadata
-// database because it's crucial for the operation of the shared database. In
-// the event that the metadata DB is corrupt, at least one retry will be made
-// so that we create the DB from scratch again.
-// |corruption| lets us know whether the retries are because of corruption.
 void SharedProtoDatabase::InitMetadataDatabase(int attempt, bool corruption) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
-
-  if (attempt >= kMaxInitMetaDatabaseAttempts) {
-    // TODO(crbug/1003951): |attempt| is always 0, need to save it and do the
-    // retry, or delete it.
-    init_state_ = InitState::kFailure;
-    init_status_ = Enums::InitStatus::kError;
-    ProcessInitRequests(init_status_);
-    return;
-  }
 
   // TODO: figure out destroy on corruption param
   metadata_db_wrapper_->Init(
@@ -319,6 +313,15 @@ void SharedProtoDatabase::OnMetadataInitComplete(
   bool success = status == Enums::kOK;
 
   if (!success) {
+    // We allow some number of attempts to be made to initialize the metadata
+    // database because it's crucial for the operation of the shared database.
+    // In the event that the metadata DB is corrupt, at least one retry will be
+    // made so that we create the DB from scratch again.
+    if (attempt < kMaxInitMetaDatabaseAttempts) {
+      InitMetadataDatabase(attempt + 1, corruption);
+      return;
+    }
+
     init_state_ = InitState::kFailure;
     init_status_ = Enums::InitStatus::kError;
     ProcessInitRequests(init_status_);
@@ -342,6 +345,14 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
   if (success && proto) {
     // It existed so let's update our internal |corruption_count_|
     metadata_ = std::move(proto);
+
+    if (metadata_->failure_count() >= kMaxSharedDbFailuresBeforeDestroy) {
+      ProtoLevelDBWrapper::Destroy(
+          db_dir_, /*client_id=*/std::string(), task_runner_,
+          base::BindOnce(&SharedProtoDatabase::OnDestroySharedDatabase, this));
+      return;
+    }
+
     InitDatabase();
     return;
   }
@@ -351,12 +362,12 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
   metadata_ = std::make_unique<SharedDBMetadataProto>();
   metadata_->set_corruptions(corruption ? 1U : 0U);
   metadata_->clear_migration_status();
+  metadata_->set_failure_count(0);
   CommitUpdatedGlobalMetadata(
-      base::BindOnce(&SharedProtoDatabase::OnFinishCorruptionCountWrite, this));
+      base::BindOnce(&SharedProtoDatabase::OnWriteMetadataAtInit, this));
 }
 
-void SharedProtoDatabase::OnFinishCorruptionCountWrite(
-    bool success) {
+void SharedProtoDatabase::OnWriteMetadataAtInit(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
   // TODO(thildebr): Should we retry a few times if we fail this? It feels like
   // if we fail to write this single value something serious happened with the
@@ -368,6 +379,29 @@ void SharedProtoDatabase::OnFinishCorruptionCountWrite(
     return;
   }
 
+  InitDatabase();
+}
+
+void SharedProtoDatabase::OnDestroySharedDatabase(bool success) {
+  if (success) {
+    // Destroy database should just delete files in a directory. It fails less
+    // often than opening database. If this fails, do not update the failure
+    // count and retry destroy in next session and just try to open the database
+    // normally.
+    metadata_->set_failure_count(0);
+
+    // Try to commit the changes to metadata, but do nothing in case of failure.
+    CommitUpdatedGlobalMetadata(base::BindOnce([](bool success) {}));
+  }
+  if (success) {
+    ProtoDatabaseSelector::RecordInitState(
+        ProtoDatabaseSelector::ProtoDatabaseInitState::
+            kDeletedSharedDbOnRepeatedFailures);
+  } else {
+    ProtoDatabaseSelector::RecordInitState(
+        ProtoDatabaseSelector::ProtoDatabaseInitState::
+            kDeletionOfSharedDbFailed);
+  }
   InitDatabase();
 }
 
@@ -399,6 +433,7 @@ void SharedProtoDatabase::OnDatabaseInit(bool create_if_missing,
     // Again, it seems like a failure to update here will indicate something
     // serious has gone wrong with the metadata database.
     metadata_->set_corruptions(metadata_->corruptions() + 1);
+    metadata_->set_failure_count(metadata_->failure_count() + 1);
 
     CommitUpdatedGlobalMetadata(base::BindOnce(
         &SharedProtoDatabase::OnUpdateCorruptionCountAtInit, this));
@@ -446,6 +481,13 @@ void SharedProtoDatabase::OnDatabaseInit(bool create_if_missing,
     task_runner_->PostDelayedTask(FROM_HERE, delete_obsolete_task_.callback(),
                                   delete_obsolete_delay_);
   }
+  if (init_state_ == InitState::kSuccess) {
+    metadata_->set_failure_count(0);
+  } else {
+    metadata_->set_failure_count(metadata_->failure_count() + 1);
+  }
+  // Try to commit the changes to metadata, but do nothing in case of failure.
+  CommitUpdatedGlobalMetadata(base::BindOnce([](bool success) {}));
 }
 
 void SharedProtoDatabase::Shutdown() {
