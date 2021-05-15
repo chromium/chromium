@@ -29,7 +29,7 @@ bool LoadUrlAndExpectResponse(
   return result->is_response();
 }
 
-base::Optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
+absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
                                               base::StringPiece script) {
   base::RunLoop run_loop;
   ResultReceiver<fuchsia::web::Frame_ExecuteJavaScript_Result> result(

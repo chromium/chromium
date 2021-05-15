@@ -255,7 +255,7 @@ bool IsFuchsiaCdmSupported() {
 std::vector<std::string> LoadWebInstanceSandboxServices() {
   std::string cmx;
   CHECK(ReadFileToString(base::FilePath(kWebInstanceComponentPath), &cmx));
-  base::Optional<base::Value> json = base::JSONReader::Read(cmx);
+  absl::optional<base::Value> json = base::JSONReader::Read(cmx);
   const base::Value* services = json->FindListPath("sandbox.services");
   std::vector<std::string> result;
   for (auto& entry : services->GetList())
@@ -339,7 +339,7 @@ void ContextProviderImpl::Create(
   // Process command-line settings specified in our package config-data.
   base::Value web_engine_config;
   if (config_for_test_.is_none()) {
-    const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+    const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
     web_engine_config =
         config ? config->Clone() : base::Value(base::Value::Type::DICTIONARY);
   } else {

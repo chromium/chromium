@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -24,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
 #include "net/socket/tcp_server_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -189,7 +189,7 @@ class UserModeController : public WebEngineDevToolsController {
   bool is_remote_debugging_started_ = false;
 
   // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
+  absl::optional<uint16_t> devtools_port_;
 
   // Set of Frames' content::WebContents which are remotely debuggable.
   base::flat_set<content::WebContents*> debuggable_contents_;
@@ -250,7 +250,7 @@ class DebugModeController : public WebEngineDevToolsController,
   }
 
   // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
+  absl::optional<uint16_t> devtools_port_;
 
  private:
   // chromium::internal::DevToolsConnector implementation.
@@ -332,7 +332,7 @@ class MixedModeController : public DebugModeController {
 std::unique_ptr<WebEngineDevToolsController>
 WebEngineDevToolsController::CreateFromCommandLine(
     const base::CommandLine& command_line) {
-  base::Optional<uint16_t> devtools_port;
+  absl::optional<uint16_t> devtools_port;
   if (command_line.HasSwitch(switches::kRemoteDebuggingPort)) {
     // Set up DevTools to listen on all network routes on the command-line
     // provided port.

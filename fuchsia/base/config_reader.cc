@@ -13,20 +13,20 @@ namespace cr_fuchsia {
 
 namespace {
 
-base::Optional<base::Value> ReadPackageConfig() {
+absl::optional<base::Value> ReadPackageConfig() {
   constexpr char kConfigPath[] = "/config/data/config.json";
 
   base::FilePath path(kConfigPath);
   if (!base::PathExists(path)) {
     LOG(WARNING) << "Config file doesn't exist: " << path.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string file_content;
   bool loaded = base::ReadFileToString(path, &file_content);
   if (!loaded) {
     LOG(WARNING) << "Couldn't read config file: " << path.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::JSONReader::ValueWithError parsed =
@@ -41,10 +41,10 @@ base::Optional<base::Value> ReadPackageConfig() {
 
 }  // namespace
 
-const base::Optional<base::Value>& LoadPackageConfig() {
+const absl::optional<base::Value>& LoadPackageConfig() {
   // Package configurations do not change at run-time, so read the configuration
   // on the first call and cache the result.
-  static base::NoDestructor<base::Optional<base::Value>> config(
+  static base::NoDestructor<absl::optional<base::Value>> config(
       ReadPackageConfig());
   return *config;
 }

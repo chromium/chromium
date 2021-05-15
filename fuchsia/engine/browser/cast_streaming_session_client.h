@@ -39,16 +39,16 @@ class CastStreamingSessionClient
 
   // cast_streaming::CastStreamingSession::Client implementation.
   void OnSessionInitialization(
-      base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
+      absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
           audio_stream_info,
-      base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
+      absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
           video_stream_info) final;
   void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
   void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
   void OnSessionReinitialization(
-      base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
+      absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
           audio_stream_info,
-      base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
+      absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
           video_stream_info) final;
   void OnSessionEnded() final;
 

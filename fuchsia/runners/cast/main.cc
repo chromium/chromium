@@ -9,7 +9,6 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -21,6 +20,7 @@
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -37,7 +37,7 @@ constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
-  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
   if (config)
     return config->FindBoolPath(config_key).value_or(false);
   return false;

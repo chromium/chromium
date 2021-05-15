@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 
@@ -53,7 +53,7 @@ class ResultReceiver {
   }
 
  private:
-  base::Optional<T> result_;
+  absl::optional<T> result_;
   const base::RepeatingClosure on_result_received_;
 
   DISALLOW_COPY_AND_ASSIGN(ResultReceiver<T>);

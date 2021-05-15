@@ -155,7 +155,7 @@ void ThemeManager::OnWatchResultReceived(
        settings.theme().theme_type() == ThemeType::LIGHT)) {
     system_theme_ = settings.theme().theme_type();
   } else {
-    system_theme_ = base::nullopt;
+    system_theme_ = absl::nullopt;
   }
 
   ApplyTheme();

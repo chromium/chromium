@@ -36,7 +36,7 @@ class FakeMediaSession : public content::MediaSession {
   MOCK_METHOD1(ScrubTo, void(base::TimeDelta));
   MOCK_METHOD0(EnterPictureInPicture, void());
   MOCK_METHOD0(ExitPictureInPicture, void());
-  MOCK_METHOD1(SetAudioSinkId, void(const base::Optional<std::string>& id));
+  MOCK_METHOD1(SetAudioSinkId, void(const absl::optional<std::string>& id));
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
@@ -291,7 +291,7 @@ TEST_F(MediaPlayerImplTest, WatchInfoChangeWaitsForNextChange) {
   // Calling WatchInfoChange() now should succeed, but not immediately return
   // any new data.
   base::RunLoop change_loop;
-  base::Optional<fuchsia::media::sessions2::PlayerState> state_after_change;
+  absl::optional<fuchsia::media::sessions2::PlayerState> state_after_change;
 
   player_->WatchInfoChange(
       [&change_loop,

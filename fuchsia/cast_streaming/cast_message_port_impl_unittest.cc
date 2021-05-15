@@ -170,7 +170,7 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   EXPECT_EQ(sender_id, kSenderId);
   EXPECT_EQ(message_namespace, kInjectNamespace);
 
-  base::Optional<base::Value> return_value = base::JSONReader::Read(message);
+  absl::optional<base::Value> return_value = base::JSONReader::Read(message);
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
@@ -178,7 +178,7 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   ASSERT_TRUE(type_value);
   EXPECT_EQ(*type_value, kValueError);
 
-  base::Optional<int> request_id_value =
+  absl::optional<int> request_id_value =
       return_value->FindIntKey(kKeyRequestId);
   ASSERT_TRUE(request_id_value);
   EXPECT_EQ(request_id_value.value(), kRequestId);

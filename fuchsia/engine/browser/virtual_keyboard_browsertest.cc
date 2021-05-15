@@ -92,7 +92,7 @@ class MockVirtualKeyboardController : public virtualkeyboard::Controller {
   }
 
   base::OnceClosure on_watch_visibility_;
-  base::Optional<virtualkeyboard::Controller::WatchVisibilityCallback>
+  absl::optional<virtualkeyboard::Controller::WatchVisibilityCallback>
       watch_vis_callback_;
   fuchsia::ui::views::ViewRef view_ref_;
   virtualkeyboard::TextType text_type_;
@@ -210,7 +210,7 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
     // Distance to click from the top/left extents of an input field.
     constexpr int kInputFieldClickInset = 8;
 
-    base::Optional<base::Value> result = cr_fuchsia::ExecuteJavaScript(
+    absl::optional<base::Value> result = cr_fuchsia::ExecuteJavaScript(
         frame_.get(),
         base::StringPrintf("getPointInsideText('%s')", id.data()));
     CHECK(result);
@@ -224,8 +224,8 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
 
  protected:
   // Used to publish fake virtual keyboard services for the InputMethod to use.
-  base::Optional<base::TestComponentContextForProcess> component_context_;
-  base::Optional<MockVirtualKeyboardControllerCreator> controller_creator_;
+  absl::optional<base::TestComponentContextForProcess> component_context_;
+  absl::optional<MockVirtualKeyboardControllerCreator> controller_creator_;
   std::unique_ptr<MockVirtualKeyboardController> controller_;
 
   fuchsia::web::FramePtr frame_;

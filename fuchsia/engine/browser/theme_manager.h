@@ -45,8 +45,8 @@ class WEB_ENGINE_EXPORT ThemeManager {
 
   bool observed_display_service_error_ = false;
   bool did_receive_first_watch_result_ = false;
-  base::Optional<fuchsia::settings::ThemeType> requested_theme_;
-  base::Optional<fuchsia::settings::ThemeType> system_theme_;
+  absl::optional<fuchsia::settings::ThemeType> requested_theme_;
+  absl::optional<fuchsia::settings::ThemeType> system_theme_;
   content::WebContents* web_contents_;
   fuchsia::settings::DisplayPtr display_service_;
   OnSetThemeCompleteCallback on_set_complete_;

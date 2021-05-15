@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Injects scripts received from the ApiBindings service, and provides connected
 // ports to the Agent.
@@ -53,7 +53,7 @@ class ApiBindingsClient {
   // Called when ApiBindings::GetAll() has responded.
   void OnBindingsReceived(std::vector<chromium::cast::ApiBinding> bindings);
 
-  base::Optional<std::vector<chromium::cast::ApiBinding>> bindings_;
+  absl::optional<std::vector<chromium::cast::ApiBinding>> bindings_;
   fuchsia::web::Frame* frame_ = nullptr;
   cast_api_bindings::NamedMessagePortConnector* connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;

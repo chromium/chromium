@@ -131,7 +131,7 @@ void ContextImpl::CreateFrameForWebContents(
 
   // Verify the explicit sites filter error page content. If the parameter is
   // present, it will be provided to the FrameImpl after it is created below.
-  base::Optional<std::string> explicit_sites_filter_error_page;
+  absl::optional<std::string> explicit_sites_filter_error_page;
   if (params.has_explicit_sites_filter_error_page()) {
     explicit_sites_filter_error_page.emplace();
     if (!cr_fuchsia::StringFromMemData(

@@ -130,7 +130,7 @@ class FakeApplicationContext : public chromium::cast::ApplicationContext {
     return controller_.get();
   }
 
-  base::Optional<int64_t> WaitForApplicationTerminated() {
+  absl::optional<int64_t> WaitForApplicationTerminated() {
     base::RunLoop loop;
     on_application_terminated_ = loop.QuitClosure();
     loop.Run();
@@ -155,7 +155,7 @@ class FakeApplicationContext : public chromium::cast::ApplicationContext {
 
   chromium::cast::ApplicationControllerPtr controller_;
 
-  base::Optional<int64_t> application_exit_code_;
+  absl::optional<int64_t> application_exit_code_;
   base::OnceClosure on_application_terminated_;
 };
 
@@ -213,7 +213,7 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
       app_config_binding_;
   const base::ScopedServiceBinding<chromium::cast::ApiBindings>
       bindings_manager_binding_;
-  base::Optional<base::ScopedServiceBinding<
+  absl::optional<base::ScopedServiceBinding<
       chromium::cast::UrlRequestRewriteRulesProvider>>
       url_request_rules_provider_binding_;
 
@@ -1136,7 +1136,7 @@ TEST_F(CastRunnerIntegrationTest, OnApplicationTerminated_WindowClose) {
 
   // Have the web content close itself, and wait for OnApplicationTerminated().
   EXPECT_EQ(component.ExecuteJavaScript("window.close()"), "undefined");
-  base::Optional<zx_status_t> exit_code = component.component_state()
+  absl::optional<zx_status_t> exit_code = component.component_state()
                                               ->application_context()
                                               ->WaitForApplicationTerminated();
   ASSERT_TRUE(exit_code);

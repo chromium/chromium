@@ -125,12 +125,12 @@ void EnsureSoftwareVideoDecodersAreDisabled(
 // enabled if a soft quota is explicitly specified via config-data.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
   // Set the web data quota based on the CastRunner configuration.
-  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
   if (!config)
     return;
 
   constexpr char kDataQuotaBytesSwitch[] = "data-quota-bytes";
-  const base::Optional<int> data_quota_bytes =
+  const absl::optional<int> data_quota_bytes =
       config->FindIntPath(kDataQuotaBytesSwitch);
   if (!data_quota_bytes)
     return;
@@ -149,10 +149,10 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 // Populates |params| with settings to enable Widevine & PlayReady CDMs.
 // CDM data persistence is always enabled, with an optional soft quota.
 void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
-  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
   if (config) {
     constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
-    const base::Optional<int> cdm_data_quota_bytes =
+    const absl::optional<int> cdm_data_quota_bytes =
         config->FindIntPath(kCdmDataQuotaBytesSwitch);
     if (cdm_data_quota_bytes)
       params->set_cdm_data_quota_bytes(*cdm_data_quota_bytes);
@@ -443,7 +443,7 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
   if (IsAppConfigForCastStreaming(params.application_config))
     web_content_url = GURL(kCastStreamingWebUrl);
 
-  base::Optional<fuchsia::web::CreateContextParams> create_context_params =
+  absl::optional<fuchsia::web::CreateContextParams> create_context_params =
       GetContextParamsForAppConfig(&params.application_config);
 
   WebContentRunner* component_owner = main_context_.get();
@@ -613,28 +613,28 @@ CastRunner::GetIsolatedContextParamsForCastStreaming() {
   return params;
 }
 
-base::Optional<fuchsia::web::CreateContextParams>
+absl::optional<fuchsia::web::CreateContextParams>
 CastRunner::GetContextParamsForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
-  base::Optional<fuchsia::web::CreateContextParams> params;
+  absl::optional<fuchsia::web::CreateContextParams> params;
 
   if (IsAppConfigForCastStreaming(*app_config)) {
     // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
     // Component has been implemented.
-    return base::make_optional(GetIsolatedContextParamsForCastStreaming());
+    return absl::make_optional(GetIsolatedContextParamsForCastStreaming());
   }
 
   const bool is_isolated_app =
       app_config->has_content_directories_for_isolated_application();
   if (is_isolated_app) {
-    return base::make_optional(
+    return absl::make_optional(
         GetIsolatedContextParamsWithFuchsiaDirs(std::move(
             *app_config
                  ->mutable_content_directories_for_isolated_application())));
   }
 
   // No need to create an isolated context in other cases.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 WebContentRunner* CastRunner::CreateIsolatedContextForParams(

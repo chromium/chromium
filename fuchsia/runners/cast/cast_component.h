@@ -18,12 +18,12 @@
 #include "base/fuchsia/startup_context.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_fuchsia.h"
-#include "base/optional.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
 #include "fuchsia/runners/cast/application_controller_impl.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia/runners/common/web_component.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 class AgentManager;
@@ -59,9 +59,9 @@ class CastComponent : public WebComponent,
     chromium::cast::ApplicationConfig application_config;
     fidl::InterfaceHandle<chromium::cast::ApplicationContext>
         application_context;
-    base::Optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
+    absl::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
         initial_url_rewrite_rules;
-    base::Optional<uint64_t> media_session_id;
+    absl::optional<uint64_t> media_session_id;
   };
 
   // See WebComponent documentation for details of |debug_name| and |runner|.

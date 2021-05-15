@@ -14,7 +14,7 @@
 
 namespace cr_fuchsia {
 
-// TODO(crbug.com/1156780): Replace bool returns with base::Optional.
+// TODO(crbug.com/1156780): Replace bool returns with absl::optional.
 
 // Reads the contents of |buffer|, encoded in UTF-8, to a UTF-16 string.
 // Returns |false| if |buffer| is not valid UTF-8.

@@ -130,7 +130,7 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   navigation_listener()->RunUntilTitleEquals("ended");
 
   // Run until the message passed to console.debug() is received.
-  base::Optional<fuchsia::logger::LogMessage> logged_message =
+  absl::optional<fuchsia::logger::LogMessage> logged_message =
       log_listener.RunUntilMessageReceived(kLogTestPageDebugMessage);
 
   ASSERT_TRUE(logged_message.has_value());

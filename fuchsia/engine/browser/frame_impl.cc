@@ -223,20 +223,20 @@ void HandleMediaPermissionsRequestResult(
       nullptr);
 }
 
-base::Optional<url::Origin> ParseAndValidateWebOrigin(
+absl::optional<url::Origin> ParseAndValidateWebOrigin(
     const std::string& origin_str) {
   GURL origin_url(origin_str);
   if (!origin_url.username().empty() || !origin_url.password().empty() ||
       !origin_url.query().empty() || !origin_url.ref().empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!origin_url.path().empty() && origin_url.path() != "/")
-    return base::nullopt;
+    return absl::nullopt;
 
   auto origin = url::Origin::Create(origin_url);
   if (origin.opaque())
-    return base::nullopt;
+    return absl::nullopt;
 
   return origin;
 }
@@ -730,7 +730,7 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  base::Optional<std::u16string> origin_utf16;
+  absl::optional<std::u16string> origin_utf16;
   if (origin != kWildcardOrigin)
     origin_utf16 = base::UTF8ToUTF16(origin);
 

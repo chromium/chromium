@@ -10,9 +10,9 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "fuchsia/engine/web_engine_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Maps AXNode IDs to Fuchsia Node IDs.
 // This class saves the remapped values.
@@ -32,7 +32,7 @@ class WEB_ENGINE_EXPORT NodeIDMapper {
   // From a Fuchsia Node ID, returns the pair of the AXTreeID and the AXNode ID
   // that maps to it. If the Fuchsia Node ID is not in the map, returns no
   // value.
-  virtual base::Optional<std::pair<ui::AXTreeID, int32_t>> ToAXNodeID(
+  virtual absl::optional<std::pair<ui::AXTreeID, int32_t>> ToAXNodeID(
       uint32_t fuchsia_node_id);
 
   // Updates the  AXNode IDs to point to the new |ax_tree_id|. This method

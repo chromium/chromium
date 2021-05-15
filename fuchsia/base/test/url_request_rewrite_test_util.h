@@ -7,8 +7,8 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 
@@ -19,7 +19,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
     base::StringPiece header_value);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
-    base::Optional<base::StringPiece> query_pattern,
+    absl::optional<base::StringPiece> query_pattern,
     base::StringPiece header_name);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(

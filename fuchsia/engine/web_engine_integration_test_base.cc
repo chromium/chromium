@@ -170,21 +170,21 @@ void WebEngineIntegrationTestBase::GrantPermission(
 
 std::string WebEngineIntegrationTestBase::ExecuteJavaScriptWithStringResult(
     base::StringPiece script) {
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetString() : std::string();
 }
 
 double WebEngineIntegrationTestBase::ExecuteJavaScriptWithDoubleResult(
     base::StringPiece script) {
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetDouble() : 0.0;
 }
 
 bool WebEngineIntegrationTestBase::ExecuteJavaScriptWithBoolResult(
     base::StringPiece script) {
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetBool() : false;
 }

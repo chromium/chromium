@@ -23,7 +23,6 @@
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -34,6 +33,7 @@
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 #include "fuchsia/engine/browser/theme_manager.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
@@ -115,7 +115,7 @@ class FrameImpl : public fuchsia::web::Frame,
   // empty, the default error page will be used.
   void EnableExplicitSitesFilter(std::string error_page);
 
-  const base::Optional<std::string>& explicit_sites_filter_error_page() const {
+  const absl::optional<std::string>& explicit_sites_filter_error_page() const {
     return explicit_sites_filter_error_page_;
   }
 
@@ -328,7 +328,7 @@ class FrameImpl : public fuchsia::web::Frame,
   // The error page to be displayed when a navigation to an explicit site is
   // filtered. Explicit sites are filtered if it has a value. If set to the
   // empty string, the default error page will be displayed.
-  base::Optional<std::string> explicit_sites_filter_error_page_;
+  absl::optional<std::string> explicit_sites_filter_error_page_;
 
   // Used to publish Frame details to Inspect.
   inspect::Node inspect_node_;

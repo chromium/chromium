@@ -28,7 +28,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
 }
 
 fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
-    base::Optional<base::StringPiece> query_pattern,
+    absl::optional<base::StringPiece> query_pattern,
     base::StringPiece header_name) {
   fuchsia::web::UrlRequestRewriteRemoveHeader remove_header;
   if (query_pattern)

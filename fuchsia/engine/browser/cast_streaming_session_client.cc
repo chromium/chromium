@@ -41,9 +41,9 @@ void CastStreamingSessionClient::OnReceiverEnabled() {
 }
 
 void CastStreamingSessionClient::OnSessionInitialization(
-    base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
+    absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
         audio_stream_info,
-    base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
+    absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
         video_stream_info) {
   DVLOG(1) << __func__;
   DCHECK(audio_stream_info || video_stream_info);
@@ -83,9 +83,9 @@ void CastStreamingSessionClient::OnVideoBufferReceived(
 }
 
 void CastStreamingSessionClient::OnSessionReinitialization(
-    base::Optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
+    absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
         audio_stream_info,
-    base::Optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
+    absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
         video_stream_info) {
   DVLOG(1) << __func__;
   DCHECK(audio_stream_info || video_stream_info);

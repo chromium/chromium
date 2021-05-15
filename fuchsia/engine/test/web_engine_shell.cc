@@ -55,7 +55,7 @@ void PrintUsage() {
             << "WebEngine to be processed." << std::endl;
 }
 
-base::Optional<uint16_t> ParseRemoteDebuggingPort(
+absl::optional<uint16_t> ParseRemoteDebuggingPort(
     const base::CommandLine& command_line) {
   std::string port_str =
       command_line.GetSwitchValueNative(kRemoteDebuggingPortSwitch);
@@ -64,7 +64,7 @@ base::Optional<uint16_t> ParseRemoteDebuggingPort(
       port_parsed > 65535) {
     LOG(ERROR) << "Invalid value for --remote-debugging-port (must be in the "
                   "range 0-65535).";
-    return base::nullopt;
+    return absl::nullopt;
   }
   return (uint16_t)port_parsed;
 }
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
   CHECK(cr_fuchsia::InitLoggingFromCommandLineDefaultingToStderrForTest(
       command_line));
 
-  base::Optional<uint16_t> remote_debugging_port;
+  absl::optional<uint16_t> remote_debugging_port;
   if (command_line->HasSwitch(kRemoteDebuggingPortSwitch)) {
     remote_debugging_port = ParseRemoteDebuggingPort(*command_line);
     if (!remote_debugging_port) {

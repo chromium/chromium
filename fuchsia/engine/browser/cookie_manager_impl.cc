@@ -188,7 +188,7 @@ void CookieManagerImpl::ObserveCookieChanges(
                           std::move(changes));
 
   if (url) {
-    base::Optional<std::string> maybe_name;
+    absl::optional<std::string> maybe_name;
     if (name)
       maybe_name = *name;
     cookie_manager_->AddCookieChangeListener(GURL(*url), maybe_name,

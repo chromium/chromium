@@ -8,7 +8,6 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
@@ -20,6 +19,7 @@
 #include "fuchsia/engine/test/test_data.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -78,7 +78,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
     theme.set_theme_type(theme_type);
     settings.set_theme(std::move(theme));
     (*watch_callback_)(std::move(settings));
-    watch_callback_ = base::nullopt;
+    watch_callback_ = absl::nullopt;
     base::RunLoop().RunUntilIdle();
   }
 
@@ -121,15 +121,15 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   }
   void NotImplemented_(const std::string&) final {}
 
-  base::Optional<base::TestComponentContextForProcess> component_context_;
-  base::Optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
+  absl::optional<base::TestComponentContextForProcess> component_context_;
+  absl::optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
       display_binding_;
   cr_fuchsia::TestNavigationListener navigation_listener_;
   fuchsia::web::NavigationControllerPtr controller_;
   fuchsia::web::FramePtr frame_;
 
   base::OnceClosure on_watch_closure_;
-  base::Optional<WatchCallback> watch_callback_;
+  absl::optional<WatchCallback> watch_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, Default) {
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_AutoWithMissingService) {
 
   ASSERT_TRUE(display_binding_->has_clients());
 
-  display_binding_ = base::nullopt;
+  display_binding_ = absl::nullopt;
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(display_binding_);

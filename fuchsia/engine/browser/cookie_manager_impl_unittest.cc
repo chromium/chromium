@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -24,6 +23,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -98,8 +98,8 @@ class CookieManagerImplTest : public testing::Test {
   }
 
   // Synchronously fetches all cookies via the |cookie_manager_|.
-  // Returns a base::nullopt if the iterator closes before a GetNext() returns.
-  base::Optional<std::vector<fuchsia::web::Cookie>> GetAllCookies() {
+  // Returns a absl::nullopt if the iterator closes before a GetNext() returns.
+  absl::optional<std::vector<fuchsia::web::Cookie>> GetAllCookies() {
     base::RunLoop get_cookies_loop;
     fuchsia::web::CookiesIteratorPtr cookies_iterator;
     cookies_iterator.set_error_handler([&](zx_status_t status) {
@@ -108,7 +108,7 @@ class CookieManagerImplTest : public testing::Test {
     });
     cookie_manager_.GetCookieList(nullptr, nullptr,
                                   cookies_iterator.NewRequest());
-    base::Optional<std::vector<fuchsia::web::Cookie>> cookies;
+    absl::optional<std::vector<fuchsia::web::Cookie>> cookies;
     std::function<void(std::vector<fuchsia::web::Cookie>)> get_next_callback =
         [&](std::vector<fuchsia::web::Cookie> new_cookies) {
           if (!cookies.has_value()) {
@@ -157,18 +157,18 @@ class GetNextCookiesIteratorResult {
   ~GetNextCookiesIteratorResult() = default;
 
   void ExpectSingleCookie(base::StringPiece name,
-                          base::Optional<base::StringPiece> value) {
+                          absl::optional<base::StringPiece> value) {
     ExpectCookieUpdates({{name, value}});
   }
 
   void ExpectDeleteSingleCookie(base::StringPiece name) {
-    ExpectCookieUpdates({{name, base::nullopt}});
+    ExpectCookieUpdates({{name, absl::nullopt}});
   }
 
   // Specifies the cookie name/value pairs expected in the GetNext() results.
-  // Deletions expectations are specified by using base::nullopt as the value.
+  // Deletions expectations are specified by using absl::nullopt as the value.
   void ExpectCookieUpdates(
-      std::map<base::StringPiece, base::Optional<base::StringPiece>> expected) {
+      std::map<base::StringPiece, absl::optional<base::StringPiece>> expected) {
     loop_.Run();
     ASSERT_TRUE(result_.has_value());
     ASSERT_EQ(result_->size(), expected.size());
@@ -363,7 +363,7 @@ TEST_F(CookieManagerImplTest, UpdateBatching) {
 
     GetNextCookiesIteratorResult global_updates(global_changes.get());
     global_updates.ExpectCookieUpdates(
-        {{kCookieName1, base::nullopt}, {kCookieName2, base::nullopt}});
+        {{kCookieName1, absl::nullopt}, {kCookieName2, absl::nullopt}});
   }
 }
 

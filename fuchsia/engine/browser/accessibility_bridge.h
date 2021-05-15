@@ -14,12 +14,12 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "fuchsia/engine/browser/ax_tree_converter.h"
 #include "fuchsia/engine/web_engine_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_observer.h"
@@ -196,7 +196,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   base::OnceClosure event_received_callback_for_test_;
 
   // If set, the scale factor for this device for use in tests.
-  base::Optional<float> device_scale_factor_override_for_test_;
+  absl::optional<float> device_scale_factor_override_for_test_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_ACCESSIBILITY_BRIDGE_H_

@@ -308,7 +308,7 @@ uint32_t NodeIDMapper::ToFuchsiaNodeID(const ui::AXTreeID& ax_tree_id,
   return fuchsia_node_id;
 }
 
-base::Optional<std::pair<ui::AXTreeID, int32_t>> NodeIDMapper::ToAXNodeID(
+absl::optional<std::pair<ui::AXTreeID, int32_t>> NodeIDMapper::ToAXNodeID(
     uint32_t fuchsia_node_id) {
   for (const auto& tree_id_to_node_ids : id_map_) {
     for (const auto& ax_id_to_fuchsia_id : tree_id_to_node_ids.second) {
@@ -318,7 +318,7 @@ base::Optional<std::pair<ui::AXTreeID, int32_t>> NodeIDMapper::ToAXNodeID(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool NodeIDMapper::UpdateAXTreeIDForCachedNodeIDs(

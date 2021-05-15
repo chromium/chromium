@@ -40,7 +40,7 @@ enum class TransferableHostType {
 };
 
 // Converts a BlinkMessage to a fuchsia::web::WebMessage.
-base::Optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
+absl::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
     blink::WebMessagePort::Message blink_message,
     TransferableHostType port_type);
 

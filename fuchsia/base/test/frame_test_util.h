@@ -7,9 +7,9 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 
@@ -22,8 +22,8 @@ bool LoadUrlAndExpectResponse(
     base::StringPiece url);
 
 // Executes |script| in the context of |frame|'s top-level document.
-// Returns an un-set |base::Optional<>| on failure.
-base::Optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
+// Returns an un-set |absl::optional<>| on failure.
+absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
                                               base::StringPiece script);
 
 // Creates and returns a LoadUrlParams with was_user_activated set to true.

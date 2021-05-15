@@ -11,8 +11,8 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "fuchsia/engine/browser/fake_semantic_tree.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeSemanticsManager : public fuchsia::accessibility::semantics::testing::
                                  SemanticsManager_TestBase {
@@ -69,7 +69,7 @@ class FakeSemanticsManager : public fuchsia::accessibility::semantics::testing::
   // which can support many.
   FakeSemanticTree semantic_tree_;
 
-  base::Optional<uint32_t> hit_test_result_;
+  absl::optional<uint32_t> hit_test_result_;
   int32_t num_actions_handled_ = 0;
   int32_t num_actions_unhandled_ = 0;
   int32_t expected_num_actions_ = 0;

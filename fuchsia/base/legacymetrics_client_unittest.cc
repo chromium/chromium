@@ -50,11 +50,11 @@ class TestMetricsRecorder
     return std::move(recorded_events_);
   }
 
-  void DropAck() { ack_callback_ = base::nullopt; }
+  void DropAck() { ack_callback_ = absl::nullopt; }
 
   void SendAck() {
     (*ack_callback_)();
-    ack_callback_ = base::nullopt;
+    ack_callback_ = absl::nullopt;
   }
 
   void set_expect_ack_dropped(bool expect_dropped) {
@@ -83,7 +83,7 @@ class TestMetricsRecorder
  private:
   std::vector<fuchsia::legacymetrics::Event> recorded_events_;
   base::OnceClosure on_record_cb_;
-  base::Optional<RecordCallback> ack_callback_;
+  absl::optional<RecordCallback> ack_callback_;
   bool expect_ack_dropped_ = false;
 };
 
