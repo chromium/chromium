@@ -127,7 +127,7 @@ function maybeGenHeader(testFixture) {
   }
   needGenHeader = false;
   output(`
-// GENERATED FILE'
+// GENERATED FILE
 ${argHint}
 // PLEASE DO NOT HAND EDIT!
 `);

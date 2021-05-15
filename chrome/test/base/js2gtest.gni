@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//v8/gni/snapshot_toolchain.gni")
 import("//v8/gni/v8.gni")
 
@@ -53,8 +52,7 @@ template("js2gtest") {
     data += invoker.data
   }
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action_foreach(action_name) {
+  action_foreach(action_name) {
     testonly = true
     visibility = [ ":$source_set_name" ]
     script = "//tools/gypv8sh.py"
@@ -91,18 +89,20 @@ template("js2gtest") {
         rebase_path(invoker.deps_js, root_build_dir),
       ]
     }
-    args += [
-      # Need "./" for script to find binary (cur dir is not on path).
-      "./" + rebase_path(v8_shell_path, root_build_dir),
-    ]
-    args += rebase_path(js2gtest_js_input_libraries, root_build_dir) +
-            [ invoker.test_type ]
+
     if (v8_use_external_startup_data) {
       args += [ "--external=y" ]
     } else {
       args += [ "--external=n" ]
     }
+
     args += [
+      # Need "./" for script to find binary (cur dir is not on path).
+      "./" + rebase_path(v8_shell_path, root_build_dir),
+    ]
+    args += rebase_path(js2gtest_js_input_libraries, root_build_dir)
+    args += [
+      invoker.test_type,
       "{{source}}",
       rebase_path("//", root_build_dir),  # Path to source root.
       gen_source_pattern,
