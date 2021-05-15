@@ -13,7 +13,7 @@ namespace multidevice_setup {
 
 HostStatusProvider::HostStatusWithDevice::HostStatusWithDevice(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device)
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device)
     : host_status_(host_status), host_device_(host_device) {
   if (host_status_ == mojom::HostStatus::kNoEligibleHosts ||
       host_status_ == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
@@ -64,7 +64,7 @@ void HostStatusProvider::RemoveObserver(Observer* observer) {
 
 void HostStatusProvider::NotifyHostStatusChange(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
   HostStatusWithDevice host_status_with_device(host_status, host_device);
   for (auto& observer : observer_list_)
     observer.OnHostStatusChange(host_status_with_device);

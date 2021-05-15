@@ -42,7 +42,7 @@ health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
+absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input);
 
 std::vector<health::mojom::DiagnosticRoutineEnum> Convert(

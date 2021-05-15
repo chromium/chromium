@@ -12,12 +12,12 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   std::vector<WaitForServiceToBeAvailableCallback>
       wait_for_service_to_be_available_callbacks_;
 
-  base::Optional<authpolicy::ErrorType> refresh_user_policy_error_;
+  absl::optional<authpolicy::ErrorType> refresh_user_policy_error_;
 
   base::WeakPtrFactory<FakeAuthPolicyClient> weak_factory_{this};
 

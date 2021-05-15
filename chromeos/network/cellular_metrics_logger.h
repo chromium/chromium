@@ -9,12 +9,12 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Records the result of pin operations performed.
   static void RecordSimPinOperationResult(
       const SimPinOperation& pin_operation,
-      const base::Optional<std::string>& shill_error_name = base::nullopt);
+      const absl::optional<std::string>& shill_error_name = absl::nullopt);
 
   // Registers device preferences used by this class in the provided
   // |registry|.
@@ -148,15 +148,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                    bool is_connecting);
     ~ConnectionInfo();
     const std::string network_guid;
-    base::Optional<bool> is_connected;
+    absl::optional<bool> is_connected;
     bool is_connecting = false;
     // Tracks whether a disconnect was requested from chrome on a network that
     // was previously in the connecting state. This field is set back to false
     // when shill connection failures are checked in
     // NetworkConnectionStateChanged().
     bool disconnect_requested = false;
-    base::Optional<base::TimeTicks> last_disconnect_request_time;
-    base::Optional<base::TimeTicks> last_connect_start_time;
+    absl::optional<base::TimeTicks> last_disconnect_request_time;
+    absl::optional<base::TimeTicks> last_connect_start_time;
   };
 
   // Usage type for cellular network. These values are persisted to logs.
@@ -334,19 +334,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const std::string& cellular_network_guid);
 
   // Tracks the last cellular network usage state.
-  base::Optional<CellularUsage> last_cellular_usage_;
+  absl::optional<CellularUsage> last_cellular_usage_;
 
   // Tracks the last PSim cellular network usage state.
-  base::Optional<CellularUsage> last_psim_cellular_usage_;
+  absl::optional<CellularUsage> last_psim_cellular_usage_;
 
   // Tracks the last time the PSim network's cellular usage changed.
-  base::Optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
+  absl::optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
 
   // Tracks the last ESim cellular network usage state.
-  base::Optional<CellularUsage> last_esim_cellular_usage_;
+  absl::optional<CellularUsage> last_esim_cellular_usage_;
 
   // Tracks the last time the ESim network's cellular usage changed.
-  base::Optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
+  absl::optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
 
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;

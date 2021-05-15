@@ -55,7 +55,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void RequestUpdate() override;
 
  private:
-  void ListCallback(base::Optional<std::vector<dbus::ObjectPath>> paths);
+  void ListCallback(absl::optional<std::vector<dbus::ObjectPath>> paths);
   void SmsReceivedCallback(const dbus::ObjectPath& path, bool complete);
   void GetCallback(const base::Value& dictionary);
   void DeleteMessages();
@@ -112,7 +112,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::RequestUpdate() {
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
-    base::Optional<std::vector<dbus::ObjectPath>> paths) {
+    absl::optional<std::vector<dbus::ObjectPath>> paths) {
   // This receives all messages, so clear any pending gets and deletes.
   retrieval_queue_.clear();
   delete_queue_.clear();
@@ -274,7 +274,7 @@ void NetworkSmsHandler::MessageReceived(const base::Value& message) {
 }
 
 void NetworkSmsHandler::ManagerPropertiesCallback(
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "NetworkSmsHandler: Failed to get manager properties.";
     return;
@@ -307,7 +307,7 @@ void NetworkSmsHandler::UpdateDevices(const base::Value& devices) {
 
 void NetworkSmsHandler::DevicePropertiesCallback(
     const std::string& device_path,
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "NetworkSmsHandler error for: " << device_path;
     return;

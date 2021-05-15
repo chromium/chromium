@@ -44,7 +44,7 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   void RunSmartctlCheckRoutine(
       RunSmartctlCheckRoutineCallback callback) override;
   void RunAcPowerRoutine(health::mojom::AcPowerStatusEnum expected_status,
-                         const base::Optional<std::string>& expected_power_type,
+                         const absl::optional<std::string>& expected_power_type,
                          RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;

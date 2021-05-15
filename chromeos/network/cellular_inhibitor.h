@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
 
   // Returns the reason that cellular scanning is currently inhibited, or null
   // if it is not inhibited.
-  base::Optional<InhibitReason> GetInhibitReason() const;
+  absl::optional<InhibitReason> GetInhibitReason() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

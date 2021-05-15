@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
@@ -30,6 +29,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -165,8 +165,8 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
 
       id_to_encrypted_group_private_key_map_[id] =
           base::Contains(device_ids_to_fail, id)
-              ? base::nullopt
-              : base::make_optional<std::string>(
+              ? absl::nullopt
+              : absl::make_optional<std::string>(
                     MakeFakeEncryptedString(payload, encrypting_key));
     }
 
@@ -266,7 +266,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
   CryptAuthGroupPrivateKeySharer::IdToEncryptingKeyMap
       id_to_encrypting_key_map_;
 
-  base::Optional<cryptauthv2::ShareGroupPrivateKeyRequest>
+  absl::optional<cryptauthv2::ShareGroupPrivateKeyRequest>
       share_group_private_key_request_;
   CryptAuthClient::ShareGroupPrivateKeyCallback
       share_group_private_key_success_callback_;
@@ -274,7 +274,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
 
   CryptAuthEciesEncryptor::IdToOutputMap id_to_encrypted_group_private_key_map_;
 
-  base::Optional<CryptAuthDeviceSyncResult::ResultCode>
+  absl::optional<CryptAuthDeviceSyncResult::ResultCode>
       device_sync_result_code_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;

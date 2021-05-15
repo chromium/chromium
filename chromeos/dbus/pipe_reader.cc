@@ -69,8 +69,8 @@ void PipeReader::OnRead(int byte_count) {
   DVLOG(1) << "OnRead byte_count: " << byte_count;
   if (byte_count <= 0) {
     // On EOF (= 0), or on error (< 0).
-    base::Optional<std::string> result =
-        byte_count < 0 ? base::nullopt : base::make_optional(std::move(data_));
+    absl::optional<std::string> result =
+        byte_count < 0 ? absl::nullopt : absl::make_optional(std::move(data_));
     // Clear members before calling the |callback|.
     data_.clear();
     data_stream_.reset();

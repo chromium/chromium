@@ -312,20 +312,20 @@ class SecureChannelConnectionTest : public testing::Test {
     EXPECT_EQ(expected_payload, wire_message->payload());
   }
 
-  void VerifyRssi(base::Optional<int32_t> expected_rssi) {
+  void VerifyRssi(absl::optional<int32_t> expected_rssi) {
     fake_connection_->set_rssi_to_return(expected_rssi);
 
     secure_channel_->GetConnectionRssi(
         base::BindOnce(&SecureChannelConnectionTest::OnConnectionRssi,
                        base::Unretained(this)));
 
-    base::Optional<int32_t> rssi = rssi_;
+    absl::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     EXPECT_EQ(expected_rssi, rssi);
   }
 
-  void OnConnectionRssi(base::Optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
   // Owned by secure_channel_.
   FakeConnection* fake_connection_;
@@ -348,7 +348,7 @@ class SecureChannelConnectionTest : public testing::Test {
 
   const multidevice::RemoteDeviceRef test_device_;
 
-  base::Optional<int32_t> rssi_;
+  absl::optional<int32_t> rssi_;
 
   base::WeakPtrFactory<SecureChannelConnectionTest> weak_ptr_factory_{this};
 

@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"
@@ -28,6 +27,7 @@
 #include "chromeos/services/secure_channel/pending_nearby_initiator_connection_request.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -100,7 +100,7 @@ class FakeBleInitiatorConnectionAttemptFactory
   }
 
   FakeBleConnectionManager* expected_ble_connection_manager_;
-  base::Optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<BleInitiatorFailureType>*>
@@ -177,7 +177,7 @@ class FakeBleListenerConnectionAttemptFactory
   }
 
   FakeBleConnectionManager* expected_ble_connection_manager_;
-  base::Optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<BleListenerFailureType>*>
@@ -255,7 +255,7 @@ class FakeNearbyInitiatorConnectionAttemptFactory
   }
 
   FakeNearbyConnectionManager* expected_nearby_connection_manager_;
-  base::Optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
+  absl::optional<ConnectionAttemptDetails> expected_connection_attempt_details_;
 
   base::flat_map<ConnectionAttemptDetails,
                  FakeConnectionAttempt<NearbyInitiatorFailureType>*>
@@ -308,7 +308,7 @@ class FakePendingBleInitiatorConnectionRequestFactory
   }
 
   ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
-  base::Optional<ConnectionPriority> expected_connection_priority_;
+  absl::optional<ConnectionPriority> expected_connection_priority_;
 
   FakePendingConnectionRequest<BleInitiatorFailureType>*
       last_created_instance_ = nullptr;
@@ -355,7 +355,7 @@ class FakePendingBleListenerConnectionRequestFactory
   }
 
   ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
-  base::Optional<ConnectionPriority> expected_connection_priority_;
+  absl::optional<ConnectionPriority> expected_connection_priority_;
 
   FakePendingConnectionRequest<BleListenerFailureType>* last_created_instance_ =
       nullptr;
@@ -402,7 +402,7 @@ class FakePendingNearbyInitiatorConnectionRequestFactory
   }
 
   ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
-  base::Optional<ConnectionPriority> expected_connection_priority_;
+  absl::optional<ConnectionPriority> expected_connection_priority_;
 
   FakePendingConnectionRequest<NearbyInitiatorFailureType>*
       last_created_instance_ = nullptr;

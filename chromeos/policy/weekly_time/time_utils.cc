@@ -119,11 +119,11 @@ bool Contains(const base::Time& time,
   return false;
 }
 
-base::Optional<base::Time> GetNextEventTime(
+absl::optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
   if (weekly_time_intervals.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::Time::Exploded exploded;
   current_time.UTCExplode(&exploded);

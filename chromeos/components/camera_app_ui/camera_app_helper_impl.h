@@ -10,11 +10,11 @@
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/camera_app_ui/camera_app_window_state_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -98,7 +98,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
 
   bool has_external_screen_;
 
-  base::Optional<uint32_t> pending_intent_id_;
+  absl::optional<uint32_t> pending_intent_id_;
 
   aura::Window* window_;
 

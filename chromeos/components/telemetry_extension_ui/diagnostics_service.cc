@@ -101,7 +101,7 @@ void DiagnosticsService::RunSmartctlCheckRoutine(
 
 void DiagnosticsService::RunAcPowerRoutine(
     health::mojom::AcPowerStatusEnum expected_status,
-    const base::Optional<std::string>& expected_power_type,
+    const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   GetService()->RunAcPowerRoutine(
       converters::Convert(expected_status), expected_power_type,

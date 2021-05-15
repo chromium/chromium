@@ -9,9 +9,9 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -41,13 +41,13 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
 
   // Simulates receiving a re-enroll push message from GCM.
   void PushReenrollMessage(
-      const base::Optional<std::string>& session_id,
-      const base::Optional<CryptAuthFeatureType>& feature_type);
+      const absl::optional<std::string>& session_id,
+      const absl::optional<CryptAuthFeatureType>& feature_type);
 
   // Simulates receiving a re-sync push message from GCM.
   void PushResyncMessage(
-      const base::Optional<std::string>& session_id,
-      const base::Optional<CryptAuthFeatureType>& feature_type);
+      const absl::optional<std::string>& session_id,
+      const absl::optional<CryptAuthFeatureType>& feature_type);
 
   // CryptAuthGCMManager:
   void StartListening() override;

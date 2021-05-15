@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_feature_state_manager.h"
@@ -19,6 +18,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -136,7 +136,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
         num_observer_events_before_call + (was_previously_verified ? 1u : 0u);
 
     fake_host_status_provider_->SetHostWithStatus(
-        mojom::HostStatus::kNoEligibleHosts, base::nullopt /* host_device */);
+        mojom::HostStatus::kNoEligibleHosts, absl::nullopt /* host_device */);
     if (was_previously_verified) {
       VerifyFeatureStateChange(num_observer_events_before_call, feature,
                                mojom::FeatureState::kUnavailableNoVerifiedHost);
@@ -148,7 +148,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
 
     fake_host_status_provider_->SetHostWithStatus(
         mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-        base::nullopt /* host_device */);
+        absl::nullopt /* host_device */);
     EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
               manager_->GetFeatureStates()[feature]);
     EXPECT_EQ(expected_num_observer_events_after_call,

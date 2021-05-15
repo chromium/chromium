@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
 
-  void set_set_game_mode_response(base::Optional<bool> set_game_mode_response) {
+  void set_set_game_mode_response(absl::optional<bool> set_game_mode_response) {
     set_game_mode_response_ = set_game_mode_response;
   }
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   int get_exit_game_mode_count() const { return exit_game_mode_count_; }
 
  private:
-  base::Optional<bool> set_game_mode_response_;
+  absl::optional<bool> set_game_mode_response_;
 
   int enter_game_mode_count_ = 0;
   int exit_game_mode_count_ = 0;

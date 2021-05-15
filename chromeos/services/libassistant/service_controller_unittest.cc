@@ -40,7 +40,7 @@ using ::testing::StrictMock;
 // Tests if the JSON string contains the given path with the given value
 #define EXPECT_HAS_PATH_WITH_VALUE(config_string, path, expected_value)    \
   ({                                                                       \
-    base::Optional<base::Value> config =                                   \
+    absl::optional<base::Value> config =                                   \
         base::JSONReader::Read(config_string);                             \
     ASSERT_TRUE(config.has_value());                                       \
     const base::Value* actual = config->FindPath(path);                    \

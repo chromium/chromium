@@ -17,26 +17,26 @@
 
 namespace chromeos {
 
-base::Optional<std::string> ReadStartupData() {
+absl::optional<std::string> ReadStartupData() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kCrosStartupDataFD))
-    return base::nullopt;
+    return absl::nullopt;
 
   int raw_fd = 0;
   if (!base::StringToInt(
           command_line->GetSwitchValueASCII(switches::kCrosStartupDataFD),
           &raw_fd)) {
     LOG(ERROR) << "Unrecognizable value for --" << switches::kCrosStartupDataFD;
-    return base::nullopt;
+    return absl::nullopt;
   }
   base::ScopedFILE file(fdopen(raw_fd, "r"));
   std::string content;
   if (!base::ReadStreamToString(file.get(), &content)) {
     LOG(ERROR) << "Failed to read startup data";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::make_optional(std::move(content));
+  return absl::make_optional(std::move(content));
 }
 
 }  // namespace chromeos

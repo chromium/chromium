@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -117,14 +117,14 @@ class CryptAuthEnrollmentResult {
 
   CryptAuthEnrollmentResult(
       ResultCode result_code,
-      const base::Optional<cryptauthv2::ClientDirective>& client_directive);
+      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthEnrollmentResult(const CryptAuthEnrollmentResult& other);
 
   ~CryptAuthEnrollmentResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const base::Optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -135,7 +135,7 @@ class CryptAuthEnrollmentResult {
 
  private:
   ResultCode result_code_;
-  base::Optional<cryptauthv2::ClientDirective> client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

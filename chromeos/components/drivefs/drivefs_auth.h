@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
     return delegate_->IsMetricsCollectionEnabled();
   }
 
-  base::Optional<std::string> GetCachedAccessToken();
+  absl::optional<std::string> GetCachedAccessToken();
 
   virtual void GetAccessToken(
       bool use_cached,

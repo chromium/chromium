@@ -7,12 +7,12 @@
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -28,14 +28,14 @@ constexpr const char kDefaultLocale[] = "en_us";
 // Examples:
 //     "fr"     ->  "fr_fr"
 //     "nl-BE"  ->  "nl_be"
-base::Optional<std::string> ToHotwordModel(std::string pref_locale) {
+absl::optional<std::string> ToHotwordModel(std::string pref_locale) {
   std::vector<std::string> code_strings = base::SplitString(
       pref_locale, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (code_strings.size() == 0) {
     // Note: I am not sure this happens during real operations, but it
     // definitely happens during the ChromeOS performance tests.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DCHECK_LT(code_strings.size(), 3u);
@@ -63,13 +63,13 @@ const chromeos::AudioDevice* GetHighestPriorityDevice(
   return left->priority < right->priority ? right : left;
 }
 
-base::Optional<uint64_t> IdToOptional(const AudioDevice* device) {
+absl::optional<uint64_t> IdToOptional(const AudioDevice* device) {
   if (!device)
-    return base::nullopt;
+    return absl::nullopt;
   return device->id;
 }
 
-base::Optional<uint64_t> GetHotwordDeviceId(
+absl::optional<uint64_t> GetHotwordDeviceId(
     const chromeos::AudioDeviceList& devices) {
   const chromeos::AudioDevice* result = nullptr;
 
@@ -90,7 +90,7 @@ base::Optional<uint64_t> GetHotwordDeviceId(
   return IdToOptional(result);
 }
 
-base::Optional<uint64_t> GetPreferredDeviceId(
+absl::optional<uint64_t> GetPreferredDeviceId(
     const chromeos::AudioDeviceList& devices) {
   const chromeos::AudioDevice* result = nullptr;
 
@@ -114,9 +114,9 @@ base::Optional<uint64_t> GetPreferredDeviceId(
   return IdToOptional(result);
 }
 
-base::Optional<std::string> ToString(base::Optional<uint64_t> int_value) {
+absl::optional<std::string> ToString(absl::optional<uint64_t> int_value) {
   if (!int_value)
-    return base::nullopt;
+    return absl::nullopt;
   return base::NumberToString(int_value.value());
 }
 

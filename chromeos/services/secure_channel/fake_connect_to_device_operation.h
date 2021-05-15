@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -34,7 +34,7 @@ class FakeConnectToDeviceOperation
 
   bool canceled() const { return canceled_; }
 
-  const base::Optional<ConnectionPriority>& updated_priority() {
+  const absl::optional<ConnectionPriority>& updated_priority() {
     return updated_priority_;
   }
 
@@ -66,7 +66,7 @@ class FakeConnectToDeviceOperation
   }
 
   bool canceled_ = false;
-  base::Optional<ConnectionPriority> updated_priority_;
+  absl::optional<ConnectionPriority> updated_priority_;
   base::OnceClosure destructor_callback_;
   base::OnceClosure cancel_callback_;
 

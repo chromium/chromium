@@ -77,7 +77,7 @@ cryptauthv2::ClientDirective BuildClientDirective(PrefService* pref_service) {
   if (encoded_client_directive->GetString() == kNoClientDirective)
     return CreateDefaultClientDirective();
 
-  base::Optional<cryptauthv2::ClientDirective> client_directive_from_pref =
+  absl::optional<cryptauthv2::ClientDirective> client_directive_from_pref =
       util::DecodeProtoMessageFromValueString<cryptauthv2::ClientDirective>(
           encoded_client_directive);
 
@@ -87,7 +87,7 @@ cryptauthv2::ClientDirective BuildClientDirective(PrefService* pref_service) {
 cryptauthv2::ClientMetadata BuildClientMetadata(
     size_t retry_count,
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   cryptauthv2::ClientMetadata client_metadata;
   client_metadata.set_retry_count(retry_count);
   client_metadata.set_invocation_reason(invocation_reason);
@@ -220,13 +220,13 @@ void CryptAuthSchedulerImpl::OnDeviceSyncSchedulingStarted() {
 
 void CryptAuthSchedulerImpl::RequestEnrollment(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   MakeRequest(RequestType::kEnrollment, invocation_reason, session_id);
 }
 
 void CryptAuthSchedulerImpl::RequestDeviceSync(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   MakeRequest(RequestType::kDeviceSync, invocation_reason, session_id);
 }
 
@@ -243,12 +243,12 @@ void CryptAuthSchedulerImpl::HandleDeviceSyncResult(
                device_sync_result.client_directive());
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 CryptAuthSchedulerImpl::GetLastSuccessfulEnrollmentTime() const {
   return GetLastSuccessTime(RequestType::kEnrollment);
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 CryptAuthSchedulerImpl::GetLastSuccessfulDeviceSyncTime() const {
   return GetLastSuccessTime(RequestType::kDeviceSync);
 }
@@ -257,12 +257,12 @@ base::TimeDelta CryptAuthSchedulerImpl::GetRefreshPeriod() const {
   return base::TimeDelta::FromMilliseconds(
       client_directive_.checkin_delay_millis());
 }
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 CryptAuthSchedulerImpl::GetTimeToNextEnrollmentRequest() const {
   return GetTimeToNextRequest(RequestType::kEnrollment);
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 CryptAuthSchedulerImpl::GetTimeToNextDeviceSyncRequest() const {
   return GetTimeToNextRequest(RequestType::kDeviceSync);
 }
@@ -310,7 +310,7 @@ void CryptAuthSchedulerImpl::OnSchedulingStarted(RequestType request_type) {
 void CryptAuthSchedulerImpl::MakeRequest(
     RequestType request_type,
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   request_timers_[request_type]->Stop();
 
   pending_requests_[request_type] =
@@ -322,7 +322,7 @@ void CryptAuthSchedulerImpl::MakeRequest(
 void CryptAuthSchedulerImpl::HandleResult(
     RequestType request_type,
     bool success,
-    const base::Optional<cryptauthv2::ClientDirective>& new_client_directive) {
+    const absl::optional<cryptauthv2::ClientDirective>& new_client_directive) {
   DCHECK(current_requests_[request_type]);
   DCHECK(!request_timers_[request_type]->IsRunning());
 
@@ -379,17 +379,17 @@ void CryptAuthSchedulerImpl::HandleInvokeNext(
   }
 }
 
-base::Optional<base::Time> CryptAuthSchedulerImpl::GetLastSuccessTime(
+absl::optional<base::Time> CryptAuthSchedulerImpl::GetLastSuccessTime(
     RequestType request_type) const {
   base::Time time =
       pref_service_->GetTime(GetLastSuccessTimePrefName(request_type));
   if (time.is_null())
-    return base::nullopt;
+    return absl::nullopt;
 
   return time;
 }
 
-base::Optional<base::TimeDelta> CryptAuthSchedulerImpl::GetTimeToNextRequest(
+absl::optional<base::TimeDelta> CryptAuthSchedulerImpl::GetTimeToNextRequest(
     RequestType request_type) const {
   // Request already in progress.
   if (IsWaitingForResult(request_type))
@@ -398,7 +398,7 @@ base::Optional<base::TimeDelta> CryptAuthSchedulerImpl::GetTimeToNextRequest(
   // No pending request.
   const auto it = pending_requests_.find(request_type);
   if (it == pending_requests_.end() || !it->second)
-    return base::nullopt;
+    return absl::nullopt;
 
   int64_t retry_count = it->second->retry_count();
   cryptauthv2::ClientMetadata::InvocationReason invocation_reason =
@@ -410,7 +410,7 @@ base::Optional<base::TimeDelta> CryptAuthSchedulerImpl::GetTimeToNextRequest(
     if (invocation_reason != cryptauthv2::ClientMetadata::PERIODIC)
       return kZeroTimeDelta;
 
-    base::Optional<base::Time> last_success_time =
+    absl::optional<base::Time> last_success_time =
         GetLastSuccessTime(request_type);
     DCHECK(last_success_time);
 
@@ -507,7 +507,7 @@ void CryptAuthSchedulerImpl::ScheduleNextRequest(RequestType request_type) {
                             GetLastSuccessTime(request_type)
                                 ? cryptauthv2::ClientMetadata::PERIODIC
                                 : cryptauthv2::ClientMetadata::INITIALIZATION,
-                            base::nullopt /* session_id */);
+                            absl::nullopt /* session_id */);
   }
 
   // Schedule a first-time DeviceSync if one has never successfully completed.
@@ -516,7 +516,7 @@ void CryptAuthSchedulerImpl::ScheduleNextRequest(RequestType request_type) {
       !pending_requests_[request_type] && !GetLastSuccessTime(request_type)) {
     pending_requests_[request_type] = BuildClientMetadata(
         0 /* retry_count */, cryptauthv2::ClientMetadata::INITIALIZATION,
-        base::nullopt /* session_id */);
+        absl::nullopt /* session_id */);
   }
 
   if (!pending_requests_[request_type]) {
@@ -540,7 +540,7 @@ void CryptAuthSchedulerImpl::ScheduleNextRequest(RequestType request_type) {
   if (!has_scheduling_started)
     return;
 
-  base::Optional<base::TimeDelta> delay = GetTimeToNextRequest(request_type);
+  absl::optional<base::TimeDelta> delay = GetTimeToNextRequest(request_type);
   DCHECK(delay);
   request_timers_[request_type]->Start(
       FROM_HERE, *delay,
@@ -566,8 +566,8 @@ void CryptAuthSchedulerImpl::OnTimerFired(RequestType request_type) {
 
   switch (request_type) {
     case RequestType::kEnrollment: {
-      base::Optional<cryptauthv2::PolicyReference> policy_reference =
-          base::nullopt;
+      absl::optional<cryptauthv2::PolicyReference> policy_reference =
+          absl::nullopt;
       if (client_directive_.has_policy_reference())
         policy_reference = client_directive_.policy_reference();
 

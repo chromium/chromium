@@ -20,6 +20,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+testing",
+  "+third_party/abseil-cpp/absl",
   "+third_party/boringssl/src/include",
   "+third_party/cros_system_api",
   "+url",

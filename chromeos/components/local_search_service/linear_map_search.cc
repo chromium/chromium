@@ -7,13 +7,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/components/local_search_service/search_utils.h"
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace local_search_service {
@@ -137,14 +137,14 @@ void LinearMapSearch::Find(const std::u16string& query,
   if (query.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyQuery;
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
-    std::move(callback).Run(status, base::nullopt);
+    std::move(callback).Run(status, absl::nullopt);
     return;
   }
 
   if (data_.empty()) {
     const ResponseStatus status = ResponseStatus::kEmptyIndex;
     MaybeLogSearchResultsStats(status, 0u, base::TimeDelta());
-    std::move(callback).Run(status, base::nullopt);
+    std::move(callback).Run(status, absl::nullopt);
     return;
   }
 

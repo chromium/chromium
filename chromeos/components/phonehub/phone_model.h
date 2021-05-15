@@ -7,9 +7,9 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "chromeos/components/phonehub/browser_tabs_model.h"
 #include "chromeos/components/phonehub/phone_status_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -32,15 +32,15 @@ class PhoneModel {
   PhoneModel& operator=(const PhoneModel&) = delete;
   virtual ~PhoneModel();
 
-  const base::Optional<std::u16string>& phone_name() const {
+  const absl::optional<std::u16string>& phone_name() const {
     return phone_name_;
   }
 
-  const base::Optional<PhoneStatusModel>& phone_status_model() const {
+  const absl::optional<PhoneStatusModel>& phone_status_model() const {
     return phone_status_model_;
   }
 
-  const base::Optional<BrowserTabsModel>& browser_tabs_model() const {
+  const absl::optional<BrowserTabsModel>& browser_tabs_model() const {
     return browser_tabs_model_;
   }
 
@@ -52,9 +52,9 @@ class PhoneModel {
 
   void NotifyModelChanged();
 
-  base::Optional<std::u16string> phone_name_;
-  base::Optional<PhoneStatusModel> phone_status_model_;
-  base::Optional<BrowserTabsModel> browser_tabs_model_;
+  absl::optional<std::u16string> phone_name_;
+  absl::optional<PhoneStatusModel> phone_status_model_;
+  absl::optional<BrowserTabsModel> browser_tabs_model_;
 
  private:
   base::ObserverList<Observer> observer_list_;

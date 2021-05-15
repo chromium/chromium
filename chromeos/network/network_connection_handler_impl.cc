@@ -523,7 +523,7 @@ void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionFailure(
 void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     bool check_error_state,
     const std::string& service_path,
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     HandleConfigurationFailure(service_path, "GetShillProperties failed",
                                nullptr);

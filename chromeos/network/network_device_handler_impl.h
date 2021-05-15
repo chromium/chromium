@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
       std::string support_property_name,
       WifiFeatureSupport* feature_support_to_set,
       const std::string& device_path,
-      base::Optional<base::Value> properties);
+      absl::optional<base::Value> properties);
 
   // Callback to be called on MAC address source change request failure.
   // The request was called on device with |device_path| path and

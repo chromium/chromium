@@ -49,7 +49,7 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
                      << "that access has been granted by the phone.";
         multidevice_setup_client_->SetFeatureEnabledState(
             Feature::kPhoneHubNotifications, /*enabled=*/true,
-            /*auth_token=*/base::nullopt, base::DoNothing());
+            /*auth_token=*/absl::nullopt, base::DoNothing());
       }
       break;
 
@@ -61,7 +61,7 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubNotifications, /*enabled=*/false,
-          /*auth_token=*/base::nullopt, base::DoNothing());
+          /*auth_token=*/absl::nullopt, base::DoNothing());
       break;
   }
 }
@@ -106,7 +106,7 @@ void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {
   if (is_awaiting_verified_host && host_status == HostStatus::kHostVerified &&
       feature_state == FeatureState::kDisabledByUser) {
     multidevice_setup_client_->SetFeatureEnabledState(
-        Feature::kPhoneHub, /*enabled=*/true, /*auth_token=*/base::nullopt,
+        Feature::kPhoneHub, /*enabled=*/true, /*auth_token=*/absl::nullopt,
         base::DoNothing());
     util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kSetupFlow);
   }

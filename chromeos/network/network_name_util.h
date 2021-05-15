@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -21,7 +21,7 @@ namespace network_name_util {
 // Returns null if |cellular_esim_profile_handler| is null, or network is not
 // an eSIM network.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Optional<std::string> GetESimProfileName(
+absl::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state);
 

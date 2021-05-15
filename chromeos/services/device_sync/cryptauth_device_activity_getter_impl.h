@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -72,7 +72,7 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
   // CryptAuthDeviceActivityGetter:
   void OnAttemptStarted() override;
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
   void SetState(State state);
   void OnTimeout();
 

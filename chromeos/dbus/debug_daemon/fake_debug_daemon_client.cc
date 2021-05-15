@@ -16,11 +16,11 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -94,19 +94,19 @@ void FakeDebugDaemonClient::GetRoutes(
     bool ipv6,
     DBusMethodCallback<std::vector<std::string>> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::GetNetworkStatus(
     DBusMethodCallback<std::string> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::GetNetworkInterfaces(
     DBusMethodCallback<std::string> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::GetPerfOutput(
@@ -151,7 +151,7 @@ void FakeDebugDaemonClient::GetLog(const std::string& log_name,
 void FakeDebugDaemonClient::TestICMP(const std::string& ip_address,
                                      TestICMPCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::TestICMPWithOptions(
@@ -159,7 +159,7 @@ void FakeDebugDaemonClient::TestICMPWithOptions(
     const std::map<std::string, std::string>& options,
     TestICMPCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeDebugDaemonClient::UploadCrashes(UploadCrashesCallback callback) {
@@ -297,7 +297,7 @@ void FakeDebugDaemonClient::GetU2fFlags(
     DBusMethodCallback<std::set<std::string>> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), base::make_optional(u2f_flags_)));
+      base::BindOnce(std::move(callback), absl::make_optional(u2f_flags_)));
 }
 
 void FakeDebugDaemonClient::GetKernelFeatureList(

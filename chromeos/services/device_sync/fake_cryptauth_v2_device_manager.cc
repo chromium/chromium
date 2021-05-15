@@ -23,7 +23,7 @@ FakeCryptAuthV2DeviceManager::GetSyncedDevices() const {
 
 void FakeCryptAuthV2DeviceManager::ForceDeviceSyncNow(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   DCHECK(has_started_);
 
   cryptauthv2::ClientMetadata client_metadata;
@@ -44,12 +44,12 @@ bool FakeCryptAuthV2DeviceManager::IsRecoveringFromFailure() const {
   return is_recovering_from_failure_;
 }
 
-base::Optional<base::Time> FakeCryptAuthV2DeviceManager::GetLastDeviceSyncTime()
+absl::optional<base::Time> FakeCryptAuthV2DeviceManager::GetLastDeviceSyncTime()
     const {
   return last_device_sync_time_;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 FakeCryptAuthV2DeviceManager::GetTimeToNextAttempt() const {
   return time_to_next_attempt_;
 }

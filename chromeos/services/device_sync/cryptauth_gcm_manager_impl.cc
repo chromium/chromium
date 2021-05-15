@@ -68,11 +68,11 @@ const char kDeviceSyncGroupNameKey[] = "K";
 // "S". In practice, one and only one of these keys should exist in a GCM
 // message. Return null if neither is set to a valid value. If both are set for
 // some reason, arbitrarily prefer a valid "S" value.
-base::Optional<cryptauthv2::TargetService> TargetServiceFromMessage(
+absl::optional<cryptauthv2::TargetService> TargetServiceFromMessage(
     const gcm::IncomingMessage& message) {
-  base::Optional<cryptauthv2::TargetService>
+  absl::optional<cryptauthv2::TargetService>
       target_from_registration_tickle_type;
-  base::Optional<cryptauthv2::TargetService> target_from_target_service;
+  absl::optional<cryptauthv2::TargetService> target_from_target_service;
 
   auto it = message.data.find(kRegistrationTickleTypeKey);
   if (it != message.data.end()) {
@@ -136,27 +136,27 @@ base::Optional<cryptauthv2::TargetService> TargetServiceFromMessage(
 }
 
 // Returns null if |key| doesn't exist in the |message.data| map.
-base::Optional<std::string> StringValueFromMessage(
+absl::optional<std::string> StringValueFromMessage(
     const std::string& key,
     const gcm::IncomingMessage& message) {
   auto it = message.data.find(key);
   if (it == message.data.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second;
 }
 
 // Returns null if |message| does not contain the feature type key-value pair or
 // if the value does not correspond to one of the CryptAuthFeatureType enums.
-base::Optional<CryptAuthFeatureType> FeatureTypeFromMessage(
+absl::optional<CryptAuthFeatureType> FeatureTypeFromMessage(
     const gcm::IncomingMessage& message) {
-  base::Optional<std::string> feature_type_hash =
+  absl::optional<std::string> feature_type_hash =
       StringValueFromMessage(kFeatureTypeHashKey, message);
 
   if (!feature_type_hash)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<CryptAuthFeatureType> feature_type =
+  absl::optional<CryptAuthFeatureType> feature_type =
       CryptAuthFeatureTypeFromGcmHash(*feature_type_hash);
   base::UmaHistogramBoolean("CryptAuth.Gcm.Message.IsKnownFeatureType",
                             feature_type.has_value());
@@ -175,7 +175,7 @@ base::Optional<CryptAuthFeatureType> FeatureTypeFromMessage(
 // value agrees with the name of the corresponding enrolled key. On Chrome OS,
 // the only relevant DeviceSync group name is "DeviceSync:BetterTogether".
 bool IsDeviceSyncGroupNameValid(const gcm::IncomingMessage& message) {
-  base::Optional<std::string> group_name =
+  absl::optional<std::string> group_name =
       StringValueFromMessage(kDeviceSyncGroupNameKey, message);
   if (!group_name)
     return true;
@@ -295,7 +295,7 @@ void CryptAuthGCMManagerImpl::OnMessage(const std::string& app_id,
                   << "  collapse_key: " << message.collapse_key << "\n"
                   << "  data:\n    " << base::JoinString(fields, "\n    ");
 
-  base::Optional<cryptauthv2::TargetService> target_service =
+  absl::optional<cryptauthv2::TargetService> target_service =
       TargetServiceFromMessage(message);
   if (!target_service) {
     PA_LOG(ERROR) << "GCM message does not specify a valid target service.";
@@ -308,9 +308,9 @@ void CryptAuthGCMManagerImpl::OnMessage(const std::string& app_id,
     return;
   }
 
-  base::Optional<std::string> session_id =
+  absl::optional<std::string> session_id =
       StringValueFromMessage(kSessionIdKey, message);
-  base::Optional<CryptAuthFeatureType> feature_type =
+  absl::optional<CryptAuthFeatureType> feature_type =
       FeatureTypeFromMessage(message);
 
   if (target_service == cryptauthv2::TargetService::ENROLLMENT) {

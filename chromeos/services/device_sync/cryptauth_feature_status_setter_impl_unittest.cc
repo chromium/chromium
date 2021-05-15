@@ -11,7 +11,6 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
@@ -24,6 +23,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -166,7 +166,7 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   void HandleNextBatchSetFeatureStatusesRequest(
       const cryptauthv2::BatchSetFeatureStatusesRequest& expected_request,
       RequestAction request_action,
-      base::Optional<NetworkRequestError> error = base::nullopt) {
+      absl::optional<NetworkRequestError> error = absl::nullopt) {
     ASSERT_TRUE(!batch_set_feature_statuses_requests_.empty());
 
     cryptauthv2::BatchSetFeatureStatusesRequest current_request =
@@ -200,7 +200,7 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   }
 
   void VerifyResults(
-      const std::vector<base::Optional<NetworkRequestError>> expected_results) {
+      const std::vector<absl::optional<NetworkRequestError>> expected_results) {
     // Verify that all requests were processed.
     EXPECT_TRUE(batch_set_feature_statuses_requests_.empty());
     EXPECT_TRUE(batch_set_feature_statuses_success_callbacks_.empty());
@@ -220,7 +220,7 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
         std::move(error_callback));
   }
 
-  void OnSetFeatureStatusSuccess() { results_.push_back(base::nullopt); }
+  void OnSetFeatureStatusSuccess() { results_.push_back(absl::nullopt); }
 
   void OnSetFeatureStatusFailure(NetworkRequestError error) {
     results_.push_back(error);
@@ -233,8 +233,8 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   base::queue<CryptAuthClient::ErrorCallback>
       batch_set_feature_statuses_failure_callbacks_;
 
-  // base::nullopt indicates a success.
-  std::vector<base::Optional<NetworkRequestError>> results_;
+  // absl::nullopt indicates a success.
+  std::vector<absl::optional<NetworkRequestError>> results_;
 
   MockCryptAuthClientFactory mock_client_factory_;
   base::MockOneShotTimer* mock_timer_ = nullptr;
@@ -259,8 +259,8 @@ TEST_F(DeviceSyncCryptAuthFeatureStatusSetterImplTest, Test) {
                    multidevice::SoftwareFeature::kBetterTogetherHost,
                    FeatureStatusChange::kEnableNonExclusively);
 
-  // base::nullopt indicates a success.
-  std::vector<base::Optional<NetworkRequestError>> expected_results;
+  // absl::nullopt indicates a success.
+  std::vector<absl::optional<NetworkRequestError>> expected_results;
 
   // Timeout waiting for BatchSetFeatureStatuses.
   HandleNextBatchSetFeatureStatusesRequest(
@@ -278,12 +278,12 @@ TEST_F(DeviceSyncCryptAuthFeatureStatusSetterImplTest, Test) {
   HandleNextBatchSetFeatureStatusesRequest(
       InstantTetherClientDisabledRequest("device_id_3"),
       RequestAction::kSucceed);
-  expected_results.push_back(base::nullopt);
+  expected_results.push_back(absl::nullopt);
 
   // Succeed enabling BetterTogether host.
   HandleNextBatchSetFeatureStatusesRequest(
       BetterTogetherHostEnabledRequest("device_id_4"), RequestAction::kSucceed);
-  expected_results.push_back(base::nullopt);
+  expected_results.push_back(absl::nullopt);
 
   VerifyResults(expected_results);
 }

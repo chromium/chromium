@@ -91,22 +91,22 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
       SetFirmwareManagementParametersCallback callback) = 0;
 
   // Blocking version of InstallAttributesGet().
-  virtual base::Optional<::user_data_auth::InstallAttributesGetReply>
+  virtual absl::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) = 0;
 
   // Blocking version of InstallAttributesSet().
-  virtual base::Optional<::user_data_auth::InstallAttributesSetReply>
+  virtual absl::optional<::user_data_auth::InstallAttributesSetReply>
   BlockingInstallAttributesSet(
       const ::user_data_auth::InstallAttributesSetRequest& request) = 0;
 
   // Blocking version of InstallAttributesFinalize().
-  virtual base::Optional<::user_data_auth::InstallAttributesFinalizeReply>
+  virtual absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
   BlockingInstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request) = 0;
 
   // Blocking version of InstallAttributesGetStatus().
-  virtual base::Optional<::user_data_auth::InstallAttributesGetStatusReply>
+  virtual absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
   BlockingInstallAttributesGetStatus(
       const ::user_data_auth::InstallAttributesGetStatusRequest& request) = 0;
 

@@ -81,7 +81,7 @@ class LanguageDetectorTest : public testing::Test {
   LanguageDetectorTest(const LanguageDetectorTest&) = delete;
   LanguageDetectorTest& operator=(const LanguageDetectorTest&) = delete;
 
-  const base::Optional<std::string>& DetectLanguage(
+  const absl::optional<std::string>& DetectLanguage(
       const std::string& surrounding_text,
       const std::string& selected_text) {
     base::RunLoop run_loop;
@@ -100,14 +100,14 @@ class LanguageDetectorTest : public testing::Test {
 
  private:
   void DetectLanguageCallback(base::OnceClosure quit_closure,
-                              base::Optional<std::string> detected_locale) {
+                              absl::optional<std::string> detected_locale) {
     detected_locale_ = std::move(detected_locale);
     std::move(quit_closure).Run();
   }
 
   base::test::TaskEnvironment task_environment_;
 
-  base::Optional<std::string> detected_locale_;
+  absl::optional<std::string> detected_locale_;
 
   FakeTextClassifier text_classifier_;
   LanguageDetector language_detector_;

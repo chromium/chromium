@@ -47,7 +47,7 @@ bool IsEligiblePhoneHubHost(const RemoteDeviceRef& device) {
 }
 
 bool IsEligibleForFeature(
-    const base::Optional<multidevice::RemoteDeviceRef>& local_device,
+    const absl::optional<multidevice::RemoteDeviceRef>& local_device,
     multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
     const RemoteDeviceRefList& remote_devices,
     FeatureState feature_state) {

@@ -10,7 +10,6 @@
 
 #include <list>
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -22,6 +21,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -54,7 +54,7 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
     const base::Value* pattern_value = dict_with_client_cert.FindKeyOfType(
         ::onc::client_cert::kClientCertPattern, base::Value::Type::DICTIONARY);
     if (pattern_value) {
-      base::Optional<OncCertificatePattern> pattern =
+      absl::optional<OncCertificatePattern> pattern =
           OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
       if (!pattern.has_value()) {
         LOG(ERROR) << "ClientCertPattern invalid";

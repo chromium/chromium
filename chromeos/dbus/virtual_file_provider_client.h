@@ -14,8 +14,8 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/dbus/dbus_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) VirtualFileProviderClient
     : public DBusClient {
  public:
   using GenerateVirtualFileIdCallback =
-      base::OnceCallback<void(const base::Optional<std::string>& id)>;
+      base::OnceCallback<void(const absl::optional<std::string>& id)>;
   using OpenFileByIdCallback = base::OnceCallback<void(base::ScopedFD fd)>;
 
   VirtualFileProviderClient();

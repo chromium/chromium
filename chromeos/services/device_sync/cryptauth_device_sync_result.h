@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -88,14 +88,14 @@ class CryptAuthDeviceSyncResult {
   CryptAuthDeviceSyncResult(
       ResultCode result_code,
       bool did_device_registry_change,
-      const base::Optional<cryptauthv2::ClientDirective>& client_directive);
+      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthDeviceSyncResult(const CryptAuthDeviceSyncResult& other);
 
   ~CryptAuthDeviceSyncResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const base::Optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -112,7 +112,7 @@ class CryptAuthDeviceSyncResult {
  private:
   ResultCode result_code_;
   bool did_device_registry_change_;
-  base::Optional<cryptauthv2::ClientDirective> client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

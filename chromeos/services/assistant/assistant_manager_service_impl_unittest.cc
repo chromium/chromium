@@ -10,7 +10,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +39,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -151,8 +151,8 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   void CreateAssistantManagerServiceImpl(
-      base::Optional<std::string> s3_server_uri_override = base::nullopt,
-      base::Optional<std::string> device_id_override = base::nullopt) {
+      absl::optional<std::string> s3_server_uri_override = absl::nullopt,
+      absl::optional<std::string> device_id_override = absl::nullopt) {
     // We can not have 2 instances of |AssistantManagerServiceImpl| at the same
     // time, so we must destroy the old one before creating a new one.
     assistant_manager_service_.reset();
@@ -417,7 +417,7 @@ TEST_F(AssistantManagerServiceImplTest,
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
-  assistant_manager_service()->SetUser(base::nullopt);
+  assistant_manager_service()->SetUser(absl::nullopt);
   RunUntilIdle();
 
   EXPECT_EQ(kNoValue, mojom_service_controller().gaia_id());
@@ -450,7 +450,7 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest,
        ShouldPassDeviceIdOverrideToMojomService) {
   CreateAssistantManagerServiceImpl(
-      /*s3_server_uri_override=*/base::nullopt, "the-device-id-override");
+      /*s3_server_uri_override=*/absl::nullopt, "the-device-id-override");
 
   Start();
   WaitForState(AssistantManagerService::STARTED);

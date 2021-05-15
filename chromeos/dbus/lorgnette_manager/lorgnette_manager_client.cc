@@ -16,7 +16,6 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +27,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -129,7 +129,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     // In case of success, std::string holds the read data. Otherwise,
     // nullopt.
     using CompletionCallback =
-        base::OnceCallback<void(base::Optional<std::string> data)>;
+        base::OnceCallback<void(absl::optional<std::string> data)>;
 
     ScanDataReader() = default;
     ScanDataReader(const ScanDataReader&) = delete;
@@ -159,7 +159,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
    private:
     // Called when a |pipe_reader_| completes reading scan data to a string.
-    void OnDataRead(base::Optional<std::string> data) {
+    void OnDataRead(absl::optional<std::string> data) {
       DCHECK(!data_read_);
       data_read_ = true;
       data_ = std::move(data);
@@ -182,7 +182,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     bool data_read_ = false;
 
     // Available only when |data_read_| is true.
-    base::Optional<std::string> data_;
+    absl::optional<std::string> data_;
 
     CompletionCallback callback_;
 
@@ -286,7 +286,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ListScannersResponse";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -294,7 +294,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to read ListScannersResponse";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -307,7 +307,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ScannerCapabilities";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -315,7 +315,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to read ScannerCapabilities";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
@@ -326,7 +326,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void OnScanDataCompleted(const std::string& uuid,
                            uint32_t page_number,
                            bool more_pages,
-                           base::Optional<std::string> data) {
+                           absl::optional<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!base::Contains(scan_job_state_, uuid)) {
       LOG(ERROR) << "Received ScanDataCompleted for unrecognized scan job: "

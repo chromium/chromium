@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WifiConfigurationSpecifics;
@@ -28,7 +28,7 @@ namespace sync_wifi {
 class LocalNetworkCollector {
  public:
   typedef base::OnceCallback<void(
-      base::Optional<sync_pb::WifiConfigurationSpecifics>)>
+      absl::optional<sync_pb::WifiConfigurationSpecifics>)>
       ProtoCallback;
 
   typedef base::OnceCallback<void(
@@ -45,7 +45,7 @@ class LocalNetworkCollector {
 
   // Creates a WifiConfigurationSpecifics proto with the relevant network
   // details for the network with the given |id|.  If that network doesn't
-  // exist or isn't syncable it will provide base::nullopt to the callback.
+  // exist or isn't syncable it will provide absl::nullopt to the callback.
   virtual void GetSyncableNetwork(const std::string& guid,
                                   ProtoCallback callback) = 0;
 
@@ -55,7 +55,7 @@ class LocalNetworkCollector {
 
   // Retrieves the NetworkIdentifier for a given local network's |guid|
   // if the network no longer exists it returns nullopt.
-  virtual base::Optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
+  virtual absl::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) = 0;
 
   // Provides the metadata store which gets constructed later.

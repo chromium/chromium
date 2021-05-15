@@ -269,7 +269,7 @@ bool Validator::ValidateRecommendedField(
     base::DictionaryValue* result) {
   CHECK(result);
 
-  base::Optional<base::Value> recommended_value =
+  absl::optional<base::Value> recommended_value =
       result->ExtractKey(::onc::kRecommended);
   // This remove passes ownership to |recommended_value|.
   if (!recommended_value) {
@@ -1021,7 +1021,7 @@ bool Validator::ValidateGlobalNetworkConfiguration(
     base::DictionaryValue* result) {
   // Replace the deprecated kBlacklistedHexSSIDs with kBlockedHexSSIDs.
   if (!result->HasKey(::onc::global_network_config::kBlockedHexSSIDs)) {
-    base::Optional<base::Value> blocked =
+    absl::optional<base::Value> blocked =
         result->ExtractKey(::onc::global_network_config::kBlacklistedHexSSIDs);
     if (blocked) {
       result->SetKey(::onc::global_network_config::kBlockedHexSSIDs,

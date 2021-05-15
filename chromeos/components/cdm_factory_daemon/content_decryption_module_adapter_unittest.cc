@@ -606,7 +606,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SubsampledCenc) {
   cdm::mojom::DecryptConfigPtr expected_decrypt_config =
       cdm::mojom::DecryptConfig::New(
           media::EncryptionScheme::kCenc, kFakeKeyId, kFakeIv,
-          std::vector<cdm::mojom::SubsampleEntryPtr>(), base::nullopt);
+          std::vector<cdm::mojom::SubsampleEntryPtr>(), absl::nullopt);
   EXPECT_CALL(*mock_daemon_cdm_,
               Decrypt(std::vector<uint8_t>(kFakeEncryptedData.begin() + 3,
                                            kFakeEncryptedData.end()),
@@ -642,7 +642,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SubsampledCbcs) {
   cdm::mojom::DecryptConfigPtr expected_decrypt_config =
       cdm::mojom::DecryptConfig::New(
           media::EncryptionScheme::kCbcs, kFakeKeyId, kFakeIv,
-          std::vector<cdm::mojom::SubsampleEntryPtr>(), base::nullopt);
+          std::vector<cdm::mojom::SubsampleEntryPtr>(), absl::nullopt);
   expected_decrypt_config->subsamples.emplace_back(
       cdm::mojom::SubsampleEntry::New(1, 2));
   expected_decrypt_config->subsamples.emplace_back(
@@ -673,7 +673,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SubsampledCbcs) {
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
       kFakeKeyId, kFakeIv,
       {media::SubsampleEntry(1, 2), media::SubsampleEntry(2, 3)},
-      base::nullopt));
+      absl::nullopt));
   cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
                         callback.Get());
   base::RunLoop().RunUntilIdle();

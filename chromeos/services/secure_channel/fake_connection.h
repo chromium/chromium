@@ -6,8 +6,8 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/connection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -23,7 +23,7 @@ class FakeConnection : public Connection {
                  bool should_auto_connect);
   ~FakeConnection() override;
 
-  void set_rssi_to_return(const base::Optional<int32_t>& rssi_to_return) {
+  void set_rssi_to_return(const absl::optional<int32_t>& rssi_to_return) {
     rssi_to_return_ = rssi_to_return;
   }
 
@@ -34,7 +34,7 @@ class FakeConnection : public Connection {
   void AddObserver(ConnectionObserver* observer) override;
   void RemoveObserver(ConnectionObserver* observer) override;
   void GetConnectionRssi(
-      base::OnceCallback<void(base::Optional<int32_t>)> callback) override;
+      base::OnceCallback<void(absl::optional<int32_t>)> callback) override;
 
   // Completes a connection attempt which was originally started via a call to
   // |Connect()|. If |success| is true, the connection's status shifts to
@@ -73,7 +73,7 @@ class FakeConnection : public Connection {
 
   std::vector<ConnectionObserver*> observers_;
 
-  base::Optional<int32_t> rssi_to_return_;
+  absl::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeConnection);

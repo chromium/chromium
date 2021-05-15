@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -58,8 +58,8 @@ CHROMEOS_EXPORT bool Contains(const base::Time& time,
                               const std::vector<WeeklyTimeInterval>& intervals);
 
 // Returns next start or end interval time after |current_time|, or
-// base::nullopt in case |weekly_time_intervals| is empty.
-CHROMEOS_EXPORT base::Optional<base::Time> GetNextEventTime(
+// absl::nullopt in case |weekly_time_intervals| is empty.
+CHROMEOS_EXPORT absl::optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
 

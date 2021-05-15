@@ -232,7 +232,7 @@ void TetherConnectorImpl::OnConnectTetheringFailure(
 
 void TetherConnectorImpl::OnTetherHostToConnectFetched(
     const std::string& device_id,
-    base::Optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
+    absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect) {
   if (device_id_pending_connection_ != device_id) {
     PA_LOG(VERBOSE) << "Device to connect to has changed while device with ID "
                     << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(

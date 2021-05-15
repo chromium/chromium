@@ -55,7 +55,7 @@ class SecureChannelPendingNearbyInitiatorConnectionRequestTest
     EXPECT_TRUE(mock_adapter_->GetObservers().HasObserver(GetRequest()));
   }
 
-  const base::Optional<
+  const absl::optional<
       PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
@@ -63,7 +63,7 @@ class SecureChannelPendingNearbyInitiatorConnectionRequestTest
             pending_nearby_initiator_request_->GetRequestId());
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() {
     return fake_client_connection_parameters_->failure_reason();
   }

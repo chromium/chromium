@@ -23,7 +23,7 @@ class HostStatusProvider {
    public:
     HostStatusWithDevice(
         mojom::HostStatus host_status,
-        const base::Optional<multidevice::RemoteDeviceRef>& host_device);
+        const absl::optional<multidevice::RemoteDeviceRef>& host_device);
     HostStatusWithDevice(const HostStatusWithDevice& other);
     ~HostStatusWithDevice();
 
@@ -34,13 +34,13 @@ class HostStatusProvider {
 
     // If host_status() is kNoEligibleHosts or
     // kEligibleHostExistsButNoHostSet, host_device() is null.
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device() const {
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device() const {
       return host_device_;
     }
 
    private:
     mojom::HostStatus host_status_;
-    base::Optional<multidevice::RemoteDeviceRef> host_device_;
+    absl::optional<multidevice::RemoteDeviceRef> host_device_;
   };
 
   class Observer {
@@ -62,7 +62,7 @@ class HostStatusProvider {
 
   void NotifyHostStatusChange(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device);
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;

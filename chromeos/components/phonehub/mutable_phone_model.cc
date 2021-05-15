@@ -12,7 +12,7 @@ MutablePhoneModel::MutablePhoneModel() = default;
 MutablePhoneModel::~MutablePhoneModel() = default;
 
 void MutablePhoneModel::SetPhoneName(
-    const base::Optional<std::u16string>& phone_name) {
+    const absl::optional<std::u16string>& phone_name) {
   if (phone_name_ == phone_name)
     return;
 
@@ -21,7 +21,7 @@ void MutablePhoneModel::SetPhoneName(
 }
 
 void MutablePhoneModel::SetPhoneStatusModel(
-    const base::Optional<PhoneStatusModel>& phone_status_model) {
+    const absl::optional<PhoneStatusModel>& phone_status_model) {
   if (phone_status_model_ == phone_status_model)
     return;
 
@@ -30,7 +30,7 @@ void MutablePhoneModel::SetPhoneStatusModel(
 }
 
 void MutablePhoneModel::SetBrowserTabsModel(
-    const base::Optional<BrowserTabsModel>& browser_tabs_model) {
+    const absl::optional<BrowserTabsModel>& browser_tabs_model) {
   if (browser_tabs_model_ == browser_tabs_model)
     return;
 

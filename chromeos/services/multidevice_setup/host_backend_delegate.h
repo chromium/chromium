@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -59,7 +59,7 @@ class HostBackendDelegate {
   // If there is already a pending request and this function is called with the
   // same request, a retry will be attempted immediately.
   virtual void AttemptToSetMultiDeviceHostOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) = 0;
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) = 0;
 
   // Returns whether there is a pending request to set the host on the back-end
   // which has not yet completed.
@@ -70,12 +70,12 @@ class HostBackendDelegate {
   //
   // This function invokes a crash if called when HasPendingHostRequest()
   // returns false.
-  virtual base::Optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  virtual absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const = 0;
 
   // Provides the host from the most recent device sync. If the return value is
   // null, there is no host set on the back-end.
-  virtual base::Optional<multidevice::RemoteDeviceRef>
+  virtual absl::optional<multidevice::RemoteDeviceRef>
   GetMultiDeviceHostFromBackend() const = 0;
 
   void AddObserver(Observer* observer);

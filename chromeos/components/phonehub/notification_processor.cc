@@ -38,7 +38,7 @@ Notification::Importance GetNotificationImportanceFromProto(
   }
 }
 
-base::Optional<int64_t> GetInlineReplyIdFromProto(
+absl::optional<int64_t> GetInlineReplyIdFromProto(
     const proto::Notification& proto) {
   auto actions_it = std::find_if(
       proto.actions().begin(), proto.actions().end(), [](const auto& action) {
@@ -46,7 +46,7 @@ base::Optional<int64_t> GetInlineReplyIdFromProto(
       });
 
   if (actions_it == proto.actions().end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return actions_it->id();
 }
@@ -55,7 +55,7 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
                                            const gfx::Image& icon,
                                            const gfx::Image& shared_image,
                                            const gfx::Image& contact_image) {
-  base::Optional<int64_t> inline_reply_id = GetInlineReplyIdFromProto(proto);
+  absl::optional<int64_t> inline_reply_id = GetInlineReplyIdFromProto(proto);
   DCHECK(inline_reply_id.has_value());
 
   auto actions_it = std::find_if(
@@ -64,19 +64,19 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
       });
   bool includes_open_action = actions_it != proto.actions().end();
 
-  base::Optional<std::u16string> title = base::nullopt;
+  absl::optional<std::u16string> title = absl::nullopt;
   if (!proto.title().empty())
     title = base::UTF8ToUTF16(proto.title());
 
-  base::Optional<std::u16string> text_content = base::nullopt;
+  absl::optional<std::u16string> text_content = absl::nullopt;
   if (!proto.text_content().empty())
     text_content = base::UTF8ToUTF16(proto.text_content());
 
-  base::Optional<gfx::Image> opt_shared_image = base::nullopt;
+  absl::optional<gfx::Image> opt_shared_image = absl::nullopt;
   if (!shared_image.IsEmpty())
     opt_shared_image = shared_image;
 
-  base::Optional<gfx::Image> opt_contact_image = base::nullopt;
+  absl::optional<gfx::Image> opt_contact_image = absl::nullopt;
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 

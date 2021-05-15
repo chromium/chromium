@@ -319,7 +319,7 @@ void LocalTranslator::TranslateWiFi() {
   shill_dictionary_->SetKey(shill::kModeProperty,
                             base::Value(shill::kModeManaged));
 
-  base::Optional<bool> allow_gateway_arp_polling =
+  absl::optional<bool> allow_gateway_arp_polling =
       onc_object_->FindBoolKey(::onc::wifi::kAllowGatewayARPPolling);
   if (allow_gateway_arp_polling) {
     shill_dictionary_->SetKey(shill::kLinkMonitorDisableProperty,

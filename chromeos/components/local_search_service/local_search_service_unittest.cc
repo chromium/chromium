@@ -41,7 +41,7 @@ class LocalSearchServiceTest : public testing::Test {
         std::move(reporter_remote),
         base::BindOnce(
             [](bool* callback_done, std::string* error,
-               const base::Optional<std::string>& error_callback) {
+               const absl::optional<std::string>& error_callback) {
               *callback_done = true;
               if (error_callback)
                 *error = error_callback.value();

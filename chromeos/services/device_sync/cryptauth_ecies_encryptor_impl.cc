@@ -25,20 +25,20 @@ constexpr securemessage::EncScheme kSecureMessageEncryptionScheme =
 constexpr securemessage::SigScheme kSecureMessageSignatureScheme =
     securemessage::HMAC_SHA256;
 
-base::Optional<securemessage::Header> ParseHeaderFromSerializedSecureMessage(
+absl::optional<securemessage::Header> ParseHeaderFromSerializedSecureMessage(
     const std::string& serialized_secure_message) {
   securemessage::SecureMessage secure_message;
   if (!secure_message.ParseFromString(serialized_secure_message)) {
     PA_LOG(ERROR) << "Error parsing SecureMessage: "
                   << util::EncodeAsString(serialized_secure_message);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   securemessage::HeaderAndBody header_and_body;
   if (!header_and_body.ParseFromString(secure_message.header_and_body())) {
     PA_LOG(ERROR) << "Error parsing SecureMessage HeaderAndBody: "
                   << util::EncodeAsString(secure_message.header_and_body());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return header_and_body.header();
@@ -62,13 +62,13 @@ bool VerifyEncryptionAndSignatureSchemes(const securemessage::Header& header) {
   return true;
 }
 
-base::Optional<std::string> GetSessionPublicKeyFromSecureMessageHeader(
+absl::optional<std::string> GetSessionPublicKeyFromSecureMessageHeader(
     const securemessage::Header& header) {
   std::string session_public_key = header.decryption_key_id();
   if (session_public_key.empty()) {
     PA_LOG(ERROR) << "The session public key stored in SecureMessage "
                   << "decryption_key_id is empty.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return session_public_key;
@@ -105,7 +105,7 @@ CryptAuthEciesEncryptorImpl::~CryptAuthEciesEncryptorImpl() = default;
 
 void CryptAuthEciesEncryptorImpl::OnSingleOutputFinished(
     const std::string& id,
-    const base::Optional<std::string>& output) {
+    const absl::optional<std::string>& output) {
   DCHECK_GT(remaining_batch_size_, 0u);
   DCHECK(base::Contains(id_to_input_map_, id));
   DCHECK(!output || !output->empty());
@@ -161,7 +161,7 @@ void CryptAuthEciesEncryptorImpl::OnSecureMessageCreated(
     const std::string& serialized_encrypted_secure_message) {
   if (serialized_encrypted_secure_message.empty()) {
     PA_LOG(ERROR) << "Error creating SecureMessage. Input ID: " << id;
-    OnSingleOutputFinished(id, base::nullopt /* output */);
+    OnSingleOutputFinished(id, absl::nullopt /* output */);
     return;
   }
 
@@ -174,22 +174,22 @@ void CryptAuthEciesEncryptorImpl::OnBatchDecryptionStarted() {
   remaining_batch_size_ = id_to_input_map_.size();
 
   for (const auto& id_input_pair : id_to_input_map_) {
-    base::Optional<securemessage::Header> header =
+    absl::optional<securemessage::Header> header =
         ParseHeaderFromSerializedSecureMessage(id_input_pair.second.payload);
     if (!header) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
     if (!VerifyEncryptionAndSignatureSchemes(*header)) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
-    base::Optional<std::string> session_public_key =
+    absl::optional<std::string> session_public_key =
         GetSessionPublicKeyFromSecureMessageHeader(*header);
     if (!session_public_key) {
-      OnSingleOutputFinished(id_input_pair.first, base::nullopt /* output */);
+      OnSingleOutputFinished(id_input_pair.first, absl::nullopt /* output */);
       continue;
     }
 
@@ -224,7 +224,7 @@ void CryptAuthEciesEncryptorImpl::OnSecureMessageUnwrapped(
   if (!verified || payload.empty()) {
     PA_LOG(ERROR) << "Error verifying and decrypting SecureMessage. Input ID: "
                   << id;
-    OnSingleOutputFinished(id, base::nullopt /* output */);
+    OnSingleOutputFinished(id, absl::nullopt /* output */);
     return;
   }
 

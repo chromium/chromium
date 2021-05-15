@@ -8,7 +8,7 @@ namespace proximity_auth {
 
 FakeRemoteDeviceLifeCycle::FakeRemoteDeviceLifeCycle(
     chromeos::multidevice::RemoteDeviceRef remote_device,
-    base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device)
+    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device)
     : remote_device_(remote_device),
       local_device_(local_device),
       started_(false),

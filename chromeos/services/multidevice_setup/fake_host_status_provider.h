@@ -22,14 +22,14 @@ class FakeHostStatusProvider : public HostStatusProvider {
 
   void SetHostWithStatus(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device);
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
   // HostStatusProvider:
   HostStatusWithDevice GetHostWithStatus() const override;
 
  private:
   mojom::HostStatus host_status_ = mojom::HostStatus::kNoEligibleHosts;
-  base::Optional<multidevice::RemoteDeviceRef> host_device_;
+  absl::optional<multidevice::RemoteDeviceRef> host_device_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeHostStatusProvider);
 };

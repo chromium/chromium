@@ -5,7 +5,6 @@
 #include "chromeos/services/assistant/platform/audio_input_host_impl.h"
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +14,7 @@
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -44,10 +44,10 @@ class AudioInputControllerMock : public MojomAudioInputController {
   MOCK_METHOD(void, SetHotwordEnabled, (bool enable));
   MOCK_METHOD(void,
               SetDeviceId,
-              (const base::Optional<std::string>& device_id));
+              (const absl::optional<std::string>& device_id));
   MOCK_METHOD(void,
               SetHotwordDeviceId,
-              (const base::Optional<std::string>& device_id));
+              (const absl::optional<std::string>& device_id));
   MOCK_METHOD(void,
               SetLidState,
               (chromeos::libassistant::mojom::LidState new_state));
@@ -116,12 +116,12 @@ class AssistantAudioInputHostTest : public testing::Test {
 
   void SetLidState(LidState state) { ReportLidEvent(state); }
 
-  void SetDeviceId(const base::Optional<std::string>& device_id) {
+  void SetDeviceId(const absl::optional<std::string>& device_id) {
     audio_input_host().SetDeviceId(device_id);
     FlushPendingMojomCalls();
   }
 
-  void SetHotwordDeviceId(const base::Optional<std::string>& device_id) {
+  void SetHotwordDeviceId(const absl::optional<std::string>& device_id) {
     audio_input_host().SetHotwordDeviceId(device_id);
     FlushPendingMojomCalls();
   }
@@ -189,33 +189,33 @@ TEST_F(AssistantAudioInputHostTest, ShouldReadCurrentLidStateWhenLaunching) {
 
 TEST_F(AssistantAudioInputHostTest, ShouldSendDeviceIdToMojom) {
   EXPECT_CALL(mojom_audio_input_controller(),
-              SetDeviceId(base::Optional<std::string>("device-id")));
+              SetDeviceId(absl::optional<std::string>("device-id")));
   SetDeviceId("device-id");
 }
 
 TEST_F(AssistantAudioInputHostTest, ShouldUnsetDeviceIdWhenItsEmpty) {
-  // Note this variable is required as directly passing base::nullopt into the
+  // Note this variable is required as directly passing absl::nullopt into the
   // EXPECT_CALL doesn't compile.
-  const base::Optional<std::string> expected = base::nullopt;
+  const absl::optional<std::string> expected = absl::nullopt;
   EXPECT_CALL(mojom_audio_input_controller(), SetDeviceId(expected));
 
-  SetDeviceId(base::nullopt);
+  SetDeviceId(absl::nullopt);
 }
 
 TEST_F(AssistantAudioInputHostTest, ShouldSendHotwordDeviceIdToMojom) {
   EXPECT_CALL(
       mojom_audio_input_controller(),
-      SetHotwordDeviceId(base::Optional<std::string>("hotword-device-id")));
+      SetHotwordDeviceId(absl::optional<std::string>("hotword-device-id")));
   SetHotwordDeviceId("hotword-device-id");
 }
 
 TEST_F(AssistantAudioInputHostTest, ShouldUnsetHotwordDeviceIdWhenItsEmpty) {
-  // Note this variable is required as directly passing base::nullopt into the
+  // Note this variable is required as directly passing absl::nullopt into the
   // EXPECT_CALL doesn't compile.
-  const base::Optional<std::string> expected = base::nullopt;
+  const absl::optional<std::string> expected = absl::nullopt;
   EXPECT_CALL(mojom_audio_input_controller(), SetHotwordDeviceId(expected));
 
-  SetHotwordDeviceId(base::nullopt);
+  SetHotwordDeviceId(absl::nullopt);
 }
 TEST_F(AssistantAudioInputHostTest, ShouldSendHotwordEnabledToMojom) {
   EXPECT_CALL(mojom_audio_input_controller(), SetHotwordEnabled(true));

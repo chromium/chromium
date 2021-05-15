@@ -21,21 +21,21 @@ constexpr char kProviderData2Bytes[] = "data_2 bytes";
 }  // namespace
 
 TEST(UserDataAuthUtilTest, ReplyToMountErrorNullOptional) {
-  const base::Optional<RemoveReply> reply = base::nullopt;
+  const absl::optional<RemoveReply> reply = absl::nullopt;
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_FATAL);
 }
 
 TEST(UserDataAuthUtilTest, ReplyToMountErrorNoError) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_NOT_SET);
-  const base::Optional<RemoveReply> reply = std::move(result);
+  const absl::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_NONE);
 }
 
 TEST(UserDataAuthUtilTest, BaseReplyToMountErrorAuthFailure) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
-  const base::Optional<RemoveReply> reply = std::move(result);
+  const absl::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_KEY_FAILURE);
 }
 
@@ -66,7 +66,7 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitionsTwoEntries) {
   cryptohome::KeyProviderData::Entry* entry2 = data->add_entry();
   entry2->set_name(kProviderData2Name);
   entry2->set_bytes(kProviderData2Bytes);
-  const base::Optional<GetKeyDataReply> reply = std::move(result);
+  const absl::optional<GetKeyDataReply> reply = std::move(result);
 
   std::vector<cryptohome::KeyDefinition> key_definitions =
       GetKeyDataReplyToKeyDefinitions(reply);
@@ -102,7 +102,7 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
   cryptohome::KeyData* key_data = result.add_key_data();
   key_data->set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
   key_data->set_label(kKeyLabel);
-  const base::Optional<GetKeyDataReply> reply = std::move(result);
+  const absl::optional<GetKeyDataReply> reply = std::move(result);
 
   const std::vector<cryptohome::KeyDefinition> key_definitions =
       GetKeyDataReplyToKeyDefinitions(reply);
@@ -115,7 +115,7 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
 }
 
 TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
-  const base::Optional<GetAccountDiskUsageReply> reply = base::nullopt;
+  const absl::optional<GetAccountDiskUsageReply> reply = absl::nullopt;
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
@@ -123,7 +123,7 @@ TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
 TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
   GetAccountDiskUsageReply result;
   result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_IMPLEMENTED);
-  const base::Optional<GetAccountDiskUsageReply> reply = std::move(result);
+  const absl::optional<GetAccountDiskUsageReply> reply = std::move(result);
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
@@ -132,7 +132,7 @@ TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeValidity) {
   constexpr int64_t kSize = 0x123456789ABCLL;
   GetAccountDiskUsageReply result;
   result.set_size(kSize);
-  const base::Optional<GetAccountDiskUsageReply> reply = std::move(result);
+  const absl::optional<GetAccountDiskUsageReply> reply = std::move(result);
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), kSize);
 }

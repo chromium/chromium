@@ -7,9 +7,9 @@
 
 #include <string>
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 class PrefService;
@@ -37,7 +37,7 @@ class EcheUidProvider : public mojom::UidGenerator {
 
  private:
   std::string ConvertBinaryToString(base::span<const uint8_t> src);
-  base::Optional<std::vector<uint8_t>> ConvertStringToBinary(
+  absl::optional<std::vector<uint8_t>> ConvertStringToBinary(
       base::StringPiece str,
       size_t expected_len);
   void GenerateKeyPair(uint8_t public_key[ED25519_PUBLIC_KEY_LEN],

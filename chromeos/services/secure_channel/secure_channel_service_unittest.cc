@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -46,6 +45,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -426,7 +426,7 @@ class FakeClientConnectionParametersFactory
 
   const std::unordered_map<
       base::UnguessableToken,
-      base::Optional<mojom::ConnectionAttemptFailureReason>,
+      absl::optional<mojom::ConnectionAttemptFailureReason>,
       base::UnguessableTokenHash>&
   id_to_failure_reason_when_deleted_map() {
     return id_to_failure_reason_when_deleted_map_;
@@ -464,7 +464,7 @@ class FakeClientConnectionParametersFactory
       id_to_active_client_parameters_map_;
 
   std::unordered_map<base::UnguessableToken,
-                     base::Optional<mojom::ConnectionAttemptFailureReason>,
+                     absl::optional<mojom::ConnectionAttemptFailureReason>,
                      base::UnguessableTokenHash>
       id_to_failure_reason_when_deleted_map_;
 
@@ -938,7 +938,7 @@ class SecureChannelServiceTest : public testing::Test {
     EXPECT_EQ(expected_failure_reason, GetFailureReasonForRequest(id));
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetFailureReasonForRequest(const base::UnguessableToken& id) {
     return fake_client_connection_parameters_factory_
         ->id_to_failure_reason_when_deleted_map()

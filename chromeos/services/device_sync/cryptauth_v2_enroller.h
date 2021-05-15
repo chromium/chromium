@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -67,13 +67,13 @@ class CryptAuthV2Enroller {
   // |client_directive_policy_reference|: The policy reference used to identify
   //     the last ClientDirective that was received in a SyncKeysResponse. If
   //     the client has never received a ClientDirective, then this is
-  //     base::nullopt.
+  //     absl::nullopt.
   // |callback|: Invoked when the enrollment attempt concludes, successfully or
   //     not. The CryptAuthEnrollmentResult provides information about the
   //     outcome of the enrollment attempt and possibly a new ClientDirective.
   void Enroll(const cryptauthv2::ClientMetadata& client_metadata,
               const cryptauthv2::ClientAppMetadata& client_app_metadata,
-              const base::Optional<cryptauthv2::PolicyReference>&
+              const absl::optional<cryptauthv2::PolicyReference>&
                   client_directive_policy_reference,
               EnrollmentAttemptFinishedCallback callback);
 
@@ -83,7 +83,7 @@ class CryptAuthV2Enroller {
   virtual void OnAttemptStarted(
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata,
-      const base::Optional<cryptauthv2::PolicyReference>&
+      const absl::optional<cryptauthv2::PolicyReference>&
           client_directive_policy_reference) = 0;
 
   void OnAttemptFinished(const CryptAuthEnrollmentResult& enrollment_result);

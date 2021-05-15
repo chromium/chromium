@@ -35,9 +35,9 @@ class FakeDeviceSync : public DeviceSyncBase {
   }
 
   void InvokePendingGetLocalDeviceMetadataCallback(
-      const base::Optional<multidevice::RemoteDevice>& local_device_metadata);
+      const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
   void InvokePendingGetSyncedDevicesCallback(
-      const base::Optional<std::vector<multidevice::RemoteDevice>>&
+      const absl::optional<std::vector<multidevice::RemoteDevice>>&
           remote_devices);
   void InvokePendingSetSoftwareFeatureStateCallback(
       mojom::NetworkRequestResult result_code);
@@ -50,7 +50,7 @@ class FakeDeviceSync : public DeviceSyncBase {
       mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
       mojom::NetworkRequestResult result_code,
-      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           get_devices_activity_status_response);
   void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 

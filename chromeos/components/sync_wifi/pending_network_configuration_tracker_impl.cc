@@ -6,11 +6,11 @@
 
 #include "base/base64url.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -34,7 +34,7 @@ PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
     base::Value* dict,
     const NetworkIdentifier& id) {
   std::string* change_guid = dict->FindStringKey(kChangeGuidKey);
-  base::Optional<sync_pb::WifiConfigurationSpecifics> specifics;
+  absl::optional<sync_pb::WifiConfigurationSpecifics> specifics;
   std::string* encoded_specifics_string = dict->FindStringKey(kSpecificsKey);
   std::string specifics_string;
   if (encoded_specifics_string &&
@@ -46,7 +46,7 @@ PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
     data.ParseFromString(specifics_string);
     specifics = data;
   }
-  base::Optional<int> completed_attempts =
+  absl::optional<int> completed_attempts =
       dict->FindIntPath(kCompletedAttemptsKey);
 
   DCHECK(change_guid);
@@ -75,7 +75,7 @@ PendingNetworkConfigurationTrackerImpl::
 
 std::string PendingNetworkConfigurationTrackerImpl::TrackPendingUpdate(
     const NetworkIdentifier& id,
-    const base::Optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
+    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
   std::string serialized_specifics;
   if (!specifics)
     serialized_specifics = std::string();
@@ -112,7 +112,7 @@ void PendingNetworkConfigurationTrackerImpl::IncrementCompletedAttempts(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   std::string path = GeneratePath(id, kCompletedAttemptsKey);
-  base::Optional<int> completed_attempts = dict_.FindIntPath(path);
+  absl::optional<int> completed_attempts = dict_.FindIntPath(path);
   dict_.SetIntPath(path, completed_attempts.value() + 1);
 }
 
@@ -126,14 +126,14 @@ PendingNetworkConfigurationTrackerImpl::GetPendingUpdates() {
   }
   return list;
 }
-base::Optional<PendingNetworkConfigurationUpdate>
+absl::optional<PendingNetworkConfigurationUpdate>
 PendingNetworkConfigurationTrackerImpl::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   std::string* found_id =
       dict_.FindStringPath(GeneratePath(id, kChangeGuidKey));
   if (!found_id || *found_id != change_guid)
-    return base::nullopt;
+    return absl::nullopt;
 
   return ConvertToPendingUpdate(dict_.FindPath(id.SerializeToString()), id);
 }

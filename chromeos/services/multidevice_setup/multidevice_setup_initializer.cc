@@ -206,7 +206,7 @@ void MultiDeviceSetupInitializer::GetHostStatus(
 void MultiDeviceSetupInitializer::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const base::Optional<std::string>& auth_token,
+    const absl::optional<std::string>& auth_token,
     SetFeatureEnabledStateCallback callback) {
   if (multidevice_setup_impl_) {
     multidevice_setup_impl_->SetFeatureEnabledState(

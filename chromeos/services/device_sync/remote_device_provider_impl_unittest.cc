@@ -143,8 +143,8 @@ CryptAuthDevice ConvertRemoteDeviceToCryptAuthDevice(
       "DeviceSync:BetterTogether public key",
       base::Time::FromJavaTime(remote_device.last_update_time_millis),
       remote_device.public_key.empty()
-          ? base::nullopt
-          : base::make_optional(beto_device_metadata),
+          ? absl::nullopt
+          : absl::make_optional(beto_device_metadata),
       remote_device.software_features);
 }
 
@@ -381,7 +381,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
         success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
                 : CryptAuthDeviceSyncResult::ResultCode::
                       kErrorSyncMetadataApiCallBadRequest,
-        did_devices_change, base::nullopt /* client_directive */));
+        did_devices_change, absl::nullopt /* client_directive */));
 
     // A new loader should be created after a successful v2 DeviceSync that
     // changed the device registry.

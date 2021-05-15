@@ -58,7 +58,7 @@ crosapi::mojom::BrowserInfoPtr ToMojo(const std::string& browser_version) {
 // Reads and parses the startup data to BrowserInitParams.
 // If data is missing, or failed to parse, returns a null StructPtr.
 crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
-  base::Optional<std::string> content = ReadStartupData();
+  absl::optional<std::string> content = ReadStartupData();
   if (!content)
     return {};
 
@@ -316,49 +316,49 @@ void LacrosChromeServiceImpl::BindReceiver(
 }
 
 bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindAccountManagerMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindMediaSessionAudioFocusMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusDebugAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::
                             kBindMediaSessionAudioFocusDebugMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsMediaSessionControllerAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindMediaSessionControllerMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsMetricsReportingAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindMetricsReportingMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindScreenManagerMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsSensorHalClientAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindSensorHalClientMinVersion;
@@ -441,7 +441,7 @@ void LacrosChromeServiceImpl::BindSensorHalClient(
 }
 
 bool LacrosChromeServiceImpl::IsOnBrowserStartupAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::kOnBrowserStartupMinVersion;
 }
@@ -457,7 +457,7 @@ void LacrosChromeServiceImpl::BindVideoCaptureDeviceFactory(
 }
 
 bool LacrosChromeServiceImpl::IsVideoCaptureDeviceFactoryAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
+  absl::optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::
                             kBindVideoCaptureDeviceFactoryMinVersion;
@@ -515,9 +515,9 @@ void LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence(
   std::move(callback).Run(delegate_->GetActiveTabUrl());
 }
 
-base::Optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
+absl::optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
   if (disable_crosapi_for_testing_)
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(did_bind_receiver_);
   return init_params_->crosapi_version;
 }

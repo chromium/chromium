@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
@@ -24,6 +23,7 @@
 #include "media/base/channel_layout.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -267,7 +267,7 @@ void AudioInputImpl::HotwordStateManager::RecreateAudioInputStream() {
   input_->RecreateAudioInputStream(/*use_dsp=*/false);
 }
 
-AudioInputImpl::AudioInputImpl(const base::Optional<std::string>& device_id)
+AudioInputImpl::AudioInputImpl(const absl::optional<std::string>& device_id)
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
       preferred_device_id_(device_id),
       weak_factory_(this) {
@@ -379,7 +379,7 @@ void AudioInputImpl::OnHotwordEnabled(bool enable) {
   UpdateRecordingState();
 }
 
-void AudioInputImpl::SetDeviceId(const base::Optional<std::string>& device_id) {
+void AudioInputImpl::SetDeviceId(const absl::optional<std::string>& device_id) {
   if (preferred_device_id_ == device_id)
     return;
 
@@ -391,7 +391,7 @@ void AudioInputImpl::SetDeviceId(const base::Optional<std::string>& device_id) {
 }
 
 void AudioInputImpl::SetHotwordDeviceId(
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   if (hotword_device_id_ == device_id)
     return;
 
@@ -441,14 +441,14 @@ bool AudioInputImpl::IsMicOpenForTesting() const {
   return mic_open_;
 }
 
-base::Optional<std::string> AudioInputImpl::GetOpenDeviceIdForTesting() const {
+absl::optional<std::string> AudioInputImpl::GetOpenDeviceIdForTesting() const {
   return GetOpenDeviceId();
 }
 
-base::Optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
+absl::optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
     const {
   if (!open_audio_stream_)
-    return base::nullopt;
+    return absl::nullopt;
   return open_audio_stream_->has_dead_stream_detection();
 }
 
@@ -506,9 +506,9 @@ std::string AudioInputImpl::GetDeviceId(bool use_dsp) const {
     return media::AudioDeviceDescription::kDefaultDeviceId;
 }
 
-base::Optional<std::string> AudioInputImpl::GetOpenDeviceId() const {
+absl::optional<std::string> AudioInputImpl::GetOpenDeviceId() const {
   if (!open_audio_stream_)
-    return base::nullopt;
+    return absl::nullopt;
   return open_audio_stream_->device_id();
 }
 

@@ -55,10 +55,10 @@ std::string GetErrorNameForShillError(const std::string& shill_error_name) {
 
 void GetPropertiesCallback(const std::string& device_path,
                            network_handler::ResultCallback callback,
-                           base::Optional<base::Value> result) {
+                           absl::optional<base::Value> result) {
   if (!result) {
     NET_LOG(ERROR) << "GetProperties failed: " << NetworkPathId(device_path);
-    std::move(callback).Run(device_path, base::nullopt);
+    std::move(callback).Run(device_path, absl::nullopt);
     return;
   }
   std::move(callback).Run(device_path, std::move(result));
@@ -341,11 +341,11 @@ void NetworkDeviceHandlerImpl::HandleWifiFeatureSupportedProperty(
     std::string support_property_name,
     WifiFeatureSupport* feature_support_to_set,
     const std::string& device_path,
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     return;
   }
-  base::Optional<bool> supported_val =
+  absl::optional<bool> supported_val =
       properties->FindBoolKey(support_property_name);
   if (!supported_val.has_value()) {
     if (base::SysInfo::IsRunningOnChromeOS()) {

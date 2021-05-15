@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkConnectionHandler
     std::string service_path_;
     base::OnceClosure success_callback_;
     network_handler::ErrorCallback error_callback_;
-    base::Optional<bool> check_error_state_;
-    base::Optional<ConnectCallbackMode> connect_callback_mode_;
+    absl::optional<bool> check_error_state_;
+    absl::optional<ConnectCallbackMode> connect_callback_mode_;
   };
 
   std::vector<ConnectionParams>& connect_calls() { return connect_calls_; }

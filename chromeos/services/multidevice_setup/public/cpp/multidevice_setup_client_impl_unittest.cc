@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -22,6 +21,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -93,10 +93,10 @@ class TestMultiDeviceSetupClientObserver
   DISALLOW_COPY_AND_ASSIGN(TestMultiDeviceSetupClientObserver);
 };
 
-base::Optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
-    const base::Optional<multidevice::RemoteDeviceRef>& remote_device_ref) {
+absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(
+    const absl::optional<multidevice::RemoteDeviceRef>& remote_device_ref) {
   if (!remote_device_ref)
-    return base::Optional<multidevice::RemoteDevice>();
+    return absl::optional<multidevice::RemoteDevice>();
 
   return *multidevice::GetMutableRemoteDevice(*remote_device_ref);
 }
@@ -255,7 +255,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   void CallSetFeatureEnabledState(mojom::Feature feature,
                                   bool enabled,
-                                  const base::Optional<std::string>& auth_token,
+                                  const absl::optional<std::string>& auth_token,
                                   bool should_succeed) {
     size_t num_set_feature_enabled_args_before_call =
         fake_multidevice_setup_->set_feature_enabled_args().size();
@@ -372,7 +372,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
   void OnGetHostStatusCompleted(
       base::OnceClosure quit_closure,
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     get_host_status_result_ = std::make_pair(host_status, host_device);
     std::move(quit_closure).Run();
   }
@@ -411,16 +411,16 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
   std::unique_ptr<MultiDeviceSetupService> service_;
   std::unique_ptr<MultiDeviceSetupClient> client_;
 
-  base::Optional<multidevice::RemoteDeviceRefList> eligible_host_devices_;
-  base::Optional<bool> set_host_device_success_;
-  base::Optional<std::pair<mojom::HostStatus,
-                           base::Optional<multidevice::RemoteDeviceRef>>>
+  absl::optional<multidevice::RemoteDeviceRefList> eligible_host_devices_;
+  absl::optional<bool> set_host_device_success_;
+  absl::optional<std::pair<mojom::HostStatus,
+                           absl::optional<multidevice::RemoteDeviceRef>>>
       get_host_status_result_;
-  base::Optional<bool> set_feature_enabled_state_success_;
-  base::Optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
+  absl::optional<bool> set_feature_enabled_state_success_;
+  absl::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
       get_feature_states_result_;
-  base::Optional<bool> retry_set_host_now_success_;
-  base::Optional<bool> trigger_event_for_debugging_success_;
+  absl::optional<bool> retry_set_host_now_success_;
+  absl::optional<bool> trigger_event_for_debugging_success_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImplTest);
 };
@@ -431,7 +431,7 @@ TEST_F(MultiDeviceSetupClientImplTest, GetHostStatus) {
 
   MultiDeviceSetupClient::HostStatusWithDevice host_status_with_device =
       std::make_pair(mojom::HostStatus::kNoEligibleHosts,
-                     base::nullopt /* expected_host_device */);
+                     absl::nullopt /* expected_host_device */);
   SimulateHostStatusChange(host_status_with_device);
   EXPECT_EQ(host_status_with_device, client()->GetHostStatus());
 

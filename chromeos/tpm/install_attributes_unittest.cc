@@ -325,13 +325,13 @@ TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {
 }
 
 TEST_F(InstallAttributesTest, CheckSetBlockDevmodeInTpm) {
-  base::Optional<::user_data_auth::SetFirmwareManagementParametersReply> reply;
+  absl::optional<::user_data_auth::SetFirmwareManagementParametersReply> reply;
   install_attributes_->SetBlockDevmodeInTpm(
       true, base::BindOnce(
-                [](base::Optional<
+                [](absl::optional<
                        ::user_data_auth::SetFirmwareManagementParametersReply>*
                        reply_ptr,
-                   base::Optional<
+                   absl::optional<
                        ::user_data_auth::SetFirmwareManagementParametersReply>
                        reply) { *reply_ptr = reply; },
                 &reply));

@@ -28,11 +28,11 @@ class BrowserTabsMetadataFetcher {
       delete;
 
   using BrowserTabsMetadataResponse =
-      base::Optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>;
+      absl::optional<std::vector<BrowserTabsModel::BrowserTabMetadata>>;
 
   // Fetches the metadata of the most recently visited tabs. Only one fetch is
   // possible at a given time, and if a new fetch is started when another is
-  // already in progress, the previous fetch will be passed a base::nullopt.
+  // already in progress, the previous fetch will be passed a absl::nullopt.
   virtual void Fetch(
       const sync_sessions::SyncedSession* session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;

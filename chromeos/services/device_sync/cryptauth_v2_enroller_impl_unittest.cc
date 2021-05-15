@@ -145,8 +145,8 @@ class SyncSingleKeyResponseData {
       const CryptAuthKeyRegistry* key_registry,
       const base::flat_map<std::string, KeyAction>& handle_to_action_map,
       const KeyCreation& new_key_creation,
-      const base::Optional<KeyType>& new_key_type,
-      const base::Optional<KeyDirective>& new_key_directive)
+      const absl::optional<KeyType>& new_key_type,
+      const absl::optional<KeyDirective>& new_key_directive)
       : bundle_name(bundle_name),
         single_response(GenerateResponse(key_registry,
                                          handle_to_action_map,
@@ -162,8 +162,8 @@ class SyncSingleKeyResponseData {
       const CryptAuthKeyRegistry* key_registry,
       const base::flat_map<std::string, KeyAction>& handle_to_action_map,
       const KeyCreation& new_key_creation,
-      const base::Optional<KeyType>& new_key_type,
-      const base::Optional<KeyDirective>& new_key_directive) {
+      const absl::optional<KeyType>& new_key_type,
+      const absl::optional<KeyDirective>& new_key_directive) {
     SyncSingleKeyResponse single_response;
     single_response.set_key_creation(new_key_creation);
     if (new_key_type)
@@ -337,7 +337,7 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
 
   void CallEnroll(const cryptauthv2::ClientMetadata& client_metadata,
                   const cryptauthv2::ClientAppMetadata& client_app_metadata,
-                  const base::Optional<cryptauthv2::PolicyReference>&
+                  const absl::optional<cryptauthv2::PolicyReference>&
                       client_directive_policy_reference) {
     enroller()->Enroll(
         client_metadata, client_app_metadata, client_directive_policy_reference,
@@ -372,7 +372,7 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
 
   void RunKeyCreator(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& new_keys_output,
+                           absl::optional<CryptAuthKey>>& new_keys_output,
       const CryptAuthKey& client_ephemeral_dh_output) {
     std::move(key_creator()->create_keys_callback())
         .Run(new_keys_output, client_ephemeral_dh_output);
@@ -404,11 +404,11 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
 
   void VerifyKeyCreatorInputs(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& expected_new_keys,
+                           absl::optional<CryptAuthKey>>& expected_new_keys,
       const std::string& expected_server_ephemeral_dh_public_key) {
     ASSERT_EQ(expected_new_keys.size(), key_creator()->keys_to_create().size());
     for (const std::pair<CryptAuthKeyBundle::Name,
-                         base::Optional<CryptAuthKey>>& name_key_pair :
+                         absl::optional<CryptAuthKey>>& name_key_pair :
          expected_new_keys) {
       const CryptAuthKeyBundle::Name& bundle_name = name_key_pair.first;
       const CryptAuthKey& key = *name_key_pair.second;
@@ -482,15 +482,15 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
 
   base::MockOneShotTimer* timer() { return timer_; }
 
-  const base::Optional<SyncKeysRequest>& sync_keys_request() {
+  const absl::optional<SyncKeysRequest>& sync_keys_request() {
     return sync_keys_request_;
   }
 
-  const base::Optional<EnrollKeysRequest>& enroll_keys_request() {
+  const absl::optional<EnrollKeysRequest>& enroll_keys_request() {
     return enroll_keys_request_;
   }
 
-  const base::Optional<CryptAuthEnrollmentResult>& enrollment_result() {
+  const absl::optional<CryptAuthEnrollmentResult>& enrollment_result() {
     return enrollment_result_;
   }
 
@@ -515,14 +515,14 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
       fake_cryptauth_key_proof_computer_factory_;
 
   // Parameters passed to the CryptAuthClient functions {Sync,Enroll}Keys().
-  base::Optional<SyncKeysRequest> sync_keys_request_;
-  base::Optional<EnrollKeysRequest> enroll_keys_request_;
+  absl::optional<SyncKeysRequest> sync_keys_request_;
+  absl::optional<EnrollKeysRequest> enroll_keys_request_;
   CryptAuthClient::SyncKeysCallback sync_keys_success_callback_;
   CryptAuthClient::EnrollKeysCallback enroll_keys_success_callback_;
   CryptAuthClient::ErrorCallback sync_keys_failure_callback_;
   CryptAuthClient::ErrorCallback enroll_keys_failure_callback_;
 
-  base::Optional<CryptAuthEnrollmentResult> enrollment_result_;
+  absl::optional<CryptAuthEnrollmentResult> enrollment_result_;
 
   std::unique_ptr<CryptAuthV2Enroller> enroller_;
 
@@ -607,14 +607,14 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
   // Verify the key creation data, and assume successful key creation.
   // Note: Since an active user key pair already exists, the same key material
   // should re-used.
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {{CryptAuthKeyBundle::Name::kUserKeyPair,
-                            base::make_optional(CryptAuthKey(
+                            absl::make_optional(CryptAuthKey(
                                 kOldActivePublicKey, kOldActivePrivateKey,
                                 CryptAuthKey::Status::kActive, KeyType::P256,
                                 kCryptAuthFixedUserKeyPairHandle))},
                            {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
-                            base::make_optional(CryptAuthKey(
+                            absl::make_optional(CryptAuthKey(
                                 kNewSymmetricKey, CryptAuthKey::Status::kActive,
                                 KeyType::RAW256, kNewSymmetricKeyHandle))}};
 
@@ -690,10 +690,10 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   // Note: Because there is not an existing kUserKeyPair key in registry, a new
   // key should be generated. (If there was an existing key, its key material
   // would be reused because the kUserKeyPair key should not be rotated.)
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
           {CryptAuthKeyBundle::Name::kUserKeyPair,
-           base::make_optional(CryptAuthKey(
+           absl::make_optional(CryptAuthKey(
                kNewPublicKey, kNewPrivateKey, CryptAuthKey::Status::kActive,
                KeyType::P256, kCryptAuthFixedUserKeyPairHandle))}};
 
@@ -748,8 +748,8 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
            {kOldInactiveSymmetricKeyHandle,
             SyncSingleKeyResponse::ACTIVATE}} /* handle_to_action_map */,
           SyncSingleKeyResponse::NONE /* new_key_creation */,
-          base::nullopt /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_type */,
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   expected_key_bundle.SetActiveKey(kOldInactiveSymmetricKeyHandle);
@@ -775,7 +775,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_ServerOverloaded) {
 
   EXPECT_EQ(CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
                                           kErrorCryptAuthServerOverloaded,
-                                      base::nullopt /* client_directive */),
+                                      absl::nullopt /* client_directive */),
             enrollment_result());
 }
 
@@ -792,7 +792,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_MissingSessionId) {
   EXPECT_EQ(CryptAuthEnrollmentResult(
                 CryptAuthEnrollmentResult::ResultCode::
                     kErrorSyncKeysResponseMissingRandomSessionId,
-                base::nullopt /* client_directive */),
+                absl::nullopt /* client_directive */),
             enrollment_result());
 }
 
@@ -809,7 +809,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_MissingClientDirective) {
   EXPECT_EQ(CryptAuthEnrollmentResult(
                 CryptAuthEnrollmentResult::ResultCode::
                     kErrorSyncKeysResponseInvalidClientDirective,
-                base::nullopt /* client_directive */),
+                absl::nullopt /* client_directive */),
             enrollment_result());
 }
 
@@ -827,7 +827,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   EXPECT_EQ(
       CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
                                     kErrorWrongNumberOfSyncSingleKeyResponses,
-                                base::nullopt /* client_directive */),
+                                absl::nullopt /* client_directive */),
       enrollment_result());
 }
 
@@ -867,8 +867,8 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {{kOldActiveSymmetricKeyHandle,
             SyncSingleKeyResponse::DEACTIVATE}} /* handle_to_action_map */,
           SyncSingleKeyResponse::NONE /* new_key_creation */,
-          base::nullopt /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_type */,
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   EXPECT_EQ(
@@ -891,7 +891,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::CURVE25519 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
@@ -914,7 +914,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::RAW256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(
@@ -938,7 +938,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::INACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(
@@ -960,7 +960,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::RAW256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   sync_keys_response.clear_server_ephemeral_dh();
 
   SendSyncKeysResponse(sync_keys_response);
@@ -983,12 +983,12 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_KeyCreation_UserKeyPair) {
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
-          {CryptAuthKeyBundle::Name::kUserKeyPair, base::nullopt}};
+          {CryptAuthKeyBundle::Name::kUserKeyPair, absl::nullopt}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
@@ -1009,12 +1009,12 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::RAW256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
-          {CryptAuthKeyBundle::Name::kLegacyAuthzenKey, base::nullopt}};
+          {CryptAuthKeyBundle::Name::kLegacyAuthzenKey, absl::nullopt}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
@@ -1035,12 +1035,12 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
-          {CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether, base::nullopt}};
+          {CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether, absl::nullopt}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(
@@ -1062,15 +1062,15 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   key_proof_computer_factory()->set_should_return_null_key_proof(true);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
           {CryptAuthKeyBundle::Name::kUserKeyPair,
-           base::make_optional(CryptAuthKey(
+           absl::make_optional(CryptAuthKey(
                kNewPublicKey, kNewPrivateKey, CryptAuthKey::Status::kActive,
                KeyType::P256, kCryptAuthFixedUserKeyPairHandle))}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
@@ -1091,7 +1091,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_SyncKeysApiCall) {
   EXPECT_EQ(
       CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
                                     kErrorSyncKeysApiCallAuthenticationError,
-                                base::nullopt /* client_directive */),
+                                absl::nullopt /* client_directive */),
       enrollment_result());
 }
 
@@ -1106,13 +1106,13 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_EnrollKeysApiCall) {
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
           {CryptAuthKeyBundle::Name::kUserKeyPair,
-           base::make_optional(CryptAuthKey(
+           absl::make_optional(CryptAuthKey(
                kNewPublicKey, kNewPrivateKey, CryptAuthKey::Status::kActive,
                KeyType::P256, kCryptAuthFixedUserKeyPairHandle))}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
@@ -1138,7 +1138,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   EXPECT_EQ(
       CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
                                     kErrorTimeoutWaitingForSyncKeysResponse,
-                                base::nullopt /* client_directive */),
+                                absl::nullopt /* client_directive */),
       enrollment_result());
 }
 
@@ -1154,7 +1154,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
   // Timeout waiting for key creation.
@@ -1179,13 +1179,13 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::P256 /* new_key_type */,
-          base::nullopt /* new_key_directive */)});
+          absl::nullopt /* new_key_directive */)});
   SendSyncKeysResponse(sync_keys_response);
 
-  base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
+  base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>
       expected_new_keys = {
           {CryptAuthKeyBundle::Name::kUserKeyPair,
-           base::make_optional(CryptAuthKey(
+           absl::make_optional(CryptAuthKey(
                kNewPublicKey, kNewPrivateKey, CryptAuthKey::Status::kActive,
                KeyType::P256, kCryptAuthFixedUserKeyPairHandle))}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);

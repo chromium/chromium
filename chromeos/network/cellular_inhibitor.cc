@@ -70,10 +70,10 @@ void CellularInhibitor::InhibitCellularScanning(InhibitReason reason,
   ProcessRequests();
 }
 
-base::Optional<CellularInhibitor::InhibitReason>
+absl::optional<CellularInhibitor::InhibitReason>
 CellularInhibitor::GetInhibitReason() const {
   if (state_ == State::kIdle)
-    return base::nullopt;
+    return absl::nullopt;
 
   return inhibit_requests_.front()->inhibit_reason;
 }

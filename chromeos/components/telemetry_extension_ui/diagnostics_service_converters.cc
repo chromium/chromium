@@ -5,12 +5,12 @@
 #include "chromeos/components/telemetry_extension_ui/diagnostics_service_converters.h"
 
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace converters {
@@ -67,7 +67,7 @@ health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
+absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
@@ -97,7 +97,7 @@ base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge:
       return health::mojom::DiagnosticRoutineEnum::kBatteryCharge;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -105,7 +105,7 @@ std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
   std::vector<health::mojom::DiagnosticRoutineEnum> output;
   for (const auto element : input) {
-    base::Optional<health::mojom::DiagnosticRoutineEnum> converted =
+    absl::optional<health::mojom::DiagnosticRoutineEnum> converted =
         Convert(element);
     if (converted.has_value()) {
       output.push_back(converted.value());

@@ -11,12 +11,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_getter.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_getter_impl.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,13 +31,13 @@ class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
 
   // The RequestContext passed to GetFeatureStatuses(). Returns null if
   // GetFeatureStatuses() has not been called yet.
-  const base::Optional<cryptauthv2::RequestContext>& request_context() const {
+  const absl::optional<cryptauthv2::RequestContext>& request_context() const {
     return request_context_;
   }
 
   // The device IDs passed to GetFeatureStatuses(). Returns null if
   // GetFeatureStatuses() has not been called yet.
-  const base::Optional<base::flat_set<std::string>>& device_ids() const {
+  const absl::optional<base::flat_set<std::string>>& device_ids() const {
     return device_ids_;
   }
 
@@ -52,8 +52,8 @@ class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
   void OnAttemptStarted(const cryptauthv2::RequestContext& request_context,
                         const base::flat_set<std::string>& device_ids) override;
 
-  base::Optional<cryptauthv2::RequestContext> request_context_;
-  base::Optional<base::flat_set<std::string>> device_ids_;
+  absl::optional<cryptauthv2::RequestContext> request_context_;
+  absl::optional<base::flat_set<std::string>> device_ids_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusGetter);
 };

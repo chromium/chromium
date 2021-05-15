@@ -8,11 +8,11 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -106,7 +106,7 @@ class ConnectToDeviceOperationBase
  private:
   DeviceIdPair device_id_pair_;
   scoped_refptr<base::TaskRunner> task_runner_;
-  base::Optional<ConnectionPriority> pending_connection_attempt_priority_;
+  absl::optional<ConnectionPriority> pending_connection_attempt_priority_;
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperationBase);

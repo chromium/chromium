@@ -621,7 +621,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     successful_connections_.push_back(
         std::make_pair(device_id_pair, std::move(authenticated_channel)));
 
-    base::Optional<std::tuple<DeviceIdPair, ConnectionRole, ConnectionPriority>>
+    absl::optional<std::tuple<DeviceIdPair, ConnectionRole, ConnectionPriority>>
         tuple_which_received_callback;
     for (const auto& tuple :
          remote_device_id_to_metadata_map_[device_id_pair.remote_device_id()]) {

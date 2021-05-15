@@ -8,10 +8,10 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -47,14 +47,14 @@ void FakeActiveHost::SetActiveHostConnected(
 
 void FakeActiveHost::GetActiveHost(
     ActiveHost::ActiveHostCallback active_host_callback) {
-  base::Optional<multidevice::RemoteDeviceRef> remote_device;
+  absl::optional<multidevice::RemoteDeviceRef> remote_device;
   if (GetActiveHostStatus() != ActiveHost::ActiveHostStatus::DISCONNECTED) {
     // Convert the active host ID to a public key.
     std::string public_key;
     ASSERT_TRUE(base::Base64Decode(GetActiveHostDeviceId(), &public_key));
 
     // Create a new RemoteDevice and set its public key.
-    remote_device = base::make_optional<multidevice::RemoteDeviceRef>(
+    remote_device = absl::make_optional<multidevice::RemoteDeviceRef>(
         multidevice::RemoteDeviceRefBuilder().SetPublicKey(public_key).Build());
   }
 

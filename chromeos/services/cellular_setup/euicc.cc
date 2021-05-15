@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chromeos/network/cellular_connection_handler.h"
@@ -26,6 +25,7 @@
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace cellular_setup {
@@ -153,7 +153,7 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   std::string qr_code_string =
       base::StrCat({kEidQrCodePrefix, properties_->eid});
   QRCodeGenerator qr_generator;
-  base::Optional<QRCodeGenerator::GeneratedCode> qr_data =
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
       qr_generator.Generate(base::as_bytes(
           base::make_span(qr_code_string.data(), qr_code_string.size())));
   if (!qr_data || qr_data->data.data() == nullptr ||

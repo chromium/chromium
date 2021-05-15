@@ -118,7 +118,7 @@ void BleAdvertiserImpl::UpdateAdvertisementRequestPriority(
     NOTREACHED();
   }
 
-  base::Optional<size_t> index_for_active_request =
+  absl::optional<size_t> index_for_active_request =
       GetIndexForActiveRequest(request);
 
   if (!index_for_active_request) {
@@ -179,7 +179,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
   }
   all_requests_.erase(request);
 
-  base::Optional<size_t> index_for_active_request =
+  absl::optional<size_t> index_for_active_request =
       GetIndexForActiveRequest(request);
 
   // If the request is not currently active, remove it from the scheduler and
@@ -198,7 +198,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
 
 bool BleAdvertiserImpl::ReplaceLowPriorityAdvertisementIfPossible(
     ConnectionPriority connection_priority) {
-  base::Optional<size_t> index_with_lower_priority =
+  absl::optional<size_t> index_with_lower_priority =
       GetIndexWithLowerPriority(connection_priority);
   if (!index_with_lower_priority)
     return false;
@@ -211,10 +211,10 @@ bool BleAdvertiserImpl::ReplaceLowPriorityAdvertisementIfPossible(
   return true;
 }
 
-base::Optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
+absl::optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
     ConnectionPriority connection_priority) {
   ConnectionPriority lowest_priority = ConnectionPriority::kHigh;
-  base::Optional<size_t> index_with_lowest_priority;
+  absl::optional<size_t> index_with_lowest_priority;
 
   // Loop through |active_advertisement_requests_|, searching for the entry with
   // the lowest priority.
@@ -233,13 +233,13 @@ base::Optional<size_t> BleAdvertiserImpl::GetIndexWithLowerPriority(
   // requests have high priority, so they should not be replaced with the new
   // connection attempt.
   if (!index_with_lowest_priority)
-    return base::nullopt;
+    return absl::nullopt;
 
   // If the lowest priority in |active_advertisement_requests_| is at least as
   // high as |connection_priority|, this slot shouldn't be replaced with the
   // new connection attempt.
   if (lowest_priority >= connection_priority)
-    return base::nullopt;
+    return absl::nullopt;
 
   return *index_with_lowest_priority;
 }
@@ -317,7 +317,7 @@ void BleAdvertiserImpl::AttemptToAddActiveAdvertisement(size_t index_to_add) {
           pair, std::move(service_data), ble_synchronizer_base_);
 }
 
-base::Optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
+absl::optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
     const DeviceIdPair& request) {
   for (size_t i = 0; i < active_advertisement_requests_.size(); ++i) {
     auto& active_request = active_advertisement_requests_[i];
@@ -325,7 +325,7 @@ base::Optional<size_t> BleAdvertiserImpl::GetIndexForActiveRequest(
       return i;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void BleAdvertiserImpl::StopAdvertisementRequestAndUpdateActiveRequests(

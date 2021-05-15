@@ -94,7 +94,7 @@ TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyFromDictionary) {
   dict.SetKey("type", base::Value(cryptauthv2::KeyType::RAW256));
   dict.SetKey("symmetric_key", util::EncodeAsValueString(kFakeSymmetricKey));
 
-  base::Optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
+  absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
   ASSERT_TRUE(key);
   EXPECT_EQ(*key, CryptAuthKey(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                                cryptauthv2::KeyType::RAW256, kFakeHandle));
@@ -108,7 +108,7 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary) {
   dict.SetKey("public_key", util::EncodeAsValueString(kFakePublicKey));
   dict.SetKey("private_key", util::EncodeAsValueString(kFakePrivateKey));
 
-  base::Optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
+  absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(dict);
   ASSERT_TRUE(key);
   EXPECT_EQ(*key, CryptAuthKey(kFakePublicKey, kFakePrivateKey,
                                CryptAuthKey::Status::kActive,

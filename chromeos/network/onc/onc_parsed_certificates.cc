@@ -10,12 +10,12 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace onc {
@@ -26,8 +26,8 @@ enum class CertificateType { kServer, kAuthority, kClient };
 
 // Parses the "Scope" of a policy-provided certificate.
 // If a Scope element is not present, returns CertificateScope::Default().
-// If a Scope element is present but malformed, returns an empty base::Optional.
-base::Optional<CertificateScope> ParseCertScope(
+// If a Scope element is present but malformed, returns an empty absl::optional.
+absl::optional<CertificateScope> ParseCertScope(
     const base::Value& onc_certificate) {
   const base::Value* scope_dict = onc_certificate.FindKeyOfType(
       ::onc::certificate::kScope, base::Value::Type::DICTIONARY);
@@ -67,8 +67,8 @@ bool HasWebTrustFlag(const base::Value& onc_certificate) {
 }
 
 // Converts the ONC string certificate type into the CertificateType enum.
-// Returns |base::nullopt| if the certificate type was not understood.
-base::Optional<CertificateType> GetCertTypeAsEnum(
+// Returns |absl::nullopt| if the certificate type was not understood.
+absl::optional<CertificateType> GetCertTypeAsEnum(
     const std::string& cert_type) {
   if (cert_type == ::onc::certificate::kServer) {
     return CertificateType::kServer;
@@ -82,7 +82,7 @@ base::Optional<CertificateType> GetCertTypeAsEnum(
     return CertificateType::kClient;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -211,7 +211,7 @@ bool OncParsedCertificates::ParseCertificate(
   const base::Value* type_key = onc_certificate.FindKeyOfType(
       ::onc::certificate::kType, base::Value::Type::STRING);
   DCHECK(type_key);
-  base::Optional<CertificateType> type_opt =
+  absl::optional<CertificateType> type_opt =
       GetCertTypeAsEnum(type_key->GetString());
   if (!type_opt)
     return false;
@@ -235,7 +235,7 @@ bool OncParsedCertificates::ParseServerOrCaCertificate(
     ServerOrAuthorityCertificate::Type type,
     const std::string& guid,
     const base::Value& onc_certificate) {
-  base::Optional<CertificateScope> scope = ParseCertScope(onc_certificate);
+  absl::optional<CertificateScope> scope = ParseCertScope(onc_certificate);
   if (!scope) {
     LOG(ERROR) << "Certificate has malformed 'Scope'";
     return false;

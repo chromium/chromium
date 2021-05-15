@@ -69,7 +69,7 @@ void FakeInstallAttributesClient::InstallAttributesFinalize(
 void FakeInstallAttributesClient::InstallAttributesGetStatus(
     const ::user_data_auth::InstallAttributesGetStatusRequest& request,
     InstallAttributesGetStatusCallback callback) {
-  base::Optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
+  absl::optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
       BlockingInstallAttributesGetStatus(request);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
@@ -89,7 +89,7 @@ void FakeInstallAttributesClient::SetFirmwareManagementParameters(
       ::user_data_auth::SetFirmwareManagementParametersReply(),
       std::move(callback));
 }
-base::Optional<::user_data_auth::InstallAttributesGetReply>
+absl::optional<::user_data_auth::InstallAttributesGetReply>
 FakeInstallAttributesClient::BlockingInstallAttributesGet(
     const ::user_data_auth::InstallAttributesGetRequest& request) {
   ::user_data_auth::InstallAttributesGetReply reply;
@@ -101,14 +101,14 @@ FakeInstallAttributesClient::BlockingInstallAttributesGet(
   }
   return reply;
 }
-base::Optional<::user_data_auth::InstallAttributesSetReply>
+absl::optional<::user_data_auth::InstallAttributesSetReply>
 FakeInstallAttributesClient::BlockingInstallAttributesSet(
     const ::user_data_auth::InstallAttributesSetRequest& request) {
   ::user_data_auth::InstallAttributesSetReply reply;
   install_attrs_[request.name()] = request.value();
   return reply;
 }
-base::Optional<::user_data_auth::InstallAttributesFinalizeReply>
+absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
 FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
     const ::user_data_auth::InstallAttributesFinalizeRequest& request) {
   locked_ = true;
@@ -145,7 +145,7 @@ FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
 
   return reply;
 }
-base::Optional<::user_data_auth::InstallAttributesGetStatusReply>
+absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
 FakeInstallAttributesClient::BlockingInstallAttributesGetStatus(
     const ::user_data_auth::InstallAttributesGetStatusRequest& request) {
   ::user_data_auth::InstallAttributesGetStatusReply reply;

@@ -12,7 +12,7 @@ namespace multidevice_setup {
 MultiDeviceSetupClient::HostStatusWithDevice
 MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
   return HostStatusWithDevice{mojom::HostStatus::kNoEligibleHosts,
-                              base::nullopt /* host_device */};
+                              absl::nullopt /* host_device */};
 }
 
 // static

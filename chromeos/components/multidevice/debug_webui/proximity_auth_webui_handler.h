@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/log_buffer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -17,6 +16,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;
@@ -119,7 +119,7 @@ class ProximityAuthWebUIHandler
 
   // Member variables for connecting to and authenticating the remote device.
   // TODO(tengs): Support multiple simultaenous connections.
-  base::Optional<multidevice::RemoteDeviceRef> selected_remote_device_;
+  absl::optional<multidevice::RemoteDeviceRef> selected_remote_device_;
   std::unique_ptr<proximity_auth::RemoteDeviceLifeCycle> life_cycle_;
   std::unique_ptr<proximity_auth::RemoteStatusUpdate>
       last_remote_status_update_;

@@ -9,7 +9,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/services/assistant/public/cpp/conversation_observer.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {

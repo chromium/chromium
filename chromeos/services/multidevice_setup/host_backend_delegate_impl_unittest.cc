@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
@@ -21,6 +20,7 @@
 #include "chromeos/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -80,7 +80,7 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   }
 
   void CreateDelegate(
-      const base::Optional<multidevice::RemoteDeviceRef>& initial_host,
+      const absl::optional<multidevice::RemoteDeviceRef>& initial_host,
       const std::string& initial_pending_host_request = kNoPendingRequest) {
     SetHostInDeviceSyncClient(initial_host);
     test_pref_service_->SetString(kPendingRequestHostIdPrefName,
@@ -132,10 +132,10 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   }
 
   void SimulateNewHostDevicesSynced(
-      const base::Optional<multidevice::RemoteDeviceRef>&
+      const absl::optional<multidevice::RemoteDeviceRef>&
           host_device_after_sync,
       bool expected_to_fulfill_pending_request) {
-    base::Optional<multidevice::RemoteDeviceRef> host_device_before_call =
+    absl::optional<multidevice::RemoteDeviceRef> host_device_before_call =
         delegate_->GetMultiDeviceHostFromBackend();
     bool host_changed = host_device_before_call != host_device_after_sync;
     size_t num_host_change_events_before_call =
@@ -167,8 +167,8 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   }
 
   void AttemptToSetMultiDeviceHostOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
-    base::Optional<multidevice::RemoteDeviceRef> host_before_call =
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+    absl::optional<multidevice::RemoteDeviceRef> host_before_call =
         delegate_->GetMultiDeviceHostFromBackend();
     bool attempting_to_set_host_which_already_exists =
         host_device == host_before_call;
@@ -211,10 +211,10 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   }
 
   void SetHostInDeviceSyncClient(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     for (const auto& remote_device : test_devices_) {
       bool should_be_host =
-          host_device != base::nullopt &&
+          host_device != absl::nullopt &&
           ((!remote_device.instance_id().empty() &&
             host_device->instance_id() == remote_device.instance_id()) ||
            (!remote_device.GetDeviceId().empty() &&
@@ -321,7 +321,7 @@ class MultiDeviceSetupHostBackendDelegateImplTest
 };
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Success) {
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // Set device 0.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
@@ -337,17 +337,17 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Success) {
   EXPECT_EQ(test_devices()[0], delegate()->GetMultiDeviceHostFromBackend());
 
   // Remove device 0 such that there is no longer a host.
-  AttemptToSetMultiDeviceHostOnBackend(base::nullopt);
+  AttemptToSetMultiDeviceHostOnBackend(absl::nullopt);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
   InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetPendingHostRequest());
-  SimulateNewHostDevicesSynced(base::nullopt /* host_device_after_sync */,
+  EXPECT_EQ(absl::nullopt, delegate()->GetPendingHostRequest());
+  SimulateNewHostDevicesSynced(absl::nullopt /* host_device_after_sync */,
                                true /* expected_to_fulfill_pending_request */);
   EXPECT_FALSE(delegate()->HasPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // Set device 1.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[1]);
@@ -364,7 +364,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Success) {
 }
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Failure) {
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // Attempt to set device 0, but fail.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
@@ -374,7 +374,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Failure) {
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // A retry should have been scheduled, so fire the timer to start the retry.
   mock_timer()->Fire();
@@ -386,7 +386,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Failure) {
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // Attempt to set device 1, but fail.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[1]);
@@ -396,7 +396,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, Failure) {
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[1], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 }
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
@@ -463,25 +463,25 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
        SimultaneousRequestsToSameDevice) {
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // Attempt to set device 0, but do not invoke the callback yet.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // Attempt to set device 0 again, and still do not invoke the callback.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // Attempt to set device 0 one more time.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // Fire the first callback, which should successfully transition the host.
   EXPECT_EQ(3, GetSetHostNetworkRequestCallbackQueueSize());
@@ -513,7 +513,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
        MultipleRequestsToSameDevice_FirstFail_ThenSucceed) {
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // Attempt to set device 0, but fail.
   AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
@@ -523,7 +523,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_TRUE(delegate()->HasPendingHostRequest());
   EXPECT_EQ(test_devices()[0], delegate()->GetPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 
   // The retry timer is running; however, instead of relying on that, call
   // AttemptToSetMultiDeviceHostOnBackend() again to trigger an immediate retry
@@ -544,7 +544,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
        InitialPendingRequestButNoInitialDevice) {
   CreateDelegate(
-      base::nullopt /* initial_host */,
+      absl::nullopt /* initial_host */,
       features::ShouldUseV1DeviceSync()
           ? test_devices()[0].GetDeviceId()
           : test_devices()[0].instance_id() /* initial_pending_host_request */);
@@ -573,14 +573,14 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
   InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
-  SimulateNewHostDevicesSynced(base::nullopt /* host_device_after_sync */,
+  SimulateNewHostDevicesSynced(absl::nullopt /* host_device_after_sync */,
                                true /* expected_to_fulfill_pending_request */);
   EXPECT_FALSE(delegate()->HasPendingHostRequest());
-  EXPECT_EQ(base::nullopt, delegate()->GetMultiDeviceHostFromBackend());
+  EXPECT_EQ(absl::nullopt, delegate()->GetMultiDeviceHostFromBackend());
 }
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, ChangedFromOtherDevice) {
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // The device changed from another device (i.e.,
   // AttemptToSetMultiDeviceHostOnBackend() was not called).
@@ -594,7 +594,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, ChangedFromOtherDevice) {
 
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
        PendingRequestCanceledIfDeviceToSetNoLongerExists) {
-  CreateDelegate(base::nullopt /* initial_host */,
+  CreateDelegate(absl::nullopt /* initial_host */,
                  "nonexistentDeviceId" /* initial_pending_host_request */);
 
   // An initial pending host request exists, but it is for a host that is not
@@ -605,7 +605,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
 TEST_P(MultiDeviceSetupHostBackendDelegateImplTest,
        PendingRequestCanceledIfDeviceToRemoveNoLongerExists) {
   CreateDelegate(
-      base::nullopt /* initial_host */,
+      absl::nullopt /* initial_host */,
       kPendingRemovalOfCurrentHost /* initial_pending_host_request */);
 
   // An initial pending host request exists to remove the current host, but
@@ -618,7 +618,7 @@ TEST_P(MultiDeviceSetupHostBackendDelegateImplTest, TryToSetNonEligibleHost) {
   fake_eligible_host_devices_provider()->set_eligible_host_devices(
       multidevice::RemoteDeviceRefList());
 
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   delegate()->AttemptToSetMultiDeviceHostOnBackend(test_devices()[0]);
   EXPECT_EQ(0u, observer()->num_pending_host_request_changes());

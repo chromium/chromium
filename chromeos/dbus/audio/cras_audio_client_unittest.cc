@@ -296,7 +296,7 @@ void WriteNodesToResponse(const AudioNodeList& node_list,
 // Expect the AudioNodeList result.
 void ExpectAudioNodeListResult(bool* called,
                                const AudioNodeList& expected_node_list,
-                               base::Optional<AudioNodeList> result) {
+                               absl::optional<AudioNodeList> result) {
   *called = true;
   ASSERT_TRUE(result.has_value());
   const AudioNodeList& node_list = result.value();

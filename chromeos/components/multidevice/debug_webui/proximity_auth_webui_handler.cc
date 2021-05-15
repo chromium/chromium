@@ -347,7 +347,7 @@ void ProximityAuthWebUIHandler::GetLocalState(const base::ListValue* args) {
 
 std::unique_ptr<base::Value>
 ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
-  base::Optional<multidevice::RemoteDeviceRef> local_device_metadata =
+  absl::optional<multidevice::RemoteDeviceRef> local_device_metadata =
       device_sync_client_->GetLocalDeviceMetadata();
 
   std::string device_id =
@@ -370,7 +370,7 @@ ProximityAuthWebUIHandler::GetRemoteDevicesList() {
 
 void ProximityAuthWebUIHandler::StartRemoteDeviceLifeCycle(
     multidevice::RemoteDeviceRef remote_device) {
-  base::Optional<multidevice::RemoteDeviceRef> local_device;
+  absl::optional<multidevice::RemoteDeviceRef> local_device;
   local_device = device_sync_client_->GetLocalDeviceMetadata();
 
   selected_remote_device_ = remote_device;
@@ -386,7 +386,7 @@ void ProximityAuthWebUIHandler::CleanUpRemoteDeviceLifeCycle() {
                     << selected_remote_device_->name();
   }
   life_cycle_.reset();
-  selected_remote_device_ = base::nullopt;
+  selected_remote_device_ = absl::nullopt;
   last_remote_status_update_.reset();
   web_ui()->CallJavascriptFunctionUnsafe(
       "LocalStateInterface.onRemoteDevicesChanged", *GetRemoteDevicesList());

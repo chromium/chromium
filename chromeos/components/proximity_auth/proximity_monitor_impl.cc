@@ -134,10 +134,10 @@ void ProximityMonitorImpl::OnGetConnectionMetadata(
   if (connection_metadata->bluetooth_connection_metadata)
     OnGetRssi(connection_metadata->bluetooth_connection_metadata->current_rssi);
   else
-    OnGetRssi(base::nullopt);
+    OnGetRssi(absl::nullopt);
 }
 
-void ProximityMonitorImpl::OnGetRssi(const base::Optional<int32_t>& rssi) {
+void ProximityMonitorImpl::OnGetRssi(const absl::optional<int32_t>& rssi) {
   if (!is_active_) {
     PA_LOG(VERBOSE) << "Received RSSI after stopping.";
     return;

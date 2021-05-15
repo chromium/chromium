@@ -8,11 +8,11 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -128,7 +128,7 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
   void OnConnectErrorGetProperties(
       const std::string& error_name,
       const std::string& service_path,
-      base::Optional<base::Value> shill_properties);
+      absl::optional<base::Value> shill_properties);
 
   bool IsEligible(const NetworkState* network);
 

@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 
@@ -27,7 +27,7 @@ namespace chromeos {
 // In case of error, nullopt should be passed.
 template <typename ResultType>
 using DBusMethodCallback =
-    base::OnceCallback<void(base::Optional<ResultType> result)>;
+    base::OnceCallback<void(absl::optional<ResultType> result)>;
 
 // Callback to handle response of methods without result.
 // |result| is true if the method call is successfully completed, otherwise

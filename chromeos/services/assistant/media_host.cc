@@ -54,19 +54,19 @@ class MediaHost::ChromeosMediaStateObserver
     UpdateMediaState();
   }
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override {
+      const absl::optional<media_session::MediaMetadata>& metadata) override {
     media_metadata_ = std::move(metadata);
     UpdateMediaState();
   }
   void MediaSessionActionsChanged(
       const std::vector<MediaSessionAction>& action) override {}
   void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override {
+      const absl::optional<base::UnguessableToken>& request_id) override {
     if (request_id.has_value())
       media_session_audio_focus_id_ = std::move(request_id.value());
   }
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
+      const absl::optional<media_session::MediaPosition>& position) override {}
 
   void UpdateMediaState() {
     if (media_session_info_ptr_) {
@@ -123,7 +123,7 @@ class MediaHost::ChromeosMediaStateObserver
   MediaSessionInfoPtr media_session_info_ptr_;
   // The metadata for the active media session. It can be null to be reset,
   // e.g. the media that was being played has been stopped.
-  base::Optional<media_session::MediaMetadata> media_metadata_ = base::nullopt;
+  absl::optional<media_session::MediaMetadata> media_metadata_ = absl::nullopt;
 
   base::UnguessableToken media_session_audio_focus_id_ =
       base::UnguessableToken::Null();

@@ -19,7 +19,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -42,6 +41,7 @@
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -76,16 +76,16 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   }
 }
 
-base::Optional<std::string> GetS3ServerUriOverride() {
+absl::optional<std::string> GetS3ServerUriOverride() {
   if (g_s3_server_uri_override)
     return g_s3_server_uri_override;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<std::string> GetDeviceIdOverride() {
+absl::optional<std::string> GetDeviceIdOverride() {
   if (g_device_id_override)
     return g_device_id_override;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // In the signed-out mode, we are going to run Assistant service without
@@ -353,7 +353,7 @@ void Service::UpdateAssistantManagerState() {
   if (IsSignedOutMode()) {
     // Clear |access_token_| in signed-out mode to keep it synced with what we
     // will pass to the |assistant_manager_service_|.
-    access_token_ = base::nullopt;
+    access_token_ = absl::nullopt;
   }
 
   if (!assistant_manager_service_)
@@ -557,12 +557,12 @@ void Service::UpdateListeningState() {
                                             ShouldEnableHotword());
 }
 
-base::Optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
+absl::optional<AssistantManagerService::UserInfo> Service::GetUserInfo() const {
   if (access_token_) {
     return AssistantManagerService::UserInfo(RetrievePrimaryAccountInfo().gaia,
                                              access_token_.value());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool Service::ShouldEnableHotword() {

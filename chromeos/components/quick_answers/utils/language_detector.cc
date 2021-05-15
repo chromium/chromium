@@ -21,7 +21,7 @@ constexpr base::FeatureParam<double> kSurroundingTextConfidenceThreshold{
     &features::kQuickAnswersTranslation,
     "surrounding_text_confidence_threshold", /*default_value=*/0.9};
 
-base::Optional<std::string> GetLanguageWithConfidence(
+absl::optional<std::string> GetLanguageWithConfidence(
     const std::vector<machine_learning::mojom::TextLanguagePtr>& languages,
     double confidence_threshold) {
   // The languages are sorted according to the confidence score, from the
@@ -30,7 +30,7 @@ base::Optional<std::string> GetLanguageWithConfidence(
       languages.front()->confidence > confidence_threshold) {
     return l10n_util::GetLanguage(languages.front()->locale);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

@@ -4,8 +4,8 @@
 
 #include "chromeos/login/auth/sync_trusted_vault_keys.h"
 
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -22,12 +22,12 @@ struct KeyMaterialAndVersion {
   int version = 0;
 };
 
-base::Optional<KeyMaterialAndVersion> ParseSingleKey(
+absl::optional<KeyMaterialAndVersion> ParseSingleKey(
     const base::Value& js_object) {
   const base::Value::BlobStorage* key_material =
       js_object.FindBlobKey(kKeyMaterialDictKey);
   if (key_material == nullptr) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return KeyMaterialAndVersion{
@@ -41,7 +41,7 @@ std::vector<KeyMaterialAndVersion> ParseKeyList(const base::Value* key_list) {
 
   std::vector<KeyMaterialAndVersion> parsed_keys;
   for (const base::Value& key : key_list->GetList()) {
-    base::Optional<KeyMaterialAndVersion> parsed_key = ParseSingleKey(key);
+    absl::optional<KeyMaterialAndVersion> parsed_key = ParseSingleKey(key);
     if (parsed_key.has_value()) {
       parsed_keys.push_back(std::move(*parsed_key));
     }

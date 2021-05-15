@@ -13,8 +13,8 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -33,10 +33,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
     ~Observer() override = default;
 
     // Set the input device to use for audio capture.
-    virtual void SetDeviceId(const base::Optional<std::string>& device_id) = 0;
+    virtual void SetDeviceId(const absl::optional<std::string>& device_id) = 0;
     // Set the input device to use for hardware based hotword detection.
     virtual void SetHotwordDeviceId(
-        const base::Optional<std::string>& device_id) = 0;
+        const absl::optional<std::string>& device_id) = 0;
   };
 
   AudioDevices(CrasAudioHandler* cras_audio_handler, const std::string& locale);
@@ -78,8 +78,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   CrasAudioHandler* const cras_audio_handler_;
 
   std::string locale_;
-  base::Optional<uint64_t> hotword_device_id_;
-  base::Optional<uint64_t> device_id_;
+  absl::optional<uint64_t> hotword_device_id_;
+  absl::optional<uint64_t> device_id_;
 
   // Observes changes to the available audio devices, and sends the list of
   // devices to SetAudioDevices().

@@ -170,7 +170,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
   // Validates |device| and adds it to the |remote_device_cache_| if it is
   // valid. If it is not valid, the reason is provided as a return type, and the
   // device is not added to the cache.
-  base::Optional<InvalidRemoteDeviceReason> AddDeviceToCacheIfPossible(
+  absl::optional<InvalidRemoteDeviceReason> AddDeviceToCacheIfPossible(
       ApiFunctionName api_fn_name,
       const multidevice::RemoteDevice& device,
       ConnectionMedium connection_medium);

@@ -33,12 +33,12 @@ bool FakeHostDeviceTimestampManager::WasHostSetFromThisChromebook() {
   return was_host_set_from_this_chromebook_;
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 FakeHostDeviceTimestampManager::GetLatestSetupFlowCompletionTimestamp() {
   return completion_time_;
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 FakeHostDeviceTimestampManager::GetLatestVerificationTimestamp() {
   return verification_time_;
 }

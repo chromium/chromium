@@ -9,11 +9,11 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -112,14 +112,14 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   static void OnBoolMethod(DBusMethodCallback<bool> callback,
                            dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     bool result = false;
     if (!reader.PopBool(&result)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     std::move(callback).Run(result);
@@ -128,13 +128,13 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   static void OnStringMethod(DBusMethodCallback<std::string> callback,
                              dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       LOG(ERROR) << "Invalid response: " << response->ToString();
       return;
     }
@@ -144,13 +144,13 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   static void OnFilePathMethod(DBusMethodCallback<base::FilePath> callback,
                                dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       LOG(ERROR) << "Invalid response: " << response->ToString();
       return;
     }

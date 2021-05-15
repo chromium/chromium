@@ -61,7 +61,7 @@ constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
 
 std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
 ToAuthenticationTokens(
-    const base::Optional<AssistantManagerService::UserInfo>& user) {
+    const absl::optional<AssistantManagerService::UserInfo>& user) {
   std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> result;
 
   if (user.has_value()) {
@@ -76,8 +76,8 @@ ToAuthenticationTokens(
 }
 
 chromeos::libassistant::mojom::BootupConfigPtr CreateBootupConfig(
-    const base::Optional<std::string>& s3_server_uri_override,
-    const base::Optional<std::string>& device_id_override) {
+    const absl::optional<std::string>& s3_server_uri_override,
+    const absl::optional<std::string>& device_id_override) {
   auto result = chromeos::libassistant::mojom::BootupConfig::New();
   result->s3_server_uri_override = s3_server_uri_override;
   result->device_id_override = device_id_override;
@@ -154,8 +154,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     ServiceContext* context,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override,
+    absl::optional<std::string> s3_server_uri_override,
+    absl::optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
     : assistant_settings_(std::make_unique<AssistantSettingsImpl>(context)),
       assistant_host_(std::make_unique<AssistantHost>()),
@@ -217,7 +217,7 @@ AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
   assistant_host_ = nullptr;
 }
 
-void AssistantManagerServiceImpl::Start(const base::Optional<UserInfo>& user,
+void AssistantManagerServiceImpl::Start(const absl::optional<UserInfo>& user,
                                         bool enable_hotword) {
   DCHECK(!IsServiceStarted());
   DCHECK_EQ(GetState(), State::STOPPED);
@@ -253,7 +253,7 @@ AssistantManagerService::State AssistantManagerServiceImpl::GetState() const {
 }
 
 void AssistantManagerServiceImpl::SetUser(
-    const base::Optional<UserInfo>& user) {
+    const absl::optional<UserInfo>& user) {
   if (!IsServiceStarted())
     return;
 
@@ -436,7 +436,7 @@ void AssistantManagerServiceImpl::OnStateChanged(
 }
 
 void AssistantManagerServiceImpl::InitAssistant(
-    const base::Optional<UserInfo>& user) {
+    const absl::optional<UserInfo>& user) {
   DCHECK(!IsServiceStarted());
 
   auto bootup_config = bootup_config_.Clone();

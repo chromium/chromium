@@ -44,7 +44,7 @@ void FakeCryptohomeMiscClient::GetSystemSalt(
 void FakeCryptohomeMiscClient::GetSanitizedUsername(
     const ::user_data_auth::GetSanitizedUsernameRequest& request,
     GetSanitizedUsernameCallback callback) {
-  base::Optional<::user_data_auth::GetSanitizedUsernameReply> reply;
+  absl::optional<::user_data_auth::GetSanitizedUsernameReply> reply;
   reply = BlockingGetSanitizedUsername(request);
   ReturnProtobufMethodCallback(*reply, std::move(callback));
 }
@@ -81,7 +81,7 @@ void FakeCryptohomeMiscClient::GetRsuDeviceId(
 void FakeCryptohomeMiscClient::CheckHealth(
     const ::user_data_auth::CheckHealthRequest& request,
     CheckHealthCallback callback) {
-  base::Optional<::user_data_auth::CheckHealthReply> reply;
+  absl::optional<::user_data_auth::CheckHealthReply> reply;
   if (cryptohome_error_ ==
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     reply = ::user_data_auth::CheckHealthReply();
@@ -93,7 +93,7 @@ void FakeCryptohomeMiscClient::CheckHealth(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 
-base::Optional<::user_data_auth::GetSanitizedUsernameReply>
+absl::optional<::user_data_auth::GetSanitizedUsernameReply>
 FakeCryptohomeMiscClient::BlockingGetSanitizedUsername(
     const ::user_data_auth::GetSanitizedUsernameRequest& request) {
   user_data_auth::GetSanitizedUsernameReply reply;

@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -574,7 +574,7 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
     return;
   }
 
-  base::Optional<double> charge_percent_opt =
+  absl::optional<double> charge_percent_opt =
       routine_type == mojom::RoutineType::kBatteryCharge
           ? result_details_dict->FindDoubleKey(kChargePercentKey)
           : result_details_dict->FindDoubleKey(kDischargePercentKey);

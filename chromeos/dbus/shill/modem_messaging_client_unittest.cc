@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -21,6 +20,7 @@
 #include "dbus/values_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -213,12 +213,12 @@ TEST_F(ModemMessagingClientTest, List) {
   response_ = response.get();
 
   // Call List.
-  base::Optional<std::vector<dbus::ObjectPath>> result;
+  absl::optional<std::vector<dbus::ObjectPath>> result;
   client_->List(
       kServiceName, dbus::ObjectPath(kObjectPath),
       base::BindOnce(
-          [](base::Optional<std::vector<dbus::ObjectPath>>* result_out,
-             base::Optional<std::vector<dbus::ObjectPath>> result) {
+          [](absl::optional<std::vector<dbus::ObjectPath>>* result_out,
+             absl::optional<std::vector<dbus::ObjectPath>> result) {
             *result_out = std::move(result);
           },
           &result));

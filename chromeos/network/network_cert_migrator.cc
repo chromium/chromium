@@ -70,7 +70,7 @@ class NetworkCertMigrator::MigrationTask
   }
 
   void MigrateNetwork(const std::string& service_path,
-                      base::Optional<base::Value> properties) {
+                      absl::optional<base::Value> properties) {
     if (!cert_migrator_) {
       VLOG(2) << "NetworkCertMigrator already destroyed. Aborting migration.";
       return;

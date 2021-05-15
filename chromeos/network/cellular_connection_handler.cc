@@ -35,7 +35,7 @@ bool CanInitiateShillConnection(const NetworkState* network) {
   return network->connectable();
 }
 
-base::Optional<dbus::ObjectPath> GetEuiccPath(const std::string& eid) {
+absl::optional<dbus::ObjectPath> GetEuiccPath(const std::string& eid) {
   const std::vector<dbus::ObjectPath>& euicc_paths =
       HermesManagerClient::Get()->GetAvailableEuiccs();
 
@@ -46,19 +46,19 @@ base::Optional<dbus::ObjectPath> GetEuiccPath(const std::string& eid) {
       return euicc_path;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
+absl::optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
                                                 const std::string& iccid) {
-  base::Optional<dbus::ObjectPath> euicc_path = GetEuiccPath(eid);
+  absl::optional<dbus::ObjectPath> euicc_path = GetEuiccPath(eid);
   if (!euicc_path)
-    return base::nullopt;
+    return absl::nullopt;
 
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(*euicc_path);
   if (!euicc_properties)
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::vector<dbus::ObjectPath>& profile_paths =
       euicc_properties->installed_carrier_profiles().value();
@@ -69,7 +69,7 @@ base::Optional<dbus::ObjectPath> GetProfilePath(const std::string& eid,
       return profile_path;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -192,7 +192,7 @@ void CellularConnectionHandler::TransitionToConnectionState(
 }
 
 void CellularConnectionHandler::CompleteConnectionAttempt(
-    const base::Optional<std::string>& error_name) {
+    const absl::optional<std::string>& error_name) {
   DCHECK(state_ != ConnectionState::kIdle);
   DCHECK(!request_queue_.empty());
 
@@ -253,7 +253,7 @@ CellularConnectionHandler::GetNetworkStateForCurrentOperation() const {
   return nullptr;
 }
 
-base::Optional<dbus::ObjectPath>
+absl::optional<dbus::ObjectPath>
 CellularConnectionHandler::GetEuiccPathForCurrentOperation() const {
   const ConnectionRequestMetadata* current_request =
       request_queue_.front().get();
@@ -263,12 +263,12 @@ CellularConnectionHandler::GetEuiccPathForCurrentOperation() const {
 
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
   if (!network_state)
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetEuiccPath(network_state->eid());
 }
 
-base::Optional<dbus::ObjectPath>
+absl::optional<dbus::ObjectPath>
 CellularConnectionHandler::GetProfilePathForCurrentOperation() const {
   const ConnectionRequestMetadata* current_request =
       request_queue_.front().get();
@@ -278,7 +278,7 @@ CellularConnectionHandler::GetProfilePathForCurrentOperation() const {
 
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
   if (!network_state)
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetProfilePath(network_state->eid(), network_state->iccid());
 }
@@ -299,7 +299,7 @@ void CellularConnectionHandler::CheckServiceStatus() {
   if (CanInitiateShillConnection(network_state)) {
     NET_LOG(USER) << "Cellular service with ICCID " << iccid
                   << " is connectable";
-    CompleteConnectionAttempt(/*error_name=*/base::nullopt);
+    CompleteConnectionAttempt(/*error_name=*/absl::nullopt);
     return;
   }
 
@@ -344,7 +344,7 @@ void CellularConnectionHandler::OnInhibitScanResult(
 }
 
 void CellularConnectionHandler::RequestInstalledProfiles() {
-  base::Optional<dbus::ObjectPath> euicc_path =
+  absl::optional<dbus::ObjectPath> euicc_path =
       GetEuiccPathForCurrentOperation();
   if (!euicc_path) {
     NET_LOG(ERROR) << "eSIM connection flow could not find relevant EUICC";
@@ -386,7 +386,7 @@ void CellularConnectionHandler::OnRefreshProfileListResult(
 }
 
 void CellularConnectionHandler::EnableProfile() {
-  base::Optional<dbus::ObjectPath> profile_path =
+  absl::optional<dbus::ObjectPath> profile_path =
       GetProfilePathForCurrentOperation();
   if (!profile_path) {
     NET_LOG(ERROR) << "eSIM connection flow could not find profile";
@@ -433,7 +433,7 @@ void CellularConnectionHandler::CheckForConnectable() {
 
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
   if (network_state && CanInitiateShillConnection(network_state)) {
-    CompleteConnectionAttempt(/*error_name=*/base::nullopt);
+    CompleteConnectionAttempt(/*error_name=*/absl::nullopt);
     return;
   }
 

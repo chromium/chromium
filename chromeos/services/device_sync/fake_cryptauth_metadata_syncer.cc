@@ -15,9 +15,9 @@ FakeCryptAuthMetadataSyncer::~FakeCryptAuthMetadataSyncer() = default;
 void FakeCryptAuthMetadataSyncer::FinishAttempt(
     const IdToDeviceMetadataPacketMap& id_to_device_metadata_packet_map,
     std::unique_ptr<CryptAuthKey> new_group_key,
-    const base::Optional<cryptauthv2::EncryptedGroupPrivateKey>&
+    const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
         encrypted_group_private_key,
-    const base::Optional<cryptauthv2::ClientDirective>& new_client_directive,
+    const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
     CryptAuthDeviceSyncResult::ResultCode device_sync_result_code) {
   DCHECK(request_context_);
   DCHECK(local_device_metadata_);

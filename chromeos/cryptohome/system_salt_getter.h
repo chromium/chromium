@@ -14,8 +14,8 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
                                       bool service_is_available);
   void DidGetSystemSalt(
       GetSystemSaltCallback callback,
-      base::Optional<::user_data_auth::GetSystemSaltReply> system_salt_reply);
+      absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply);
 
   RawSalt raw_salt_;
   std::string system_salt_;

@@ -54,7 +54,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   void SetRemoteDevicesForUser(
       const AccountId& account_id,
       const chromeos::multidevice::RemoteDeviceRefList& remote_devices,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
 
   // Returns the RemoteDevices registered for |account_id|. Returns an empty
   // list
@@ -88,7 +88,7 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // Exposed for testing.
   virtual std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
       chromeos::multidevice::RemoteDeviceRef remote_device,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
 
   // ScreenlockBridge::Observer:
   void OnScreenDidLock(

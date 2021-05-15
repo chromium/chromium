@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
@@ -29,6 +28,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -102,8 +102,8 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
-  static base::Optional<CryptAuthDeviceSyncResult::ResultCode>
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<CryptAuthDeviceSyncResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   // |device_registry|: At the end of a DeviceSync flow, the devices in the
@@ -142,9 +142,9 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
       const CryptAuthMetadataSyncer::IdToDeviceMetadataPacketMap&
           id_to_device_metadata_packet_map,
       std::unique_ptr<CryptAuthKey> new_group_key,
-      const base::Optional<cryptauthv2::EncryptedGroupPrivateKey>&
+      const absl::optional<cryptauthv2::EncryptedGroupPrivateKey>&
           encrypted_group_private_key,
-      const base::Optional<cryptauthv2::ClientDirective>& new_client_directive,
+      const absl::optional<cryptauthv2::ClientDirective>& new_client_directive,
       CryptAuthDeviceSyncResult::ResultCode device_sync_result_code);
 
   void SetGroupKey(const CryptAuthKey& new_group_key);
@@ -166,7 +166,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   // we verify that they agree.
   void ProcessEncryptedGroupPrivateKey();
   void OnGroupPrivateKeyDecrypted(
-      const base::Optional<std::string>& group_private_key_from_cryptauth);
+      const absl::optional<std::string>& group_private_key_from_cryptauth);
 
   void ProcessEncryptedDeviceMetadata();
   void OnDeviceMetadataDecrypted(const CryptAuthEciesEncryptor::IdToOutputMap&
@@ -197,15 +197,15 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   // Output from CryptAuthMetadataSyncer.
   CryptAuthMetadataSyncer::IdToDeviceMetadataPacketMap
       id_to_device_metadata_packet_map_;
-  base::Optional<cryptauthv2::EncryptedGroupPrivateKey>
+  absl::optional<cryptauthv2::EncryptedGroupPrivateKey>
       encrypted_group_private_key_;
-  base::Optional<cryptauthv2::ClientDirective> new_client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> new_client_directive_;
 
   // Populated after a successful BatchGetFeatureStatuses call. Device metadata
   // is added if device metadata decryption is successful. Replaces the contents
   // of the device registry if non-null when the DeviceSync attempt ends,
   // successfully or not.
-  base::Optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
+  absl::optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
       new_device_registry_map_;
 
   // The time of the last state change. Used for execution time metrics.

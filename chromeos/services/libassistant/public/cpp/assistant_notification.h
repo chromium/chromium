@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -81,7 +81,7 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantNotification {
 
   // When the notification should expire.
   // Expressed as milliseconds since Unix Epoch.
-  base::Optional<base::Time> expiry_time;
+  absl::optional<base::Time> expiry_time;
 
   // If |true|, the notification will be removed on click.
   bool remove_on_click = true;

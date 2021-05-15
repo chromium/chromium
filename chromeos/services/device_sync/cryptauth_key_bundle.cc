@@ -60,7 +60,7 @@ std::string CryptAuthKeyBundle::KeyBundleNameEnumToString(
 }
 
 // static
-base::Optional<CryptAuthKeyBundle::Name>
+absl::optional<CryptAuthKeyBundle::Name>
 CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
   if (name == kCryptAuthUserKeyPairName)
     return CryptAuthKeyBundle::Name::kUserKeyPair;
@@ -71,47 +71,47 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
   if (name == kDeviceSyncBetterTogetherGroupKeyName)
     return CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
-base::Optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
+absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     const base::Value& dict) {
   if (!dict.is_dict())
-    return base::nullopt;
+    return absl::nullopt;
 
   const std::string* name_string = dict.FindStringKey(kBundleNameDictKey);
   if (!name_string)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<CryptAuthKeyBundle::Name> name =
+  absl::optional<CryptAuthKeyBundle::Name> name =
       KeyBundleNameStringToEnum(*name_string);
   if (!name)
-    return base::nullopt;
+    return absl::nullopt;
 
   CryptAuthKeyBundle bundle(*name);
 
   const base::Value* keys = dict.FindKey(kKeyListDictKey);
   if (!keys || !keys->is_list())
-    return base::nullopt;
+    return absl::nullopt;
 
   bool active_key_exists = false;
   for (const base::Value& key_dict : keys->GetList()) {
-    base::Optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(key_dict);
+    absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(key_dict);
     if (!key)
-      return base::nullopt;
+      return absl::nullopt;
 
     // Return nullopt if there are multiple active keys.
     if (key->status() == CryptAuthKey::Status::kActive) {
       if (active_key_exists)
-        return base::nullopt;
+        return absl::nullopt;
 
       active_key_exists = true;
     }
 
     // Return nullopt if duplicate handles exist.
     if (base::Contains(bundle.handle_to_key_map(), key->handle()))
-      return base::nullopt;
+      return absl::nullopt;
 
     bundle.AddKey(*key);
   }
@@ -119,11 +119,11 @@ base::Optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
   const base::Value* encoded_serialized_key_directive =
       dict.FindKey(kKeyDirectiveDictKey);
   if (encoded_serialized_key_directive) {
-    base::Optional<cryptauthv2::KeyDirective> key_directive =
+    absl::optional<cryptauthv2::KeyDirective> key_directive =
         util::DecodeProtoMessageFromValueString<cryptauthv2::KeyDirective>(
             encoded_serialized_key_directive);
     if (!key_directive)
-      return base::nullopt;
+      return absl::nullopt;
 
     bundle.set_key_directive(*key_directive);
   }

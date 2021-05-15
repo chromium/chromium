@@ -745,8 +745,8 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesFailure(
 }
 
 void CryptAuthDeviceManagerImpl::OnResyncMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   ForceSyncNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 }
 

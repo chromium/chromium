@@ -99,13 +99,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   // Shill configuration removal.
   struct UninstallRequest {
     UninstallRequest(const std::string& iccid,
-                     const base::Optional<dbus::ObjectPath>& esim_profile_path,
-                     const base::Optional<dbus::ObjectPath>& euicc_path,
+                     const absl::optional<dbus::ObjectPath>& esim_profile_path,
+                     const absl::optional<dbus::ObjectPath>& euicc_path,
                      UninstallRequestCallback callback);
     ~UninstallRequest();
     std::string iccid;
-    base::Optional<dbus::ObjectPath> esim_profile_path;
-    base::Optional<dbus::ObjectPath> euicc_path;
+    absl::optional<dbus::ObjectPath> esim_profile_path;
+    absl::optional<dbus::ObjectPath> euicc_path;
     UninstallRequestCallback callback;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
   };

@@ -108,7 +108,7 @@ TEST_F(RmadClientTest, GetCurrentState) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         EXPECT_FALSE(response->has_state());
@@ -126,7 +126,7 @@ TEST_F(RmadClientTest, GetCurrentState_NullResponse) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -144,7 +144,7 @@ TEST_F(RmadClientTest, GetCurrentState_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -173,7 +173,7 @@ TEST_F(RmadClientTest, TransitionNextState) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](base::Optional<rmad::GetStateReply> response) {
+                   [&](absl::optional<rmad::GetStateReply> response) {
                      EXPECT_TRUE(response.has_value());
                      EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
                      EXPECT_TRUE(response->has_state());
@@ -195,7 +195,7 @@ TEST_F(RmadClientTest, TransitionNextState_NullResponse) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](base::Optional<rmad::GetStateReply> response) {
+                   [&](absl::optional<rmad::GetStateReply> response) {
                      EXPECT_FALSE(response.has_value());
                      run_loop.Quit();
                    }));
@@ -216,7 +216,7 @@ TEST_F(RmadClientTest, TransitionNextState_EmptyResponse) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](base::Optional<rmad::GetStateReply> response) {
+                   [&](absl::optional<rmad::GetStateReply> response) {
                      EXPECT_FALSE(response.has_value());
                      run_loop.Quit();
                    }));
@@ -241,7 +241,7 @@ TEST_F(RmadClientTest, TransitionPreviousState) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_TRANSITION_FAILED);
         EXPECT_TRUE(response->has_state());
@@ -260,7 +260,7 @@ TEST_F(RmadClientTest, TransitionPreviousState_NullResponse) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -278,7 +278,7 @@ TEST_F(RmadClientTest, TransitionPreviousState_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -300,7 +300,7 @@ TEST_F(RmadClientTest, AbortRma) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -317,7 +317,7 @@ TEST_F(RmadClientTest, AbortRma_NullResponse) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -335,7 +335,7 @@ TEST_F(RmadClientTest, AbortRma_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));

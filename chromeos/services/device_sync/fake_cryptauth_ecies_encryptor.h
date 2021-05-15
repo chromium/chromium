@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "chromeos/services/device_sync/cryptauth_ecies_encryptor_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

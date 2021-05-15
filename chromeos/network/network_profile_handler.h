@@ -14,10 +14,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
   void AddObserver(NetworkProfileObserver* observer);
   void RemoveObserver(NetworkProfileObserver* observer);
 
-  void GetManagerPropertiesCallback(base::Optional<base::Value> properties);
+  void GetManagerPropertiesCallback(absl::optional<base::Value> properties);
 
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& name,

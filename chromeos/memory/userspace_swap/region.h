@@ -12,9 +12,9 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/chromeos_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace memory {
@@ -115,9 +115,9 @@ struct CHROMEOS_EXPORT RegionOverlap {
 
   RegionOverlap(const RegionOverlap&);
 
-  base::Optional<Region> before;
-  base::Optional<Region> intersection;
-  base::Optional<Region> after;
+  absl::optional<Region> before;
+  absl::optional<Region> intersection;
+  absl::optional<Region> after;
 };
 
 }  // namespace userspace_swap

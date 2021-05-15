@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
@@ -24,6 +23,7 @@
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -70,7 +70,7 @@ struct StructTraits<
   static const std::string& grouping_key(const AssistantNotification& input);
   static const std::string& obfuscated_gaia_id(
       const AssistantNotification& input);
-  static const base::Optional<base::Time>& expiry_time(
+  static const absl::optional<base::Time>& expiry_time(
       const AssistantNotification& input);
   static const std::vector<chromeos::assistant::AssistantNotificationButton>&
   buttons(const AssistantNotification& input);

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -16,7 +16,7 @@ namespace chromeos {
 // specified via the kCrosStartupDataFD command line flag. This function
 // consumes the FD, so this must not be called twice in a process.
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
-base::Optional<std::string> ReadStartupData();
+absl::optional<std::string> ReadStartupData();
 
 }  // namespace chromeos
 

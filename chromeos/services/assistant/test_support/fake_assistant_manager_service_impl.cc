@@ -18,7 +18,7 @@ void FakeAssistantManagerServiceImpl::FinishStart() {
 }
 
 void FakeAssistantManagerServiceImpl::Start(
-    const base::Optional<UserInfo>& user,
+    const absl::optional<UserInfo>& user,
     bool enable_hotword) {
   SetStateAndInformObservers(State::STARTING);
   SetUser(user);
@@ -29,13 +29,13 @@ void FakeAssistantManagerServiceImpl::Stop() {
 }
 
 void FakeAssistantManagerServiceImpl::SetUser(
-    const base::Optional<UserInfo>& user) {
+    const absl::optional<UserInfo>& user) {
   if (user) {
     gaia_id_ = user.value().gaia_id;
     access_token_ = user.value().access_token;
   } else {
-    gaia_id_ = base::nullopt;
-    access_token_ = base::nullopt;
+    gaia_id_ = absl::nullopt;
+    access_token_ = absl::nullopt;
   }
 }
 

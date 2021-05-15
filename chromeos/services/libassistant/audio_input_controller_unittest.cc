@@ -103,12 +103,12 @@ class AssistantAudioInputControllerTest : public testing::Test {
     client().FlushForTesting();
   }
 
-  void SetDeviceId(const base::Optional<std::string>& value) {
+  void SetDeviceId(const absl::optional<std::string>& value) {
     client()->SetDeviceId(value);
     client().FlushForTesting();
   }
 
-  void SetHotwordDeviceId(const base::Optional<std::string>& value) {
+  void SetHotwordDeviceId(const absl::optional<std::string>& value) {
     client()->SetHotwordDeviceId(value);
     client().FlushForTesting();
   }
@@ -166,7 +166,7 @@ TEST_F(AssistantAudioInputControllerTest, ShouldOnlyRecordWhenDeviceIdIsSet) {
   SetDeviceId("device-id");
   EXPECT_TRUE(IsRecordingAudio());
 
-  SetDeviceId(base::nullopt);
+  SetDeviceId(absl::nullopt);
   EXPECT_FALSE(IsRecordingAudio());
 }
 
@@ -239,8 +239,8 @@ TEST_F(AssistantAudioInputControllerTest,
   // Mic must be open, otherwise we will not start recording audio if the
   // device id is not set.
   SetMicOpen(true);
-  SetDeviceId(base::nullopt);
-  SetHotwordDeviceId(base::nullopt);
+  SetDeviceId(absl::nullopt);
+  SetHotwordDeviceId(absl::nullopt);
 
   EXPECT_TRUE(IsRecordingAudio());
   EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId, GetOpenDeviceId());
@@ -250,7 +250,7 @@ TEST_F(AssistantAudioInputControllerTest,
        DeadStreamDetectionShouldBeDisabledWhenUsingHotwordDevice) {
   InitializeForTestOfType(kHotwordDeviceIdTest);
 
-  SetHotwordDeviceId(base::nullopt);
+  SetHotwordDeviceId(absl::nullopt);
   EXPECT_TRUE(IsUsingDeadStreamDetection());
 
   SetHotwordDeviceId("fake-hotword-device");

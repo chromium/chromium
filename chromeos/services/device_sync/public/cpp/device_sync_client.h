@@ -13,13 +13,13 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -76,7 +76,7 @@ class DeviceSyncClient {
   virtual void ForceSyncNow(
       mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
-  virtual base::Optional<multidevice::RemoteDeviceRef>
+  virtual absl::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;
 
   // Note: In the special case of passing |software_feature| =

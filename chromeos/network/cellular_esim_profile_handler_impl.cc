@@ -86,7 +86,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
       continue;
     }
 
-    base::Optional<CellularESimProfile> profile =
+    absl::optional<CellularESimProfile> profile =
         CellularESimProfile::FromDictionaryValue(*dict);
     if (!profile) {
       NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << *dict;

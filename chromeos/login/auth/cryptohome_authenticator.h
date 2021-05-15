@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -21,6 +20,7 @@
 #include "chromeos/login/auth/safe_mode_delegate.h"
 #include "chromeos/login/auth/test_attempt_state.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AuthFailure;
 
@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void ResyncEncryptedData() override;
 
   // Called after UnmountEx finishes.
-  void OnUnmountEx(base::Optional<user_data_auth::UnmountReply> reply);
+  void OnUnmountEx(absl::optional<user_data_auth::UnmountReply> reply);
 
   // Attempts to make a decision and call back |consumer_| based on
   // the state we have gathered at the time of call.  If a decision
@@ -227,7 +227,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void OnOwnershipChecked(bool is_owner);
 
   // Handles completion of cryptohome unmount.
-  void OnUnmount(base::Optional<bool> success);
+  void OnUnmount(absl::optional<bool> success);
 
   // Signal login completion status for cases when a new user is added via
   // an external authentication provider (i.e. GAIA extension).

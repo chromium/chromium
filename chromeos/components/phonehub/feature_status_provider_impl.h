@@ -88,7 +88,7 @@ class FeatureStatusProviderImpl
   PowerManagerClient* power_manager_client_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  base::Optional<FeatureStatus> status_;
+  absl::optional<FeatureStatus> status_;
   bool is_login_status_metric_recorded_ = false;
   bool is_suspended_ = false;
 

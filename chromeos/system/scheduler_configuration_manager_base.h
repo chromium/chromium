@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
   // Gets the most recent reply from debugd for SetSchedulerConfiguration D-Bus
   // call. Returns nullopt when the D-Bus client hasn't received any replies
   // yet.
-  virtual base::Optional<std::pair<bool, size_t>> GetLastReply() const = 0;
+  virtual absl::optional<std::pair<bool, size_t>> GetLastReply() const = 0;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(const Observer* obs);

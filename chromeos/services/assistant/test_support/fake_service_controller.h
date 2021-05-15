@@ -26,7 +26,7 @@ class FakeServiceController
       public chromeos::libassistant::mojom::SettingsController {
  public:
   // Value returned when optional fields |access_token| or |user_id| are
-  // missing. Note we use this instead of a |base::Optional| because this
+  // missing. Note we use this instead of a |absl::optional| because this
   // results in a much nicer error message if the test fails. (otherwise you get
   // a message like this:
   //     Expected equality of these values:

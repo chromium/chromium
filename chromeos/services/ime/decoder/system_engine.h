@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 #define CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
-#include "base/optional.h"
 #include "base/scoped_native_library.h"
 #include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace ime {
@@ -66,7 +66,7 @@ class SystemEngine : public InputEngine {
 
   ImeCrosPlatform* platform_ = nullptr;
 
-  base::Optional<ImeDecoder::EntryPoints> decoder_entry_points_;
+  absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
   mojo::Receiver<mojom::InputChannel> decoder_channel_receiver_;
 

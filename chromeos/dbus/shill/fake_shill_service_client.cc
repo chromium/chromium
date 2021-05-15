@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -26,6 +25,7 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -161,7 +161,7 @@ void FakeShillServiceClient::RemovePropertyChangedObserver(
 void FakeShillServiceClient::GetProperties(
     const dbus::ObjectPath& service_path,
     DBusMethodCallback<base::Value> callback) {
-  base::Optional<base::Value> result_properties;
+  absl::optional<base::Value> result_properties;
   const base::Value* nested_dict = GetServiceProperties(service_path.value());
   if (nested_dict) {
     result_properties = nested_dict->Clone();
@@ -263,7 +263,7 @@ void FakeShillServiceClient::Connect(const dbus::ObjectPath& service_path,
         FROM_HERE,
         base::BindOnce(std::move(error_callback), *connect_error_name_,
                        /*error_message=*/std::string()));
-    connect_error_name_ = base::nullopt;
+    connect_error_name_ = absl::nullopt;
     return;
   }
 

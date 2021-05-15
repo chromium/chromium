@@ -6,7 +6,7 @@
 #define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace attestation {
@@ -39,13 +39,13 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowStatusReporter {
   // Encode the recorded parameters into a UMA entry and report it.
   void Report();
   // The flag that is set by `OnHasProxy()`.
-  base::Optional<bool> has_proxy_;
+  absl::optional<bool> has_proxy_;
   // The flag that is set by `OnIsSystemProxyAvailable()`.
-  base::Optional<bool> is_system_proxy_available_;
+  absl::optional<bool> is_system_proxy_available_;
   // The flag that is set/unset by `OnDefaultFlowStatus()`.
-  base::Optional<bool> does_default_flow_succeed_;
+  absl::optional<bool> does_default_flow_succeed_;
   // The flag that is set/unset by `OnFallbackFlowStatus()`.
-  base::Optional<bool> does_fallback_flow_succeed_;
+  absl::optional<bool> does_fallback_flow_succeed_;
 };
 
 }  // namespace attestation

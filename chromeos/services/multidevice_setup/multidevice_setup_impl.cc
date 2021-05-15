@@ -239,7 +239,7 @@ void MultiDeviceSetupImpl::RemoveHostDevice() {
       VerifyAndForgetHostConfirmationState::kButtonClickedState);
 
   host_backend_delegate_->AttemptToSetMultiDeviceHostOnBackend(
-      base::nullopt /* host_device */);
+      absl::nullopt /* host_device */);
 }
 
 void MultiDeviceSetupImpl::GetHostStatus(GetHostStatusCallback callback) {
@@ -248,7 +248,7 @@ void MultiDeviceSetupImpl::GetHostStatus(GetHostStatusCallback callback) {
 
   // The Mojo API requires a raw multidevice::RemoteDevice instead of a
   // multidevice::RemoteDeviceRef.
-  base::Optional<multidevice::RemoteDevice> device_for_callback;
+  absl::optional<multidevice::RemoteDevice> device_for_callback;
   if (host_status_with_device.host_device()) {
     device_for_callback =
         host_status_with_device.host_device()->GetRemoteDevice();
@@ -261,7 +261,7 @@ void MultiDeviceSetupImpl::GetHostStatus(GetHostStatusCallback callback) {
 void MultiDeviceSetupImpl::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const base::Optional<std::string>& auth_token,
+    const absl::optional<std::string>& auth_token,
     SetFeatureEnabledStateCallback callback) {
   if (IsAuthTokenRequiredForFeatureStateChange(feature, enabled) &&
       (!auth_token || !auth_token_validator_->IsAuthTokenValid(*auth_token))) {
@@ -351,7 +351,7 @@ void MultiDeviceSetupImpl::OnHostStatusChange(
 
   // The Mojo API requires a raw multidevice::RemoteDevice instead of a
   // multidevice::RemoteDeviceRef.
-  base::Optional<multidevice::RemoteDevice> device_for_callback;
+  absl::optional<multidevice::RemoteDevice> device_for_callback;
   if (host_status_with_device.host_device()) {
     device_for_callback =
         host_status_with_device.host_device()->GetRemoteDevice();

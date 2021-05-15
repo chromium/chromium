@@ -72,7 +72,7 @@ void DriveFsSearch::OnSearchDriveFs(
     drivefs::mojom::QueryParametersPtr query,
     mojom::SearchQuery::GetNextPageCallback callback,
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   if (error == drive::FILE_ERROR_NO_CONNECTION &&
       query->query_source !=
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {

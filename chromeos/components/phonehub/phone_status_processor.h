@@ -69,7 +69,7 @@ class PhoneStatusProcessor
       const proto::PhoneProperties& phone_properties);
 
   void MaybeSetPhoneModelName(
-      const base::Optional<multidevice::RemoteDeviceRef>& remote_device);
+      const absl::optional<multidevice::RemoteDeviceRef>& remote_device);
 
   void SetDoNotDisturbState(proto::NotificationMode mode);
 

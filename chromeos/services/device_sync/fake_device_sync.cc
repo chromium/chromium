@@ -7,8 +7,8 @@
 #include "chromeos/services/device_sync/fake_device_sync.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -19,14 +19,14 @@ FakeDeviceSync::FakeDeviceSync() : DeviceSyncBase() {}
 FakeDeviceSync::~FakeDeviceSync() = default;
 
 void FakeDeviceSync::InvokePendingGetLocalDeviceMetadataCallback(
-    const base::Optional<multidevice::RemoteDevice>& local_device_metadata) {
+    const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
   std::move(get_local_device_metadata_callback_queue_.front())
       .Run(local_device_metadata);
   get_local_device_metadata_callback_queue_.pop();
 }
 
 void FakeDeviceSync::InvokePendingGetSyncedDevicesCallback(
-    const base::Optional<std::vector<multidevice::RemoteDevice>>&
+    const absl::optional<std::vector<multidevice::RemoteDevice>>&
         remote_devices) {
   std::move(get_synced_devices_callback_queue_.front()).Run(remote_devices);
   get_synced_devices_callback_queue_.pop();
@@ -61,7 +61,7 @@ void FakeDeviceSync::InvokePendingNotifyDevicesCallback(
 
 void FakeDeviceSync::InvokePendingGetDevicesActivityStatusCallback(
     mojom::NetworkRequestResult result_code,
-    base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+    absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
         get_devices_activity_status_response) {
   std::move(get_devices_activity_status_callback_queue_.front())
       .Run(result_code, std::move(get_devices_activity_status_response));

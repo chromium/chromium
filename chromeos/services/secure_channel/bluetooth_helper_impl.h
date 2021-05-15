@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -54,14 +54,14 @@ class BluetoothHelperImpl : public BluetoothHelper {
   // BluetoothHelper:
   std::unique_ptr<DataWithTimestamp> GenerateForegroundAdvertisement(
       const DeviceIdPair& device_id_pair) override;
-  base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
+  absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) override;
   std::string GetBluetoothPublicAddress(const std::string& device_id) override;
   std::string ExpectedServiceDataToString(
       const DeviceIdPairSet& device_id_pair_set) override;
 
-  base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
+  absl::optional<BluetoothHelper::DeviceWithBackgroundBool>
   PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const std::string& local_device_id,

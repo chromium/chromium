@@ -86,19 +86,19 @@ bool HostDeviceTimestampManagerImpl::WasHostSetFromThisChromebook() {
   return pref_service_->GetBoolean(kWasHostSetFromThisChromebookPrefName);
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestSetupFlowCompletionTimestamp() {
   if (pref_service_->GetInt64(kSetupFlowCompletedPrefName) == kTimestampNotSet)
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJavaTime(
       pref_service_->GetInt64(kSetupFlowCompletedPrefName));
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 HostDeviceTimestampManagerImpl::GetLatestVerificationTimestamp() {
   if (pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName) ==
       kTimestampNotSet)
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJavaTime(
       pref_service_->GetInt64(kHostVerifiedUpdateReceivedPrefName));
 }

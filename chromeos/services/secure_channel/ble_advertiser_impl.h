@@ -12,13 +12,13 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -113,12 +113,12 @@ class BleAdvertiserImpl : public BleAdvertiser {
 
   bool ReplaceLowPriorityAdvertisementIfPossible(
       ConnectionPriority connection_priority);
-  base::Optional<size_t> GetIndexWithLowerPriority(
+  absl::optional<size_t> GetIndexWithLowerPriority(
       ConnectionPriority connection_priority);
   void UpdateAdvertisementState();
   void AddActiveAdvertisementRequest(size_t index_to_add);
   void AttemptToAddActiveAdvertisement(size_t index_to_add);
-  base::Optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
+  absl::optional<size_t> GetIndexForActiveRequest(const DeviceIdPair& request);
   void StopAdvertisementRequestAndUpdateActiveRequests(
       size_t index,
       bool replaced_by_higher_priority_advertisement,

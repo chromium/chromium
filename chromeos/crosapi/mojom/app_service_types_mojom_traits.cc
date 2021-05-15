@@ -26,23 +26,23 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   if (!data.ReadReadiness(&readiness))
     return false;
 
-  base::Optional<std::string> name;
+  absl::optional<std::string> name;
   if (!data.ReadName(&name))
     return false;
 
-  base::Optional<std::string> short_name;
+  absl::optional<std::string> short_name;
   if (!data.ReadShortName(&short_name))
     return false;
 
-  base::Optional<std::string> publisher_id;
+  absl::optional<std::string> publisher_id;
   if (!data.ReadPublisherId(&publisher_id))
     return false;
 
-  base::Optional<std::string> description;
+  absl::optional<std::string> description;
   if (!data.ReadDescription(&description))
     return false;
 
-  base::Optional<std::string> version;
+  absl::optional<std::string> version;
   if (!data.ReadVersion(&version))
     return false;
 
@@ -54,11 +54,11 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   if (!data.ReadIconKey(&icon_key))
     return false;
 
-  base::Optional<base::Time> last_launch_time;
+  absl::optional<base::Time> last_launch_time;
   if (!data.ReadLastLaunchTime(&last_launch_time))
     return false;
 
-  base::Optional<base::Time> install_time;
+  absl::optional<base::Time> install_time;
   if (!data.ReadInstallTime(&install_time))
     return false;
 
@@ -341,10 +341,10 @@ bool StructTraits<crosapi::mojom::IntentFilterDataView,
   std::vector<apps::mojom::ConditionPtr> conditions;
   if (!data.ReadConditions(&conditions))
     return false;
-  base::Optional<std::string> activity_name;
+  absl::optional<std::string> activity_name;
   if (!data.ReadActivityName(&activity_name))
     return false;
-  base::Optional<std::string> activity_label;
+  absl::optional<std::string> activity_label;
   if (!data.ReadActivityLabel(&activity_label))
     return false;
 

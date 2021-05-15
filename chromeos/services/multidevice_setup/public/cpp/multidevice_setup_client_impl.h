@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -19,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -57,7 +57,7 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   void SetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const base::Optional<std::string>& auth_token,
+      const absl::optional<std::string>& auth_token,
       mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
       override;
   const FeatureStatesMap& GetFeatureStates() const override;
@@ -71,7 +71,7 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   // mojom::HostStatusObserver:
   void OnHostStatusChanged(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDevice>& host_device) override;
+      const absl::optional<multidevice::RemoteDevice>& host_device) override;
 
   // mojom::FeatureStateObserver:
   void OnFeatureStatesChanged(

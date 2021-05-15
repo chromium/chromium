@@ -84,7 +84,7 @@ void ExtendedAuthenticatorImpl::StartFingerprintAuthSession(
 
 void ExtendedAuthenticatorImpl::OnStartFingerprintAuthSessionComplete(
     base::OnceCallback<void(bool)> callback,
-    base::Optional<user_data_auth::StartFingerprintAuthSessionReply> reply) {
+    absl::optional<user_data_auth::StartFingerprintAuthSessionReply> reply) {
   std::move(callback).Run(
       reply.has_value() &&
       reply->error() ==
@@ -94,7 +94,7 @@ void ExtendedAuthenticatorImpl::OnStartFingerprintAuthSessionComplete(
 void ExtendedAuthenticatorImpl::EndFingerprintAuthSession() {
   UserDataAuthClient::Get()->EndFingerprintAuthSession(
       user_data_auth::EndFingerprintAuthSessionRequest(),
-      base::BindOnce([](base::Optional<
+      base::BindOnce([](absl::optional<
                          user_data_auth::EndFingerprintAuthSessionReply>
                             reply) {
         if (!reply ||
@@ -125,7 +125,7 @@ void ExtendedAuthenticatorImpl::AuthenticateWithFingerprint(
 
 void ExtendedAuthenticatorImpl::OnFingerprintScanComplete(
     base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback,
-    base::Optional<user_data_auth::CheckKeyReply> reply) {
+    absl::optional<user_data_auth::CheckKeyReply> reply) {
   if (!reply) {
     std::move(callback).Run(user_data_auth::CryptohomeErrorCode::
                                 CRYPTOHOME_ERROR_FINGERPRINT_ERROR_INTERNAL);
@@ -248,7 +248,7 @@ void ExtendedAuthenticatorImpl::OnOperationComplete(
     const std::string& time_marker,
     const UserContext& user_context,
     base::OnceClosure success_callback,
-    base::Optional<ReplyType> reply) {
+    absl::optional<ReplyType> reply) {
   RecordEndMarker(time_marker);
   cryptohome::MountError return_code = cryptohome::MOUNT_ERROR_FATAL;
   if (reply.has_value()) {

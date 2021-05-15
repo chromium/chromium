@@ -14,19 +14,19 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {
 
 void CopyResult(base::RunLoop* run_loop,
-                base::Optional<std::string>* output,
-                base::Optional<std::string> result) {
+                absl::optional<std::string>* output,
+                absl::optional<std::string> result) {
   run_loop->Quit();
   *output = std::move(result);
 }
@@ -58,7 +58,7 @@ class PipeReaderTest : public testing::Test {
 TEST_F(PipeReaderTest, Empty) {
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
   base::RunLoop run_loop;
-  base::Optional<std::string> output;
+  absl::optional<std::string> output;
   base::ScopedFD write_fd =
       reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
   write_fd.reset();
@@ -71,7 +71,7 @@ TEST_F(PipeReaderTest, SmallData) {
 
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
   base::RunLoop run_loop;
-  base::Optional<std::string> output;
+  absl::optional<std::string> output;
   base::ScopedFD write_fd =
       reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
   base::ThreadPool::PostTask(
@@ -86,7 +86,7 @@ TEST_F(PipeReaderTest, LargeData) {
 
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
   base::RunLoop run_loop;
-  base::Optional<std::string> output;
+  absl::optional<std::string> output;
   base::ScopedFD write_fd =
       reader->StartIO(base::BindOnce(&CopyResult, &run_loop, &output));
   base::ThreadPool::PostTask(
@@ -98,7 +98,7 @@ TEST_F(PipeReaderTest, LargeData) {
 TEST_F(PipeReaderTest, Cancel) {
   auto reader = std::make_unique<PipeReader>(GetTaskRunner());
   base::ScopedFD write_fd =
-      reader->StartIO(base::BindOnce([](base::Optional<std::string> result) {
+      reader->StartIO(base::BindOnce([](absl::optional<std::string> result) {
         FAIL();  // Unexpected to be called.
       }));
   reader.reset();  // Delete |reader| before closing |write_fd|.

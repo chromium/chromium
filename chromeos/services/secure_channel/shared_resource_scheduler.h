@@ -9,9 +9,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -40,17 +40,17 @@ class SharedResourceScheduler {
   // Removes a request from the scheduler.
   void RemoveScheduledRequest(const DeviceIdPair& request);
 
-  // Returns the next scheduled request, or base::nullopt if there are no
+  // Returns the next scheduled request, or absl::nullopt if there are no
   // requests scheduled. Once a request is retrieved via this function, it is
   // removed from the scheduler and will not be re-scheduled unless a new call
   // to ScheduleRequest() is made.
-  base::Optional<std::pair<DeviceIdPair, ConnectionPriority>>
+  absl::optional<std::pair<DeviceIdPair, ConnectionPriority>>
   GetNextScheduledRequest();
 
   // Returns the priority of the the request which will next be returned by
   // GetNextScheduledRequest(). If no requests are currently scheduled,
-  // base::nullopt is returned.
-  base::Optional<ConnectionPriority> GetHighestPriorityOfScheduledRequests();
+  // absl::nullopt is returned.
+  absl::optional<ConnectionPriority> GetHighestPriorityOfScheduledRequests();
 
   bool empty() const { return request_to_priority_map_.empty(); }
 

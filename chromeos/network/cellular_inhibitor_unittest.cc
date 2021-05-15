@@ -67,7 +67,7 @@ class CellularInhibitorTest : public testing::Test {
 
   void TearDown() override {
     cellular_inhibitor_.RemoveObserver(&observer_);
-    helper_.device_test()->SetPropertyChangeDelay(base::nullopt);
+    helper_.device_test()->SetPropertyChangeDelay(absl::nullopt);
   }
 
   void AddCellularDevice() {
@@ -129,7 +129,7 @@ class CellularInhibitorTest : public testing::Test {
                      : GetInhibitedPropertyResult::kFalse;
   }
 
-  base::Optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {
+  absl::optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {
     return cellular_inhibitor_.GetInhibitReason();
   }
 
@@ -149,7 +149,7 @@ class CellularInhibitorTest : public testing::Test {
 
  private:
   void GetPropertiesCallback(const std::string& device_path,
-                             base::Optional<base::Value> properties) {
+                             absl::optional<base::Value> properties) {
     if (!properties) {
       properties_.reset();
       return;

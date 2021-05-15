@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
 #include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -44,10 +44,10 @@ class FakeObserver : public NotificationManager::Observer {
   FakeObserver() = default;
   ~FakeObserver() override = default;
 
-  base::Optional<NotificationState> GetState(int64_t notification_id) const {
+  absl::optional<NotificationState> GetState(int64_t notification_id) const {
     const auto it = id_to_state_map_.find(notification_id);
     if (it == id_to_state_map_.end())
-      return base::nullopt;
+      return absl::nullopt;
     return it->second;
   }
 
@@ -108,7 +108,7 @@ class NotificationManagerImplTest : public testing::Test {
     return manager_->id_to_notification_map_.size();
   }
 
-  base::Optional<NotificationState> GetNotificationState(
+  absl::optional<NotificationState> GetNotificationState(
       int64_t notification_id) {
     return fake_observer_.GetState(notification_id);
   }

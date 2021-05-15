@@ -22,7 +22,7 @@ bool FakeOsInstallClient::HasObserver(const Observer* observer) const {
 }
 
 void FakeOsInstallClient::StartOsInstall(StartOsInstallCallback callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace chromeos

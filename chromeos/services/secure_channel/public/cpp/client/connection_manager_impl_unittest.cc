@@ -289,7 +289,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
 TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
   // Simulate a missing local device.
   fake_device_sync_client_.set_local_device_metadata(
-      base::Optional<chromeos::multidevice::RemoteDeviceRef>());
+      absl::optional<chromeos::multidevice::RemoteDeviceRef>());
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that
@@ -303,7 +303,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
   // Simulate a missing remote device.
   fake_multidevice_setup_client_.SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified,
-                     base::Optional<chromeos::multidevice::RemoteDeviceRef>()));
+                     absl::optional<chromeos::multidevice::RemoteDeviceRef>()));
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that

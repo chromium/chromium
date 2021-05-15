@@ -189,7 +189,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetManagedProperties(
   if (!GetPoliciesForUser(userhash) || !GetPoliciesForUser(std::string())) {
     NET_LOG(ERROR) << "GetManagedProperties failed: "
                    << kPoliciesNotInitialized;
-    std::move(callback).Run(service_path, base::nullopt,
+    std::move(callback).Run(service_path, absl::nullopt,
                             kPoliciesNotInitialized);
     return;
   }
@@ -977,10 +977,10 @@ void ManagedNetworkConfigurationHandlerImpl::GetPropertiesCallback(
     const std::string& userhash,
     network_handler::PropertiesCallback callback,
     const std::string& service_path,
-    base::Optional<base::Value> shill_properties) {
+    absl::optional<base::Value> shill_properties) {
   if (!shill_properties) {
     SendProperties(properties_type, userhash, service_path, std::move(callback),
-                   base::nullopt);
+                   absl::nullopt);
     return;
   }
 
@@ -1033,9 +1033,9 @@ void ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    base::Optional<base::Value> network_properties,
+    absl::optional<base::Value> network_properties,
     const std::string& device_path,
-    base::Optional<base::Value> device_properties) {
+    absl::optional<base::Value> device_properties) {
   DCHECK(network_properties);
   if (!device_properties) {
     NET_LOG(ERROR) << "Error getting device properties: "
@@ -1054,7 +1054,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    base::Optional<base::Value> shill_properties) {
+    absl::optional<base::Value> shill_properties) {
   auto get_name = [](PropertiesType properties_type) {
     switch (properties_type) {
       case PropertiesType::kUnmanaged:
@@ -1067,7 +1067,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
 
   if (!shill_properties) {
     NET_LOG(ERROR) << get_name(properties_type) << " Failed.";
-    std::move(callback).Run(service_path, base::nullopt,
+    std::move(callback).Run(service_path, absl::nullopt,
                             network_handler::kDBusFailedError);
     return;
   }
@@ -1075,7 +1075,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       shill_properties->FindStringKey(shill::kGuidProperty);
   if (!guid) {
     NET_LOG(ERROR) << get_name(properties_type) << " Missing GUID.";
-    std::move(callback).Run(service_path, base::nullopt, kUnknownNetwork);
+    std::move(callback).Run(service_path, absl::nullopt, kUnknownNetwork);
     return;
   }
 
@@ -1090,9 +1090,9 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
 
   if (properties_type == PropertiesType::kUnmanaged) {
     std::move(callback).Run(service_path,
-                            base::make_optional(base::Value::FromUniquePtrValue(
+                            absl::make_optional(base::Value::FromUniquePtrValue(
                                 std::move(onc_network))),
-                            base::nullopt);
+                            absl::nullopt);
     return;
   }
 
@@ -1131,7 +1131,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     if (!policies) {
       NET_LOG(ERROR) << "GetManagedProperties failed: "
                      << kPoliciesNotInitialized;
-      std::move(callback).Run(service_path, base::nullopt,
+      std::move(callback).Run(service_path, absl::nullopt,
                               kPoliciesNotInitialized);
       return;
     }
@@ -1145,9 +1145,9 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
                                     user_settings, onc_network.get(), profile));
   SetManagedActiveProxyValues(*guid, augmented_properties.get());
   std::move(callback).Run(service_path,
-                          base::make_optional(base::Value::FromUniquePtrValue(
+                          absl::make_optional(base::Value::FromUniquePtrValue(
                               std::move(augmented_properties))),
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 }  // namespace chromeos

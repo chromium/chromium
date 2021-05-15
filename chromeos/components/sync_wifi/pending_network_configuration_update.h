@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -24,7 +24,7 @@ class PendingNetworkConfigurationUpdate {
   PendingNetworkConfigurationUpdate(
       const NetworkIdentifier& id,
       const std::string& change_guid,
-      const base::Optional<sync_pb::WifiConfigurationSpecifics>& specifics,
+      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
       int completed_attempts);
   PendingNetworkConfigurationUpdate(
       const PendingNetworkConfigurationUpdate& update);
@@ -40,7 +40,7 @@ class PendingNetworkConfigurationUpdate {
 
   // When null, this is a delete operation, if there is a
   // WifiConfigurationSpecifics then it is an add or update.
-  const base::Optional<sync_pb::WifiConfigurationSpecifics>& specifics() const {
+  const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics() const {
     return specifics_;
   }
 
@@ -58,7 +58,7 @@ class PendingNetworkConfigurationUpdate {
 
   NetworkIdentifier id_;
   std::string change_guid_;
-  base::Optional<sync_pb::WifiConfigurationSpecifics> specifics_;
+  absl::optional<sync_pb::WifiConfigurationSpecifics> specifics_;
   int completed_attempts_;
 };
 

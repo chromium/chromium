@@ -9,7 +9,7 @@
 #include <ostream>
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -69,7 +69,7 @@ class PhoneStatusModel {
   // Note: If |mobile_status| is not kSimWithReception,
   // |mobile_connection_metadata| should be null.
   PhoneStatusModel(MobileStatus mobile_status,
-                   const base::Optional<MobileConnectionMetadata>&
+                   const absl::optional<MobileConnectionMetadata>&
                        mobile_connection_metadata,
                    ChargingState charging_state,
                    BatterySaverState battery_saver_state,
@@ -83,7 +83,7 @@ class PhoneStatusModel {
   MobileStatus mobile_status() const { return mobile_status_; }
 
   // Note: Null when mobile_status() is not kSimWithReception.
-  const base::Optional<MobileConnectionMetadata>& mobile_connection_metadata()
+  const absl::optional<MobileConnectionMetadata>& mobile_connection_metadata()
       const {
     return mobile_connection_metadata_;
   }
@@ -96,7 +96,7 @@ class PhoneStatusModel {
 
  private:
   MobileStatus mobile_status_;
-  base::Optional<MobileConnectionMetadata> mobile_connection_metadata_;
+  absl::optional<MobileConnectionMetadata> mobile_connection_metadata_;
   ChargingState charging_state_;
   BatterySaverState battery_saver_state_;
   uint32_t battery_percentage_;

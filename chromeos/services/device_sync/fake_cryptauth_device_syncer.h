@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -28,11 +28,11 @@ class FakeCryptAuthDeviceSyncer : public CryptAuthDeviceSyncer {
   FakeCryptAuthDeviceSyncer();
   ~FakeCryptAuthDeviceSyncer() override;
 
-  const base::Optional<cryptauthv2::ClientMetadata>& client_metadata() const {
+  const absl::optional<cryptauthv2::ClientMetadata>& client_metadata() const {
     return client_metadata_;
   }
 
-  const base::Optional<cryptauthv2::ClientAppMetadata>& client_app_metadata()
+  const absl::optional<cryptauthv2::ClientAppMetadata>& client_app_metadata()
       const {
     return client_app_metadata_;
   }
@@ -45,8 +45,8 @@ class FakeCryptAuthDeviceSyncer : public CryptAuthDeviceSyncer {
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata) override;
 
-  base::Optional<cryptauthv2::ClientMetadata> client_metadata_;
-  base::Optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
+  absl::optional<cryptauthv2::ClientMetadata> client_metadata_;
+  absl::optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceSyncer);
 };

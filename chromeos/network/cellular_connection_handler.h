@@ -9,12 +9,12 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -103,9 +103,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
         ErrorCallback error_callback);
     ~ConnectionRequestMetadata();
 
-    base::Optional<std::string> iccid;
-    base::Optional<dbus::ObjectPath> euicc_path;
-    base::Optional<dbus::ObjectPath> profile_path;
+    absl::optional<std::string> iccid;
+    absl::optional<dbus::ObjectPath> euicc_path;
+    absl::optional<dbus::ObjectPath> profile_path;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
     SuccessCallback success_callback;
     ErrorCallback error_callback;
@@ -136,11 +136,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
 
   // If |error_name| is is non-null, invokes the error callback. If |error_name|
   // is non-null and a relevant network exists, invokes the success callback.
-  void CompleteConnectionAttempt(const base::Optional<std::string>& error_name);
+  void CompleteConnectionAttempt(const absl::optional<std::string>& error_name);
 
   const NetworkState* GetNetworkStateForCurrentOperation() const;
-  base::Optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
-  base::Optional<dbus::ObjectPath> GetProfilePathForCurrentOperation() const;
+  absl::optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
+  absl::optional<dbus::ObjectPath> GetProfilePathForCurrentOperation() const;
 
   void CheckServiceStatus();
   void OnInhibitScanResult(
@@ -152,9 +152,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   void OnEnableCarrierProfileResult(HermesResponseStatus status);
 
   void UninhibitScans(
-      const base::Optional<std::string>& error_before_uninhibit);
+      const absl::optional<std::string>& error_before_uninhibit);
   void OnUninhibitScanResult(
-      const base::Optional<std::string>& error_before_uninhibit,
+      const absl::optional<std::string>& error_before_uninhibit,
       bool success);
   void HandleNetworkPropertiesUpdate();
   void CheckForConnectable();

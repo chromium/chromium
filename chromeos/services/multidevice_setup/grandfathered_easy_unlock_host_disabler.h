@@ -86,14 +86,14 @@ class GrandfatheredEasyUnlockHostDisabler
       multidevice::RemoteDeviceRef device,
       device_sync::mojom::NetworkRequestResult result_code);
   void SetPotentialEasyUnlockHostToDisable(
-      base::Optional<multidevice::RemoteDeviceRef> device);
-  base::Optional<multidevice::RemoteDeviceRef> GetEasyUnlockHostToDisable();
+      absl::optional<multidevice::RemoteDeviceRef> device);
+  absl::optional<multidevice::RemoteDeviceRef> GetEasyUnlockHostToDisable();
 
   HostBackendDelegate* host_backend_delegate_;
   device_sync::DeviceSyncClient* device_sync_client_;
   PrefService* pref_service_;
   std::unique_ptr<base::OneShotTimer> timer_;
-  base::Optional<multidevice::RemoteDeviceRef> current_better_together_host_;
+  absl::optional<multidevice::RemoteDeviceRef> current_better_together_host_;
 
   base::WeakPtrFactory<GrandfatheredEasyUnlockHostDisabler> weak_ptr_factory_{
       this};

@@ -5,7 +5,7 @@
 #include "chromeos/components/local_search_service/index.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace local_search_service {

@@ -10,10 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -53,9 +53,9 @@ class ExpiringRemoteDeviceCache {
   //
   // For best results, pass in both IDs when available since the device could
   // have been written to the cache with one of the IDs missing.
-  base::Optional<RemoteDeviceRef> GetRemoteDevice(
-      const base::Optional<std::string>& instance_id,
-      const base::Optional<std::string>& legacy_device_id) const;
+  absl::optional<RemoteDeviceRef> GetRemoteDevice(
+      const absl::optional<std::string>& instance_id,
+      const absl::optional<std::string>& legacy_device_id) const;
 
  private:
   void RememberIdsFromLastSetCall(const RemoteDevice& device);

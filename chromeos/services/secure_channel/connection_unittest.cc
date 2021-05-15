@@ -8,13 +8,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::DoAll;
@@ -100,20 +100,20 @@ class CryptAuthConnectionTest : public testing::Test {
   CryptAuthConnectionTest() = default;
   ~CryptAuthConnectionTest() override = default;
 
-  base::Optional<int32_t> GetRssi(Connection* connection) {
+  absl::optional<int32_t> GetRssi(Connection* connection) {
     connection->GetConnectionRssi(base::BindOnce(
         &CryptAuthConnectionTest::OnConnectionRssi, base::Unretained(this)));
 
-    base::Optional<int32_t> rssi = rssi_;
+    absl::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     return rssi;
   }
 
  private:
-  void OnConnectionRssi(base::Optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
-  base::Optional<int32_t> rssi_;
+  absl::optional<int32_t> rssi_;
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthConnectionTest);
 };
@@ -279,7 +279,7 @@ TEST_F(CryptAuthConnectionTest,
 TEST_F(CryptAuthConnectionTest, GetConnectionRssi) {
   NiceMock<MockConnection> connection;
   connection.SetStatus(Connection::Status::CONNECTED);
-  EXPECT_EQ(base::nullopt, GetRssi(&connection));
+  EXPECT_EQ(absl::nullopt, GetRssi(&connection));
 }
 
 }  // namespace secure_channel

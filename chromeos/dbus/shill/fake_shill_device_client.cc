@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -25,6 +24,7 @@
 #include "dbus/object_proxy.h"
 #include "dbus/values_util.h"
 #include "net/base/ip_endpoint.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -432,7 +432,7 @@ void FakeShillDeviceClient::SetSimulateUninhibitScanning(
 }
 
 void FakeShillDeviceClient::SetPropertyChangeDelay(
-    base::Optional<base::TimeDelta> time_delay) {
+    absl::optional<base::TimeDelta> time_delay) {
   property_change_delay_ = time_delay;
 }
 
@@ -546,7 +546,7 @@ void FakeShillDeviceClient::PassStubDeviceProperties(
   const base::Value* device_properties =
       stub_devices_.FindDictKey(device_path.value());
   if (!device_properties) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(device_properties->Clone());

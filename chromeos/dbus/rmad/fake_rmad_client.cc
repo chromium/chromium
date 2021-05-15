@@ -97,7 +97,7 @@ void FakeRmadClient::AbortRma(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     base::Optional<rmad::AbortRmaReply>(abort_rma_reply_)));
+                     absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
 void FakeRmadClient::SetFakeStateReplies(

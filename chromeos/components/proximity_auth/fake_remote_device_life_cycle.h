@@ -18,7 +18,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
  public:
   explicit FakeRemoteDeviceLifeCycle(
       chromeos::multidevice::RemoteDeviceRef remote_device,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
   ~FakeRemoteDeviceLifeCycle() override;
 
   // RemoteDeviceLifeCycle:
@@ -49,7 +49,7 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
 
  private:
   chromeos::multidevice::RemoteDeviceRef remote_device_;
-  base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
+  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;

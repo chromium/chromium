@@ -57,7 +57,7 @@ void KeepAliveScheduler::OnActiveHostChanged(
     DCHECK(change_info.new_wifi_network_guid.empty());
 
     keep_alive_operation_.reset();
-    active_host_device_ = base::nullopt;
+    active_host_device_ = absl::nullopt;
     timer_->Stop();
     return;
   }

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/simple_test_clock.h"
@@ -19,6 +18,7 @@
 #include "base/values.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace em = enterprise_management;
@@ -56,11 +56,11 @@ constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
 }  // namespace
 
 class SingleWeeklyTimeTest
-    : public testing::TestWithParam<std::tuple<int, int, base::Optional<int>>> {
+    : public testing::TestWithParam<std::tuple<int, int, absl::optional<int>>> {
  public:
   int day_of_week() const { return std::get<0>(GetParam()); }
   int minutes() const { return std::get<1>(GetParam()); }
-  base::Optional<int> timezone_offset() const {
+  absl::optional<int> timezone_offset() const {
     return std::get<2>(GetParam());
   }
 };
@@ -165,7 +165,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromValue_Valid) {
 INSTANTIATE_TEST_SUITE_P(
     TheSmallestCase,
     SingleWeeklyTimeTest,
-    testing::Values(std::make_tuple(kMonday, 0, base::nullopt)));
+    testing::Values(std::make_tuple(kMonday, 0, absl::nullopt)));
 
 INSTANTIATE_TEST_SUITE_P(
     TheBiggestCase,
@@ -230,18 +230,18 @@ INSTANTIATE_TEST_SUITE_P(
 class TwoWeeklyTimesAndDurationInDifferentTimezonesTest
     : public testing::TestWithParam<std::tuple<int,
                                                int,
-                                               base::Optional<int>,
+                                               absl::optional<int>,
                                                int,
                                                int,
-                                               base::Optional<int>,
+                                               absl::optional<int>,
                                                base::TimeDelta>> {
  public:
   int day1() const { return std::get<0>(GetParam()); }
   int minutes1() const { return std::get<1>(GetParam()); }
-  base::Optional<int> offset1() const { return std::get<2>(GetParam()); }
+  absl::optional<int> offset1() const { return std::get<2>(GetParam()); }
   int day2() const { return std::get<3>(GetParam()); }
   int minutes2() const { return std::get<4>(GetParam()); }
-  base::Optional<int> offset2() const { return std::get<5>(GetParam()); }
+  absl::optional<int> offset2() const { return std::get<5>(GetParam()); }
   base::TimeDelta expected_duration() const { return std::get<6>(GetParam()); }
 };
 
@@ -280,10 +280,10 @@ INSTANTIATE_TEST_SUITE_P(
     TwoWeeklyTimesAndDurationInDifferentTimezonesTest,
     testing::Values(std::make_tuple(kMonday,
                                     10 * kMinutesInHour,
-                                    base::nullopt,
+                                    absl::nullopt,
                                     kTuesday,
                                     5 * kMinutesInHour,
-                                    base::nullopt,
+                                    absl::nullopt,
                                     base::TimeDelta::FromHours(19))));
 
 class TwoWeeklyTimesAndOffsetTest

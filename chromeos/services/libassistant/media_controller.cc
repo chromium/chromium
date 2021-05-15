@@ -115,7 +115,7 @@ std::string GetAndroidIntentUrlFromMediaArgs(
   return std::string();
 }
 
-base::Optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
+absl::optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
     const std::string& play_media_args_proto) {
   PlayMediaArgs play_media_args;
   if (play_media_args.ParseFromString(play_media_args_proto)) {
@@ -132,7 +132,7 @@ base::Optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string GetWebUrlFromMediaArgs(const std::string& play_media_args_proto) {
@@ -214,7 +214,7 @@ class MediaController::LibassistantMediaHandler {
   }
 
   void OnPlayMedia(const std::string& play_media_args_proto) {
-    base::Optional<AndroidAppInfo> app_info =
+    absl::optional<AndroidAppInfo> app_info =
         GetAppInfoFromMediaArgs(play_media_args_proto);
     if (app_info) {
       OnOpenMediaAndroidIntent(play_media_args_proto,

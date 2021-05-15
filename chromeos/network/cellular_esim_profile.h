@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "dbus/object_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   // Returns null if the provided value does not have the required dictionary
   // properties. Should be provided a dictionary created via
   // ToDictionaryValue().
-  static base::Optional<CellularESimProfile> FromDictionaryValue(
+  static absl::optional<CellularESimProfile> FromDictionaryValue(
       const base::Value& value);
 
   CellularESimProfile(State state,

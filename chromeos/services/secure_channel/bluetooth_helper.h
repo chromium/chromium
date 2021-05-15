@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -41,8 +41,8 @@ class BluetoothHelper {
       std::pair<multidevice::RemoteDeviceRef, bool>;
 
   // Identifies the device that produced a BLE advertisement with service data
-  // |service_data|. If no device can be identified, base::nullopt is returned.
-  base::Optional<DeviceWithBackgroundBool> IdentifyRemoteDevice(
+  // |service_data|. If no device can be identified, absl::nullopt is returned.
+  absl::optional<DeviceWithBackgroundBool> IdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set);
 
@@ -58,7 +58,7 @@ class BluetoothHelper {
  protected:
   BluetoothHelper();
 
-  virtual base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
+  virtual absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) = 0;
 

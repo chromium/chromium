@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/components/help_app_ui/search/search.mojom.h"
 #include "chromeos/components/help_app_ui/search/search_tag_registry.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace help_app {
@@ -64,7 +64,7 @@ class SearchHandler : public mojom::SearchHandler,
       SearchCallback callback,
       uint32_t max_num_results,
       local_search_service::ResponseStatus response_status,
-      const base::Optional<std::vector<local_search_service::Result>>&
+      const absl::optional<std::vector<local_search_service::Result>>&
           local_search_service_results);
 
   // Converts an LSS search result to the format used by this search handler.

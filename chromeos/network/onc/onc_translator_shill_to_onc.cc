@@ -37,7 +37,7 @@ base::Value ConvertVpnStringToValue(const std::string& str,
   if (type == base::Value::Type::STRING)
     return base::Value(str);
 
-  base::Optional<base::Value> value = base::JSONReader::Read(str);
+  absl::optional<base::Value> value = base::JSONReader::Read(str);
   if (!value || value->type() != type)
     return base::Value(type);
 
@@ -391,7 +391,7 @@ void ShillToONCTranslator::TranslateVPN() {
     provider_type_dictionary = onc_provider_type;
   }
 
-  base::Optional<bool> save_credentials =
+  absl::optional<bool> save_credentials =
       shill_dictionary_->FindBoolKey(shill::kSaveCredentialsProperty);
   if (onc_provider_type != ::onc::vpn::kThirdPartyVpn &&
       onc_provider_type != ::onc::vpn::kArcVpn && save_credentials) {
@@ -420,7 +420,7 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
   if (!unknown_encoding && !ssid.empty())
     onc_object_->SetKey(::onc::wifi::kSSID, base::Value(ssid));
 
-  base::Optional<bool> link_monitor_disable =
+  absl::optional<bool> link_monitor_disable =
       shill_dictionary_->FindBoolKey(shill::kLinkMonitorDisableProperty);
   if (link_monitor_disable) {
     onc_object_->SetKey(::onc::wifi::kAllowGatewayARPPolling,

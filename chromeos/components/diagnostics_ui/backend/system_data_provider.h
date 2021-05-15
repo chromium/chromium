@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/components/diagnostics_ui/backend/cpu_usage_data.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -17,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RepeatingTimer;
@@ -100,7 +100,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void NotifyCpuUsageObservers(const mojom::CpuUsagePtr& cpu_usage);
 
   void OnBatteryChargeStatusUpdated(
-      const base::Optional<power_manager::PowerSupplyProperties>&
+      const absl::optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
       cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 

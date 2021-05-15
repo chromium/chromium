@@ -12,12 +12,12 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/test_support/fake_assistant_settings_impl.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -35,10 +35,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void FinishStart();
 
   // assistant::AssistantManagerService overrides
-  void Start(const base::Optional<UserInfo>& user,
+  void Start(const absl::optional<UserInfo>& user,
              bool enable_hotword) override;
   void Stop() override;
-  void SetUser(const base::Optional<UserInfo>& user) override;
+  void SetUser(const absl::optional<UserInfo>& user) override;
   void EnableListening(bool enable) override;
   void EnableHotword(bool enable) override;
   void SetArcPlayStoreEnabled(bool enabled) override;
@@ -84,9 +84,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void SetStateAndInformObservers(State new_state);
 
   // Return the access token that was passed to |SetUser|.
-  base::Optional<std::string> access_token() { return access_token_; }
+  absl::optional<std::string> access_token() { return access_token_; }
   // Return the Gaia ID that was passed to |SetUser|.
-  base::Optional<std::string> gaia_id() { return gaia_id_; }
+  absl::optional<std::string> gaia_id() { return gaia_id_; }
 
  private:
   // Send out a |AssistantStateObserver::OnStateChange(state)| event if we are
@@ -94,8 +94,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void MaybeSendStateChange(State state, State old_state, State target_state);
 
   State state_ = State::STOPPED;
-  base::Optional<std::string> gaia_id_;
-  base::Optional<std::string> access_token_;
+  absl::optional<std::string> gaia_id_;
+  absl::optional<std::string> access_token_;
   FakeAssistantSettingsImpl assistant_settings_;
   base::ObserverList<StateObserver> state_observers_;
 

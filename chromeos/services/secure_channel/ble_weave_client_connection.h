@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/secure_channel/ble_characteristics_finder.h"
@@ -28,6 +27,7 @@
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -106,7 +106,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void Disconnect() override;
   std::string GetDeviceAddress() override;
   void GetConnectionRssi(
-      base::OnceCallback<void(base::Optional<int32_t>)> callback) override;
+      base::OnceCallback<void(absl::optional<int32_t>)> callback) override;
 
  protected:
   enum BleWeaveConnectionResult {
@@ -333,7 +333,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void OnTimeoutForSubStatus(SubStatus status);
 
   void OnConnectionInfo(
-      base::RepeatingCallback<void(base::Optional<int32_t>)> rssi_callback,
+      base::RepeatingCallback<void(absl::optional<int32_t>)> rssi_callback,
       const device::BluetoothDevice::ConnectionInfo& connection_info);
 
   // These functions are used to set up the connection so that it is ready to

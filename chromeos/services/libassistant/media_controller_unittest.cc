@@ -313,7 +313,7 @@ TEST_F(AssistantMediaControllerTest, ShouldSupportPlayAndroidMedia) {
   android_app_info->set_app_version(111);
   media_item->set_uri("http://the/uri");
 
-  base::Optional<AndroidAppInfo> actual;
+  absl::optional<AndroidAppInfo> actual;
   EXPECT_CALL(delegate(), PlayAndroidMedia)
       .WillOnce([&](const AndroidAppInfo& a) { actual = a; });
 

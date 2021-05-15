@@ -398,7 +398,7 @@ class CrosNetworkConfigTest : public testing::Test {
         std::move(properties), shared,
         base::BindOnce(
             [](std::string* guidp, base::OnceClosure quit_closure,
-               const base::Optional<std::string>& guid,
+               const absl::optional<std::string>& guid,
                const std::string& message) {
               if (guid)
                 *guidp = *guid;
@@ -425,7 +425,7 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   bool SetCellularSimState(const std::string& current_pin_or_puk,
-                           base::Optional<std::string> new_pin,
+                           absl::optional<std::string> new_pin,
                            bool require_pin) {
     bool success = false;
     base::RunLoop run_loop;
@@ -1359,7 +1359,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Unlock the sim with the correct pin. |require_pin| should be ignored.
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/base::nullopt,
+                                  /*new_pin=*/absl::nullopt,
                                   /*require_pin=*/false));
 
   // Sim should be unlocked, locking should still be enabled.
@@ -1370,7 +1370,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Set |require_pin| to false (disable locking).
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/base::nullopt,
+                                  /*new_pin=*/absl::nullopt,
                                   /*require_pin=*/false));
 
   // Sim should be unlocked, locking should be disabled.
@@ -1381,7 +1381,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Set |require_pin| to true (enable locking).
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/base::nullopt,
+                                  /*new_pin=*/absl::nullopt,
                                   /*require_pin=*/true));
 
   // Sim should remain unlocked, locking should be enabled.
@@ -1399,7 +1399,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
   ASSERT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
 
   // Attempt to unlock the sim with an incorrect pin. Call should fail.
-  EXPECT_FALSE(SetCellularSimState("incorrect pin", /*new_pin=*/base::nullopt,
+  EXPECT_FALSE(SetCellularSimState("incorrect pin", /*new_pin=*/absl::nullopt,
                                    /*require_pin=*/false));
 
   // Ensure sim is still locked and retry count has decreased.
@@ -1411,7 +1411,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Additional attempts should set the sim to puk locked.
   for (int i = retries - 1; i > 0; --i) {
-    SetCellularSimState("incorrect pin", /*new_pin=*/base::nullopt, false);
+    SetCellularSimState("incorrect pin", /*new_pin=*/absl::nullopt, false);
   }
   cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
   ASSERT_TRUE(cellular && cellular->sim_lock_status);
@@ -1421,17 +1421,17 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
   // Attempt to unblock the sim with the incorrect puk. Call should fail.
   const std::string new_pin = "2222";
   EXPECT_FALSE(SetCellularSimState("incorrect puk",
-                                   base::make_optional(new_pin),
+                                   absl::make_optional(new_pin),
                                    /*require_pin=*/false));
 
   // Attempt to unblock the sim with np pin. Call should fail.
   EXPECT_FALSE(SetCellularSimState(FakeShillDeviceClient::kSimPuk,
-                                   /*new_pin=*/base::nullopt,
+                                   /*new_pin=*/absl::nullopt,
                                    /*require_pin=*/false));
 
   // Attempt to unlock the sim with the correct puk.
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kSimPuk,
-                                  base::make_optional(new_pin),
+                                  absl::make_optional(new_pin),
                                   /*require_pin=*/false));
 
   // Sim should be unlocked
@@ -1442,7 +1442,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
 TEST_F(CrosNetworkConfigTest, SelectCellularMobileNetwork) {
   // Create fake list of found networks.
-  base::Optional<base::Value> found_networks_list =
+  absl::optional<base::Value> found_networks_list =
       base::JSONReader::Read(base::StringPrintf(
           R"([{"network_id": "network1", "technology": "GSM",
                "status": "current"},

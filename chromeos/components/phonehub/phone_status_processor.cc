@@ -198,9 +198,9 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
 }
 
 void PhoneStatusProcessor::MaybeSetPhoneModelName(
-    const base::Optional<multidevice::RemoteDeviceRef>& remote_device) {
+    const absl::optional<multidevice::RemoteDeviceRef>& remote_device) {
   if (!remote_device.has_value()) {
-    phone_model_->SetPhoneName(base::nullopt);
+    phone_model_->SetPhoneName(absl::nullopt);
     return;
   }
 
@@ -211,7 +211,7 @@ void PhoneStatusProcessor::OnFeatureStatusChanged() {
   // Reset phone model instance when but still keep the phone's name.
   if (feature_status_provider_->GetStatus() !=
       FeatureStatus::kEnabledAndConnected) {
-    phone_model_->SetPhoneStatusModel(base::nullopt);
+    phone_model_->SetPhoneStatusModel(absl::nullopt);
     notification_processor_->ClearNotificationsAndPendingUpdates();
   }
 }

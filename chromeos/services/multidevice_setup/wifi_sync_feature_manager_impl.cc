@@ -227,7 +227,7 @@ bool WifiSyncFeatureManagerImpl::IsWifiSyncSupported() {
     return false;
   }
 
-  base::Optional<multidevice::RemoteDeviceRef> host_device =
+  absl::optional<multidevice::RemoteDeviceRef> host_device =
       host_status_provider_->GetHostWithStatus().host_device();
   if (!host_device) {
     PA_LOG(ERROR) << "WifiSyncFeatureManagerImpl::" << __func__
@@ -241,7 +241,7 @@ bool WifiSyncFeatureManagerImpl::IsWifiSyncSupported() {
     return false;
   }
 
-  base::Optional<multidevice::RemoteDeviceRef> local_device =
+  absl::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!local_device) {
     PA_LOG(ERROR) << "WifiSyncFeatureManagerImpl::" << __func__

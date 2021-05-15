@@ -19,7 +19,7 @@ namespace chromeos {
 
 namespace network_name_util {
 
-base::Optional<std::string> GetESimProfileName(
+absl::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state) {
   DCHECK(network_state);
@@ -27,15 +27,15 @@ base::Optional<std::string> GetESimProfileName(
   // CellularESimProfileHandler is not available if the relevant flag is
   // disabled.
   if (!cellular_esim_profile_handler)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Only Cellular networks correspond to eSIM profiles.
   if (network_state->type() != shill::kTypeCellular)
-    return base::nullopt;
+    return absl::nullopt;
 
   // eSIM profiles have an associated EID and ICCID.
   if (network_state->eid().empty() || network_state->iccid().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<CellularESimProfile> profiles =
       cellular_esim_profile_handler->GetESimProfiles();
@@ -58,7 +58,7 @@ base::Optional<std::string> GetESimProfileName(
       return base::UTF16ToUTF8(profile.service_provider());
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::string GetNetworkName(
@@ -66,7 +66,7 @@ std::string GetNetworkName(
     const NetworkState* network_state) {
   DCHECK(network_state);
   if (!network_state->eid().empty()) {
-    base::Optional<std::string> network_name;
+    absl::optional<std::string> network_name;
     network_name =
         GetESimProfileName(cellular_esim_profile_handler, network_state);
     if (network_name.has_value())

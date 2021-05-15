@@ -11,7 +11,7 @@ namespace chromeos {
 namespace libassistant {
 
 AudioInputProviderImpl::AudioInputProviderImpl()
-    : audio_input_(/*device_id=*/base::nullopt) {}
+    : audio_input_(/*device_id=*/absl::nullopt) {}
 
 AudioInputProviderImpl::~AudioInputProviderImpl() = default;
 

@@ -116,8 +116,8 @@ class FeatureStatusProviderImplTest : public testing::Test {
   }
 
   void SetSyncedDevices(
-      const base::Optional<multidevice::RemoteDeviceRef>& local_device,
-      const std::vector<base::Optional<multidevice::RemoteDeviceRef>>
+      const absl::optional<multidevice::RemoteDeviceRef>& local_device,
+      const std::vector<absl::optional<multidevice::RemoteDeviceRef>>
           phone_devices) {
     fake_device_sync_client_.set_local_device_metadata(local_device);
 
@@ -156,7 +156,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   void SetHostStatusWithDevice(
       HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(host_status, host_device));
   }
@@ -224,28 +224,28 @@ class FeatureStatusProviderImplTest : public testing::Test {
 // Tests conditions for kNotEligibleForFeature status, including missing local
 // device and/or phone and various missing properties of these devices.
 TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
-  SetSyncedDevices(/*local_device=*/base::nullopt,
-                   /*phone_devices=*/{base::nullopt});
+  SetSyncedDevices(/*local_device=*/absl::nullopt,
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_devices=*/{base::nullopt});
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_devices=*/{base::nullopt});
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_devices=*/{base::nullopt});
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_device=*/{base::nullopt});
+                   /*phone_device=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
@@ -313,7 +313,7 @@ TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
   // eligible, expect that we return kNotEligibleForFeature.
   SetFeatureState(FeatureState::kEnabledByUser);
   SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
-                          /*host_device=*/base::nullopt);
+                          /*host_device=*/absl::nullopt);
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
                    {CreatePhoneDevice(/*supports_better_together_host=*/false,
@@ -378,7 +378,7 @@ TEST_F(FeatureStatusProviderImplTest, MultiPhoneEligibility) {
 
   // Simulate no host device connected and expect to detect one eligible host.
   SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
-                          /*host_device=*/base::nullopt);
+                          /*host_device=*/absl::nullopt);
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 

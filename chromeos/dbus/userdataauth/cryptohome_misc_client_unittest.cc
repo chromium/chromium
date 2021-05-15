@@ -217,37 +217,37 @@ class CryptohomeMiscClientTest : public testing::Test {
 TEST_F(CryptohomeMiscClientTest, GetSystemSalt) {
   constexpr char kSalt[] = "example_salt";
   expected_get_system_salt_reply_.set_salt(std::string(kSalt));
-  base::Optional<::user_data_auth::GetSystemSaltReply> result_reply;
+  absl::optional<::user_data_auth::GetSystemSaltReply> result_reply;
 
   client_->GetSystemSalt(::user_data_auth::GetSystemSaltRequest(),
                          CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_system_salt_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, GetSystemSaltInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  base::Optional<::user_data_auth::GetSystemSaltReply> result_reply =
+  absl::optional<::user_data_auth::GetSystemSaltReply> result_reply =
       ::user_data_auth::GetSystemSaltReply();
 
   client_->GetSystemSalt(::user_data_auth::GetSystemSaltRequest(),
                          CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, base::nullopt);
+  ASSERT_EQ(result_reply, absl::nullopt);
 }
 
 TEST_F(CryptohomeMiscClientTest, GetSanitizedUsername) {
   constexpr char kAccountId[] = "test1234@example.com";
   expected_get_sanitized_username_reply_.set_sanitized_username(
       std::string(kAccountId));
-  base::Optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
+  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
 
   client_->GetSanitizedUsername(::user_data_auth::GetSanitizedUsernameRequest(),
                                 CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_sanitized_username_reply_));
 }
@@ -255,12 +255,12 @@ TEST_F(CryptohomeMiscClientTest, GetSanitizedUsername) {
 TEST_F(CryptohomeMiscClientTest, GetLoginStatus) {
   expected_get_login_status_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::GetLoginStatusReply> result_reply;
+  absl::optional<::user_data_auth::GetLoginStatusReply> result_reply;
 
   client_->GetLoginStatus(::user_data_auth::GetLoginStatusRequest(),
                           CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_login_status_reply_));
 }
@@ -268,14 +268,14 @@ TEST_F(CryptohomeMiscClientTest, GetLoginStatus) {
 TEST_F(CryptohomeMiscClientTest, LockToSingleUserMountUntilReboot) {
   expected_lock_to_single_user_mount_until_reboot_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::LockToSingleUserMountUntilRebootReply>
+  absl::optional<::user_data_auth::LockToSingleUserMountUntilRebootReply>
       result_reply;
 
   client_->LockToSingleUserMountUntilReboot(
       ::user_data_auth::LockToSingleUserMountUntilRebootRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(),
                      expected_lock_to_single_user_mount_until_reboot_reply_));
@@ -284,24 +284,24 @@ TEST_F(CryptohomeMiscClientTest, LockToSingleUserMountUntilReboot) {
 TEST_F(CryptohomeMiscClientTest, GetRsuDeviceId) {
   expected_get_rsu_device_id_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::GetRsuDeviceIdReply> result_reply;
+  absl::optional<::user_data_auth::GetRsuDeviceIdReply> result_reply;
 
   client_->GetRsuDeviceId(::user_data_auth::GetRsuDeviceIdRequest(),
                           CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_rsu_device_id_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, CheckHealth) {
   expected_check_health_reply_.set_requires_powerwash(true);
-  base::Optional<::user_data_auth::CheckHealthReply> result_reply;
+  absl::optional<::user_data_auth::CheckHealthReply> result_reply;
 
   client_->CheckHealth(::user_data_auth::CheckHealthRequest(),
                        CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_check_health_reply_));
 }
@@ -310,7 +310,7 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsername) {
   constexpr char kAccountId[] = "test1234@example.com";
   expected_blocking_get_sanitized_username_reply_.set_sanitized_username(
       std::string(kAccountId));
-  base::Optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
+  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply;
 
   scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
@@ -319,14 +319,14 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsername) {
   result_reply = client_->BlockingGetSanitizedUsername(
       ::user_data_auth::GetSanitizedUsernameRequest());
 
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_blocking_get_sanitized_username_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsernameInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  base::Optional<::user_data_auth::GetSanitizedUsernameReply> result_reply =
+  absl::optional<::user_data_auth::GetSanitizedUsernameReply> result_reply =
       ::user_data_auth::GetSanitizedUsernameReply();
 
   scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
@@ -336,7 +336,7 @@ TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsernameInvalidProtobuf) {
   result_reply = client_->BlockingGetSanitizedUsername(
       ::user_data_auth::GetSanitizedUsernameRequest());
 
-  EXPECT_EQ(result_reply, base::nullopt);
+  EXPECT_EQ(result_reply, absl::nullopt);
 }
 
 }  // namespace chromeos

@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
   void CheckHealth(const ::user_data_auth::CheckHealthRequest& request,
                    CheckHealthCallback callback) override;
 
-  base::Optional<::user_data_auth::GetSanitizedUsernameReply>
+  absl::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(
       const ::user_data_auth::GetSanitizedUsernameRequest& request) override;
 

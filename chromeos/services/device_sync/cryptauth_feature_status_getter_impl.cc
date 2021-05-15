@@ -85,7 +85,7 @@ ConvertFeatureStatusesToSoftwareFeatureMap(
   base::flat_set<multidevice::SoftwareFeature> marked_enabled;
   for (const cryptauthv2::DeviceFeatureStatus::FeatureStatus& status :
        feature_statuses) {
-    base::Optional<CryptAuthFeatureType> feature_type =
+    absl::optional<CryptAuthFeatureType> feature_type =
         CryptAuthFeatureTypeFromString(status.feature_type());
 
     bool is_known_feature_type = feature_type.has_value();

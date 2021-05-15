@@ -50,7 +50,7 @@ void OnGetDictionaryError(const std::string& method_name,
   else
     LOG(ERROR) << log_string;
 
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 // The ShillServiceClient implementation.

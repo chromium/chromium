@@ -75,7 +75,7 @@ class SyncedNetworkUpdaterImpl
   network_config::mojom::NetworkStatePropertiesPtr FindMojoNetwork(
       const NetworkIdentifier& id);
 
-  base::Optional<base::DictionaryValue> ConvertToDictionary(
+  absl::optional<base::DictionaryValue> ConvertToDictionary(
       const sync_pb::WifiConfigurationSpecifics& specifics,
       const std::string& guid);
   void OnGetNetworkList(
@@ -89,7 +89,7 @@ class SyncedNetworkUpdaterImpl
   void OnConfigureNetworkResult(
       const std::string& change_guid,
       const sync_pb::WifiConfigurationSpecifics& proto,
-      const base::Optional<std::string>& network_guid,
+      const absl::optional<std::string>& network_guid,
       const std::string& error_message);
   void OnForgetNetworkResult(const std::string& change_guid,
                              const NetworkIdentifier& id,

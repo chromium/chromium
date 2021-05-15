@@ -120,7 +120,7 @@ class TetherControllerImplTest : public testing::Test {
             networks) {
       if (connection_state_.has_value() && networks.size() == 1) {
         networks[0]->connection_state = *connection_state_;
-        connection_state_ = base::nullopt;
+        connection_state_ = absl::nullopt;
       }
 
       std::move(callback).Run(std::move(networks));
@@ -152,7 +152,7 @@ class TetherControllerImplTest : public testing::Test {
 
    private:
     mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
-    base::Optional<ConnectionStateType> connection_state_;
+    absl::optional<ConnectionStateType> connection_state_;
     StartConnectCallback start_connect_callback_;
     StartDisconnectCallback start_disconnect_callback_;
     base::WeakPtrFactory<FakeTetherNetworkConnector> weak_ptr_factory_{this};
@@ -266,7 +266,7 @@ class TetherControllerImplTest : public testing::Test {
 
     fake_multidevice_setup_client_.InvokePendingSetFeatureEnabledStateCallback(
         Feature::kInstantTethering,
-        /*expected_enabled=*/expected_enabled, base::nullopt, success);
+        /*expected_enabled=*/expected_enabled, absl::nullopt, success);
   }
 
   void AttemptConnection() {
@@ -392,7 +392,7 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EXPECT_EQ(GetNumObserverStatusChanged(), 10U);
 
   // Phone Model is lost, connection is still unavailable.
-  phone_model()->SetPhoneStatusModel(base::nullopt);
+  phone_model()->SetPhoneStatusModel(absl::nullopt);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
   EXPECT_EQ(GetNumObserverStatusChanged(), 10U);
 

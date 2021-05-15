@@ -34,7 +34,7 @@ void EcheUidProvider::GetUid(
   if (pref_seed.empty()) {
     GenerateKeyPair(public_key, private_key);
   } else {
-    base::Optional<std::vector<uint8_t>> result =
+    absl::optional<std::vector<uint8_t>> result =
         ConvertStringToBinary(pref_seed, kSeedSizeInByte);
     if (!result) {
       PA_LOG(WARNING) << "Invalid encoded string, regenerate the keypair.";
@@ -59,7 +59,7 @@ void EcheUidProvider::GenerateKeyPair(
       ConvertBinaryToString(base::make_span(private_key, kSeedSizeInByte)));
 }
 
-base::Optional<std::vector<uint8_t>> EcheUidProvider::ConvertStringToBinary(
+absl::optional<std::vector<uint8_t>> EcheUidProvider::ConvertStringToBinary(
     base::StringPiece str,
     size_t expected_len) {
   std::vector<uint8_t> decoded_data(str.size());
@@ -68,11 +68,11 @@ base::Optional<std::vector<uint8_t>> EcheUidProvider::ConvertStringToBinary(
           decoded_data.data(), &decoded_data_len, decoded_data.size(),
           reinterpret_cast<const uint8_t*>(str.data()), str.size())) {
     PA_LOG(ERROR) << "Attempting to decode string failed.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (decoded_data_len != expected_len) {
     PA_LOG(ERROR) << "Expected length is not match.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   decoded_data.resize(decoded_data_len);
   return decoded_data;

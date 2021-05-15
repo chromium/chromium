@@ -4,8 +4,8 @@
 
 #include "chromeos/services/device_sync/fake_cryptauth_key_proof_computer.h"
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -21,13 +21,13 @@ FakeCryptAuthKeyProofComputer::FakeCryptAuthKeyProofComputer() = default;
 
 FakeCryptAuthKeyProofComputer::~FakeCryptAuthKeyProofComputer() = default;
 
-base::Optional<std::string> FakeCryptAuthKeyProofComputer::ComputeKeyProof(
+absl::optional<std::string> FakeCryptAuthKeyProofComputer::ComputeKeyProof(
     const CryptAuthKey& key,
     const std::string& payload,
     const std::string& salt,
-    const base::Optional<std::string>& info) {
+    const absl::optional<std::string>& info) {
   if (should_return_null_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return kFakeKeyProofPrefix + std::string("_") + std::string("_") + payload +
          std::string("_") + salt + (info ? "_" + *info : "");

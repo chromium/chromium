@@ -10,10 +10,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
 #include "chromeos/dbus/kerberos/kerberos_client.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   std::vector<AccountData> accounts_;
 
   // For recording which methods have been called (for testing).
-  base::Optional<std::string> recorded_function_calls_;
+  absl::optional<std::string> recorded_function_calls_;
 
   // Fake delay for any asynchronous operation.
   base::TimeDelta task_delay_ = base::TimeDelta::FromMilliseconds(100);

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -20,6 +19,7 @@
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -90,11 +90,11 @@ class CryptAuthV2DeviceManagerImpl
       const override;
   void ForceDeviceSyncNow(
       const cryptauthv2::ClientMetadata::InvocationReason&,
-      const base::Optional<std::string>& session_id) override;
+      const absl::optional<std::string>& session_id) override;
   bool IsDeviceSyncInProgress() const override;
   bool IsRecoveringFromFailure() const override;
-  base::Optional<base::Time> GetLastDeviceSyncTime() const override;
-  base::Optional<base::TimeDelta> GetTimeToNextAttempt() const override;
+  absl::optional<base::Time> GetLastDeviceSyncTime() const override;
+  absl::optional<base::TimeDelta> GetTimeToNextAttempt() const override;
 
   // CryptAuthScheduler::DeviceSyncDelegate:
   void OnDeviceSyncRequested(
@@ -102,12 +102,12 @@ class CryptAuthV2DeviceManagerImpl
 
   // CryptAuthGCMManager::Observer:
   void OnResyncMessage(
-      const base::Optional<std::string>& session_id,
-      const base::Optional<CryptAuthFeatureType>& feature_type) override;
+      const absl::optional<std::string>& session_id,
+      const absl::optional<CryptAuthFeatureType>& feature_type) override;
 
   void OnDeviceSyncFinished(CryptAuthDeviceSyncResult device_sync_result);
 
-  base::Optional<cryptauthv2::ClientMetadata> current_client_metadata_;
+  absl::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
   std::unique_ptr<SyncedBluetoothAddressTracker>
       synced_bluetooth_address_tracker_;
   std::unique_ptr<CryptAuthDeviceSyncer> device_syncer_;

@@ -175,7 +175,7 @@ void RecordKeyErrorAndResolve(const base::WeakPtr<AuthAttemptState>& attempt,
 // finished.
 void OnGetSanitizedUsername(
     base::OnceCallback<void(bool, const std::string&)> callback,
-    base::Optional<user_data_auth::GetSanitizedUsernameReply> reply) {
+    absl::optional<user_data_auth::GetSanitizedUsernameReply> reply) {
   std::string res;
   if (reply.has_value())
     res = reply->sanitized_username();
@@ -188,7 +188,7 @@ template <typename ReplyType>
 void OnReplyMethod(const base::WeakPtr<AuthAttemptState>& attempt,
                    scoped_refptr<CryptohomeAuthenticator> resolver,
                    const std::string& time_marker,
-                   base::Optional<ReplyType> reply) {
+                   absl::optional<ReplyType> reply) {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(time_marker, false);
   attempt->RecordCryptohomeStatus(user_data_auth::ReplyToMountError(reply));
   resolver->Resolve();
@@ -197,7 +197,7 @@ void OnReplyMethod(const base::WeakPtr<AuthAttemptState>& attempt,
 // Callback invoked when cryptohome's MountEx() method has finished.
 void OnMount(const base::WeakPtr<AuthAttemptState>& attempt,
              scoped_refptr<CryptohomeAuthenticator> resolver,
-             base::Optional<user_data_auth::MountReply> reply) {
+             absl::optional<user_data_auth::MountReply> reply) {
   const bool public_mount = attempt->user_context.GetUserType() ==
                                 user_manager::USER_TYPE_KIOSK_APP ||
                             attempt->user_context.GetUserType() ==
@@ -263,7 +263,7 @@ void OnCryptohomeRenamed(const base::WeakPtr<AuthAttemptState>& attempt,
                          scoped_refptr<CryptohomeAuthenticator> resolver,
                          bool ephemeral,
                          bool create_if_nonexistent,
-                         base::Optional<user_data_auth::RenameReply> reply) {
+                         absl::optional<user_data_auth::RenameReply> reply) {
   cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
       "CryptohomeRename-End", false);
@@ -379,7 +379,7 @@ void OnGetKeyData(const base::WeakPtr<AuthAttemptState>& attempt,
                   scoped_refptr<CryptohomeAuthenticator> resolver,
                   bool ephemeral,
                   bool create_if_nonexistent,
-                  base::Optional<user_data_auth::GetKeyDataReply> reply) {
+                  absl::optional<user_data_auth::GetKeyDataReply> reply) {
   if (user_data_auth::ReplyToMountError(reply) ==
       cryptohome::MOUNT_ERROR_NONE) {
     std::vector<cryptohome::KeyDefinition> key_definitions =
@@ -767,7 +767,7 @@ void CryptohomeAuthenticator::OnOldEncryptionDetected(
 
 // Callback invoked when UnmountEx returns.
 void CryptohomeAuthenticator::OnUnmountEx(
-    base::Optional<user_data_auth::UnmountReply> reply) {
+    absl::optional<user_data_auth::UnmountReply> reply) {
   if (ReplyToMountError(reply) != cryptohome::MOUNT_ERROR_NONE)
     LOGIN_LOG(ERROR) << "Couldn't unmount user's homedir";
   OnAuthFailure(AuthFailure(AuthFailure::OWNER_REQUIRED));

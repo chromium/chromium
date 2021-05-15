@@ -640,14 +640,14 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
                              GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_UNKNOWN;
   }
 
-  base::Optional<int32_t> GetRssi(
+  absl::optional<int32_t> GetRssi(
       TestBluetoothLowEnergyWeaveClientConnection* connection) {
     connection->GetConnectionRssi(base::BindOnce(
         &SecureChannelBluetoothLowEnergyWeaveClientConnectionTest::
             OnConnectionRssi,
         base::Unretained(this)));
 
-    base::Optional<int32_t> rssi = rssi_;
+    absl::optional<int32_t> rssi = rssi_;
     rssi_.reset();
 
     return rssi;
@@ -707,9 +707,9 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
         rssi_for_channel_, 0 /* transmit_power */, 0 /* max_transmit_power */));
   }
 
-  void OnConnectionRssi(base::Optional<int32_t> rssi) { rssi_ = rssi; }
+  void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
-  base::Optional<int32_t> rssi_;
+  absl::optional<int32_t> rssi_;
 
   DISALLOW_COPY_AND_ASSIGN(
       SecureChannelBluetoothLowEnergyWeaveClientConnectionTest);

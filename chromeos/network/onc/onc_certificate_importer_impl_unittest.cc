@@ -76,7 +76,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                bool expected_import_success) {
     std::unique_ptr<base::DictionaryValue> onc =
         test_utils::ReadTestDictionary(filename);
-    base::Optional<base::Value> certificates_value =
+    absl::optional<base::Value> certificates_value =
         onc->ExtractKey(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value);
 

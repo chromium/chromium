@@ -9,11 +9,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/components/tether/device_status_util.h"
 #include "chromeos/components/tether/keep_alive_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -76,7 +76,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
   DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map_;
 
   std::unique_ptr<base::RepeatingTimer> timer_;
-  base::Optional<multidevice::RemoteDeviceRef> active_host_device_;
+  absl::optional<multidevice::RemoteDeviceRef> active_host_device_;
   std::unique_ptr<KeepAliveOperation> keep_alive_operation_;
 
   base::WeakPtrFactory<KeepAliveScheduler> weak_ptr_factory_{this};

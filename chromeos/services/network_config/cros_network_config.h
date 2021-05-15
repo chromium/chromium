@@ -99,13 +99,13 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void OnGetManagedProperties(GetManagedPropertiesCallback callback,
                               std::string guid,
                               const std::string& service_path,
-                              base::Optional<base::Value> properties,
-                              base::Optional<std::string> error);
+                              absl::optional<base::Value> properties,
+                              absl::optional<std::string> error);
   void OnGetManagedPropertiesEap(GetManagedPropertiesCallback callback,
                                  mojom::ManagedPropertiesPtr managed_properties,
                                  const std::string& service_path,
-                                 base::Optional<base::Value> properties,
-                                 base::Optional<std::string> error);
+                                 absl::optional<base::Value> properties,
+                                 absl::optional<std::string> error);
   void SetPropertiesSuccess(int callback_id);
   void SetPropertiesConfigureSuccess(int callback_id,
                                      const std::string& service_path,

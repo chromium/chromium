@@ -8,9 +8,9 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -29,7 +29,7 @@ class FakeLocalNetworkCollector : public LocalNetworkCollector {
                           ProtoCallback callback) override;
   void RecordZeroNetworksEligibleForSync() override {}
   // For test purposes, |guid| == serialized NetworkIdentifier.
-  base::Optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
+  absl::optional<NetworkIdentifier> GetNetworkIdentifierFromGuid(
       const std::string& guid) override;
 
   void AddNetwork(sync_pb::WifiConfigurationSpecifics proto);

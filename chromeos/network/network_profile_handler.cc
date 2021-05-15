@@ -82,7 +82,7 @@ void NetworkProfileHandler::RemoveObserver(NetworkProfileObserver* observer) {
 }
 
 void NetworkProfileHandler::GetManagerPropertiesCallback(
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Error when requesting manager properties.";
     return;

@@ -230,14 +230,14 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void FetchClientAppMetadata();
   void OnClientAppMetadataFetchTimeout();
   void OnClientAppMetadataFetched(
-      const base::Optional<cryptauthv2::ClientAppMetadata>&
+      const absl::optional<cryptauthv2::ClientAppMetadata>&
           client_app_metadata);
   void OnClientAppMetadataFetchFailure();
   void WaitForValidEnrollment();
   void InitializeCryptAuthManagementObjects();
   void CompleteInitializationAfterSuccessfulEnrollment();
 
-  base::Optional<multidevice::RemoteDevice> GetSyncedDeviceWithPublicKey(
+  absl::optional<multidevice::RemoteDevice> GetSyncedDeviceWithPublicKey(
       const std::string& public_key) const;
 
   void OnSetSoftwareFeatureStateSuccess();
@@ -295,7 +295,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   base::flat_map<base::UnguessableToken, GetDevicesActivityStatusCallback>
       get_devices_activity_status_callbacks_;
 
-  base::Optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
+  absl::optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
   size_t num_gcm_registration_failures_ = 0;
   size_t num_client_app_metadata_fetch_failures_ = 0;
   base::TimeTicks initialization_start_timestamp_;

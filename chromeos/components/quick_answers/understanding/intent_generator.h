@@ -56,7 +56,7 @@ class IntentGenerator {
 
   void MaybeGenerateTranslationIntent(const QuickAnswersRequest& request);
   void LanguageDetectorCallback(const QuickAnswersRequest& request,
-                                base::Optional<std::string> detected_language);
+                                absl::optional<std::string> detected_language);
 
   IntentGeneratorCallback complete_callback_;
   mojo::Remote<::chromeos::machine_learning::mojom::TextClassifier>

@@ -87,9 +87,9 @@ std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(net::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
 
-base::Optional<double> GetRatio(const double value1, const double value2) {
+absl::optional<double> GetRatio(const double value1, const double value2) {
   if (value1 == 0 || value2 == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return std::max(value1, value2) / std::min(value1, value2);
 }

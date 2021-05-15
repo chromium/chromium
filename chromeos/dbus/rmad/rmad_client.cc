@@ -76,7 +76,7 @@ void RmadClientImpl::TransitionNextState(
   if (!writer.AppendProtoAsArrayOfBytes(protobuf_request)) {
     LOG(ERROR) << "Error constructing message for "
                << rmad::kTransitionNextStateMethod;
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   rmad_proxy_->CallMethod(
@@ -110,7 +110,7 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
                                   dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Error calling rmad function";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -118,7 +118,7 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
   T response_proto;
   if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
     LOG(ERROR) << "Unable to decode response for " << response->GetMember();
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

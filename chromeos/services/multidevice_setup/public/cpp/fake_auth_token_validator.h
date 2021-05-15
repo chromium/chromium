@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -29,7 +29,7 @@ class FakeAuthTokenValidator : public AuthTokenValidator {
   }
 
  private:
-  base::Optional<std::string> expected_auth_token_;
+  absl::optional<std::string> expected_auth_token_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAuthTokenValidator);
 };

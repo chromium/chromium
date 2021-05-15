@@ -13,9 +13,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void MessageReceived(const base::Value& message);
 
   // Callback to handle the manager properties with the list of devices.
-  void ManagerPropertiesCallback(base::Optional<base::Value> properties);
+  void ManagerPropertiesCallback(absl::optional<base::Value> properties);
 
   // Requests properties for each entry in |devices|.
   void UpdateDevices(const base::Value& devices);
@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // Callback to handle the device properties for |device_path|.
   // A NetworkSmsDeviceHandler will be instantiated for each cellular device.
   void DevicePropertiesCallback(const std::string& device_path,
-                                base::Optional<base::Value> properties);
+                                absl::optional<base::Value> properties);
 
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::vector<std::unique_ptr<NetworkSmsDeviceHandler>> device_handlers_;

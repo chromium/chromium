@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomeMiscClient {
                            CheckHealthCallback callback) = 0;
 
   // Blocking version of GetSanitizedUsername().
-  virtual base::Optional<::user_data_auth::GetSanitizedUsernameReply>
+  virtual absl::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(
       const ::user_data_auth::GetSanitizedUsernameRequest& request) = 0;
 

@@ -181,7 +181,7 @@ void InstallAttributes::ReadImmutableAttributes(base::OnceClosure callback) {
 
 void InstallAttributes::ReadAttributesIfReady(
     base::OnceClosure callback,
-    base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
   base::ScopedClosureRunner callback_runner(std::move(callback));
 
   // Can't proceed if the call failed.
@@ -304,7 +304,7 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
     const std::string& realm,
     const std::string& device_id,
     LockResultCallback callback,
-    base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
+    absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply) {
   if (!reply.has_value() ||
       reply->state() == ::user_data_auth::InstallAttributesState::UNKNOWN ||
       reply->state() ==

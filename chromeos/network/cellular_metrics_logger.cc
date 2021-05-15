@@ -108,7 +108,7 @@ CellularMetricsLogger::GetSimPinOperationResultForShillError(
 // static
 void CellularMetricsLogger::RecordSimPinOperationResult(
     const SimPinOperation& pin_operation,
-    const base::Optional<std::string>& shill_error_name) {
+    const absl::optional<std::string>& shill_error_name) {
   SimPinOperationResult result =
       shill_error_name.has_value()
           ? GetSimPinOperationResultForShillError(*shill_error_name)
@@ -601,7 +601,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   bool new_is_connected = network->IsConnectedState();
   if (connection_info->is_connected == new_is_connected)
     return;
-  base::Optional<bool> old_is_connected = connection_info->is_connected;
+  absl::optional<bool> old_is_connected = connection_info->is_connected;
   connection_info->is_connected = new_is_connected;
 
   if (new_is_connected) {
@@ -620,7 +620,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   if (!old_is_connected.has_value())
     return;
 
-  base::Optional<base::TimeDelta> time_since_disconnect_requested;
+  absl::optional<base::TimeDelta> time_since_disconnect_requested;
   if (connection_info->last_disconnect_request_time) {
     time_since_disconnect_requested =
         base::TimeTicks::Now() - *connection_info->last_disconnect_request_time;
@@ -691,7 +691,7 @@ void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
   if (network_list.size() == 0)
     return;
 
-  base::Optional<std::string> psim_activation_state;
+  absl::optional<std::string> psim_activation_state;
   for (const auto* network : network_list) {
     if (GetSimType(network) == SimType::kPSim)
       psim_activation_state = network->activation_state();
@@ -741,7 +741,7 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::NonVirtual(), &network_list);
 
-  base::Optional<const NetworkState*> connected_cellular_network;
+  absl::optional<const NetworkState*> connected_cellular_network;
   bool is_non_cellular_connected = false;
   for (auto* network : network_list) {
     if (!network->IsConnectedState())
@@ -761,7 +761,7 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
   }
 
   CellularUsage usage;
-  base::Optional<SimType> sim_type;
+  absl::optional<SimType> sim_type;
   if (connected_cellular_network.has_value()) {
     usage = is_non_cellular_connected
                 ? CellularUsage::kConnectedWithOtherNetwork

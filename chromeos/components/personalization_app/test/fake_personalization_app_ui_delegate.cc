@@ -32,7 +32,7 @@ void FakePersonalizationAppUiDelegate::FetchCollections(
       collections;
   collections.push_back(
       chromeos::personalization_app::mojom::WallpaperCollection::New(
-          kFakeCollectionId, "Test Collection", base::Optional<GURL>()));
+          kFakeCollectionId, "Test Collection", absl::optional<GURL>()));
   std::move(callback).Run(std::move(collections));
 }
 

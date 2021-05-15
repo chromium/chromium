@@ -7,11 +7,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_key_creator.h"
 #include "chromeos/services/device_sync/cryptauth_key_creator_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -25,7 +25,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
   // CryptAuthKeyCreator:
   void CreateKeys(const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
                       keys_to_create,
-                  const base::Optional<CryptAuthKey>& server_ephemeral_dh,
+                  const absl::optional<CryptAuthKey>& server_ephemeral_dh,
                   CreateKeysCallback create_keys_callback) override;
 
   const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
@@ -33,7 +33,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
     return keys_to_create_;
   }
 
-  const base::Optional<CryptAuthKey>& server_ephemeral_dh() const {
+  const absl::optional<CryptAuthKey>& server_ephemeral_dh() const {
     return server_ephemeral_dh_;
   }
 
@@ -41,7 +41,7 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
 
  private:
   base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData> keys_to_create_;
-  base::Optional<CryptAuthKey> server_ephemeral_dh_;
+  absl::optional<CryptAuthKey> server_ephemeral_dh_;
   CreateKeysCallback create_keys_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyCreator);

@@ -74,7 +74,7 @@ void SystemSaltGetter::DidWaitForServiceToBeAvailable(
 
 void SystemSaltGetter::DidGetSystemSalt(
     GetSystemSaltCallback callback,
-    base::Optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
+    absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
   if (system_salt_reply.has_value() && !system_salt_reply->salt().empty() &&
       system_salt_reply->salt().size() % 2 == 0U) {
     raw_salt_ = RawSalt(system_salt_reply->salt().begin(),

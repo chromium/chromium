@@ -240,7 +240,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
 
 void IntentGenerator::LanguageDetectorCallback(
     const QuickAnswersRequest& request,
-    base::Optional<std::string> detected_language) {
+    absl::optional<std::string> detected_language) {
   language_detector_.reset();
 
   // Generate translation intent if the detected language is different to the

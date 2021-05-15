@@ -72,7 +72,7 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
                                       const std::string& patch_number) {
   // System info
   auto system_info = cros_healthd::mojom::SystemInfo::New();
-  system_info->product_name = base::Optional<std::string>(board_name);
+  system_info->product_name = absl::optional<std::string>(board_name);
   auto os_version_info = cros_healthd::mojom::OsVersion::New(
       milestone_version, build_number, patch_number, "unittest-channel");
   system_info->os_version = std::move(os_version_info);
@@ -115,7 +115,7 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     double current_now,
     const std::string& technology,
     const std::string& status,
-    const base::Optional<std::string>& manufacture_date,
+    const absl::optional<std::string>& manufacture_date,
     uint64_t temperature) {
   cros_healthd::mojom::NullableUint64Ptr temp_value_ptr(
       cros_healthd::mojom::NullableUint64::New());
@@ -145,7 +145,7 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/base::nullopt,
+      /*manufacture_date=*/absl::nullopt,
       /*temperature=*/0);
 }
 
@@ -165,7 +165,7 @@ CreateCrosHealthdBatteryChargeStatusResponse(double charge_now,
       /*current_now=*/current_now,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/base::nullopt,
+      /*manufacture_date=*/absl::nullopt,
       /*temperature=*/0);
 }
 
@@ -186,7 +186,7 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
       /*current_now=*/0,
       /*technology=*/"",
       /*status=*/"",
-      /*manufacture_date=*/base::nullopt,
+      /*manufacture_date=*/absl::nullopt,
       /*temperature=*/0);
 }
 

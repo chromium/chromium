@@ -56,10 +56,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
     MountObserver() = default;
     virtual ~MountObserver() = default;
     virtual void OnMounted(const base::FilePath& mount_path) = 0;
-    virtual void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) = 0;
+    virtual void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) = 0;
     virtual void OnMountFailed(
         MountFailure failure,
-        base::Optional<base::TimeDelta> remount_delay) = 0;
+        absl::optional<base::TimeDelta> remount_delay) = 0;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(MountObserver);
@@ -85,8 +85,8 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
  private:
   // mojom::DriveFsDelegate:
   void OnMounted() final;
-  void OnMountFailed(base::Optional<base::TimeDelta> remount_delay) final;
-  void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) final;
+  void OnMountFailed(absl::optional<base::TimeDelta> remount_delay) final;
+  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) final;
   void OnHeartbeat() final;
 
   void OnDiskMountCompleted(base::FilePath mount_path);
@@ -94,8 +94,8 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
   void OnMountTimedOut();
   void MaybeNotifyOnMounted();
   void NotifyFailed(MountObserver::MountFailure failure,
-                    base::Optional<base::TimeDelta> remount_delay);
-  void NotifyUnmounted(base::Optional<base::TimeDelta> remount_delay);
+                    absl::optional<base::TimeDelta> remount_delay);
+  void NotifyUnmounted(absl::optional<base::TimeDelta> remount_delay);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

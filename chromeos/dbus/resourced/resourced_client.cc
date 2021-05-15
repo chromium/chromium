@@ -61,14 +61,14 @@ void ResourcedClientImpl::HandleAvailableResponse(
     DBusMethodCallback<uint64_t> callback,
     dbus::Response* response) {
   if (!response) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   dbus::MessageReader reader(response);
   uint64_t result;
   if (!reader.PopUint64(&result)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -79,19 +79,19 @@ void ResourcedClientImpl::HandleMarginsResponse(
     DBusMethodCallback<MemoryMarginsKB> callback,
     dbus::Response* response) {
   if (!response) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   dbus::MessageReader reader(response);
   uint64_t critical;
   if (!reader.PopUint64(&critical)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   uint64_t moderate;
   if (!reader.PopUint64(&moderate)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -105,7 +105,7 @@ void ResourcedClientImpl::HandleSetGameModeResponse(
     bool status,
     dbus::Response* response) {
   if (!response) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(status);

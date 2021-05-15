@@ -192,7 +192,7 @@ void FakeCrosHealthdClient::RunLanConnectivityRoutineForTesting(
   fake_service_.RunLanConnectivityRoutineForTesting(std::move(callback));
 }
 
-base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+absl::optional<FakeCrosHealthdService::RoutineUpdateParams>
 FakeCrosHealthdClient::GetRoutineUpdateParams() {
   return fake_service_.GetRoutineUpdateParams();
 }

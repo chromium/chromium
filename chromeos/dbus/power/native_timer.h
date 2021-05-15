@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
 
   // D-Bus callback for a create timer D-Bus call.
   void OnCreateTimer(base::ScopedFD expiration_fd,
-                     base::Optional<std::vector<int32_t>> timer_ids);
+                     absl::optional<std::vector<int32_t>> timer_ids);
 
   // D-Bus callback for a start timer D-Bus call.
   void OnStartTimer(base::OnceClosure timer_expiration_callback,

@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -54,9 +54,9 @@ CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
   for (const std::pair<const std::string&, const base::Value&>& id_device_pair :
        dict->DictItems()) {
-    base::Optional<std::string> instance_id =
+    absl::optional<std::string> instance_id =
         util::DecodeFromString(id_device_pair.first);
-    base::Optional<CryptAuthDevice> device =
+    absl::optional<CryptAuthDevice> device =
         CryptAuthDevice::FromDictionary(id_device_pair.second);
     if (!instance_id || !device || *instance_id != device->instance_id()) {
       PA_LOG(ERROR) << "Error retrieving device with Instance ID "

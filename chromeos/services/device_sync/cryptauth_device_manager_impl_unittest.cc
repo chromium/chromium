@@ -955,8 +955,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncOnGCMPushMessage) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage(base::nullopt /* session_id */,
-                                 base::nullopt /* feature_type */);
+  gcm_manager_.PushResyncMessage(absl::nullopt /* session_id */,
+                                 absl::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 
@@ -973,8 +973,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncDeviceWithNoContents) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage(base::nullopt /* session_id */,
-                                 base::nullopt /* feature_type */);
+  gcm_manager_.PushResyncMessage(absl::nullopt /* session_id */,
+                                 absl::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 

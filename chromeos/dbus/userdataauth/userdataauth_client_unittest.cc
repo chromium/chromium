@@ -289,46 +289,46 @@ class UserDataAuthClientTest : public testing::Test {
 TEST_F(UserDataAuthClientTest, IsMounted) {
   expected_is_mounted_reply_.set_is_mounted(true);
   expected_is_mounted_reply_.set_is_ephemeral_mount(false);
-  base::Optional<::user_data_auth::IsMountedReply> result_reply = base::nullopt;
+  absl::optional<::user_data_auth::IsMountedReply> result_reply = absl::nullopt;
   auto callback = base::BindOnce(
-      [](base::Optional<::user_data_auth::IsMountedReply>* result_reply,
-         base::Optional<::user_data_auth::IsMountedReply> reply) {
+      [](absl::optional<::user_data_auth::IsMountedReply>* result_reply,
+         absl::optional<::user_data_auth::IsMountedReply> reply) {
         *result_reply = reply;
       },
       &result_reply);
 
   client_->IsMounted(::user_data_auth::IsMountedRequest(), std::move(callback));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(result_reply.value().is_mounted());
   EXPECT_FALSE(result_reply.value().is_ephemeral_mount());
 }
 
 TEST_F(UserDataAuthClientTest, IsMountedInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  base::Optional<::user_data_auth::IsMountedReply> result_reply =
+  absl::optional<::user_data_auth::IsMountedReply> result_reply =
       ::user_data_auth::IsMountedReply();
   auto callback = base::BindOnce(
-      [](base::Optional<::user_data_auth::IsMountedReply>* result_reply,
-         base::Optional<::user_data_auth::IsMountedReply> reply) {
+      [](absl::optional<::user_data_auth::IsMountedReply>* result_reply,
+         absl::optional<::user_data_auth::IsMountedReply> reply) {
         *result_reply = reply;
       },
       &result_reply);
 
   client_->IsMounted(::user_data_auth::IsMountedRequest(), std::move(callback));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, base::nullopt);
+  ASSERT_EQ(result_reply, absl::nullopt);
 }
 
 TEST_F(UserDataAuthClientTest, Unmount) {
   expected_unmount_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::UnmountReply> result_reply;
+  absl::optional<::user_data_auth::UnmountReply> result_reply;
 
   client_->Unmount(::user_data_auth::UnmountRequest(),
                    CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_unmount_reply_));
 }
 
@@ -337,48 +337,48 @@ TEST_F(UserDataAuthClientTest, Mount) {
   expected_mount_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
   expected_mount_reply_.set_sanitized_username(std::string(kUsername));
-  base::Optional<::user_data_auth::MountReply> result_reply;
+  absl::optional<::user_data_auth::MountReply> result_reply;
 
   client_->Mount(::user_data_auth::MountRequest(),
                  CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_mount_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, Remove) {
   expected_remove_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::RemoveReply> result_reply;
+  absl::optional<::user_data_auth::RemoveReply> result_reply;
 
   client_->Remove(::user_data_auth::RemoveRequest(),
                   CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_remove_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, Rename) {
   expected_rename_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::RenameReply> result_reply;
+  absl::optional<::user_data_auth::RenameReply> result_reply;
 
   client_->Rename(::user_data_auth::RenameRequest(),
                   CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_rename_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, GetKeyData) {
   expected_get_key_data_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::GetKeyDataReply> result_reply;
+  absl::optional<::user_data_auth::GetKeyDataReply> result_reply;
 
   client_->GetKeyData(::user_data_auth::GetKeyDataRequest(),
                       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_key_data_reply_));
 }
@@ -386,48 +386,48 @@ TEST_F(UserDataAuthClientTest, GetKeyData) {
 TEST_F(UserDataAuthClientTest, CheckKey) {
   expected_check_key_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::CheckKeyReply> result_reply;
+  absl::optional<::user_data_auth::CheckKeyReply> result_reply;
 
   client_->CheckKey(::user_data_auth::CheckKeyRequest(),
                     CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_check_key_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, AddKey) {
   expected_add_key_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::AddKeyReply> result_reply;
+  absl::optional<::user_data_auth::AddKeyReply> result_reply;
 
   client_->AddKey(::user_data_auth::AddKeyRequest(),
                   CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_add_key_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, RemoveKey) {
   expected_remove_key_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::RemoveKeyReply> result_reply;
+  absl::optional<::user_data_auth::RemoveKeyReply> result_reply;
 
   client_->RemoveKey(::user_data_auth::RemoveKeyRequest(),
                      CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_remove_key_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, MassRemoveKeys) {
   expected_mass_remove_keys_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::MassRemoveKeysReply> result_reply;
+  absl::optional<::user_data_auth::MassRemoveKeysReply> result_reply;
 
   client_->MassRemoveKeys(::user_data_auth::MassRemoveKeysRequest(),
                           CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_mass_remove_keys_reply_));
 }
@@ -435,12 +435,12 @@ TEST_F(UserDataAuthClientTest, MassRemoveKeys) {
 TEST_F(UserDataAuthClientTest, MigrateKey) {
   expected_migrate_key_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::MigrateKeyReply> result_reply;
+  absl::optional<::user_data_auth::MigrateKeyReply> result_reply;
 
   client_->MigrateKey(::user_data_auth::MigrateKeyRequest(),
                       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_migrate_key_reply_));
 }
@@ -448,14 +448,14 @@ TEST_F(UserDataAuthClientTest, MigrateKey) {
 TEST_F(UserDataAuthClientTest, StartFingerprintAuthSession) {
   expected_start_fingerprint_auth_session_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::StartFingerprintAuthSessionReply>
+  absl::optional<::user_data_auth::StartFingerprintAuthSessionReply>
       result_reply;
 
   client_->StartFingerprintAuthSession(
       ::user_data_auth::StartFingerprintAuthSessionRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_start_fingerprint_auth_session_reply_));
 }
@@ -463,13 +463,13 @@ TEST_F(UserDataAuthClientTest, StartFingerprintAuthSession) {
 TEST_F(UserDataAuthClientTest, EndFingerprintAuthSession) {
   expected_end_fingerprint_auth_session_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::EndFingerprintAuthSessionReply> result_reply;
+  absl::optional<::user_data_auth::EndFingerprintAuthSessionReply> result_reply;
 
   client_->EndFingerprintAuthSession(
       ::user_data_auth::EndFingerprintAuthSessionRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_end_fingerprint_auth_session_reply_));
 }
@@ -477,13 +477,13 @@ TEST_F(UserDataAuthClientTest, EndFingerprintAuthSession) {
 TEST_F(UserDataAuthClientTest, StartMigrateToDircrypto) {
   expected_start_migrate_to_dircrypto_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::StartMigrateToDircryptoReply> result_reply;
+  absl::optional<::user_data_auth::StartMigrateToDircryptoReply> result_reply;
 
   client_->StartMigrateToDircrypto(
       ::user_data_auth::StartMigrateToDircryptoRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_start_migrate_to_dircrypto_reply_));
 }
@@ -491,13 +491,13 @@ TEST_F(UserDataAuthClientTest, StartMigrateToDircrypto) {
 TEST_F(UserDataAuthClientTest, NeedsDircryptoMigration) {
   expected_needs_dircrypto_migration_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::NeedsDircryptoMigrationReply> result_reply;
+  absl::optional<::user_data_auth::NeedsDircryptoMigrationReply> result_reply;
 
   client_->NeedsDircryptoMigration(
       ::user_data_auth::NeedsDircryptoMigrationRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_needs_dircrypto_migration_reply_));
 }
@@ -505,13 +505,13 @@ TEST_F(UserDataAuthClientTest, NeedsDircryptoMigration) {
 TEST_F(UserDataAuthClientTest, GetSupportedKeyPolicies) {
   expected_get_supported_key_policies_reply_
       .set_low_entropy_credentials_supported(true);
-  base::Optional<::user_data_auth::GetSupportedKeyPoliciesReply> result_reply;
+  absl::optional<::user_data_auth::GetSupportedKeyPoliciesReply> result_reply;
 
   client_->GetSupportedKeyPolicies(
       ::user_data_auth::GetSupportedKeyPoliciesRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_supported_key_policies_reply_));
 }
@@ -519,12 +519,12 @@ TEST_F(UserDataAuthClientTest, GetSupportedKeyPolicies) {
 TEST_F(UserDataAuthClientTest, GetAccountDiskUsage) {
   expected_get_account_disk_usage_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::GetAccountDiskUsageReply> result_reply;
+  absl::optional<::user_data_auth::GetAccountDiskUsageReply> result_reply;
 
   client_->GetAccountDiskUsage(::user_data_auth::GetAccountDiskUsageRequest(),
                                CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_account_disk_usage_reply_));
 }
@@ -532,12 +532,12 @@ TEST_F(UserDataAuthClientTest, GetAccountDiskUsage) {
 TEST_F(UserDataAuthClientTest, StartAuthSession) {
   expected_start_auth_session_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::StartAuthSessionReply> result_reply;
+  absl::optional<::user_data_auth::StartAuthSessionReply> result_reply;
 
   client_->StartAuthSession(::user_data_auth::StartAuthSessionRequest(),
                             CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_start_auth_session_reply_));
 }
@@ -545,13 +545,13 @@ TEST_F(UserDataAuthClientTest, StartAuthSession) {
 TEST_F(UserDataAuthClientTest, AuthenticateAuthSession) {
   expected_authenticate_auth_session_reply_.set_error(
       user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  base::Optional<::user_data_auth::AuthenticateAuthSessionReply> result_reply;
+  absl::optional<::user_data_auth::AuthenticateAuthSessionReply> result_reply;
 
   client_->AuthenticateAuthSession(
       ::user_data_auth::AuthenticateAuthSessionRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_authenticate_auth_session_reply_));
 }

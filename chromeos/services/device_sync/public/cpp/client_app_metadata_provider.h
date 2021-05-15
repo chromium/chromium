@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -27,7 +27,7 @@ class ClientAppMetadataProvider {
   virtual ~ClientAppMetadataProvider() = default;
 
   using GetMetadataCallback = base::OnceCallback<void(
-      const base::Optional<cryptauthv2::ClientAppMetadata>&)>;
+      const absl::optional<cryptauthv2::ClientAppMetadata>&)>;
 
   // Fetches the ClientAppMetadata for the current device; if the operation
   // fails, null is passed to the callback.

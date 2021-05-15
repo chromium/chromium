@@ -42,7 +42,7 @@ class RemoteDeviceCacheTest : public testing::Test {
 
 TEST_F(RemoteDeviceCacheTest, TestNoRemoteDevices) {
   VerifyCacheRemoteDevices(RemoteDeviceRefList());
-  EXPECT_EQ(base::nullopt, cache_->GetRemoteDevice(
+  EXPECT_EQ(absl::nullopt, cache_->GetRemoteDevice(
                                test_remote_device_ref_list_[0].instance_id(),
                                test_remote_device_ref_list_[0].GetDeviceId()));
 }
@@ -69,20 +69,20 @@ TEST_F(RemoteDeviceCacheTest,
 
   EXPECT_EQ(
       test_remote_device_ref_list_[0],
-      cache_->GetRemoteDevice(base::nullopt /* instance_id */,
+      cache_->GetRemoteDevice(absl::nullopt /* instance_id */,
                               test_remote_device_ref_list_[0].GetDeviceId()));
   EXPECT_EQ(
       test_remote_device_ref_list_[1],
       cache_->GetRemoteDevice(test_remote_device_ref_list_[1].instance_id(),
-                              base::nullopt /* legacy_device_id */));
+                              absl::nullopt /* legacy_device_id */));
   EXPECT_EQ(
       test_remote_device_ref_list_[2],
-      cache_->GetRemoteDevice(base::nullopt /* instance_id */,
+      cache_->GetRemoteDevice(absl::nullopt /* instance_id */,
                               test_remote_device_ref_list_[2].GetDeviceId()));
   EXPECT_EQ(
       test_remote_device_ref_list_[2],
       cache_->GetRemoteDevice(test_remote_device_ref_list_[2].instance_id(),
-                              base::nullopt /* legacy_device_id */));
+                              absl::nullopt /* legacy_device_id */));
 }
 
 TEST_F(RemoteDeviceCacheTest,

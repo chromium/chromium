@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSearch {
       drivefs::mojom::QueryParametersPtr query,
       mojom::SearchQuery::GetNextPageCallback callback,
       drive::FileError error,
-      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   mojom::DriveFs* const drivefs_;
   network::NetworkConnectionTracker* const network_connection_tracker_;

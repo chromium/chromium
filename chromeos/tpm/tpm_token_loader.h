@@ -15,11 +15,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenLoader
   void ContinueTokenInitialization();
   void OnTPMTokenEnabledForNSS();
   void OnGotTpmTokenInfo(
-      base::Optional<user_data_auth::TpmTokenInfo> token_info);
+      absl::optional<user_data_auth::TpmTokenInfo> token_info);
   void OnTPMTokenInitialized(bool success);
 
   // Notifies observers that the TPM token is ready.

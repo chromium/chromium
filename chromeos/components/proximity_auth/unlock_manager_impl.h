@@ -158,7 +158,7 @@ class UnlockManagerImpl : public UnlockManager,
   // if and only if |error| is empty. If the auth attempt is accepted, unlocks
   // the screen.
   void FinalizeAuthAttempt(
-      const base::Optional<
+      const absl::optional<
           SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>& error);
 
   // Failed to create a connection to the host during the "initial scan". See

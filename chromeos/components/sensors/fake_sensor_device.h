@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace sensors {
@@ -74,7 +74,7 @@ class FakeSensorDevice final : public mojom::SensorDevice {
     ClientData();
     ~ClientData();
 
-    base::Optional<double> frequency;
+    absl::optional<double> frequency;
     std::vector<bool> channels_enabled;
     mojo::Remote<mojom::SensorDeviceSamplesObserver> observer;
   };

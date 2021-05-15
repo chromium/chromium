@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -20,6 +19,7 @@
 #include "libassistant/shared/public/platform_audio_input.h"
 #include "media/base/audio_capturer_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -29,7 +29,7 @@ class AudioCapturer;
 
 class AudioInputImpl : public assistant_client::AudioInput {
  public:
-  explicit AudioInputImpl(const base::Optional<std::string>& device_id);
+  explicit AudioInputImpl(const absl::optional<std::string>& device_id);
   AudioInputImpl(const AudioInputImpl&) = delete;
   AudioInputImpl& operator=(const AudioInputImpl&) = delete;
   ~AudioInputImpl() override;
@@ -68,8 +68,8 @@ class AudioInputImpl : public assistant_client::AudioInput {
   // Called when hotword enabled status changed.
   void OnHotwordEnabled(bool enable);
 
-  void SetDeviceId(const base::Optional<std::string>& device_id);
-  void SetHotwordDeviceId(const base::Optional<std::string>& device_id);
+  void SetDeviceId(const absl::optional<std::string>& device_id);
+  void SetHotwordDeviceId(const absl::optional<std::string>& device_id);
 
   // Called when the user opens/closes the lid.
   void OnLidStateChanged(mojom::LidState new_state);
@@ -86,10 +86,10 @@ class AudioInputImpl : public assistant_client::AudioInput {
   bool IsMicOpenForTesting() const;
   // Returns the id of the device that is currently recording audio.
   // Returns nullopt if no audio is being recorded.
-  base::Optional<std::string> GetOpenDeviceIdForTesting() const;
+  absl::optional<std::string> GetOpenDeviceIdForTesting() const;
   // Returns if dead stream detection is being used for the current audio
   // recording. Returns nullopt if no audio is being recorded.
-  base::Optional<bool> IsUsingDeadStreamDetectionForTesting() const;
+  absl::optional<bool> IsUsingDeadStreamDetectionForTesting() const;
 
  private:
   void RecreateStateManager();
@@ -100,7 +100,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   void UpdateRecordingState();
 
   std::string GetDeviceId(bool use_dsp) const;
-  base::Optional<std::string> GetOpenDeviceId() const;
+  absl::optional<std::string> GetOpenDeviceId() const;
   bool ShouldEnableDeadStreamDetection(bool use_dsp) const;
   bool HasOpenAudioStream() const;
 
@@ -124,9 +124,9 @@ class AudioInputImpl : public assistant_client::AudioInput {
   mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Preferred audio input device which will be used for capture.
-  base::Optional<std::string> preferred_device_id_;
+  absl::optional<std::string> preferred_device_id_;
   // Hotword input device used for hardware based hotword detection.
-  base::Optional<std::string> hotword_device_id_;
+  absl::optional<std::string> hotword_device_id_;
 
   // Currently open audio stream. nullptr if no audio stream is open.
   std::unique_ptr<AudioInputStream> open_audio_stream_;

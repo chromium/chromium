@@ -8,8 +8,8 @@
 #include <ostream>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -86,7 +86,7 @@ class NotificationAccessSetupOperation {
 
   void NotifyStatusChanged(Status new_status);
 
-  base::Optional<Status> current_status_;
+  absl::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
   Delegate* const delegate_;
   base::OnceClosure destructor_callback_;

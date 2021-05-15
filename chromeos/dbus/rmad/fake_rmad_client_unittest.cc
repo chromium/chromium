@@ -82,7 +82,7 @@ rmad::GetStateReply CreateSelectNetworkStateReply(rmad::RmadErrorCode error) {
 TEST_F(FakeRmadClientTest, GetCurrentState_Default_RmaNotRequired) {
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         EXPECT_FALSE(response->has_state());
@@ -98,7 +98,7 @@ TEST_F(FakeRmadClientTest, GetCurrentState_Welcome_Ok) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         EXPECT_TRUE(response->has_state());
@@ -120,7 +120,7 @@ TEST_F(FakeRmadClientTest, GetCurrentState_Welcome_CorrectStateReturned) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_MISSING_COMPONENT);
         EXPECT_TRUE(response->has_state());
@@ -138,7 +138,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_Default_RmaNotRequired) {
   client_->TransitionNextState(
       std::move(CreateWelcomeState()),
       base::BindLambdaForTesting(
-          [&](base::Optional<rmad::GetStateReply> response) {
+          [&](absl::optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
             EXPECT_FALSE(response->has_state());
@@ -157,7 +157,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_NoNextState_Fails) {
   client_->TransitionNextState(
       std::move(CreateWelcomeState()),
       base::BindLambdaForTesting(
-          [&](base::Optional<rmad::GetStateReply> response) {
+          [&](absl::optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_TRANSITION_FAILED);
             EXPECT_TRUE(response->has_state());
@@ -179,7 +179,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_HasNextState_Ok) {
   client_->TransitionNextState(
       std::move(CreateWelcomeState()),
       base::BindLambdaForTesting(
-          [&](base::Optional<rmad::GetStateReply> response) {
+          [&](absl::optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
             EXPECT_TRUE(response->has_state());
@@ -201,7 +201,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
   client_->TransitionNextState(
       std::move(CreateSelectNetworkState()),
       base::BindLambdaForTesting(
-          [&](base::Optional<rmad::GetStateReply> response) {
+          [&](absl::optional<rmad::GetStateReply> response) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_REQUEST_INVALID);
             EXPECT_TRUE(response->has_state());
@@ -214,7 +214,7 @@ TEST_F(FakeRmadClientTest, TransitionNextState_WrongCurrentState_Invalid) {
 TEST_F(FakeRmadClientTest, TransitionPreviousState_Default_RmaNotRequired) {
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::GetStateReply> response) {
+      [&](absl::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         EXPECT_FALSE(response->has_state());
@@ -236,7 +236,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
     client_->TransitionNextState(
         std::move(CreateWelcomeState()),
         base::BindLambdaForTesting(
-            [&](base::Optional<rmad::GetStateReply> response) {
+            [&](absl::optional<rmad::GetStateReply> response) {
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
@@ -248,7 +248,7 @@ TEST_F(FakeRmadClientTest, TransitionPreviousState_HasPreviousState_Ok) {
   {
     base::RunLoop run_loop;
     client_->TransitionPreviousState(base::BindLambdaForTesting(
-        [&](base::Optional<rmad::GetStateReply> response) {
+        [&](absl::optional<rmad::GetStateReply> response) {
           LOG(ERROR) << "Prev started";
           EXPECT_TRUE(response.has_value());
           EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
@@ -271,7 +271,7 @@ TEST_F(FakeRmadClientTest,
   {
     base::RunLoop run_loop;
     client_->GetCurrentState(base::BindLambdaForTesting(
-        [&](base::Optional<rmad::GetStateReply> response) {
+        [&](absl::optional<rmad::GetStateReply> response) {
           EXPECT_TRUE(response.has_value());
           EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
           EXPECT_TRUE(response->has_state());
@@ -291,7 +291,7 @@ TEST_F(FakeRmadClientTest,
     client_->TransitionNextState(
         std::move(current_state),
         base::BindLambdaForTesting(
-            [&](base::Optional<rmad::GetStateReply> response) {
+            [&](absl::optional<rmad::GetStateReply> response) {
               EXPECT_TRUE(response.has_value());
               EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
               EXPECT_TRUE(response->has_state());
@@ -303,7 +303,7 @@ TEST_F(FakeRmadClientTest,
   {
     base::RunLoop run_loop;
     client_->TransitionPreviousState(base::BindLambdaForTesting(
-        [&](base::Optional<rmad::GetStateReply> response) {
+        [&](absl::optional<rmad::GetStateReply> response) {
           LOG(ERROR) << "Prev started";
           EXPECT_TRUE(response.has_value());
           EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
@@ -320,7 +320,7 @@ TEST_F(FakeRmadClientTest,
 TEST_F(FakeRmadClientTest, Abortable_Default_Ok) {
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -332,7 +332,7 @@ TEST_F(FakeRmadClientTest, Abortable_SetFalse_CannotCancel) {
   fake_client_()->SetAbortable(false);
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_CANNOT_CANCEL_RMA);
         run_loop.Quit();
@@ -344,7 +344,7 @@ TEST_F(FakeRmadClientTest, Abortable_SetTrue_Ok) {
   fake_client_()->SetAbortable(true);
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](base::Optional<rmad::AbortRmaReply> response) {
+      [&](absl::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         run_loop.Quit();

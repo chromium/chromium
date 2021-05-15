@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
@@ -22,6 +21,7 @@
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::MakeMatcher;
 using ::testing::Matcher;
@@ -151,7 +151,7 @@ class ShillClientUnittestBase : public testing::Test {
 
   // Checks the result and expects the call status to be SUCCESS.
   static void ExpectValueResult(const base::Value* expected_result,
-                                base::Optional<base::Value> result);
+                                absl::optional<base::Value> result);
 
   // Expects the |expected_result| to match the |result|.
   static void ExpectValueResultWithoutStatus(const base::Value* expected_result,

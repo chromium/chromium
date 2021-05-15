@@ -14,7 +14,6 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/smbfs/mojom/smbfs.mojom.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace smbfs {
 
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
     std::string username;
     std::string workgroup;
     std::string password;
-    base::Optional<KerberosOptions> kerberos_options;
+    absl::optional<KerberosOptions> kerberos_options;
 
     // Allow NTLM authentication to be used.
     bool allow_ntlm = false;

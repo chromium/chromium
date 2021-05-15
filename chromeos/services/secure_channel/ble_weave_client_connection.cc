@@ -866,10 +866,10 @@ std::string BluetoothLowEnergyWeaveClientConnection::GetDeviceAddress() {
 }
 
 void BluetoothLowEnergyWeaveClientConnection::GetConnectionRssi(
-    base::OnceCallback<void(base::Optional<int32_t>)> callback) {
+    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
   device::BluetoothDevice* bluetooth_device = GetBluetoothDevice();
   if (!bluetooth_device || !bluetooth_device->IsConnected()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -882,10 +882,10 @@ void BluetoothLowEnergyWeaveClientConnection::GetConnectionRssi(
 }
 
 void BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo(
-    base::RepeatingCallback<void(base::Optional<int32_t>)> rssi_callback,
+    base::RepeatingCallback<void(absl::optional<int32_t>)> rssi_callback,
     const device::BluetoothDevice::ConnectionInfo& connection_info) {
   if (connection_info.rssi == device::BluetoothDevice::kUnknownPower) {
-    std::move(rssi_callback).Run(base::nullopt);
+    std::move(rssi_callback).Run(absl::nullopt);
     return;
   }
 

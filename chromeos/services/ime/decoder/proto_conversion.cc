@@ -4,8 +4,8 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
-#include "base/optional.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace ime {
@@ -96,7 +96,7 @@ TextSuggestionMode ProtoToTextSuggestionMode(
   }
 }
 
-base::Optional<TextSuggestionType> ProtoToTextSuggestionType(
+absl::optional<TextSuggestionType> ProtoToTextSuggestionType(
     const SuggestionType& suggestion_type) {
   switch (suggestion_type) {
     case SuggestionType::SUGGESTION_TYPE_ASSISTIVE_EMOJI:
@@ -106,7 +106,7 @@ base::Optional<TextSuggestionType> ProtoToTextSuggestionType(
     case SuggestionType::SUGGESTION_TYPE_MULTI_WORD:
       return TextSuggestionType::kMultiWord;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -249,7 +249,7 @@ std::vector<TextSuggestion> ProtoToTextSuggestions(
     const chromeos::ime::DisplaySuggestions& display_suggestions) {
   std::vector<TextSuggestion> suggestions;
   for (const auto& candidate : display_suggestions.candidates()) {
-    base::Optional<TextSuggestionType> suggestion_type =
+    absl::optional<TextSuggestionType> suggestion_type =
         ProtoToTextSuggestionType(candidate.type());
     if (suggestion_type) {
       // Drop any unexpected suggestion types

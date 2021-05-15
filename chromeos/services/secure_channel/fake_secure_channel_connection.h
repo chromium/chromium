@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,12 +27,12 @@ class FakeSecureChannelConnection : public SecureChannel {
 
   bool was_initialized() { return was_initialized_; }
 
-  void set_rssi_to_return(const base::Optional<int32_t>& rssi_to_return) {
+  void set_rssi_to_return(const absl::optional<int32_t>& rssi_to_return) {
     rssi_to_return_ = rssi_to_return;
   }
 
   void set_channel_binding_data(
-      const base::Optional<std::string>& channel_binding_data) {
+      const absl::optional<std::string>& channel_binding_data) {
     channel_binding_data_ = channel_binding_data;
   }
 
@@ -59,16 +59,16 @@ class FakeSecureChannelConnection : public SecureChannel {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void GetConnectionRssi(
-      base::OnceCallback<void(base::Optional<int32_t>)> callback) override;
-  base::Optional<std::string> GetChannelBindingData() override;
+      base::OnceCallback<void(absl::optional<int32_t>)> callback) override;
+  absl::optional<std::string> GetChannelBindingData() override;
 
  private:
   int next_sequence_number_ = 0;
   bool was_initialized_ = false;
   std::vector<Observer*> observers_;
   std::vector<SentMessage> sent_messages_;
-  base::Optional<int32_t> rssi_to_return_;
-  base::Optional<std::string> channel_binding_data_;
+  absl::optional<int32_t> rssi_to_return_;
+  absl::optional<std::string> channel_binding_data_;
 
   base::OnceClosure destructor_callback_;
 

@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
       const std::string& error_name) override;
   void SetSimulateUninhibitScanning(bool simulate_uninhibit_scanning) override;
   void SetPropertyChangeDelay(
-      base::Optional<base::TimeDelta> time_delay) override;
+      absl::optional<base::TimeDelta> time_delay) override;
 
   static const char kSimPuk[];
   static const char kDefaultSimPin[];
@@ -161,7 +161,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
 
   // When set, causes SetProperty call to return immediately and delay the value
   // change by given amount.
-  base::Optional<base::TimeDelta> property_change_delay_;
+  absl::optional<base::TimeDelta> property_change_delay_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -22,7 +22,7 @@ const std::list<DeviceIdPair>& FakeBleAdvertiser::GetRequestsForPriority(
   return priority_to_queued_requests_map()[connection_priority];
 }
 
-base::Optional<ConnectionPriority> FakeBleAdvertiser::GetPriorityForRequest(
+absl::optional<ConnectionPriority> FakeBleAdvertiser::GetPriorityForRequest(
     const DeviceIdPair& request) const {
   for (auto it = request_to_priority_map().begin();
        it != request_to_priority_map().end(); ++it) {
@@ -30,7 +30,7 @@ base::Optional<ConnectionPriority> FakeBleAdvertiser::GetPriorityForRequest(
       return it->second;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<DeviceIdPair> FakeBleAdvertiser::GetAllRequestsForRemoteDevice(

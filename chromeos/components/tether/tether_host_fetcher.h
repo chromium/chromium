@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -45,7 +45,7 @@ class TetherHostFetcher {
 
   // Fetches the tether host with the ID |device_id|.
   using TetherHostCallback =
-      base::OnceCallback<void(base::Optional<multidevice::RemoteDeviceRef>)>;
+      base::OnceCallback<void(absl::optional<multidevice::RemoteDeviceRef>)>;
   virtual void FetchTetherHost(const std::string& device_id,
                                TetherHostCallback callback) = 0;
 

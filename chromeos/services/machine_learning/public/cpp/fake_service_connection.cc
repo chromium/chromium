@@ -6,7 +6,7 @@
 
 #include <utility>
 #include "base/bind.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace machine_learning {
@@ -261,7 +261,7 @@ void FakeServiceConnectionImpl::HandleCreateGraphExecutorCall(
 void FakeServiceConnectionImpl::HandleExecuteCall(
     mojom::GraphExecutor::ExecuteCallback callback) {
   if (execute_result_ != mojom::ExecuteResult::OK) {
-    std::move(callback).Run(execute_result_, base::nullopt);
+    std::move(callback).Run(execute_result_, absl::nullopt);
     return;
   }
 

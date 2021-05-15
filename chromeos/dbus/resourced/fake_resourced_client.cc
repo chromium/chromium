@@ -15,13 +15,13 @@ FakeResourcedClient::~FakeResourcedClient() = default;
 void FakeResourcedClient::GetAvailableMemoryKB(
     DBusMethodCallback<uint64_t> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeResourcedClient::GetMemoryMarginsKB(
     DBusMethodCallback<ResourcedClient::MemoryMarginsKB> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
 }
 
 void FakeResourcedClient::SetGameMode(bool status,

@@ -11,7 +11,7 @@ namespace sync_wifi {
 PendingNetworkConfigurationUpdate::PendingNetworkConfigurationUpdate(
     const NetworkIdentifier& id,
     const std::string& change_guid,
-    const base::Optional<sync_pb::WifiConfigurationSpecifics>& specifics,
+    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics,
     int completed_attempts)
     : id_(id),
       change_guid_(change_guid),

@@ -183,7 +183,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
   }
 
   void InitializeSyncStore() {
-    std::move(init_callback_).Run(/*error=*/base::nullopt, std::move(store_));
+    std::move(init_callback_).Run(/*error=*/absl::nullopt, std::move(store_));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -234,7 +234,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
     store_->CommitWriteBatch(
         std::move(batch),
         base::BindLambdaForTesting(
-            [&](const base::Optional<syncer::ModelError>& error) {
+            [&](const absl::optional<syncer::ModelError>& error) {
               EXPECT_FALSE(error);
               run_loop.Quit();
             }));
@@ -329,7 +329,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplySyncChangesAddTwoSpecifics) {
   const WifiConfigurationSpecifics woof_network =
       GenerateTestWifiSpecifics(woof_network_id());
 
-  base::Optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
+  absl::optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
       bridge()->CreateMetadataChangeList(),
       CreateEntityAddList({meow_network, woof_network}));
   EXPECT_FALSE(error);

@@ -220,7 +220,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   std::unique_ptr<FakeMultiDeviceSetupFactory> fake_multidevice_setup_factory_;
 
   std::unique_ptr<MultiDeviceSetupService> service_;
-  base::Optional<bool> last_debug_event_success_;
+  absl::optional<bool> last_debug_event_success_;
 
   mojo::Remote<mojom::MultiDeviceSetup> multidevice_setup_remote_;
   mojo::Remote<mojom::PrivilegedHostDeviceSetter>

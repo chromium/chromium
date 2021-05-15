@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -26,6 +25,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -101,10 +101,10 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
   void TearDown() override {}
 
   void SetHostInDeviceSyncClient(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     for (const auto& remote_device : test_devices_) {
       bool should_be_host =
-          host_device != base::nullopt &&
+          host_device != absl::nullopt &&
           ((!remote_device.instance_id().empty() &&
             host_device->instance_id() == remote_device.instance_id()) ||
            (!remote_device.GetDeviceId().empty() &&
@@ -128,7 +128,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
   }
 
   void CreateDelegate(
-      const base::Optional<multidevice::RemoteDeviceRef>& initial_host,
+      const absl::optional<multidevice::RemoteDeviceRef>& initial_host,
       int initial_pending_wifi_sync_request = kPendingNone) {
     SetHostInDeviceSyncClient(initial_host);
     test_pref_service_->SetInteger(kPendingWifiSyncRequestEnabledPrefName,
@@ -147,9 +147,9 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
   }
 
   void SetHostWithStatus(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     mojom::HostStatus host_status =
-        (host_device == base::nullopt ? mojom::HostStatus::kNoEligibleHosts
+        (host_device == absl::nullopt ? mojom::HostStatus::kNoEligibleHosts
                                       : mojom::HostStatus::kHostVerified);
     fake_host_status_provider_->SetHostWithStatus(host_status, host_device);
   }
@@ -234,7 +234,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
   }
 
   void SetWifiSyncHostInDeviceSyncClient(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device,
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device,
       bool enabled) {
     GetMutableRemoteDevice(*host_device)
         ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
@@ -518,8 +518,8 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
 
   // Remove synced device. This should remove the pending request and stop the
   // retry timer.
-  SetHostInDeviceSyncClient(base::nullopt);
-  SetHostWithStatus(base::nullopt);
+  SetHostInDeviceSyncClient(absl::nullopt);
+  SetHostWithStatus(absl::nullopt);
   EXPECT_FALSE(mock_timer()->IsRunning());
 }
 
@@ -527,7 +527,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
        InitialPendingEnableRequest_NoInitialDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   true /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */,
+  CreateDelegate(absl::nullopt /* initial_host */,
                  kPendingEnable /* initial_pending_wifi_sync_request*/);
 
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
@@ -741,7 +741,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
        SetPendingEnableOnVerify_HostSetLocallyThenHostVerified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   true /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
@@ -779,7 +779,7 @@ TEST_P(
     SetPendingEnableOnVerify_HostSetLocallyThenHostSetNotVerifiedThenHostVerified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   true /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
@@ -823,7 +823,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
        SetPendingEnableOnVerify_WifiSyncFlagOff) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   false /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
@@ -843,7 +843,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
                   true /* enable_wifi_sync */);
   // Disable by policy
   test_pref_service()->SetBoolean(kWifiSyncAllowedPrefName, false);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
@@ -861,7 +861,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
        SetPendingEnableOnVerify_WifiSyncNotSupportedOnHostDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   true /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
   GetMutableRemoteDevice(test_devices()[0])
       ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
       multidevice::SoftwareFeatureState::kNotSupported;
@@ -882,7 +882,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
        SetPendingEnableOnVerify_HostRemoved) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
                   true /* enable_wifi_sync */);
-  CreateDelegate(base::nullopt /* initial_host */);
+  CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
   // setup flow has been completed on the local device.
@@ -908,7 +908,7 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   // Wifi Sync should stop the enable attempt because it requires a paired host
   // device that transitions from unverified to verified.
   fake_host_status_provider()->SetHostWithStatus(
-      mojom::HostStatus::kEligibleHostExistsButNoHostSet, base::nullopt);
+      mojom::HostStatus::kEligibleHostExistsButNoHostSet, absl::nullopt);
   EXPECT_EQ(
       test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
       kPendingNone);

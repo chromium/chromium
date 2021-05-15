@@ -56,7 +56,7 @@ class EligibleHostDevicesProviderImpl
 
   void OnGetDevicesActivityStatus(
       device_sync::mojom::NetworkRequestResult,
-      base::Optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
+      absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
 
   device_sync::DeviceSyncClient* device_sync_client_;
 

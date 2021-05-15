@@ -37,7 +37,7 @@ class FakeErrorTolerantBleAdvertisementFactory
         ble_synchronizer_base_(ble_synchronizer_base) {}
   ~FakeErrorTolerantBleAdvertisementFactory() override = default;
 
-  const base::Optional<DeviceIdPair>& last_created_device_id_pair() const {
+  const absl::optional<DeviceIdPair>& last_created_device_id_pair() const {
     return last_created_device_id_pair_;
   }
 
@@ -85,7 +85,7 @@ class FakeErrorTolerantBleAdvertisementFactory
   BluetoothHelper* bluetooth_helper_;
   BleSynchronizerBase* ble_synchronizer_base_;
 
-  base::Optional<DeviceIdPair> last_created_device_id_pair_;
+  absl::optional<DeviceIdPair> last_created_device_id_pair_;
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
@@ -273,8 +273,8 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
 
   base::UnguessableToken last_fetched_advertisement_id_;
   base::UnguessableToken last_fetched_timer_id_;
-  base::Optional<size_t> highest_slot_ended_delegate_index_verified_;
-  base::Optional<size_t> highest_failed_advertisement_delegate_index_verified_;
+  absl::optional<size_t> highest_slot_ended_delegate_index_verified_;
+  absl::optional<size_t> highest_failed_advertisement_delegate_index_verified_;
 
   scoped_refptr<base::TestSimpleTaskRunner> test_runner_;
 

@@ -43,7 +43,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<::media_session::MediaMetadata>& metadata) override {
+      const absl::optional<::media_session::MediaMetadata>& metadata) override {
   }
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
@@ -53,7 +53,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
                            std::vector<::media_session::MediaImage>>& images)
       override {}
   void MediaSessionPositionChanged(
-      const base::Optional<::media_session::MediaPosition>& position) override {
+      const absl::optional<::media_session::MediaPosition>& position) override {
   }
 
   // media::AudioRenderSink::RenderCallback overrides:

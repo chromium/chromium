@@ -7,6 +7,7 @@ include_rules = [
   "+components/account_id",
   "+components/device_event_log",
   "+components/user_manager",
+  "+third_party/abseil-cpp/absl",
   "+third_party/cros_system_api",
 ]
 

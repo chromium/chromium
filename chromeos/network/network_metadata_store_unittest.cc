@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -24,6 +23,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -381,7 +381,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
   ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
 
   network_configuration_handler()->RemoveConfiguration(
-      service_path, /*remove_confirmer=*/base::nullopt, base::DoNothing(),
+      service_path, /*remove_confirmer=*/absl::nullopt, base::DoNothing(),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
 

@@ -82,8 +82,8 @@ class EcheFeatureStatusProviderTest : public testing::Test {
   }
 
   void SetSyncedDevices(
-      const base::Optional<multidevice::RemoteDeviceRef>& local_device,
-      const std::vector<base::Optional<multidevice::RemoteDeviceRef>>
+      const absl::optional<multidevice::RemoteDeviceRef>& local_device,
+      const std::vector<absl::optional<multidevice::RemoteDeviceRef>>
           phone_devices) {
     fake_device_sync_client_.set_local_device_metadata(local_device);
 
@@ -115,7 +115,7 @@ class EcheFeatureStatusProviderTest : public testing::Test {
 
   void SetHostStatusWithDevice(
       HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
     fake_multidevice_setup_client_.SetHostStatusWithDevice(
         std::make_pair(host_status, host_device));
   }
@@ -148,16 +148,16 @@ class EcheFeatureStatusProviderTest : public testing::Test {
 // Tests conditions for kIneligible status, including missing local
 // device and/or phone and various missing properties of these devices.
 TEST_F(EcheFeatureStatusProviderTest, IneligibleForFeature) {
-  SetSyncedDevices(/*local_device=*/base::nullopt,
-                   /*phone_devices=*/{base::nullopt});
+  SetSyncedDevices(/*local_device=*/absl::nullopt,
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/false),
-                   /*phone_devices=*/{base::nullopt});
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
-                   /*phone_devices=*/{base::nullopt});
+                   /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),

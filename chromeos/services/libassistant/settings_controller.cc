@@ -260,7 +260,7 @@ void SettingsController::UpdateSettings(const std::string& settings,
 }
 
 void SettingsController::UpdateListeningEnabled(
-    base::Optional<bool> listening_enabled) {
+    absl::optional<bool> listening_enabled) {
   if (!assistant_manager_)
     return;
   if (!listening_enabled.has_value())
@@ -270,7 +270,7 @@ void SettingsController::UpdateListeningEnabled(
 }
 
 void SettingsController::UpdateAuthenticationTokens(
-    const base::Optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
+    const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
   if (!assistant_manager_)
     return;
   if (!tokens.has_value())
@@ -280,8 +280,8 @@ void SettingsController::UpdateAuthenticationTokens(
 }
 
 void SettingsController::UpdateInternalOptions(
-    const base::Optional<std::string>& locale,
-    base::Optional<bool> spoken_feedback_enabled) {
+    const absl::optional<std::string>& locale,
+    absl::optional<bool> spoken_feedback_enabled) {
   if (!assistant_manager_internal_)
     return;
 
@@ -298,8 +298,8 @@ void SettingsController::UpdateInternalOptions(
 }
 
 void SettingsController::UpdateDeviceSettings(
-    const base::Optional<std::string>& locale,
-    base::Optional<bool> hotword_enabled) {
+    const absl::optional<std::string>& locale,
+    absl::optional<bool> hotword_enabled) {
   if (!device_settings_updater_)
     return;
 

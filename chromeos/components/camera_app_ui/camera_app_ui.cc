@@ -100,11 +100,11 @@ void TranslateVideoDeviceId(
     const std::string& salt,
     const url::Origin& origin,
     const std::string& source_id,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback) {
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
          const std::string& source_id,
-         base::OnceCallback<void(const base::Optional<std::string>&)>
+         base::OnceCallback<void(const absl::optional<std::string>&)>
              callback) {
         content::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,

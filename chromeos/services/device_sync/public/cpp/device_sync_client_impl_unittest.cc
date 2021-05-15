@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
@@ -34,6 +33,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -355,7 +355,7 @@ class DeviceSyncClientImplTest : public testing::Test {
 
   void CallSetFeatureStatus(
       mojom::NetworkRequestResult expected_result_code,
-      const base::Optional<std::string> invalid_instance_id = base::nullopt) {
+      const absl::optional<std::string> invalid_instance_id = absl::nullopt) {
     base::RunLoop run_loop;
 
     std::string instance_id = invalid_instance_id.value_or(
@@ -409,8 +409,8 @@ class DeviceSyncClientImplTest : public testing::Test {
   }
 
   void CallNotifyDevices(mojom::NetworkRequestResult expected_result_code,
-                         const base::Optional<std::vector<std::string>>&
-                             invalid_instance_ids = base::nullopt) {
+                         const absl::optional<std::vector<std::string>>&
+                             invalid_instance_ids = absl::nullopt) {
     base::RunLoop run_loop;
 
     std::vector<std::string> instance_ids =
@@ -437,7 +437,7 @@ class DeviceSyncClientImplTest : public testing::Test {
 
   void CallGetDevicesActivityStatus(
       mojom::NetworkRequestResult expected_result_code,
-      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           expected_activity_statuses) {
     base::RunLoop run_loop;
 
@@ -447,9 +447,9 @@ class DeviceSyncClientImplTest : public testing::Test {
 
     SendPendingMojoMessages();
 
-    base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+    absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
         device_activity_statuses_optional;
-    if (expected_activity_statuses != base::nullopt) {
+    if (expected_activity_statuses != absl::nullopt) {
       std::vector<mojom::DeviceActivityStatusPtr> device_activity_statuses;
       for (const mojom::DeviceActivityStatusPtr& device_activity_status :
            *expected_activity_statuses) {
@@ -460,7 +460,7 @@ class DeviceSyncClientImplTest : public testing::Test {
             device_activity_status->last_update_time));
       }
       device_activity_statuses_optional =
-          base::make_optional(std::move(device_activity_statuses));
+          absl::make_optional(std::move(device_activity_statuses));
     }
     fake_device_sync_->InvokePendingGetDevicesActivityStatusCallback(
         expected_result_code, std::move(device_activity_statuses_optional));
@@ -535,18 +535,18 @@ class DeviceSyncClientImplTest : public testing::Test {
   multidevice::RemoteDeviceList test_remote_device_list_;
   const multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
 
-  base::Optional<bool> force_enrollment_now_completed_success_;
-  base::Optional<bool> force_sync_now_completed_success_;
-  base::Optional<mojom::NetworkRequestResult>
+  absl::optional<bool> force_enrollment_now_completed_success_;
+  absl::optional<bool> force_sync_now_completed_success_;
+  absl::optional<mojom::NetworkRequestResult>
       set_software_feature_state_result_code_;
-  base::Optional<mojom::NetworkRequestResult> set_feature_status_result_code_;
+  absl::optional<mojom::NetworkRequestResult> set_feature_status_result_code_;
   std::tuple<mojom::NetworkRequestResult,
              multidevice::RemoteDeviceRefList,
              multidevice::RemoteDeviceRefList>
       find_eligible_devices_error_code_and_response_;
-  base::Optional<mojom::NetworkRequestResult> notify_devices_result_code_;
+  absl::optional<mojom::NetworkRequestResult> notify_devices_result_code_;
   std::tuple<mojom::NetworkRequestResult,
-             base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>>
+             absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>>
       get_devices_activity_status_code_and_response_;
   bool debug_info_received_ = false;
 
@@ -594,7 +594,7 @@ class DeviceSyncClientImplTest : public testing::Test {
   void OnGetDevicesActivityStatus(
       base::OnceClosure callback,
       mojom::NetworkRequestResult result_code,
-      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           device_activity_status) {
     get_devices_activity_status_code_and_response_ =
         std::make_tuple(result_code, std::move(device_activity_status));
@@ -630,7 +630,7 @@ TEST_F(
   // Simulate local device metadata not being ready. It will be ready once
   // synced devices are returned, at which point |client_| should call
   // GetLocalMetadata() again.
-  fake_device_sync_->InvokePendingGetLocalDeviceMetadataCallback(base::nullopt);
+  fake_device_sync_->InvokePendingGetLocalDeviceMetadataCallback(absl::nullopt);
   fake_device_sync_->InvokePendingGetSyncedDevicesCallback(
       test_remote_device_list_);
 
@@ -863,7 +863,7 @@ TEST_F(DeviceSyncClientImplTest, TestGetDevicesActivityStatus_ErrorCode) {
   SetupClient();
 
   CallGetDevicesActivityStatus(mojom::NetworkRequestResult::kEndpointNotFound,
-                               base::nullopt);
+                               absl::nullopt);
 }
 
 TEST_F(DeviceSyncClientImplTest, TestGetDebugInfo) {

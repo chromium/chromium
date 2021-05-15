@@ -163,7 +163,7 @@ void CryptAuthEnrollmentManagerImpl::Start() {
 
 void CryptAuthEnrollmentManagerImpl::ForceEnrollmentNow(
     cryptauth::InvocationReason invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   // We store the invocation reason in a preference so that it can persist
   // across browser restarts. If the sync fails, the next retry should still use
   // this original reason instead of
@@ -219,7 +219,7 @@ void CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished(bool success) {
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
-  base::Optional<std::string> public_key = util::DecodeFromValueString(
+  absl::optional<std::string> public_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPublicKey));
   if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
@@ -230,7 +230,7 @@ std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPrivateKey() const {
-  base::Optional<std::string> private_key = util::DecodeFromValueString(
+  absl::optional<std::string> private_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPrivateKey));
   if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
@@ -275,10 +275,10 @@ void CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated(
 }
 
 void CryptAuthEnrollmentManagerImpl::OnReenrollMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED,
-                     base::nullopt /* session_id */);
+                     absl::nullopt /* session_id */);
 }
 
 void CryptAuthEnrollmentManagerImpl::OnSyncRequested(

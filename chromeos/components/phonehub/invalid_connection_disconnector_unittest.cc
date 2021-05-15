@@ -54,7 +54,7 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
   }
 
   void ClearPhoneModel() {
-    fake_phone_model_.SetPhoneStatusModel(base::nullopt);
+    fake_phone_model_.SetPhoneStatusModel(absl::nullopt);
   }
 
   void SetPhoneModel() {

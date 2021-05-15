@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -27,6 +26,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -85,9 +85,9 @@ class LocalNetworkCollectorImplTest : public testing::Test {
 
   void OnGetSyncableNetwork(
       std::string expected_ssid,
-      base::Optional<sync_pb::WifiConfigurationSpecifics> result) {
+      absl::optional<sync_pb::WifiConfigurationSpecifics> result) {
     if (expected_ssid.empty()) {
-      ASSERT_EQ(base::nullopt, result);
+      ASSERT_EQ(absl::nullopt, result);
       return;
     }
     EXPECT_EQ(expected_ssid, DecodeHexString(result->hex_ssid()));

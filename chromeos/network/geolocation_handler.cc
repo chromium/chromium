@@ -97,7 +97,7 @@ void GeolocationHandler::OnPropertyChanged(const std::string& key,
 // Private methods
 
 void GeolocationHandler::ManagerPropertiesCallback(
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties)
     return;
 
@@ -144,7 +144,7 @@ void GeolocationHandler::RequestGeolocationObjects() {
 }
 
 void GeolocationHandler::GeolocationCallback(
-    base::Optional<base::Value> properties) {
+    absl::optional<base::Value> properties) {
   if (!properties) {
     LOG(ERROR) << "Failed to get Geolocation data";
     return;

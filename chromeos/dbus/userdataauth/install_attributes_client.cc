@@ -127,7 +127,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
                     std::move(callback));
   }
 
-  base::Optional<::user_data_auth::InstallAttributesGetReply>
+  absl::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesGetReply>(
@@ -135,7 +135,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  base::Optional<::user_data_auth::InstallAttributesSetReply>
+  absl::optional<::user_data_auth::InstallAttributesSetReply>
   BlockingInstallAttributesSet(
       const ::user_data_auth::InstallAttributesSetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesSetReply>(
@@ -143,7 +143,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  base::Optional<::user_data_auth::InstallAttributesFinalizeReply>
+  absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
   BlockingInstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request)
       override {
@@ -153,7 +153,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  base::Optional<::user_data_auth::InstallAttributesGetStatusReply>
+  absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
   BlockingInstallAttributesGetStatus(
       const ::user_data_auth::InstallAttributesGetStatusRequest& request)
       override {
@@ -180,7 +180,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
           << "Failed to append protobuf when calling InstallAttributes method "
           << method_name;
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
     // Bind with the weak pointer of |this| so the response is not
@@ -215,14 +215,14 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     if (!ParseProto(response, &reply_proto)) {
       LOG(ERROR)
           << "Failed to parse reply protobuf from InstallAttributes method";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     std::move(callback).Run(reply_proto);
   }
 
   template <typename ReplyType, typename RequestType>
-  base::Optional<ReplyType> BlockingCallProtoMethod(
+  absl::optional<ReplyType> BlockingCallProtoMethod(
       const char* method_name,
       const char* interface_name,
       const RequestType& request) {
@@ -232,7 +232,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
       LOG(ERROR) << "Failed to append protobuf when calling InstallAttributes "
                     "method (blocking) "
                  << method_name;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     std::unique_ptr<dbus::Response> response(
@@ -241,7 +241,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     if (!response) {
       LOG(ERROR) << "DBus call failed for InstallAttributes method (blocking) "
                  << method_name;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     ReplyType reply_proto;
@@ -249,7 +249,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
       LOG(ERROR)
           << "Failed to parse proto from InstallAttributes method (blocking) "
           << method_name;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return reply_proto;

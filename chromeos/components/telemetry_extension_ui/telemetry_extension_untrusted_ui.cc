@@ -89,7 +89,7 @@ class TelemetryExtensionUntrustedSource : public content::URLDataSource {
       network::mojom::CSPDirectiveName directive) override;
 
  private:
-  base::Optional<int> PathToIdr(const std::string& path);
+  absl::optional<int> PathToIdr(const std::string& path);
 
   const base::FilePath root_directory_;
   const std::string source_;
@@ -128,7 +128,7 @@ void TelemetryExtensionUntrustedSource::StartDataRequest(
   // Remove the query string for named resource lookups.
   path = path.substr(0, path.find_first_of('?'));
 
-  base::Optional<int> resource_id = PathToIdr(path);
+  absl::optional<int> resource_id = PathToIdr(path);
   if (resource_id.has_value()) {
     scoped_refptr<base::RefCountedMemory> response(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
@@ -171,13 +171,13 @@ std::string TelemetryExtensionUntrustedSource::GetContentSecurityPolicy(
   return it->second;
 }
 
-base::Optional<int> TelemetryExtensionUntrustedSource::PathToIdr(
+absl::optional<int> TelemetryExtensionUntrustedSource::PathToIdr(
     const std::string& path) {
   const auto& it = path_to_idr_map_.find(path);
   if (it == path_to_idr_map_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::Optional<int>(it->second);
+  return absl::optional<int>(it->second);
 }
 
 }  // namespace

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -38,8 +38,8 @@ class CryptAuthGCMManager {
     // |feature_type|: Only included in messages resulting from
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnReenrollMessage(
-        const base::Optional<std::string>& session_id,
-        const base::Optional<CryptAuthFeatureType>& feature_type);
+        const absl::optional<std::string>& session_id,
+        const absl::optional<CryptAuthFeatureType>& feature_type);
 
     // Called when a GCM message is received to sync down new devices from
     // CryptAuth.
@@ -49,8 +49,8 @@ class CryptAuthGCMManager {
     // |feature_type|: Only included in messages resulting from
     //                 BatchNotifyGroupDevices requests and null otherwise.
     virtual void OnResyncMessage(
-        const base::Optional<std::string>& session_id,
-        const base::Optional<CryptAuthFeatureType>& feature_type);
+        const absl::optional<std::string>& session_id,
+        const absl::optional<CryptAuthFeatureType>& feature_type);
   };
 
   virtual ~CryptAuthGCMManager() {}

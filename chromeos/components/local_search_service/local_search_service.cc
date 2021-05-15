@@ -48,7 +48,7 @@ void LocalSearchService::BindIndex(
   }
 
   it->second->BindReceiver(std::move(index_receiver));
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace local_search_service

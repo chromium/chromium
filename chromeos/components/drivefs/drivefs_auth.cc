@@ -30,10 +30,10 @@ DriveFsAuth::DriveFsAuth(const base::Clock* clock,
 
 DriveFsAuth::~DriveFsAuth() = default;
 
-base::Optional<std::string> DriveFsAuth::GetCachedAccessToken() {
+absl::optional<std::string> DriveFsAuth::GetCachedAccessToken() {
   const auto& token = GetOrResetCachedToken(true);
   if (token.empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return token;
 }

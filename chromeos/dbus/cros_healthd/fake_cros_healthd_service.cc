@@ -142,7 +142,7 @@ void FakeCrosHealthdService::RunSmartctlCheckRoutine(
 
 void FakeCrosHealthdService::RunAcPowerRoutine(
     mojom::AcPowerStatusEnum expected_status,
-    const base::Optional<std::string>& expected_power_type,
+    const absl::optional<std::string>& expected_power_type,
     RunAcPowerRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -299,7 +299,7 @@ void FakeCrosHealthdService::RunHttpsLatencyRoutine(
 }
 
 void FakeCrosHealthdService::RunVideoConferencingRoutine(
-    const base::Optional<std::string>& stun_server_hostname,
+    const absl::optional<std::string>& stun_server_hostname,
     RunVideoConferencingRoutineCallback callback) {
   std::move(callback).Run(run_routine_response_.Clone());
 }
@@ -461,7 +461,7 @@ void FakeCrosHealthdService::RunLanConnectivityRoutineForTesting(
   network_diagnostics_routines_->LanConnectivity(std::move(callback));
 }
 
-base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+absl::optional<FakeCrosHealthdService::RoutineUpdateParams>
 FakeCrosHealthdService::GetRoutineUpdateParams() const {
   return routine_update_params_;
 }

@@ -84,11 +84,11 @@ void FakeSecureChannelConnection::RemoveObserver(Observer* observer) {
 }
 
 void FakeSecureChannelConnection::GetConnectionRssi(
-    base::OnceCallback<void(base::Optional<int32_t>)> callback) {
+    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
   std::move(callback).Run(rssi_to_return_);
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 FakeSecureChannelConnection::GetChannelBindingData() {
   return channel_binding_data_;
 }

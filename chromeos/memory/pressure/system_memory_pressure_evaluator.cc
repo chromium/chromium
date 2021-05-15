@@ -206,7 +206,7 @@ uint64_t SystemMemoryPressureEvaluator::GetCachedAvailableMemoryKB() {
 }
 
 void SystemMemoryPressureEvaluator::OnMemoryMargins(
-    base::Optional<chromeos::ResourcedClient::MemoryMarginsKB> result) {
+    absl::optional<chromeos::ResourcedClient::MemoryMarginsKB> result) {
   // The bus daemon never reorders messages. That is, if you send two method
   // call messages to the same recipient, they will be received in the order
   // they were sent [1].
@@ -227,7 +227,7 @@ void SystemMemoryPressureEvaluator::OnMemoryMargins(
 }
 
 void SystemMemoryPressureEvaluator::OnAvailableMemory(
-    base::Optional<uint64_t> result) {
+    absl::optional<uint64_t> result) {
   if (result.has_value()) {
     uint64_t mem_avail_kb = result.value();
     cached_available_kb_.store(mem_avail_kb);

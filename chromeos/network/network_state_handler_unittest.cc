@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -38,6 +37,7 @@
 #include "chromeos/network/tether_constants.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -292,8 +292,8 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   std::map<std::string, int> device_property_updates_;
   std::map<std::string, int> connection_state_changes_;
   std::map<std::string, std::string> network_connection_state_;
-  base::Optional<base::RunLoop> run_loop_scan_started_;
-  base::Optional<base::RunLoop> run_loop_scan_completed_;
+  absl::optional<base::RunLoop> run_loop_scan_started_;
+  absl::optional<base::RunLoop> run_loop_scan_completed_;
   std::vector<std::pair<std::string, std::string>> service_path_transitions_;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);

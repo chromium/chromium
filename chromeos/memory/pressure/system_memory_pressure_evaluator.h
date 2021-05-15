@@ -14,13 +14,13 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
 #include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace memory {
@@ -85,10 +85,10 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
 
   // Callback for D-Bus method GetMemoryMarginsKB.
   void OnMemoryMargins(
-      base::Optional<chromeos::ResourcedClient::MemoryMarginsKB> result);
+      absl::optional<chromeos::ResourcedClient::MemoryMarginsKB> result);
 
   // Callback for D-Bus method GetAvailableMemoryKB.
-  void OnAvailableMemory(base::Optional<uint64_t> result);
+  void OnAvailableMemory(absl::optional<uint64_t> result);
 
   // Member variables.
 

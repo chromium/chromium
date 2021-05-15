@@ -65,10 +65,10 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -99,14 +99,14 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
 
   // Callbacks for ModelTypeStore.
-  void OnStoreCreated(const base::Optional<syncer::ModelError>& error,
+  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::ModelTypeStore::RecordList> records);
-  void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
+  void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void OnCommit(const base::Optional<syncer::ModelError>& error);
+  void OnCommit(const absl::optional<syncer::ModelError>& error);
 
   void OnGetAllSyncableNetworksResult(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
@@ -114,7 +114,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
       std::vector<sync_pb::WifiConfigurationSpecifics> local_network_list);
 
   void SaveNetworkToSync(
-      base::Optional<sync_pb::WifiConfigurationSpecifics> proto);
+      absl::optional<sync_pb::WifiConfigurationSpecifics> proto);
   void RemoveNetworkFromSync(const std::string& storage_key);
 
   // Starts an async request to serialize a network to a proto and save to sync.
@@ -146,7 +146,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   // most recent change is kept if there are multiple changes to the same
   // network.
   base::flat_map<std::string,
-                 base::Optional<sync_pb::WifiConfigurationSpecifics>>
+                 absl::optional<sync_pb::WifiConfigurationSpecifics>>
       networks_to_sync_when_ready_;
 
   // The on disk store of WifiConfigurationSpecifics protos that mirrors what

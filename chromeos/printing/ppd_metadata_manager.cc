@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -28,6 +27,7 @@
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_config_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -780,7 +780,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   // Called by GetPrinters().
   // Returns the known name for the Printers metadata named by
   // |manufacturer|.
-  base::Optional<std::string> GetPrintersMetadataName(
+  absl::optional<std::string> GetPrintersMetadataName(
       base::StringPiece manufacturer) {
     PpdMetadataPathSpecifier manufacturers_path(
         PpdMetadataPathSpecifier::Type::kManufacturers);
@@ -790,14 +790,14 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     if (!cached_manufacturers_.contains(manufacturers_metadata_name)) {
       // This is likely a bug: we don't have the expected manufacturers
       // metadata.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     const ParsedMetadataWithTimestamp<ParsedManufacturers>& manufacturers =
         cached_manufacturers_.at(manufacturers_metadata_name);
     if (!manufacturers.value.contains(manufacturer)) {
       // This is likely a bug: we don't know about this manufacturer.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     PpdMetadataPathSpecifier printers_path(
@@ -991,7 +991,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    base::Optional<ParsedUsbIndex> parsed =
+    absl::optional<ParsedUsbIndex> parsed =
         ParseUsbIndex(fetch_result.contents);
     if (!parsed.has_value()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -1049,7 +1049,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    const base::Optional<ParsedUsbVendorIdMap> parsed =
+    const absl::optional<ParsedUsbVendorIdMap> parsed =
         ParseUsbVendorIdMap(fetch_result.contents);
     if (!parsed.has_value()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(

@@ -478,7 +478,7 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
 
   base::RunLoop run_loop;
   client()->ListScanners(base::BindLambdaForTesting(
-      [&](base::Optional<lorgnette::ListScannersResponse> result) {
+      [&](absl::optional<lorgnette::ListScannersResponse> result) {
         ASSERT_TRUE(result.has_value());
         EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
         run_loop.Quit();
@@ -494,8 +494,8 @@ TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
 
   base::RunLoop run_loop;
   client()->ListScanners(base::BindLambdaForTesting(
-      [&](base::Optional<lorgnette::ListScannersResponse> result) {
-        EXPECT_EQ(result, base::nullopt);
+      [&](absl::optional<lorgnette::ListScannersResponse> result) {
+        EXPECT_EQ(result, absl::nullopt);
         run_loop.Quit();
       }));
 
@@ -510,8 +510,8 @@ TEST_F(LorgnetteManagerClientTest, EmptyResponseToListScanners) {
 
   base::RunLoop run_loop;
   client()->ListScanners(base::BindLambdaForTesting(
-      [&](base::Optional<lorgnette::ListScannersResponse> result) {
-        EXPECT_EQ(result, base::nullopt);
+      [&](absl::optional<lorgnette::ListScannersResponse> result) {
+        EXPECT_EQ(result, absl::nullopt);
         run_loop.Quit();
       }));
 
@@ -531,7 +531,7 @@ TEST_F(LorgnetteManagerClientTest, GetScannerCapabilities) {
   client()->GetScannerCapabilities(
       kScannerDeviceName,
       base::BindLambdaForTesting(
-          [&](base::Optional<lorgnette::ScannerCapabilities> result) {
+          [&](absl::optional<lorgnette::ScannerCapabilities> result) {
             ASSERT_TRUE(result.has_value());
             EXPECT_THAT(result.value(), ProtobufEquals(kExpectedResponse));
             run_loop.Quit();
@@ -549,8 +549,8 @@ TEST_F(LorgnetteManagerClientTest, NullResponseToGetScannerCapabilities) {
   client()->GetScannerCapabilities(
       kScannerDeviceName,
       base::BindLambdaForTesting(
-          [&](base::Optional<lorgnette::ScannerCapabilities> result) {
-            EXPECT_EQ(result, base::nullopt);
+          [&](absl::optional<lorgnette::ScannerCapabilities> result) {
+            EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));
 
@@ -567,8 +567,8 @@ TEST_F(LorgnetteManagerClientTest, EmptyResponseToGetScannerCapabilities) {
   client()->GetScannerCapabilities(
       kScannerDeviceName,
       base::BindLambdaForTesting(
-          [&](base::Optional<lorgnette::ScannerCapabilities> result) {
-            EXPECT_EQ(result, base::nullopt);
+          [&](absl::optional<lorgnette::ScannerCapabilities> result) {
+            EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));
 

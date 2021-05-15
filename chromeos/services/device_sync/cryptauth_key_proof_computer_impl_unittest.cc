@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer_impl.h"
@@ -17,6 +16,7 @@
 #include "crypto/hmac.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -104,9 +104,9 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
                    ByteVectorToString(kTestPrivateKeyBytes),
                    CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256);
 
-  base::Optional<std::string> key_proof =
+  absl::optional<std::string> key_proof =
       CryptAuthKeyProofComputerImpl::Factory::Create()->ComputeKeyProof(
-          key, kTestPayload, kAsymmetricTestSalt, base::nullopt /* info */);
+          key, kTestPayload, kAsymmetricTestSalt, absl::nullopt /* info */);
   EXPECT_TRUE(key_proof);
 
   // Verify the key proof which should be of the form:
@@ -127,7 +127,7 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   CryptAuthKey key(ByteVectorToString(kTestSymmetricKeyBytes),
                    CryptAuthKey::Status::kActive, cryptauthv2::KeyType::RAW256);
 
-  base::Optional<std::string> key_proof =
+  absl::optional<std::string> key_proof =
       CryptAuthKeyProofComputerImpl::Factory::Create()->ComputeKeyProof(
           key, kTestPayload, ByteVectorToString(kSymmetricTestSaltBytes),
           ByteVectorToString(kSymmetricTestInfoBytes));
@@ -147,7 +147,7 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   CryptAuthKey key(ByteVectorToString(kTestSymmetricKeyBytes),
                    CryptAuthKey::Status::kActive, cryptauthv2::KeyType::RAW128);
 
-  base::Optional<std::string> key_proof =
+  absl::optional<std::string> key_proof =
       CryptAuthKeyProofComputerImpl::Factory::Create()->ComputeKeyProof(
           key, kTestPayload, ByteVectorToString(kSymmetricTestSaltBytes),
           ByteVectorToString(kSymmetricTestInfoBytes));
@@ -164,9 +164,9 @@ TEST(DeviceSyncCryptAuthKeyProofComputerImplTest,
   CryptAuthKey key("public_key", "non_pkcs8_private_key",
                    CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256);
 
-  base::Optional<std::string> key_proof =
+  absl::optional<std::string> key_proof =
       CryptAuthKeyProofComputerImpl::Factory::Create()->ComputeKeyProof(
-          key, kTestPayload, kAsymmetricTestSalt, base::nullopt /* info */);
+          key, kTestPayload, kAsymmetricTestSalt, absl::nullopt /* info */);
 
   EXPECT_FALSE(key_proof);
 }

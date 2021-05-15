@@ -6,11 +6,11 @@
 
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/dbus/os_install/fake_os_install_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -18,7 +18,7 @@ namespace {
 
 OsInstallClient* g_instance = nullptr;
 
-base::Optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
+absl::optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
   if (str == os_install_service::kStatusInProgress)
     return OsInstallClient::Status::InProgress;
   if (str == os_install_service::kStatusSucceeded)
@@ -29,7 +29,7 @@ base::Optional<OsInstallClient::Status> ParseStatus(const std::string& str) {
     return OsInstallClient::Status::NoDestinationDeviceFound;
 
   LOG(ERROR) << "Invalid status: " << str;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 class OsInstallClientImpl : public OsInstallClient {
@@ -99,7 +99,7 @@ void OsInstallClientImpl::HandleStartResponse(StartOsInstallCallback callback,
                                               dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Invalid response";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -107,7 +107,7 @@ void OsInstallClientImpl::HandleStartResponse(StartOsInstallCallback callback,
   std::string status_str;
   if (!reader.PopString(&status_str)) {
     LOG(ERROR) << "Missing status";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

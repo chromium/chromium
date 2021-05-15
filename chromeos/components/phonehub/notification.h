@@ -9,8 +9,8 @@
 #include <ostream>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 namespace chromeos {
@@ -79,10 +79,10 @@ class Notification {
       Importance importance,
       int64_t inline_reply_id,
       InteractionBehavior interaction_behavior,
-      const base::Optional<std::u16string>& title = base::nullopt,
-      const base::Optional<std::u16string>& text_content = base::nullopt,
-      const base::Optional<gfx::Image>& shared_image = base::nullopt,
-      const base::Optional<gfx::Image>& contact_image = base::nullopt);
+      const absl::optional<std::u16string>& title = absl::nullopt,
+      const absl::optional<std::u16string>& text_content = absl::nullopt,
+      const absl::optional<gfx::Image>& shared_image = absl::nullopt,
+      const absl::optional<gfx::Image>& contact_image = absl::nullopt);
   Notification(const Notification& other);
   ~Notification();
 
@@ -98,14 +98,14 @@ class Notification {
   InteractionBehavior interaction_behavior() const {
     return interaction_behavior_;
   }
-  const base::Optional<std::u16string>& title() const { return title_; }
-  const base::Optional<std::u16string>& text_content() const {
+  const absl::optional<std::u16string>& title() const { return title_; }
+  const absl::optional<std::u16string>& text_content() const {
     return text_content_;
   }
-  const base::Optional<gfx::Image>& shared_image() const {
+  const absl::optional<gfx::Image>& shared_image() const {
     return shared_image_;
   }
-  const base::Optional<gfx::Image>& contact_image() const {
+  const absl::optional<gfx::Image>& contact_image() const {
     return contact_image_;
   }
 
@@ -116,10 +116,10 @@ class Notification {
   Importance importance_;
   int64_t inline_reply_id_;
   InteractionBehavior interaction_behavior_;
-  base::Optional<std::u16string> title_;
-  base::Optional<std::u16string> text_content_;
-  base::Optional<gfx::Image> shared_image_;
-  base::Optional<gfx::Image> contact_image_;
+  absl::optional<std::u16string> title_;
+  absl::optional<std::u16string> text_content_;
+  absl::optional<gfx::Image> shared_image_;
+  absl::optional<gfx::Image> contact_image_;
 };
 
 std::ostream& operator<<(std::ostream& stream,

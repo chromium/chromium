@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -24,6 +23,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
 
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   void UpdateListeningState();
 
-  base::Optional<AssistantManagerService::UserInfo> GetUserInfo() const;
+  absl::optional<AssistantManagerService::UserInfo> GetUserInfo() const;
 
   ServiceContext* context() { return context_.get(); }
 
@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   std::unique_ptr<AssistantManagerService>
       assistant_manager_service_for_testing_;
 
-  base::Optional<std::string> access_token_;
+  absl::optional<std::string> access_token_;
 
   // non-null until |assistant_manager_service_| is created.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>

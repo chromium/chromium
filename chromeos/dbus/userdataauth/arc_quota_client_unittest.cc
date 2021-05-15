@@ -154,12 +154,12 @@ class ArcQuotaClientTest : public testing::Test {
 
 TEST_F(ArcQuotaClientTest, GetArcDiskFeatures) {
   expected_get_arc_disk_features_reply_.set_quota_supported(true);
-  base::Optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply;
+  absl::optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply;
 
   client_->GetArcDiskFeatures(::user_data_auth::GetArcDiskFeaturesRequest(),
                               CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_arc_disk_features_reply_));
 }
@@ -167,25 +167,25 @@ TEST_F(ArcQuotaClientTest, GetArcDiskFeatures) {
 TEST_F(ArcQuotaClientTest, GetArcDiskFeaturesInvalidProtobuf) {
   expected_get_arc_disk_features_reply_.set_quota_supported(true);
   shall_message_parsing_fail_ = true;
-  base::Optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply =
+  absl::optional<::user_data_auth::GetArcDiskFeaturesReply> result_reply =
       ::user_data_auth::GetArcDiskFeaturesReply();
 
   client_->GetArcDiskFeatures(::user_data_auth::GetArcDiskFeaturesRequest(),
                               CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, base::nullopt);
+  ASSERT_EQ(result_reply, absl::nullopt);
 }
 
 TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcUid) {
   constexpr int64_t kCurSpace = 0x12345678ABCDLL;
   expected_get_current_space_for_arc_uid_reply_.set_cur_space(kCurSpace);
-  base::Optional<::user_data_auth::GetCurrentSpaceForArcUidReply> result_reply;
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcUidReply> result_reply;
 
   client_->GetCurrentSpaceForArcUid(
       ::user_data_auth::GetCurrentSpaceForArcUidRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_current_space_for_arc_uid_reply_));
 }
@@ -193,13 +193,13 @@ TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcUid) {
 TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcGid) {
   constexpr int64_t kCurSpace = 0x12345678ABCDLL;
   expected_get_current_space_for_arc_gid_reply_.set_cur_space(kCurSpace);
-  base::Optional<::user_data_auth::GetCurrentSpaceForArcGidReply> result_reply;
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcGidReply> result_reply;
 
   client_->GetCurrentSpaceForArcGid(
       ::user_data_auth::GetCurrentSpaceForArcGidRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_get_current_space_for_arc_gid_reply_));
 }
@@ -207,14 +207,14 @@ TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcGid) {
 TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcProjectId) {
   constexpr int64_t kCurSpace = 0x12345678ABCDLL;
   expected_get_current_space_for_arc_project_id_reply_.set_cur_space(kCurSpace);
-  base::Optional<::user_data_auth::GetCurrentSpaceForArcProjectIdReply>
+  absl::optional<::user_data_auth::GetCurrentSpaceForArcProjectIdReply>
       result_reply;
 
   client_->GetCurrentSpaceForArcProjectId(
       ::user_data_auth::GetCurrentSpaceForArcProjectIdRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(),
                      expected_get_current_space_for_arc_project_id_reply_));
@@ -222,12 +222,12 @@ TEST_F(ArcQuotaClientTest, GetCurrentSpaceForArcProjectId) {
 
 TEST_F(ArcQuotaClientTest, SetProjectId) {
   expected_set_project_id_reply_.set_success(true);
-  base::Optional<::user_data_auth::SetProjectIdReply> result_reply;
+  absl::optional<::user_data_auth::SetProjectIdReply> result_reply;
 
   client_->SetProjectId(::user_data_auth::SetProjectIdRequest(),
                         CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, base::nullopt);
+  ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_set_project_id_reply_));
 }

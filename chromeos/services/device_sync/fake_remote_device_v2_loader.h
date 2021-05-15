@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/services/device_sync/remote_device_v2_loader.h"
 #include "chromeos/services/device_sync/remote_device_v2_loader_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,18 +31,18 @@ class FakeRemoteDeviceV2Loader : public RemoteDeviceV2Loader {
 
   // Returns the Instance ID to device map that was passed into Load(). Returns
   // null if Load() has not been called.
-  const base::Optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>&
+  const absl::optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>&
   id_to_device_map() const {
     return id_to_device_map_;
   }
 
   // Returns the user email that was passed into Load(). Returns null if Load()
   // has not been called.
-  const base::Optional<std::string>& user_email() const { return user_email_; }
+  const absl::optional<std::string>& user_email() const { return user_email_; }
 
   // Returns the user private key that was passed into Load(). Returns null if
   // Load() has not been called.
-  const base::Optional<std::string>& user_private_key() const {
+  const absl::optional<std::string>& user_private_key() const {
     return user_private_key_;
   }
 
@@ -56,10 +56,10 @@ class FakeRemoteDeviceV2Loader : public RemoteDeviceV2Loader {
       const std::string& user_private_key,
       LoadCallback callback) override;
 
-  base::Optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
+  absl::optional<CryptAuthDeviceRegistry::InstanceIdToDeviceMap>
       id_to_device_map_;
-  base::Optional<std::string> user_email_;
-  base::Optional<std::string> user_private_key_;
+  absl::optional<std::string> user_email_;
+  absl::optional<std::string> user_private_key_;
   LoadCallback callback_;
 };
 

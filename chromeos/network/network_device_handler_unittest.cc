@@ -95,7 +95,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
   void SuccessCallback() { result_ = kResultSuccess; }
 
   void GetPropertiesCallback(const std::string& device_path,
-                             base::Optional<base::Value> properties) {
+                             absl::optional<base::Value> properties) {
     if (!properties) {
       result_ = kResultFailure;
       return;

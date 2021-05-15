@@ -18,7 +18,7 @@ namespace ime {
 
 namespace {
 
-base::Optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
+absl::optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
 
 using ReplyCallback =
     base::RepeatingCallback<void(const std::vector<uint8_t>&,

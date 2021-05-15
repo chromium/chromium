@@ -17,11 +17,11 @@ class MutablePhoneModel : public PhoneModel {
   MutablePhoneModel();
   ~MutablePhoneModel() override;
 
-  void SetPhoneName(const base::Optional<std::u16string>& phone_name);
+  void SetPhoneName(const absl::optional<std::u16string>& phone_name);
   void SetPhoneStatusModel(
-      const base::Optional<PhoneStatusModel>& phone_status_model);
+      const absl::optional<PhoneStatusModel>& phone_status_model);
   void SetBrowserTabsModel(
-      const base::Optional<BrowserTabsModel>& browser_tabs_model);
+      const absl::optional<BrowserTabsModel>& browser_tabs_model);
 };
 
 }  // namespace phonehub

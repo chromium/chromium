@@ -55,7 +55,7 @@ class MultiDeviceSetupPrivilegedHostDeviceSetterImplTest
     last_set_host_success_ = success;
   }
 
-  base::Optional<bool> last_set_host_success_;
+  absl::optional<bool> last_set_host_success_;
 
   std::unique_ptr<FakeMultiDeviceSetup> fake_multidevice_setup_;
   std::unique_ptr<PrivilegedHostDeviceSetterBase> host_setter_;

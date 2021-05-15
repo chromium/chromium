@@ -175,8 +175,8 @@ base::FilePath GetBaseAssistantDir() {
 }
 
 std::string CreateLibAssistantConfig(
-    base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override) {
+    absl::optional<std::string> s3_server_uri_override,
+    absl::optional<std::string> device_id_override) {
   using Value = base::Value;
   using Type = base::Value::Type;
 

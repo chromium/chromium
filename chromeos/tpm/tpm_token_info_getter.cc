@@ -156,7 +156,7 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
     }
 
     state_ = STATE_DONE;
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
     return;
   }
 
@@ -165,7 +165,7 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
 }
 
 void TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo(
-    base::Optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info) {
+    absl::optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info) {
   if (!token_info.has_value() || !token_info->has_token_info() ||
       token_info->token_info().slot() == -1) {
     RetryLater();

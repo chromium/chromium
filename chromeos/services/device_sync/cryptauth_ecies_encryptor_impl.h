@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_ecies_encryptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace securemessage {
 class Header;
@@ -77,7 +77,7 @@ class CryptAuthEciesEncryptorImpl : public CryptAuthEciesEncryptor {
   void OnBatchDecryptionStarted() override;
 
   void OnSingleOutputFinished(const std::string& id,
-                              const base::Optional<std::string>& output);
+                              const absl::optional<std::string>& output);
   void OnSessionKeyPairGenerated(const std::string& session_public_key,
                                  const std::string& session_private_key);
   void OnDiffieHellmanEncryptionKeyDerived(

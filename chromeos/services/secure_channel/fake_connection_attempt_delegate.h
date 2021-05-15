@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/connection_attempt_delegate.h"
 #include "chromeos/services/secure_channel/connection_details.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,11 +27,11 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
     return authenticated_channel_.get();
   }
 
-  const base::Optional<ConnectionDetails>& connection_details() const {
+  const absl::optional<ConnectionDetails>& connection_details() const {
     return connection_details_;
   }
 
-  const base::Optional<ConnectionAttemptDetails>& connection_attempt_details()
+  const absl::optional<ConnectionAttemptDetails>& connection_attempt_details()
       const {
     return connection_attempt_details_;
   }
@@ -44,8 +44,8 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
   void OnConnectionAttemptFinishedWithoutConnection(
       const ConnectionAttemptDetails& connection_attempt_details) override;
 
-  base::Optional<ConnectionAttemptDetails> connection_attempt_details_;
-  base::Optional<ConnectionDetails> connection_details_;
+  absl::optional<ConnectionAttemptDetails> connection_attempt_details_;
+  absl::optional<ConnectionDetails> connection_details_;
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttemptDelegate);

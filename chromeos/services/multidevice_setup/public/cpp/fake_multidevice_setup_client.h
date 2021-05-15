@@ -12,10 +12,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -42,7 +42,7 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   void InvokePendingSetFeatureEnabledStateCallback(
       mojom::Feature expected_feature,
       bool expected_enabled,
-      const base::Optional<std::string>& expected_auth_token,
+      const absl::optional<std::string>& expected_auth_token,
       bool success);
   void InvokePendingRetrySetHostNowCallback(bool success);
   void InvokePendingTriggerEventForDebuggingCallback(
@@ -70,7 +70,7 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   void SetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const base::Optional<std::string>& auth_token,
+      const absl::optional<std::string>& auth_token,
       mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
       override;
   void RetrySetHostNow(
@@ -91,7 +91,7 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
   std::queue<
       std::tuple<mojom::Feature,
                  bool,
-                 base::Optional<std::string>,
+                 absl::optional<std::string>,
                  mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback>>
       set_feature_enabled_state_args_queue_;
   std::queue<mojom::MultiDeviceSetup::RetrySetHostNowCallback>

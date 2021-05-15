@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_
 
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "components/metrics/daily_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;

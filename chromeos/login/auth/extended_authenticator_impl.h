@@ -12,9 +12,9 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/extended_authenticator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -74,14 +74,14 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
   void OnOperationComplete(const std::string& time_marker,
                            const UserContext& context,
                            base::OnceClosure success_callback,
-                           base::Optional<ReplyType> reply);
+                           absl::optional<ReplyType> reply);
 
   void OnStartFingerprintAuthSessionComplete(
       base::OnceCallback<void(bool)> callback,
-      base::Optional<user_data_auth::StartFingerprintAuthSessionReply> reply);
+      absl::optional<user_data_auth::StartFingerprintAuthSessionReply> reply);
   void OnFingerprintScanComplete(
       base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback,
-      base::Optional<user_data_auth::CheckKeyReply> reply);
+      absl::optional<user_data_auth::CheckKeyReply> reply);
 
   bool salt_obtained_;
   std::string system_salt_;

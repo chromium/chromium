@@ -86,7 +86,7 @@ MultiDeviceSetupClientImpl::GetHostStatus() const {
 void MultiDeviceSetupClientImpl::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const base::Optional<std::string>& auth_token,
+    const absl::optional<std::string>& auth_token,
     mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) {
   multidevice_setup_remote_->SetFeatureEnabledState(
       feature, enabled, auth_token, std::move(callback));
@@ -111,7 +111,7 @@ void MultiDeviceSetupClientImpl::TriggerEventForDebugging(
 
 void MultiDeviceSetupClientImpl::OnHostStatusChanged(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDevice>& host_device) {
+    const absl::optional<multidevice::RemoteDevice>& host_device) {
   if (host_device) {
     remote_device_cache_->SetRemoteDevices({*host_device});
     host_status_with_device_ = std::make_pair(
@@ -119,7 +119,7 @@ void MultiDeviceSetupClientImpl::OnHostStatusChanged(
                          host_device->instance_id, host_device->GetDeviceId()));
   } else {
     host_status_with_device_ =
-        std::make_pair(host_status, base::nullopt /* host_device */);
+        std::make_pair(host_status, absl::nullopt /* host_device */);
   }
 
   NotifyHostStatusChanged(host_status_with_device_);

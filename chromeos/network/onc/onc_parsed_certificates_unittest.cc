@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace onc {

@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/shared_resource_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -32,7 +32,7 @@ class FakeBleAdvertiser : public BleAdvertiser {
   const std::list<DeviceIdPair>& GetRequestsForPriority(
       ConnectionPriority connection_priority);
 
-  base::Optional<ConnectionPriority> GetPriorityForRequest(
+  absl::optional<ConnectionPriority> GetPriorityForRequest(
       const DeviceIdPair& request) const;
 
   std::vector<DeviceIdPair> GetAllRequestsForRemoteDevice(

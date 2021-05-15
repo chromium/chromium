@@ -129,7 +129,7 @@ void CryptAuthApiCallFlow::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  base::Optional<NetworkRequestError> error;
+  absl::optional<NetworkRequestError> error;
   std::string error_message;
   if (net_error == net::OK) {
     int response_code = -1;

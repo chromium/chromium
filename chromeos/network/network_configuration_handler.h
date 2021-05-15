@@ -16,13 +16,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class ObjectPath;
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   // operation and only entries that evaluate to true by applying the confirmer
   // will be removed.
   void RemoveConfiguration(const std::string& service_path,
-                           base::Optional<RemoveConfirmer> remove_confirmer,
+                           absl::optional<RemoveConfirmer> remove_confirmer,
                            base::OnceClosure callback,
                            network_handler::ErrorCallback error_callback);
 
@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   // Set the Name and GUID properties correctly and Invoke |callback|.
   void GetPropertiesCallback(network_handler::ResultCallback callback,
                              const std::string& service_path,
-                             base::Optional<base::Value> properties);
+                             absl::optional<base::Value> properties);
 
   // Invoke |callback| and inform NetworkStateHandler to request an update
   // for the service after setting properties.
@@ -210,7 +210,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   void RemoveConfigurationFromProfile(
       const std::string& service_path,
       const std::string& profile_path,
-      base::Optional<RemoveConfirmer> remove_confirmer,
+      absl::optional<RemoveConfirmer> remove_confirmer,
       base::OnceClosure callback,
       network_handler::ErrorCallback error_callback);
 

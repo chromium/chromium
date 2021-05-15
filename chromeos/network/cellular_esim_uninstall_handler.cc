@@ -5,7 +5,6 @@
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
@@ -16,6 +15,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "components/device_event_log/device_event_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace chromeos {
@@ -38,8 +38,8 @@ void OnRemoveStaleShillService(std::string service_path, bool success) {
 
 CellularESimUninstallHandler::UninstallRequest::UninstallRequest(
     const std::string& iccid,
-    const base::Optional<dbus::ObjectPath>& esim_profile_path,
-    const base::Optional<dbus::ObjectPath>& euicc_path,
+    const absl::optional<dbus::ObjectPath>& esim_profile_path,
+    const absl::optional<dbus::ObjectPath>& euicc_path,
     UninstallRequestCallback callback)
     : iccid(iccid),
       esim_profile_path(esim_profile_path),
@@ -354,7 +354,7 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   }
 
   network_configuration_handler_->RemoveConfiguration(
-      network->path(), base::nullopt,
+      network->path(), absl::nullopt,
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceSuccess,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceFailure,
@@ -416,8 +416,8 @@ void CellularESimUninstallHandler::CheckStaleESimServices() {
                    << network_state->iccid() << ", "
                    << "network path=" << network_state->path();
     uninstall_requests_.push_back(std::make_unique<UninstallRequest>(
-        network_state->iccid(), /*esim_profile_path=*/base::nullopt,
-        /*euicc_path=*/base::nullopt,
+        network_state->iccid(), /*esim_profile_path=*/absl::nullopt,
+        /*euicc_path=*/absl::nullopt,
         base::BindOnce(&OnRemoveStaleShillService, network_state->path())));
   }
   ProcessPendingUninstallRequests();

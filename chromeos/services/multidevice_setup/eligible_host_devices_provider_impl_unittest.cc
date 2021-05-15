@@ -361,7 +361,7 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
   fake_device_sync_client()->NotifyNewDevicesSynced();
   fake_device_sync_client()->InvokePendingGetDevicesActivityStatusCallback(
       device_sync::mojom::NetworkRequestResult::kInternalServerError,
-      base::nullopt);
+      absl::nullopt);
 
   multidevice::DeviceWithConnectivityStatusList eligible_active_devices =
       provider()->GetEligibleActiveHostDevices();

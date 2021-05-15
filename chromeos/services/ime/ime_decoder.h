@@ -8,8 +8,8 @@
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/scoped_native_library.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace ime {
@@ -61,7 +61,7 @@ class ImeDecoder {
   Status status_;
 
   // Result of IME decoder DSO initialization.
-  base::Optional<base::ScopedNativeLibrary> library_;
+  absl::optional<base::ScopedNativeLibrary> library_;
 
   EntryPoints entry_points_;
 

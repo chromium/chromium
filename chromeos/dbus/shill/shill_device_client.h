@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
     // Adds a delay before a SetProperty call will result in property value
     // change.
     virtual void SetPropertyChangeDelay(
-        base::Optional<base::TimeDelta> time_delay) = 0;
+        absl::optional<base::TimeDelta> time_delay) = 0;
 
    protected:
     virtual ~TestInterface() {}

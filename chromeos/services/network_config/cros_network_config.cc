@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
@@ -40,6 +39,7 @@
 #include "components/onc/onc_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -436,7 +436,7 @@ mojom::InhibitReason GetInhibitReason(CellularInhibitor* cellular_inhibitor) {
   if (!cellular_inhibitor)
     return mojom::InhibitReason::kNotInhibited;
 
-  base::Optional<CellularInhibitor::InhibitReason> inhibit_reason =
+  absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
       cellular_inhibitor->GetInhibitReason();
   if (!inhibit_reason)
     return mojom::InhibitReason::kNotInhibited;
@@ -515,14 +515,14 @@ void SetValueIfKeyPresent(const base::Value* dict,
     *out = v->Clone();
 }
 
-base::Optional<std::string> GetString(const base::Value* dict,
+absl::optional<std::string> GetString(const base::Value* dict,
                                       const char* key) {
   const base::Value* v = dict->FindKey(key);
   if (v && !v->is_string()) {
     NET_LOG(ERROR) << "Expected string, found: " << *v;
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return v ? base::make_optional<std::string>(v->GetString()) : base::nullopt;
+  return v ? absl::make_optional<std::string>(v->GetString()) : absl::nullopt;
 }
 
 std::string GetRequiredString(const base::Value* dict, const char* key) {
@@ -579,14 +579,14 @@ const base::Value* GetDictionary(const base::Value* dict, const char* key) {
   return v;
 }
 
-base::Optional<std::vector<std::string>> GetStringList(const base::Value* dict,
+absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
                                                        const char* key) {
   const base::Value* v = dict->FindKey(key);
   if (!v)
-    return base::nullopt;
+    return absl::nullopt;
   if (!v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::vector<std::string> result;
   for (const base::Value& e : v->GetList())
@@ -595,7 +595,7 @@ base::Optional<std::vector<std::string>> GetStringList(const base::Value* dict,
 }
 
 void SetString(const char* key,
-               const base::Optional<std::string>& property,
+               const absl::optional<std::string>& property,
                base::Value* dict) {
   if (!property)
     return;
@@ -603,7 +603,7 @@ void SetString(const char* key,
 }
 
 void SetStringIfNotEmpty(const char* key,
-                         const base::Optional<std::string>& property,
+                         const absl::optional<std::string>& property,
                          base::Value* dict) {
   if (!property || property->empty())
     return;
@@ -611,7 +611,7 @@ void SetStringIfNotEmpty(const char* key,
 }
 
 void SetStringList(const char* key,
-                   const base::Optional<std::vector<std::string>>& property,
+                   const absl::optional<std::vector<std::string>>& property,
                    base::Value* dict) {
   if (!property)
     return;
@@ -638,7 +638,7 @@ ManagedDictionary GetManagedDictionary(const base::Value* onc_dict) {
   SetValueIfKeyPresent(onc_dict, ::onc::kAugmentationActiveSetting,
                        &result.active_value);
 
-  base::Optional<std::string> effective =
+  absl::optional<std::string> effective =
       GetString(onc_dict, ::onc::kAugmentationEffectiveSetting);
   if (!effective)
     return result;
@@ -1255,7 +1255,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     const base::Value* properties) {
   DCHECK(network_state);
   DCHECK(properties);
-  base::Optional<std::string> onc_type =
+  absl::optional<std::string> onc_type =
       GetString(properties, ::onc::network_config::kType);
   if (!onc_type) {
     NET_LOG(ERROR) << "Malformed ONC dictionary: missing 'Type'";
@@ -1269,7 +1269,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   auto result = mojom::ManagedProperties::New();
 
   // |network_state| and |properties| guid should be the same.
-  base::Optional<std::string> guid =
+  absl::optional<std::string> guid =
       GetString(properties, ::onc::network_config::kGUID);
   if (!guid) {
     NET_LOG(ERROR) << "Malformed ONC dictionary: missing 'GUID'";
@@ -1310,7 +1310,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       GetManagedBoolean(properties, ::onc::network_config::kMetered);
   result->name = GetManagedString(properties, ::onc::network_config::kName);
   if (result->name->policy_source == mojom::PolicySource::kNone) {
-    base::Optional<std::string> profile_name =
+    absl::optional<std::string> profile_name =
         network_name_util::GetESimProfileName(cellular_esim_profile_handler,
                                               network_state);
     if (profile_name)
@@ -1474,7 +1474,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           if (third_party_dict) {
             vpn->provider_id = GetManagedString(
                 third_party_dict, ::onc::third_party_vpn::kExtensionID);
-            base::Optional<std::string> provider_name = GetString(
+            absl::optional<std::string> provider_name = GetString(
                 third_party_dict, ::onc::third_party_vpn::kProviderName);
             if (provider_name)
               vpn->provider_name = *provider_name;
@@ -1586,7 +1586,7 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
 
 std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
     const mojom::ConfigProperties* properties,
-    base::Optional<std::string> guid) {
+    absl::optional<std::string> guid) {
   auto onc = std::make_unique<base::DictionaryValue>();
 
   // Process |properties->network_type| and set |type|. Configurations have only
@@ -2006,8 +2006,8 @@ void CrosNetworkConfig::OnGetManagedProperties(
     GetManagedPropertiesCallback callback,
     std::string guid,
     const std::string& service_path,
-    base::Optional<base::Value> properties,
-    base::Optional<std::string> error) {
+    absl::optional<base::Value> properties,
+    absl::optional<std::string> error) {
   if (!properties) {
     NET_LOG(ERROR) << "GetManagedProperties failed for: " << guid
                    << " Error: " << error.value_or("Failed");
@@ -2068,8 +2068,8 @@ void CrosNetworkConfig::OnGetManagedPropertiesEap(
     GetManagedPropertiesCallback callback,
     mojom::ManagedPropertiesPtr managed_properties,
     const std::string& service_path,
-    base::Optional<base::Value> eap_properties,
-    base::Optional<std::string> error) {
+    absl::optional<base::Value> eap_properties,
+    absl::optional<std::string> error) {
   if (eap_properties) {
     // Copy the EAP properties to |managed_properties| before sending.
     const base::Value* ethernet_dict =
@@ -2201,7 +2201,7 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
                                          ConfigureNetworkCallback callback) {
   if (!network_configuration_handler_) {
     NET_LOG(ERROR) << "Configure called with no handler";
-    std::move(callback).Run(/*guid=*/base::nullopt, kErrorNotReady);
+    std::move(callback).Run(/*guid=*/absl::nullopt, kErrorNotReady);
     return;
   }
 
@@ -2209,14 +2209,14 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
                      UserManager::Get()->GetActiveUser()) {
     NET_LOG(ERROR)
         << "Attempt to set unshared configuration from non primary user";
-    std::move(callback).Run(/*guid=*/base::nullopt, kErrorAccessToSharedConfig);
+    std::move(callback).Run(/*guid=*/absl::nullopt, kErrorAccessToSharedConfig);
     return;
   }
 
   std::unique_ptr<base::DictionaryValue> onc =
-      GetOncFromConfigProperties(properties.get(), /*guid=*/base::nullopt);
+      GetOncFromConfigProperties(properties.get(), /*guid=*/absl::nullopt);
   if (!onc) {
-    std::move(callback).Run(/*guid=*/base::nullopt,
+    std::move(callback).Run(/*guid=*/absl::nullopt,
                             kErrorInvalidONCConfiguration);
     return;
   }
@@ -2252,7 +2252,7 @@ void CrosNetworkConfig::ConfigureNetworkFailure(
   DCHECK(iter != configure_network_callbacks_.end());
   DCHECK(iter->second);
   NET_LOG(ERROR) << "Failed to configure network. Error: " << error_name;
-  std::move(iter->second).Run(/*guid=*/base::nullopt, error_name);
+  std::move(iter->second).Run(/*guid=*/absl::nullopt, error_name);
   configure_network_callbacks_.erase(iter);
 }
 
@@ -2580,7 +2580,7 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
     result->allow_only_policy_networks_to_connect_if_available = GetBoolean(
         global_policy_dict, ::onc::global_network_config::
                                 kAllowOnlyPolicyNetworksToConnectIfAvailable);
-    base::Optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
+    absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
         global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
     if (blocked_hex_ssids)
       result->blocked_hex_ssids = std::move(*blocked_hex_ssids);

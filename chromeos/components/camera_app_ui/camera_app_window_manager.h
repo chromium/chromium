@@ -80,12 +80,12 @@ class CameraAppWindowManager : public views::WidgetObserver {
   views::Widget* owner_ = nullptr;
 
   // For the pending camera usage owner, there are three possible values:
-  // 1. base::nullopt: When there is no pending owner. Transfer can stop.
+  // 1. absl::nullopt: When there is no pending owner. Transfer can stop.
   // 2. nullptr:       When there should be no active window after the transfer
   //                   is stopped.
   // 3. non-null:      When there is another window which should own camera
   //                   usage.
-  base::Optional<views::Widget*> pending_transfer_;
+  absl::optional<views::Widget*> pending_transfer_;
 };
 
 }  // namespace chromeos

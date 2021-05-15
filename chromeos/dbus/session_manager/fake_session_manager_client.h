@@ -163,11 +163,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     restart_job_callback_ = std::move(callback);
   }
 
-  const base::Optional<std::vector<std::string>>& restart_job_argv() const {
+  const absl::optional<std::vector<std::string>>& restart_job_argv() const {
     return restart_job_argv_;
   }
 
-  base::Optional<RestartJobReason> restart_job_reason() const {
+  absl::optional<RestartJobReason> restart_job_reason() const {
     return restart_job_reason_;
   }
 
@@ -293,11 +293,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   // If restart job was requested, and the client supports restart job, the
   // requested restarted arguments.
-  base::Optional<std::vector<std::string>> restart_job_argv_;
+  absl::optional<std::vector<std::string>> restart_job_argv_;
 
   // If restart job was requested, and the client supports restart job, the
   // requested restart reason.
-  base::Optional<RestartJobReason> restart_job_reason_;
+  absl::optional<RestartJobReason> restart_job_reason_;
 
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};

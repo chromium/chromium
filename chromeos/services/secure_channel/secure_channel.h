@@ -96,13 +96,13 @@ class SecureChannel : public ConnectionObserver {
   virtual void RemoveObserver(Observer* observer);
 
   // Returns the RSSI of the connection; if no derived class overrides this
-  // function, base::nullopt is returned.
+  // function, absl::nullopt is returned.
   virtual void GetConnectionRssi(
-      base::OnceCallback<void(base::Optional<int32_t>)> callback);
+      base::OnceCallback<void(absl::optional<int32_t>)> callback);
 
   // The |responder_auth| message. Returns null if |secure_context_| is null or
   // status() != AUTHENTICATED.
-  virtual base::Optional<std::string> GetChannelBindingData();
+  virtual absl::optional<std::string> GetChannelBindingData();
 
   Status status() const { return status_; }
 

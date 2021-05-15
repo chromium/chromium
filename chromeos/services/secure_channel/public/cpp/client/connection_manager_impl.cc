@@ -148,9 +148,9 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
     return;
   }
 
-  const base::Optional<multidevice::RemoteDeviceRef> remote_device =
+  const absl::optional<multidevice::RemoteDeviceRef> remote_device =
       multidevice_setup_client_->GetHostStatus().second;
-  const base::Optional<multidevice::RemoteDeviceRef> local_device =
+  const absl::optional<multidevice::RemoteDeviceRef> local_device =
       device_sync_client_->GetLocalDeviceMetadata();
 
   if (!remote_device || !local_device) {

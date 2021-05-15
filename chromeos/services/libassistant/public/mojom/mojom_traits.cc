@@ -197,7 +197,7 @@ StructTraits<AssistantNotificationDataView, AssistantNotification>::
   return input.obfuscated_gaia_id;
 }
 
-const base::Optional<base::Time>&
+const absl::optional<base::Time>&
 StructTraits<AssistantNotificationDataView, AssistantNotification>::expiry_time(
     const AssistantNotification& input) {
   return input.expiry_time;

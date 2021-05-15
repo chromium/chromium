@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chromeos/services/libassistant/abortable_task_list.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
@@ -58,13 +58,13 @@ class SettingsController : public AssistantManagerObserver,
 
   // The settings are being passed in to clearly document when Libassistant
   // must be updated.
-  void UpdateListeningEnabled(base::Optional<bool> listening_enabled);
+  void UpdateListeningEnabled(absl::optional<bool> listening_enabled);
   void UpdateAuthenticationTokens(
-      const base::Optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
-  void UpdateInternalOptions(const base::Optional<std::string>& locale,
-                             base::Optional<bool> spoken_feedback_enabled);
-  void UpdateDeviceSettings(const base::Optional<std::string>& locale,
-                            base::Optional<bool> hotword_enabled);
+      const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
+  void UpdateInternalOptions(const absl::optional<std::string>& locale,
+                             absl::optional<bool> spoken_feedback_enabled);
+  void UpdateDeviceSettings(const absl::optional<std::string>& locale,
+                            absl::optional<bool> hotword_enabled);
 
   // Instantiated when Libassistant is started and destroyed when Libassistant
   // is stopped.
@@ -79,11 +79,11 @@ class SettingsController : public AssistantManagerObserver,
       nullptr;
   assistant_client::AssistantManager* assistant_manager_ = nullptr;
 
-  base::Optional<bool> hotword_enabled_;
-  base::Optional<bool> spoken_feedback_enabled_;
-  base::Optional<bool> listening_enabled_;
-  base::Optional<std::string> locale_;
-  base::Optional<std::vector<mojom::AuthenticationTokenPtr>>
+  absl::optional<bool> hotword_enabled_;
+  absl::optional<bool> spoken_feedback_enabled_;
+  absl::optional<bool> listening_enabled_;
+  absl::optional<std::string> locale_;
+  absl::optional<std::vector<mojom::AuthenticationTokenPtr>>
       authentication_tokens_;
 
   mojo::Receiver<mojom::SettingsController> receiver_{this};

@@ -15,10 +15,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   // Helper for ReadImmutableAttributes.
   void ReadAttributesIfReady(
       base::OnceClosure callback,
-      base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply);
+      absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Helper for LockDevice(). Handles the result of InstallAttributesIsReady()
   // and continue processing LockDevice if the result is true.
@@ -203,7 +203,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
       const std::string& realm,
       const std::string& device_id,
       LockResultCallback callback,
-      base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply);
+      absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Confirms the registered user and invoke the callback.
   void OnReadImmutableAttributes(policy::DeviceMode mode,

@@ -90,7 +90,7 @@ class SecureChannelNearbyInitiatorOperationTest : public testing::Test {
   DeviceIdPair device_id_pair_;
 
   std::unique_ptr<AuthenticatedChannel> channel_from_callback_;
-  base::Optional<NearbyInitiatorFailureType> failure_type_from_callback_;
+  absl::optional<NearbyInitiatorFailureType> failure_type_from_callback_;
 
   std::unique_ptr<ConnectToDeviceOperation<NearbyInitiatorFailureType>>
       operation_;

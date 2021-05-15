@@ -8,11 +8,11 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -63,11 +63,11 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
   // HostBackendDelegate:
   void AttemptToSetMultiDeviceHostOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) override;
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) override;
   bool HasPendingHostRequest() override;
-  base::Optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const override;
-  base::Optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
+  absl::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
       const override;
 
   // DeviceSyncClient::Observer:
@@ -84,11 +84,11 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   // in the list of synced devices. If no such device exists, returns null.
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is disabled, only look
   // up by Instance ID since all devices are guaranteed to have one.
-  base::Optional<multidevice::RemoteDeviceRef> FindDeviceById(
+  absl::optional<multidevice::RemoteDeviceRef> FindDeviceById(
       const std::string& id) const;
 
   void AttemptNetworkRequest(bool is_retry);
-  base::Optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
+  absl::optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
   void OnSetHostNetworkRequestFinished(
       multidevice::RemoteDeviceRef device_for_request,
       bool attempted_to_enable,
@@ -100,7 +100,7 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // The most-recent snapshot of the host on the back-end.
-  base::Optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
+  absl::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
 

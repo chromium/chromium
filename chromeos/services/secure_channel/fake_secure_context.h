@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -39,7 +39,7 @@ class FakeSecureContext : public SecureContext {
 
  private:
   ProtocolVersion protocol_version_;
-  base::Optional<std::string> channel_binding_data_;
+  absl::optional<std::string> channel_binding_data_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecureContext);
 };

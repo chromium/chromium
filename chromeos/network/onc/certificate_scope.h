@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateScope {
 
   // Parses a CertificateScope from |scope_dict|, which should be a dictionary
   // containing the ONC "Scope" object.
-  static base::Optional<CertificateScope> ParseFromOncValue(
+  static absl::optional<CertificateScope> ParseFromOncValue(
       const base::Value& scope_dict);
 
   CertificateScope& operator=(const CertificateScope& other);

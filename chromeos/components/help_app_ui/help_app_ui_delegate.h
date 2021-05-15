@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -24,7 +24,7 @@ class HelpAppUIDelegate {
   // Opens the native chrome feedback dialog scoped to chrome://help-app.
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
-  virtual base::Optional<std::string> OpenFeedbackDialog() = 0;
+  virtual absl::optional<std::string> OpenFeedbackDialog() = 0;
 
   // Takes a WebUIDataSource, and adds device flags (e.g. board name) and
   // feature flags (e.g. Google Assistant).

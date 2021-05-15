@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -24,6 +23,7 @@
 #include "chromeos/dbus/userdataauth/fake_cryptohome_pkcs11_client.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -32,8 +32,8 @@ using TpmTokenInfo = user_data_auth::TpmTokenInfo;
 // On invocation, set |called| to true, and store the result |token_info|
 // to the |result|.
 void OnTpmTokenInfoGetterCompleted(bool* called,
-                                   base::Optional<TpmTokenInfo>* result,
-                                   base::Optional<TpmTokenInfo> token_info) {
+                                   absl::optional<TpmTokenInfo>* result,
+                                   absl::optional<TpmTokenInfo> token_info) {
   DCHECK(called);
   DCHECK(result);
   *called = true;
@@ -132,7 +132,7 @@ class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
     if (get_tpm_token_info_failure_count_ > 0) {
       --get_tpm_token_info_failure_count_;
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
 
@@ -169,7 +169,7 @@ class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
   bool get_tpm_token_info_succeeded_;
   chromeos::DBusMethodCallback<::user_data_auth::Pkcs11GetTpmTokenInfoReply>
       pending_get_tpm_token_info_callback_;
-  base::Optional<TpmTokenInfo> tpm_token_info_;
+  absl::optional<TpmTokenInfo> tpm_token_info_;
 
   DISALLOW_COPY_AND_ASSIGN(TestCryptohomePkcs11Client);
 };
@@ -236,7 +236,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
 
 TEST_F(SystemTPMTokenInfoGetterTest, BasicFlow) {
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -259,7 +259,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, BasicFlow) {
 
 TEST_F(SystemTPMTokenInfoGetterTest, TokenSlotIdEqualsZero) {
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -287,7 +287,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
       ->set_is_enabled(false);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -303,7 +303,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabledSystemSlotFallbackEnabled) {
       ->set_is_enabled(false);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->SetSystemSlotSoftwareFallback(true);
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
@@ -331,7 +331,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
       ->set_non_nonsensitive_status_dbus_error_count(1);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -359,7 +359,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyNotReady) {
   cryptohome_client_->set_get_tpm_token_info_not_set_count(1);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -387,7 +387,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -419,7 +419,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
   cryptohome_client_->set_get_tpm_token_info_not_set_count(3);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -451,7 +451,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
   cryptohome_client_->set_get_tpm_token_info_not_set_count(6);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -480,7 +480,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
 
 TEST_F(UserTPMTokenInfoGetterTest, BasicFlow) {
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -506,7 +506,7 @@ TEST_F(UserTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();
@@ -535,7 +535,7 @@ TEST_F(UserTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyNotReady) {
   cryptohome_client_->set_get_tpm_token_info_not_set_count(1);
 
   bool completed = false;
-  base::Optional<TpmTokenInfo> result;
+  absl::optional<TpmTokenInfo> result;
   tpm_token_info_getter_->Start(
       base::BindOnce(&OnTpmTokenInfoGetterCompleted, &completed, &result));
   base::RunLoop().RunUntilIdle();

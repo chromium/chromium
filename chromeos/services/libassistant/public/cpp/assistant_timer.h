@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -49,7 +49,7 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantTimer {
   base::TimeDelta original_duration;
 
   // These fields are set *only* by Chrome.
-  base::Optional<base::Time> creation_time;
+  absl::optional<base::Time> creation_time;
   base::TimeDelta remaining_time;
 
   // This field is set *only* by LibAssistant *except* in timers v2 where we may

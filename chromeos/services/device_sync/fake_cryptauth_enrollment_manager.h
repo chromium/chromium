@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -54,7 +54,7 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
     is_enrollment_in_progress_ = is_enrollment_in_progress;
   }
 
-  base::Optional<cryptauth::InvocationReason> last_invocation_reason() {
+  absl::optional<cryptauth::InvocationReason> last_invocation_reason() {
     return last_invocation_reason_;
   }
 
@@ -73,7 +73,7 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
   void Start() override;
   void ForceEnrollmentNow(
       cryptauth::InvocationReason invocation_reason,
-      const base::Optional<std::string>& session_id = base::nullopt) override;
+      const absl::optional<std::string>& session_id = absl::nullopt) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;
@@ -87,7 +87,7 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
   bool is_enrollment_in_progress_ = false;
   bool is_recovering_from_failure_ = false;
   bool is_enrollment_valid_ = false;
-  base::Optional<cryptauth::InvocationReason> last_invocation_reason_;
+  absl::optional<cryptauth::InvocationReason> last_invocation_reason_;
   base::Time last_enrollment_time_;
   base::TimeDelta time_to_next_attempt_;
   std::string user_public_key_;

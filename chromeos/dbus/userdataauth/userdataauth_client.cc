@@ -252,7 +252,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
           << "Failed to append protobuf when calling UserDataAuth method "
           << method_name;
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
     }
     // Bind with the weak pointer of |this| so the response is not
@@ -286,7 +286,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     ReplyType reply_proto;
     if (!ParseProto(response, &reply_proto)) {
       LOG(ERROR) << "Failed to parse reply protobuf from UserDataAuth method";
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     std::move(callback).Run(reply_proto);

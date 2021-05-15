@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_update.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,7 +31,7 @@ class PendingNetworkConfigurationTracker {
   // is being deleted.  Returns the change_guid.
   virtual std::string TrackPendingUpdate(
       const NetworkIdentifier& id,
-      const base::Optional<sync_pb::WifiConfigurationSpecifics>& specifics) = 0;
+      const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) = 0;
 
   // Removes the given change from the list.
   virtual void MarkComplete(const std::string& change_guid,
@@ -42,7 +42,7 @@ class PendingNetworkConfigurationTracker {
   GetPendingUpdates() = 0;
 
   // Returns the requested pending update, if it exists.
-  virtual base::Optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
+  virtual absl::optional<PendingNetworkConfigurationUpdate> GetPendingUpdate(
       const std::string& change_guid,
       const NetworkIdentifier& id) = 0;
 

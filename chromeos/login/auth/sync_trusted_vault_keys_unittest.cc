@@ -4,10 +4,10 @@
 
 #include "chromeos/login/auth/sync_trusted_vault_keys.h"
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {

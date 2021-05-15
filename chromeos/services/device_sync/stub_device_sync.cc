@@ -9,7 +9,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/stub_multidevice_util.h"
@@ -17,6 +16,7 @@
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -96,7 +96,7 @@ class StubDeviceSync : public DeviceSyncBase {
       bool is_exclusive,
       SetSoftwareFeatureStateCallback callback) override {
     multidevice::RemoteDevice* device = GetRemoteDevice(
-        device_public_key, /*device_instance_id=*/base::nullopt);
+        device_public_key, /*device_instance_id=*/absl::nullopt);
     if (!device) {
       std::move(callback).Run(
           /*result=*/mojom::NetworkRequestResult::kBadRequest);
@@ -114,7 +114,7 @@ class StubDeviceSync : public DeviceSyncBase {
                         FeatureStatusChange status_change,
                         SetFeatureStatusCallback callback) override {
     multidevice::RemoteDevice* device = GetRemoteDevice(
-        /*device_public_key=*/base::nullopt, device_instance_id);
+        /*device_public_key=*/absl::nullopt, device_instance_id);
     if (!device) {
       std::move(callback).Run(
           /*result=*/mojom::NetworkRequestResult::kBadRequest);
@@ -162,15 +162,15 @@ class StubDeviceSync : public DeviceSyncBase {
   void GetDevicesActivityStatus(
       GetDevicesActivityStatusCallback callback) override {
     std::move(callback).Run(/*result=*/mojom::NetworkRequestResult::kSuccess,
-                            /*response=*/base::nullopt);
+                            /*response=*/absl::nullopt);
   }
 
  private:
   // Returns the synced device that has a matching |device_public_key| or a
   // matching |device_instance_id|, otherwise returns nullptr.
   multidevice::RemoteDevice* GetRemoteDevice(
-      const base::Optional<std::string>& device_public_key,
-      const base::Optional<std::string>& device_instance_id) {
+      const absl::optional<std::string>& device_public_key,
+      const absl::optional<std::string>& device_instance_id) {
     auto it = std::find_if(synced_devices_.begin(), synced_devices_.end(),
                            [&](const auto& device) {
                              if (device_public_key.has_value())
@@ -186,7 +186,7 @@ class StubDeviceSync : public DeviceSyncBase {
   }
 
   std::vector<multidevice::RemoteDevice> synced_devices_;
-  base::Optional<multidevice::RemoteDevice> local_device_metadata_;
+  absl::optional<multidevice::RemoteDevice> local_device_metadata_;
 };
 
 class StubDeviceSyncImplFactory

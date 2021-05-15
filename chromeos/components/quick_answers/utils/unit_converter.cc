@@ -17,7 +17,7 @@ namespace {
 
 using base::Value;
 
-bool IsLinearFormula(const base::Optional<double> rate_a) {
+bool IsLinearFormula(const absl::optional<double> rate_a) {
   return rate_a.has_value() && rate_a.value() != 0;
 }
 

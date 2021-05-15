@@ -327,11 +327,11 @@ class DeviceSyncSoftwareFeatureManagerImplTest
 
   // Set when a CryptAuthClient function returns. If empty, no callback has been
   // invoked.
-  base::Optional<Result> result_;
+  absl::optional<Result> result_;
 
   // The code passed to the error callback; varies depending on what
   // CryptAuthClient function is invoked.
-  base::Optional<NetworkRequestError> error_code_;
+  absl::optional<NetworkRequestError> error_code_;
 
   // For SetSoftwareFeatureState() tests.
   cryptauth::ToggleEasyUnlockRequest last_toggle_request_;

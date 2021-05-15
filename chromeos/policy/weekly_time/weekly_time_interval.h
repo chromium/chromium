@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/chromeos_export.h"
 #include "chromeos/policy/weekly_time/weekly_time.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -54,7 +54,7 @@ class CHROMEOS_EXPORT WeeklyTimeInterval {
   bool Contains(const WeeklyTime& w) const;
 
   // Returns the timezone_offset that |start_| and |end_| have.
-  base::Optional<int> GetIntervalOffset(int timezone_offset) const {
+  absl::optional<int> GetIntervalOffset(int timezone_offset) const {
     return start_.timezone_offset();
   }
 
@@ -62,7 +62,7 @@ class CHROMEOS_EXPORT WeeklyTimeInterval {
   // nullptr if the proto contains an invalid interval.
   static std::unique_ptr<WeeklyTimeInterval> ExtractFromProto(
       const enterprise_management::WeeklyTimeIntervalProto& container,
-      base::Optional<int> timezone_offset);
+      absl::optional<int> timezone_offset);
 
   // Return time interval made from Value in format:
   // { "start" : WeeklyTime,
@@ -76,7 +76,7 @@ class CHROMEOS_EXPORT WeeklyTimeInterval {
   // Return nullptr if value contains an invalid interval.
   static std::unique_ptr<WeeklyTimeInterval> ExtractFromValue(
       const base::Value* value,
-      base::Optional<int> timezone_offset);
+      absl::optional<int> timezone_offset);
 
   WeeklyTime start() const { return start_; }
 

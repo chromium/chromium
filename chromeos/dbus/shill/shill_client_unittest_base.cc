@@ -348,7 +348,7 @@ void ShillClientUnittestBase::ExpectValueResultWithoutStatus(
 // static
 void ShillClientUnittestBase::ExpectValueResult(
     const base::Value* expected_result,
-    base::Optional<base::Value> result) {
+    absl::optional<base::Value> result) {
   EXPECT_TRUE(result);
   ExpectValueResultWithoutStatus(expected_result,
                                  std::move(result).value_or(base::Value()));

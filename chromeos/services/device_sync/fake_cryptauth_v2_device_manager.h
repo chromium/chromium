@@ -9,13 +9,13 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -37,11 +37,11 @@ class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
       const override;
   void ForceDeviceSyncNow(
       const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-      const base::Optional<std::string>& session_id) override;
+      const absl::optional<std::string>& session_id) override;
   bool IsDeviceSyncInProgress() const override;
   bool IsRecoveringFromFailure() const override;
-  base::Optional<base::Time> GetLastDeviceSyncTime() const override;
-  base::Optional<base::TimeDelta> GetTimeToNextAttempt() const override;
+  absl::optional<base::Time> GetLastDeviceSyncTime() const override;
+  absl::optional<base::TimeDelta> GetTimeToNextAttempt() const override;
 
   bool has_started() const { return has_started_; }
 
@@ -55,7 +55,7 @@ class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
   }
 
   void set_time_to_next_attempt(
-      const base::Optional<base::TimeDelta>& time_to_next_attempt) {
+      const absl::optional<base::TimeDelta>& time_to_next_attempt) {
     time_to_next_attempt_ = time_to_next_attempt;
   }
 
@@ -75,8 +75,8 @@ class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
  private:
   bool has_started_ = false;
   bool is_recovering_from_failure_ = false;
-  base::Optional<base::Time> last_device_sync_time_;
-  base::Optional<base::TimeDelta> time_to_next_attempt_;
+  absl::optional<base::Time> last_device_sync_time_;
+  absl::optional<base::TimeDelta> time_to_next_attempt_;
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap synced_devices_;
   base::queue<cryptauthv2::ClientMetadata> force_device_sync_now_requests_;
 

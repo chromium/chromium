@@ -67,7 +67,7 @@ void CameraAppWindowManager::OnWidgetVisibilityChanged(views::Widget* widget,
   }
 
   if (pending_transfer_.has_value() && widget == *pending_transfer_) {
-    pending_transfer_ = base::nullopt;
+    pending_transfer_ = absl::nullopt;
     // It is possible that |*pending_transfer_| == |owner_|. For example: when a
     // widget is activated while it is suspending. Therefore, we cannot return
     // here.
@@ -121,7 +121,7 @@ void CameraAppWindowManager::OnWidgetActivationChanged(views::Widget* widget,
       break;
     case TransferState::kResuming:
       if (owner_ == widget) {
-        pending_transfer_ = base::nullopt;
+        pending_transfer_ = absl::nullopt;
       } else {
         pending_transfer_ = widget;
       }
@@ -141,7 +141,7 @@ void CameraAppWindowManager::OnMonitorMojoConnectionError(
   camera_usage_monitors_.erase(widget);
 
   if (pending_transfer_.has_value() && widget == *pending_transfer_) {
-    pending_transfer_ = base::nullopt;
+    pending_transfer_ = absl::nullopt;
   }
   if (widget == owner_) {
     ResumeNextOrIdle();
@@ -200,7 +200,7 @@ void CameraAppWindowManager::OnResumedCameraUsage(views::Widget* prev_owner) {
 
 void CameraAppWindowManager::ResumeNextOrIdle() {
   auto next_owner(pending_transfer_);
-  pending_transfer_ = base::nullopt;
+  pending_transfer_ = absl::nullopt;
   if (next_owner.has_value()) {
     owner_ = *next_owner;
     if (owner_ != nullptr) {

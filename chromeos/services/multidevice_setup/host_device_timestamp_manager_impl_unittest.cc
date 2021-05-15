@@ -49,7 +49,7 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
     if (host_status == mojom::HostStatus::kNoEligibleHosts ||
         host_status == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
       fake_host_status_provider_->SetHostWithStatus(
-          host_status, base::nullopt /* host_device */);
+          host_status, absl::nullopt /* host_device */);
       return;
     }
     fake_host_status_provider_->SetHostWithStatus(

@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -45,6 +44,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -867,7 +867,7 @@ class PpdProviderImpl : public PpdProvider {
       return;
     }
 
-    base::Optional<base::Value> top_list = base::JSONReader::Read(contents);
+    absl::optional<base::Value> top_list = base::JSONReader::Read(contents);
     if (!top_list.has_value() || !top_list.value().is_list()) {
       // We got something malformed back.
       FailQueuedMetadataResolutions(PpdProvider::INTERNAL_ERROR);
@@ -1128,7 +1128,7 @@ class PpdProviderImpl : public PpdProvider {
       //  [0x5926, "some othercanonical name"]
       // ]
       // So we scan through the response looking for our desired device id.
-      base::Optional<base::Value> top_list = base::JSONReader::Read(buffer);
+      absl::optional<base::Value> top_list = base::JSONReader::Read(buffer);
       if (!top_list.has_value() || !top_list.value().is_list()) {
         // We got something malformed back.
         LOG(ERROR) << "Malformed top list";
@@ -1330,7 +1330,7 @@ class PpdProviderImpl : public PpdProvider {
       return fetch_result;
     }
 
-    base::Optional<base::Value> ret_list = base::JSONReader::Read(buffer);
+    absl::optional<base::Value> ret_list = base::JSONReader::Read(buffer);
     if (!ret_list.has_value()) {
       LOG(ERROR) << "Failed to read contents of retrieved JSON";
       return PpdProvider::INTERNAL_ERROR;

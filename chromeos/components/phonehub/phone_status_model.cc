@@ -22,7 +22,7 @@ bool PhoneStatusModel::MobileConnectionMetadata::operator!=(
 
 PhoneStatusModel::PhoneStatusModel(
     MobileStatus mobile_status,
-    const base::Optional<MobileConnectionMetadata>& mobile_connection_metadata,
+    const absl::optional<MobileConnectionMetadata>& mobile_connection_metadata,
     ChargingState charging_state,
     BatterySaverState battery_saver_state,
     uint32_t battery_percentage)

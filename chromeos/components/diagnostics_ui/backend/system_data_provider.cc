@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/i18n/time_formatting.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
@@ -20,6 +19,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -38,7 +38,7 @@ constexpr int kMilliampsInAnAmp = 1000;
 
 void PopulateBoardName(const healthd::SystemInfo& system_info,
                        mojom::SystemInfo& out_system_info) {
-  const base::Optional<std::string>& product_name = system_info.product_name;
+  const absl::optional<std::string>& product_name = system_info.product_name;
 
   if (!product_name.has_value()) {
     DVLOG(1) << "No board name in SystemInfo response.";
@@ -421,7 +421,7 @@ void SystemDataProvider::OnBatteryInfoProbeResponse(
 
 void SystemDataProvider::UpdateBatteryChargeStatus() {
   // Fetch updated data from PowerManagerClient
-  base::Optional<PowerSupplyProperties> properties =
+  absl::optional<PowerSupplyProperties> properties =
       PowerManagerClient::Get()->GetLastStatus();
 
   // Fetch updated data from CrosHealthd
@@ -461,7 +461,7 @@ void SystemDataProvider::UpdateCpuUsage() {
 }
 
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
-    const base::Optional<PowerSupplyProperties>& power_supply_properties,
+    const absl::optional<PowerSupplyProperties>& power_supply_properties,
     healthd::TelemetryInfoPtr info_ptr) {
   mojom::BatteryChargeStatusPtr battery_charge_status =
       mojom::BatteryChargeStatus::New();

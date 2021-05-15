@@ -26,26 +26,26 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->readiness;
   }
 
-  static const base::Optional<std::string>& name(const apps::mojom::AppPtr& r) {
+  static const absl::optional<std::string>& name(const apps::mojom::AppPtr& r) {
     return r->name;
   }
 
-  static const base::Optional<std::string>& short_name(
+  static const absl::optional<std::string>& short_name(
       const apps::mojom::AppPtr& r) {
     return r->short_name;
   }
 
-  static const base::Optional<std::string>& publisher_id(
+  static const absl::optional<std::string>& publisher_id(
       const apps::mojom::AppPtr& r) {
     return r->publisher_id;
   }
 
-  static const base::Optional<std::string>& description(
+  static const absl::optional<std::string>& description(
       const apps::mojom::AppPtr& r) {
     return r->description;
   }
 
-  static const base::Optional<std::string>& version(
+  static const absl::optional<std::string>& version(
       const apps::mojom::AppPtr& r) {
     return r->version;
   }
@@ -59,12 +59,12 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->icon_key;
   }
 
-  static const base::Optional<base::Time>& last_launch_time(
+  static const absl::optional<base::Time>& last_launch_time(
       const apps::mojom::AppPtr& r) {
     return r->last_launch_time;
   }
 
-  static const base::Optional<base::Time>& install_time(
+  static const absl::optional<base::Time>& install_time(
       const apps::mojom::AppPtr& r) {
     return r->install_time;
   }
@@ -176,12 +176,12 @@ struct StructTraits<crosapi::mojom::IntentFilterDataView,
     return r->conditions;
   }
 
-  static const base::Optional<std::string>& activity_name(
+  static const absl::optional<std::string>& activity_name(
       const apps::mojom::IntentFilterPtr& r) {
     return r->activity_name;
   }
 
-  static const base::Optional<std::string>& activity_label(
+  static const absl::optional<std::string>& activity_label(
       const apps::mojom::IntentFilterPtr& r) {
     return r->activity_label;
   }

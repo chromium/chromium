@@ -16,7 +16,7 @@ namespace user_data_auth {
 namespace {
 
 template <typename ReplyType>
-bool IsEmpty(const base::Optional<ReplyType>& reply) {
+bool IsEmpty(const absl::optional<ReplyType>& reply) {
   if (!reply.has_value()) {
     LOGIN_LOG(ERROR) << "Cryptohome call failed with empty reply.";
     return true;
@@ -28,7 +28,7 @@ bool IsEmpty(const base::Optional<ReplyType>& reply) {
 
 template <typename ReplyType>
 cryptohome::MountError ReplyToMountError(
-    const base::Optional<ReplyType>& reply) {
+    const absl::optional<ReplyType>& reply) {
   if (IsEmpty(reply)) {
     return cryptohome::MOUNT_ERROR_FATAL;
   }
@@ -38,26 +38,26 @@ cryptohome::MountError ReplyToMountError(
 
 // Instantiate ReplyToMountError and export them for types actually used.
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<RemoveReply>&);
+    ReplyToMountError(const absl::optional<RemoveReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<UnmountReply>&);
+    ReplyToMountError(const absl::optional<UnmountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<RenameReply>&);
+    ReplyToMountError(const absl::optional<RenameReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<MountReply>&);
+    ReplyToMountError(const absl::optional<MountReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<MigrateKeyReply>&);
+    ReplyToMountError(const absl::optional<MigrateKeyReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
-    ReplyToMountError(const base::Optional<GetKeyDataReply>&);
+    ReplyToMountError(const absl::optional<GetKeyDataReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
-    const base::Optional<GetKeyDataReply>& reply) {
+    const absl::optional<GetKeyDataReply>& reply) {
   const RepeatedPtrField<cryptohome::KeyData>& key_data = reply->key_data();
   return cryptohome::RepeatedKeyDataToKeyDefinitions(key_data);
 }
 
 int64_t AccountDiskUsageReplyToUsageSize(
-    const base::Optional<GetAccountDiskUsageReply>& reply) {
+    const absl::optional<GetAccountDiskUsageReply>& reply) {
   if (IsEmpty(reply))
     return -1;
 

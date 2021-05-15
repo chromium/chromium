@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chromeos/chromeos_export.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/uri.h"
 #include "net/base/host_port_pair.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class IPEndPoint;

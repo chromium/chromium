@@ -186,7 +186,7 @@ bool ParseCellularSIMSlotInfo(
     if (iccid)
       sim_slot_info.iccid = *iccid;
 
-    base::Optional<bool> primary =
+    absl::optional<bool> primary =
         value.FindBoolKey(shill::kSIMSlotInfoPrimary);
     sim_slot_info.primary = primary.has_value() ? *primary : false;
 

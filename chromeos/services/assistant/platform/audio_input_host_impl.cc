@@ -5,10 +5,10 @@
 #include "chromeos/services/assistant/platform/audio_input_host_impl.h"
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace assistant {
@@ -57,7 +57,7 @@ void AudioInputHostImpl::SetMicState(bool mic_open) {
 }
 
 void AudioInputHostImpl::SetDeviceId(
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   remote_->SetDeviceId(device_id);
 }
 
@@ -75,7 +75,7 @@ void AudioInputHostImpl::OnHotwordEnabled(bool enable) {
 }
 
 void AudioInputHostImpl::SetHotwordDeviceId(
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   remote_->SetHotwordDeviceId(device_id);
 }
 
@@ -89,7 +89,7 @@ void AudioInputHostImpl::LidEventReceived(
 }
 
 void AudioInputHostImpl::OnInitialLidStateReceived(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value())
     remote_->SetLidState(ConvertLidState(switch_states->lid_state));
 }

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
@@ -21,6 +20,7 @@
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace attestation {
@@ -69,7 +69,7 @@ bool IsPreparedWith(const ::attestation::GetEnrollmentPreparationsReply& reply,
   return false;
 }
 
-base::Optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
+absl::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
     AttestationCertificateProfile p) {
   switch (p) {
     case PROFILE_ENTERPRISE_MACHINE_CERTIFICATE:
@@ -179,7 +179,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
 
   ::attestation::GetCertificateRequest request;
   request.set_aca_type(aca_type_);
-  base::Optional<::attestation::CertificateProfile> profile_attestation_enum =
+  absl::optional<::attestation::CertificateProfile> profile_attestation_enum =
       ProfileToAttestationProtoEnum(certificate_profile);
   if (!profile_attestation_enum) {
     LOG(ERROR) << __func__ << ": Unexpected profile value: "

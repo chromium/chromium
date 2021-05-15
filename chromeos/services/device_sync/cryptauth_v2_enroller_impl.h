@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"
@@ -23,6 +22,7 @@
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -75,15 +75,15 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
-  static base::Optional<CryptAuthEnrollmentResult::ResultCode>
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<CryptAuthEnrollmentResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   // CryptAuthV2Enroller:
   void OnAttemptStarted(
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata,
-      const base::Optional<cryptauthv2::PolicyReference>&
+      const absl::optional<cryptauthv2::PolicyReference>&
           client_directive_policy_reference) override;
 
   // |key_registry|: Holds the key bundles that enrolled with CryptAuth. The
@@ -103,7 +103,7 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   cryptauthv2::SyncKeysRequest BuildSyncKeysRequest(
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata,
-      const base::Optional<cryptauthv2::PolicyReference>&
+      const absl::optional<cryptauthv2::PolicyReference>&
           client_directive_policy_reference);
 
   cryptauthv2::SyncKeysRequest::SyncSingleKeyRequest BuildSyncSingleKeyRequest(
@@ -118,7 +118,7 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   // SyncSingleKeyResponse::key_actions. For each SyncSingleKeyResponse that
   // indicates that a key should be created, values will be added to
   // |new_keys_to_create| and |new_key_directives|.
-  base::Optional<CryptAuthEnrollmentResult::ResultCode>
+  absl::optional<CryptAuthEnrollmentResult::ResultCode>
   ProcessSingleKeyResponses(
       const cryptauthv2::SyncKeysResponse& sync_keys_response,
       base::flat_map<CryptAuthKeyBundle::Name,
@@ -128,14 +128,14 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
 
   // A function to help ProcessSingleKeyResponse() handle the key-creation
   // instructions.
-  base::Optional<CryptAuthEnrollmentResult::ResultCode>
+  absl::optional<CryptAuthEnrollmentResult::ResultCode>
   ProcessKeyCreationInstructions(
       const CryptAuthKeyBundle::Name& bundle_name,
       const cryptauthv2::SyncKeysResponse::SyncSingleKeyResponse&
           single_key_response,
       const std::string& server_ephemeral_dh,
-      base::Optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create,
-      base::Optional<cryptauthv2::KeyDirective>* new_key_directive);
+      absl::optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create,
+      absl::optional<cryptauthv2::KeyDirective>* new_key_directive);
 
   void OnSyncKeysFailure(NetworkRequestError error);
 
@@ -144,14 +144,14 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
       const base::flat_map<CryptAuthKeyBundle::Name, cryptauthv2::KeyDirective>&
           new_key_directives,
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& new_keys,
-      const base::Optional<CryptAuthKey>& client_ephemeral_dh);
+                           absl::optional<CryptAuthKey>>& new_keys,
+      const absl::optional<CryptAuthKey>& client_ephemeral_dh);
 
   void OnEnrollKeysSuccess(
       const base::flat_map<CryptAuthKeyBundle::Name, cryptauthv2::KeyDirective>&
           new_key_directives,
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& new_keys,
+                           absl::optional<CryptAuthKey>>& new_keys,
       const cryptauthv2::EnrollKeysResponse& response);
 
   void OnEnrollKeysFailure(NetworkRequestError error);
@@ -174,7 +174,7 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   // EnrollmentAttemptFinishedCallback. It should be passed as null if a failure
   // occurs before the SyncKeysResponse's |client_directive| field is received
   // or if that field's data is invalid.
-  base::Optional<cryptauthv2::ClientDirective> new_client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> new_client_directive_;
 
   // The order the key handles were sent in each SyncSingleKeyRequests.
   base::flat_map<CryptAuthKeyBundle::Name, std::vector<std::string>>

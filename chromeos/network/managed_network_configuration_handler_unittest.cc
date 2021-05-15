@@ -751,8 +751,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
           [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             base::Optional<base::Value> dictionary,
-             base::Optional<std::string> error) {
+             absl::optional<base::Value> dictionary,
+             absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = base::DictionaryValue::From(
                   base::Value::ToUniquePtrValue(std::move(*dictionary)));
@@ -964,8 +964,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
           [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             base::Optional<base::Value> dictionary,
-             base::Optional<std::string> error) {
+             absl::optional<base::Value> dictionary,
+             absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = base::DictionaryValue::From(
                   base::Value::ToUniquePtrValue(std::move(*dictionary)));
@@ -999,8 +999,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
           [](std::unique_ptr<base::DictionaryValue>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             base::Optional<base::Value> dictionary,
-             base::Optional<std::string> error) {
+             absl::optional<base::Value> dictionary,
+             absl::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = base::DictionaryValue::From(
                   base::Value::ToUniquePtrValue(std::move(*dictionary)));

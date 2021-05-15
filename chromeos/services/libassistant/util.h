@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -20,8 +20,8 @@ namespace libassistant {
 
 // Creates the configuration for libassistant.
 std::string CreateLibAssistantConfig(
-    base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override);
+    absl::optional<std::string> s3_server_uri_override,
+    absl::optional<std::string> device_id_override);
 
 // Returns the path where all downloaded LibAssistant resources are stored.
 base::FilePath GetBaseAssistantDir();

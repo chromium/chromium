@@ -9,12 +9,12 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/fake_tether_host_fetcher.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -24,7 +24,7 @@ namespace {
 
 struct GetActiveHostResult {
   ActiveHost::ActiveHostStatus active_host_status;
-  base::Optional<multidevice::RemoteDeviceRef> remote_device;
+  absl::optional<multidevice::RemoteDeviceRef> remote_device;
   std::string tether_network_guid;
   std::string wifi_network_guid;
 
@@ -76,7 +76,7 @@ class ActiveHostTest : public testing::Test {
 
   void OnActiveHostFetched(
       ActiveHost::ActiveHostStatus active_host_status,
-      base::Optional<multidevice::RemoteDeviceRef> active_host,
+      absl::optional<multidevice::RemoteDeviceRef> active_host,
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid) {
     get_active_host_results_.push_back(
@@ -96,7 +96,7 @@ class ActiveHostTest : public testing::Test {
     ASSERT_EQ(1u, get_active_host_results_.size());
     EXPECT_EQ(
         (GetActiveHostResult{ActiveHost::ActiveHostStatus::DISCONNECTED,
-                             base::nullopt, std::string(), std::string()}),
+                             absl::nullopt, std::string(), std::string()}),
         get_active_host_results_[0]);
   }
 
@@ -141,7 +141,7 @@ TEST_F(ActiveHostTest, TestConnecting) {
   EXPECT_EQ(
       (GetActiveHostResult{
           ActiveHost::ActiveHostStatus::CONNECTING,
-          base::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "tetherNetworkGuid", std::string()}),
       get_active_host_results_[0]);
 }
@@ -163,7 +163,7 @@ TEST_F(ActiveHostTest, TestConnected) {
   EXPECT_EQ(
       (GetActiveHostResult{
           ActiveHost::ActiveHostStatus::CONNECTED,
-          base::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "tetherNetworkGuid", "wifiNetworkGuid"}),
       get_active_host_results_[0]);
 }
@@ -185,7 +185,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
       ActiveHost::ActiveHostChangeInfo(
           ActiveHost::ActiveHostStatus::CONNECTING,
           ActiveHost::ActiveHostStatus::DISCONNECTED,
-          base::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           "" /* old_active_host_id */,
           "tetherNetworkGuid" /* new_tether_network_guid */,
           "" /* old_tether_network_id */, "" /* new_wifi_network_guid */,
@@ -200,7 +200,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
       ActiveHost::ActiveHostChangeInfo(
           ActiveHost::ActiveHostStatus::CONNECTED,
           ActiveHost::ActiveHostStatus::CONNECTING,
-          base::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
+          absl::make_optional<multidevice::RemoteDeviceRef>(test_devices_[0]),
           test_devices_[0].GetDeviceId(), "tetherNetworkGuid",
           "tetherNetworkGuid", "wifiNetworkGuid",
           "" /* old_wifi_network_guid */),
@@ -211,7 +211,7 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
   EXPECT_EQ(3u, test_observer_->host_changed_updates().size());
   EXPECT_EQ(ActiveHost::ActiveHostChangeInfo(
                 ActiveHost::ActiveHostStatus::DISCONNECTED,
-                ActiveHost::ActiveHostStatus::CONNECTED, base::nullopt,
+                ActiveHost::ActiveHostStatus::CONNECTED, absl::nullopt,
                 test_devices_[0].GetDeviceId(),
                 "" /* new_tether_network_guid */, "tetherNetworkGuid",
                 "" /* new_wifi_network_guid */, "wifiNetworkGuid"),

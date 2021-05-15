@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -53,9 +53,9 @@ class Connection {
   multidevice::RemoteDeviceRef remote_device() const { return remote_device_; }
 
   // Returns the RSSI of the connection; if no derived class overrides this
-  // function, base::nullopt is returned.
+  // function, absl::nullopt is returned.
   virtual void GetConnectionRssi(
-      base::OnceCallback<void(base::Optional<int32_t>)> callback);
+      base::OnceCallback<void(absl::optional<int32_t>)> callback);
 
   // Abstract methods that subclasses should implement:
 

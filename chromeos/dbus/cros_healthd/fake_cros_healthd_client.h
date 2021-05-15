@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
@@ -18,6 +17,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace cros_healthd {
@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
-  base::Optional<FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<FakeCrosHealthdService::RoutineUpdateParams>
   GetRoutineUpdateParams();
 
  private:

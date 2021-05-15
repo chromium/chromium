@@ -10,10 +10,10 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -48,7 +48,7 @@ class CryptAuthKeyCreator {
   struct CreateKeyData {
     CreateKeyData(CryptAuthKey::Status status,
                   cryptauthv2::KeyType type,
-                  base::Optional<std::string> handle = base::nullopt);
+                  absl::optional<std::string> handle = absl::nullopt);
 
     // Special constructor needed to handle existing user key pair. The input
     // strings cannot be empty.
@@ -63,13 +63,13 @@ class CryptAuthKeyCreator {
 
     CryptAuthKey::Status status;
     cryptauthv2::KeyType type;
-    base::Optional<std::string> handle;
+    absl::optional<std::string> handle;
     // Special data needed to handle existing user key pair. If these are both
     // non-empty strings and the key type is asymmetric, then the key creator
     // will bypass the standard key creation and simply return
     // CryptAuthKey(|public_key|, |private_key|, |status|, |type|, |handle|).
-    base::Optional<std::string> public_key;
-    base::Optional<std::string> private_key;
+    absl::optional<std::string> public_key;
+    absl::optional<std::string> private_key;
   };
 
   CryptAuthKeyCreator();
@@ -78,12 +78,12 @@ class CryptAuthKeyCreator {
   // A new key is null if key creation fails.
   using CreateKeysCallback = base::OnceCallback<void(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& /* new_keys */,
-      const base::Optional<CryptAuthKey>& /* client_ephemeral_dh */)>;
+                           absl::optional<CryptAuthKey>>& /* new_keys */,
+      const absl::optional<CryptAuthKey>& /* client_ephemeral_dh */)>;
   virtual void CreateKeys(
       const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
           keys_to_create,
-      const base::Optional<CryptAuthKey>& server_ephemeral_dh,
+      const absl::optional<CryptAuthKey>& server_ephemeral_dh,
       CreateKeysCallback create_keys_callback) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyCreator);

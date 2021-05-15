@@ -61,7 +61,7 @@ class EcheFeatureStatusProvider
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   secure_channel::ConnectionManager* connection_manager_;
   phonehub::FeatureStatus current_phone_hub_feature_status_;
-  base::Optional<FeatureStatus> status_;
+  absl::optional<FeatureStatus> status_;
   base::WeakPtrFactory<EcheFeatureStatusProvider> weak_ptr_factory_{this};
 };
 

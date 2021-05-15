@@ -47,8 +47,8 @@ class FakeNotificationProcessor : public NotificationProcessor {
       notifications.emplace(Notification(
           proto.id(), CreateFakeAppMetadata(), base::Time(),
           Notification::Importance::kDefault, /*inline_reply_id=*/0,
-          Notification::InteractionBehavior::kNone, base::nullopt,
-          base::nullopt, base::nullopt, base::nullopt));
+          Notification::InteractionBehavior::kNone, absl::nullopt,
+          absl::nullopt, absl::nullopt, absl::nullopt));
     }
     notification_manager_->SetNotificationsInternal(notifications);
   }
@@ -182,7 +182,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_EQ(NotificationAccessManager::AccessStatus::kAvailableButNotGranted,
             fake_notification_access_manager_->GetAccessStatus());
 
-  base::Optional<PhoneStatusModel> phone_status_model =
+  absl::optional<PhoneStatusModel> phone_status_model =
       mutable_phone_model_->phone_status_model();
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
             phone_status_model->charging_state());
@@ -252,7 +252,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
             fake_notification_access_manager_->GetAccessStatus());
 
-  base::Optional<PhoneStatusModel> phone_status_model =
+  absl::optional<PhoneStatusModel> phone_status_model =
       mutable_phone_model_->phone_status_model();
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
             phone_status_model->charging_state());
@@ -307,7 +307,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
 
 TEST_F(PhoneStatusProcessorTest, PhoneName) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
-      std::make_pair(HostStatus::kHostVerified, base::nullopt));
+      std::make_pair(HostStatus::kHostVerified, absl::nullopt));
   CreatePhoneStatusProcessor();
 
   auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
@@ -321,7 +321,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneName) {
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
 
   EXPECT_EQ(0u, fake_notification_manager_->num_notifications());
-  EXPECT_EQ(base::nullopt, mutable_phone_model_->phone_name());
+  EXPECT_EQ(absl::nullopt, mutable_phone_model_->phone_name());
 
   // Create new fake phone with name.
   const multidevice::RemoteDeviceRef kFakePhoneA =

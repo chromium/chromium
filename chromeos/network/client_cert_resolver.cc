@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -34,6 +33,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -140,13 +140,13 @@ struct MatchingCertAndResolveStatus {
   // matching certificate has been found when |resolve_status| is kResolved.
   // This is also used to determine if re-resolving a network actually changed
   // any properties.
-  base::Optional<MatchingCert> matching_cert;
+  absl::optional<MatchingCert> matching_cert;
 };
 
 // Describes a network |network_path| and the client cert resolution result.
 struct NetworkAndMatchingCert {
   NetworkAndMatchingCert(const NetworkAndCertConfig& network_and_cert_config,
-                         base::Optional<MatchingCert> matching_cert)
+                         absl::optional<MatchingCert> matching_cert)
       : service_path(network_and_cert_config.service_path),
         cert_config_type(network_and_cert_config.cert_config.location),
         matching_cert(matching_cert) {}
@@ -156,7 +156,7 @@ struct NetworkAndMatchingCert {
 
   // The resolved certificate, or |nullopt| if no matching certificate has been
   // found.
-  base::Optional<MatchingCert> matching_cert;
+  absl::optional<MatchingCert> matching_cert;
 };
 
 }  // namespace internal
@@ -169,15 +169,15 @@ namespace {
 // Returns the nickname of the private key for certificate |cert|, if such a
 // private key is installed. Note that this is not a cheap operation: it
 // iterates all tokens and attempts to look up the private key.
-// A return value of |base::nullopt| means that no private key could be found
+// A return value of |absl::nullopt| means that no private key could be found
 // for |cert|.
 // If a private key could be found for |cert| but it did not have a nickname,
 // will return the empty string.
-base::Optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
+absl::optional<std::string> GetPrivateKeyNickname(CERTCertificate* cert) {
   crypto::ScopedSECKEYPrivateKey key(
       PK11_FindKeyByAnyCert(cert, nullptr /* wincx */));
   if (!key)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string key_nickname;
   char* nss_key_nickname = PK11_GetPrivateKeyNickname(key.get());
@@ -300,7 +300,7 @@ void CreateSortedCertAndIssuerList(
     }
     // GetPrivateKeyNickname should be invoked after the checks above for
     // performance reasons.
-    base::Optional<std::string> private_key_nickname =
+    absl::optional<std::string> private_key_nickname =
         GetPrivateKeyNickname(cert);
     if (!private_key_nickname.has_value()) {
       // No private key has been found for this certificate.
@@ -359,7 +359,7 @@ std::vector<NetworkAndMatchingCert> FindCertificateMatches(
       VLOG(1) << "Couldn't find a matching client cert for network "
               << network_and_cert_config.service_path;
       matches.push_back(
-          NetworkAndMatchingCert(network_and_cert_config, base::nullopt));
+          NetworkAndMatchingCert(network_and_cert_config, absl::nullopt));
       continue;
     }
 

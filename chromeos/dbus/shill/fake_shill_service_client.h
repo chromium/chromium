@@ -14,9 +14,9 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   std::map<std::string, base::RepeatingClosure> connect_behavior_;
 
   // If set the next Connect call will fail with this error_name.
-  base::Optional<std::string> connect_error_name_;
+  absl::optional<std::string> connect_error_name_;
 
   // Observer list for each service.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>

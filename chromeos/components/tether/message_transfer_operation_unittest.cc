@@ -107,7 +107,7 @@ class TestOperation : public MessageTransferOperation {
 
   bool has_operation_finished() { return has_operation_finished_; }
 
-  base::Optional<int> last_sequence_number() { return last_sequence_number_; }
+  absl::optional<int> last_sequence_number() { return last_sequence_number_; }
 
  private:
   struct DeviceMapValue {
@@ -124,7 +124,7 @@ class TestOperation : public MessageTransferOperation {
   bool should_unregister_device_on_message_received_ = false;
   bool has_operation_started_ = false;
   bool has_operation_finished_ = false;
-  base::Optional<int> last_sequence_number_;
+  absl::optional<int> last_sequence_number_;
 };
 
 TetherAvailabilityResponse CreateTetherAvailabilityResponse() {

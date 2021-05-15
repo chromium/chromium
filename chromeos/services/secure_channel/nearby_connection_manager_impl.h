@@ -111,7 +111,7 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
 
   base::flat_map<std::string, std::unique_ptr<SecureChannel>>
       remote_device_id_to_secure_channel_map_;
-  base::Optional<std::string> notifying_remote_device_id_;
+  absl::optional<std::string> notifying_remote_device_id_;
 };
 
 }  // namespace secure_channel

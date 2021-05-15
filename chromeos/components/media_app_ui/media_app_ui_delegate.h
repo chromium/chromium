@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A delegate which exposes browser functionality from //chrome to the media app
 // ui page handler.
@@ -18,7 +18,7 @@ class MediaAppUIDelegate {
   // Opens the native chrome feedback dialog scoped to chrome://media-app.
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
-  virtual base::Optional<std::string> OpenFeedbackDialog() = 0;
+  virtual absl::optional<std::string> OpenFeedbackDialog() = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_UI_DELEGATE_H_

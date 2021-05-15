@@ -610,7 +610,7 @@ TEST_F(SystemRoutineControllerTest, CancelRoutine) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that CrosHealthd is called with the correct parameters.
-  base::Optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
       update_params =
           cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
 
@@ -645,7 +645,7 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that CrosHealthd is called with the correct parameters.
-  base::Optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
       update_params =
           cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
 
