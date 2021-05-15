@@ -20,7 +20,11 @@ import contextlib
 import os
 import subprocess
 import sys
-import urllib2
+
+if sys.version_info.major == 2:
+  from urllib2 import urlopen
+else:
+  from urllib.request import urlopen
 
 GS_HTTP_URL = 'https://storage.googleapis.com'
 
@@ -80,7 +84,7 @@ def RetrieveProfile(desired_profile_name, out_path, gs_url_base):
   else:
     gs_url = '/'.join([GS_HTTP_URL, desired_profile_name[len(gs_prefix):]])
 
-  with contextlib.closing(urllib2.urlopen(gs_url)) as u:
+  with contextlib.closing(urlopen(gs_url)) as u:
     with open(out_path, 'wb') as f:
       while True:
         buf = u.read(4096)
