@@ -58,3 +58,4 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+crbug.com/1203234 [ fuchsia fuchsia-board-qemu-x64 ] HardwareAcceleratedFeature_canvas_accelerated [ Failure ]
