@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace base {
@@ -170,22 +170,22 @@ class ArgumentSpec {
 
   // The reference the argument points to, if any. Note that if this is set,
   // none of the following fields describing the argument will be.
-  base::Optional<std::string> ref_;
+  absl::optional<std::string> ref_;
 
   // The type of instance an object should be, if any. Only applicable for
   // ArgumentType::OBJECT. If specified, the argument must contain the instance
   // type in its prototype chain.
-  base::Optional<std::string> instance_of_;
+  absl::optional<std::string> instance_of_;
 
   // A minimum and maximum for integer and double values, if any.
-  base::Optional<int> minimum_;
-  base::Optional<int> maximum_;
+  absl::optional<int> minimum_;
+  absl::optional<int> maximum_;
 
   // A minimium length for strings or arrays.
-  base::Optional<size_t> min_length_;
+  absl::optional<size_t> min_length_;
 
   // A maximum length for strings or arrays.
-  base::Optional<size_t> max_length_;
+  absl::optional<size_t> max_length_;
 
   // A map of required properties; present only for objects. Note that any
   // properties *not* defined in this map will be dropped during conversion.

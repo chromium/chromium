@@ -129,7 +129,7 @@ class ServiceWorkerTaskQueue::WorkerState {
 
   // Contains the worker's WorkerId associated with this WorkerState, once we
   // have discovered info about the worker.
-  base::Optional<WorkerId> worker_id_;
+  absl::optional<WorkerId> worker_id_;
 };
 
 void ServiceWorkerTaskQueue::DidStartWorkerForScope(
@@ -279,7 +279,7 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
 
   DCHECK_NE(RendererState::kStopped, worker_state->renderer_state_);
   worker_state->renderer_state_ = RendererState::kStopped;
-  worker_state->worker_id_ = base::nullopt;
+  worker_state->worker_id_ = absl::nullopt;
 }
 
 // static
@@ -374,7 +374,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       BackgroundInfo::GetBackgroundServiceWorkerScript(extension));
   const ExtensionId extension_id = extension->id();
   RemoveRegisteredServiceWorkerInfo(extension_id);
-  base::Optional<ActivationSequence> sequence =
+  absl::optional<ActivationSequence> sequence =
       GetCurrentSequence(extension_id);
 
   // Extension was never activated, this happens in tests.
@@ -566,11 +566,11 @@ bool ServiceWorkerTaskQueue::IsCurrentSequence(
   return current_sequence == sequence;
 }
 
-base::Optional<ActivationSequence> ServiceWorkerTaskQueue::GetCurrentSequence(
+absl::optional<ActivationSequence> ServiceWorkerTaskQueue::GetCurrentSequence(
     const ExtensionId& extension_id) const {
   auto iter = activation_sequences_.find(extension_id);
   if (iter == activation_sequences_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return iter->second;
 }
 

@@ -79,7 +79,7 @@ ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
 }
 
 void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
-    base::Optional<std::string> status) {
+    absl::optional<std::string> status) {
   std::string ip;
   double latency;
   if (!status.has_value() || !ParseResult(status.value(), &ip, &latency)) {

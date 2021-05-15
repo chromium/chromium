@@ -137,7 +137,7 @@ TEST(ManifestTest, AvailableValues) {
   // clang-format on
 
   for (const auto& test_case : test_cases) {
-    base::Optional<base::Value> manifest_value =
+    absl::optional<base::Value> manifest_value =
         base::JSONReader::Read(test_case.input_manifest);
     ASSERT_TRUE(manifest_value) << test_case.input_manifest;
     ASSERT_TRUE(manifest_value->is_dict()) << test_case.input_manifest;
@@ -147,7 +147,7 @@ TEST(ManifestTest, AvailableValues) {
                           std::move(*manifest_value))),
                       crx_file::id_util::GenerateId("extid"));
 
-    base::Optional<base::Value> expected_value =
+    absl::optional<base::Value> expected_value =
         base::JSONReader::Read(test_case.expected_available_manifest);
     ASSERT_TRUE(expected_value) << test_case.expected_available_manifest;
     EXPECT_EQ(*expected_value,

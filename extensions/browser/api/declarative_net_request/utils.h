@@ -13,11 +13,11 @@
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace base {
@@ -137,7 +137,7 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 // for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
 // permissions are checked.
 bool HasDNRFeedbackPermission(const Extension* extension,
-                              const base::Optional<int>& tab_id);
+                              const absl::optional<int>& tab_id);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

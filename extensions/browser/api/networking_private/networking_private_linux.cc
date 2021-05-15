@@ -143,10 +143,10 @@ void GetCachedNetworkPropertiesResultCallback(
     NetworkingPrivateDelegate::PropertiesCallback callback) {
   if (!error->empty()) {
     LOG(ERROR) << "GetCachedNetworkProperties failed: " << *error;
-    std::move(callback).Run(base::nullopt, *error);
+    std::move(callback).Run(absl::nullopt, *error);
     return;
   }
-  std::move(callback).Run(std::move(*properties), base::nullopt);
+  std::move(callback).Run(std::move(*properties), absl::nullopt);
 }
 
 }  // namespace
@@ -204,7 +204,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
                                            PropertiesCallback callback) {
   if (!network_manager_proxy_) {
     LOG(WARNING) << "NetworkManager over DBus is not supported";
-    std::move(callback).Run(base::nullopt,
+    std::move(callback).Run(absl::nullopt,
                             extensions::networking_private::kErrorNotSupported);
     return;
   }
@@ -230,7 +230,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
 void NetworkingPrivateLinux::GetManagedProperties(const std::string& guid,
                                                   PropertiesCallback callback) {
   LOG(WARNING) << "GetManagedProperties is not supported";
-  std::move(callback).Run(base::nullopt,
+  std::move(callback).Run(absl::nullopt,
                           extensions::networking_private::kErrorNotSupported);
 }
 

@@ -67,7 +67,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   TRACE_EVENT0("accessibility",
                "AutomationAXTreeWrapper::OnAccessibilityEvents");
 
-  base::Optional<gfx::Rect> previous_accessibility_focused_global_bounds =
+  absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
       owner_->GetAccessibilityFocusedLocation();
 
   std::map<ui::AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =

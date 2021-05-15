@@ -348,7 +348,7 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
 }
 
 bool HasDNRFeedbackPermission(const Extension* extension,
-                              const base::Optional<int>& tab_id) {
+                              const absl::optional<int>& tab_id) {
   const PermissionsData* permissions_data = extension->permissions_data();
   return tab_id.has_value()
              ? permissions_data->HasAPIPermissionForTab(

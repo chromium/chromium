@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
@@ -28,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace crx_file {
@@ -298,7 +298,7 @@ class ExtensionDownloader {
       ExtensionDownloaderDelegate::Error error,
       const int net_error,
       const int response_code,
-      const base::Optional<ManifestInvalidFailureDataList>&
+      const absl::optional<ManifestInvalidFailureDataList>&
           manifest_invalid_errors);
 
   // Makes a retry attempt, reports failure by calling
@@ -315,7 +315,7 @@ class ExtensionDownloader {
   // If |results| is null, it means something went wrong when parsing it.
   void HandleManifestResults(std::unique_ptr<ManifestFetchData> fetch_data,
                              std::unique_ptr<UpdateManifestResults> results,
-                             const base::Optional<ManifestParseFailure>& error);
+                             const absl::optional<ManifestParseFailure>& error);
 
   // This function partition extension IDs stored in |fetch_data| into 3 sets:
   // update/no update/error using the update information from
@@ -333,10 +333,10 @@ class ExtensionDownloader {
                         ManifestInvalidFailureDataList* errors);
 
   // Checks whether extension is presented in cache. If yes, return path to its
-  // cached CRX, base::nullopt otherwise. |manifest_fetch_failed| flag indicates
+  // cached CRX, absl::nullopt otherwise. |manifest_fetch_failed| flag indicates
   // whether the lookup in cache is performed after the manifest is fetched or
   // due to failure while fetching or parsing manifest.
-  base::Optional<base::FilePath> GetCachedExtension(
+  absl::optional<base::FilePath> GetCachedExtension(
       const ExtensionFetch& fetch_data,
       bool manifest_fetch_failed);
 
@@ -344,7 +344,7 @@ class ExtensionDownloader {
   // additional information about the extension update from the info field in
   // the update manifest.
   void FetchUpdatedExtension(std::unique_ptr<ExtensionFetch> fetch_data,
-                             base::Optional<std::string> info);
+                             absl::optional<std::string> info);
 
   // Called by RequestQueue when a new extension load request is started.
   void CreateExtensionLoader();

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -103,12 +103,12 @@ class ExtensionCreator {
   // Creates a CRX file at |crx_path|, signed with |private_key| and with the
   // contents of the archive at |zip_path|. Injects
   // |compressed_verified_contents| in the header if it not equal to
-  // base::nullopt.
+  // absl::nullopt.
   bool CreateCrx(
       const base::FilePath& zip_path,
       crypto::RSAPrivateKey* private_key,
       const base::FilePath& crx_path,
-      const base::Optional<std::string>& compressed_verified_contents);
+      const absl::optional<std::string>& compressed_verified_contents);
 
   // Creates a temporary directory to store zipped extension and then creates
   // CRX using the zipped extension.
@@ -116,7 +116,7 @@ class ExtensionCreator {
       const base::FilePath& extension_dir,
       const base::FilePath& crx_path,
       crypto::RSAPrivateKey* private_key,
-      const base::Optional<std::string>& compressed_verified_contents);
+      const absl::optional<std::string>& compressed_verified_contents);
 
   // Holds a message for any error that is raised during Run(...).
   std::string error_message_;

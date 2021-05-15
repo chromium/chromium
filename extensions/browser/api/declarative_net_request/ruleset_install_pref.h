@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -17,13 +17,13 @@ struct RulesetInstallPref {
   // ID of the ruleset.
   RulesetID ruleset_id;
   // Checksum of the indexed ruleset if specified.
-  base::Optional<int> checksum;
+  absl::optional<int> checksum;
 
   // If set to true, then the ruleset was ignored and not indexed.
   bool ignored;
 
   RulesetInstallPref(RulesetID ruleset_id,
-                     base::Optional<int> checksum,
+                     absl::optional<int> checksum,
                      bool ignored);
 };
 

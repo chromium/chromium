@@ -345,7 +345,7 @@ class PermissionsData {
   // It required in order to properly map the context to the right default
   // policy hosts.
   // The context_id is empty if the default policy hosts are not used.
-  mutable base::Optional<int> context_id_;
+  mutable absl::optional<int> context_id_;
 
   mutable TabPermissionsMap tab_specific_permissions_;
 

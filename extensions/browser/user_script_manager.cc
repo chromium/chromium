@@ -84,7 +84,7 @@ void UserScriptManager::OnExtensionUnloaded(
 
 void UserScriptManager::OnInitialExtensionLoadComplete(
     UserScriptLoader* loader,
-    const base::Optional<std::string>& error) {
+    const absl::optional<std::string>& error) {
   --pending_manifest_load_count_;
   DCHECK_GE(pending_manifest_load_count_, 0);
 

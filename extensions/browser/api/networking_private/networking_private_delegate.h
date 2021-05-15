@@ -11,10 +11,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/networking_private.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -38,8 +38,8 @@ class NetworkingPrivateDelegate : public KeyedService {
 
   // Returns |result| on success, or |result|=nullopt and |error| on failure.
   using PropertiesCallback =
-      base::OnceCallback<void(base::Optional<base::Value> result,
-                              base::Optional<std::string> error)>;
+      base::OnceCallback<void(absl::optional<base::Value> result,
+                              absl::optional<std::string> error)>;
 
   // Delegate for forwarding UI requests, e.g. for showing the account UI.
   class UIDelegate {

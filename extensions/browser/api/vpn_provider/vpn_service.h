@@ -190,7 +190,7 @@ class VpnService : public KeyedService,
       std::unique_ptr<base::DictionaryValue> error_data);
 
   void OnGetShillProperties(const std::string& service_path,
-                            base::Optional<base::Value> dictionary);
+                            absl::optional<base::Value> dictionary);
 
   // Creates and adds the configuration to the internal store.
   VpnConfiguration* CreateConfigurationInternal(

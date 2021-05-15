@@ -48,7 +48,7 @@ class LeveldbScopedDatabase
   // Reads a single |value| from the database for the specified |key|.
   ValueStore::Status Read(const std::string& scope,
                           const std::string& key,
-                          base::Optional<base::Value>* value);
+                          absl::optional<base::Value>* value);
 
   // Reads all |values| from the database stored within the specified |scope|.
   ValueStore::Status Read(const std::string& scope,

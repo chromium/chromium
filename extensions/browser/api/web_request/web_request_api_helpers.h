@@ -16,7 +16,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/extension_id.h"
@@ -24,6 +23,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -214,8 +214,8 @@ struct RequestCookie {
 
   RequestCookie Clone() const;
 
-  base::Optional<std::string> name;
-  base::Optional<std::string> value;
+  absl::optional<std::string> name;
+  absl::optional<std::string> value;
 
   DISALLOW_COPY_AND_ASSIGN(RequestCookie);
 };
@@ -232,14 +232,14 @@ struct ResponseCookie {
 
   ResponseCookie Clone() const;
 
-  base::Optional<std::string> name;
-  base::Optional<std::string> value;
-  base::Optional<std::string> expires;
-  base::Optional<int> max_age;
-  base::Optional<std::string> domain;
-  base::Optional<std::string> path;
-  base::Optional<bool> secure;
-  base::Optional<bool> http_only;
+  absl::optional<std::string> name;
+  absl::optional<std::string> value;
+  absl::optional<std::string> expires;
+  absl::optional<int> max_age;
+  absl::optional<std::string> domain;
+  absl::optional<std::string> path;
+  absl::optional<bool> secure;
+  absl::optional<bool> http_only;
 
   DISALLOW_COPY_AND_ASSIGN(ResponseCookie);
 };
@@ -256,9 +256,9 @@ struct FilterResponseCookie : ResponseCookie {
 
   bool operator==(const FilterResponseCookie& other) const;
 
-  base::Optional<int> age_lower_bound;
-  base::Optional<int> age_upper_bound;
-  base::Optional<bool> session_cookie;
+  absl::optional<int> age_lower_bound;
+  absl::optional<int> age_upper_bound;
+  absl::optional<bool> session_cookie;
 
   DISALLOW_COPY_AND_ASSIGN(FilterResponseCookie);
 };
@@ -281,9 +281,9 @@ struct RequestCookieModification {
 
   CookieModificationType type;
   // Used for EDIT and REMOVE, nullopt otherwise.
-  base::Optional<RequestCookie> filter;
+  absl::optional<RequestCookie> filter;
   // Used for ADD and EDIT, nullopt otherwise.
-  base::Optional<RequestCookie> modification;
+  absl::optional<RequestCookie> modification;
 
   DISALLOW_COPY_AND_ASSIGN(RequestCookieModification);
 };
@@ -300,9 +300,9 @@ struct ResponseCookieModification {
 
   CookieModificationType type;
   // Used for EDIT and REMOVE, nullopt otherwise.
-  base::Optional<FilterResponseCookie> filter;
+  absl::optional<FilterResponseCookie> filter;
   // Used for ADD and EDIT, nullopt otherwise.
-  base::Optional<ResponseCookie> modification;
+  absl::optional<ResponseCookie> modification;
 
   DISALLOW_COPY_AND_ASSIGN(ResponseCookieModification);
 };
@@ -344,7 +344,7 @@ struct EventResponseDelta {
   ResponseHeaders deleted_response_headers;
 
   // Authentication Credentials to use.
-  base::Optional<net::AuthCredentials> auth_credentials;
+  absl::optional<net::AuthCredentials> auth_credentials;
 
   // Modifications to cookies in request headers.
   RequestCookieModifications request_cookie_modifications;
@@ -406,7 +406,7 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
     const std::string& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
-    base::Optional<net::AuthCredentials> auth_credentials);
+    absl::optional<net::AuthCredentials> auth_credentials);
 
 // These functions merge the responses (the |deltas|) of request handlers.
 // The |deltas| need to be sorted in decreasing order of precedence of
@@ -414,10 +414,10 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
 // IDs are reported in |conflicting_extensions|.
 
 // Stores in |*canceled_by_extension| whether any extension wanted to cancel the
-// request, base::nullopt if none did, the extension id otherwise.
+// request, absl::nullopt if none did, the extension id otherwise.
 void MergeCancelOfResponses(
     const EventResponseDeltas& deltas,
-    base::Optional<extensions::ExtensionId>* canceled_by_extension);
+    absl::optional<extensions::ExtensionId>* canceled_by_extension);
 // Stores in |*new_url| the redirect request of the extension with highest
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.

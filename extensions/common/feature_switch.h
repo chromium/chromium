@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -80,7 +80,7 @@ class FeatureSwitch {
   const char* switch_name_;
   bool default_value_;
   OverrideValue override_value_;
-  mutable base::Optional<bool> cached_value_;
+  mutable absl::optional<bool> cached_value_;
 
   DISALLOW_COPY_AND_ASSIGN(FeatureSwitch);
 };

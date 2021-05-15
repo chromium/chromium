@@ -100,7 +100,7 @@ class TimedScriptInjectionCallback : public ScriptInjectionCallback {
   void OnCompleted(const std::vector<v8::Local<v8::Value>>& result) {
     if (injection_) {
       base::TimeTicks timestamp(base::TimeTicks::Now());
-      base::Optional<base::TimeDelta> elapsed;
+      absl::optional<base::TimeDelta> elapsed;
       // If the script will never execute (such as if the context is destroyed),
       // willExecute() will not be called, but OnCompleted() will. Only log a
       // time for execution if the script, in fact, executed.
@@ -342,7 +342,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
 
 void ScriptInjection::OnJsInjectionCompleted(
     const std::vector<v8::Local<v8::Value>>& results,
-    base::Optional<base::TimeDelta> elapsed) {
+    absl::optional<base::TimeDelta> elapsed) {
   DCHECK(!did_inject_js_);
 
   if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
@@ -415,7 +415,7 @@ void ScriptInjection::InjectOrRemoveCss(
   }
 
   blink::WebStyleSheetKey style_sheet_key;
-  if (const base::Optional<std::string>& injection_key =
+  if (const absl::optional<std::string>& injection_key =
           injector_->GetInjectionKey())
     style_sheet_key = blink::WebString::FromASCII(*injection_key);
   // CSS deletion can be thought of as the inverse of CSS injection

@@ -717,7 +717,7 @@ bool ContentVerifier::ShouldVerifyAnyPaths(
   const std::set<CanonicalRelativePath>& indexed_ruleset_paths =
       *(data->canonical_indexed_ruleset_paths);
 
-  base::Optional<std::set<std::string>> all_locale_candidates;
+  absl::optional<std::set<std::string>> all_locale_candidates;
 
   const CanonicalRelativePath manifest_file =
       content_verifier_utils::CanonicalizeRelativePath(

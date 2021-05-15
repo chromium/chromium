@@ -99,7 +99,7 @@ ComputedHashes::ComputedHashes(ComputedHashes&&) = default;
 ComputedHashes& ComputedHashes::operator=(ComputedHashes&&) = default;
 
 // static
-base::Optional<ComputedHashes> ComputedHashes::CreateFromFile(
+absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     const base::FilePath& path,
     Status* status) {
   DCHECK(status);
@@ -109,62 +109,62 @@ base::Optional<ComputedHashes> ComputedHashes::CreateFromFile(
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
     *status = Status::READ_FAILED;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
+  absl::optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
   if (!top_dictionary || !top_dictionary->is_dict()) {
     *status = Status::PARSE_FAILED;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // For now we don't support forwards or backwards compatibility in the
   // format, so we return nullopt on version mismatch.
-  base::Optional<int> version =
+  absl::optional<int> version =
       top_dictionary->FindIntKey(computed_hashes::kVersionKey);
   if (!version || *version != computed_hashes::kVersion) {
     *status = Status::PARSE_FAILED;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const base::Value* all_hashes =
       top_dictionary->FindListKey(computed_hashes::kFileHashesKey);
   if (!all_hashes) {
     *status = Status::PARSE_FAILED;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ComputedHashes::Data data;
   for (const base::Value& file_hash : all_hashes->GetList()) {
     if (!file_hash.is_dict()) {
       *status = Status::PARSE_FAILED;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     const std::string* relative_path_utf8 =
         file_hash.FindStringKey(computed_hashes::kPathKey);
     if (!relative_path_utf8) {
       *status = Status::PARSE_FAILED;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
-    base::Optional<int> block_size =
+    absl::optional<int> block_size =
         file_hash.FindIntKey(computed_hashes::kBlockSizeKey);
     if (!block_size) {
       *status = Status::PARSE_FAILED;
-      return base::nullopt;
+      return absl::nullopt;
     }
     if (*block_size <= 0 || ((*block_size % 1024) != 0)) {
       LOG(ERROR) << "Invalid block size: " << *block_size;
       *status = Status::PARSE_FAILED;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     const base::Value* block_hashes =
         file_hash.FindListKey(computed_hashes::kBlockHashesKey);
     if (!block_hashes) {
       *status = Status::PARSE_FAILED;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     base::FilePath relative_path =
@@ -174,7 +174,7 @@ base::Optional<ComputedHashes> ComputedHashes::CreateFromFile(
     for (const base::Value& value : block_hashes->GetList()) {
       if (!value.is_string()) {
         *status = Status::PARSE_FAILED;
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       hashes.push_back(std::string());
@@ -182,7 +182,7 @@ base::Optional<ComputedHashes> ComputedHashes::CreateFromFile(
       std::string* decoded = &hashes.back();
       if (!base::Base64Decode(encoded, decoded)) {
         *status = Status::PARSE_FAILED;
-        return base::nullopt;
+        return absl::nullopt;
       }
     }
     data.Add(relative_path, *block_size, std::move(hashes));
@@ -193,7 +193,7 @@ base::Optional<ComputedHashes> ComputedHashes::CreateFromFile(
 }
 
 // static
-base::Optional<ComputedHashes::Data> ComputedHashes::Compute(
+absl::optional<ComputedHashes::Data> ComputedHashes::Compute(
     const base::FilePath& extension_root,
     int block_size,
     const IsCancelledCallback& is_cancelled,
@@ -204,7 +204,7 @@ base::Optional<ComputedHashes::Data> ComputedHashes::Compute(
   SortedFilePathSet paths;
   while (true) {
     if (is_cancelled && is_cancelled.Run())
-      return base::nullopt;
+      return absl::nullopt;
 
     base::FilePath full_path = enumerator.Next();
     if (full_path.empty())
@@ -217,7 +217,7 @@ base::Optional<ComputedHashes::Data> ComputedHashes::Compute(
   Data data;
   for (const auto& full_path : paths) {
     if (is_cancelled && is_cancelled.Run())
-      return base::nullopt;
+      return absl::nullopt;
 
     base::FilePath relative_path;
     extension_root.AppendRelativePath(full_path, &relative_path);
@@ -225,7 +225,7 @@ base::Optional<ComputedHashes::Data> ComputedHashes::Compute(
     if (!should_compute_hashes_for_resource.Run(relative_path))
       continue;
 
-    base::Optional<std::vector<std::string>> hashes =
+    absl::optional<std::vector<std::string>> hashes =
         ComputeAndCheckResourceHash(full_path, block_size);
     if (hashes)
       data.Add(relative_path, block_size, std::move(hashes.value()));
@@ -324,21 +324,20 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
 }
 
 // static
-base::Optional<std::vector<std::string>>
-ComputedHashes::ComputeAndCheckResourceHash(
-    const base::FilePath& full_path,
-    int block_size) {
+absl::optional<std::vector<std::string>>
+ComputedHashes::ComputeAndCheckResourceHash(const base::FilePath& full_path,
+                                            int block_size) {
   std::string contents;
   if (!base::ReadFileToString(full_path, &contents)) {
     LOG(ERROR) << "Could not read " << full_path.MaybeAsASCII();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Iterate through taking the hash of each block of size |block_size| of the
   // file.
   std::vector<std::string> hashes = GetHashesForContent(contents, block_size);
 
-  return base::make_optional(std::move(hashes));
+  return absl::make_optional(std::move(hashes));
 }
 
 }  // namespace extensions

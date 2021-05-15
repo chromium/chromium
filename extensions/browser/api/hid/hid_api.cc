@@ -252,13 +252,13 @@ bool HidReceiveFunction::ReadParameters() {
 void HidReceiveFunction::StartWork(device::mojom::HidConnection* connection) {
   connection->Read(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&HidReceiveFunction::OnFinished, this), false, 0,
-      base::nullopt));
+      absl::nullopt));
 }
 
 void HidReceiveFunction::OnFinished(
     bool success,
     uint8_t report_id,
-    const base::Optional<std::vector<uint8_t>>& buffer) {
+    const absl::optional<std::vector<uint8_t>>& buffer) {
   if (success) {
     DCHECK(buffer);
     Respond(TwoArguments(base::Value(report_id), base::Value(*buffer)));
@@ -315,12 +315,12 @@ void HidReceiveFeatureReportFunction::StartWork(
       static_cast<uint8_t>(parameters_->report_id),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&HidReceiveFeatureReportFunction::OnFinished, this),
-          false, base::nullopt));
+          false, absl::nullopt));
 }
 
 void HidReceiveFeatureReportFunction::OnFinished(
     bool success,
-    const base::Optional<std::vector<uint8_t>>& buffer) {
+    const absl::optional<std::vector<uint8_t>>& buffer) {
   if (success) {
     DCHECK(buffer);
     Respond(OneArgument(base::Value(*buffer)));

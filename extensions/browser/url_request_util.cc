@@ -147,7 +147,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
 
 bool AllowSpecialCaseExtensionURLInGuest(
     const Extension* extension,
-    base::Optional<base::StringPiece> resource_path) {
+    absl::optional<base::StringPiece> resource_path) {
   // Allow mobile setup web UI (chrome://mobilesetup) to embed resources from
   // the component mobile activation extension in a webview. This is needed
   // because the activation web UI relies on the activation extension to

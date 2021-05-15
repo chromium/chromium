@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/renderer/script_injection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -34,7 +34,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   mojom::CSSOrigin GetCssOrigin() const override;
   bool IsRemovingCSS() const override;
   bool IsAddingCSS() const override;
-  const base::Optional<std::string> GetInjectionKey() const override;
+  const absl::optional<std::string> GetInjectionKey() const override;
   bool ExpectsResults() const override;
   bool ShouldInjectJs(
       mojom::RunLocation run_location,
@@ -79,7 +79,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   std::string origin_for_about_error_;
 
   // The result of the script execution.
-  base::Optional<base::Value> result_;
+  absl::optional<base::Value> result_;
 
   // Whether or not this script injection has finished.
   bool finished_ = false;

@@ -426,7 +426,7 @@ void EventRouter::AddFilteredEventListener(
     const std::string& event_name,
     RenderProcessHost* process,
     const std::string& extension_id,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
+    absl::optional<ServiceWorkerIdentifier> sw_identifier,
     const base::DictionaryValue& filter,
     bool add_lazy_listener) {
   const bool is_for_service_worker = sw_identifier.has_value();
@@ -460,7 +460,7 @@ void EventRouter::RemoveFilteredEventListener(
     const std::string& event_name,
     RenderProcessHost* process,
     const std::string& extension_id,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
+    absl::optional<ServiceWorkerIdentifier> sw_identifier,
     const base::DictionaryValue& filter,
     bool remove_lazy_listener) {
   const bool is_for_service_worker = sw_identifier.has_value();

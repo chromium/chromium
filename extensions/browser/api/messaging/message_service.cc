@@ -136,7 +136,7 @@ struct MessageService::OpenChannelParams {
   std::unique_ptr<MessagePort> opener_port;
   std::string target_extension_id;
   GURL source_url;
-  base::Optional<url::Origin> source_origin;
+  absl::optional<url::Origin> source_origin;
   std::string channel_name;
   bool include_guest_process_info;
 
@@ -150,7 +150,7 @@ struct MessageService::OpenChannelParams {
                     std::unique_ptr<MessagePort> opener_port,
                     const std::string& target_extension_id,
                     const GURL& source_url,
-                    base::Optional<url::Origin> source_origin,
+                    absl::optional<url::Origin> source_origin,
                     const std::string& channel_name,
                     bool include_guest_process_info)
       : source(source),
@@ -315,7 +315,7 @@ void MessageService::OpenChannelToExtension(
   std::unique_ptr<base::DictionaryValue> source_tab =
       messaging_delegate_->MaybeGetTabInfo(source_contents);
 
-  base::Optional<url::Origin> source_origin;
+  absl::optional<url::Origin> source_origin;
   if (source_render_frame_host)
     source_origin = source_render_frame_host->GetLastCommittedOrigin();
 

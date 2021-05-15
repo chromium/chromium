@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {

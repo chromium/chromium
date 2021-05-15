@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ValueStoreChange;
 typedef std::vector<ValueStoreChange> ValueStoreChangeList;
@@ -23,8 +23,8 @@ class ValueStoreChange {
   static base::Value ToValue(ValueStoreChangeList changes);
 
   ValueStoreChange(const std::string& key,
-                   base::Optional<base::Value> old_value,
-                   base::Optional<base::Value> new_value);
+                   absl::optional<base::Value> old_value,
+                   absl::optional<base::Value> new_value);
 
   ValueStoreChange(const ValueStoreChange& other) = delete;
   ValueStoreChange(ValueStoreChange&& other);
@@ -46,8 +46,8 @@ class ValueStoreChange {
 
  private:
   std::string key_;
-  base::Optional<base::Value> old_value_;
-  base::Optional<base::Value> new_value_;
+  absl::optional<base::Value> old_value_;
+  absl::optional<base::Value> new_value_;
 };
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_CHANGE_H_

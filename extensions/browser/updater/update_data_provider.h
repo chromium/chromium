@@ -13,9 +13,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/browser/updater/extension_update_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -48,7 +48,7 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
   // done.
   void Shutdown();
 
-  std::vector<base::Optional<update_client::CrxComponent>> GetData(
+  std::vector<absl::optional<update_client::CrxComponent>> GetData(
       bool install_immediately,
       const ExtensionUpdateDataMap& update_info,
       const std::vector<std::string>& ids);

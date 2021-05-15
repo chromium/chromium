@@ -13,10 +13,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct HostID;
 
@@ -83,7 +83,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
   // UserScriptLoader is about to be destroyed. This may be called multiple
   // times per script load.
   void OnScriptsUpdated(UserScriptLoader* loader,
-                        const base::Optional<std::string>& error);
+                        const absl::optional<std::string>& error);
 
   // If there are no pending script loads, we will run all the remaining
   // callbacks in |pending_scripts_loading_callbacks_|.

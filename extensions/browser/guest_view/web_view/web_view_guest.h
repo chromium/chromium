@@ -285,7 +285,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const base::Optional<std::u16string>& untrusted_stack_trace) final;
+      const absl::optional<std::u16string>& untrusted_stack_trace) final;
 
   // Informs the embedder of a frame name change.
   void ReportFrameNameChange(const std::string& name);

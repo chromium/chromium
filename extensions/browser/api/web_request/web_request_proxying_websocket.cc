@@ -72,7 +72,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           /*is_download=*/false,
           /*is_async=*/true,
           /*is_service_worker_script=*/false,
-          /*navigation_id=*/base::nullopt,
+          /*navigation_id=*/absl::nullopt,
           ukm_source_id)),
       proxies_(proxies) {
   // base::Unretained is safe here because the callback will be canceled when
@@ -91,11 +91,11 @@ WebRequestProxyingWebSocket::~WebRequestProxyingWebSocket() {
       browser_context_, &info_);
   if (on_before_send_headers_callback_) {
     std::move(on_before_send_headers_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt);
+        .Run(net::ERR_ABORTED, absl::nullopt);
   }
   if (on_headers_received_callback_) {
     std::move(on_headers_received_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt, base::nullopt);
+        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt);
   }
 }
 
@@ -279,7 +279,7 @@ void WebRequestProxyingWebSocket::StartProxying(
     WebSocketFactory factory,
     const GURL& url,
     const GURL& site_for_cookies,
-    const base::Optional<std::string>& user_agent,
+    const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     bool has_extra_headers,
@@ -415,11 +415,11 @@ void WebRequestProxyingWebSocket::OnHeadersReceivedComplete(int error_code) {
   }
 
   if (on_headers_received_callback_) {
-    base::Optional<std::string> headers;
+    absl::optional<std::string> headers;
     if (override_headers_)
       headers = override_headers_->raw_headers();
     std::move(on_headers_received_callback_)
-        .Run(net::OK, headers, base::nullopt);
+        .Run(net::OK, headers, absl::nullopt);
   }
 
   if (override_headers_) {
@@ -445,7 +445,7 @@ void WebRequestProxyingWebSocket::OnAuthRequiredComplete(
         AUTH_REQUIRED_RESPONSE_NO_ACTION:
     case ExtensionWebRequestEventRouter::AuthRequiredResponse::
         AUTH_REQUIRED_RESPONSE_CANCEL_AUTH:
-      std::move(auth_required_callback_).Run(base::nullopt);
+      std::move(auth_required_callback_).Run(absl::nullopt);
       break;
 
     case ExtensionWebRequestEventRouter::AuthRequiredResponse::

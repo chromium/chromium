@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
@@ -30,6 +29,7 @@
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/web_ui_injection_host.h"
 #include "ipc/ipc_message_macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -46,7 +46,7 @@ namespace {
 const int kScriptIdleTimeoutInMs = 200;
 
 // Returns the RunLocation that follows |run_location|.
-base::Optional<mojom::RunLocation> NextRunLocation(
+absl::optional<mojom::RunLocation> NextRunLocation(
     mojom::RunLocation run_location) {
   switch (run_location) {
     case mojom::RunLocation::kDocumentStart:
@@ -54,11 +54,11 @@ base::Optional<mojom::RunLocation> NextRunLocation(
     case mojom::RunLocation::kDocumentEnd:
       return mojom::RunLocation::kDocumentIdle;
     case mojom::RunLocation::kDocumentIdle:
-      return base::nullopt;
+      return absl::nullopt;
     case mojom::RunLocation::kUndefined:
     case mojom::RunLocation::kRunDeferred:
     case mojom::RunLocation::kBrowserDriven:
-      return base::nullopt;
+      return absl::nullopt;
   }
   NOTREACHED();
 }
@@ -331,7 +331,7 @@ void ScriptInjectionManager::StartInjectScripts(
   if (iter == frame_statuses_.end()) {
     invalid_run_order = (run_location != mojom::RunLocation::kDocumentStart);
   } else {
-    base::Optional<mojom::RunLocation> next = NextRunLocation(iter->second);
+    absl::optional<mojom::RunLocation> next = NextRunLocation(iter->second);
     if (next)
       invalid_run_order = run_location > next.value();
   }
@@ -438,7 +438,7 @@ void ScriptInjectionManager::HandleExecuteCode(
     injection_host = ExtensionInjectionHost::Create(params->host_id->id);
     if (!injection_host) {
       std::move(callback).Run(base::EmptyString(), GURL::EmptyGURL(),
-                              base::nullopt);
+                              absl::nullopt);
       return;
     }
   } else if (params->host_id->type == mojom::HostID::HostType::kWebUi) {

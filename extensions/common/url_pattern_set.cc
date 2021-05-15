@@ -81,7 +81,7 @@ URLPatternSet URLPatternSet::CreateIntersection(
   // they have with the other patterns.
   for (const auto* pattern : unique_set1) {
     for (const auto* pattern2 : unique_set2) {
-      base::Optional<URLPattern> intersection =
+      absl::optional<URLPattern> intersection =
           pattern->CreateIntersection(*pattern2);
       if (intersection)
         result.patterns_.insert(std::move(*intersection));

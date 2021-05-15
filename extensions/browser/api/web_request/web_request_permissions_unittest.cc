@@ -229,7 +229,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
 
   auto get_access = [extension, this](
                         const GURL& url,
-                        const base::Optional<url::Origin>& initiator,
+                        const absl::optional<url::Origin>& initiator,
                         const WebRequestResourceType type) {
     constexpr int kTabId = 42;
     constexpr WebRequestPermissions::HostPermissionsCheck kPermissionsCheck =
@@ -245,7 +245,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   const url::Origin chromium_org_origin(url::Origin::Create(chromium_org));
 
   GURL urls[] = {example_com, chromium_org};
-  base::Optional<url::Origin> initiators[] = {base::nullopt, example_com_origin,
+  absl::optional<url::Origin> initiators[] = {absl::nullopt, example_com_origin,
                                               chromium_org_origin};
   WebRequestResourceType types[] = {WebRequestResourceType::OTHER,
                                     WebRequestResourceType::MAIN_FRAME};
@@ -276,7 +276,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   // that the extension doesn't have access to, access is withheld.
   EXPECT_EQ(
       PermissionsData::PageAccess::kWithheld,
-      get_access(example_com, base::nullopt, WebRequestResourceType::OTHER));
+      get_access(example_com, absl::nullopt, WebRequestResourceType::OTHER));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
             get_access(example_com, example_com_origin,
                        WebRequestResourceType::MAIN_FRAME));
@@ -337,7 +337,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
 
   auto get_access = [extension, this](
                         const GURL& url,
-                        const base::Optional<url::Origin>& initiator,
+                        const absl::optional<url::Origin>& initiator,
                         WebRequestResourceType type) {
     constexpr int kTabId = 42;
     constexpr WebRequestPermissions::HostPermissionsCheck kPermissionsCheck =
@@ -356,15 +356,15 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   const url::Origin kDeniedOrigin(url::Origin::Create(kDeniedUrl));
   const url::Origin kOpaqueOrigin;
   struct {
-    base::Optional<url::Origin> initiator;
+    absl::optional<url::Origin> initiator;
     GURL url;
     PermissionsData::PageAccess expected_access_subresource;
     PermissionsData::PageAccess expected_access_navigation;
   } cases[] = {
-      {base::nullopt, kAllowedUrl, PageAccess::kAllowed, PageAccess::kAllowed},
-      {base::nullopt, kWithheldUrl, PageAccess::kWithheld,
+      {absl::nullopt, kAllowedUrl, PageAccess::kAllowed, PageAccess::kAllowed},
+      {absl::nullopt, kWithheldUrl, PageAccess::kWithheld,
        PageAccess::kWithheld},
-      {base::nullopt, kDeniedUrl, PageAccess::kDenied, PageAccess::kDenied},
+      {absl::nullopt, kDeniedUrl, PageAccess::kDenied, PageAccess::kDenied},
 
       {kOpaqueOrigin, kAllowedUrl, PageAccess::kAllowed, PageAccess::kAllowed},
       {kOpaqueOrigin, kWithheldUrl, PageAccess::kWithheld,

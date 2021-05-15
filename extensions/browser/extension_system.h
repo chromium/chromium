@@ -9,12 +9,12 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
 #error "Extensions must be enabled"
@@ -53,7 +53,7 @@ class ExtensionSystem : public KeyedService {
  public:
   // A callback to be executed when InstallUpdate finishes.
   using InstallUpdateCallback =
-      base::OnceCallback<void(const base::Optional<CrxInstallError>& result)>;
+      base::OnceCallback<void(const absl::optional<CrxInstallError>& result)>;
 
   ExtensionSystem();
   ~ExtensionSystem() override;

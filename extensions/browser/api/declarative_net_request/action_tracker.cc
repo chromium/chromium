@@ -288,7 +288,7 @@ void ActionTracker::ResetTrackedInfoForTab(int tab_id, int64_t navigation_id) {
 
 std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
     const Extension& extension,
-    const base::Optional<int>& tab_id,
+    const absl::optional<int>& tab_id,
     const base::Time& min_time_stamp) {
   TrimRulesFromNonActiveTabs();
 

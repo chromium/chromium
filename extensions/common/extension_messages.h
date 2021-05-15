@@ -203,7 +203,7 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExternalConnectionInfo)
   IPC_STRUCT_MEMBER(GURL, source_url)
 
   // The origin of the object that initiated the request.
-  IPC_STRUCT_MEMBER(base::Optional<url::Origin>, source_origin)
+  IPC_STRUCT_MEMBER(absl::optional<url::Origin>, source_origin)
 
   // The process ID of the webview that initiated the request.
   IPC_STRUCT_MEMBER(int, guest_process_id)
@@ -319,7 +319,7 @@ struct ExtensionMsg_Loaded_Params {
   ~ExtensionMsg_Loaded_Params();
   ExtensionMsg_Loaded_Params(const extensions::Extension* extension,
                              bool include_tab_permissions,
-                             base::Optional<extensions::ActivationSequence>
+                             absl::optional<extensions::ActivationSequence>
                                  worker_activation_sequence);
 
   ExtensionMsg_Loaded_Params(ExtensionMsg_Loaded_Params&& other);
@@ -361,7 +361,7 @@ struct ExtensionMsg_Loaded_Params {
 
   // If this extension is Service Worker based, then this contains the
   // activation sequence of the extension.
-  base::Optional<extensions::ActivationSequence> worker_activation_sequence;
+  absl::optional<extensions::ActivationSequence> worker_activation_sequence;
 
   // Send creation flags so extension is initialized identically.
   int creation_flags;
@@ -512,7 +512,7 @@ IPC_MESSAGE_ROUTED2(ExtensionMsg_ValidateMessagePort,
 // Dispatch the Port.onConnect event for message channels.
 IPC_MESSAGE_ROUTED5(ExtensionMsg_DispatchOnConnect,
                     // For main thread, this is kMainThreadId.
-                    // TODO(lazyboy): Can this be base::Optional<int> instead?
+                    // TODO(lazyboy): Can this be absl::optional<int> instead?
                     int /* worker_thread_id */,
                     extensions::PortId /* target_port_id */,
                     std::string /* channel_name */,
@@ -578,7 +578,7 @@ IPC_MESSAGE_CONTROL5(
     ExtensionHostMsg_AddFilteredListener,
     std::string /* extension_id */,
     std::string /* name */,
-    base::Optional<ServiceWorkerIdentifier> /* sw_identifier */,
+    absl::optional<ServiceWorkerIdentifier> /* sw_identifier */,
     base::DictionaryValue /* filter */,
     bool /* lazy */)
 
@@ -590,7 +590,7 @@ IPC_MESSAGE_CONTROL5(
     ExtensionHostMsg_RemoveFilteredListener,
     std::string /* extension_id */,
     std::string /* name */,
-    base::Optional<ServiceWorkerIdentifier> /* sw_identifier */,
+    absl::optional<ServiceWorkerIdentifier> /* sw_identifier */,
     base::DictionaryValue /* filter */,
     bool /* lazy */)
 

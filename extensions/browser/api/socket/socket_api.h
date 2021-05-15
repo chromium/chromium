@@ -172,7 +172,7 @@ class SocketExtensionWithDnsLookupFunction
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
@@ -318,7 +318,7 @@ class SocketAcceptFunction : public SocketAsyncApiFunction {
  private:
   void OnAccept(int result_code,
                 mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-                const base::Optional<net::IPEndPoint>& remote_addr,
+                const absl::optional<net::IPEndPoint>& remote_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
@@ -481,7 +481,7 @@ class SocketGetNetworkListFunction : public ExtensionFunction {
 
  private:
   void GotNetworkList(
-      const base::Optional<net::NetworkInterfaceList>& interface_list);
+      const absl::optional<net::NetworkInterfaceList>& interface_list);
 };
 
 class SocketJoinGroupFunction : public SocketAsyncApiFunction {

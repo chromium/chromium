@@ -154,8 +154,8 @@ NetworkingPrivateGetPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetPropertiesFunction::Result(
-    base::Optional<base::Value> result,
-    base::Optional<std::string> error) {
+    absl::optional<base::Value> result,
+    absl::optional<std::string> error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
     return;
@@ -190,8 +190,8 @@ NetworkingPrivateGetManagedPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetManagedPropertiesFunction::Result(
-    base::Optional<base::Value> result,
-    base::Optional<std::string> error) {
+    absl::optional<base::Value> result,
+    absl::optional<std::string> error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
     return;

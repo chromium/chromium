@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -27,6 +26,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -52,7 +52,7 @@ struct WebRequestInfoInitParams {
       bool is_download,
       bool is_async,
       bool is_service_worker_script,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id);
 
   ~WebRequestInfoInitParams();
@@ -64,7 +64,7 @@ struct WebRequestInfoInitParams {
   int frame_id = -1;
   std::string method;
   bool is_navigation_request = false;
-  base::Optional<url::Origin> initiator;
+  absl::optional<url::Origin> initiator;
   WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
   bool is_async = false;
   net::HttpRequestHeaders extra_request_headers;
@@ -75,7 +75,7 @@ struct WebRequestInfoInitParams {
   int web_view_embedder_process_id = -1;
   ExtensionApiFrameIdMap::FrameData frame_data;
   bool is_service_worker_script = false;
-  base::Optional<int64_t> navigation_id;
+  absl::optional<int64_t> navigation_id;
   ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
   content::GlobalFrameRoutingId parent_routing_id;
 
@@ -122,7 +122,7 @@ struct WebRequestInfo {
 
   // The origin of the context which initiated the request. May be null for
   // browser-initiated requests such as navigations.
-  const base::Optional<url::Origin> initiator;
+  const absl::optional<url::Origin> initiator;
 
   // Extension API frame data corresponding to details of the frame which
   // initiate this request.
@@ -169,13 +169,13 @@ struct WebRequestInfo {
   // since this is lazily computed. Cached to avoid redundant computations.
   // Valid when not null. In case no actions are taken, populated with an empty
   // vector.
-  mutable base::Optional<std::vector<declarative_net_request::RequestAction>>
+  mutable absl::optional<std::vector<declarative_net_request::RequestAction>>
       dnr_actions;
 
   const bool is_service_worker_script;
 
   // Valid if this request corresponds to a navigation.
-  const base::Optional<int64_t> navigation_id;
+  const absl::optional<int64_t> navigation_id;
 
   // UKM source to associate metrics with for this request.
   const ukm::SourceIdObj ukm_source_id;

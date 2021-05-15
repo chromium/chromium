@@ -66,7 +66,7 @@ IndexHelper::Result CombineResults(
       // warnings associated.
       DCHECK(!index_result.warnings.empty());
       total_result.ruleset_install_prefs.emplace_back(
-          source->id(), base::nullopt /* ruleset_checksum */,
+          source->id(), absl::nullopt /* ruleset_checksum */,
           true /* ignored */);
       continue;
     }

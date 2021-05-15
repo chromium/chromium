@@ -265,7 +265,7 @@ APIBinding::APIBinding(const std::string& api_name,
       const std::set<std::string>& enum_values = argument_spec->enum_values();
       if (!enum_values.empty()) {
         // Type names may be prefixed by the api name. If so, remove the prefix.
-        base::Optional<std::string> stripped_id;
+        absl::optional<std::string> stripped_id;
         if (base::StartsWith(id, api_name_, base::CompareCase::SENSITIVE))
           stripped_id = id.substr(api_name_.size() + 1);  // +1 for trailing '.'
         std::vector<EnumEntry>& entries =

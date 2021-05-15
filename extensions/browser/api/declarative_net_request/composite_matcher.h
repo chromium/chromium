@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -30,13 +30,13 @@ struct RequestAction;
 class CompositeMatcher {
  public:
   struct ActionInfo {
-    ActionInfo(base::Optional<RequestAction> action, bool notify);
+    ActionInfo(absl::optional<RequestAction> action, bool notify);
     ~ActionInfo();
     ActionInfo(ActionInfo&& other);
     ActionInfo& operator=(ActionInfo&& other);
 
     // The action to be taken for this request.
-    base::Optional<RequestAction> action;
+    absl::optional<RequestAction> action;
 
     // Whether the extension should be notified that the request was unable to
     // be redirected as the extension lacks the appropriate host permission for
@@ -72,7 +72,7 @@ class CompositeMatcher {
   std::set<RulesetID> ComputeStaticRulesetIDs() const;
 
   // Returns a RequestAction for the network request specified by |params|, or
-  // base::nullopt if there is no matching rule.
+  // absl::nullopt if there is no matching rule.
   ActionInfo GetBeforeRequestAction(
       const RequestParams& params,
       PermissionsData::PageAccess page_access) const;
@@ -101,7 +101,7 @@ class CompositeMatcher {
 
   // Denotes the cached return value for |HasAnyExtraHeadersMatcher|. Care must
   // be taken to reset this as this object is modified.
-  mutable base::Optional<bool> has_any_extra_headers_matcher_;
+  mutable absl::optional<bool> has_any_extra_headers_matcher_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositeMatcher);
 };

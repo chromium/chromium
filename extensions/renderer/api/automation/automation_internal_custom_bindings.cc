@@ -2404,7 +2404,7 @@ void AutomationInternalCustomBindings::OnAccessibilityLocationChange(
   if (!node)
     return;
 
-  base::Optional<gfx::Rect> previous_accessibility_focused_global_bounds =
+  absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
       GetAccessibilityFocusedLocation();
 
   node->SetLocation(params.new_location.offset_container_id,
@@ -2508,7 +2508,7 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
     ui::AXTreeID tree_id,
     const gfx::Point& mouse_location,
     const ui::AXEvent& event,
-    base::Optional<ui::AXEventGenerator::Event> generated_event_type) {
+    absl::optional<ui::AXEventGenerator::Event> generated_event_type) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper)
@@ -2671,19 +2671,19 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   }
 }
 
-base::Optional<gfx::Rect>
+absl::optional<gfx::Rect>
 AutomationInternalCustomBindings::GetAccessibilityFocusedLocation() const {
   if (accessibility_focused_tree_id_ == ui::AXTreeIDUnknown())
-    return base::nullopt;
+    return absl::nullopt;
 
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(accessibility_focused_tree_id_);
   if (!tree_wrapper)
-    return base::nullopt;
+    return absl::nullopt;
 
   ui::AXNode* node = tree_wrapper->GetAccessibilityFocusedNode();
   if (!node)
-    return base::nullopt;
+    return absl::nullopt;
 
   return ComputeGlobalNodeBounds(tree_wrapper, node);
 }

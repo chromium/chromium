@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/url_pattern.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -38,18 +38,18 @@ struct TestRuleCondition : public DictionarySource {
   TestRuleCondition(const TestRuleCondition&);
   TestRuleCondition& operator=(const TestRuleCondition&);
 
-  base::Optional<std::string> url_filter;
-  base::Optional<std::string> regex_filter;
-  base::Optional<bool> is_url_filter_case_sensitive;
-  base::Optional<std::vector<std::string>> domains;
-  base::Optional<std::vector<std::string>> excluded_domains;
-  base::Optional<std::vector<std::string>> request_methods;
-  base::Optional<std::vector<std::string>> excluded_request_methods;
-  base::Optional<std::vector<std::string>> resource_types;
-  base::Optional<std::vector<std::string>> excluded_resource_types;
-  base::Optional<std::vector<int>> tab_ids;
-  base::Optional<std::vector<int>> excluded_tab_ids;
-  base::Optional<std::string> domain_type;
+  absl::optional<std::string> url_filter;
+  absl::optional<std::string> regex_filter;
+  absl::optional<bool> is_url_filter_case_sensitive;
+  absl::optional<std::vector<std::string>> domains;
+  absl::optional<std::vector<std::string>> excluded_domains;
+  absl::optional<std::vector<std::string>> request_methods;
+  absl::optional<std::vector<std::string>> excluded_request_methods;
+  absl::optional<std::vector<std::string>> resource_types;
+  absl::optional<std::vector<std::string>> excluded_resource_types;
+  absl::optional<std::vector<int>> tab_ids;
+  absl::optional<std::vector<int>> excluded_tab_ids;
+  absl::optional<std::string> domain_type;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -60,8 +60,8 @@ struct TestRuleQueryKeyValue : public DictionarySource {
   TestRuleQueryKeyValue(const TestRuleQueryKeyValue&);
   TestRuleQueryKeyValue& operator=(const TestRuleQueryKeyValue&);
 
-  base::Optional<std::string> key;
-  base::Optional<std::string> value;
+  absl::optional<std::string> key;
+  absl::optional<std::string> value;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -72,8 +72,8 @@ struct TestRuleQueryTransform : public DictionarySource {
   TestRuleQueryTransform(const TestRuleQueryTransform&);
   TestRuleQueryTransform& operator=(const TestRuleQueryTransform&);
 
-  base::Optional<std::vector<std::string>> remove_params;
-  base::Optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
+  absl::optional<std::vector<std::string>> remove_params;
+  absl::optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -84,15 +84,15 @@ struct TestRuleTransform : public DictionarySource {
   TestRuleTransform(const TestRuleTransform&);
   TestRuleTransform& operator=(const TestRuleTransform&);
 
-  base::Optional<std::string> scheme;
-  base::Optional<std::string> host;
-  base::Optional<std::string> port;
-  base::Optional<std::string> path;
-  base::Optional<std::string> query;
-  base::Optional<TestRuleQueryTransform> query_transform;
-  base::Optional<std::string> fragment;
-  base::Optional<std::string> username;
-  base::Optional<std::string> password;
+  absl::optional<std::string> scheme;
+  absl::optional<std::string> host;
+  absl::optional<std::string> port;
+  absl::optional<std::string> path;
+  absl::optional<std::string> query;
+  absl::optional<TestRuleQueryTransform> query_transform;
+  absl::optional<std::string> fragment;
+  absl::optional<std::string> username;
+  absl::optional<std::string> password;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -103,10 +103,10 @@ struct TestRuleRedirect : public DictionarySource {
   TestRuleRedirect(const TestRuleRedirect&);
   TestRuleRedirect& operator=(const TestRuleRedirect&);
 
-  base::Optional<std::string> extension_path;
-  base::Optional<TestRuleTransform> transform;
-  base::Optional<std::string> url;
-  base::Optional<std::string> regex_substitution;
+  absl::optional<std::string> extension_path;
+  absl::optional<TestRuleTransform> transform;
+  absl::optional<std::string> url;
+  absl::optional<std::string> regex_substitution;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -114,14 +114,14 @@ struct TestRuleRedirect : public DictionarySource {
 struct TestHeaderInfo : public DictionarySource {
   TestHeaderInfo(std::string header,
                  std::string operation,
-                 base::Optional<std::string> value);
+                 absl::optional<std::string> value);
   ~TestHeaderInfo() override;
   TestHeaderInfo(const TestHeaderInfo&);
   TestHeaderInfo& operator=(const TestHeaderInfo&);
 
-  base::Optional<std::string> header;
-  base::Optional<std::string> operation;
-  base::Optional<std::string> value;
+  absl::optional<std::string> header;
+  absl::optional<std::string> operation;
+  absl::optional<std::string> value;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -132,10 +132,10 @@ struct TestRuleAction : public DictionarySource {
   TestRuleAction(const TestRuleAction&);
   TestRuleAction& operator=(const TestRuleAction&);
 
-  base::Optional<std::string> type;
-  base::Optional<std::vector<TestHeaderInfo>> request_headers;
-  base::Optional<std::vector<TestHeaderInfo>> response_headers;
-  base::Optional<TestRuleRedirect> redirect;
+  absl::optional<std::string> type;
+  absl::optional<std::vector<TestHeaderInfo>> request_headers;
+  absl::optional<std::vector<TestHeaderInfo>> response_headers;
+  absl::optional<TestRuleRedirect> redirect;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -146,10 +146,10 @@ struct TestRule : public DictionarySource {
   TestRule(const TestRule&);
   TestRule& operator=(const TestRule&);
 
-  base::Optional<int> id;
-  base::Optional<int> priority;
-  base::Optional<TestRuleCondition> condition;
-  base::Optional<TestRuleAction> action;
+  absl::optional<int> id;
+  absl::optional<int> priority;
+  absl::optional<TestRuleCondition> condition;
+  absl::optional<TestRuleAction> action;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };

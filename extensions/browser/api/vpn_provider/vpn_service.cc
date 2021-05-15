@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -36,6 +35,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -304,7 +304,7 @@ void VpnService::OnConfigurationRemoved(const std::string& service_path,
 }
 
 void VpnService::OnGetShillProperties(const std::string& service_path,
-                                      base::Optional<base::Value> dictionary) {
+                                      absl::optional<base::Value> dictionary) {
   if (!dictionary || service_path_to_configuration_map_.find(service_path) !=
                          service_path_to_configuration_map_.end()) {
     return;
@@ -430,7 +430,7 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
 
   network_configuration_handler_->RemoveConfiguration(
       service_path,
-      /*remove_confirmer=*/base::nullopt,
+      /*remove_confirmer=*/absl::nullopt,
       base::BindOnce(&VpnService::OnRemoveConfigurationSuccess,
                      weak_factory_.GetWeakPtr(), std::move(success)),
       base::BindOnce(&VpnService::OnRemoveConfigurationFailure,

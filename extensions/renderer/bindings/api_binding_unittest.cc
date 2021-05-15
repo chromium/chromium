@@ -1494,8 +1494,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
   SetHooksDelegate(std::move(hooks));
 
   auto on_silent_request =
-      [](base::Optional<std::string>* name_out,
-         base::Optional<std::vector<std::string>>* args_out,
+      [](absl::optional<std::string>* name_out,
+         absl::optional<std::vector<std::string>>* args_out,
          v8::Local<v8::Context> context, const std::string& call_name,
          const std::vector<v8::Local<v8::Value>>& arguments) {
         *name_out = call_name;
@@ -1504,8 +1504,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
         for (const auto& arg : arguments)
           (*args_out)->push_back(V8ToString(arg, context));
       };
-  base::Optional<std::string> silent_request;
-  base::Optional<std::vector<std::string>> request_arguments;
+  absl::optional<std::string> silent_request;
+  absl::optional<std::vector<std::string>> request_arguments;
   SetOnSilentRequest(base::BindRepeating(on_silent_request, &silent_request,
                                          &request_arguments));
 

@@ -120,7 +120,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  base::Optional<base::Value> dictionary = base::JSONReader::Read(payload);
+  absl::optional<base::Value> dictionary = base::JSONReader::Read(payload);
   if (!dictionary || !dictionary->is_dict())
     return nullptr;
 
@@ -151,8 +151,8 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (!format || *format != kTreeHash)
       continue;
 
-    base::Optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
-    base::Optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
+    absl::optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
+    absl::optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
     if (!block_size || !hash_block_size)
       return nullptr;
 
@@ -253,7 +253,7 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // enterprise installs).
 bool VerifiedContents::GetPayload(base::StringPiece contents,
                                   std::string* payload) {
-  base::Optional<base::Value> top_list = base::JSONReader::Read(contents);
+  absl::optional<base::Value> top_list = base::JSONReader::Read(contents);
   if (!top_list || !top_list->is_list())
     return false;
 

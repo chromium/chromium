@@ -10,10 +10,10 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class TestSendMessageFunction;
@@ -144,7 +144,7 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
 
   // The message we're expecting. If empty, we will wait for any message,
   // regardless of contents.
-  const base::Optional<std::string> expected_message_;
+  const absl::optional<std::string> expected_message_;
 
   // The last message we received.
   std::string message_;
@@ -163,7 +163,7 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
   std::string extension_id_;
 
   // The message that signals failure.
-  base::Optional<std::string> failure_message_;
+  absl::optional<std::string> failure_message_;
 
   // If we received a message that was the failure message.
   bool failed_ = false;

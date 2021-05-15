@@ -11,11 +11,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "ipc/ipc_message.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree.h"
 #include "v8/include/v8.h"
 
@@ -87,14 +87,14 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       ui::AXTreeID tree_id,
       const gfx::Point& mouse_location,
       const ui::AXEvent& event,
-      base::Optional<ui::AXEventGenerator::Event> generated_event_type =
-          base::Optional<ui::AXEventGenerator::Event>());
+      absl::optional<ui::AXEventGenerator::Event> generated_event_type =
+          absl::optional<ui::AXEventGenerator::Event>());
 
   void MaybeSendFocusAndBlur(
       AutomationAXTreeWrapper* tree,
       const ExtensionMsg_AccessibilityEventBundleParams& event_bundle);
 
-  base::Optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
+  absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
 
   void SendAccessibilityFocusedLocationChange(const gfx::Point& mouse_location);
 
@@ -281,7 +281,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // Keeps track  of the single desktop tree, if it exists.
   ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
 
-  base::Optional<float> device_scale_factor_for_test_;
+  absl::optional<float> device_scale_factor_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationInternalCustomBindings);
 };

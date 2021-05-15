@@ -433,14 +433,14 @@ TEST_P(EventRouterFilterTest, Basic) {
   const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
   const std::string kHostSuffixes[] = {"foo.com", "bar.com", "baz.com"};
 
-  base::Optional<ServiceWorkerIdentifier> worker_identifier = base::nullopt;
+  absl::optional<ServiceWorkerIdentifier> worker_identifier = absl::nullopt;
   if (is_for_service_worker()) {
     ServiceWorkerIdentifier identifier;
     identifier.scope = Extension::GetBaseURLFromExtensionId(kExtensionId);
     identifier.version_id = 99;  // Dummy version_id.
     identifier.thread_id = 199;  // Dummy thread_id.
     worker_identifier =
-        base::make_optional<ServiceWorkerIdentifier>(std::move(identifier));
+        absl::make_optional<ServiceWorkerIdentifier>(std::move(identifier));
   }
   std::vector<std::unique_ptr<DictionaryValue>> filters;
   for (size_t i = 0; i < base::size(kHostSuffixes); ++i) {

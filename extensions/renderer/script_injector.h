@@ -57,7 +57,7 @@ class ScriptInjector {
   virtual bool IsAddingCSS() const = 0;
 
   // Returns the key for this injection, if it's a CSS injection.
-  virtual const base::Optional<std::string> GetInjectionKey() const = 0;
+  virtual const absl::optional<std::string> GetInjectionKey() const = 0;
 
   // Returns true if the script expects results.
   virtual bool ExpectsResults() const = 0;

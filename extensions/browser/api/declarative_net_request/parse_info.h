@@ -11,8 +11,8 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace extensions {

@@ -188,7 +188,7 @@ class Handler : public content::WebContentsObserver {
                              int render_frame_id,
                              const std::string& error,
                              const GURL& on_url,
-                             base::Optional<base::Value> result) {
+                             absl::optional<base::Value> result) {
     auto* render_frame_host =
         content::RenderFrameHost::FromID(render_process_id, render_frame_id);
     if (!render_frame_host)
@@ -249,7 +249,7 @@ class Handler : public content::WebContentsObserver {
 
   // The id of the primary frame of the injection, if only a single frame is
   // explicitly specified.
-  base::Optional<int> root_rfh_id_;
+  absl::optional<int> root_rfh_id_;
 
   // The hosts of the still-running injections. Note: this is a vector because
   // order matters (some tests - and therefore perhaps some extensions - rely on

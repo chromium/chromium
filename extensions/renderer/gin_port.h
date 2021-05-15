@@ -10,10 +10,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/wrappable.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace gin {
@@ -151,7 +151,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // A listener for context invalidation. Note: this isn't actually optional;
   // it just needs to be created after |weak_factory_|, which needs to be the
   // final member.
-  base::Optional<binding::ContextInvalidationListener>
+  absl::optional<binding::ContextInvalidationListener>
       context_invalidation_listener_;
 
   base::WeakPtrFactory<GinPort> weak_factory_{this};

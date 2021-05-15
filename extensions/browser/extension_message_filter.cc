@@ -229,7 +229,7 @@ void ExtensionMessageFilter::OnExtensionRemoveLazyServiceWorkerListener(
 void ExtensionMessageFilter::OnExtensionAddFilteredListener(
     const std::string& extension_id,
     const std::string& event_name,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
+    absl::optional<ServiceWorkerIdentifier> sw_identifier,
     const base::DictionaryValue& filter,
     bool lazy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -247,7 +247,7 @@ void ExtensionMessageFilter::OnExtensionAddFilteredListener(
 void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(
     const std::string& extension_id,
     const std::string& event_name,
-    base::Optional<ServiceWorkerIdentifier> sw_identifier,
+    absl::optional<ServiceWorkerIdentifier> sw_identifier,
     const base::DictionaryValue& filter,
     bool lazy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

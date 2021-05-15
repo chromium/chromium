@@ -86,7 +86,7 @@ class TCPServerSocketEventDispatcher
       const AcceptParams& params,
       int result,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 

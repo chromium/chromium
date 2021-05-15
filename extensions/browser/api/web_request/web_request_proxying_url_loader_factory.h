@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,6 +32,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -77,7 +77,7 @@ class WebRequestProxyingURLLoaderFactory
         const std::vector<std::string>& removed_headers,
         const net::HttpRequestHeaders& modified_headers,
         const net::HttpRequestHeaders& modified_cors_exempt_headers,
-        const base::Optional<GURL>& new_url) override;
+        const absl::optional<GURL>& new_url) override;
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override;
     void PauseReadingBodyFromNet() override;
@@ -178,7 +178,7 @@ class WebRequestProxyingURLLoaderFactory
 
     WebRequestProxyingURLLoaderFactory* const factory_;
     network::ResourceRequest request_;
-    const base::Optional<url::Origin> original_initiator_;
+    const absl::optional<url::Origin> original_initiator_;
     const uint64_t request_id_ = 0;
     const int32_t network_service_request_id_ = 0;
     const int32_t view_routing_id_ = MSG_ROUTING_NONE;
@@ -189,7 +189,7 @@ class WebRequestProxyingURLLoaderFactory
     mojo::Receiver<network::mojom::URLLoader> proxied_loader_receiver_;
     mojo::Remote<network::mojom::URLLoaderClient> target_client_;
 
-    base::Optional<WebRequestInfo> info_;
+    absl::optional<WebRequestInfo> info_;
 
     mojo::Receiver<network::mojom::URLLoaderClient> proxied_client_receiver_{
         this};
@@ -206,7 +206,7 @@ class WebRequestProxyingURLLoaderFactory
 
     // Holds any provided auth credentials through the extent of the request's
     // lifetime.
-    base::Optional<net::AuthCredentials> auth_credentials_;
+    absl::optional<net::AuthCredentials> auth_credentials_;
 
     int num_redirects_ = 0;
 
@@ -236,7 +236,7 @@ class WebRequestProxyingURLLoaderFactory
       std::vector<std::string> removed_headers;
       net::HttpRequestHeaders modified_headers;
       net::HttpRequestHeaders modified_cors_exempt_headers;
-      base::Optional<GURL> new_url;
+      absl::optional<GURL> new_url;
 
       DISALLOW_COPY_AND_ASSIGN(FollowRedirectParams);
     };
@@ -255,7 +255,7 @@ class WebRequestProxyingURLLoaderFactory
       int view_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -274,7 +274,7 @@ class WebRequestProxyingURLLoaderFactory
       int view_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -333,7 +333,7 @@ class WebRequestProxyingURLLoaderFactory
   const int view_routing_id_;
   WebRequestAPI::RequestIDGenerator* const request_id_generator_;
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data_;
-  base::Optional<int64_t> navigation_id_;
+  absl::optional<int64_t> navigation_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   mojo::Receiver<network::mojom::TrustedURLLoaderHeaderClient>

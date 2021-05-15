@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
@@ -36,6 +35,7 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -48,7 +48,7 @@ namespace dnr_api = api::declarative_net_request;
 // the API call is for all tabs.
 bool CanCallGetMatchedRules(content::BrowserContext* browser_context,
                             const Extension* extension,
-                            base::Optional<int> tab_id,
+                            absl::optional<int> tab_id,
                             std::string* error) {
   bool can_call =
       declarative_net_request::HasDNRFeedbackPermission(extension, tab_id);
@@ -101,7 +101,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -193,7 +193,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
@@ -289,7 +289,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 }
 
 void DeclarativeNetRequestUpdateEnabledRulesetsFunction::
-    OnEnabledStaticRulesetsUpdated(base::Optional<std::string> error) {
+    OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error) {
   if (error)
     Respond(Error(std::move(*error)));
   else
@@ -346,7 +346,7 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
-  base::Optional<int> tab_id;
+  absl::optional<int> tab_id;
   base::Time min_time_stamp = base::Time::Min();
 
   if (params->filter) {

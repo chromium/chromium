@@ -65,7 +65,7 @@ ExtensionMsg_Loaded_Params::~ExtensionMsg_Loaded_Params() {}
 ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
     const Extension* extension,
     bool include_tab_permissions,
-    base::Optional<ActivationSequence> worker_activation_sequence)
+    absl::optional<ActivationSequence> worker_activation_sequence)
     : manifest(static_cast<base::DictionaryValue&&>(
           extension->manifest()->value()->Clone())),
       location(extension->location()),

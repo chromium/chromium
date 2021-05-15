@@ -498,7 +498,7 @@ void WebRequestAPI::Proxy::HandleAuthRequest(
     AuthRequestCallback callback) {
   // Default implementation cancels the request.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::nullopt,
+      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                 false /* should_cancel */));
 }
 
@@ -573,7 +573,7 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
     // Run the |callback| which will display a dialog for the user to enter
     // their auth credentials.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt,
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                   false /* should_cancel */));
     return;
   }
@@ -678,7 +678,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     content::RenderFrameHost* frame,
     int render_process_id,
     URLLoaderFactoryType type,
-    base::Optional<int64_t> navigation_id,
+    absl::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -779,7 +779,7 @@ void WebRequestAPI::ProxyWebSocket(
     content::ContentBrowserClient::WebSocketFactory factory,
     const GURL& url,
     const GURL& site_for_cookies,
-    const base::Optional<std::string>& user_agent,
+    const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -2248,7 +2248,7 @@ int ExtensionWebRequestEventRouter::ExecuteDeltas(
 
   deltas.sort(&helpers::InDecreasingExtensionInstallationTimeOrder);
 
-  base::Optional<ExtensionId> canceled_by_extension;
+  absl::optional<ExtensionId> canceled_by_extension;
   helpers::MergeCancelOfResponses(blocked_request.response_deltas,
                                   &canceled_by_extension);
 

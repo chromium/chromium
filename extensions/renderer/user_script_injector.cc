@@ -144,8 +144,8 @@ bool UserScriptInjector::IsAddingCSS() const {
   return script_ && !script_->css_scripts().empty();
 }
 
-const base::Optional<std::string> UserScriptInjector::GetInjectionKey() const {
-  return base::nullopt;
+const absl::optional<std::string> UserScriptInjector::GetInjectionKey() const {
+  return absl::nullopt;
 }
 
 bool UserScriptInjector::ShouldInjectJs(

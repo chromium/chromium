@@ -30,7 +30,7 @@ class DeclarativeNetRequestUpdateDynamicRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnDynamicRulesUpdated(base::Optional<std::string> error);
+  void OnDynamicRulesUpdated(absl::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetDynamicRulesFunction : public ExtensionFunction {
@@ -64,7 +64,7 @@ class DeclarativeNetRequestUpdateSessionRulesFunction
   ExtensionFunction::ResponseAction Run() override;
 
  private:
-  void OnSessionRulesUpdated(base::Optional<std::string> error);
+  void OnSessionRulesUpdated(absl::optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetSessionRulesFunction : public ExtensionFunction {
@@ -91,7 +91,7 @@ class DeclarativeNetRequestUpdateEnabledRulesetsFunction
   ~DeclarativeNetRequestUpdateEnabledRulesetsFunction() override;
 
  private:
-  void OnEnabledStaticRulesetsUpdated(base::Optional<std::string> error);
+  void OnEnabledStaticRulesetsUpdated(absl::optional<std::string> error);
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;

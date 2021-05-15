@@ -451,7 +451,7 @@ void RulesMonitorService::OnExtensionLoaded(
     std::vector<FileBackedRulesetSource> sources =
         FileBackedRulesetSource::CreateStatic(*extension);
 
-    base::Optional<std::set<RulesetID>> prefs_enabled_rulesets =
+    absl::optional<std::set<RulesetID>> prefs_enabled_rulesets =
         prefs_->GetDNREnabledStaticRulesets(extension->id());
 
     bool ruleset_failed_to_load = false;
@@ -581,7 +581,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     // There is no enabled extension to respond to. While this is probably a
     // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
-    std::move(callback).Run(base::nullopt /* error */);
+    std::move(callback).Run(absl::nullopt /* error */);
     return;
   }
 
@@ -619,7 +619,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     // There is no enabled extension to respond to. While this is probably a
     // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
-    std::move(callback).Run(base::nullopt /* error */);
+    std::move(callback).Run(absl::nullopt /* error */);
     return;
   }
 
@@ -671,7 +671,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
 
   session_rules_[extension_id] = std::move(*new_rules_value);
   UpdateRulesetMatcher(extension_id, std::move(matcher));
-  std::move(callback).Run(base::nullopt /* error */);
+  std::move(callback).Run(absl::nullopt /* error */);
 }
 
 void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
@@ -685,7 +685,7 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
     // There is no enabled extension to respond to. While this is probably a
     // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
-    std::move(callback).Run(base::nullopt /* error */);
+    std::move(callback).Run(absl::nullopt /* error */);
     return;
   }
 
@@ -838,7 +838,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   if (!extension_registry_->enabled_extensions().Contains(
           load_data.extension_id)) {
     // Still dispatch the |callback|, even though it's probably a no-op.
-    std::move(callback).Run(base::nullopt /* error */);
+    std::move(callback).Run(absl::nullopt /* error */);
     return;
   }
 
@@ -909,7 +909,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     AddCompositeMatcher(
         load_data.extension_id,
         std::make_unique<CompositeMatcher>(std::move(new_matchers)));
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -923,13 +923,13 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
   AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
 
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 void RulesMonitorService::OnDynamicRulesUpdated(
     ApiCallback callback,
     LoadRequestData load_data,
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   DCHECK_EQ(1u, load_data.rulesets.size());
 
   const bool has_error = error.has_value();

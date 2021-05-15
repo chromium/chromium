@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
@@ -17,6 +16,7 @@
 #include "extensions/common/api/media_perception_private.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -98,12 +98,12 @@ class MediaPerceptionAPIManager
 
   // Callback for State D-Bus method calls to the media analytics process.
   void StateCallback(APIStateCallback callback,
-                     base::Optional<mri::State> state);
+                     absl::optional<mri::State> state);
 
   // Callback for GetDiagnostics D-Bus method calls to the media analytics
   // process.
   void GetDiagnosticsCallback(APIGetDiagnosticsCallback callback,
-                              base::Optional<mri::Diagnostics> diagnostics);
+                              absl::optional<mri::Diagnostics> diagnostics);
 
   // Callbacks for Upstart command to start media analytics process.
   void UpstartStartProcessCallback(APIComponentProcessStateCallback callback,

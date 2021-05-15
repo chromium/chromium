@@ -14,9 +14,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -60,10 +60,10 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
                            const base::FilePath& unzip_dir);
 
   // Unzip an extension into |unzip_dir| and load it with an UnpackedInstaller.
-  void Unzip(base::Optional<base::FilePath> unzip_dir);
+  void Unzip(absl::optional<base::FilePath> unzip_dir);
   void ManifestUnzipped(const base::FilePath& unzip_dir, bool success);
   void ManifestRead(const base::FilePath& unzip_dir,
-                    base::Optional<std::string> manifest_content);
+                    absl::optional<std::string> manifest_content);
   void ManifestParsed(const base::FilePath& unzip_dir,
                       data_decoder::DataDecoder::ValueOrError result);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);

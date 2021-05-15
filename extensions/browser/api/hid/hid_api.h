@@ -133,7 +133,7 @@ class HidReceiveFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success,
                   uint8_t report_id,
-                  const base::Optional<std::vector<uint8_t>>& buffer);
+                  const absl::optional<std::vector<uint8_t>>& buffer);
 
   std::unique_ptr<api::hid::Receive::Params> parameters_;
 
@@ -175,7 +175,7 @@ class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
   void StartWork(device::mojom::HidConnection* connection) override;
 
   void OnFinished(bool success,
-                  const base::Optional<std::vector<uint8_t>>& buffer);
+                  const absl::optional<std::vector<uint8_t>>& buffer);
 
   std::unique_ptr<api::hid::ReceiveFeatureReport::Params> parameters_;
 

@@ -43,15 +43,15 @@ namespace extensions {
 namespace {
 
 // Returns the current ActivationSequence of |extension| if the extension is
-// Service Worker-based, otherwise returns base::nullopt.
-base::Optional<ActivationSequence> GetWorkerActivationSequence(
+// Service Worker-based, otherwise returns absl::nullopt.
+absl::optional<ActivationSequence> GetWorkerActivationSequence(
     BrowserContext* browser_context,
     const Extension& extension) {
   if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
     return ServiceWorkerTaskQueue::Get(browser_context)
         ->GetCurrentSequence(extension.id());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

@@ -164,7 +164,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     bool is_download,
     bool is_async,
     bool is_service_worker_script,
-    base::Optional<int64_t> navigation_id,
+    absl::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id)
     : id(request_id),
       url(request.url),

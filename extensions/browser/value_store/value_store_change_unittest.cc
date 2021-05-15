@@ -17,7 +17,7 @@ using extensions::ListBuilder;
 namespace {
 
 TEST(ValueStoreChangeTest, NullOldValue) {
-  ValueStoreChange change("key", base::nullopt, base::Value("value"));
+  ValueStoreChange change("key", absl::nullopt, base::Value("value"));
 
   EXPECT_EQ("key", change.key());
   EXPECT_EQ(nullptr, change.old_value());
@@ -28,7 +28,7 @@ TEST(ValueStoreChangeTest, NullOldValue) {
 }
 
 TEST(ValueStoreChangeTest, NullNewValue) {
-  ValueStoreChange change("key", base::Value("value"), base::nullopt);
+  ValueStoreChange change("key", base::Value("value"), absl::nullopt);
 
   EXPECT_EQ("key", change.key());
   {

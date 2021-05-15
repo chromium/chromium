@@ -437,14 +437,14 @@ class BluetoothLowEnergyEventRouter
       const std::string& characteristic_instance_id,
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Runs |callback|.
   void OnReadRemoteDescriptor(
       base::OnceClosure callback,
       ErrorCallback error_callback,
-      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Called by BluetoothDevice in response to a call to CreateGattConnection.

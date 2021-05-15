@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
@@ -19,6 +18,7 @@
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

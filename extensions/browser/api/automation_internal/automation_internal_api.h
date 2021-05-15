@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXActionData;
@@ -41,10 +41,10 @@ class AutomationInternalPerformActionFunction : public ExtensionFunction {
     ~Result();
     // If there is a validation error then |automation_error| should be ignored.
     bool validation_success = false;
-    // Assuming validation was successful, then a value of base::nullopt
+    // Assuming validation was successful, then a value of absl::nullopt
     // implies success. Otherwise, the failure is described in the contained
     // string.
-    base::Optional<std::string> automation_error;
+    absl::optional<std::string> automation_error;
   };
 
   // Exposed to allow crosapi to reuse the implementation. |extension_id| can be
@@ -83,10 +83,10 @@ class AutomationInternalEnableTreeFunction : public ExtensionFunction {
                              AUTOMATIONINTERNAL_ENABLETREE)
 
  public:
-  // Returns an error message or base::nullopt on success. Exposed to allow
+  // Returns an error message or absl::nullopt on success. Exposed to allow
   // crosapi to reuse the implementation. |extension_id| can be the empty
   // string.
-  static base::Optional<std::string> EnableTree(
+  static absl::optional<std::string> EnableTree(
       const ui::AXTreeID& ax_tree_id,
       const ExtensionId& extension_id);
 

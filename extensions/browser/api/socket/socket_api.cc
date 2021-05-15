@@ -195,7 +195,7 @@ bool SocketExtensionWithDnsLookupFunction::PrePrepare() {
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateHostResolver(
-          base::nullopt,
+          absl::nullopt,
           pending_host_resolver_.InitWithNewPipeAndPassReceiver());
   return true;
 }
@@ -212,7 +212,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   receiver_.set_disconnect_handler(
       base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -221,7 +221,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   host_resolver_.reset();
   receiver_.reset();
   if (result == net::OK) {
@@ -525,7 +525,7 @@ void SocketAcceptFunction::AsyncWorkStart() {
     socket->Accept(base::BindOnce(&SocketAcceptFunction::OnAccept, this));
   } else {
     error_ = kSocketNotFoundError;
-    OnAccept(net::ERR_FAILED, mojo::NullRemote(), base::nullopt,
+    OnAccept(net::ERR_FAILED, mojo::NullRemote(), absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }
@@ -534,7 +534,7 @@ void SocketAcceptFunction::AsyncWorkStart() {
 void SocketAcceptFunction::OnAccept(
     int result_code,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
@@ -870,7 +870,7 @@ ExtensionFunction::ResponseAction SocketGetNetworkListFunction::Run() {
 }
 
 void SocketGetNetworkListFunction::GotNetworkList(
-    const base::Optional<net::NetworkInterfaceList>& interface_list) {
+    const absl::optional<net::NetworkInterfaceList>& interface_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!interface_list.has_value()) {
     Respond(Error(kNetworkListError));

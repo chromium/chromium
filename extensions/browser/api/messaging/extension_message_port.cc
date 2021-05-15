@@ -245,7 +245,7 @@ void ExtensionMessagePort::DispatchOnConnect(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    base::Optional<url::Origin> source_origin) {
+    absl::optional<url::Origin> source_origin) {
   SendToPort(base::BindRepeating(
       &ExtensionMessagePort::BuildDispatchOnConnectIPC,
       // Called synchronously.
@@ -459,7 +459,7 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    base::Optional<url::Origin> source_origin,
+    absl::optional<url::Origin> source_origin,
     const IPCTarget& target) {
   ExtensionMsg_TabConnectionInfo source;
   if (source_tab) {

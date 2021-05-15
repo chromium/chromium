@@ -356,7 +356,7 @@ class CSPDirectiveToken {
 
  private:
   const Directive& directive_;
-  base::Optional<std::string> secure_value_;
+  absl::optional<std::string> secure_value_;
 
   DISALLOW_COPY_AND_ASSIGN(CSPDirectiveToken);
 };

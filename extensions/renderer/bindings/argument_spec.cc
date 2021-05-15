@@ -59,8 +59,8 @@ const char* GetV8ValueTypeString(v8::Local<v8::Value> value) {
 // |maximum|, populating |error| otherwise.
 template <class T>
 bool CheckFundamentalBounds(T value,
-                            const base::Optional<int>& minimum,
-                            const base::Optional<int>& maximum,
+                            const absl::optional<int>& minimum,
+                            const absl::optional<int>& maximum,
                             std::string* error) {
   if (minimum && value < *minimum) {
     *error = api_errors::NumberTooSmall(*minimum);

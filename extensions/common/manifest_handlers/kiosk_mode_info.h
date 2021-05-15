@@ -9,23 +9,23 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 struct SecondaryKioskAppInfo {
   SecondaryKioskAppInfo() = delete;
   SecondaryKioskAppInfo(const extensions::ExtensionId& id,
-                        const base::Optional<bool>& enabled_on_launch);
+                        const absl::optional<bool>& enabled_on_launch);
   SecondaryKioskAppInfo(const SecondaryKioskAppInfo& other);
   ~SecondaryKioskAppInfo();
 
   const extensions::ExtensionId id;
-  const base::Optional<bool> enabled_on_launch;
+  const absl::optional<bool> enabled_on_launch;
 };
 
 struct KioskModeInfo : public Extension::ManifestData {

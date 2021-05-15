@@ -153,7 +153,7 @@ bool ShouldComputeHashesForResource(
   return !components.empty() && components[0] != kMetadataFolder;
 }
 
-base::Optional<crx_file::VerifierFormat> g_verifier_format_override_for_test;
+absl::optional<crx_file::VerifierFormat> g_verifier_format_override_for_test;
 
 }  // namespace
 
@@ -446,8 +446,8 @@ void SandboxedUnpacker::Unpack(const base::FilePath& directory) {
 }
 
 void SandboxedUnpacker::ReadManifestDone(
-    base::Optional<base::Value> manifest,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> manifest,
+    const absl::optional<std::string>& error) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   if (error) {
     ReportUnpackExtensionFailed(*error);
@@ -481,7 +481,7 @@ void SandboxedUnpacker::ReadManifestDone(
 void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
-  base::Optional<base::Value> final_manifest(RewriteManifestFile(manifest));
+  absl::optional<base::Value> final_manifest(RewriteManifestFile(manifest));
   if (!final_manifest)
     return;
 
@@ -721,7 +721,7 @@ void SandboxedUnpacker::MaybeComputeHashes(bool should_compute) {
 
   base::ElapsedTimer timer;
 
-  base::Optional<ComputedHashes::Data> computed_hashes_data =
+  absl::optional<ComputedHashes::Data> computed_hashes_data =
       ComputedHashes::Compute(
           extension_->path(),
           extension_misc::kContentVerificationDefaultBlockSize,
@@ -973,7 +973,7 @@ void SandboxedUnpacker::ReportSuccess() {
   Cleanup();
 }
 
-base::Optional<base::Value> SandboxedUnpacker::RewriteManifestFile(
+absl::optional<base::Value> SandboxedUnpacker::RewriteManifestFile(
     const base::Value& manifest) {
   constexpr int64_t kMaxFingerprintSize = 1024;
 
@@ -1003,7 +1003,7 @@ base::Optional<base::Value> SandboxedUnpacker::RewriteManifestFile(
         SandboxedUnpackerFailureReason::ERROR_SERIALIZING_MANIFEST_JSON,
         l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                    u"ERROR_SERIALIZING_MANIFEST_JSON"));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::FilePath manifest_path = extension_root_.Append(kManifestFilename);
@@ -1014,7 +1014,7 @@ base::Optional<base::Value> SandboxedUnpacker::RewriteManifestFile(
         SandboxedUnpackerFailureReason::ERROR_SAVING_MANIFEST_JSON,
         l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                    u"ERROR_SAVING_MANIFEST_JSON"));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::move(final_manifest);
@@ -1038,8 +1038,8 @@ void SandboxedUnpacker::ParseJsonFile(
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
     std::move(callback).Run(
-        /*value=*/base::nullopt,
-        /*error=*/base::Optional<std::string>("File doesn't exist."));
+        /*value=*/absl::nullopt,
+        /*error=*/absl::optional<std::string>("File doesn't exist."));
     return;
   }
 

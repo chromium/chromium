@@ -77,7 +77,7 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
     std::unique_ptr<Alarm> alarm(new Alarm());
     if (list->GetDictionary(i, &alarm_dict) &&
         alarms::Alarm::Populate(*alarm_dict, alarm->js_alarm.get())) {
-      base::Optional<base::TimeDelta> delta =
+      absl::optional<base::TimeDelta> delta =
           util::ValueToTimeDelta(alarm_dict->FindKey(kAlarmGranularity));
       if (delta) {
         alarm->granularity = *delta;

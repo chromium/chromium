@@ -9,13 +9,13 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -24,26 +24,26 @@ namespace errors = manifest_errors;
 
 namespace {
 
-base::Optional<base::flat_set<std::string>> LoadFileExtensions(
+absl::optional<base::flat_set<std::string>> LoadFileExtensions(
     const base::Value& entry,
     int* error_index) {
   auto extract_file_extension =
-      [](const base::Value& entry) -> base::Optional<std::string> {
+      [](const base::Value& entry) -> absl::optional<std::string> {
     if (!entry.is_string())
-      return base::nullopt;
+      return absl::nullopt;
     std::string file_extension = entry.GetString();
     if (file_extension.empty() || file_extension[0] != '.')
-      return base::nullopt;
+      return absl::nullopt;
     return file_extension;
   };
 
   // An accept entry can validly map from a MIME type to either a single file
   // extension (a string), or alist of file extensions.
   if (entry.is_string()) {
-    base::Optional<std::string> file_extension = extract_file_extension(entry);
+    absl::optional<std::string> file_extension = extract_file_extension(entry);
     if (!file_extension) {
       *error_index = 0;
-      return base::nullopt;
+      return absl::nullopt;
     }
     return base::flat_set<std::string>{*file_extension};
   }
@@ -52,11 +52,11 @@ base::Optional<base::flat_set<std::string>> LoadFileExtensions(
   base::flat_set<std::string> file_extensions;
   base::Value::ConstListView entry_list = entry.GetList();
   for (size_t i = 0; i < entry_list.size(); i++) {
-    base::Optional<std::string> file_extension =
+    absl::optional<std::string> file_extension =
         extract_file_extension(entry_list[i]);
     if (!file_extension) {
       *error_index = i;
-      return base::nullopt;
+      return absl::nullopt;
     }
     file_extensions.insert(*file_extension);
   }
@@ -114,7 +114,7 @@ bool LoadWebAppFileHandler(const std::string& manifest_entry_index,
     }
 
     int error_index = -1;
-    base::Optional<base::flat_set<std::string>> file_extensions =
+    absl::optional<base::flat_set<std::string>> file_extensions =
         LoadFileExtensions(manifest_accept_entry.second, &error_index);
     if (!file_extensions) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

@@ -34,7 +34,7 @@ dnr_api::HeaderOperation ConvertFlatHeaderOperation(
 
 RequestAction::HeaderInfo::HeaderInfo(std::string header,
                                       dnr_api::HeaderOperation operation,
-                                      base::Optional<std::string> value)
+                                      absl::optional<std::string> value)
     : header(std::move(header)),
       operation(operation),
       value(std::move(value)) {}
@@ -86,9 +86,9 @@ bool operator>(const RequestAction& lhs, const RequestAction& rhs) {
          std::tie(rhs.index_priority, rhs.ruleset_id, rhs.rule_id);
 }
 
-base::Optional<RequestAction> GetMaxPriorityAction(
-    base::Optional<RequestAction> lhs,
-    base::Optional<RequestAction> rhs) {
+absl::optional<RequestAction> GetMaxPriorityAction(
+    absl::optional<RequestAction> lhs,
+    absl::optional<RequestAction> rhs) {
   if (!lhs)
     return rhs;
   if (!rhs)

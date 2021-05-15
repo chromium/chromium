@@ -10,9 +10,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -31,7 +31,7 @@ void TestConversion(std::vector<std::string> filter_list_rules,
            static_cast<size_t>(base::WriteFile(input_path, filterlist.c_str(),
                                                filterlist.size())));
 
-  base::Optional<base::Value> expected_json =
+  absl::optional<base::Value> expected_json =
       base::JSONReader::Read(json_result);
   CHECK(expected_json.has_value());
 

@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_CONTENT_VERIFIER_TEST_UTILS_H_
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,6 +18,7 @@
 #include "extensions/browser/content_verify_job.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -82,7 +82,7 @@ class TestContentVerifySingleJobObserver {
 
     ExtensionId extension_id_;
     base::FilePath relative_path_;
-    base::Optional<ContentVerifyJob::FailureReason> failure_reason_;
+    absl::optional<ContentVerifyJob::FailureReason> failure_reason_;
     bool seen_on_hashes_ready_ = false;
     ContentHashReader::InitStatus hashes_status_;
   };

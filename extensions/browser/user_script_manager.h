@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -19,6 +18,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -58,7 +58,7 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // Called when the |loader| has finished loading its initial set of scripts.
   // This is only fired for extension script loaders.
   void OnInitialExtensionLoadComplete(UserScriptLoader* loader,
-                                      const base::Optional<std::string>& error);
+                                      const absl::optional<std::string>& error);
 
   // Gets an extension's manifest scripts' metadata; i.e., gets a list of
   // UserScript objects that contains script info, but not the contents of the

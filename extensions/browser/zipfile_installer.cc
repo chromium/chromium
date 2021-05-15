@@ -35,7 +35,7 @@ constexpr const base::FilePath::CharType* kAllowedThemeFiletypes[] = {
     FILE_PATH_LITERAL(".json"), FILE_PATH_LITERAL(".png"),
     FILE_PATH_LITERAL(".webp")};
 
-base::Optional<base::FilePath> PrepareAndGetUnzipDir(
+absl::optional<base::FilePath> PrepareAndGetUnzipDir(
     const base::FilePath& zip_file) {
   base::FilePath dir_temp;
   base::PathService::Get(base::DIR_TEMP, &dir_temp);
@@ -45,15 +45,15 @@ base::Optional<base::FilePath> PrepareAndGetUnzipDir(
 
   base::FilePath unzip_dir;
   if (!base::CreateTemporaryDirInDir(dir_temp, dir_name, &unzip_dir))
-    return base::Optional<base::FilePath>();
+    return absl::optional<base::FilePath>();
 
   return unzip_dir;
 }
 
-base::Optional<std::string> ReadFileContent(const base::FilePath& path) {
+absl::optional<std::string> ReadFileContent(const base::FilePath& path) {
   std::string content;
   return base::ReadFileToString(path, &content) ? content
-                                                : base::Optional<std::string>();
+                                                : absl::optional<std::string>();
 }
 
 }  // namespace
@@ -105,7 +105,7 @@ ZipFileInstaller::ZipFileInstaller(
 
 ZipFileInstaller::~ZipFileInstaller() = default;
 
-void ZipFileInstaller::Unzip(base::Optional<base::FilePath> unzip_dir) {
+void ZipFileInstaller::Unzip(absl::optional<base::FilePath> unzip_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!unzip_dir) {
@@ -134,7 +134,7 @@ void ZipFileInstaller::ManifestUnzipped(const base::FilePath& unzip_dir,
 
 void ZipFileInstaller::ManifestRead(
     const base::FilePath& unzip_dir,
-    base::Optional<std::string> manifest_content) {
+    absl::optional<std::string> manifest_content) {
   if (!manifest_content) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;

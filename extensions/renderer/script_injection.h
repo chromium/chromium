@@ -13,13 +13,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrame;
@@ -95,7 +95,7 @@ class ScriptInjection {
   // Called when JS injection for the given frame has been completed or
   // cancelled.
   void OnJsInjectionCompleted(const std::vector<v8::Local<v8::Value>>& results,
-                              base::Optional<base::TimeDelta> elapsed);
+                              absl::optional<base::TimeDelta> elapsed);
 
  private:
   class FrameWatcher;

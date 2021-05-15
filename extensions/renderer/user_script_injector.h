@@ -46,7 +46,7 @@ class UserScriptInjector : public ScriptInjector,
   mojom::CSSOrigin GetCssOrigin() const override;
   bool IsRemovingCSS() const override;
   bool IsAddingCSS() const override;
-  const base::Optional<std::string> GetInjectionKey() const override;
+  const absl::optional<std::string> GetInjectionKey() const override;
   bool ExpectsResults() const override;
   bool ShouldInjectJs(
       mojom::RunLocation run_location,

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -93,7 +93,7 @@ class CrxInstallError {
  private:
   CrxInstallErrorType type_;
   CrxInstallErrorDetail detail_;
-  base::Optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
+  absl::optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
   std::u16string message_;
 };
 

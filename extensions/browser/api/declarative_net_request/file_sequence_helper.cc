@@ -343,7 +343,7 @@ std::unique_ptr<RulesetMatcher> RulesetInfo::TakeMatcher() {
   return std::move(matcher_);
 }
 
-const base::Optional<LoadRulesetResult>& RulesetInfo::load_ruleset_result()
+const absl::optional<LoadRulesetResult>& RulesetInfo::load_ruleset_result()
     const {
   // |matcher_| is valid only on success.
   DCHECK_EQ(load_ruleset_result_ == LoadRulesetResult::kSuccess, !!matcher_);
@@ -419,7 +419,7 @@ void FileSequenceHelper::UpdateDynamicRules(
   DCHECK(!dynamic_ruleset.expected_checksum());
 
   auto log_status_and_dispatch_callback = [&ui_callback, &load_data](
-                                              base::Optional<std::string> error,
+                                              absl::optional<std::string> error,
                                               UpdateDynamicRulesStatus status) {
     base::UmaHistogramEnumeration(kUpdateDynamicRulesStatusHistogram, status);
 
@@ -456,7 +456,7 @@ void FileSequenceHelper::UpdateDynamicRules(
   }
 
   // Success.
-  log_status_and_dispatch_callback(base::nullopt, status);
+  log_status_and_dispatch_callback(absl::nullopt, status);
 }
 
 void FileSequenceHelper::OnRulesetsReindexed(LoadRulesetsUICallback ui_callback,

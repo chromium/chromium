@@ -9,7 +9,6 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -28,6 +27,7 @@
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace extensions {
@@ -110,7 +110,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     render_thread_->Send(new ExtensionHostMsg_AddFilteredListener(
-        context->GetExtensionID(), event_name, base::nullopt, filter, is_lazy));
+        context->GetExtensionID(), event_name, absl::nullopt, filter, is_lazy));
   }
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
@@ -121,7 +121,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
 
     render_thread_->Send(new ExtensionHostMsg_RemoveFilteredListener(
-        context->GetExtensionID(), event_name, base::nullopt, filter,
+        context->GetExtensionID(), event_name, absl::nullopt, filter,
         remove_lazy_listener));
   }
 
@@ -407,7 +407,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   WorkerThreadDispatcher* const dispatcher_;
   const int64_t service_worker_version_id_;
-  base::Optional<ExtensionId> extension_id_;
+  absl::optional<ExtensionId> extension_id_;
 
   // request id -> GUID map for each outstanding requests.
   std::map<int, std::string> request_id_to_guid_;

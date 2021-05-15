@@ -148,7 +148,7 @@ void AutomationEventRouter::DispatchActionResult(
 
 void AutomationEventRouter::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const base::Optional<gfx::Rect>& rect) {
+    const absl::optional<gfx::Rect>& rect) {
   CHECK(!data.source_extension_id.empty());
 
   if (listeners_.empty())

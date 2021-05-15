@@ -1043,7 +1043,7 @@ void WebViewGuest::OnDidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const base::Optional<std::u16string>& untrusted_stack_trace) {
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   auto args = std::make_unique<base::DictionaryValue>();
   // Log levels are from base/logging.h: LogSeverity.
   args->SetInteger(webview::kLevel,

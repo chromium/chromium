@@ -270,7 +270,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   std::unique_ptr<base::DictionaryValue> GetNetworkProperties(
       const std::string& service_path) {
     base::RunLoop run_loop;
-    base::Optional<base::Value> properties;
+    absl::optional<base::Value> properties;
     chromeos::NetworkHandler::Get()
         ->network_configuration_handler()
         ->GetShillProperties(
@@ -287,10 +287,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void OnNetworkProperties(const std::string& expected_path,
-                           base::Optional<base::Value>* result,
+                           absl::optional<base::Value>* result,
                            base::OnceClosure callback,
                            const std::string& service_path,
-                           base::Optional<base::Value> properties) {
+                           absl::optional<base::Value> properties) {
     if (!properties) {
       ADD_FAILURE() << "Error calling shill client.";
       std::move(callback).Run();

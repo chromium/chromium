@@ -12,7 +12,6 @@
 #include <unordered_set>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -21,6 +20,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/common/api/bluetooth_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothSocket;
@@ -118,7 +118,7 @@ class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
   virtual void CreateService(
       scoped_refptr<device::BluetoothAdapter> adapter,
       const device::BluetoothUUID& uuid,
-      const base::Optional<std::string>& name,
+      const absl::optional<std::string>& name,
       device::BluetoothAdapter::CreateServiceCallback callback,
       device::BluetoothAdapter::CreateServiceErrorCallback error_callback) = 0;
   virtual std::unique_ptr<base::ListValue> CreateResults() = 0;
@@ -155,7 +155,7 @@ class BluetoothSocketListenUsingRfcommFunction
   bool CreateParams() override;
   void CreateService(scoped_refptr<device::BluetoothAdapter> adapter,
                      const device::BluetoothUUID& uuid,
-                     const base::Optional<std::string>& name,
+                     const absl::optional<std::string>& name,
                      device::BluetoothAdapter::CreateServiceCallback callback,
                      device::BluetoothAdapter::CreateServiceErrorCallback
                          error_callback) override;
@@ -183,7 +183,7 @@ class BluetoothSocketListenUsingL2capFunction
   bool CreateParams() override;
   void CreateService(scoped_refptr<device::BluetoothAdapter> adapter,
                      const device::BluetoothUUID& uuid,
-                     const base::Optional<std::string>& name,
+                     const absl::optional<std::string>& name,
                      device::BluetoothAdapter::CreateServiceCallback callback,
                      device::BluetoothAdapter::CreateServiceErrorCallback
                          error_callback) override;

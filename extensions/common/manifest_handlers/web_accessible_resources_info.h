@@ -51,7 +51,7 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
   static bool IsResourceWebAccessible(
       const Extension* extension,
       const std::string& relative_path,
-      const base::Optional<url::Origin>& initiator_origin);
+      const absl::optional<url::Origin>& initiator_origin);
 
   // Returns true when 'web_accessible_resources' are defined for the extension.
   static bool HasWebAccessibleResources(const Extension* extension);

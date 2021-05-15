@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -27,20 +27,20 @@ struct EventFilteringInfo {
   EventFilteringInfo(const EventFilteringInfo& other);
   ~EventFilteringInfo();
 
-  base::Optional<GURL> url;
-  base::Optional<std::string> service_type;
-  base::Optional<int> instance_id;
+  absl::optional<GURL> url;
+  absl::optional<std::string> service_type;
+  absl::optional<int> instance_id;
 
   // Note: window type & visible are Chrome concepts, so arguably
   // doesn't belong in the extensions module. If the number of Chrome
   // concept grows, consider a delegation model with a
   // ChromeEventFilteringInfo class.
-  base::Optional<std::string> window_type;
+  absl::optional<std::string> window_type;
 
   // By default events related to windows are filtered based on the
   // listener's extension. This parameter will be set if the listener
   // didn't set any filter on window types.
-  base::Optional<bool> window_exposed_by_default;
+  absl::optional<bool> window_exposed_by_default;
 
   bool is_empty() const {
     return !url && !service_type && !instance_id && !window_type &&

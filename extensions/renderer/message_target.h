@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -41,12 +41,12 @@ struct MessageTarget {
 
   Type type;
   // Only valid for Type::EXTENSION.
-  base::Optional<ExtensionId> extension_id;
+  absl::optional<ExtensionId> extension_id;
   // Only valid for Type::NATIVE_APP.
-  base::Optional<std::string> native_application_name;
+  absl::optional<std::string> native_application_name;
   // Only valid for Type::TAB.
-  base::Optional<int> tab_id;
-  base::Optional<int> frame_id;
+  absl::optional<int> tab_id;
+  absl::optional<int> frame_id;
 
   bool operator==(const MessageTarget& other) const;
 

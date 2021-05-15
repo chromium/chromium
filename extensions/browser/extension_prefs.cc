@@ -651,7 +651,7 @@ base::Time ExtensionPrefs::ReadPrefAsTime(const std::string& extension_id,
   const base::Value* value;
   if (!ext || !ext->Get(pref.name, &value))
     return base::Time();
-  base::Optional<base::Time> time = ::util::ValueToTime(value);
+  absl::optional<base::Time> time = ::util::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
 }
@@ -2150,18 +2150,18 @@ void ExtensionPrefs::SetDNRDynamicRulesetChecksum(
                       std::make_unique<base::Value>(checksum));
 }
 
-base::Optional<std::set<declarative_net_request::RulesetID>>
+absl::optional<std::set<declarative_net_request::RulesetID>>
 ExtensionPrefs::GetDNREnabledStaticRulesets(
     const ExtensionId& extension_id) const {
   std::set<declarative_net_request::RulesetID> ids;
   const base::ListValue* ids_value = nullptr;
   if (!ReadPrefAsList(extension_id, kDNREnabledStaticRulesetIDs, &ids_value))
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(ids_value);
   for (const base::Value& id_value : ids_value->GetList()) {
     if (!id_value.is_int())
-      return base::nullopt;
+      return absl::nullopt;
 
     ids.insert(declarative_net_request::RulesetID(id_value.GetInt()));
   }
@@ -2714,7 +2714,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
       continue;
     }
 
-    base::Optional<int> state_value = item.second.FindIntKey(kPrefState);
+    absl::optional<int> state_value = item.second.FindIntKey(kPrefState);
     if (!state_value ||
         *state_value != Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED) {
       continue;

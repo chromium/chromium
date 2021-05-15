@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -18,6 +17,7 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "extensions/renderer/bindings/argument_spec_builder.h"
 #include "gin/converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -70,16 +70,16 @@ class APIResponseValidatorTest : public APIBindingTest {
   }
 
   APIResponseValidator* validator() { return &validator_; }
-  const base::Optional<std::string>& failure_method() const {
+  const absl::optional<std::string>& failure_method() const {
     return failure_method_;
   }
-  const base::Optional<std::string>& failure_error() const {
+  const absl::optional<std::string>& failure_error() const {
     return failure_error_;
   }
 
   void reset() {
-    failure_method_ = base::nullopt;
-    failure_error_ = base::nullopt;
+    failure_method_ = absl::nullopt;
+    failure_error_ = absl::nullopt;
   }
 
  private:
@@ -95,8 +95,8 @@ class APIResponseValidatorTest : public APIBindingTest {
   APIResponseValidator::TestHandler test_handler_;
   APIResponseValidator validator_;
 
-  base::Optional<std::string> failure_method_;
-  base::Optional<std::string> failure_error_;
+  absl::optional<std::string> failure_method_;
+  absl::optional<std::string> failure_error_;
 
   DISALLOW_COPY_AND_ASSIGN(APIResponseValidatorTest);
 };

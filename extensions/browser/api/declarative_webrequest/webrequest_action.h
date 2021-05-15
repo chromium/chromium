@@ -13,11 +13,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative/declarative_rule.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/common/api/events.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -134,7 +134,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
 
   // Returns a description of the modification to the request caused by
   // this action.
-  virtual base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  virtual absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const = 0;
@@ -181,7 +181,7 @@ class WebRequestCancelAction : public WebRequestAction {
 
   // Implementation of WebRequestAction:
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -199,7 +199,7 @@ class WebRequestRedirectAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -219,7 +219,7 @@ class WebRequestRedirectToTransparentImageAction : public WebRequestAction {
 
   // Implementation of WebRequestAction:
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -237,7 +237,7 @@ class WebRequestRedirectToEmptyDocumentAction : public WebRequestAction {
 
   // Implementation of WebRequestAction:
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -263,7 +263,7 @@ class WebRequestRedirectByRegExAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -286,7 +286,7 @@ class WebRequestSetRequestHeaderAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -307,7 +307,7 @@ class WebRequestRemoveRequestHeaderAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -328,7 +328,7 @@ class WebRequestAddResponseHeaderAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -351,7 +351,7 @@ class WebRequestRemoveResponseHeaderAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -374,7 +374,7 @@ class WebRequestIgnoreRulesAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -401,7 +401,7 @@ class WebRequestRequestCookieAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -425,7 +425,7 @@ class WebRequestResponseCookieAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;
@@ -446,7 +446,7 @@ class WebRequestSendMessageToExtensionAction : public WebRequestAction {
   // Implementation of WebRequestAction:
   bool Equals(const WebRequestAction* other) const override;
   std::string GetName() const override;
-  base::Optional<extension_web_request_api_helpers::EventResponseDelta>
+  absl::optional<extension_web_request_api_helpers::EventResponseDelta>
   CreateDelta(const WebRequestData& request_data,
               const std::string& extension_id,
               const base::Time& extension_install_time) const override;

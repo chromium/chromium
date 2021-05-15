@@ -92,7 +92,7 @@ TCPSocket::TCPSocket(
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     const std::string& owner_extension_id)
     : Socket(owner_extension_id),
       browser_context_(nullptr),
@@ -150,8 +150,8 @@ void TCPSocket::Disconnect(bool socket_destroying) {
   // aborted.
   weak_factory_.InvalidateWeakPtrs();
   is_connected_ = false;
-  local_addr_ = base::nullopt;
-  peer_addr_ = base::nullopt;
+  local_addr_ = absl::nullopt;
+  peer_addr_ = absl::nullopt;
   mojo_data_pump_ = nullptr;
   client_socket_.reset();
   server_socket_.reset();
@@ -272,7 +272,7 @@ void TCPSocket::Listen(const std::string& address,
 
 void TCPSocket::Accept(AcceptCompletionCallback callback) {
   if (socket_mode_ != SERVER || !server_socket_) {
-    std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote(), base::nullopt,
+    std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote(), absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
     return;
@@ -280,7 +280,7 @@ void TCPSocket::Accept(AcceptCompletionCallback callback) {
 
   // Limits to only 1 blocked accept call.
   if (accept_callback_) {
-    std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote(), base::nullopt,
+    std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote(), absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
     return;
@@ -339,7 +339,7 @@ void TCPSocket::ConnectOnUIThread(
     storage_partition = browser_context->GetDefaultStoragePartition();
   }
   storage_partition->GetNetworkContext()->CreateTCPConnectedSocket(
-      base::nullopt, remote_addr_list, nullptr /* options */,
+      absl::nullopt, remote_addr_list, nullptr /* options */,
       net::MutableNetworkTrafficAnnotationTag(
           Socket::GetNetworkTrafficAnnotationTag()),
       std::move(receiver), mojo::NullRemote() /* observer */,
@@ -351,8 +351,8 @@ void TCPSocket::OnConnectCompleteOnUIThread(
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -365,8 +365,8 @@ void TCPSocket::OnConnectCompleteOnUIThread(
 
 void TCPSocket::OnConnectComplete(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(!is_connected_);
@@ -408,7 +408,7 @@ void TCPSocket::OnListenCompleteOnUIThread(
     const scoped_refptr<base::SequencedTaskRunner>& original_task_runner,
     network::mojom::NetworkContext::CreateTCPServerSocketCallback callback,
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr) {
+    const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   original_task_runner->PostTask(
@@ -417,7 +417,7 @@ void TCPSocket::OnListenCompleteOnUIThread(
 
 void TCPSocket::OnListenComplete(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr) {
+    const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(listen_callback_);
 
@@ -438,7 +438,7 @@ content::StoragePartition* TCPSocket::GetStoragePartitionHelper() {
 
 void TCPSocket::OnAccept(
     int result,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
@@ -483,7 +483,7 @@ void TCPSocket::OnUpgradeToTLSComplete(
     int result,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const base::Optional<net::SSLInfo>& ssl_info) {
+    const absl::optional<net::SSLInfo>& ssl_info) {
   std::move(callback).Run(result, std::move(tls_socket), local_addr, peer_addr,
                           std::move(receive_stream), std::move(send_stream));
 }
@@ -570,7 +570,7 @@ ResumableTCPSocket::ResumableTCPSocket(
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     const std::string& owner_extension_id)
     : TCPSocket(std::move(socket),
                 std::move(receive_stream),

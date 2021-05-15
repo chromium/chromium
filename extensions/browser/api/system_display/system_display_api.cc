@@ -248,7 +248,7 @@ SystemDisplaySetDisplayPropertiesFunction::Run() {
 }
 
 void SystemDisplaySetDisplayPropertiesFunction::Response(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : NoArguments());
 }
 
@@ -262,7 +262,7 @@ ExtensionFunction::ResponseAction SystemDisplaySetDisplayLayoutFunction::Run() {
 }
 
 void SystemDisplaySetDisplayLayoutFunction::Response(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : NoArguments());
 }
 
@@ -333,7 +333,7 @@ SystemDisplayShowNativeTouchCalibrationFunction::Run() {
 }
 
 void SystemDisplayShowNativeTouchCalibrationFunction::OnCalibrationComplete(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : OneArgument(base::Value(true)));
 }
 
@@ -379,7 +379,7 @@ ExtensionFunction::ResponseAction SystemDisplaySetMirrorModeFunction::Run() {
 }
 
 void SystemDisplaySetMirrorModeFunction::Response(
-    base::Optional<std::string> error) {
+    absl::optional<std::string> error) {
   Respond(error ? Error(*error) : NoArguments());
 }
 

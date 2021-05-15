@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -33,6 +32,7 @@
 #include "extensions/common/url_pattern_set.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionPrefValueMap;
 class PrefService;
@@ -681,9 +681,9 @@ class ExtensionPrefs : public KeyedService {
   void SetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
                                     int checksum);
 
-  // Returns the set of enabled static ruleset IDs or base::nullopt if the
+  // Returns the set of enabled static ruleset IDs or absl::nullopt if the
   // extension hasn't updated the set of enabled static rulesets.
-  base::Optional<std::set<declarative_net_request::RulesetID>>
+  absl::optional<std::set<declarative_net_request::RulesetID>>
   GetDNREnabledStaticRulesets(const ExtensionId& extension_id) const;
   // Updates the set of enabled static rulesets for the |extension_id|. This
   // preference gets cleared on extension update.

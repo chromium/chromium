@@ -84,7 +84,7 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
   extension->permissions_data()->SetPolicyHostRestrictions(
       runtime_blocked_hosts, runtime_allowed_hosts);
 
-  ExtensionMsg_Loaded_Params params_in(extension.get(), true, base::nullopt);
+  ExtensionMsg_Loaded_Params params_in(extension.get(), true, absl::nullopt);
   EXPECT_EQ(extension->id(), params_in.id);
   EXPECT_EQ(extension->guid(), params_in.guid);
 

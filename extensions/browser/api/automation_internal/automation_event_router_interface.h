@@ -53,7 +53,7 @@ class AutomationEventRouterInterface {
   // Notify the source extension of the result to getTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) = 0;
+      const absl::optional<gfx::Rect>& rect) = 0;
 };
 
 }  // namespace extensions

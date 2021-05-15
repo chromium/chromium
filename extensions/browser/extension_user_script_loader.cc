@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/one_shot_event.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -37,6 +36,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 
 using content::BrowserContext;
@@ -49,7 +49,7 @@ using SubstitutionMap = std::map<std::string, std::string>;
 
 // Each map entry associates a UserScript::File object with the ID of the
 // resource holding the content of the script.
-using ScriptResourceIds = std::map<UserScript::File*, base::Optional<int>>;
+using ScriptResourceIds = std::map<UserScript::File*, absl::optional<int>>;
 
 struct VerifyContentInfo {
   VerifyContentInfo(const scoped_refptr<ContentVerifier>& verifier,
@@ -91,7 +91,7 @@ void ForwardVerifyContentToIO(const VerifyContentInfo& info) {
 // Loads user scripts from the extension who owns these scripts.
 bool LoadScriptContent(const mojom::HostID& host_id,
                        UserScript::File* script_file,
-                       const base::Optional<int>& script_resource_id,
+                       const absl::optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
                        const scoped_refptr<ContentVerifier>& verifier) {
   DCHECK(script_file);

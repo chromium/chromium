@@ -72,7 +72,7 @@ bool IsActualConnectionFailure(bt_private::ConnectResultType result) {
   }
 }
 
-base::Optional<device::ConnectionFailureReason> GetConnectionFailureReason(
+absl::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
     bt_private::ConnectResultType result) {
   DCHECK(IsActualConnectionFailure(result));
 
@@ -679,7 +679,7 @@ void BluetoothPrivateRecordPairingFunction::DoWork(
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {
     device::RecordPairingResult(
-        success ? base::nullopt : GetConnectionFailureReason(result),
+        success ? absl::nullopt : GetConnectionFailureReason(result),
         GetBluetoothTransport(params_->transport),
         base::TimeDelta::FromMilliseconds(params_->pairing_duration_ms));
   }
@@ -710,7 +710,7 @@ void BluetoothPrivateRecordReconnectionFunction::DoWork(
   // Only emit metrics if this is a success or a true connection failure.
   if (success || IsActualConnectionFailure(result)) {
     device::RecordUserInitiatedReconnectionAttemptResult(
-        success ? base::nullopt : GetConnectionFailureReason(result),
+        success ? absl::nullopt : GetConnectionFailureReason(result),
         device::BluetoothUiSurface::kSettings);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

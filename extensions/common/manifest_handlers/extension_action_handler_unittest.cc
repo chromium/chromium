@@ -232,20 +232,20 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
     // The expected error, if parsing was unsuccessful.
     const char* expected_error;
     // The expected state, if parsing was successful.
-    base::Optional<ActionInfo::DefaultState> expected_state;
+    absl::optional<ActionInfo::DefaultState> expected_state;
   } test_cases[] = {
       {kDefaultStateDisabled,
        default_state_allowed ? nullptr : key_disallowed_error,
-       default_state_allowed ? base::make_optional(ActionInfo::STATE_DISABLED)
-                             : base::nullopt},
+       default_state_allowed ? absl::make_optional(ActionInfo::STATE_DISABLED)
+                             : absl::nullopt},
       {kDefaultStateEnabled,
        default_state_allowed ? nullptr : key_disallowed_error,
-       default_state_allowed ? base::make_optional(ActionInfo::STATE_ENABLED)
-                             : base::nullopt},
+       default_state_allowed ? absl::make_optional(ActionInfo::STATE_ENABLED)
+                             : absl::nullopt},
       {kDefaultStateInvalid,
        default_state_allowed ? manifest_errors::kInvalidActionDefaultState
                              : key_disallowed_error,
-       base::nullopt},
+       absl::nullopt},
   };
 
   for (const auto& test_case : test_cases) {

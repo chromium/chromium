@@ -63,9 +63,9 @@ struct IndexedRule {
   // Note: For redirect rules, exactly one of |redirect_url|,
   // |regex_substitution| or |url_transform|  will be set.
   // The redirect url for the rule.
-  base::Optional<std::string> redirect_url;
+  absl::optional<std::string> redirect_url;
   // The regex substitution for this rule.
-  base::Optional<std::string> regex_substitution;
+  absl::optional<std::string> regex_substitution;
   // UrlTransform for this rule.
   std::unique_ptr<api::declarative_net_request::URLTransform> url_transform;
 

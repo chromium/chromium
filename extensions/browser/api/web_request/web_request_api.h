@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "content/public/browser/content_browser_client.h"
@@ -43,6 +42,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionWebRequestTimeTracker;
 class GURL;
@@ -84,7 +84,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Otherwise any supplied |credentials| will be used. If no credentials are
   // supplied, default browser behavior will follow (e.g. UI prompt for login).
   using AuthRequestCallback = base::OnceCallback<void(
-      const base::Optional<net::AuthCredentials>& credentials,
+      const absl::optional<net::AuthCredentials>& credentials,
       bool should_cancel)>;
 
   // An interface which is held by ProxySet defined below.
@@ -94,7 +94,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
     // Asks the Proxy to handle an auth request on behalf of one of its known
     // in-progress network requests. If the request will *not* be handled by
-    // the proxy, |callback| should be invoked with |base::nullopt|.
+    // the proxy, |callback| should be invoked with |absl::nullopt|.
     virtual void HandleAuthRequest(
         const net::AuthChallengeInfo& auth_info,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -197,7 +197,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::RenderFrameHost* frame,
       int render_process_id,
       content::ContentBrowserClient::URLLoaderFactoryType type,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -223,7 +223,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::ContentBrowserClient::WebSocketFactory factory,
       const GURL& url,
       const GURL& site_for_cookies,
-      const base::Optional<std::string>& user_agent,
+      const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);
 
@@ -331,7 +331,7 @@ class ExtensionWebRequestEventRouter {
     std::unique_ptr<extension_web_request_api_helpers::ResponseHeaders>
         response_headers;
 
-    base::Optional<net::AuthCredentials> auth_credentials;
+    absl::optional<net::AuthCredentials> auth_credentials;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(EventResponse);

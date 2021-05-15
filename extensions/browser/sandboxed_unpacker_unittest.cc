@@ -142,7 +142,7 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
     std::move(quit_closure_).Run();
   }
 
-  base::Optional<CrxInstallError> error_;
+  absl::optional<CrxInstallError> error_;
   base::OnceClosure quit_closure_;
   base::FilePath temp_dir_;
   bool* deleted_tracker_ = nullptr;
@@ -268,7 +268,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     sandboxed_unpacker_->extension_root_ = path;
   }
 
-  base::Optional<base::Value> RewriteManifestFile(const base::Value& manifest) {
+  absl::optional<base::Value> RewriteManifestFile(const base::Value& manifest) {
     return sandboxed_unpacker_->RewriteManifestFile(manifest);
   }
 
@@ -445,7 +445,7 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
                       FILE_PATH_LITERAL("manifest.fingerprint")),
                   fingerprint.c_str(),
                   base::checked_cast<int>(fingerprint.size()));
-  base::Optional<base::Value> manifest(RewriteManifestFile(
+  absl::optional<base::Value> manifest(RewriteManifestFile(
       *DictionaryBuilder().Set(kVersionStr, kTestVersion).Build()));
   auto* key = manifest->FindStringKey("key");
   auto* version = manifest->FindStringKey(kVersionStr);

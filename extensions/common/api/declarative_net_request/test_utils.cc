@@ -53,7 +53,7 @@ std::unique_ptr<base::ListValue> ToValue(const std::vector<T>& vec) {
 template <typename T>
 void SetValue(base::DictionaryValue* dict,
               const char* key,
-              const base::Optional<T>& value) {
+              const absl::optional<T>& value) {
   if (!value)
     return;
 
@@ -153,7 +153,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleRedirect::ToValue() const {
 
 TestHeaderInfo::TestHeaderInfo(std::string header,
                                std::string operation,
-                               base::Optional<std::string> value)
+                               absl::optional<std::string> value)
     : header(std::move(header)),
       operation(std::move(operation)),
       value(std::move(value)) {}

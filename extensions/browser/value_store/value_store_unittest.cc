@@ -181,7 +181,7 @@ TEST_P(ValueStoreTest, GetWhenEmpty) {
 TEST_P(ValueStoreTest, GetWithSingleValue) {
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, base::nullopt, val1_->Clone()));
+    changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq,
         changes, storage_->Set(DEFAULTS, key1_, *val1_));
   }
@@ -197,8 +197,8 @@ TEST_P(ValueStoreTest, GetWithSingleValue) {
 TEST_P(ValueStoreTest, GetWithMultipleValues) {
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, base::nullopt, val1_->Clone()));
-    changes.push_back(ValueStoreChange(key2_, base::nullopt, val2_->Clone()));
+    changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
+    changes.push_back(ValueStoreChange(key2_, absl::nullopt, val2_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, *dict12_));
   }
 
@@ -222,7 +222,7 @@ TEST_P(ValueStoreTest, RemoveWithSingleValue) {
   storage_->Set(DEFAULTS, *dict1_);
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(key1_));
   }
 
@@ -237,7 +237,7 @@ TEST_P(ValueStoreTest, RemoveWithMultipleValues) {
   storage_->Set(DEFAULTS, *dict123_);
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key3_, val3_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key3_, val3_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(key3_));
   }
 
@@ -252,8 +252,8 @@ TEST_P(ValueStoreTest, RemoveWithMultipleValues) {
 
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), base::nullopt));
-    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), absl::nullopt));
+    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(list12_));
   }
 
@@ -272,7 +272,7 @@ TEST_P(ValueStoreTest, SetWhenOverwriting) {
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, val2_->Clone(), val1_->Clone()));
-    changes.push_back(ValueStoreChange(key2_, base::nullopt, val2_->Clone()));
+    changes.push_back(ValueStoreChange(key2_, absl::nullopt, val2_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, *dict12_));
   }
 
@@ -299,8 +299,8 @@ TEST_P(ValueStoreTest, ClearWhenNotEmpty) {
   storage_->Set(DEFAULTS, *dict12_);
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), base::nullopt));
-    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), absl::nullopt));
+    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Clear());
   }
 
@@ -325,7 +325,7 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange(dot_key, base::nullopt, dot_value.Clone()));
+        ValueStoreChange(dot_key, absl::nullopt, dot_value.Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq,
         changes, storage_->Set(DEFAULTS, dot_key, dot_value));
   }
@@ -337,7 +337,7 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange(dot_key, dot_value.Clone(), base::nullopt));
+        ValueStoreChange(dot_key, dot_value.Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(dot_key));
   }
   EXPECT_PRED_FORMAT2(ChangesEq,
@@ -345,7 +345,7 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange(dot_key, base::nullopt, dot_value.Clone()));
+        ValueStoreChange(dot_key, absl::nullopt, dot_value.Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, dot_dict));
   }
 
@@ -355,7 +355,7 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange(dot_key, dot_value.Clone(), base::nullopt));
+        ValueStoreChange(dot_key, dot_value.Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(dot_list));
   }
 
@@ -372,7 +372,7 @@ TEST_P(ValueStoreTest, DotsInKeyNamesWithDicts) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange("foo", base::nullopt, inner_dict.Clone()));
+        ValueStoreChange("foo", absl::nullopt, inner_dict.Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes,
                         storage_->Set(DEFAULTS, outer_dict));
   }
@@ -400,35 +400,35 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val2_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val2_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(key1_));
     EXPECT_PRED_FORMAT2(ChangesEq,
         ValueStoreChangeList(), storage_->Remove(key1_));
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, base::nullopt, val1_->Clone()));
+    changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq,
         changes, storage_->Set(DEFAULTS, key1_, *val1_));
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val1_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Clear());
     EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(), storage_->Clear());
   }
 
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, base::nullopt, val1_->Clone()));
-    changes.push_back(ValueStoreChange(key2_, base::nullopt, val2_->Clone()));
+    changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
+    changes.push_back(ValueStoreChange(key2_, absl::nullopt, val2_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, *dict12_));
     EXPECT_PRED_FORMAT2(ChangesEq,
         ValueStoreChangeList(), storage_->Set(DEFAULTS, *dict12_));
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key3_, base::nullopt, val3_->Clone()));
+    changes.push_back(ValueStoreChange(key3_, absl::nullopt, val3_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, *dict123_));
   }
   {
@@ -440,15 +440,15 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
 
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, val1_->Clone(), val2_->Clone()));
-    changes.push_back(ValueStoreChange("asdf", base::nullopt, val1_->Clone()));
+    changes.push_back(ValueStoreChange("asdf", absl::nullopt, val1_->Clone()));
     changes.push_back(
-        ValueStoreChange("qwerty", base::nullopt, val3_->Clone()));
+        ValueStoreChange("qwerty", absl::nullopt, val3_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, to_set));
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key1_, val2_->Clone(), base::nullopt));
-    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key1_, val2_->Clone(), absl::nullopt));
+    changes.push_back(ValueStoreChange(key2_, val2_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(list12_));
   }
   {
@@ -457,14 +457,14 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
     to_remove.push_back("asdf");
 
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("asdf", val1_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange("asdf", val1_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(to_remove));
   }
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange(key3_, val3_->Clone(), base::nullopt));
+    changes.push_back(ValueStoreChange(key3_, val3_->Clone(), absl::nullopt));
     changes.push_back(
-        ValueStoreChange("qwerty", val3_->Clone(), base::nullopt));
+        ValueStoreChange("qwerty", val3_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Clear());
     EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(), storage_->Clear());
   }

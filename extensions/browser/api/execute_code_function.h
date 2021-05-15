@@ -6,11 +6,11 @@
 #define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -74,9 +74,9 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // |DeleteInjectionDetails|, since the two types are compatible; the value
   // of |run_at| defaults to |RUN_AT_NONE|.
   std::unique_ptr<api::extension_types::InjectDetails> details_;
-  base::Optional<InitResult> init_result_;
+  absl::optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.
-  base::Optional<std::string> init_error_;
+  absl::optional<std::string> init_error_;
 
  private:
   void OnExecuteCodeFinished(std::vector<ScriptExecutor::FrameResult> results);

@@ -281,7 +281,7 @@ void BluetoothSocketListenFunction::OnGetAdapter(
     return;
   }
 
-  base::Optional<std::string> name;
+  absl::optional<std::string> name;
   if (socket->name())
     name = *socket->name();
 
@@ -339,7 +339,7 @@ bool BluetoothSocketListenUsingRfcommFunction::CreateParams() {
 void BluetoothSocketListenUsingRfcommFunction::CreateService(
     scoped_refptr<device::BluetoothAdapter> adapter,
     const device::BluetoothUUID& uuid,
-    const base::Optional<std::string>& name,
+    const absl::optional<std::string>& name,
     device::BluetoothAdapter::CreateServiceCallback callback,
     device::BluetoothAdapter::CreateServiceErrorCallback error_callback) {
   device::BluetoothAdapter::ServiceOptions service_options;
@@ -380,7 +380,7 @@ bool BluetoothSocketListenUsingL2capFunction::CreateParams() {
 void BluetoothSocketListenUsingL2capFunction::CreateService(
     scoped_refptr<device::BluetoothAdapter> adapter,
     const device::BluetoothUUID& uuid,
-    const base::Optional<std::string>& name,
+    const absl::optional<std::string>& name,
     device::BluetoothAdapter::CreateServiceCallback callback,
     device::BluetoothAdapter::CreateServiceErrorCallback error_callback) {
   device::BluetoothAdapter::ServiceOptions service_options;

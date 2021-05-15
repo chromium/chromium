@@ -26,7 +26,7 @@ void MessagePort::DispatchOnConnect(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url,
-    base::Optional<url::Origin> source_origin) {}
+    absl::optional<url::Origin> source_origin) {}
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 

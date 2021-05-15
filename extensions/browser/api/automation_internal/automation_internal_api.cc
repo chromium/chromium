@@ -346,7 +346,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
           ax_tree_id.ToString(), tab_id)));
 }
 
-base::Optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
+absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {
   ui::AXActionHandlerRegistry* registry =
@@ -367,7 +367,7 @@ base::Optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   if (automation_api_delegate->EnableTree(ax_tree_id))
-    return base::nullopt;
+    return absl::nullopt;
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
@@ -383,7 +383,7 @@ base::Optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   if (!rfh->GetParent())
     contents->EnableWebContentsOnlyAccessibilityMode();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
@@ -393,7 +393,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
-  base::Optional<std::string> error = EnableTree(ax_tree_id, extension_id());
+  absl::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
   if (error) {
     return RespondNow(Error(error.value()));
   } else {

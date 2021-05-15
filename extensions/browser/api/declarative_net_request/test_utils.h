@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -21,6 +20,7 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -58,7 +58,7 @@ std::ostream& operator<<(std::ostream& output, RequestAction::Type type);
 std::ostream& operator<<(std::ostream& output, const RequestAction& action);
 std::ostream& operator<<(std::ostream& output, const ParseResult& result);
 std::ostream& operator<<(std::ostream& output,
-                         const base::Optional<RequestAction>& action);
+                         const absl::optional<RequestAction>& action);
 std::ostream& operator<<(std::ostream& output, LoadRulesetResult result);
 std::ostream& operator<<(std::ostream& output, const RulesCountPair& count);
 
@@ -83,7 +83,7 @@ FileBackedRulesetSource CreateTemporarySource(
 api::declarative_net_request::ModifyHeaderInfo CreateModifyHeaderInfo(
     api::declarative_net_request::HeaderOperation operation,
     std::string header,
-    base::Optional<std::string> value);
+    absl::optional<std::string> value);
 
 bool EqualsForTesting(
     const api::declarative_net_request::ModifyHeaderInfo& lhs,
@@ -116,7 +116,7 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
 
   RulesetManager* const manager_;
   size_t current_count_ = 0;
-  base::Optional<size_t> expected_count_;
+  absl::optional<size_t> expected_count_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<GURL> observed_requests_;
   SEQUENCE_CHECKER(sequence_checker_);

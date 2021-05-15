@@ -217,7 +217,7 @@ class APISignatureTest : public APIBindingTest {
 
   void ExpectResponsePass(const APISignature& signature,
                           base::StringPiece arg_values) {
-    RunResponseTest(signature, arg_values, base::nullopt);
+    RunResponseTest(signature, arg_values, absl::nullopt);
   }
 
   void ExpectResponseFailure(const APISignature& signature,
@@ -260,7 +260,7 @@ class APISignatureTest : public APIBindingTest {
 
   void RunResponseTest(const APISignature& signature,
                        base::StringPiece arg_values,
-                       base::Optional<std::string> expected_error) {
+                       absl::optional<std::string> expected_error) {
     SCOPED_TRACE(arg_values);
     v8::Local<v8::Context> context = MainContext();
     v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, arg_values);

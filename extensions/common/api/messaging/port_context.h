@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -51,8 +51,8 @@ struct PortContext {
   bool is_for_render_frame() const { return frame.has_value(); }
   bool is_for_service_worker() const { return worker.has_value(); }
 
-  base::Optional<FrameContext> frame;
-  base::Optional<WorkerContext> worker;
+  absl::optional<FrameContext> frame;
+  absl::optional<WorkerContext> worker;
 };
 
 }  // namespace extensions

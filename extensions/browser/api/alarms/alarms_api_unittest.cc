@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/simple_test_clock.h"
@@ -25,6 +24,7 @@
 #include "extensions/common/extension_messages.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 typedef extensions::api::alarms::Alarm JsAlarm;
 
@@ -310,7 +310,7 @@ class ConsoleLogMessageLocalFrame : public content::FakeLocalFrame {
 
  private:
   unsigned message_count_ = 0;
-  base::Optional<blink::mojom::ConsoleMessageLevel> last_level_;
+  absl::optional<blink::mojom::ConsoleMessageLevel> last_level_;
   std::string last_message_;
 };
 

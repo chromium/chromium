@@ -212,7 +212,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       content::RenderProcessHost* process,
       const std::string& extension_id,
-      base::Optional<ServiceWorkerIdentifier> sw_identifier,
+      absl::optional<ServiceWorkerIdentifier> sw_identifier,
       const base::DictionaryValue& filter,
       bool add_lazy_listener);
 
@@ -222,7 +222,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       content::RenderProcessHost* process,
       const std::string& extension_id,
-      base::Optional<ServiceWorkerIdentifier> sw_identifier,
+      absl::optional<ServiceWorkerIdentifier> sw_identifier,
       const base::DictionaryValue& filter,
       bool remove_lazy_listener);
 

@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -43,8 +43,8 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(base::Optional<base::Value> result,
-              base::Optional<std::string> error);
+  void Result(absl::optional<base::Value> result,
+              absl::optional<std::string> error);
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetPropertiesFunction);
 };
@@ -63,8 +63,8 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void Result(base::Optional<base::Value> result,
-              base::Optional<std::string> error);
+  void Result(absl::optional<base::Value> result,
+              absl::optional<std::string> error);
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetManagedPropertiesFunction);
 };

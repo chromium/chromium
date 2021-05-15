@@ -152,7 +152,7 @@ WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
 bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const Extension* extension,
     const std::string& relative_path,
-    const base::Optional<url::Origin>& initiator_origin) {
+    const absl::optional<url::Origin>& initiator_origin) {
   auto initiator_url =
       initiator_origin.has_value() ? initiator_origin->GetURL() : GURL();
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(extension);

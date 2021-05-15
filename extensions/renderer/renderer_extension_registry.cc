@@ -114,13 +114,13 @@ void RendererExtensionRegistry::SetWorkerActivationSequence(
   worker_activation_sequences_[extension->id()] = worker_activation_sequence;
 }
 
-base::Optional<ActivationSequence>
+absl::optional<ActivationSequence>
 RendererExtensionRegistry::GetWorkerActivationSequence(
     const ExtensionId& extension_id) const {
   base::AutoLock lock(lock_);
   auto iter = worker_activation_sequences_.find(extension_id);
   if (iter == worker_activation_sequences_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return iter->second;
 }
 

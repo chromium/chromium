@@ -160,7 +160,7 @@ TEST_F(LeveldbScopedDatabaseUnitTest, TestEmptyValue) {
   values.SetString("s1_key1", "");
   EXPECT_TRUE(db_->Write("scope1", values).ok());
 
-  base::Optional<base::Value> value;
+  absl::optional<base::Value> value;
   ASSERT_TRUE(db_->Read("scope1", "s1_key1", &value).ok());
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_string());
@@ -172,7 +172,7 @@ TEST_F(LeveldbScopedDatabaseUnitTest, TestValueContainingDelimiter) {
   values.SetString("s1_key1", "with:delimiter");
   EXPECT_TRUE(db_->Write("scope1", values).ok());
 
-  base::Optional<base::Value> value;
+  absl::optional<base::Value> value;
   ASSERT_TRUE(db_->Read("scope1", "s1_key1", &value).ok());
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_string());

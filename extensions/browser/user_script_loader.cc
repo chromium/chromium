@@ -193,8 +193,8 @@ UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
       host_id_(host_id) {}
 
 UserScriptLoader::~UserScriptLoader() {
-  base::Optional<std::string> error =
-      base::make_optional(kUserScriptLoaderDestroyedErrorMsg);
+  absl::optional<std::string> error =
+      absl::make_optional(kUserScriptLoaderDestroyedErrorMsg);
 
   // Clean up state by firing all remaining callbacks with |error| populated to
   // alert consumers that scripts are not loaded.
@@ -270,7 +270,7 @@ void UserScriptLoader::AttemptLoad(ScriptsLoadedCallback callback) {
       queued_load_callbacks_.push_back(std::move(callback));
     } else {
       std::move(callback).Run(this,
-                              base::make_optional(kNoScriptChangesErrorMsg));
+                              absl::make_optional(kNoScriptChangesErrorMsg));
     }
   }
 
@@ -428,7 +428,7 @@ void UserScriptLoader::OnScriptsLoaded(
   std::list<ScriptsLoadedCallback> loaded_callbacks;
   loaded_callbacks.splice(loaded_callbacks.end(), loading_callbacks_);
   for (auto& callback : loaded_callbacks)
-    std::move(callback).Run(this, /*error=*/base::nullopt);
+    std::move(callback).Run(this, /*error=*/absl::nullopt);
 }
 
 void UserScriptLoader::SendUpdate(

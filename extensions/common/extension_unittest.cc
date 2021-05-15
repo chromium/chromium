@@ -5,7 +5,6 @@
 #include "extensions/common/extension.h"
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "extensions/common/extension_features.h"
@@ -13,6 +12,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -99,7 +99,7 @@ testing::AssertionResult RunCreationWithFlags(
 // that don't depend on //chrome into here.
 
 TEST(ExtensionTest, ExtensionManifestVersions) {
-  auto get_manifest = [](base::Optional<int> manifest_version) {
+  auto get_manifest = [](absl::optional<int> manifest_version) {
     DictionaryBuilder builder;
     builder.Set("name", "My Extension")
         .Set("version", "0.1")
@@ -118,7 +118,7 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
   // Manifest v1 is deprecated, and should not load.
   EXPECT_TRUE(RunManifestVersionFailure(get_manifest(1)));
   // Omitting the key defaults to v1 for extensions.
-  EXPECT_TRUE(RunManifestVersionFailure(get_manifest(base::nullopt)));
+  EXPECT_TRUE(RunManifestVersionFailure(get_manifest(absl::nullopt)));
 
   // '0' and '-1' are invalid values.
   EXPECT_TRUE(RunManifestVersionFailure(get_manifest(0)));
@@ -131,7 +131,7 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
         switches::kAllowLegacyExtensionManifests);
     EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(1), kType, 1));
     EXPECT_TRUE(
-        RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 1));
+        RunManifestVersionSuccess(get_manifest(absl::nullopt), kType, 1));
   }
 
   {
@@ -145,7 +145,7 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
 }
 
 TEST(ExtensionTest, PlatformAppManifestVersions) {
-  auto get_manifest = [](base::Optional<int> manifest_version) {
+  auto get_manifest = [](absl::optional<int> manifest_version) {
     DictionaryBuilder background;
     background.Set("scripts", ListBuilder().Append("background.js").Build());
     DictionaryBuilder builder;
@@ -166,7 +166,7 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
                                         true /* expect warning */));
 
   // Omitting the key defaults to v2 for platform apps.
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 2));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(absl::nullopt), kType, 2));
 
   // Manifest v1 is deprecated, and should not load.
   EXPECT_TRUE(RunManifestVersionFailure(get_manifest(1)));
@@ -186,7 +186,7 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
 }
 
 TEST(ExtensionTest, HostedAppManifestVersions) {
-  auto get_manifest = [](base::Optional<int> manifest_version) {
+  auto get_manifest = [](absl::optional<int> manifest_version) {
     DictionaryBuilder builder;
     DictionaryBuilder app;
     app.Set("urls", ListBuilder().Append("http://example.com").Build());
@@ -208,7 +208,7 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
   // Manifest v1 is deprecated, but should still load for hosted apps.
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(1), kType, 1));
   // Omitting the key defaults to v1 for hosted apps, and v1 is still allowed.
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 1));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(absl::nullopt), kType, 1));
 
   // Requiring the modern manifest version should make hosted apps require v2.
   EXPECT_TRUE(RunManifestVersionFailure(
@@ -216,7 +216,7 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
 }
 
 TEST(ExtensionTest, UserScriptManifestVersions) {
-  auto get_manifest = [](base::Optional<int> manifest_version) {
+  auto get_manifest = [](absl::optional<int> manifest_version) {
     DictionaryBuilder builder;
     builder.Set("name", "My Extension")
         .Set("version", "0.1")
@@ -236,7 +236,7 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
   // Manifest v1 is deprecated, but should still load for user scripts.
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(1), kType, 1));
   // Omitting the key defaults to v1 for user scripts, but v1 is still allowed.
-  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 1));
+  EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(absl::nullopt), kType, 1));
 
   // Requiring the modern manifest version should make user scripts require v2.
   EXPECT_TRUE(RunManifestVersionFailure(

@@ -1382,7 +1382,7 @@ void BluetoothLowEnergyEventRouter::HandleRequestResponse(
   }
 
   if (request->type == AttributeValueRequest::ATTRIBUTE_READ_REQUEST) {
-    std::move(request->value_callback).Run(/*error_code=*/base::nullopt, value);
+    std::move(request->value_callback).Run(/*error_code=*/absl::nullopt, value);
   } else {
     std::move(request->success_callback).Run();
   }
@@ -1602,7 +1602,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
     const std::string& characteristic_instance_id,
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    base::Optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic value read failed.";
@@ -1621,7 +1621,7 @@ void BluetoothLowEnergyEventRouter::OnReadRemoteCharacteristic(
 void BluetoothLowEnergyEventRouter::OnReadRemoteDescriptor(
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     VLOG(2) << "Remote characteristic/descriptor value read failed.";

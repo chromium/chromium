@@ -101,7 +101,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
     set_info_value_ = properties.ToValue();
     set_info_display_id_ = display_id;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
   }
 
   void EnableUnifiedDesktop(bool enable) override {
@@ -167,15 +167,15 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   native_touch_calibration_success_
-                                      ? base::nullopt
-                                      : base::Optional<std::string>("failed")));
+                                      ? absl::nullopt
+                                      : absl::optional<std::string>("failed")));
   }
 
   void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
                      ErrorCallback callback) override {
     mirror_mode_ = info.mode;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
   }
 
  private:
@@ -236,7 +236,7 @@ class SystemDisplayApiTest : public ShellApiTest {
                const api::system_display::DisplayProperties& properties) {
     provider_->SetDisplayProperties(
         display_id, properties,
-        base::BindOnce([](base::Optional<std::string>) {}));
+        base::BindOnce([](absl::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
   std::unique_ptr<display::Screen> screen_;

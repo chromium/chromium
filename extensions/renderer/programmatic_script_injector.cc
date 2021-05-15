@@ -56,8 +56,8 @@ bool ProgrammaticScriptInjector::IsAddingCSS() const {
   return params_->action_type == mojom::ActionType::kAddCss;
 }
 
-const base::Optional<std::string>
-ProgrammaticScriptInjector::GetInjectionKey() const {
+const absl::optional<std::string> ProgrammaticScriptInjector::GetInjectionKey()
+    const {
   return params_->injection_key;
 }
 

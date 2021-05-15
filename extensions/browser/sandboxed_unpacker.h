@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/index_helper.h"
@@ -28,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SkBitmap;
 
@@ -196,8 +196,8 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
 
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
-  void ReadManifestDone(base::Optional<base::Value> manifest,
-                        const base::Optional<std::string>& error);
+  void ReadManifestDone(absl::optional<base::Value> manifest,
+                        const absl::optional<std::string>& error);
   void UnpackExtensionSucceeded(base::Value manifest);
 
   // Helper which calls ReportFailure.
@@ -225,7 +225,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
 
   // Overwrites original manifest with safe result from utility process.
   // Returns nullopt on error.
-  base::Optional<base::Value> RewriteManifestFile(const base::Value& manifest);
+  absl::optional<base::Value> RewriteManifestFile(const base::Value& manifest);
 
   // Cleans up temp directory artifacts.
   void Cleanup();
@@ -274,7 +274,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Parsed original manifest of the extension. Set after unpacking the
   // extension and working with its manifest, so after UnpackExtensionSucceeded
   // is called.
-  base::Optional<base::Value> manifest_;
+  absl::optional<base::Value> manifest_;
 
   // Install prefs needed for the Declarative Net Request API.
   declarative_net_request::RulesetInstallPrefs ruleset_install_prefs_;

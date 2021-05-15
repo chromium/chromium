@@ -47,7 +47,7 @@ bool AllowSecondaryAppEnabledOnLaunch(const Extension* extension) {
 
 SecondaryKioskAppInfo::SecondaryKioskAppInfo(
     const extensions::ExtensionId& id,
-    const base::Optional<bool>& enabled_on_launch)
+    const absl::optional<bool>& enabled_on_launch)
     : id(id), enabled_on_launch(enabled_on_launch) {}
 
 SecondaryKioskAppInfo::SecondaryKioskAppInfo(
@@ -172,7 +172,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
         return false;
       }
 
-      base::Optional<bool> enabled_on_launch;
+      absl::optional<bool> enabled_on_launch;
       if (app->enabled_on_launch)
         enabled_on_launch = *app->enabled_on_launch;
 

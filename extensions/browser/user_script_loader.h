@@ -16,10 +16,10 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ReadOnlySharedMemoryRegion;
@@ -47,7 +47,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   using ScriptsLoadedCallback =
       base::OnceCallback<void(UserScriptLoader* loader,
-                              const base::Optional<std::string>& error)>;
+                              const absl::optional<std::string>& error)>;
 
   class Observer {
    public:
