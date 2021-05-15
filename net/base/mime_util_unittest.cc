@@ -244,8 +244,6 @@ TEST(MimeUtilTest, TestParseMimeType) {
       {"/ts", "/ts", {}},
       {"/s", "/s", {}},
       {"/", "/", {}},
-      // TODO(crbug.com/1202034): This is a bug and should fail.
-      {"t / s", "t", {}},
   };
   for (const auto& test : tests) {
     std::string mime_type;
@@ -258,6 +256,7 @@ TEST(MimeUtilTest, TestParseMimeType) {
            // Must have slash in mime type.
            "",
            "ts",
+           "t / s",
        }) {
     EXPECT_FALSE(ParseMimeType(type_str, nullptr, nullptr));
   }

@@ -466,11 +466,8 @@ bool ParseMimeType(const std::string& type_str,
     type_end = type_str.length();
 
   // Reject a mime-type if it does not include a slash.
-  // TODO(crbug.com/1202034): This is currently matching old code to search
-  // anywhere in the string for a slash. Update to require the slash in the
-  // mime which was the intention.
   size_t slash_pos = type_str.find_first_of('/');
-  if (slash_pos == std::string::npos)
+  if (slash_pos == std::string::npos || slash_pos > type_end)
     return false;
   if (mime_type)
     *mime_type = type_str.substr(type_val, type_end - type_val);
