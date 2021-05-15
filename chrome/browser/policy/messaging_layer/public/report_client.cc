@@ -19,11 +19,9 @@
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -355,8 +353,7 @@ ReportingClient::ReportingClient()
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(res) << "Could not retrieve base path";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_data_dir = user_data_dir.Append(
-      chromeos::ProfileHelper::Get()->GetActiveUserProfileDir());
+  user_data_dir = user_data_dir.Append("user");
 #endif
   reporting_path_ = user_data_dir.Append(kReportingDirectory);
   DETACH_FROM_SEQUENCE(uploaders_queue_sequence_checker_);
