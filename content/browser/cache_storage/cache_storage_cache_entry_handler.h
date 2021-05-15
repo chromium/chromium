@@ -94,7 +94,7 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
     ~DiskCacheBlobEntry();
 
     base::WeakPtr<CacheStorageCacheEntryHandler> entry_handler_;
-    base::Optional<CacheStorageCacheHandle> cache_handle_;
+    absl::optional<CacheStorageCacheHandle> cache_handle_;
     disk_cache::ScopedEntryPtr disk_cache_entry_;
 
     SEQUENCE_CHECKER(sequence_checker_);

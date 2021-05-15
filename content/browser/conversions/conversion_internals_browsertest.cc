@@ -4,7 +4,6 @@
 
 #include "content/browser/conversions/conversion_internals_ui.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

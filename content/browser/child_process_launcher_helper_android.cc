@@ -61,9 +61,9 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
          !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
 }
 
-base::Optional<mojo::NamedPlatformChannel>
+absl::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>

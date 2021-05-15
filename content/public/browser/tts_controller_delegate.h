@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -39,15 +39,15 @@ class CONTENT_EXPORT TtsControllerDelegate {
 
     // The voice ID that matches the language of the utterance, if the user
     // has picked a preferred voice for that language.
-    base::Optional<PreferredVoiceId> lang_voice_id;
+    absl::optional<PreferredVoiceId> lang_voice_id;
 
     // The voice ID that matches the language of the system locale, if the user
     // has picked a preferred voice for that locale.
-    base::Optional<PreferredVoiceId> locale_voice_id;
+    absl::optional<PreferredVoiceId> locale_voice_id;
 
     // The voice ID that the user has chosen to use when no language code is
     // specified, which can be used to match against any locale.
-    base::Optional<PreferredVoiceId> any_locale_voice_id;
+    absl::optional<PreferredVoiceId> any_locale_voice_id;
   };
 
   // Returns the PreferredVoiceIds for an utterance. PreferredVoiceIds are used

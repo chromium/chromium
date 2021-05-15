@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -23,6 +22,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -210,11 +210,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       std::move(fallback_callback));
 }
 
-base::Optional<SubresourceLoaderParams>
+absl::optional<SubresourceLoaderParams>
 ServiceWorkerMainResourceLoaderInterceptor::
     MaybeCreateSubresourceLoaderParams() {
   if (!handle_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       handle_->container_host();
@@ -222,7 +222,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
   // We didn't find a matching service worker for this request, and
   // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
   if (!container_host || !container_host->controller()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Otherwise let's send the controller service worker information along
@@ -244,7 +244,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
   controller_info->client_id = container_host->client_uuid();
   if (container_host->fetch_request_window_id()) {
     controller_info->fetch_request_window_id =
-        base::make_optional(container_host->fetch_request_window_id());
+        absl::make_optional(container_host->fetch_request_window_id());
   }
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
       container_host->GetOrCreateServiceWorkerObjectHost(
@@ -257,7 +257,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
     controller_info->used_features.push_back(feature);
   }
   params.controller_service_worker_info = std::move(controller_info);
-  return base::Optional<SubresourceLoaderParams>(std::move(params));
+  return absl::optional<SubresourceLoaderParams>(std::move(params));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::

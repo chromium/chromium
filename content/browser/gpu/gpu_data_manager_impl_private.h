@@ -60,7 +60,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
-      const base::Optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
+      const absl::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
 #if defined(OS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
@@ -78,7 +78,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void TerminateInfoCollectionGpuProcess();
 #endif
   void UpdateGpuFeatureInfo(const gpu::GpuFeatureInfo& gpu_feature_info,
-                            const base::Optional<gpu::GpuFeatureInfo>&
+                            const absl::optional<gpu::GpuFeatureInfo>&
                                 gpu_feature_info_for_hardware_gpu);
   void UpdateGpuExtraInfo(const gfx::GpuExtraInfo& process_info);
 

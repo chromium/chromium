@@ -43,7 +43,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   ~WebContentsContext() override = default;
 
   // WebContextFrameTracker::Context overrides.
-  base::Optional<gfx::Rect> GetScreenBounds() override {
+  absl::optional<gfx::Rect> GetScreenBounds() override {
     if (auto* view = GetCurrentView()) {
       // If we know the available size of the screen, we don't want to exceed
       // it as it may result in strange capture behavior in some cases.
@@ -51,7 +51,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
       view->GetScreenInfo(&info);
       return info.rect;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   viz::FrameSinkId GetFrameSinkIdForCapture() override {
@@ -148,7 +148,7 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
   // If we know the available size of the screen, we don't want to exceed
   // it as it may result in strange capture behavior in some cases.
   if (context_) {
-    const base::Optional<gfx::Rect> screen_bounds = context_->GetScreenBounds();
+    const absl::optional<gfx::Rect> screen_bounds = context_->GetScreenBounds();
     if (screen_bounds) {
       if (screen_bounds->size().IsEmpty()) {
         return {};

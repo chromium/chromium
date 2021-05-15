@@ -317,7 +317,7 @@ class ChildProcessSecurityPolicy {
   // by the source of how they were added and/or by BrowserContext.
   //
   // If |source| is provided, only origins that were added with the same source
-  // will be returned; if |source| is base::nullopt, origins from all sources
+  // will be returned; if |source| is absl::nullopt, origins from all sources
   // will be returned.
   //
   // If |browser_context| is null, only globally applicable origins will be
@@ -326,7 +326,7 @@ class ChildProcessSecurityPolicy {
   // includes both matching per-profile isolated origins as well as globally
   // applicable origins which apply to |browser_context| by definition).
   virtual std::vector<url::Origin> GetIsolatedOrigins(
-      base::Optional<IsolatedOriginSource> source = base::nullopt,
+      absl::optional<IsolatedOriginSource> source = absl::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
 
   // Returns whether the site of |origin| is isolated and was added by the

@@ -48,7 +48,7 @@ class CONTENT_EXPORT StreamTextureHost : public IPC::Listener {
         const gpu::Mailbox& mailbox,
         const gfx::Size& coded_size,
         const gfx::Rect& visible_rect,
-        const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) = 0;
+        const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) = 0;
     virtual ~Listener() {}
   };
 
@@ -70,7 +70,7 @@ class CONTENT_EXPORT StreamTextureHost : public IPC::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
 
   int32_t route_id_;
   Listener* listener_;

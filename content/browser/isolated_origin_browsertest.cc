@@ -238,7 +238,7 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
 
-  base::Optional<std::string> header_;
+  absl::optional<std::string> header_;
   std::queue<std::string> content_;
 
   DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderTest);
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
           // override them.
           URLLoaderInterceptor::WriteResponse(
               "content/test/data/isolated_base_origin_with_subframe.html",
-              params->client.get(), &headers, base::Optional<net::SSLInfo>());
+              params->client.get(), &headers, absl::optional<net::SSLInfo>());
           return true;
         }
         if (params->url_request.url.host() == "a.foo.com" ||
@@ -5154,7 +5154,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndOriginAgentClusterNoPorts) {
               "Cross-Origin-Opener-Policy: same-origin\n";
           URLLoaderInterceptor::WriteResponse(
               "content/test/data" + params->url_request.url.path(),
-              params->client.get(), &headers, base::Optional<net::SSLInfo>());
+              params->client.get(), &headers, absl::optional<net::SSLInfo>());
           return true;
         } else if (params->url_request.url.host() == "a.foo.com" ||
                    params->url_request.url.host() == "b.foo.com") {

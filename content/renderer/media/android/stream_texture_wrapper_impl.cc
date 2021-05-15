@@ -58,7 +58,7 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
     const gpu::Mailbox& mailbox,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   // This message comes from GPU process when the SharedImage is already
   // created, so we don't need to wait on any synctoken, mailbox is ready to
   // use.

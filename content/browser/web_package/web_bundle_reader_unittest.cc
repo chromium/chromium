@@ -10,13 +10,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {

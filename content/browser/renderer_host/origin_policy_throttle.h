@@ -58,7 +58,7 @@ class CONTENT_EXPORT OriginPolicyThrottle : public NavigationThrottle {
  private:
   explicit OriginPolicyThrottle(NavigationHandle* handle);
 
-  static base::Optional<network::OriginPolicy>& GetTestOriginPolicy();
+  static absl::optional<network::OriginPolicy>& GetTestOriginPolicy();
 
   DISALLOW_COPY_AND_ASSIGN(OriginPolicyThrottle);
 };

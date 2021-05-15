@@ -8,12 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using blink::WebBluetoothDeviceId;
 using blink::mojom::WebBluetoothResult;
@@ -103,7 +103,7 @@ class BluetoothPairingManagerTest : public testing::Test,
     }
 
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED,
-                            base::nullopt);
+                            absl::nullopt);
   }
 
   const std::string& characteristic_instance_id() const {
@@ -142,7 +142,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthFirstSuccess) {
       characteristic_instance_id(), kStartingPairAttemptCount,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const base::Optional<std::vector<uint8_t>>& value) {
+                  const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, kTestValue) << "Incorrect characteristic value";
             loop.Quit();
@@ -161,7 +161,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthSecondSuccess) {
       characteristic_instance_id(), kStartingPairAttemptCount,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const base::Optional<std::vector<uint8_t>>& value) {
+                  const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, kTestValue) << "Incorrect characteristic value";
             loop.Quit();
@@ -180,7 +180,7 @@ TEST_F(BluetoothPairingManagerTest, ReadFailAllAuthsFail) {
       characteristic_instance_id(), kStartingPairAttemptCount,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const base::Optional<std::vector<uint8_t>>& value) {
+                  const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
             loop.Quit();
           }));
@@ -198,7 +198,7 @@ TEST_F(BluetoothPairingManagerTest, ReadInvalidCharacteristicID) {
       invalid_characteristic_instance_id(), kStartingPairAttemptCount,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const base::Optional<std::vector<uint8_t>>& value) {
+                  const absl::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_UNKNOWN_ERROR, result);
             loop.Quit();
           }));

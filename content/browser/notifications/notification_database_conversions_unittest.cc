@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/notification_database_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -301,7 +301,7 @@ TEST(NotificationDatabaseConversionsTest,
      SerializeAndDeserializeNullPlaceholder) {
   auto action = blink::mojom::NotificationAction::New();
   action->type = kNotificationActionType;
-  action->placeholder = base::nullopt;  // null string.
+  action->placeholder = absl::nullopt;  // null string.
 
   blink::PlatformNotificationData notification_data;
   notification_data.actions.push_back(std::move(action));
@@ -325,7 +325,7 @@ TEST(NotificationDatabaseConversionsTest,
   blink::PlatformNotificationData notification_data;
 
   // explicitly empty timestamp
-  notification_data.show_trigger_timestamp = base::nullopt;
+  notification_data.show_trigger_timestamp = absl::nullopt;
 
   NotificationDatabaseData database_data;
   database_data.notification_data = notification_data;

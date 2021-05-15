@@ -71,7 +71,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   blink::mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
   net::SiteForCookies SiteForCookies() const override;
-  base::Optional<blink::WebSecurityOrigin> TopFrameOrigin() const override;
+  absl::optional<blink::WebSecurityOrigin> TopFrameOrigin() const override;
   std::unique_ptr<blink::WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;

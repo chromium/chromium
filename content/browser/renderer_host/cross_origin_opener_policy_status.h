@@ -38,7 +38,7 @@ class CrossOriginOpenerPolicyStatus {
   // Called when receiving a redirect or the final response. Returns a
   // BlockedByResponse reason if the navigation should be blocked, nullopt
   // otherwise.
-  base::Optional<network::mojom::BlockedByResponseReason> EnforceCOOP(
+  absl::optional<network::mojom::BlockedByResponseReason> EnforceCOOP(
       const network::CrossOriginOpenerPolicy& response_coop,
       const url::Origin& response_origin,
       const net::NetworkIsolationKey& network_isolation_key);

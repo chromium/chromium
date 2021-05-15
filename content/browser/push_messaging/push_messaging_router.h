@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "url/gurl.h"
@@ -39,7 +39,7 @@ class PushMessagingRouter {
                              const GURL& origin,
                              int64_t service_worker_registration_id,
                              const std::string& message_id,
-                             base::Optional<std::string> payload,
+                             absl::optional<std::string> payload,
                              PushEventCallback deliver_message_callback);
 
   // TODO(https://crbug.com/753163): Add the ability to trigger a push
@@ -60,7 +60,7 @@ class PushMessagingRouter {
   // Must be called on the ServiceWorkerContext core thread.
   static void DeliverMessageToWorker(
       const std::string& message_id,
-      base::Optional<std::string> payload,
+      absl::optional<std::string> payload,
       PushEventCallback deliver_message_callback,
       scoped_refptr<ServiceWorkerVersion> service_worker,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context,

@@ -9,9 +9,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // which is shown if the background color of the renderer is not available.
   virtual void SetBackgroundColor(SkColor color) = 0;
   // GetBackgroundColor returns the current background color of the view.
-  virtual base::Optional<SkColor> GetBackgroundColor() = 0;
+  virtual absl::optional<SkColor> GetBackgroundColor() = 0;
   // Copy background color from another view if other view has background color.
   virtual void CopyBackgroundColorIfPresentFrom(
       const RenderWidgetHostView& other) = 0;
@@ -182,7 +182,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Start/Stop intercepting future system keyboard events.
   virtual bool LockKeyboard(
-      base::Optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
+      absl::optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
   virtual void UnlockKeyboard() = 0;
   // Returns true if keyboard lock is active.
   virtual bool IsKeyboardLocked() = 0;

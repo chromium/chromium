@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node.h"
@@ -447,7 +447,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   int GetIndexInParent() override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
 
-  base::Optional<int> FindTextBoundary(
+  absl::optional<int> FindTextBoundary(
       ax::mojom::TextBoundary boundary,
       int offset,
       ax::mojom::MoveDirection direction,
@@ -459,12 +459,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::string GetLanguage() const override;
 
   bool IsTable() const override;
-  base::Optional<int> GetTableColCount() const override;
-  base::Optional<int> GetTableRowCount() const override;
-  base::Optional<int> GetTableAriaColCount() const override;
-  base::Optional<int> GetTableAriaRowCount() const override;
-  base::Optional<int> GetTableCellCount() const override;
-  base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
+  absl::optional<int> GetTableColCount() const override;
+  absl::optional<int> GetTableRowCount() const override;
+  absl::optional<int> GetTableAriaColCount() const override;
+  absl::optional<int> GetTableAriaRowCount() const override;
+  absl::optional<int> GetTableCellCount() const override;
+  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<ui::AXNodeID> GetColHeaderNodeIds() const override;
   std::vector<ui::AXNodeID> GetColHeaderNodeIds(int col_index) const override;
   std::vector<ui::AXNodeID> GetRowHeaderNodeIds() const override;
@@ -472,19 +472,19 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::AXPlatformNode* GetTableCaption() const override;
 
   bool IsTableRow() const override;
-  base::Optional<int> GetTableRowRowIndex() const override;
+  absl::optional<int> GetTableRowRowIndex() const override;
 
   bool IsTableCellOrHeader() const override;
-  base::Optional<int> GetTableCellIndex() const override;
-  base::Optional<int> GetTableCellColIndex() const override;
-  base::Optional<int> GetTableCellRowIndex() const override;
-  base::Optional<int> GetTableCellColSpan() const override;
-  base::Optional<int> GetTableCellRowSpan() const override;
-  base::Optional<int> GetTableCellAriaColIndex() const override;
-  base::Optional<int> GetTableCellAriaRowIndex() const override;
-  base::Optional<int32_t> GetCellId(int row_index,
+  absl::optional<int> GetTableCellIndex() const override;
+  absl::optional<int> GetTableCellColIndex() const override;
+  absl::optional<int> GetTableCellRowIndex() const override;
+  absl::optional<int> GetTableCellColSpan() const override;
+  absl::optional<int> GetTableCellRowSpan() const override;
+  absl::optional<int> GetTableCellAriaColIndex() const override;
+  absl::optional<int> GetTableCellAriaRowIndex() const override;
+  absl::optional<int32_t> GetCellId(int row_index,
                                     int col_index) const override;
-  base::Optional<int32_t> CellIndexToId(int cell_index) const override;
+  absl::optional<int32_t> CellIndexToId(int cell_index) const override;
 
   bool IsCellOrHeaderOfARIATable() const override;
   bool IsCellOrHeaderOfARIAGrid() const override;
@@ -515,8 +515,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ax::mojom::IntListAttribute attr) override;
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;
-  base::Optional<int> GetPosInSet() const override;
-  base::Optional<int> GetSetSize() const override;
+  absl::optional<int> GetPosInSet() const override;
+  absl::optional<int> GetSetSize() const override;
   SkColor GetColor() const override;
   SkColor GetBackgroundColor() const override;
 

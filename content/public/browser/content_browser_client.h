@@ -19,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -52,6 +51,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/websocket.mojom-forward.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
@@ -78,7 +78,7 @@ class IsolationInfo;
 
 class GURL;
 using LoginAuthRequiredCallback =
-    base::OnceCallback<void(const base::Optional<net::AuthCredentials>&)>;
+    base::OnceCallback<void(const absl::optional<net::AuthCredentials>&)>;
 
 namespace base {
 class CommandLine;
@@ -508,7 +508,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       ui::PageTransition* transition,
       bool* is_renderer_initiated,
       content::Referrer* referrer,
-      base::Optional<url::Origin>* initiator_origin) {}
+      absl::optional<url::Origin>* initiator_origin) {}
 
   // Temporary hack to determine whether to skip OOPIFs on the new tab page.
   // TODO(creis): Remove when https://crbug.com/566091 is fixed.
@@ -649,7 +649,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool AllowAppCache(
       const GURL& manifest_url,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       BrowserContext* context);
 
   // Allows the embedder to control if a service worker is allowed at the given
@@ -671,7 +671,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       BrowserContext* context);
 
@@ -681,7 +681,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool AllowSharedWorker(
       const GURL& worker_url,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       const std::string& name,
       const storage::StorageKey& storage_key,
       BrowserContext* context,
@@ -1437,7 +1437,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -1473,7 +1473,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       WebSocketFactory factory,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const base::Optional<std::string>& user_agent,
+      const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);
 
@@ -1699,7 +1699,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
   // |auth_required_callback| is used to transfer auth credentials to
   // URLRequest::SetAuth(). The credentials parameter of the callback
-  // is base::nullopt if the request should be cancelled; otherwise
+  // is absl::nullopt if the request should be cancelled; otherwise
   // the credentials will be used to respond to the auth challenge.
   // This method is called on the UI thread. The callback must be
   // called on the UI thread as well. If the LoginDelegate is destroyed
@@ -1751,7 +1751,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool is_main_frame,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin,
+      const absl::optional<url::Origin>& initiating_origin,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
   // Creates an OverlayWindow to be used for Picture-in-Picture. This window
@@ -1769,7 +1769,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns the HTML content of the error page for Origin Policy related
   // errors.
-  virtual base::Optional<std::string> GetOriginPolicyErrorPage(
+  virtual absl::optional<std::string> GetOriginPolicyErrorPage(
       network::OriginPolicyState error_reason,
       content::NavigationHandle* navigation_handle);
 
@@ -1835,7 +1835,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns a 256x256 transparent background image of the product logo, i.e.
   // the browser icon, if available.
-  virtual base::Optional<gfx::ImageSkia> GetProductLogo();
+  virtual absl::optional<gfx::ImageSkia> GetProductLogo();
 
   // Returns whether |origin| should be considered a integral component similar
   // to native code, and as such whether its log messages should be recorded.
@@ -1885,7 +1885,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       WebContents* web_contents,
       const GURL& url,
-      const base::Optional<url::Origin>& top_frame_origin);
+      const absl::optional<url::Origin>& top_frame_origin);
 
   // Returns whether a site is blocked to use Bluetooth scanning API.
   virtual bool IsBluetoothScanningBlocked(
@@ -1908,7 +1908,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& scope,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin);
+      const absl::optional<url::Origin>& top_frame_origin);
 
   // Requests an SMS from |origin| from a remote device with telephony
   // capabilities, for example the user's mobile phone. Callbacks |callback|
@@ -1920,9 +1920,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual base::OnceClosure FetchRemoteSms(
       content::WebContents* web_contents,
       const url::Origin& origin,
-      base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                              base::Optional<std::string>,
-                              base::Optional<content::SmsFetchFailureType>)>
+      base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                              absl::optional<std::string>,
+                              absl::optional<content::SmsFetchFailureType>)>
           callback);
 
   // Check whether paste is allowed. To paste, an implementation may require a

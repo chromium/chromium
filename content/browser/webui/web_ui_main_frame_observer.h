@@ -53,7 +53,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const base::Optional<std::u16string>& untrusted_stack_trace) override;
+      const absl::optional<std::u16string>& untrusted_stack_trace) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 

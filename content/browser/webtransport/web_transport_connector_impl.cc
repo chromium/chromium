@@ -33,10 +33,10 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
     remote_->OnConnectionEstablished(std::move(transport), std::move(client));
   }
   void OnHandshakeFailed(
-      const base::Optional<net::WebTransportError>& error) override {
+      const absl::optional<net::WebTransportError>& error) override {
     // Here we pass null because it is dangerous to pass the error details
     // to the initiator renderer.
-    remote_->OnHandshakeFailed(base::nullopt);
+    remote_->OnHandshakeFailed(absl::nullopt);
 
     if (RenderFrameHostImpl* frame = frame_.get()) {
       devtools_instrumentation::OnWebTransportHandshakeFailed(frame, url_,

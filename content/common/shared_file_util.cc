@@ -19,7 +19,7 @@ void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
   switch_value_ += base::NumberToString(key_id);
 }
 
-base::Optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
+absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value) {
   std::map<int, std::string> values;
   std::vector<std::string> string_pairs = base::SplitString(
@@ -30,7 +30,7 @@ base::Optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
         colon_position == pair.size() - 1) {
       DLOG(ERROR) << "Found invalid entry parsing shared file string value:"
                   << pair;
-      return base::nullopt;
+      return absl::nullopt;
     }
     std::string key = pair.substr(0, colon_position);
     std::string number_string =
@@ -39,12 +39,12 @@ base::Optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     if (!base::StringToInt(number_string, &key_int)) {
       DLOG(ERROR) << "Found invalid entry parsing shared file string value:"
                   << number_string << " (not an int).";
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     values[key_int] = key;
   }
-  return base::make_optional(std::move(values));
+  return absl::make_optional(std::move(values));
 }
 
 }  // namespace content

@@ -130,7 +130,7 @@ void MediaPlayerRenderer::CreateMediaPlayer(
 }
 
 void MediaPlayerRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {}
+    absl::optional<base::TimeDelta> latency_hint) {}
 
 void MediaPlayerRenderer::Flush(base::OnceClosure flush_cb) {
   DVLOG(3) << __func__;

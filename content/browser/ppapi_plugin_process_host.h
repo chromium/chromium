@@ -15,13 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -67,7 +67,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   static PpapiPluginProcessHost* CreatePluginHost(
       const PepperPluginInfo& info,
       const base::FilePath& profile_data_directory,
-      const base::Optional<url::Origin>& origin_lock);
+      const absl::optional<url::Origin>& origin_lock);
 
   // Notification that a PP_Instance has been created and the associated
   // renderer related data including the RenderView/Process pair for the given
@@ -97,7 +97,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   BrowserPpapiHostImpl* host_impl() { return host_impl_.get(); }
   BrowserChildProcessHostImpl* process() { return process_.get(); }
-  const base::Optional<url::Origin>& origin_lock() const {
+  const absl::optional<url::Origin>& origin_lock() const {
     return origin_lock_;
   }
   const base::FilePath& plugin_path() const { return plugin_path_; }
@@ -114,7 +114,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   // You must call Init before doing anything else.
   PpapiPluginProcessHost(const PepperPluginInfo& info,
                          const base::FilePath& profile_data_directory,
-                         const base::Optional<url::Origin>& origin_lock);
+                         const absl::optional<url::Origin>& origin_lock);
 
   // Actually launches the process with the given plugin info. Returns true
   // on success (the process was spawned).
@@ -156,7 +156,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Specific origin to which this is bound, omitted to allow any origin to
   // re-use the plugin host.
-  const base::Optional<url::Origin> origin_lock_;
+  const absl::optional<url::Origin> origin_lock_;
 
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
 

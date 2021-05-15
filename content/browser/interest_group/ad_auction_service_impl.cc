@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction.h"
@@ -32,6 +31,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -154,7 +154,7 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         render_frame_host()->GetSiteInstance()->GetBrowserContext(),
         render_frame_host(), render_frame_host()->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        url::Origin(), base::nullopt /* navigation_id */,
+        url::Origin(), absl::nullopt /* navigation_id */,
         ukm::SourceIdObj::FromInt64(render_frame_host()->GetPageUkmSourceId()),
         &factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
@@ -189,9 +189,9 @@ AdAuctionServiceImpl::GetWorkletService() {
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AdAuction* auction,
-    base::Optional<GURL> render_url,
-    base::Optional<GURL> bidder_report_url,
-    base::Optional<GURL> seller_report_url) {
+    absl::optional<GURL> render_url,
+    absl::optional<GURL> bidder_report_url,
+    absl::optional<GURL> seller_report_url) {
   auto auction_it = auctions_.find(auction);
   DCHECK(auction_it != auctions_.end());
   auctions_.erase(auction_it);

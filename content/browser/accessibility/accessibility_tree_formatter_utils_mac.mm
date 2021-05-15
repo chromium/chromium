@@ -191,7 +191,7 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
 // NSNumber. Format: integer.
 NSNumber* AttributeInvoker::PropertyNodeToInt(
     const AXPropertyNode& intnode) const {
-  base::Optional<int> param = intnode.AsInt();
+  absl::optional<int> param = intnode.AsInt();
   if (!param) {
     INT_FAIL(intnode, "not a number")
   }
@@ -208,7 +208,7 @@ NSArray* AttributeInvoker::PropertyNodeToIntArray(
   NSMutableArray* array =
       [[NSMutableArray alloc] initWithCapacity:arraynode.parameters.size()];
   for (const auto& paramnode : arraynode.parameters) {
-    base::Optional<int> param = paramnode.AsInt();
+    absl::optional<int> param = paramnode.AsInt();
     if (!param) {
       INTARRAY_FAIL(arraynode, paramnode.name_or_value + " is not a number")
     }
@@ -224,12 +224,12 @@ NSValue* AttributeInvoker::PropertyNodeToRange(
     NSRANGE_FAIL(dictnode, "dictionary is expected")
   }
 
-  base::Optional<int> loc = dictnode.FindIntKey("loc");
+  absl::optional<int> loc = dictnode.FindIntKey("loc");
   if (!loc) {
     NSRANGE_FAIL(dictnode, "no loc or loc is not a number")
   }
 
-  base::Optional<int> len = dictnode.FindIntKey("len");
+  absl::optional<int> len = dictnode.FindIntKey("len");
   if (!len) {
     NSRANGE_FAIL(dictnode, "no len or len is not a number")
   }
@@ -264,7 +264,7 @@ id AttributeInvoker::DictNodeToTextMarker(
     TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
   }
 
-  base::Optional<int> offset = dictnode.parameters[1].AsInt();
+  absl::optional<int> offset = dictnode.parameters[1].AsInt();
   if (!offset) {
     TEXTMARKER_FAIL(dictnode, "2nd argument: wrong offset")
   }

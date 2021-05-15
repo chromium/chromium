@@ -218,7 +218,7 @@ DumpAccessibilityTestHelper::EventTestPasses() {
 }
 
 // static
-base::Optional<std::vector<std::string>>
+absl::optional<std::vector<std::string>>
 DumpAccessibilityTestHelper::LoadExpectationFile(
     const base::FilePath& expected_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -232,7 +232,7 @@ DumpAccessibilityTestHelper::LoadExpectationFile(
   base::RemoveChars(expected_contents_raw, "\r", &expected_contents);
 
   if (!expected_contents.compare(0, strlen(kMarkSkipFile), kMarkSkipFile)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> expected_lines =

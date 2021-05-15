@@ -84,7 +84,7 @@ v8::Local<v8::Object> TrustedBiddingSignals::GetSignals(
 void TrustedBiddingSignals::OnDownloadComplete(
     std::vector<std::string> trusted_bidding_signals_keys,
     std::unique_ptr<std::string> body,
-    base::Optional<std::string> error_msg) {
+    absl::optional<std::string> error_msg) {
   auction_downloader_.reset();
 
   if (!body) {
@@ -115,7 +115,7 @@ void TrustedBiddingSignals::OnDownloadComplete(
     v8::Local<v8::Value> v8_string_value;
     std::string value;
     if (!v8_helper_->CreateUtf8String(key).ToLocal(&v8_key)) {
-      std::move(load_signals_callback_).Run(false, base::nullopt);
+      std::move(load_signals_callback_).Run(false, absl::nullopt);
       return;
     }
     // Only the `has_result` check should be able to fail.
@@ -131,7 +131,7 @@ void TrustedBiddingSignals::OnDownloadComplete(
     }
     json_data_[key] = std::move(value);
   }
-  std::move(load_signals_callback_).Run(true, base::nullopt);
+  std::move(load_signals_callback_).Run(true, absl::nullopt);
 }
 
 }  // namespace auction_worklet

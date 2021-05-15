@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
@@ -18,6 +17,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_MAC)
 #include "device/fido/mac/authenticator_config.h"
@@ -59,7 +59,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // credentials so thought is required before allowing an origin to assert an
   // RP ID. RP ID strings may be stored on authenticators and may later appear
   // in management UI.
-  virtual base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
+  virtual absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin);
 
@@ -94,7 +94,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // authenticator. May return nullopt if the authenticator is not available in
   // the current context, in which case the Touch ID authenticator will be
   // unavailable.
-  virtual base::Optional<TouchIdAuthenticatorConfig>
+  virtual absl::optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
 #endif  // defined(OS_MAC)
 
@@ -113,8 +113,8 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
   // API call originating from |render_frame_host| should be overridden with
-  // that value, or base::nullopt otherwise.
-  virtual base::Optional<bool>
+  // that value, or absl::nullopt otherwise.
+  virtual absl::optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
 };

@@ -13,7 +13,7 @@
 
 #if defined(OS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -71,7 +71,7 @@ class CONTENT_EXPORT BrowserThreadImpl : public BrowserThread {
 
 #if defined(OS_POSIX)
   // Allows usage of the FileDescriptorWatcher API on the UI thread.
-  base::Optional<base::FileDescriptorWatcher> file_descriptor_watcher_;
+  absl::optional<base::FileDescriptorWatcher> file_descriptor_watcher_;
 #endif
 };
 

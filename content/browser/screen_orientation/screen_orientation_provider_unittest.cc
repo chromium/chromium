@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 
 namespace content {
@@ -81,7 +81,7 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };
 
-void LockResultCallback(base::Optional<ScreenOrientationLockResult>* out_result,
+void LockResultCallback(absl::optional<ScreenOrientationLockResult>* out_result,
                         ScreenOrientationLockResult result) {
   *out_result = result;
 }
@@ -101,7 +101,7 @@ class ScreenOrientationProviderTest : public RenderViewHostImplTestHarness {
   // Helpers for testing ScreenOrientationProvider methods.
   void CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType orientation,
-      base::Optional<ScreenOrientationLockResult>* out_result) {
+      absl::optional<ScreenOrientationLockResult>* out_result) {
     contents()->GetScreenOrientationProviderForTesting()->LockOrientation(
         orientation, base::BindOnce(&LockResultCallback, out_result));
 
@@ -119,7 +119,7 @@ class ScreenOrientationProviderTest : public RenderViewHostImplTestHarness {
 // Lock operation is not available.
 TEST_F(ScreenOrientationProviderTest, DelegateNotAvailableLockOnce) {
   // No ScreenOrientationDelegate.
-  base::Optional<ScreenOrientationLockResult> result_1;
+  absl::optional<ScreenOrientationLockResult> result_1;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
   EXPECT_EQ(ScreenOrientationLockResult::
@@ -128,7 +128,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateNotAvailableLockOnce) {
 
   // ScreenOrientationDelegate not supported.
   FakeScreenOrientationDelegate delegate(false, false);
-  base::Optional<ScreenOrientationLockResult> result_2;
+  absl::optional<ScreenOrientationLockResult> result_2;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_2);
   EXPECT_EQ(ScreenOrientationLockResult::
@@ -146,7 +146,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateLockOnce) {
   controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
 
-  base::Optional<ScreenOrientationLockResult> result_1;
+  absl::optional<ScreenOrientationLockResult> result_1;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
   // Lock request is pending.
@@ -167,7 +167,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateRequireFullScreenLockOnce) {
 
   // Current web contents is not in full screen.
   ASSERT_FALSE(contents()->IsFullscreen());
-  base::Optional<ScreenOrientationLockResult> result_1;
+  absl::optional<ScreenOrientationLockResult> result_1;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
   EXPECT_EQ(ScreenOrientationLockResult::
@@ -182,7 +182,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateRequireFullScreenLockOnce) {
                                    base::DoNothing());
   ASSERT_TRUE(contents()->IsFullscreen());
 
-  base::Optional<ScreenOrientationLockResult> result_2;
+  absl::optional<ScreenOrientationLockResult> result_2;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_2);
   // Lock request is pending.
@@ -200,7 +200,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateLockThenUnlock) {
   controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
 
-  base::Optional<ScreenOrientationLockResult> result_1;
+  absl::optional<ScreenOrientationLockResult> result_1;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
   // The lock request will be pending.
@@ -227,7 +227,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateLockThenLock) {
   controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
 
-  base::Optional<ScreenOrientationLockResult> result_1;
+  absl::optional<ScreenOrientationLockResult> result_1;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
   // The lock request will be pending.
@@ -236,7 +236,7 @@ TEST_F(ScreenOrientationProviderTest, DelegateLockThenLock) {
   EXPECT_EQ(1, delegate.lock_count());
   EXPECT_EQ(0, delegate.unlock_count());
 
-  base::Optional<ScreenOrientationLockResult> result_2;
+  absl::optional<ScreenOrientationLockResult> result_2;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_2);
   // The pending lock request is cancelled.
@@ -282,7 +282,7 @@ TEST_F(ScreenOrientationProviderTest, UnlockWhenExitingFullScreen) {
                                    base::DoNothing());
   ASSERT_TRUE(contents()->IsFullscreen());
 
-  base::Optional<ScreenOrientationLockResult> result;
+  absl::optional<ScreenOrientationLockResult> result;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result);
   // The lock request will be pending.
@@ -313,7 +313,7 @@ TEST_F(ScreenOrientationProviderTest, UnlockWhenNavigation) {
   controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
 
-  base::Optional<ScreenOrientationLockResult> result;
+  absl::optional<ScreenOrientationLockResult> result;
   CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result);
   // The lock request will be pending.

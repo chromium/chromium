@@ -161,7 +161,7 @@ void PepperNetworkProxyHost::TryToSendUnsentRequests() {
 void PepperNetworkProxyHost::OnResolveProxyCompleted(
     ppapi::host::ReplyMessageContext context,
     PepperProxyLookupHelper* pending_request,
-    base::Optional<net::ProxyInfo> proxy_info) {
+    absl::optional<net::ProxyInfo> proxy_info) {
   auto it = pending_requests_.find(pending_request);
   DCHECK(it != pending_requests_.end());
   pending_requests_.erase(it);

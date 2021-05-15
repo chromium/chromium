@@ -9,10 +9,10 @@
 #include <unordered_set>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace device {
@@ -94,7 +94,7 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
           TestScanDurationSetting::IMMEDIATE_TIMEOUT);
 
   static std::unique_ptr<device::BluetoothDiscoveryFilter> ComputeScanFilter(
-      const base::Optional<
+      const absl::optional<
           std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
  private:

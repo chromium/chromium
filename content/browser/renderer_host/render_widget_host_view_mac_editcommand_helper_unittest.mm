@@ -88,7 +88,7 @@ class RenderWidgetHostDelegateEditCommandCounter
  private:
   void ExecuteEditCommand(
       const std::string& command,
-      const base::Optional<std::u16string>& value) override {
+      const absl::optional<std::u16string>& value) override {
     edit_command_message_count_++;
   }
   void Undo() override {}

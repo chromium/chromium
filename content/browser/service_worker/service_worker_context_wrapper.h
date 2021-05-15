@@ -459,7 +459,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void DidGetRegisteredOrigins(const std::vector<url::Origin>& origins);
 
   static void DidGetRegisteredOriginsForGetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
+      absl::optional<std::string> host_filter,
       GetInstalledRegistrationOriginsCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback,
       const std::vector<url::Origin>& origins);
@@ -509,7 +509,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const std::string& key_prefix,
       StatusCallback callback);
   void GetInstalledRegistrationOriginsOnUIThread(
-      base::Optional<std::string> host_filter,
+      absl::optional<std::string> host_filter,
       GetInstalledRegistrationOriginsCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback);
 

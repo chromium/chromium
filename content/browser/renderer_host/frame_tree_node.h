@@ -127,7 +127,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   FrameTreeNode* original_opener() const { return original_opener_; }
 
-  const base::Optional<base::UnguessableToken>& opener_devtools_frame_token() {
+  const absl::optional<base::UnguessableToken>& opener_devtools_frame_token() {
     return opener_devtools_frame_token_;
   }
 
@@ -516,7 +516,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // The devtools frame token of the frame which opened this frame. This is
   // not cleared even if the opener is destroyed or disowns the frame.
-  base::Optional<base::UnguessableToken> opener_devtools_frame_token_;
+  absl::optional<base::UnguessableToken> opener_devtools_frame_token_;
 
   // An observer that clears this node's |original_opener_| if the opener is
   // destroyed.

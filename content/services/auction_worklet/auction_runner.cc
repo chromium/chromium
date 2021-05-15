@@ -5,13 +5,13 @@
 #include "content/services/auction_worklet/auction_runner.h"
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/seller_worklet.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 
@@ -77,7 +77,7 @@ void AuctionRunner::StartBidding() {
 
 void AuctionRunner::OnGenerateBidComplete(
     BidState* state,
-    base::Optional<BidderWorklet::Bid> bid,
+    absl::optional<BidderWorklet::Bid> bid,
     const std::vector<std::string>& errors) {
   DCHECK(!state->bid_generate_complete);
   DCHECK_GT(outstanding_bids_, 0);
@@ -154,7 +154,7 @@ std::string AuctionRunner::AdRenderFingerprint(const BidState* state) {
   return "#####";
 }
 
-base::Optional<std::string> AuctionRunner::PerBuyerSignals(
+absl::optional<std::string> AuctionRunner::PerBuyerSignals(
     const BidState* state) {
   if (auction_config_->per_buyer_signals.has_value()) {
     auto it = auction_config_->per_buyer_signals.value().find(
@@ -162,7 +162,7 @@ base::Optional<std::string> AuctionRunner::PerBuyerSignals(
     if (it != auction_config_->per_buyer_signals.value().end())
       return it->second;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AuctionRunner::CompleteAuction() {
@@ -198,8 +198,8 @@ void AuctionRunner::ReportSellerResult(const BidState* best_bid) {
 
 void AuctionRunner::OnReportSellerResultComplete(
     const BidState* best_bid,
-    const base::Optional<std::string>& signals_for_winner,
-    const base::Optional<GURL>& seller_report_url,
+    const absl::optional<std::string>& signals_for_winner,
+    const absl::optional<GURL>& seller_report_url,
     const std::vector<std::string>& errors) {
   signals_for_winner_ = signals_for_winner;
   seller_report_url_ = seller_report_url;
@@ -225,7 +225,7 @@ void AuctionRunner::ReportBidWin(const BidState* best_bid) {
 
 void AuctionRunner::OnReportBidWinComplete(
     const BidState* best_bid,
-    const base::Optional<GURL>& bidder_report_url,
+    const absl::optional<GURL>& bidder_report_url,
     const std::vector<std::string>& errors) {
   bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());

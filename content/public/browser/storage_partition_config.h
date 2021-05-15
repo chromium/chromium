@@ -9,8 +9,8 @@
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -77,7 +77,7 @@ class CONTENT_EXPORT StoragePartitionConfig {
   FallbackMode fallback_to_partition_domain_for_blob_urls() const {
     return fallback_to_partition_domain_for_blob_urls_;
   }
-  base::Optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
+  absl::optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
 
   bool operator<(const StoragePartitionConfig& rhs) const;
   bool operator==(const StoragePartitionConfig& rhs) const;

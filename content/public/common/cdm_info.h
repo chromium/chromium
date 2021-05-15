@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
@@ -18,6 +17,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ struct CONTENT_EXPORT CdmInfo {
 
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          base::Optional<media::CdmCapability> capability,
+          absl::optional<media::CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
           const base::Token& guid,
@@ -39,7 +39,7 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& file_system_id);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          base::Optional<media::CdmCapability> capability);
+          absl::optional<media::CdmCapability> capability);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
@@ -56,7 +56,7 @@ struct CONTENT_EXPORT CdmInfo {
   // CDM capability, e.g. video codecs, encryption schemes and session types.
   // Optional to allow lazy initialization, i.e. to populate the capability
   // after registration.
-  base::Optional<media::CdmCapability> capability;
+  absl::optional<media::CdmCapability> capability;
 
   // Whether we also support sub key systems of the `key_system`.
   // A sub key system to a key system is like a sub domain to a domain.

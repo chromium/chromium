@@ -202,7 +202,7 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return download::DownloadItem::DownloadCreationType::TYPE_ACTIVE_DOWNLOAD;
 }
 
-const base::Optional<download::DownloadSchedule>&
+const absl::optional<download::DownloadSchedule>&
 FakeDownloadItem::GetDownloadSchedule() const {
   return download_schedule_;
 }
@@ -286,7 +286,7 @@ void FakeDownloadItem::OnAsyncScanningCompleted(
 }
 
 void FakeDownloadItem::OnDownloadScheduleChanged(
-    base::Optional<download::DownloadSchedule> schedule) {
+    absl::optional<download::DownloadSchedule> schedule) {
   NOTREACHED();
 }
 
@@ -338,7 +338,7 @@ const GURL& FakeDownloadItem::GetTabReferrerUrl() const {
   return dummy_url;
 }
 
-const base::Optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
+const absl::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
     const {
   NOTREACHED();
   return dummy_origin;

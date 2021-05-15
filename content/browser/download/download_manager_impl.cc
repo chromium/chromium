@@ -174,7 +174,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -203,7 +203,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
         last_modified, received_bytes, total_bytes, auto_resume_count, hash,
         state, danger_type, interrupt_reason, false /* paused */,
         false /* allow_metered */, opened, last_access_time, transient,
-        received_slices, base::nullopt /*download_schedule*/,
+        received_slices, absl::nullopt /*download_schedule*/,
         nullptr /* download_entry */);
   }
 
@@ -263,7 +263,7 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         rfh->GetSiteInstance()->GetBrowserContext(), rfh,
         rfh->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kDownload, url::Origin(),
-        base::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
+        absl::nullopt /* navigation_id */, ukm::kInvalidSourceIdObj,
         &maybe_proxy_factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
         nullptr /* factory_override */);
@@ -427,7 +427,7 @@ void DownloadManagerImpl::DetermineDownloadTarget(
         target_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN, target_path,
-        base::nullopt /*download_schedule*/,
+        absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
   }
 }
@@ -871,7 +871,7 @@ void DownloadManagerImpl::InterceptNavigation(
 
   const GURL& url = resource_request->url;
   const std::string& method = resource_request->method;
-  base::Optional<url::Origin> request_initiator =
+  absl::optional<url::Origin> request_initiator =
       resource_request->request_initiator;
 
   WebContents::Getter web_contents_getter =
@@ -964,7 +964,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
     const GURL& site_url,
     const GURL& tab_url,
     const GURL& tab_refererr_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -1385,7 +1385,7 @@ void DownloadManagerImpl::BeginDownloadInternal(
         WebContents::FromFrameTreeNodeId, rfh->GetFrameTreeNodeId());
     const GURL& url = params->url();
     const std::string& method = params->method();
-    base::Optional<url::Origin> initiator = params->initiator();
+    absl::optional<url::Origin> initiator = params->initiator();
     base::OnceCallback<void(bool /* download allowed */)>
         on_can_download_checks_done = base::BindOnce(
             &DownloadManagerImpl::BeginResourceDownloadOnChecksComplete,

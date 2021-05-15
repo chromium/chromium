@@ -1688,7 +1688,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
       storage_partition_->browser_context(), /*frame=*/nullptr,
       ChildProcessHost::kInvalidUniqueID,
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-      url::Origin::Create(scope), /*navigation_id=*/base::nullopt,
+      url::Origin::Create(scope), /*navigation_id=*/absl::nullopt,
       ukm::kInvalidSourceIdObj, &pending_receiver, &header_client,
       &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
@@ -1743,7 +1743,7 @@ void ServiceWorkerContextWrapper::DidGetRegisteredOrigins(
 // static
 void ServiceWorkerContextWrapper::
     DidGetRegisteredOriginsForGetInstalledRegistrationOrigins(
-        base::Optional<std::string> host_filter,
+        absl::optional<std::string> host_filter,
         GetInstalledRegistrationOriginsCallback callback,
         scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_callback,
         const std::vector<url::Origin>& origins) {

@@ -98,10 +98,10 @@ blink::WebCSPSourceList ToWebCSPSourceList(
           source_list->report_sample};
 }
 
-base::Optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
+absl::optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
     network::mojom::CSPTrustedTypesPtr trusted_types) {
   if (!trusted_types)
-    return base::nullopt;
+    return absl::nullopt;
   return blink::WebCSPTrustedTypes{
       ToWebVectorOfWebStrings(std::move(trusted_types->list)),
       trusted_types->allow_any, trusted_types->allow_duplicates};

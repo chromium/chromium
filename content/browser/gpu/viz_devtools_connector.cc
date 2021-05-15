@@ -21,7 +21,7 @@ namespace {
 
 void OnSocketCreated(base::OnceCallback<void(int, int)> callback,
                      int result,
-                     const base::Optional<net::IPEndPoint>& local_addr) {
+                     const absl::optional<net::IPEndPoint>& local_addr) {
   int port = 0;
   if (local_addr)
     port = local_addr->port();

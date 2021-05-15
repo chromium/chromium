@@ -485,11 +485,11 @@ RenderProcessHostBadIpcMessageWaiter::RenderProcessHostBadIpcMessageWaiter(
     : internal_waiter_(render_process_host,
                        "Stability.BadMessageTerminated.Content") {}
 
-base::Optional<bad_message::BadMessageReason>
+absl::optional<bad_message::BadMessageReason>
 RenderProcessHostBadIpcMessageWaiter::Wait() {
-  base::Optional<int> internal_result = internal_waiter_.Wait();
+  absl::optional<int> internal_result = internal_waiter_.Wait();
   if (!internal_result.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
@@ -696,7 +696,7 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
   auto parsed_message = base::JSONReader::Read(message_str);
-  base::Optional<int> command_id = parsed_message->FindIntPath("id");
+  absl::optional<int> command_id = parsed_message->FindIntPath("id");
   if (command_id.has_value()) {
     switch (command_id.value()) {
       case kEnableLogMessageId:

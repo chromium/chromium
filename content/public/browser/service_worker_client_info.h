@@ -54,7 +54,7 @@ class CONTENT_EXPORT ServiceWorkerClientInfo {
   int frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
 
   // The ID of the client, if it is a worker.
-  base::Optional<DedicatedOrSharedWorkerToken> worker_token_;
+  absl::optional<DedicatedOrSharedWorkerToken> worker_token_;
 };
 
 }  // namespace content

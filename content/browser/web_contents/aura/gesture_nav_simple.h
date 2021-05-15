@@ -38,7 +38,7 @@ class CONTENT_EXPORT GestureNavSimple : public OverscrollControllerDelegate {
                               OverscrollMode new_mode,
                               OverscrollSource source,
                               cc::OverscrollBehavior behavior) override;
-  base::Optional<float> GetMaxOverscrollDelta() const override;
+  absl::optional<float> GetMaxOverscrollDelta() const override;
 
   WebContentsImpl* web_contents_ = nullptr;
 

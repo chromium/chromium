@@ -60,7 +60,7 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   bool last_navigation_succeeded_;
 
   // Saved parameters from NavigationHandle.
-  base::Optional<ui::PageTransition> transition_type_;
+  absl::optional<ui::PageTransition> transition_type_;
   GURL last_committed_url_;
 
   // The RunLoop used to spin the message loop.

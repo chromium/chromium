@@ -42,16 +42,16 @@ namespace {
 // The secondary key is:
 // Case 1. an empty GURL if the render process is not locked to an origin. In
 // this case, code cache uses |resource_url| as the key.
-// Case 2. a base::nullopt, if the origin lock is opaque (for ex: browser
+// Case 2. a absl::nullopt, if the origin lock is opaque (for ex: browser
 // initiated navigation to a data: URL). In these cases, the code should not be
 // cached since the serialized value of opaque origins should not be used as a
 // key.
 // Case 3: origin_lock if the scheme of origin_lock is Http/Https/chrome.
-// Case 4. base::nullopt otherwise.
-base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
+// Case 4. absl::nullopt otherwise.
+absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
                                                  int render_process_id) {
   if (!resource_url.is_valid() || !resource_url.SchemeIsHTTPOrHTTPS())
-    return base::nullopt;
+    return absl::nullopt;
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
@@ -67,9 +67,9 @@ base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
   // origin checks should always fail for opaque origins but the serialized
   // value of opaque origins does not ensure this.
   // NOTE: HasOpaqueOrigin() will return true if the ProcessLock lock url is
-  // invalid, leading to a return value of base::nullopt.
+  // invalid, leading to a return value of absl::nullopt.
   if (process_lock.HasOpaqueOrigin())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Case 3: process_lock_url is used to enfore site-isolation in code caches.
   // Http/https/chrome schemes are safe to be used as a secondary key. Other
@@ -86,7 +86,7 @@ base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
     return process_lock.lock_url();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -128,7 +128,7 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
   if (!code_cache)
     return;
 
-  base::Optional<GURL> origin_lock =
+  absl::optional<GURL> origin_lock =
       GetSecondaryKeyForCodeCache(url, render_process_id_);
   if (!origin_lock)
     return;
@@ -146,7 +146,7 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  base::Optional<GURL> origin_lock =
+  absl::optional<GURL> origin_lock =
       GetSecondaryKeyForCodeCache(url, render_process_id_);
   if (!origin_lock) {
     std::move(callback).Run(base::Time(), std::vector<uint8_t>());
@@ -166,7 +166,7 @@ void CodeCacheHostImpl::ClearCodeCacheEntry(
   if (!code_cache)
     return;
 
-  base::Optional<GURL> origin_lock =
+  absl::optional<GURL> origin_lock =
       GetSecondaryKeyForCodeCache(url, render_process_id_);
   if (!origin_lock)
     return;

@@ -25,11 +25,11 @@ WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
 
 WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
 
-base::Optional<std::string>
+absl::optional<std::string>
 WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool WebAuthenticationDelegate::ShouldPermitIndividualAttestation(
@@ -56,10 +56,10 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
 }
 
 #if defined(OS_MAC)
-base::Optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
 WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
     BrowserContext* browser_context) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 #endif  // defined(OS_MAC)
 
@@ -71,7 +71,7 @@ WebAuthenticationDelegate::GetGenerateRequestIdCallback(
 }
 #endif
 
-base::Optional<bool> WebAuthenticationDelegate::
+absl::optional<bool> WebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
         RenderFrameHost* render_frame_host) {
   FrameTreeNode* frame_tree_node =
@@ -81,7 +81,7 @@ base::Optional<bool> WebAuthenticationDelegate::
     return AuthenticatorEnvironmentImpl::GetInstance()
         ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =

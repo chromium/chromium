@@ -26,9 +26,9 @@ gfx::Size MockOverscrollControllerDelegateAura::GetDisplaySize() const {
       .size();
 }
 
-base::Optional<float>
+absl::optional<float>
 MockOverscrollControllerDelegateAura::GetMaxOverscrollDelta() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool MockOverscrollControllerDelegateAura::OnOverscrollUpdate(float, float) {

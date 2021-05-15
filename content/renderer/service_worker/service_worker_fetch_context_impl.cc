@@ -155,9 +155,9 @@ net::SiteForCookies ServiceWorkerFetchContextImpl::SiteForCookies() const {
   return net::SiteForCookies::FromUrl(worker_script_url_);
 }
 
-base::Optional<blink::WebSecurityOrigin>
+absl::optional<blink::WebSecurityOrigin>
 ServiceWorkerFetchContextImpl::TopFrameOrigin() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>

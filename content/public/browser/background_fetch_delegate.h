@@ -12,9 +12,9 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -139,8 +139,8 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
   // Updates the UI shown for the fetch job associated with |job_unique_id| to
   // display a new |title| or |icon|.
   virtual void UpdateUI(const std::string& job_unique_id,
-                        const base::Optional<std::string>& title,
-                        const base::Optional<SkBitmap>& icon) = 0;
+                        const absl::optional<std::string>& title,
+                        const absl::optional<SkBitmap>& icon) = 0;
 };
 
 }  // namespace content

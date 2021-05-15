@@ -113,7 +113,7 @@ class URLLoaderInterceptor {
       base::StringPiece headers,
       base::StringPiece body,
       network::mojom::URLLoaderClient* client,
-      base::Optional<net::SSLInfo> ssl_info = base::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Reads the given path, relative to the root source directory, and writes it
   // to |client|. For headers:
@@ -127,14 +127,14 @@ class URLLoaderInterceptor {
       const std::string& relative_path,
       network::mojom::URLLoaderClient* client,
       const std::string* headers = nullptr,
-      base::Optional<net::SSLInfo> ssl_info = base::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Like above, but uses an absolute file path.
   static void WriteResponse(
       const base::FilePath& file_path,
       network::mojom::URLLoaderClient* client,
       const std::string* headers = nullptr,
-      base::Optional<net::SSLInfo> ssl_info = base::nullopt);
+      absl::optional<net::SSLInfo> ssl_info = absl::nullopt);
 
   // Attempts to write |body| to |client| and complete the load with status OK.
   // client->OnReceiveResponse() must have been called prior to this.

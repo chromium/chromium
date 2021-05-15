@@ -7,8 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -58,7 +58,7 @@ class DumpAccessibilityTestHelper {
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.
   // Returns nullopt if the file contains a skip marker.
-  static base::Optional<std::vector<std::string>> LoadExpectationFile(
+  static absl::optional<std::vector<std::string>> LoadExpectationFile(
       const base::FilePath& expected_file);
 
   // Compares the given actual dump against the given expectation and generates

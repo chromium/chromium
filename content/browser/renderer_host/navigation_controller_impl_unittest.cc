@@ -2393,7 +2393,7 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> entry =
       NavigationController::CreateNavigationEntry(
-          url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
+          url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
           std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   entry->SetTitle(u"Title");
@@ -2461,7 +2461,7 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   std::vector<std::unique_ptr<NavigationEntry>> entries;
   std::unique_ptr<NavigationEntry> new_entry =
       NavigationController::CreateNavigationEntry(
-          url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
+          url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
           std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
   new_entry->SetTitle(u"Title");
@@ -3771,7 +3771,7 @@ TEST_F(NavigationControllerTest, CopyRestoredStateAndNavigate) {
   for (size_t i = 0; i < base::size(kRestoredUrls); ++i) {
     std::unique_ptr<NavigationEntry> entry =
         NavigationController::CreateNavigationEntry(
-            kRestoredUrls[i], Referrer(), base::nullopt,
+            kRestoredUrls[i], Referrer(), absl::nullopt,
             ui::PAGE_TRANSITION_RELOAD, false, std::string(), browser_context(),
             nullptr /* blob_url_loader_factory */);
     entries.push_back(std::move(entry));
@@ -4421,7 +4421,7 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       false /* should_replace_current_entry */,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
-      network::mojom::SourceLocation::New(), nullptr, base::nullopt);
+      network::mojom::SourceLocation::New(), nullptr, absl::nullopt);
 
   // Clean up the handler.
   BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(
@@ -4460,7 +4460,7 @@ TEST_F(NavigationControllerTest,
       main_test_rfh()->GetSiteInstance(), Referrer(), ui::PAGE_TRANSITION_LINK,
       should_replace_current_entry, blink::NavigationDownloadPolicy(), "GET",
       nullptr, "", network::mojom::SourceLocation::New(), nullptr,
-      base::nullopt);
+      absl::nullopt);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 

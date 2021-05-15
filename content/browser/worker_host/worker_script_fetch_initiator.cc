@@ -377,7 +377,7 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
         browser_context, creator_render_frame_host, factory_process->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kWorkerMainResource,
         request_initiator,
-        /*navigation_id=*/base::nullopt,
+        /*navigation_id=*/absl::nullopt,
         /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
         ukm::kInvalidSourceIdObj, &default_factory_receiver,
         &factory_params->header_client, &bypass_redirect_checks,
@@ -438,7 +438,7 @@ void WorkerScriptFetchInitiator::DidCreateScriptLoader(
         subresource_loader_factories,
     const GURL& initial_request_url,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-    base::Optional<SubresourceLoaderParams> subresource_loader_params,
+    absl::optional<SubresourceLoaderParams> subresource_loader_params,
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

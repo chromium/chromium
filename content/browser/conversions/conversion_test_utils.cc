@@ -79,9 +79,9 @@ bool ConfigurableConversionTestBrowserClient::
 
 void ConfigurableConversionTestBrowserClient::
     BlockConversionMeasurementInContext(
-        base::Optional<url::Origin> impression_origin,
-        base::Optional<url::Origin> conversion_origin,
-        base::Optional<url::Origin> reporting_origin) {
+        absl::optional<url::Origin> impression_origin,
+        absl::optional<url::Origin> conversion_origin,
+        absl::optional<url::Origin> reporting_origin) {
   blocked_impression_origin_ = impression_origin;
   blocked_conversion_origin_ = conversion_origin;
   blocked_reporting_origin_ = reporting_origin;
@@ -244,7 +244,7 @@ ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
 }
 
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
-    base::Optional<int64_t> impression_id) {
+    absl::optional<int64_t> impression_id) {
   impression_id_ = impression_id;
   return *this;
 }

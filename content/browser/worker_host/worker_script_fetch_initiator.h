@@ -143,7 +143,7 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
           subresource_loader_factories,
       const GURL& initial_request_url,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
       bool success);
 
   // Calculate the final response URL from the redirect chain, URLs fetched by

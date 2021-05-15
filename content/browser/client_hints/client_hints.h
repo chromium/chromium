@@ -29,14 +29,14 @@ CONTENT_EXPORT bool ShouldAddClientHints(
 // per the NetInfo spec to improve privacy.
 CONTENT_EXPORT unsigned long RoundRttForTesting(
     const std::string& host,
-    const base::Optional<base::TimeDelta>& rtt);
+    const absl::optional<base::TimeDelta>& rtt);
 
 // Returns downlink (in Mbps) after adding host-specific random noise to
 // |downlink_kbps| (which is in Kbps), and rounding it as per the NetInfo spec
 // to improve privacy.
 CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
     const std::string& host,
-    const base::Optional<int32_t>& downlink_kbps);
+    const absl::optional<int32_t>& downlink_kbps);
 
 // Returns true if there is a hint in |critical_hints| that would be sent (i.e.
 // not blocked by browser or origin level preferences like disabled JavaScript
@@ -82,7 +82,7 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 // persisted. The distinction is relevant in legacy case where permissions
 // policy is off and there is no valid Accept-CH-Lifetime, where the header
 // still applies locally within frame.
-CONTENT_EXPORT base::Optional<std::vector<network::mojom::WebClientHintsType>>
+CONTENT_EXPORT absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNagivation(
     const GURL& url,
     const ::network::mojom::ParsedHeadersPtr& headers,

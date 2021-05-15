@@ -73,7 +73,7 @@ void MediaSessionServiceImpl::SetPlaybackState(
 }
 
 void MediaSessionServiceImpl::SetPositionState(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   position_ = position;
   MediaSessionImpl* session = GetMediaSession();
   if (session)

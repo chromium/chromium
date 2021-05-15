@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -588,7 +588,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const base::Optional<std::u16string>& untrusted_stack_trace) {}
+      const absl::optional<std::u16string>& untrusted_stack_trace) {}
 
   // Invoked when media is playing or paused.  |id| is unique per player and per
   // RenderFrameHost.  There may be multiple players within a RenderFrameHost
@@ -664,7 +664,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // be invoked before DidUpdateFaviconURL().
   virtual void DidUpdateWebManifestURL(
       RenderFrameHost* target_frame,
-      const base::Optional<GURL>& manifest_url) {}
+      const absl::optional<GURL>& manifest_url) {}
 
   // DEPRECATED. Please register interface binders with BrowserInterfaceBroker
   // instead (see 'Interface-Brokers' section in //docs/mojo_and_services.md).

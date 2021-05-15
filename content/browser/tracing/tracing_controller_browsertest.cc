@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   TestStartAndStopTracingString();
   // Check that a number of important keys exist in the metadata dictionary. The
   // values are not checked to ensure the test is robust.
-  base::Optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   auto* metadata_json = static_cast<base::DictionaryValue*>(
       trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
                        MAYBE_NotWhitelistedMetadataStripped) {
   TestStartAndStopTracingStringWithFilter();
   // Check that a number of important keys exist in the metadata dictionary.
-  base::Optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   const base::Value* metadata_json =
       trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY);

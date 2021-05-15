@@ -13,7 +13,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -27,6 +26,7 @@
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -94,15 +94,15 @@ url::Origin DeserializeOrigin(const std::string& serialized_origin) {
   return url::Origin::Create(GURL(serialized_origin));
 }
 
-std::string Serialize(const base::Optional<GURL>& url) {
+std::string Serialize(const absl::optional<GURL>& url) {
   if (!url)
     return "";
   return url->spec();
 }
-base::Optional<GURL> DeserializeURL(const std::string& serialized_url) {
+absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
   GURL result(serialized_url);
   if (result.is_empty())
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -130,7 +130,7 @@ InterestGroupAdPtr FromInterestGroupAdPtrValue(const base::Value* value) {
 }
 
 std::string Serialize(
-    const base::Optional<std::vector<InterestGroupAdPtr>>& ads) {
+    const absl::optional<std::vector<InterestGroupAdPtr>>& ads) {
   if (!ads)
     return "";
   base::Value list(base::Value::Type::LIST);
@@ -139,19 +139,19 @@ std::string Serialize(
   }
   return Serialize(list);
 }
-base::Optional<std::vector<InterestGroupAdPtr>>
+absl::optional<std::vector<InterestGroupAdPtr>>
 DeserializeInterestGroupAdPtrVector(std::string serialized_ads) {
   std::vector<InterestGroupAdPtr> result;
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   for (const auto& ad_value : ads_value->GetList())
     result.push_back(FromInterestGroupAdPtrValue(&ad_value));
   return result;
 }
 
-std::string Serialize(const base::Optional<std::vector<std::string>> strings) {
+std::string Serialize(const absl::optional<std::vector<std::string>> strings) {
   if (!strings)
     return "";
   base::Value list(base::Value::Type::LIST);
@@ -159,11 +159,11 @@ std::string Serialize(const base::Optional<std::vector<std::string>> strings) {
     list.Append(s);
   return Serialize(list);
 }
-base::Optional<std::vector<std::string>> DeserializeStringVector(
+absl::optional<std::vector<std::string>> DeserializeStringVector(
     std::string serialized_vector) {
   std::unique_ptr<base::Value> list = DeserializeValue(serialized_vector);
   if (!list)
-    return base::nullopt;
+    return absl::nullopt;
   std::vector<std::string> result;
   for (const auto& value : list->GetList())
     result.push_back(value.GetString());
@@ -493,7 +493,7 @@ bool DoRecordInterestGroupWin(sql::Database& db,
   return win_hist.Run();
 }
 
-base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
+absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     sql::Database& db,
     base::Time expiring_after) {
   std::vector<url::Origin> result;
@@ -507,7 +507,7 @@ base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
   if (!load.is_valid()) {
     DLOG(ERROR) << "LoadAllInterestGroups SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return base::nullopt;
+    return absl::nullopt;
   }
   load.Reset(true);
   load.BindTime(0, expiring_after);
@@ -515,7 +515,7 @@ base::Optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     result.push_back(DeserializeOrigin(load.ColumnString(0)));
   }
   if (!load.Succeeded())
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -605,7 +605,7 @@ bool GetBidCount(sql::Database& db,
   return bid_count.Succeeded();
 }
 
-base::Optional<std::vector<BiddingInterestGroupPtr>>
+absl::optional<std::vector<BiddingInterestGroupPtr>>
 DoGetInterestGroupsForOwner(sql::Database& db,
                             const url::Origin& owner,
                             base::Time now) {
@@ -634,7 +634,7 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   if (!load.is_valid()) {
     DLOG(ERROR) << "GetInterestGroupsForOwner SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   load.Reset(true);
@@ -643,7 +643,7 @@ DoGetInterestGroupsForOwner(sql::Database& db,
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin())
-    return base::nullopt;
+    return absl::nullopt;
   while (load.Step()) {
     BiddingInterestGroupPtr bidding_interest_group =
         auction_worklet::mojom::BiddingInterestGroup::New();
@@ -669,7 +669,7 @@ DoGetInterestGroupsForOwner(sql::Database& db,
     result.push_back(std::move(bidding_interest_group));
   }
   if (!load.Succeeded())
-    return base::nullopt;
+    return absl::nullopt;
 
   // These queries are in separate loops to improve locality of the database
   // access.
@@ -677,25 +677,25 @@ DoGetInterestGroupsForOwner(sql::Database& db,
     if (!GetJoinCount(db, owner, bidding_interest_group->group->name,
                       now - InterestGroupStorage::kHistoryLength,
                       bidding_interest_group)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
     if (!GetBidCount(db, owner, bidding_interest_group->group->name,
                      now - InterestGroupStorage::kHistoryLength,
                      bidding_interest_group)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
   for (auto& bidding_interest_group : result) {
     if (!GetPreviousWins(db, owner, bidding_interest_group->group->name,
                          now - InterestGroupStorage::kHistoryLength,
                          bidding_interest_group)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
   if (!transaction.Commit())
-    return base::nullopt;
+    return absl::nullopt;
   return result;
 }
 
@@ -709,7 +709,7 @@ bool DoDeleteInterestGroupData(
     return false;
 
   std::vector<url::Origin> affected_origins;
-  base::Optional<std::vector<url::Origin>> maybe_all_origins =
+  absl::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, infinite_past);
   if (!maybe_all_origins)
     return false;
@@ -720,7 +720,7 @@ bool DoDeleteInterestGroupData(
   }
 
   for (const auto& affected_origin : affected_origins) {
-    base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_interest_groups =
+    absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_interest_groups =
         DoGetInterestGroupsForOwner(db, affected_origin, infinite_past);
     if (!maybe_interest_groups)
       return false;
@@ -1007,7 +1007,7 @@ std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
   if (!EnsureDBInitialized())
     return {};
 
-  base::Optional<std::vector<url::Origin>> maybe_result =
+  absl::optional<std::vector<url::Origin>> maybe_result =
       DoGetAllInterestGroupOwners(*db_, base::Time::Now());
   if (!maybe_result)
     return {};
@@ -1020,7 +1020,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   if (!EnsureDBInitialized())
     return {};
 
-  base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_result =
+  absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_result =
       DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now());
   if (!maybe_result)
     return {};
@@ -1072,12 +1072,12 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time infinite_past = base::Time::Min();
   std::vector<BiddingInterestGroupPtr> result;
-  base::Optional<std::vector<url::Origin>> maybe_owners =
+  absl::optional<std::vector<url::Origin>> maybe_owners =
       DoGetAllInterestGroupOwners(*db_, infinite_past);
   if (!maybe_owners)
     return {};
   for (const auto& owner : *maybe_owners) {
-    base::Optional<std::vector<BiddingInterestGroupPtr>> maybe_owner_results =
+    absl::optional<std::vector<BiddingInterestGroupPtr>> maybe_owner_results =
         DoGetInterestGroupsForOwner(*db_, owner, infinite_past);
     DCHECK(maybe_owner_results);
     std::move(maybe_owner_results->begin(), maybe_owner_results->end(),

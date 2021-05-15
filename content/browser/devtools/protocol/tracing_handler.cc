@@ -16,7 +16,6 @@
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -51,6 +50,7 @@
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 #ifdef OS_ANDROID
@@ -213,7 +213,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
   }
 }
 
-base::Optional<base::trace_event::MemoryDumpLevelOfDetail>
+absl::optional<base::trace_event::MemoryDumpLevelOfDetail>
 StringToMemoryDumpLevelOfDetail(const std::string& str) {
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Detailed)
     return {base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
@@ -240,7 +240,7 @@ void AddPidsToProcessFilter(
   }
 }
 
-base::Optional<perfetto::BackendType> GetBackendTypeFromParameters(
+absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     const std::string& tracing_backend,
     perfetto::TraceConfig& perfetto_config) {
   if (tracing_backend == Tracing::TracingBackendEnum::Chrome)
@@ -257,7 +257,7 @@ base::Optional<perfetto::BackendType> GetBackendTypeFromParameters(
     }
     return perfetto::BackendType::kCustomBackend;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // We currently don't support concurrent tracing sessions, but are planning to.
@@ -745,7 +745,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
                                                proto_format);
   }
 
-  base::Optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
+  absl::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
       tracing_backend.fromMaybe(Tracing::TracingBackendEnum::Auto),
       trace_config);
 
@@ -1021,7 +1021,7 @@ void TracingHandler::RequestMemoryDump(
     return;
   }
 
-  base::Optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
+  absl::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
       StringToMemoryDumpLevelOfDetail(level_of_detail.fromMaybe(
           Tracing::MemoryDumpLevelOfDetailEnum::Detailed));
 

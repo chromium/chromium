@@ -81,7 +81,7 @@ class TestWebContentsObserver : public WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-  base::Optional<blink::mojom::ViewportFit> value_;
+  absl::optional<blink::mojom::ViewportFit> value_;
   blink::mojom::ViewportFit wanted_value_ = blink::mojom::ViewportFit::kAuto;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);

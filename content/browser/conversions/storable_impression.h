@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -42,7 +42,7 @@ class CONTENT_EXPORT StorableImpression {
                      base::Time expiry_time,
                      SourceType source_type,
                      int64_t priority,
-                     const base::Optional<int64_t>& impression_id);
+                     const absl::optional<int64_t>& impression_id);
   StorableImpression(const StorableImpression& other);
   StorableImpression& operator=(const StorableImpression& other) = delete;
   ~StorableImpression();
@@ -59,7 +59,7 @@ class CONTENT_EXPORT StorableImpression {
 
   base::Time expiry_time() const { return expiry_time_; }
 
-  base::Optional<int64_t> impression_id() const { return impression_id_; }
+  absl::optional<int64_t> impression_id() const { return impression_id_; }
 
   SourceType source_type() const { return source_type_; }
 
@@ -83,7 +83,7 @@ class CONTENT_EXPORT StorableImpression {
   int64_t priority_;
 
   // If null, an ID has not been assigned yet.
-  base::Optional<int64_t> impression_id_;
+  absl::optional<int64_t> impression_id_;
 
   // When adding new members, the ImpressionsEqual() testing utility in
   // conversion_test_utils.h should also be updated.

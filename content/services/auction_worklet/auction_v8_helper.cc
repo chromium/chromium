@@ -277,7 +277,7 @@ bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
 v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
     const GURL& src_url,
-    base::Optional<std::string>& error_out) {
+    absl::optional<std::string>& error_out) {
   v8::Isolate* v8_isolate = isolate();
 
   v8::MaybeLocal<v8::String> src_string = CreateUtf8String(src);
@@ -305,7 +305,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::UnboundScript> script,
     base::StringPiece script_name,
     base::span<v8::Local<v8::Value>> args,
-    base::Optional<std::string>& error_out) {
+    absl::optional<std::string>& error_out) {
   DCHECK_EQ(isolate(), context->GetIsolate());
 
   v8::Local<v8::String> v8_script_name;

@@ -11,10 +11,10 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -35,11 +35,11 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
-  base::Optional<base::Value> parsed_message =
+  absl::optional<base::Value> parsed_message =
       base::JSONReader::Read(message_str);
   ASSERT_TRUE(parsed_message.has_value());
 
-  base::Optional<int> id = parsed_message->FindIntPath("id");
+  absl::optional<int> id = parsed_message->FindIntPath("id");
   if (!id || !*id || *id != last_sent_id_)
     return;
 

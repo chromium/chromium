@@ -101,7 +101,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   return resource_request;
 }
 
-base::Optional<content::IdentityRequestAccount> ParseAccount(
+absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account) {
   auto* sub = account.FindStringKey("sub");
   auto* email = account.FindStringKey("email");
@@ -111,7 +111,7 @@ base::Optional<content::IdentityRequestAccount> ParseAccount(
 
   // required fields
   if (!(sub && email && name))
-    return base::nullopt;
+    return absl::nullopt;
 
   return content::IdentityRequestAccount(*sub, *email, *name,
                                          given_name ? *given_name : "",

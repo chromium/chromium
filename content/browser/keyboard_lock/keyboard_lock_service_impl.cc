@@ -12,13 +12,13 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "content/browser/keyboard_lock/keyboard_lock_metrics.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -99,7 +99,7 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
     return;
   }
 
-  base::Optional<base::flat_set<ui::DomCode>> dom_code_set;
+  absl::optional<base::flat_set<ui::DomCode>> dom_code_set;
   if (!dom_codes.empty())
     dom_code_set = std::move(dom_codes);
 

@@ -19,10 +19,10 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"
 
@@ -232,7 +232,7 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
   base::FilePath cache_directory_;
 
   bool caching_enabled_ = true;
-  base::Optional<base::WaitableEvent> hang_event_for_testing_;
+  absl::optional<base::WaitableEvent> hang_event_for_testing_;
   base::CancelableOnceCallback<void()> timeout_callback_;
 
   // All responses are serialized through this DeferredSequencedTaskRunner. It

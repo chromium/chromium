@@ -109,9 +109,9 @@ bool SmsFetcherImpl::Notify(const OriginList& origin_list,
   return true;
 }
 
-void SmsFetcherImpl::OnRemote(base::Optional<OriginList> origin_list,
-                              base::Optional<std::string> one_time_code,
-                              base::Optional<FailureType> failure_type) {
+void SmsFetcherImpl::OnRemote(absl::optional<OriginList> origin_list,
+                              absl::optional<std::string> one_time_code,
+                              absl::optional<FailureType> failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (failure_type) {

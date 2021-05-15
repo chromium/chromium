@@ -91,9 +91,9 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
     return result;
   }
 
-  virtual base::Optional<network::CrossOriginEmbedderPolicy>
+  virtual absl::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id);
-  virtual base::Optional<network::CrossOriginOpenerPolicy>
+  virtual absl::optional<network::CrossOriginOpenerPolicy>
   cross_origin_opener_policy(const std::string& id);
 
  protected:

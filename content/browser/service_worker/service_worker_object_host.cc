@@ -29,7 +29,7 @@ void DispatchExtendableMessageEventAfterStartWorker(
     scoped_refptr<ServiceWorkerVersion> worker,
     blink::TransferableMessage message,
     const url::Origin& source_origin,
-    const base::Optional<base::TimeDelta>& timeout,
+    const absl::optional<base::TimeDelta>& timeout,
     StatusCallback callback,
     PrepareExtendableMessageEventCallback prepare_callback,
     blink::ServiceWorkerStatusCode start_worker_status) {
@@ -64,7 +64,7 @@ void StartWorkerToDispatchExtendableMessageEvent(
     scoped_refptr<ServiceWorkerVersion> worker,
     blink::TransferableMessage message,
     const url::Origin& source_origin,
-    const base::Optional<base::TimeDelta>& timeout,
+    const absl::optional<base::TimeDelta>& timeout,
     StatusCallback callback,
     PrepareExtendableMessageEventCallback prepare_callback) {
   // If not enough time is left to actually process the event don't even
@@ -165,7 +165,7 @@ void DispatchExtendableMessageEventFromClient(
   }
 
   StartWorkerToDispatchExtendableMessageEvent(
-      worker, std::move(message), source_origin, base::nullopt /* timeout */,
+      worker, std::move(message), source_origin, absl::nullopt /* timeout */,
       std::move(callback),
       base::BindOnce(&PrepareExtendableMessageEventFromClient, context,
                      worker->registration_id(), std::move(source_client_info)));
@@ -175,7 +175,7 @@ void DispatchExtendableMessageEventFromServiceWorker(
     scoped_refptr<ServiceWorkerVersion> worker,
     blink::TransferableMessage message,
     const url::Origin& source_origin,
-    const base::Optional<base::TimeDelta>& timeout,
+    const absl::optional<base::TimeDelta>& timeout,
     StatusCallback callback,
     base::WeakPtr<ServiceWorkerContainerHost> source_container_host) {
   if (!source_container_host) {
@@ -295,7 +295,7 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
         FROM_HERE,
         base::BindOnce(&DispatchExtendableMessageEventFromServiceWorker,
                        version_, std::move(message), container_origin_,
-                       base::make_optional(timeout), std::move(callback),
+                       absl::make_optional(timeout), std::move(callback),
                        container_host_->GetWeakPtr()));
   } else if (container_host_->IsContainerForWindowClient()) {
     service_worker_client_utils::GetClient(

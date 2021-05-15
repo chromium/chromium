@@ -68,7 +68,7 @@ class PepperRendererConnection
   void OpenChannelToPepperPlugin(
       const url::Origin& embedder_origin,
       const base::FilePath& path,
-      const base::Optional<url::Origin>& origin_lock,
+      const absl::optional<url::Origin>& origin_lock,
       OpenChannelToPepperPluginCallback callback) override;
 
  private:

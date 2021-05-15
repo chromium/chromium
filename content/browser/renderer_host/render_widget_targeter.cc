@@ -96,7 +96,7 @@ RenderWidgetTargetResult::RenderWidgetTargetResult(
 RenderWidgetTargetResult::RenderWidgetTargetResult(
     RenderWidgetHostViewBase* in_view,
     bool in_should_query_view,
-    base::Optional<gfx::PointF> in_location,
+    absl::optional<gfx::PointF> in_location,
     bool in_latched_target)
     : view(in_view),
       should_query_view(in_should_query_view),
@@ -134,7 +134,7 @@ RenderWidgetTargeter::TargetingRequest::~TargetingRequest() = default;
 
 void RenderWidgetTargeter::TargetingRequest::RunCallback(
     RenderWidgetHostViewBase* target,
-    base::Optional<gfx::PointF> point) {
+    absl::optional<gfx::PointF> point) {
   if (!callback.is_null()) {
     std::move(callback).Run(target ? target->GetWeakPtr() : nullptr, point);
   }
@@ -424,7 +424,7 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 
 void RenderWidgetTargeter::FoundTarget(
     RenderWidgetHostViewBase* target,
-    const base::Optional<gfx::PointF>& target_location,
+    const absl::optional<gfx::PointF>& target_location,
     bool latched_target,
     TargetingRequest* request) {
   DCHECK(request);

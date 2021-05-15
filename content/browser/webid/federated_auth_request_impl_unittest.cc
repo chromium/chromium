@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -77,21 +77,21 @@ typedef struct {
 
 // Mock configuration values for test.
 typedef struct {
-  base::Optional<SigninResponse> signin_response;
+  absl::optional<SigninResponse> signin_response;
   const char* signin_url_or_token;
-  base::Optional<UserApproval> token_permission;
+  absl::optional<UserApproval> token_permission;
 } MockPermissionConfiguration;
 
 typedef struct {
-  base::Optional<AccountsResponse> accounts_response;
+  absl::optional<AccountsResponse> accounts_response;
   IdpNetworkRequestManager::AccountList accounts;
-  base::Optional<TokenResponse> token_response;
+  absl::optional<TokenResponse> token_response;
 } MockMediatedConfiguration;
 
 typedef struct {
   const char* token;
-  base::Optional<UserApproval> initial_permission;
-  base::Optional<FetchStatus> wellknown_fetch_status;
+  absl::optional<UserApproval> initial_permission;
+  absl::optional<FetchStatus> wellknown_fetch_status;
   const char* idp_endpoint;
   const char* accounts_endpoint;
   const char* token_endpoint;
@@ -99,7 +99,7 @@ typedef struct {
   MockMediatedConfiguration Mediated_conf;
 } MockConfiguration;
 
-// base::Optional fields should be nullopt to prevent the corresponding
+// absl::optional fields should be nullopt to prevent the corresponding
 // methods from having EXPECT_CALL set on the mocks.
 typedef struct {
   std::string test_name;
@@ -115,10 +115,10 @@ std::ostream& operator<<(std::ostream& os,
   return os << name;
 }
 
-static const MockMediatedConfiguration kMediatedNoop{base::nullopt, kAccounts,
-                                                     base::nullopt};
-static const MockPermissionConfiguration kPermissionNoop{base::nullopt, "",
-                                                         base::nullopt};
+static const MockMediatedConfiguration kMediatedNoop{absl::nullopt, kAccounts,
+                                                     absl::nullopt};
+static const MockPermissionConfiguration kPermissionNoop{absl::nullopt, "",
+                                                         absl::nullopt};
 
 static const AuthRequestTestCase kPermissionTestCases[]{
     {"Successful run with the IdP page loaded",
@@ -142,13 +142,13 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kIdpEndpoint,
       "",
       "",
-      {SigninResponse::kTokenGranted, kToken, base::nullopt},
+      {SigninResponse::kTokenGranted, kToken, absl::nullopt},
       kMediatedNoop}},
 
     {"Initial user permission denied",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kPermission},
      {RequestIdTokenStatus::kApprovalDeclined, kEmptyToken},
-     {kToken, UserApproval::kDenied, base::nullopt, "", "", "", kPermissionNoop,
+     {kToken, UserApproval::kDenied, absl::nullopt, "", "", "", kPermissionNoop,
       kMediatedNoop}},
 
     {"Wellknown file not found",
@@ -178,7 +178,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kIdpEndpoint,
       "",
       "",
-      {SigninResponse::kSigninError, "", base::nullopt},
+      {SigninResponse::kSigninError, "", absl::nullopt},
       kMediatedNoop}},
 
     {"Error parsing the idpendpoint response",
@@ -190,7 +190,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kIdpEndpoint,
       "",
       "",
-      {SigninResponse::kInvalidResponseError, "", base::nullopt},
+      {SigninResponse::kInvalidResponseError, "", absl::nullopt},
       kMediatedNoop}},
 
     {"IdP window closed before token provision",
@@ -202,7 +202,7 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kIdpEndpoint,
       "",
       "",
-      {SigninResponse::kLoadIdp, kSigninUrl, base::nullopt},
+      {SigninResponse::kLoadIdp, kSigninUrl, absl::nullopt},
       kMediatedNoop}},
 
     {"Token provision declined by user after IdP window closed",
@@ -221,44 +221,44 @@ static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing wellknown for Mediated mode missing token endpoint",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
-     {kToken, base::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
+     {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
       kAccountsEndpoint, "", kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Mediated mode missing accounts endpoint",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
-     {kToken, base::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
+     {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, kIdpEndpoint,
       "", kTokenEndpoint, kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
      {RequestIdTokenStatus::kError, kEmptyToken},
      {kEmptyToken,
-      base::nullopt,
+      absl::nullopt,
       FetchStatus::kSuccess,
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kPermissionNoop,
-      {AccountsResponse::kNetError, kAccounts, base::nullopt}}},
+      {AccountsResponse::kNetError, kAccounts, absl::nullopt}}},
 
     {"Error parsing Accounts response",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
      {RequestIdTokenStatus::kErrorInvalidAccountsResponse, kEmptyToken},
      {kToken,
-      base::nullopt,
+      absl::nullopt,
       FetchStatus::kSuccess,
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
       kPermissionNoop,
-      {AccountsResponse::kInvalidResponseError, kAccounts, base::nullopt}}},
+      {AccountsResponse::kInvalidResponseError, kAccounts, absl::nullopt}}},
 
     {"Successful Mediated flow",
      {kIdpTestOrigin, kAuthRequest, RequestMode::kMediated},
      {RequestIdTokenStatus::kSuccess, kToken},
      {kToken,
-      base::nullopt,
+      absl::nullopt,
       FetchStatus::kSuccess,
       "",
       kAccountsEndpoint,
@@ -278,11 +278,11 @@ class AuthRequestCallbackHelper {
       delete;
 
   RequestIdTokenStatus status() const { return status_; }
-  base::Optional<std::string> token() const { return token_; }
+  absl::optional<std::string> token() const { return token_; }
 
   // This can only be called once per lifetime of this object.
   base::OnceCallback<void(RequestIdTokenStatus,
-                          const base::Optional<std::string>&)>
+                          const absl::optional<std::string>&)>
   callback() {
     return base::BindOnce(&AuthRequestCallbackHelper::ReceiverMethod,
                           base::Unretained(this));
@@ -298,7 +298,7 @@ class AuthRequestCallbackHelper {
 
  private:
   void ReceiverMethod(RequestIdTokenStatus status,
-                      const base::Optional<std::string>& token) {
+                      const absl::optional<std::string>& token) {
     status_ = status;
     token_ = token;
     was_called_ = true;
@@ -308,7 +308,7 @@ class AuthRequestCallbackHelper {
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
   RequestIdTokenStatus status_;
-  base::Optional<std::string> token_;
+  absl::optional<std::string> token_;
 };
 
 // Helper class for receiving the Logout method callback.
@@ -372,7 +372,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
         std::make_unique<NiceMock<MockRequestPermissionDelegate>>();
   }
 
-  std::pair<RequestIdTokenStatus, base::Optional<std::string>>
+  std::pair<RequestIdTokenStatus, absl::optional<std::string>>
   PerformAuthRequest(const std::string& request,
                      blink::mojom::RequestMode mode) {
     auth_request_impl_->SetNetworkManagerForTests(

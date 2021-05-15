@@ -450,7 +450,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
 }
 
 void RenderFrameHostManager::DidChangeOpener(
-    const base::Optional<blink::LocalFrameToken>& opener_frame_token,
+    const absl::optional<blink::LocalFrameToken>& opener_frame_token,
     SiteInstance* source_site_instance) {
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
@@ -712,7 +712,7 @@ void RenderFrameHostManager::ActivatePrerender(
   BackForwardCacheMetrics* back_forward_cache_metrics =
       render_frame_host_->GetBackForwardCacheMetrics();
   if (back_forward_cache_metrics)
-    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(base::nullopt);
+    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(absl::nullopt);
 
   RestoreFromBackForwardCache(std::move(entry));
 }
@@ -2952,7 +2952,7 @@ bool RenderFrameHostManager::InitRenderFrame(
 
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
 
-  base::Optional<blink::FrameToken> opener_frame_token;
+  absl::optional<blink::FrameToken> opener_frame_token;
   if (frame_tree_node_->opener())
     opener_frame_token = GetOpenerFrameToken(site_instance);
 
@@ -3082,7 +3082,7 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstance(
   return MSG_ROUTING_NONE;
 }
 
-base::Optional<blink::FrameToken>
+absl::optional<blink::FrameToken>
 RenderFrameHostManager::GetFrameTokenForSiteInstance(
     SiteInstance* site_instance) {
   if (render_frame_host_->GetSiteInstance() == site_instance)
@@ -3092,7 +3092,7 @@ RenderFrameHostManager::GetFrameTokenForSiteInstance(
   if (proxy)
     return proxy->GetFrameToken();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void RenderFrameHostManager::CommitPending(
@@ -3310,7 +3310,7 @@ void RenderFrameHostManager::CommitPending(
 
   // Store the old_render_frame_host's current frame size so that it can be used
   // to initialize the child RWHV.
-  base::Optional<gfx::Size> old_size = old_render_frame_host->frame_size();
+  absl::optional<gfx::Size> old_size = old_render_frame_host->frame_size();
 
   // Unload the old frame now that the new one is visible.
   // This will unload it and schedule it for deletion when the unload ack
@@ -3559,10 +3559,10 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
   frame_tree->CreateProxiesForSiteInstance(skip_this_node, instance);
 }
 
-base::Optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
+absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
     SiteInstance* instance) {
   if (!frame_tree_node_->opener())
-    return base::nullopt;
+    return absl::nullopt;
 
   return frame_tree_node_->opener()
       ->render_manager()

@@ -142,7 +142,7 @@ void AccessibilityScriptsMacBrowserTest::AssertOutputMatchesExpectations() {
   base::FilePath expectation_file =
       helper_.GetExpectationFilePath(test_file_path_);
   EXPECT_FALSE(expectation_file.empty());
-  base::Optional<std::vector<std::string>> expected_lines =
+  absl::optional<std::vector<std::string>> expected_lines =
       helper_.LoadExpectationFile(expectation_file);
   EXPECT_TRUE(expected_lines.has_value());
 

@@ -46,8 +46,8 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     DedicatedWorkerServiceImpl* service,
     const blink::DedicatedWorkerToken& token,
     RenderProcessHost* worker_process_host,
-    base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
-    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
+    absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
@@ -410,7 +410,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
-      worker_origin_, /*navigation_id=*/base::nullopt,
+      worker_origin_, /*navigation_id=*/absl::nullopt,
       ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
@@ -549,7 +549,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetID(),
-          /*creator_render_frame_host_id_=*/base::nullopt,
+          /*creator_render_frame_host_id_=*/absl::nullopt,
           /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
           worker_origin_, isolation_info_, cross_origin_embedder_policy(),
           creator_coep_reporter, ancestor_coep_reporter_),

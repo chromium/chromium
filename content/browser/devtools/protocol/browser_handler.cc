@@ -373,7 +373,7 @@ Response BrowserHandler::SetPermission(
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(browser_context);
 
-  base::Optional<url::Origin> overridden_origin;
+  absl::optional<url::Origin> overridden_origin;
   if (origin.isJust()) {
     overridden_origin = url::Origin::Create(GURL(origin.fromJust()));
     if (overridden_origin->opaque())
@@ -414,7 +414,7 @@ Response BrowserHandler::GrantPermissions(
 
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(browser_context);
-  base::Optional<url::Origin> overridden_origin;
+  absl::optional<url::Origin> overridden_origin;
   if (origin.isJust()) {
     overridden_origin = url::Origin::Create(GURL(origin.fromJust()));
     if (overridden_origin->opaque())

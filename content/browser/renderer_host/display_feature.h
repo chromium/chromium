@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -65,7 +65,7 @@ struct CONTENT_EXPORT DisplayFeature {
   std::vector<gfx::Rect> ComputeWindowSegments(
       const gfx::Size& visible_viewport_size) const;
 
-  static base::Optional<DisplayFeature> Create(
+  static absl::optional<DisplayFeature> Create(
       Orientation orientation,
       int offset,
       int mask_length,

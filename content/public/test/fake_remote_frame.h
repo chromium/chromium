@@ -84,7 +84,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
           parsed_permissions_policy) override {}
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override {}
   void UpdateOpener(
-      const base::Optional<blink::FrameToken>& opener_frame_token) override;
+      const absl::optional<blink::FrameToken>& opener_frame_token) override;
   void DetachAndDispose() override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;

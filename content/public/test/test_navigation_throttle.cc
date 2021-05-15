@@ -5,10 +5,10 @@
 #include "content/public/test/test_navigation_throttle.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

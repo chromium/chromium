@@ -11,13 +11,13 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -70,7 +70,7 @@ void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
-    base::Optional<std::vector<net::SourceStream::SourceType>>*
+    absl::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types);
 
 // Returns true if devtools want |*override_out| to be used.
@@ -79,7 +79,7 @@ void ApplyNetworkRequestOverrides(
 //  the behavior).
 bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
-    base::Optional<blink::UserAgentMetadata>* override_out);
+    absl::optional<blink::UserAgentMetadata>* override_out);
 
 bool WillCreateURLLoaderFactory(
     RenderFrameHostImpl* rfh,
@@ -126,12 +126,12 @@ void BackForwardCacheNotUsed(const NavigationRequest* nav_request);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
-    base::Optional<const base::UnguessableToken> devtools_navigation_token,
+    absl::optional<const base::UnguessableToken> devtools_navigation_token,
     const GURL& outer_request_url,
     const network::mojom::URLResponseHead& outer_response,
-    const base::Optional<SignedExchangeEnvelope>& header,
+    const absl::optional<SignedExchangeEnvelope>& header,
     const scoped_refptr<net::X509Certificate>& certificate,
-    const base::Optional<net::SSLInfo>& ssl_info,
+    const absl::optional<net::SSLInfo>& ssl_info,
     const std::vector<SignedExchangeError>& errors);
 void OnSignedExchangeCertificateRequestSent(
     FrameTreeNode* frame_tree_node,
@@ -179,7 +179,7 @@ void ReportSameSiteCookieIssue(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::SameSiteCookieOperation operation,
-    const base::Optional<std::string>& devtools_request_id);
+    const absl::optional<std::string>& devtools_request_id);
 
 // This function works similar to RenderFrameHostImpl::AddInspectorIssue, in
 // that it reports an InspectorIssue to DevTools clients. The difference is that
@@ -209,7 +209,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
 void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
-    const base::Optional<net::WebTransportError>& error);
+    const absl::optional<net::WebTransportError>& error);
 
 // Adds a debug error message from a worklet to the devtools console.
 void LogWorkletError(RenderFrameHostImpl* frame_host, const std::string& error);

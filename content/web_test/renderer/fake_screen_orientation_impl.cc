@@ -56,10 +56,10 @@ bool FakeScreenOrientationImpl::UpdateScreenOrientation(
   return false;
 }
 
-base::Optional<blink::mojom::ScreenOrientation>
+absl::optional<blink::mojom::ScreenOrientation>
 FakeScreenOrientationImpl::CurrentOrientationType() const {
   if (is_disabled_)
-    return base::nullopt;
+    return absl::nullopt;
   return current_orientation_;
 }
 

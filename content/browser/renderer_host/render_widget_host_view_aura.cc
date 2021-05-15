@@ -530,7 +530,7 @@ bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {
 void RenderWidgetHostViewAura::EnsureSurfaceSynchronizedForWebTest() {
   ++latest_capture_sequence_number_;
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseInfiniteDeadline(),
-                              base::nullopt);
+                              absl::nullopt);
 }
 
 bool RenderWidgetHostViewAura::IsShowing() {
@@ -652,7 +652,7 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   window_->layer()->SetColor(color);
 }
 
-base::Optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
+absl::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
   return display_feature_;
 }
 
@@ -661,7 +661,7 @@ void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
   if (display_feature)
     display_feature_ = *display_feature;
   else
-    display_feature_ = base::nullopt;
+    display_feature_ = absl::nullopt;
 }
 
 void RenderWidgetHostViewAura::WindowTitleChanged() {
@@ -837,7 +837,7 @@ void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
 
 bool RenderWidgetHostViewAura::RequestRepaintForTesting() {
   return SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                     base::nullopt);
+                                     absl::nullopt);
 }
 
 void RenderWidgetHostViewAura::DidStopFlinging() {
@@ -1098,7 +1098,7 @@ bool RenderWidgetHostViewAura::GetIsMouseLockedUnadjustedMovementForTesting() {
 }
 
 bool RenderWidgetHostViewAura::LockKeyboard(
-    base::Optional<base::flat_set<ui::DomCode>> codes) {
+    absl::optional<base::flat_set<ui::DomCode>> codes) {
   return event_handler_->LockKeyboard(std::move(codes));
 }
 
@@ -1554,10 +1554,10 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
   return true;
 }
 
-base::Optional<ui::GrammarFragment>
+absl::optional<ui::GrammarFragment>
 RenderWidgetHostViewAura::GetGrammarFragment(const gfx::Range& range) {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
-    return base::nullopt;
+    return absl::nullopt;
   return text_input_manager_->GetGrammarFragment(range);
 }
 
@@ -1605,8 +1605,8 @@ bool RenderWidgetHostViewAura::AddGrammarFragments(
 
 #if defined(OS_WIN)
 void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
-    base::Optional<gfx::Rect>* control_bounds,
-    base::Optional<gfx::Rect>* selection_bounds) {
+    absl::optional<gfx::Rect>* control_bounds,
+    absl::optional<gfx::Rect>* selection_bounds) {
   if (text_input_manager_) {
     const ui::mojom::TextInputState* state =
         text_input_manager_->GetTextInputState();
@@ -2156,7 +2156,7 @@ void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
 
 bool RenderWidgetHostViewAura::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const base::Optional<viz::LocalSurfaceId>& child_local_surface_id) {
+    const absl::optional<viz::LocalSurfaceId>& child_local_surface_id) {
   DCHECK(window_);
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
@@ -2604,7 +2604,7 @@ void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoRect(
 void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged(
     bool rotation) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              base::nullopt);
+                              absl::nullopt);
 }
 
 viz::ScopedSurfaceIdAllocator
@@ -2632,7 +2632,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
                                   window_->GetLocalSurfaceId());
     } else {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
-                                  base::nullopt);
+                                  absl::nullopt);
     }
   }
     delegated_frame_host_->DidNavigate();

@@ -129,7 +129,7 @@ class ServiceWorkerAccessContentBrowserClient
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       BrowserContext* context) override {
     return AllowServiceWorkerResult::FromPolicy(!javascript_allowed_,

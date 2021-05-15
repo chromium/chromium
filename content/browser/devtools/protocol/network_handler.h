@@ -13,7 +13,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -22,6 +21,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace net {
@@ -179,7 +179,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       net::HttpRequestHeaders* headers,
       bool* skip_service_worker,
       bool* disable_cache,
-      base::Optional<std::vector<net::SourceStream::SourceType>>*
+      absl::optional<std::vector<net::SourceStream::SourceType>>*
           accepted_stream_types);
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
@@ -187,7 +187,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                    const std::string& loader_id,
                    const network::ResourceRequest& request,
                    const char* initiator_type,
-                   const base::Optional<GURL>& initiator_url,
+                   const absl::optional<GURL>& initiator_url,
                    const std::string& initiator_devtools_request_id,
                    base::TimeTicks timestamp);
   void ResponseReceived(const std::string& request_id,
@@ -202,12 +202,12 @@ class NetworkHandler : public DevToolsDomainHandler,
       const network::URLLoaderCompletionStatus& completion_status);
 
   void OnSignedExchangeReceived(
-      base::Optional<const base::UnguessableToken> devtools_navigation_token,
+      absl::optional<const base::UnguessableToken> devtools_navigation_token,
       const GURL& outer_request_url,
       const network::mojom::URLResponseHead& outer_response,
-      const base::Optional<SignedExchangeEnvelope>& header,
+      const absl::optional<SignedExchangeEnvelope>& header,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const base::Optional<net::SSLInfo>& ssl_info,
+      const absl::optional<net::SSLInfo>& ssl_info,
       const std::vector<SignedExchangeError>& errors);
 
   DispatchResponse GetSecurityIsolationStatus(
@@ -224,7 +224,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-      const base::Optional<std::string>& response_headers_text,
+      const absl::optional<std::string>& response_headers_text,
       network::mojom::IPAddressSpace resource_address_space);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
@@ -292,7 +292,7 @@ class NetworkHandler : public DevToolsDomainHandler,
            std::unique_ptr<LoadNetworkResourceCallback>,
            base::UniquePtrComparator>
       loaders_;
-  base::Optional<std::set<net::SourceStream::SourceType>>
+  absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 

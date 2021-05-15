@@ -34,7 +34,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnExitPictureInPicture(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
-  base::Optional<media_session::MediaPosition> GetPosition(
+  absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
@@ -82,7 +82,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
     bool is_playing_;
     double volume_multiplier_;
-    base::Optional<media_session::MediaPosition> position_;
+    absl::optional<media_session::MediaPosition> position_;
     bool is_in_picture_in_picture_;
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;

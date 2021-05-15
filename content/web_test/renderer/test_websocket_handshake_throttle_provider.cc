@@ -67,7 +67,7 @@ class TestWebSocketHandshakeThrottle
 
     auto wrapper = base::BindOnce(
         [](CompletionCallback callback) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
         },
         std::move(completion_callback));
 

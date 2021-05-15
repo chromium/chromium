@@ -7,11 +7,11 @@
 
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
 
@@ -97,7 +97,7 @@ class CONTENT_EXPORT FontEnumerationCache {
   blink::mojom::FontEnumerationStatus status_ =
       blink::mojom::FontEnumerationStatus::kOk;
 
-  base::Optional<std::string> locale_override_;
+  absl::optional<std::string> locale_override_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

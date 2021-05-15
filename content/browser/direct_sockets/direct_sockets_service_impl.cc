@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -23,6 +22,7 @@
 #include "net/net_buildflags.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN) || defined(OS_MAC)
 #include "base/enterprise_util.h"
@@ -34,7 +34,7 @@ namespace content {
 
 namespace {
 
-base::Optional<bool> g_is_enterprise_managed_for_testing;
+absl::optional<bool> g_is_enterprise_managed_for_testing;
 
 constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 
@@ -54,9 +54,9 @@ network::mojom::NetworkContext*& GetNetworkContextForTesting() {
 }
 
 // Get local ip address from options.
-base::Optional<net::IPEndPoint> GetLocalAddr(
+absl::optional<net::IPEndPoint> GetLocalAddr(
     const blink::mojom::DirectSocketOptions& options) {
-  base::Optional<net::IPEndPoint> local_addr = base::nullopt;
+  absl::optional<net::IPEndPoint> local_addr = absl::nullopt;
   if (!options.local_hostname)
     return local_addr;
 
@@ -161,7 +161,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
 
     mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver;
     network_context_->CreateHostResolver(
-        base::nullopt, pending_host_resolver.InitWithNewPipeAndPassReceiver());
+        absl::nullopt, pending_host_resolver.InitWithNewPipeAndPassReceiver());
     resolver_.Bind(std::move(pending_host_resolver));
 
     network::mojom::ResolveHostParametersPtr parameters =
@@ -179,7 +179,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     receiver_.set_disconnect_handler(
         base::BindOnce(&ResolveHostAndOpenSocket::OnComplete,
                        base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
  private:
@@ -187,7 +187,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+      const absl::optional<net::AddressList>& resolved_addresses) override {
     // Reject hostnames that resolve to non-public exception unless a raw IP
     // address or a *.local hostname is entered by the user.
     if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
@@ -202,10 +202,10 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
 
   void OpenTCPSocket(
       int result,
-      const base::Optional<net::AddressList>& resolved_addresses) {
+      const absl::optional<net::AddressList>& resolved_addresses) {
     if (result != net::OK) {
       std::move(tcp_callback_)
-          .Run(result, base::nullopt, base::nullopt,
+          .Run(result, absl::nullopt, absl::nullopt,
                mojo::ScopedDataPipeConsumerHandle(),
                mojo::ScopedDataPipeProducerHandle());
       delete this;
@@ -213,7 +213,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     }
 
     DCHECK(resolved_addresses && !resolved_addresses->empty());
-    const base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
+    const absl::optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
 
     network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
         network::mojom::TCPConnectedSocketOptions::New();
@@ -242,15 +242,15 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
 
   void OpenUDPSocket(
       int result,
-      const base::Optional<net::AddressList>& resolved_addresses) {
+      const absl::optional<net::AddressList>& resolved_addresses) {
     if (result != net::OK) {
-      std::move(udp_callback_).Run(result, base::nullopt, base::nullopt);
+      std::move(udp_callback_).Run(result, absl::nullopt, absl::nullopt);
       delete this;
       return;
     }
 
     DCHECK(resolved_addresses && !resolved_addresses->empty());
-    base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
+    absl::optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
 
     // TODO(crbug.com/1119620): network_context_->CreateUDPSocket
     // TODO(crbug.com/1119620): Connect(remote_addr, udp_socket_options)
@@ -303,7 +303,7 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
   // TODO(crbug.com/1119681): Collect metrics for usage and permission checks
 
   if (result != net::OK) {
-    std::move(callback).Run(result, base::nullopt, base::nullopt,
+    std::move(callback).Run(result, absl::nullopt, absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
     return;
@@ -334,7 +334,7 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
   const net::Error result = ValidateOptions(*options);
 
   if (result != net::OK) {
-    std::move(callback).Run(result, base::nullopt, base::nullopt);
+    std::move(callback).Run(result, absl::nullopt, absl::nullopt);
     return;
   }
 
@@ -365,7 +365,7 @@ void DirectSocketsServiceImpl::SetNetworkContextForTesting(
 }
 
 // static
-base::Optional<net::IPEndPoint>
+absl::optional<net::IPEndPoint>
 DirectSocketsServiceImpl::GetLocalAddrForTesting(
     const blink::mojom::DirectSocketOptions& options) {
   return GetLocalAddr(options);

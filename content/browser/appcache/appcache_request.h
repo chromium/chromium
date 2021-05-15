@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -50,7 +50,7 @@ class CONTENT_EXPORT AppCacheRequest {
   }
 
   // Used for cookie policy.
-  base::Optional<url::Origin> GetTopFrameOrigin() const;
+  absl::optional<url::Origin> GetTopFrameOrigin() const;
 
   // The referrer for this request.
   const GURL GetReferrer() const { return request_.referrer; }

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
@@ -136,7 +136,7 @@ struct PushMessagingManager::RegisterData {
 
   GURL requesting_origin;
   int64_t service_worker_registration_id;
-  base::Optional<std::string> existing_subscription_id;
+  absl::optional<std::string> existing_subscription_id;
   blink::mojom::PushSubscriptionOptionsPtr options;
   SubscribeCallback callback;
 
@@ -174,7 +174,7 @@ class PushMessagingManager::Core {
       const std::string& application_server_key,
       bool is_valid,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth);
 
@@ -218,7 +218,7 @@ class PushMessagingManager::Core {
   void DidRegister(RegisterData data,
                    const std::string& push_subscription_id,
                    const GURL& endpoint,
-                   const base::Optional<base::Time>& expiration_time,
+                   const absl::optional<base::Time>& expiration_time,
                    const std::vector<uint8_t>& p256dh,
                    const std::vector<uint8_t>& auth,
                    blink::mojom::PushRegistrationStatus status);
@@ -518,7 +518,7 @@ void PushMessagingManager::Core::DidRegister(
     RegisterData data,
     const std::string& push_subscription_id,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
@@ -557,7 +557,7 @@ void PushMessagingManager::PersistRegistrationOnSW(
     RegisterData data,
     const std::string& push_subscription_id,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
@@ -580,7 +580,7 @@ void PushMessagingManager::PersistRegistrationOnSW(
 void PushMessagingManager::DidPersistRegistrationOnSW(
     RegisterData data,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus push_registration_status,
@@ -608,7 +608,7 @@ void PushMessagingManager::SendSubscriptionSuccess(
     RegisterData data,
     blink::mojom::PushRegistrationStatus status,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
@@ -726,12 +726,12 @@ void PushMessagingManager::DidUnregister(
     case blink::mojom::PushUnregistrationStatus::PENDING_SERVICE_ERROR:
       std::move(callback).Run(blink::mojom::PushErrorType::NONE,
                               true /* did_unsubscribe */,
-                              base::nullopt /* error_message */);
+                              absl::nullopt /* error_message */);
       break;
     case blink::mojom::PushUnregistrationStatus::SUCCESS_WAS_NOT_REGISTERED:
       std::move(callback).Run(blink::mojom::PushErrorType::NONE,
                               false /* did_unsubscribe */,
-                              base::nullopt /* error_message */);
+                              absl::nullopt /* error_message */);
       break;
     case blink::mojom::PushUnregistrationStatus::NO_SERVICE_WORKER:
     case blink::mojom::PushUnregistrationStatus::SERVICE_NOT_AVAILABLE:
@@ -860,7 +860,7 @@ void PushMessagingManager::Core::GetSubscriptionDidGetInfoOnUI(
     const std::string& application_server_key,
     bool is_valid,
     const GURL& endpoint,
-    const base::Optional<base::Time>& expiration_time,
+    const absl::optional<base::Time>& expiration_time,
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -945,7 +945,7 @@ void PushMessagingManager::Core::GetSubscriptionInfoOnUI(
   if (!push_service) {
     std::move(callback).Run(
         false /* is_valid */, GURL::EmptyGURL() /* endpoint */,
-        base::nullopt /* expiration_time */,
+        absl::nullopt /* expiration_time */,
         std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */);
     return;
   }

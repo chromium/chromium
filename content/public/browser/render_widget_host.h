@@ -12,13 +12,13 @@
 
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/drop_data.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sender.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -261,7 +261,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual float GetDeviceScaleFactor() = 0;
 
   // Get the allowed touch action corresponding to this RenderWidgetHost.
-  virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
+  virtual absl::optional<cc::TouchAction> GetAllowedTouchAction() = 0;
 
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;

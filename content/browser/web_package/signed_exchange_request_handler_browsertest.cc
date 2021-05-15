@@ -100,10 +100,10 @@ class RedirectObserver : public WebContentsObserver {
       response_code_ = response->response_code();
   }
 
-  const base::Optional<int>& response_code() const { return response_code_; }
+  const absl::optional<int>& response_code() const { return response_code_; }
 
  private:
-  base::Optional<int> response_code_;
+  absl::optional<int> response_code_;
 
   DISALLOW_COPY_AND_ASSIGN(RedirectObserver);
 };
@@ -133,11 +133,11 @@ class FinishNavigationObserver : public WebContentsObserver {
     std::move(done_closure_).Run();
   }
 
-  const base::Optional<net::Error>& error_code() const { return error_code_; }
+  const absl::optional<net::Error>& error_code() const { return error_code_; }
 
  private:
   base::OnceClosure done_closure_;
-  base::Optional<net::Error> error_code_;
+  absl::optional<net::Error> error_code_;
 
   DISALLOW_COPY_AND_ASSIGN(FinishNavigationObserver);
 };
@@ -1130,12 +1130,12 @@ class SignedExchangeAcceptHeaderBrowserTest
     }
   }
 
-  base::Optional<std::string> GetInterceptedAcceptHeader(
+  absl::optional<std::string> GetInterceptedAcceptHeader(
       const GURL& url) const {
     base::AutoLock lock(url_accept_header_map_lock_);
     const auto it = url_accept_header_map_.find(url);
     if (it == url_accept_header_map_.end())
-      return base::nullopt;
+      return absl::nullopt;
     return it->second;
   }
 
@@ -1311,10 +1311,10 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeAcceptHeaderBrowserTest, ServiceWorker) {
         is_generated_scope
             ? (IsSignedExchangeEnabled() ? frame_accept_with_sxg : frame_accept)
             : "Done";
-    const base::Optional<std::string> expected_target_accept_header =
+    const absl::optional<std::string> expected_target_accept_header =
         is_generated_scope
-            ? base::nullopt
-            : base::Optional<std::string>(IsSignedExchangeEnabled()
+            ? absl::nullopt
+            : absl::optional<std::string>(IsSignedExchangeEnabled()
                                               ? frame_accept_with_sxg
                                               : frame_accept);
 

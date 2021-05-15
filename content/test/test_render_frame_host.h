@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_params.mojom-forward.h"
@@ -24,6 +23,7 @@
 #include "content/test/test_render_widget_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -93,7 +93,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
   void SimulateManifestURLUpdate(
-      const base::Optional<GURL>& manifest_url) override;
+      const absl::optional<GURL>& manifest_url) override;
 
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,
@@ -122,7 +122,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                               bool has_user_gesture);
 
   void SimulateDidChangeOpener(
-      const base::Optional<blink::LocalFrameToken>& opener_frame_token);
+      const absl::optional<blink::LocalFrameToken>& opener_frame_token);
 
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
@@ -148,7 +148,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool was_fetched_via_cache,
       bool is_signed_exchange_inner_response,
       net::HttpResponseInfo::ConnectionInfo connection_info,
-      base::Optional<net::SSLInfo> ssl_info,
+      absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const std::vector<std::string>& dns_aliases);
 
@@ -219,7 +219,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
-      base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
@@ -236,7 +236,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool has_stale_copy_in_cache,
       int32_t error_code,
       int32_t extended_error_code,
-      const base::Optional<std::string>& error_page_content,
+      const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::PolicyContainerPtr policy_container) override;
@@ -253,7 +253,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool was_fetched_via_cache,
       bool is_signed_exchange_inner_response,
       net::HttpResponseInfo::ConnectionInfo connection_info,
-      base::Optional<net::SSLInfo> ssl_info,
+      absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const std::vector<std::string>& dns_aliases);
 

@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_EXPOSED_ISOLATION_INFO_H_
 #define CONTENT_BROWSER_WEB_EXPOSED_ISOLATION_INFO_H_
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -74,14 +74,14 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   bool operator<(const WebExposedIsolationInfo& b) const;
 
  private:
-  WebExposedIsolationInfo(const base::Optional<url::Origin>& origin,
+  WebExposedIsolationInfo(const absl::optional<url::Origin>& origin,
                           bool isolated_application);
 
   // |origin_| serve two purposes. If null, it indicates that the page(s) it
   // refers to are not isolated, and that the crossOriginIsolated boolean is
   // false. If it has a value, all these page(s) share the same top level
   // origin. This ensure we can put them in the same process.
-  base::Optional<url::Origin> origin_;
+  absl::optional<url::Origin> origin_;
 
   // Some applications may require additional isolation above and beyond what
   // COOP/COEP-based COI provides. This boolean will be `true` for applications

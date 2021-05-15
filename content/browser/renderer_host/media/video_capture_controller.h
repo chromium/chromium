@@ -108,7 +108,7 @@ class CONTENT_EXPORT VideoCaptureController
                     int buffer_id,
                     const media::VideoCaptureFeedback& feedback);
 
-  const base::Optional<media::VideoCaptureFormat> GetVideoCaptureFormat() const;
+  const absl::optional<media::VideoCaptureFormat> GetVideoCaptureFormat() const;
 
   bool has_received_frames() const { return has_received_frames_; }
 
@@ -288,7 +288,7 @@ class CONTENT_EXPORT VideoCaptureController
   bool has_received_frames_;
   base::TimeTicks time_of_start_request_;
 
-  base::Optional<media::VideoCaptureFormat> video_capture_format_;
+  absl::optional<media::VideoCaptureFormat> video_capture_format_;
 
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};
 

@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/widget_type.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -117,9 +117,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   std::u16string GetSelectedText() override;
   bool IsMouseLocked() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
-  bool LockKeyboard(base::Optional<base::flat_set<ui::DomCode>> codes) override;
+  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
   void SetBackgroundColor(SkColor color) override;
-  base::Optional<SkColor> GetBackgroundColor() override;
+  absl::optional<SkColor> GetBackgroundColor() override;
   void CopyBackgroundColorIfPresentFrom(
       const RenderWidgetHostView& other) override;
   void UnlockKeyboard() override;
@@ -483,7 +483,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Gets the DisplayFeature whose offset and mask_length are expressed in DIPs
   // relative to the view. See display_feature.h for more details.
-  virtual base::Optional<DisplayFeature> GetDisplayFeature() = 0;
+  virtual absl::optional<DisplayFeature> GetDisplayFeature() = 0;
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;
@@ -539,7 +539,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // SetContentBackgroundColor is called when the renderer wants to update the
   // view's background color.
   void SetContentBackgroundColor(SkColor color);
-  base::Optional<SkColor> content_background_color() const {
+  absl::optional<SkColor> content_background_color() const {
     return content_background_color_;
   }
 
@@ -599,11 +599,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   TextInputManager* text_input_manager_ = nullptr;
 
   // The background color used in the current renderer.
-  base::Optional<SkColor> content_background_color_;
+  absl::optional<SkColor> content_background_color_;
 
   // The default background color used before getting the
   // |content_background_color|.
-  base::Optional<SkColor> default_background_color_;
+  absl::optional<SkColor> default_background_color_;
 
   bool is_currently_scrolling_viewport_ = false;
 
@@ -657,7 +657,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 
-  base::Optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
+  absl::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 
   // The last tab switch processing start request. This should only be set and
   // retrieved using SetRecordContentToVisibleTimeRequest and

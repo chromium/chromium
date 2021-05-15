@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -42,6 +41,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -346,11 +346,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* owner= */ test_origin_a,
       /* name = */ "bicycles",
       /* bidding_url = */ GURL("https://bid.a.test"),
-      /* update_url  = */ base::nullopt,
-      /* trusted_bidding_signals_url = */ base::nullopt,
-      /* trusted_bidding_signals_keys = */ base::nullopt,
-      /* user_bidding_signals = */ base::nullopt,
-      /* ads = */ base::nullopt)));
+      /* update_url  = */ absl::nullopt,
+      /* trusted_bidding_signals_url = */ absl::nullopt,
+      /* trusted_bidding_signals_keys = */ absl::nullopt,
+      /* user_bidding_signals = */ absl::nullopt,
+      /* ads = */ absl::nullopt)));
 
   // This join should silently fail since a.test is not the same origin as
   // the update_url, update.a.test
@@ -358,12 +358,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* expiry */ base::Time(),
       /* owner= */ test_origin_a,
       /* name = */ "tricycles",
-      /* bidding_url = */ base::nullopt,
+      /* bidding_url = */ absl::nullopt,
       /* update_url  = */ GURL("https://update.a.test"),
-      /* trusted_bidding_signals_url = */ base::nullopt,
-      /* trusted_bidding_signals_keys = */ base::nullopt,
-      /* user_bidding_signals = */ base::nullopt,
-      /* ads = */ base::nullopt)));
+      /* trusted_bidding_signals_url = */ absl::nullopt,
+      /* trusted_bidding_signals_keys = */ absl::nullopt,
+      /* user_bidding_signals = */ absl::nullopt,
+      /* ads = */ absl::nullopt)));
 
   // This join should silently fail since a.test is not the same origin as
   // the trusted_bidding_signals_url, signals.a.test
@@ -371,12 +371,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* expiry */ base::Time(),
       /* owner= */ test_origin_a,
       /* name = */ "four-wheelers",
-      /* bidding_url = */ base::nullopt,
-      /* update_url  = */ base::nullopt,
+      /* bidding_url = */ absl::nullopt,
+      /* update_url  = */ absl::nullopt,
       /* trusted_bidding_signals_url = */ GURL("https://signals.a.test"),
-      /* trusted_bidding_signals_keys = */ base::nullopt,
-      /* user_bidding_signals = */ base::nullopt,
-      /* ads = */ base::nullopt)));
+      /* trusted_bidding_signals_keys = */ absl::nullopt,
+      /* user_bidding_signals = */ absl::nullopt,
+      /* ads = */ absl::nullopt)));
 
   // This join should silently fail since d.test is not allowlisted for the API
   GURL test_url_d = https_server_->GetURL("d.test", "/echo");
@@ -408,12 +408,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
       /* expiry */ base::Time::Now() + base::TimeDelta::FromSeconds(300),
       /* owner= */ test_origin_d,
       /* name = */ "candy",
-      /* bidding_url = */ base::nullopt,
-      /* update_url  = */ base::nullopt,
-      /* trusted_bidding_signals_url = */ base::nullopt,
-      /* trusted_bidding_signals_keys = */ base::nullopt,
-      /* user_bidding_signals = */ base::nullopt,
-      /* ads = */ base::nullopt));
+      /* bidding_url = */ absl::nullopt,
+      /* update_url  = */ absl::nullopt,
+      /* trusted_bidding_signals_url = */ absl::nullopt,
+      /* trusted_bidding_signals_keys = */ absl::nullopt,
+      /* user_bidding_signals = */ absl::nullopt,
+      /* ads = */ absl::nullopt));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url_d));
   // This leave should do nothing because origin_d is not allowed by privacy
@@ -769,11 +769,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* name = */ "cars",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -901,11 +901,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* name = */ "cars",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -970,13 +970,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* name = */ "cars",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
           /* trusted_bidding_signals_url = */
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads, "['key1']"));
 
   GURL test_url_d = https_server_->GetURL("d.test", "/echo");
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "/interest_group/bidding_logic_stop_bidding_after_win.js");
   disabled_group->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
   disabled_group->ads->emplace_back(blink::mojom::InterestGroupAd::New(
-      GURL("https://stop_bidding_after_win.com/render"), base::nullopt));
+      GURL("https://stop_bidding_after_win.com/render"), absl::nullopt));
   storage_->JoinInterestGroup(std::move(disabled_group));
   ASSERT_EQ(1, GetJoinCount(url::Origin::Create(disabled_domain), "candy"));
 
@@ -1045,13 +1045,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* bidding_url = */
           https_server_->GetURL(test_url.host(),
                                 "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
           /* trusted_bidding_signals_url = */
           https_server_->GetURL(test_url.host(),
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads, "['key1']"));
 
   EXPECT_EQ("https://example.com/render",
@@ -1092,13 +1092,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
           /* name = */ "cars",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
           /* trusted_bidding_signals_url = */
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads, "['key1']"));
 
   EXPECT_EQ(
@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   for (const auto& expected_request : kExpectedRequests) {
     SCOPED_TRACE(expected_request.url);
 
-    base::Optional<network::ResourceRequest> request =
+    absl::optional<network::ResourceRequest> request =
         url_loader_monitor.GetRequestInfo(expected_request.url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
-    base::Optional<network::ResourceRequest> request =
+    absl::optional<network::ResourceRequest> request =
         url_loader_monitor.GetRequestInfo(expected_report_url);
     ASSERT_TRUE(request);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -1230,13 +1230,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
           /* name = */ "cars",
           /* bidding_url = */
           https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
           /* trusted_bidding_signals_url = */
           https_server_->GetURL(kBidder,
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads, "['key1']"));
 
   // Navigate to publisher.
@@ -1300,11 +1300,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           https_server_->GetURL(
               "a.test",
               "/interest_group/bidding_logic_stop_bidding_after_win.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       "[{renderUrl : 'https://stop_bidding_after_win.com/render'}]"));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
@@ -1313,13 +1313,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* name = */ "bikes",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
           /* trusted_bidding_signals_url = */
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       "[{renderUrl : 'https://example.com/render'}]", "['key1']"));
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       blink::mojom::InterestGroup::New(
@@ -1328,11 +1328,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /* name = */ "shoes",
           /* bidding_url = */
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       "[{renderUrl : 'https://example.com/render2'}]"));
 
   EXPECT_EQ(
@@ -1373,11 +1373,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
           https_server_->GetURL(
               "a.test",
               "/interest_group/bidding_logic_stop_bidding_after_win.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads));
 
   GURL test_url2 = https_server_->GetURL("b.test", "/echo");
@@ -1390,11 +1390,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
           /* name = */ "shoes",
           /* bidding_url = */
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       "[{renderUrl : 'https://example.com/render'}]"));
 
   // Both owners have one interest group in storage, and both interest groups
@@ -1489,11 +1489,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
           /* bidding_url = */
           https_server_->GetURL(
               "a.test", "/interest_group/bidding_logic_invalid_ad_url.js"),
-          /* update_url  = */ base::nullopt,
-          /* trusted_bidding_signals_url = */ base::nullopt,
-          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* update_url  = */ absl::nullopt,
+          /* trusted_bidding_signals_url = */ absl::nullopt,
+          /* trusted_bidding_signals_keys = */ absl::nullopt,
           /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
-          /* ads = */ base::nullopt),
+          /* ads = */ absl::nullopt),
       ads));
 
   EXPECT_EQ(
@@ -1525,13 +1525,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*bidding_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/bidding_logic_throws.js"),
-          /*update_url=*/base::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /*trusted_bidding_signals_keys=*/base::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-          /*ads=*/base::nullopt),
+          /*ads=*/absl::nullopt),
       /*ads=*/
       "[{renderUrl: 'https://example.com/render', metadata: {ad: 'metadata', "
       "here: [1, 2, 3]}}]",
@@ -1568,13 +1568,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
           /*name=*/"boats",
           /*bidding_url=*/
           https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
-          /*update_url=*/base::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/
           https_server_->GetURL("b.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /*trusted_bidding_signals_keys=*/base::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-          /*ads=*/base::nullopt),
+          /*ads=*/absl::nullopt),
       /*ads=*/
       "[{renderUrl: 'https://example2.com/render', metadata: {ad: 'metadata', "
       "here: [1, 2, 3]}}]",
@@ -1594,13 +1594,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateGenerateBid) {
           /*bidding_url=*/
           https_server_->GetURL(
               "a.test", "/interest_group/bidding_argument_validator.js"),
-          /*update_url=*/base::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /*trusted_bidding_signals_keys=*/base::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-          /*ads=*/base::nullopt),
+          /*ads=*/absl::nullopt),
       /*ads=*/
       "[{renderUrl: 'https://example.com/render', metadata: {ad: 'metadata', "
       "here: [1, 2, 3]}}]",
@@ -1639,13 +1639,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*name=*/"cars",
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*update_url=*/base::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /*trusted_bidding_signals_keys=*/base::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-          /*ads=*/base::nullopt),
+          /*ads=*/absl::nullopt),
       /*ads=*/
       "[{renderUrl: 'https://example.com/render', metadata: {ad: 'metadata', "
       "here: [1, 2, 3]}}]",
@@ -1680,13 +1680,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
           /*name=*/"cars",
           /*bidding_url=*/
           https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*update_url=*/base::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/
           https_server_->GetURL("a.test",
                                 "/interest_group/trusted_bidding_signals.json"),
-          /*trusted_bidding_signals_keys=*/base::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
-          /*ads=*/base::nullopt),
+          /*ads=*/absl::nullopt),
       /*ads=*/
       "[{renderUrl: 'https://example.com/render', metadata: {ad: 'metadata', "
       "here: [1, 2, 3]}}]",
@@ -1962,8 +1962,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionBasicBypassBlink) {
 
   auction_service->RunAdAuction(
       blink::mojom::AuctionAdConfig::New(),
-      base::BindLambdaForTesting([&run_loop](const base::Optional<GURL>& url) {
-        EXPECT_THAT(url, Eq(base::nullopt));
+      base::BindLambdaForTesting([&run_loop](const absl::optional<GURL>& url) {
+        EXPECT_THAT(url, Eq(absl::nullopt));
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -2014,9 +2014,9 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
     EXPECT_EQ(1, GetJoinCount(test_origin_a_, kGroupName));
   }
 
-  base::Optional<GURL> RunAuctionBypassBlink(
+  absl::optional<GURL> RunAuctionBypassBlink(
       blink::mojom::AuctionAdConfigPtr config) {
-    base::Optional<GURL> maybe_url;
+    absl::optional<GURL> maybe_url;
     base::RunLoop run_loop;
     mojo::Remote<blink::mojom::AdAuctionService> auction_service;
     AdAuctionServiceImpl::CreateMojoService(
@@ -2026,7 +2026,7 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
     auction_service->RunAdAuction(
         std::move(config),
         base::BindLambdaForTesting(
-            [&run_loop, &maybe_url](const base::Optional<GURL>& url) {
+            [&run_loop, &maybe_url](const absl::optional<GURL>& url) {
               maybe_url = url;
               run_loop.Quit();
             }));
@@ -2069,7 +2069,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_});
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2087,7 +2087,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_});
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2100,7 +2100,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_});
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2123,7 +2123,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_http});
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2148,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers->set_buyers(
       {test_origin_a_, test_origin_a_http});
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2190,7 +2190,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->interest_group_buyers->set_all_buyers(blink::mojom::AllBuyers::New());
 
   // All buyers isn't supported.
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
@@ -2235,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->per_buyer_signals.value()[test_origin_b] =
       "{\"even\": \"more\", \"x\": 4.5}";
 
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(base::nullopt));
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
 
 }  // namespace

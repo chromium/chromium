@@ -489,7 +489,7 @@ net::SiteForCookies WebWorkerFetchContextImpl::SiteForCookies() const {
   return site_for_cookies_;
 }
 
-base::Optional<blink::WebSecurityOrigin>
+absl::optional<blink::WebSecurityOrigin>
 WebWorkerFetchContextImpl::TopFrameOrigin() const {
   // TODO(jkarlin): set_top_frame_origin is only called for dedicated workers.
   // Determine the top-frame-origin of a shared worker as well. See

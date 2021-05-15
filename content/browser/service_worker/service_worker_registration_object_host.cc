@@ -306,7 +306,7 @@ void ServiceWorkerRegistrationObjectHost::GetNavigationPreloadState(
   }
 
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          base::nullopt,
+                          absl::nullopt,
                           registration_->navigation_preload_state().Clone());
 }
 
@@ -362,7 +362,7 @@ void ServiceWorkerRegistrationObjectHost::UpdateComplete(
   }
 
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 void ServiceWorkerRegistrationObjectHost::UnregistrationComplete(
@@ -380,7 +380,7 @@ void ServiceWorkerRegistrationObjectHost::UnregistrationComplete(
   }
 
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 void ServiceWorkerRegistrationObjectHost::DidUpdateNavigationPreloadEnabled(
@@ -398,7 +398,7 @@ void ServiceWorkerRegistrationObjectHost::DidUpdateNavigationPreloadEnabled(
   if (registration_)
     registration_->EnableNavigationPreload(enable);
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 void ServiceWorkerRegistrationObjectHost::DidUpdateNavigationPreloadHeader(
@@ -417,7 +417,7 @@ void ServiceWorkerRegistrationObjectHost::DidUpdateNavigationPreloadHeader(
   if (registration_)
     registration_->SetNavigationPreloadHeader(value);
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 void ServiceWorkerRegistrationObjectHost::SetServiceWorkerObjects(

@@ -60,7 +60,7 @@ interface AgentSchedulingGroup {
   //     RenderFrameProxyHost.
   // `routing_id`: The legacy IPC routing ID.
   // `opener_frame_token`: Frame token that identifies the opener frame if one
-  //     exists, or base::nullopt otherwise.
+  //     exists, or absl::nullopt otherwise.
   // `view_routing_id`: routing ID of the RenderView for this RenderFrameProxy.
   //     Must not be `MSG_ROUTING_NONE`.
   // `parent_routing_id`: `MSG_ROUTING_NONE` for a top-level RenderFrameProxy;

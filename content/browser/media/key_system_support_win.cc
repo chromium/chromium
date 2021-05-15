@@ -32,7 +32,7 @@ void OnKeySystemCapability(
       key_system_capability->hw_secure_capability->video_codecs.empty() ||
       key_system_capability->hw_secure_capability->encryption_schemes.empty() ||
       key_system_capability->hw_secure_capability->session_types.empty()) {
-    std::move(cdm_capability_cb).Run(base::nullopt);
+    std::move(cdm_capability_cb).Run(absl::nullopt);
     return;
   }
 
@@ -47,7 +47,7 @@ void GetMediaFoundationServiceHardwareSecureCdmCapability(
     CdmCapabilityCB cdm_capability_cb) {
   if (!media::MediaFoundationCdm::IsAvailable()) {
     DVLOG(1) << "MediaFoundationCdm not available!";
-    std::move(cdm_capability_cb).Run(base::nullopt);
+    std::move(cdm_capability_cb).Run(absl::nullopt);
     return;
   }
 

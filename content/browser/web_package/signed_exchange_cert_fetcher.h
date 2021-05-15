@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
 #include "content/browser/web_package/signed_exchange_error.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -61,7 +61,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       bool force_fetch,
       CertificateCallback callback,
       SignedExchangeDevToolsProxy* devtools_proxy,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
 
   ~SignedExchangeCertFetcher() override;
@@ -83,7 +83,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       bool force_fetch,
       CertificateCallback callback,
       SignedExchangeDevToolsProxy* devtools_proxy,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
   void Start();
   void Abort();
@@ -124,7 +124,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   // This is owned by SignedExchangeHandler which is the owner of |this|.
   SignedExchangeDevToolsProxy* devtools_proxy_;
   bool has_notified_completion_to_devtools_ = false;
-  base::Optional<base::UnguessableToken> cert_request_id_;
+  absl::optional<base::UnguessableToken> cert_request_id_;
 
   net::IPAddress cert_server_ip_address_;
 

@@ -39,7 +39,7 @@ class WorkletLoaderTest : public testing::Test {
 
   void LoadWorkletCallback(
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      base::Optional<std::string> error_msg) {
+      absl::optional<std::string> error_msg) {
     load_succeeded_ = !!worklet_script;
     error_msg_ = std::move(error_msg);
     EXPECT_EQ(load_succeeded_, !error_msg_.has_value());
@@ -58,12 +58,12 @@ class WorkletLoaderTest : public testing::Test {
   GURL url_ = GURL("https://foo.test/");
   base::RunLoop run_loop_;
   bool load_succeeded_ = false;
-  base::Optional<std::string> error_msg_;
+  absl::optional<std::string> error_msg_;
 };
 
 TEST_F(WorkletLoaderTest, NetworkError) {
   // Make this look like a valid response in all ways except the response code.
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, &v8_helper_,
@@ -109,7 +109,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
               [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-                  base::Optional<std::string> error_msg) {
+                  absl::optional<std::string> error_msg) {
                 EXPECT_TRUE(worklet_script);
                 EXPECT_FALSE(error_msg.has_value());
                 worklet_script.reset();
@@ -132,7 +132,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
           &url_loader_factory_, url_, v8_helper.get(),
           base::BindLambdaForTesting(
               [&](std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-                  base::Optional<std::string> error_msg) {
+                  absl::optional<std::string> error_msg) {
                 EXPECT_FALSE(worklet_script);
                 ASSERT_TRUE(error_msg.has_value());
                 EXPECT_THAT(error_msg.value(),

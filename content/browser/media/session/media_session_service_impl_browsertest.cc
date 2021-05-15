@@ -62,9 +62,9 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override {}
 
-  base::Optional<media_session::MediaPosition> GetPosition(
+  absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool IsPictureInPictureAvailable(int player_id) const override {

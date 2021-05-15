@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_power_experiment_manager.h"
 #include "content/browser/media/session/media_session_controllers_manager.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "ui/android/view_android.h"
@@ -81,7 +81,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   bool IsPictureInPictureAllowedForFullscreenVideo() const;
 
   // Gets the MediaPlayerId of the fullscreen video if it exists.
-  const base::Optional<MediaPlayerId>& GetFullscreenVideoMediaPlayerId() const;
+  const absl::optional<MediaPlayerId>& GetFullscreenVideoMediaPlayerId() const;
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override;
@@ -273,8 +273,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // Tracking variables and associated wake locks for media playback.
   PlayerInfoMap player_info_map_;
   mojo::Remote<device::mojom::WakeLock> audio_wake_lock_;
-  base::Optional<MediaPlayerId> fullscreen_player_;
-  base::Optional<bool> picture_in_picture_allowed_in_fullscreen_;
+  absl::optional<MediaPlayerId> fullscreen_player_;
+  absl::optional<bool> picture_in_picture_allowed_in_fullscreen_;
   bool has_audio_wake_lock_for_testing_ = false;
 
   std::unique_ptr<MediaSessionControllersManager> session_controllers_manager_;

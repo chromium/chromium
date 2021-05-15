@@ -116,7 +116,7 @@ class ShellControllerImpl : public mojom::ShellController {
     if (command_line.HasSwitch(name))
       std::move(callback).Run(command_line.GetSwitchValueASCII(name));
     else
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
   }
 
   void ExecuteJavaScript(const std::u16string& script,

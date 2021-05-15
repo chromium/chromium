@@ -76,7 +76,7 @@ network::mojom::NetworkContext* g_network_context_for_testing = nullptr;
 bool g_should_ignore_cert_validity_period_error = false;
 
 bool IsSupportedSignedExchangeVersion(
-    const base::Optional<SignedExchangeVersion>& version) {
+    const absl::optional<SignedExchangeVersion>& version) {
   return version == SignedExchangeVersion::kB3;
 }
 
@@ -500,13 +500,13 @@ void SignedExchangeHandler::OnCertReceived(
   UMA_HISTOGRAM_ENUMERATION(kHistogramSignatureVerificationResult,
                             verify_result);
   if (verify_result != SignedExchangeSignatureVerifier::Result::kSuccess) {
-    base::Optional<SignedExchangeError::Field> error_field =
+    absl::optional<SignedExchangeError::Field> error_field =
         SignedExchangeError::GetFieldFromSignatureVerifierResult(verify_result);
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(), "Failed to verify the signed exchange header.",
-        error_field ? base::make_optional(
+        error_field ? absl::make_optional(
                           std::make_pair(0 /* signature_index */, *error_field))
-                    : base::nullopt);
+                    : absl::nullopt);
     RunErrorCallback(
         signed_exchange_utils::GetLoadResultFromSignatureVerifierResult(
             verify_result),

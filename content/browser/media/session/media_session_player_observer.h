@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_session {
 struct MediaPosition;
@@ -53,7 +53,7 @@ class MediaSessionPlayerObserver {
                                 const std::string& raw_device_id) = 0;
 
   // Returns the position for |player_id|.
-  virtual base::Optional<media_session::MediaPosition> GetPosition(
+  virtual absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const = 0;
 
   // Returns if picture-in-picture is available for |player_id|.

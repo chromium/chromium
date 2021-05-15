@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
@@ -19,6 +18,7 @@
 #include "ipc/ipc_sender.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
@@ -313,7 +313,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //
   // TODO(crbug/1098283): Remove the nullopt scenario by creating the token in
   // CreateChildFrame() or similar.
-  virtual base::Optional<base::UnguessableToken> GetEmbeddingToken() = 0;
+  virtual absl::optional<base::UnguessableToken> GetEmbeddingToken() = 0;
 
   // Returns the assigned name of the frame, the name of the iframe tag
   // declaring it. For example, <iframe name="framename">[...]</iframe>. It is
@@ -326,7 +326,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the size of the frame in the viewport. The frame may not be aware
   // of its size.
-  virtual const base::Optional<gfx::Size>& GetFrameSize() = 0;
+  virtual const absl::optional<gfx::Size>& GetFrameSize() = 0;
 
   // Returns the distance from this frame to its main frame.
   virtual size_t GetFrameDepth() = 0;

@@ -42,7 +42,7 @@ void SignedExchangeBrowserTestHelper::SetUp() {
 void SignedExchangeBrowserTestHelper::TearDownOnMainThread() {
   interceptor_.reset();
   signed_exchange_utils::SetVerificationTimeForTesting(
-      base::Optional<base::Time>());
+      absl::optional<base::Time>());
 }
 
 scoped_refptr<net::X509Certificate>

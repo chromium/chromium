@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/http/http_response_headers.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -66,7 +66,7 @@ struct CONTENT_EXPORT BackgroundFetchResult {
   BackgroundFetchResult(std::unique_ptr<BackgroundFetchResponse> response,
                         base::Time response_time,
                         const base::FilePath& path,
-                        base::Optional<storage::BlobDataHandle> blob_handle,
+                        absl::optional<storage::BlobDataHandle> blob_handle,
                         uint64_t file_size);
 
   ~BackgroundFetchResult();
@@ -74,7 +74,7 @@ struct CONTENT_EXPORT BackgroundFetchResult {
   std::unique_ptr<BackgroundFetchResponse> response;
   const base::Time response_time;
   const base::FilePath file_path;
-  base::Optional<storage::BlobDataHandle> blob_handle;
+  absl::optional<storage::BlobDataHandle> blob_handle;
   const uint64_t file_size = 0;
   FailureReason failure_reason;
 

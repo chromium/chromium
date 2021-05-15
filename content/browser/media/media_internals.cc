@@ -383,7 +383,7 @@ static bool ConvertEventToUpdate(int render_process_id,
       break;
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
-      base::Optional<base::Value> exists = cloned_params.ExtractPath("event");
+      absl::optional<base::Value> exists = cloned_params.ExtractPath("event");
       DCHECK(exists.has_value());
       dict.SetKey("type", std::move(exists.value()));
       break;

@@ -85,7 +85,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   device::mojom::XRDeviceId GetId() const { return id_; }
 
 #if defined(OS_WIN)
-  base::Optional<LUID> GetLuid() const;
+  absl::optional<LUID> GetLuid() const;
 #endif
 
   // BrowserXRRuntime

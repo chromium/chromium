@@ -42,7 +42,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
     PreloadedResource& operator=(const PreloadedResource&);
 
     // Completion error code. Set only when network request is completed.
-    base::Optional<int> error_code;
+    absl::optional<int> error_code;
     // True when the preload was canceled. When true, the response was already
     // in the disk cache.
     bool was_canceled = false;

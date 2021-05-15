@@ -10,11 +10,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -49,13 +49,13 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
       const GURL& outer_request_url,
       network::mojom::URLResponseHeadPtr outer_response_head,
       int frame_tree_node_id,
-      base::Optional<const base::UnguessableToken> devtools_navigation_token,
+      absl::optional<const base::UnguessableToken> devtools_navigation_token,
       bool report_raw_headers);
   ~SignedExchangeDevToolsProxy();
 
   void ReportError(
       const std::string& message,
-      base::Optional<SignedExchangeError::FieldIndexPair> error_field);
+      absl::optional<SignedExchangeError::FieldIndexPair> error_field);
 
   void CertificateRequestSent(const base::UnguessableToken& request_id,
                               const network::ResourceRequest& request);
@@ -67,7 +67,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
       const network::URLLoaderCompletionStatus& status);
 
   void OnSignedExchangeReceived(
-      const base::Optional<SignedExchangeEnvelope>& envelope,
+      const absl::optional<SignedExchangeEnvelope>& envelope,
       const scoped_refptr<net::X509Certificate>& certificate,
       const net::SSLInfo* ssl_info);
 
@@ -75,7 +75,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   const GURL outer_request_url_;
   const network::mojom::URLResponseHeadPtr outer_response_;
   const int frame_tree_node_id_;
-  const base::Optional<const base::UnguessableToken> devtools_navigation_token_;
+  const absl::optional<const base::UnguessableToken> devtools_navigation_token_;
   const bool devtools_enabled_;
   std::vector<SignedExchangeError> errors_;
 

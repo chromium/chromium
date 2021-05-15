@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -85,7 +85,7 @@ void BackgroundFetchRegistrationServiceImpl::MatchRequests(
 }
 
 void BackgroundFetchRegistrationServiceImpl::UpdateUI(
-    const base::Optional<std::string>& title,
+    const absl::optional<std::string>& title,
     const SkBitmap& icon,
     UpdateUICallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
@@ -103,7 +103,7 @@ void BackgroundFetchRegistrationServiceImpl::UpdateUI(
 
   // Wrap the icon in an optional for clarity.
   auto optional_icon =
-      icon.isNull() ? base::nullopt : base::Optional<SkBitmap>(icon);
+      icon.isNull() ? absl::nullopt : absl::optional<SkBitmap>(icon);
 
   background_fetch_context_->UpdateUI(registration_id_, title, optional_icon,
                                       std::move(callback));

@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
@@ -33,12 +33,12 @@ class CONTENT_EXPORT DevToolsPermissionOverrides {
 
   // Set permission override for |permission| at |origin| to |status|.
   // Null |origin| specifies global overrides.
-  void Set(const base::Optional<url::Origin>& origin,
+  void Set(const absl::optional<url::Origin>& origin,
            PermissionType permission,
            const blink::mojom::PermissionStatus& status);
 
   // Get override for |origin| set for |permission|, if specified.
-  base::Optional<blink::mojom::PermissionStatus> Get(
+  absl::optional<blink::mojom::PermissionStatus> Get(
       const url::Origin& origin,
       PermissionType permission) const;
 
@@ -46,16 +46,16 @@ class CONTENT_EXPORT DevToolsPermissionOverrides {
   // if found. Will return empty overrides if none previously existed. Returns
   // global overrides when |origin| is nullptr.
   const PermissionOverrides& GetAll(
-      const base::Optional<url::Origin>& origin) const;
+      const absl::optional<url::Origin>& origin) const;
 
   // Resets overrides for |origin|.
   // Null |origin| resets global overrides.
-  void Reset(const base::Optional<url::Origin>& origin);
+  void Reset(const absl::optional<url::Origin>& origin);
 
   // Sets status for |permissions| to GRANTED in |origin|, and DENIED
   // for all others.
   // Null |origin| grants permissions globally for context.
-  void GrantPermissions(const base::Optional<url::Origin>& origin,
+  void GrantPermissions(const absl::optional<url::Origin>& origin,
                         const std::vector<PermissionType>& permissions);
 
  private:

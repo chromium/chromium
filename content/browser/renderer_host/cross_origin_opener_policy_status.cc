@@ -128,14 +128,14 @@ CrossOriginOpenerPolicyStatus::RetrieveCOOPFromResponse(
   return parsed_headers->cross_origin_opener_policy;
 }
 
-base::Optional<network::mojom::BlockedByResponseReason>
+absl::optional<network::mojom::BlockedByResponseReason>
 CrossOriginOpenerPolicyStatus::EnforceCOOP(
     const network::CrossOriginOpenerPolicy& response_coop,
     const url::Origin& response_origin,
     const net::NetworkIsolationKey& network_isolation_key) {
   // COOP only applies to top level browsing contexts.
   if (!frame_tree_node_->IsMainFrame()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const GURL& response_url = navigation_request_->common_params().url;
@@ -266,7 +266,7 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // of the navigation to the subsequent response.
   is_navigation_source_ = true;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<CrossOriginOpenerPolicyReporter>
@@ -336,8 +336,8 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
           "CrossOriginOpenerPolicyReporting", base::Time::Now());
 
   if (!reporting_enabled) {
-    coop.reporting_endpoint = base::nullopt;
-    coop.report_only_reporting_endpoint = base::nullopt;
+    coop.reporting_endpoint = absl::nullopt;
+    coop.report_only_reporting_endpoint = absl::nullopt;
     coop.report_only_value =
         network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
   }

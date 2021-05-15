@@ -61,7 +61,7 @@ class CONTENT_EXPORT CacheStorageControlWrapper
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   base::SequenceBound<CacheStorageContextImpl> cache_storage_context_;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;

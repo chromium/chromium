@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -79,7 +79,7 @@ class BidderWorklet {
   // - auctions will still be run without it, but `errors` will be populated
   // with information about the load failure.
   using LoadScriptAndGenerateBidCallback =
-      base::OnceCallback<void(base::Optional<Bid> bid,
+      base::OnceCallback<void(absl::optional<Bid> bid,
                               const std::vector<std::string>& errors)>;
 
   // `report_url` is the URL to request to report displaying the ad. It is
@@ -87,7 +87,7 @@ class BidderWorklet {
   // errors that occurred, if any. `errors` may be non-empty on success, or
   // empty on failure.
   using ReportWinCallback =
-      base::OnceCallback<void(const base::Optional<GURL>& report_url,
+      base::OnceCallback<void(const absl::optional<GURL>& report_url,
                               const std::vector<std::string>& errors)>;
 
   // Starts loading the worklet script on construction, as well as the trusted
@@ -101,8 +101,8 @@ class BidderWorklet {
       AuctionV8Helper* v8_helper,
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojom::BiddingInterestGroupPtr bidding_interest_group,
-      const base::Optional<std::string>& auction_signals_json,
-      const base::Optional<std::string>& per_buyer_signals_json,
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
       const url::Origin& browser_signal_top_window_origin,
       const url::Origin& browser_signal_seller_origin,
       base::Time auction_start_time,
@@ -122,10 +122,10 @@ class BidderWorklet {
  private:
   void OnScriptDownloaded(
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      base::Optional<std::string> error_msg);
+      absl::optional<std::string> error_msg);
 
   void OnTrustedBiddingSignalsDownloaded(bool load_result,
-                                         base::Optional<std::string> error_msg);
+                                         absl::optional<std::string> error_msg);
 
   // Checks if the script has been loaded successfully, and the
   // TrustedBiddingSignals load has finished (successfully or not). If so, calls
@@ -137,7 +137,7 @@ class BidderWorklet {
   // Utility function to invoke `load_script_and_generate_bid_callback_` with
   // `error_msg` and `trusted_bidding_signals_error_msg_`.
   void InvokeBidCallbackOnError(
-      base::Optional<std::string> error_msg = base::nullopt);
+      absl::optional<std::string> error_msg = absl::nullopt);
 
   AuctionV8Helper* const v8_helper_;
 
@@ -146,8 +146,8 @@ class BidderWorklet {
 
   LoadScriptAndGenerateBidCallback load_script_and_generate_bid_callback_;
 
-  const base::Optional<std::string> auction_signals_json_;
-  const base::Optional<std::string> per_buyer_signals_json_;
+  const absl::optional<std::string> auction_signals_json_;
+  const absl::optional<std::string> per_buyer_signals_json_;
   const std::string browser_signal_top_window_hostname_;
   // Serialized copy of seller's origin.
   const std::string browser_signal_seller_;
@@ -160,7 +160,7 @@ class BidderWorklet {
   // Error message returned by attempt to load `trusted_bidding_signals_`.
   // Errors loading it are not fatal, so such errors are cached here and only
   // reported on bid completion.
-  base::Optional<std::string> trusted_bidding_signals_error_msg_;
+  absl::optional<std::string> trusted_bidding_signals_error_msg_;
 
   // Compiled script, not bound to any context. Can be repeatedly bound to
   // different context and executed, without persisting any state.

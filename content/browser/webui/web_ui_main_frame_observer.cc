@@ -74,7 +74,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const base::Optional<std::u16string>& untrusted_stack_trace) {
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   // TODO(iby) Change all VLOGs to DVLOGs once tast tests are stable.
   DVLOG(3) << "OnDidAddMessageToConsole called for " << message;
   if (untrusted_stack_trace) {

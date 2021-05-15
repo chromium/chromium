@@ -338,7 +338,7 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
   handle_watcher_.Cancel();
 
-  base::Optional<blink::WebURLError> error;
+  absl::optional<blink::WebURLError> error;
   if (status_.error_code != net::OK) {
     error = blink::WebURLLoader::PopulateURLError(status_, original_url_);
   }

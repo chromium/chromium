@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -32,6 +31,7 @@
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -70,7 +70,7 @@ class MediaImageGetterHelper {
   }
 
   base::RunLoop run_loop_;
-  base::Optional<SkBitmap> bitmap_;
+  absl::optional<SkBitmap> bitmap_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaImageGetterHelper);
 };

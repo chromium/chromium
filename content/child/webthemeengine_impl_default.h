@@ -23,13 +23,13 @@ class WebThemeEngineDefault : public blink::WebThemeEngine {
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::mojom::ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) override;
+             const absl::optional<SkColor>& accent_color) override;
   void GetOverlayScrollbarStyle(
       blink::WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size NinePatchCanvasSize(Part part) const override;
   gfx::Rect NinePatchAperture(Part part) const override;
-  base::Optional<SkColor> GetSystemColor(blink::WebThemeEngine::SystemThemeColor
+  absl::optional<SkColor> GetSystemColor(blink::WebThemeEngine::SystemThemeColor
                                              system_theme_color) const override;
 #if defined(OS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed

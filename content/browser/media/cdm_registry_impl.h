@@ -42,7 +42,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   bool FinalizeCdmCapability(
       const std::string& key_system,
       CdmInfo::Robustness robustness,
-      base::Optional<media::CdmCapability> cdm_capability);
+      absl::optional<media::CdmCapability> cdm_capability);
 
  private:
   friend class CdmRegistryImplTest;

@@ -33,7 +33,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   const blink::mojom::ViewportIntersectionStatePtr& GetIntersectionState()
       const;
 
-  base::Optional<bool> GetActive() const;
+  absl::optional<bool> GetActive() const;
 
  private:
   void DragTargetDragEnter(
@@ -85,13 +85,13 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
       mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver) override {}
   void SetViewportIntersection(
       blink::mojom::ViewportIntersectionStatePtr intersection_state,
-      const base::Optional<blink::VisualProperties>& visual_properties)
+      const absl::optional<blink::VisualProperties>& visual_properties)
       override;
 
   mojo::AssociatedReceiver<blink::mojom::FrameWidget> receiver_;
   base::i18n::TextDirection text_direction_ =
       base::i18n::TextDirection::UNKNOWN_DIRECTION;
-  base::Optional<bool> active_;
+  absl::optional<bool> active_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
 };
 

@@ -600,8 +600,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   //
   // NOTE: Don't use or modify these properties directly, use the
   // SetLastFocusedNode and GetLastFocusedNode methods instead.
-  static base::Optional<int32_t> last_focused_node_id_;
-  static base::Optional<ui::AXTreeID> last_focused_node_tree_id_;
+  static absl::optional<int32_t> last_focused_node_id_;
+  static absl::optional<ui::AXTreeID> last_focused_node_tree_id_;
 
   // For debug only: True when handling OnAccessibilityEvents.
 #if DCHECK_IS_ON()

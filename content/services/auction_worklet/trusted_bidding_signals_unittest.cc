@@ -99,7 +99,7 @@ class TrustedBiddingSignalsTest : public testing::Test {
 
  protected:
   void LoadSignalsCallback(bool success,
-                           base::Optional<std::string> error_msg) {
+                           absl::optional<std::string> error_msg) {
     load_signals_succeeded_ = success;
     error_msg_ = std::move(error_msg);
     EXPECT_EQ(load_signals_succeeded_, !error_msg_.has_value());
@@ -116,7 +116,7 @@ class TrustedBiddingSignalsTest : public testing::Test {
   // synchronously.
   std::unique_ptr<base::RunLoop> load_signals_run_loop_;
   bool load_signals_succeeded_ = false;
-  base::Optional<std::string> error_msg_;
+  absl::optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   AuctionV8Helper v8_helper_;

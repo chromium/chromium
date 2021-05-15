@@ -9,9 +9,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "url/origin.h"
@@ -58,7 +58,7 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // WebContents count of connected devices if |device_address| had a
   // connection. Returns the device_id of the device associated with the
   // connection.
-  base::Optional<blink::WebBluetoothDeviceId>
+  absl::optional<blink::WebBluetoothDeviceId>
   CloseConnectionToDeviceWithAddress(const std::string& device_address);
 
   // Deletes all connections that are NOT in the list of |permitted_ids| and

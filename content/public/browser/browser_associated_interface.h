@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -18,6 +17,7 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -97,7 +97,7 @@ class BrowserAssociatedInterface : public Interface {
     ~InternalState() {}
 
     Interface* impl_;
-    base::Optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
+    absl::optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
 
     DISALLOW_COPY_AND_ASSIGN(InternalState);
   };

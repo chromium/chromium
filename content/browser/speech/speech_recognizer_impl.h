@@ -113,7 +113,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   void ProcessAudioPipeline(const AudioChunk& raw_audio);
 
   // Callback from AudioSystem.
-  void OnDeviceInfo(const base::Optional<media::AudioParameters>& params);
+  void OnDeviceInfo(const absl::optional<media::AudioParameters>& params);
 
   // The methods below handle transitions of the recognizer FSM.
   FSMState PrepareRecognition(const FSMEventArgs&);

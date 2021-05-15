@@ -89,7 +89,7 @@ void StreamTextureProxy::OnFrameWithInfoAvailable(
     const gpu::Mailbox& mailbox,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
+    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   base::AutoLock lock(lock_);
   // Set the ycbcr info before running the received frame callback so that the
   // first frame has it.

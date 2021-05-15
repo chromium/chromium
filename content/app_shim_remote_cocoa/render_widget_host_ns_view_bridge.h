@@ -67,7 +67,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void ShowDictionaryOverlay(ui::mojom::AttributedStringPtr attributed_string,
                              const gfx::Point& baseline_point) override;
   void LockKeyboard(
-      const base::Optional<std::vector<uint32_t>>& uint_dom_codes) override;
+      const absl::optional<std::vector<uint32_t>>& uint_dom_codes) override;
   void UnlockKeyboard() override;
   void ShowSharingServicePicker(
       const std::string& title,

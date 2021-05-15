@@ -199,7 +199,7 @@ class PageHandler : public DevToolsDomainHandler,
       const gfx::Size& original_view_size,
       const gfx::Size& requested_image_size,
       const blink::DeviceEmulationParams& original_params,
-      const base::Optional<blink::web_pref::WebPreferences>& original_web_prefs,
+      const absl::optional<blink::web_pref::WebPreferences>& original_web_prefs,
       const gfx::Image& image);
 
   void GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
@@ -226,7 +226,7 @@ class PageHandler : public DevToolsDomainHandler,
   int screencast_max_height_;
   int capture_every_nth_frame_;
   int capture_retry_count_;
-  base::Optional<cc::RenderFrameMetadata> frame_metadata_;
+  absl::optional<cc::RenderFrameMetadata> frame_metadata_;
   int session_id_;
   int frame_counter_;
   int frames_in_flight_;

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
@@ -24,6 +23,7 @@
 #include "content/public/common/content_client.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -252,13 +252,13 @@ void AdAuction::WorkletComplete(
     return;
   }
 
-  base::Optional<GURL> bidder_report_url;
+  absl::optional<GURL> bidder_report_url;
   if (bidder_report->report_requested && bidder_report->report_url.is_valid() &&
       bidder_report->report_url.SchemeIs(url::kHttpsScheme)) {
     bidder_report_url = bidder_report->report_url;
   }
 
-  base::Optional<GURL> seller_report_url;
+  absl::optional<GURL> seller_report_url;
   if (seller_report->success && seller_report->report_url.is_valid() &&
       seller_report->report_url.SchemeIs(url::kHttpsScheme)) {
     seller_report_url = seller_report->report_url;
@@ -280,7 +280,7 @@ void AdAuction::WorkletComplete(
 void AdAuction::OnAuctionFailed() {
   DCHECK(callback_);
 
-  std::move(callback_).Run(this, base::nullopt, base::nullopt, base::nullopt);
+  std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt);
 }
 
 }  // namespace content

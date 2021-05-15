@@ -83,7 +83,7 @@ struct CreateViewParams {
   // The session storage namespace ID this view should use.
   string session_storage_namespace_id;
 
-  // The frame token of the opener frame if one exists, or base::nullopt
+  // The frame token of the opener frame if one exists, or absl::nullopt
   // otherwise.
   blink.mojom.FrameToken? opener_frame_token;
 
@@ -212,7 +212,7 @@ struct CreateFrameParams {
   int32 previous_routing_id;
 
   // Specifies the new frame's opener.  The opener will be null if this is
-  // base::nullopt.
+  // absl::nullopt.
   blink.mojom.FrameToken? opener_frame_token;
 
   // The new frame should be created as a child of the object

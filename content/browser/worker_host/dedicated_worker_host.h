@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
@@ -56,8 +56,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
       RenderProcessHost* worker_process_host,
-      base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
-      base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
+      absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
@@ -76,7 +76,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   const GlobalFrameRoutingId& GetAncestorRenderFrameHostId() const {
     return ancestor_render_frame_host_id_;
   }
-  const base::Optional<GURL>& GetFinalResponseURL() const {
+  const absl::optional<GURL>& GetFinalResponseURL() const {
     return final_response_url_;
   }
 
@@ -204,13 +204,13 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       scoped_process_host_observation_{this};
 
-  // The ID of the frame that directly starts this worker. This is base::nullopt
+  // The ID of the frame that directly starts this worker. This is absl::nullopt
   // when this worker is nested.
-  const base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+  const absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
 
   // The token of the dedicated worker that directly starts this worker. This is
-  // base::nullopt when this worker is created from a frame.
-  const base::Optional<blink::DedicatedWorkerToken> creator_worker_token_;
+  // absl::nullopt when this worker is created from a frame.
+  const absl::optional<blink::DedicatedWorkerToken> creator_worker_token_;
 
   // The ID of the frame that owns this worker, either directly, or (in the case
   // of nested workers) indirectly via a tree of dedicated workers.
@@ -234,7 +234,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   // The DedicatedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
   // the script's response head is loaded.
-  base::Optional<network::CrossOriginEmbedderPolicy>
+  absl::optional<network::CrossOriginEmbedderPolicy>
       worker_cross_origin_embedder_policy_;
 
   // This is kept alive during the lifetime of the dedicated worker, since it's
@@ -275,7 +275,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 
   // Will be set once the worker script started loading.
-  base::Optional<GURL> final_response_url_;
+  absl::optional<GURL> final_response_url_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 

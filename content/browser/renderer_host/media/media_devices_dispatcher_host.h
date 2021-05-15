@@ -91,7 +91,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   void GotAudioInputParameters(
       size_t index,
-      const base::Optional<media::AudioParameters>& parameters);
+      const absl::optional<media::AudioParameters>& parameters);
 
   void FinalizeGetAudioInputCapabilities();
 

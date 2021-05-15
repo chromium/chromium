@@ -88,10 +88,10 @@ gfx::Range TextInputManager::GetAutocorrectRange() const {
   return gfx::Range();
 }
 
-base::Optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
+absl::optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
     gfx::Range range) const {
   if (!active_view_)
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const auto& ime_text_span_info :
        text_input_state_map_.at(active_view_)->ime_text_spans_info) {
@@ -106,7 +106,7 @@ base::Optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
       }
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(

@@ -73,7 +73,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
-      base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
@@ -93,7 +93,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       int error_code,
       int extended_error_code,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<std::string>& error_page_content,
+      const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       blink::mojom::PolicyContainerPtr policy_container,
       CommitFailedNavigationCallback callback) override {
@@ -238,7 +238,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
   navigation_client_->CommitNavigation(
       CreateCommonNavigationParams(), CreateCommitNavigationParams(),
       network::mojom::URLResponseHead::New(),
-      mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, base::nullopt,
+      mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, absl::nullopt,
       nullptr, std::move(info), mojo::NullRemote(),
       base::UnguessableToken::Create(), CreateStubPolicyContainer(),
       base::BindOnce(
@@ -307,11 +307,11 @@ CreateContainerHostAndInfoForWindow(
 }
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
-ReceiveServiceWorkerStatus(base::Optional<blink::ServiceWorkerStatusCode>* out,
+ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure) {
   return base::BindOnce(
       [](base::OnceClosure quit_closure,
-         base::Optional<blink::ServiceWorkerStatusCode>* out,
+         absl::optional<blink::ServiceWorkerStatusCode>* out,
          blink::ServiceWorkerStatusCode result) {
         *out = result;
         std::move(quit_closure).Run();
@@ -580,7 +580,7 @@ void MockServiceWorkerResourceReader::CompletePendingRead() {
     response_head->content_length = expected.len;
     std::move(pending_read_response_head_callback_)
         .Run(expected.result, std::move(response_head),
-             /*metadata=*/base::nullopt);
+             /*metadata=*/absl::nullopt);
   } else {
     if (expected.len == 0) {
       body_.reset();
@@ -854,7 +854,7 @@ bool ServiceWorkerUpdateCheckTestUtils::VerifyStoredResponse(
     base::RunLoop loop;
     reader->ReadResponseHead(base::BindLambdaForTesting(
         [&](int status, network::mojom::URLResponseHeadPtr response_head,
-            base::Optional<mojo_base::BigBuffer> metadata) {
+            absl::optional<mojo_base::BigBuffer> metadata) {
           rv = status;
           status_text = response_head->headers->GetStatusText();
           response_data_size = response_head->content_length;

@@ -384,7 +384,7 @@ RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
 }
 
 bool RenderViewHostImpl::CreateRenderView(
-    const base::Optional<blink::FrameToken>& opener_frame_token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
     int proxy_route_id,
     bool window_was_created_with_opener) {
   TRACE_EVENT0("renderer_host,navigation",
@@ -922,7 +922,7 @@ void RenderViewHostImpl::ResetPerPageState() {
 
 void RenderViewHostImpl::OnThemeColorChanged(
     RenderFrameHostImpl* rfh,
-    const base::Optional<SkColor>& theme_color) {
+    const absl::optional<SkColor>& theme_color) {
   if (GetMainFrame() != rfh)
     return;
   main_frame_theme_color_ = theme_color;

@@ -36,7 +36,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   ~SimpleContext() override = default;
 
   // WebContentsFrameTracker::Context overrides.
-  base::Optional<gfx::Rect> GetScreenBounds() override {
+  absl::optional<gfx::Rect> GetScreenBounds() override {
     return screen_bounds_;
   }
   viz::FrameSinkId GetFrameSinkIdForCapture() override {
@@ -54,7 +54,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   void set_frame_sink_id(viz::FrameSinkId frame_sink_id) {
     frame_sink_id_ = frame_sink_id;
   }
-  void set_screen_bounds(base::Optional<gfx::Rect> screen_bounds) {
+  void set_screen_bounds(absl::optional<gfx::Rect> screen_bounds) {
     screen_bounds_ = std::move(screen_bounds);
   }
 
@@ -62,7 +62,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   int capturer_count_ = 0;
   viz::FrameSinkId frame_sink_id_;
   gfx::Size last_capture_size_;
-  base::Optional<gfx::Rect> screen_bounds_;
+  absl::optional<gfx::Rect> screen_bounds_;
 };
 
 // The capture device is mostly for interacting with the frame tracker. We do

@@ -16,7 +16,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -137,7 +137,7 @@ class RenderFrameAudioOutputStreamFactory::Core final
   void RequestDeviceAuthorization(
       mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
           provider_receiver,
-      const base::Optional<base::UnguessableToken>& session_id,
+      const absl::optional<base::UnguessableToken>& session_id,
       const std::string& device_id,
       RequestDeviceAuthorizationCallback callback) final;
 
@@ -264,7 +264,7 @@ void RenderFrameAudioOutputStreamFactory::Core::
 void RenderFrameAudioOutputStreamFactory::Core::RequestDeviceAuthorization(
     mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
         provider_receiver,
-    const base::Optional<base::UnguessableToken>& session_id,
+    const absl::optional<base::UnguessableToken>& session_id,
     const std::string& device_id,
     RequestDeviceAuthorizationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

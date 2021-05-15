@@ -76,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
 
   // Implements ServiceWorkerInstalledScriptReader::Client.
   void OnStarted(network::mojom::URLResponseHeadPtr response_head,
-                 base::Optional<mojo_base::BigBuffer> metadata,
+                 absl::optional<mojo_base::BigBuffer> metadata,
                  mojo::ScopedDataPipeConsumerHandle body_handle,
                  mojo::ScopedDataPipeConsumerHandle meta_data_handle) override;
   void OnFinished(

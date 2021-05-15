@@ -23,7 +23,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
@@ -116,6 +115,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -484,7 +484,7 @@ class LoginHandlerDelegate {
 
   void ContinueAfterInterceptor(
       bool use_fallback,
-      const base::Optional<net::AuthCredentials>& auth_credentials) {
+      const absl::optional<net::AuthCredentials>& auth_credentials) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!(use_fallback && auth_credentials.has_value()));
     if (!use_fallback) {
@@ -494,7 +494,7 @@ class LoginHandlerDelegate {
 
     WebContents* web_contents = web_contents_getter_.Run();
     if (!web_contents) {
-      OnAuthCredentials(base::nullopt);
+      OnAuthCredentials(absl::nullopt);
       return;
     }
 
@@ -507,13 +507,13 @@ class LoginHandlerDelegate {
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
     if (!login_delegate_) {
-      OnAuthCredentials(base::nullopt);
+      OnAuthCredentials(absl::nullopt);
       return;
     }
   }
 
   void OnAuthCredentials(
-      const base::Optional<net::AuthCredentials>& auth_credentials) {
+      const absl::optional<net::AuthCredentials>& auth_credentials) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // CreateLoginDelegate must not call the callback reentrantly. For
     // robustness, detect this mistake.
@@ -552,7 +552,7 @@ void OnAuthRequiredContinuation(
   if (!web_contents_getter || !web_contents_getter.Run()) {
     mojo::Remote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder_remote(std::move(auth_challenge_responder));
-    auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
+    auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
     return;
   }
   new LoginHandlerDelegate(std::move(auth_challenge_responder),
@@ -843,7 +843,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   QuotaManagedDataDeletionHelper(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      const base::Optional<url::Origin>& storage_origin,
+      const absl::optional<url::Origin>& storage_origin,
       base::OnceClosure callback)
       : remove_mask_(remove_mask),
         quota_storage_remove_mask_(quota_storage_remove_mask),
@@ -880,7 +880,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   // All of these data are accessed on IO thread.
   uint32_t remove_mask_;
   uint32_t quota_storage_remove_mask_;
-  base::Optional<url::Origin> storage_origin_;
+  absl::optional<url::Origin> storage_origin_;
   base::OnceClosure callback_;
   int task_count_;
 
@@ -985,8 +985,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
       new StoragePartitionImpl::QuotaManagedDataDeletionHelper(
           remove_mask_, quota_storage_remove_mask_,
           storage_origin.is_empty()
-              ? base::nullopt
-              : base::make_optional(url::Origin::Create(storage_origin)),
+              ? absl::nullopt
+              : absl::make_optional(url::Origin::Create(storage_origin)),
           std::move(callback));
   helper->ClearDataOnIOThread(quota_manager, begin, end, special_storage_policy,
                               std::move(origin_matcher),
@@ -1683,7 +1683,7 @@ void StoragePartitionImpl::BindSessionStorageArea(
 }
 
 void StoragePartitionImpl::OnAuthRequired(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -1724,7 +1724,7 @@ void StoragePartitionImpl::OnAuthRequired(
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
-    const base::Optional<base::UnguessableToken>& window_id,
+    const absl::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
@@ -2457,7 +2457,7 @@ BrowserContext* StoragePartitionImpl::browser_context() const {
 
 storage::mojom::Partition* StoragePartitionImpl::GetStorageServicePartition() {
   if (!remote_partition_) {
-    base::Optional<base::FilePath> storage_path;
+    absl::optional<base::FilePath> storage_path;
     if (!is_in_memory_) {
       storage_path =
           browser_context_->GetPath().Append(relative_partition_path_);

@@ -116,7 +116,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     }
 
     // Make the registration findable via storage functions.
-    base::Optional<blink::ServiceWorkerStatusCode> status;
+    absl::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
     helper_->context()->registry()->StoreRegistration(
         registration_.get(), version_.get(),
@@ -144,7 +144,7 @@ class ServiceWorkerVersionTest : public testing::Test {
   }
 
   void SimulateDispatchEvent(ServiceWorkerMetrics::EventType event_type) {
-    base::Optional<blink::ServiceWorkerStatusCode> status;
+    absl::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
 
     // Make sure worker is running.
@@ -219,9 +219,9 @@ class FailStartInstanceClient : public FakeEmbeddedWorkerInstanceClient {
 
 TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
   // Call StartWorker() multiple times.
-  base::Optional<blink::ServiceWorkerStatusCode> status1;
-  base::Optional<blink::ServiceWorkerStatusCode> status2;
-  base::Optional<blink::ServiceWorkerStatusCode> status3;
+  absl::optional<blink::ServiceWorkerStatusCode> status1;
+  absl::optional<blink::ServiceWorkerStatusCode> status2;
+  absl::optional<blink::ServiceWorkerStatusCode> status3;
   base::RunLoop run_loop_1;
   base::RunLoop run_loop_2;
   base::RunLoop run_loop_3;
@@ -346,7 +346,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
   // Delete the registration.
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   helper_->context()->registry()->DeleteRegistration(
       registration_,
@@ -453,7 +453,7 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
 }
 
 TEST_F(ServiceWorkerVersionTest, SetDevToolsAttached) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   version_->StartWorker(
       ServiceWorkerMetrics::EventType::UNKNOWN,
@@ -490,7 +490,7 @@ TEST_F(ServiceWorkerVersionTest, RequestTerminationWithDevToolsAttached) {
 
   version_->SetDevToolsAttached(true);
 
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   version_->StartWorker(
       ServiceWorkerMetrics::EventType::UNKNOWN,
@@ -686,7 +686,7 @@ TEST_F(ServiceWorkerVersionTest, RestartWorker) {
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   bool has_stopped = false;
 
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   version_->StartRequest(
       ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME,
@@ -753,7 +753,7 @@ TEST_F(ServiceWorkerVersionTest, RequestTimeout) {
   auto* worker =
       helper_->AddNewPendingServiceWorker<DelayMessageWorker>(helper_.get());
 
-  base::Optional<blink::ServiceWorkerStatusCode> error_status;
+  absl::optional<blink::ServiceWorkerStatusCode> error_status;
   base::RunLoop run_loop;
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   client->UnblockStartWorker();
@@ -800,7 +800,7 @@ TEST_F(ServiceWorkerVersionTest, RequestTimeout) {
 }
 
 TEST_F(ServiceWorkerVersionTest, RequestNowTimeout) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -825,7 +825,7 @@ TEST_F(ServiceWorkerVersionTest, RequestNowTimeout) {
 }
 
 TEST_F(ServiceWorkerVersionTest, RequestNowTimeoutKill) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -851,8 +851,8 @@ TEST_F(ServiceWorkerVersionTest, RequestNowTimeoutKill) {
 }
 
 TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
-  base::Optional<blink::ServiceWorkerStatusCode> first_status;
-  base::Optional<blink::ServiceWorkerStatusCode> second_status;
+  absl::optional<blink::ServiceWorkerStatusCode> first_status;
+  absl::optional<blink::ServiceWorkerStatusCode> second_status;
   base::RunLoop first_run_loop;
   base::RunLoop second_run_loop;
 
@@ -916,8 +916,8 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
 }
 
 TEST_F(ServiceWorkerVersionTest, MixedRequestTimeouts) {
-  base::Optional<blink::ServiceWorkerStatusCode> sync_status;
-  base::Optional<blink::ServiceWorkerStatusCode> fetch_status;
+  absl::optional<blink::ServiceWorkerStatusCode> sync_status;
+  absl::optional<blink::ServiceWorkerStatusCode> fetch_status;
   base::RunLoop sync_run_loop;
   base::RunLoop fetch_run_loop;
 
@@ -966,7 +966,7 @@ TEST_F(ServiceWorkerVersionTest, MixedRequestTimeouts) {
 }
 
 TEST_F(ServiceWorkerVersionTest, FailToStart_RendererCrash) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   auto* client = helper_->AddNewPendingInstanceClient<
       DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get());
@@ -990,7 +990,7 @@ TEST_F(ServiceWorkerVersionTest, FailToStart_RendererCrash) {
 }
 
 TEST_F(ServiceWorkerVersionTest, FailToStart_Timeout) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
 
   // Start starting the worker.
@@ -1075,7 +1075,7 @@ TEST_F(ServiceWorkerVersionTest, StallInStopping_DetachThenRestart) {
   EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, version_->running_status());
 
   // Worker is now stalled in stopping. Add a start worker request.
-  base::Optional<blink::ServiceWorkerStatusCode> start_status;
+  absl::optional<blink::ServiceWorkerStatusCode> start_status;
   base::RunLoop run_loop;
   version_->StartWorker(
       ServiceWorkerMetrics::EventType::UNKNOWN,
@@ -1369,7 +1369,7 @@ TEST_F(ServiceWorkerVersionTest, FailToStart_UseNewRendererProcess) {
 }
 
 TEST_F(ServiceWorkerVersionTest, FailToStart_RestartStalledWorker) {
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   // Stall in starting.
   auto* client = helper_->AddNewPendingInstanceClient<

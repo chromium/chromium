@@ -229,7 +229,7 @@ class TrustTokenOriginTrialBrowsertest
   // |on_received_request_| is called once a request arrives at
   // |kTrustTokenUrl|; the request is then placed in |trust_token_request_|.
   base::OnceClosure on_received_request_ GUARDED_BY(mutex_);
-  base::Optional<network::ResourceRequest> trust_token_request_
+  absl::optional<network::ResourceRequest> trust_token_request_
       GUARDED_BY(mutex_);
 };
 
@@ -330,8 +330,8 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
   }
 
   network::TrustTokenTestParameters trust_token_params(
-      test_description.op, base::nullopt, base::nullopt, base::nullopt,
-      base::nullopt, base::nullopt, base::nullopt);
+      test_description.op, absl::nullopt, absl::nullopt, absl::nullopt,
+      absl::nullopt, absl::nullopt, absl::nullopt);
 
   network::TrustTokenParametersAndSerialization
       expected_params_and_serialization =

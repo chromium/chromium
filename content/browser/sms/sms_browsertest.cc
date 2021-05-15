@@ -735,13 +735,13 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
       }));
 
   service->Receive(base::BindLambdaForTesting(
-      [](SmsStatus status, const base::Optional<std::string>& otp) {
+      [](SmsStatus status, const absl::optional<std::string>& otp) {
         EXPECT_EQ(SmsStatus::kSuccess, status);
         EXPECT_EQ("ABC234", otp);
       }));
 
   service2->Receive(base::BindLambdaForTesting(
-      [&navigate](SmsStatus status, const base::Optional<std::string>& otp) {
+      [&navigate](SmsStatus status, const absl::optional<std::string>& otp) {
         EXPECT_EQ(SmsStatus::kSuccess, status);
         EXPECT_EQ("DEF567", otp);
         navigate.Quit();

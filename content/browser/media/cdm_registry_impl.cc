@@ -76,7 +76,7 @@ std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
 bool CdmRegistryImpl::FinalizeCdmCapability(
     const std::string& key_system,
     CdmInfo::Robustness robustness,
-    base::Optional<media::CdmCapability> cdm_capability) {
+    absl::optional<media::CdmCapability> cdm_capability) {
   base::AutoLock auto_lock(lock_);
 
   auto itr = cdms_.begin();

@@ -327,7 +327,7 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
 
 void CrossProcessFrameConnector::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
-    const base::Optional<blink::FrameVisualProperties>& visual_properties) {
+    const absl::optional<blink::FrameVisualProperties>& visual_properties) {
   if (visual_properties.has_value())
     SynchronizeVisualProperties(visual_properties.value(), false);
   UpdateViewportIntersectionInternal(intersection_state);

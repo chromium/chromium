@@ -332,11 +332,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
   // scheme, returns an empty object.
-  virtual const base::Optional<net::SSLInfo>& GetSSLInfo() = 0;
+  virtual const absl::optional<net::SSLInfo>& GetSSLInfo() = 0;
 
   // Returns the AuthChallengeInfo for the request, if the response contained an
   // authentication challenge.
-  virtual const base::Optional<net::AuthChallengeInfo>&
+  virtual const absl::optional<net::AuthChallengeInfo>&
   GetAuthChallengeInfo() = 0;
 
   // Returns host resolution error info associated with the request.
@@ -388,14 +388,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns, if available, the impression associated with the link clicked to
   // initiate this navigation. The impression is available for the entire
   // lifetime of the navigation.
-  virtual const base::Optional<blink::Impression>& GetImpression() = 0;
+  virtual const absl::optional<blink::Impression>& GetImpression() = 0;
 
   // Returns the frame token associated with the frame that initiated the
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
   // defined if and only if GetInitiatorProcessID below is.
-  virtual const base::Optional<blink::LocalFrameToken>&
+  virtual const absl::optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
@@ -405,7 +405,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
-  virtual const base::Optional<url::Origin>& GetInitiatorOrigin() = 0;
+  virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
   // Retrieves any DNS aliases for the requested URL. The alias chain order
   // is preserved in reverse, from canonical name (i.e. address record name)

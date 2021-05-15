@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 
 namespace content {
@@ -60,7 +60,7 @@ enum class PermissionType {
 CONTENT_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 
 // Given |descriptor|, set |permission_type| to a corresponding PermissionType.
-CONTENT_EXPORT base::Optional<PermissionType>
+CONTENT_EXPORT absl::optional<PermissionType>
 PermissionDescriptorToPermissionType(
     const blink::mojom::PermissionDescriptorPtr& descriptor);
 

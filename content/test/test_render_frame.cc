@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -27,6 +26,7 @@
 #include "net/base/data_url.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -206,7 +206,7 @@ class MockFrameHost : public mojom::FrameHost {
       last_browser_interface_broker_receiver_;
 
   size_t request_overlay_routing_token_called_ = 0;
-  base::Optional<base::UnguessableToken> overlay_routing_token_;
+  absl::optional<base::UnguessableToken> overlay_routing_token_;
 
   bool is_page_state_updated_ = false;
 
@@ -253,7 +253,7 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
       std::move(common_params), std::move(commit_params), std::move(head),
       mojo::ScopedDataPipeConsumerHandle(),
       network::mojom::URLLoaderClientEndpointsPtr(),
-      std::move(pending_factory_bundle), base::nullopt,
+      std::move(pending_factory_bundle), absl::nullopt,
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
       mojo::NullRemote() /* prefetch_loader_factory */,
@@ -276,7 +276,7 @@ void TestRenderFrame::NavigateWithError(
     mojom::CommitNavigationParamsPtr commit_params,
     int error_code,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<std::string>& error_page_content) {
+    const absl::optional<std::string>& error_page_content) {
   mock_navigation_client_.reset();
   BindNavigationClient(
       mock_navigation_client_.BindNewEndpointAndPassDedicatedReceiver());
@@ -306,7 +306,7 @@ void TestRenderFrame::BeginNavigation(
         std::make_unique<blink::WebPolicyContainer>(
             blink::WebPolicyContainerPolicies(),
             mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-    next_navigation_html_override_ = base::nullopt;
+    next_navigation_html_override_ = absl::nullopt;
     frame_->CommitNavigation(std::move(navigation_params),
                              nullptr /* extra_data */);
     return;

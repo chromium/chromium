@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -388,7 +388,7 @@ class NavigationThrottleRunnerTestWithEventAndError
       public testing::WithParamInterface<
           std::tuple<NavigationThrottleRunner::Event,
                      net::Error,
-                     base::Optional<std::string>>> {
+                     absl::optional<std::string>>> {
  public:
   NavigationThrottleRunnerTestWithEventAndError()
       : NavigationThrottleRunnerTest() {}
@@ -399,7 +399,7 @@ class NavigationThrottleRunnerTestWithEventAndError
   }
   NavigationThrottleRunner::Event event() const { return event_; }
   net::Error error() const { return error_; }
-  const base::Optional<std::string>& custom_error_page() const {
+  const absl::optional<std::string>& custom_error_page() const {
     return custom_error_page_;
   }
 
@@ -410,7 +410,7 @@ class NavigationThrottleRunnerTestWithEventAndError
  private:
   NavigationThrottleRunner::Event event_;
   net::Error error_;
-  base::Optional<std::string> custom_error_page_ = base::nullopt;
+  absl::optional<std::string> custom_error_page_ = absl::nullopt;
 };
 
 // Checks that the NavigationThrottleRunner correctly propagates a
@@ -456,6 +456,6 @@ INSTANTIATE_TEST_SUITE_P(
                           NavigationThrottleRunner::Event::WillFailRequest,
                           NavigationThrottleRunner::Event::WillProcessResponse),
         ::testing::Values(net::ERR_BLOCKED_BY_ADMINISTRATOR, net::ERR_ABORTED),
-        ::testing::Values(base::nullopt, "<html><body>test</body></html>")));
+        ::testing::Values(absl::nullopt, "<html><body>test</body></html>")));
 
 }  // namespace content

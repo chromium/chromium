@@ -135,7 +135,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
             client_receiver,
         media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
         bool initially_muted,
-        const base::Optional<base::UnguessableToken>& stream_id) override {}
+        const absl::optional<base::UnguessableToken>& stream_id) override {}
   };
 
   AudioInputDeviceManager* audio_input_device_manager() {

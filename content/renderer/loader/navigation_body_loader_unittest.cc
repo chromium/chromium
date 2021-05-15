@@ -98,7 +98,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
       int64_t total_encoded_body_length,
       int64_t total_decoded_body_length,
       bool should_report_corb_blocking,
-      const base::Optional<blink::WebURLError>& error) override {
+      const absl::optional<blink::WebURLError>& error) override {
     ASSERT_TRUE(expecting_finished_);
     did_finish_ = true;
     error_ = error;
@@ -171,7 +171,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   bool toggle_defers_loading_ = false;
   bool destroy_loader_ = false;
   std::string data_received_;
-  base::Optional<blink::WebURLError> error_;
+  absl::optional<blink::WebURLError> error_;
 };
 
 TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {

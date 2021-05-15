@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
@@ -21,6 +20,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -142,7 +142,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
   aura::Window* target_window_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<aura::WindowOcclusionTracker::ScopedForceVisible>
+  absl::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_visible_;
 #endif
 

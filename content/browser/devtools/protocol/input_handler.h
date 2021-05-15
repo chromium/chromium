@@ -172,7 +172,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       std::unique_ptr<blink::WebMouseEvent> mouse_event,
       blink::WebMouseWheelEvent* wheel_event,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      base::Optional<gfx::PointF> point);
+      absl::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchDragEvent(
       const std::string& event_type,
@@ -182,13 +182,13 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<int> modifiers,
       std::unique_ptr<DispatchDragEventCallback> callback,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      base::Optional<gfx::PointF> point);
+      absl::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchWebTouchEvent(
       std::unique_ptr<DispatchTouchEventCallback> callback,
       std::vector<blink::WebTouchEvent> events,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      base::Optional<gfx::PointF> point);
+      absl::optional<gfx::PointF> point);
 
   SyntheticPointerActionParams PrepareSyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType pointer_action_type,

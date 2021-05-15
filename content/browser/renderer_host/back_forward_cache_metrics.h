@@ -10,13 +10,13 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -162,9 +162,9 @@ class BackForwardCacheMetrics
       EvictedAfterDocumentRestoredReason reason);
 
   // Sets the reason why the browsing instance is not swapped. Passing
-  // base::nullopt resets the reason.
+  // absl::nullopt resets the reason.
   void SetBrowsingInstanceSwapResult(
-      base::Optional<ShouldSwapBrowsingInstance> reason);
+      absl::optional<ShouldSwapBrowsingInstance> reason);
 
   // Notifies that the main frame has started a navigation to an entry
   // associated with |this|.
@@ -265,8 +265,8 @@ class BackForwardCacheMetrics
   uint64_t same_origin_frames_features_ = 0;
   uint64_t cross_origin_frames_features_ = 0;
 
-  base::Optional<base::TimeTicks> started_navigation_timestamp_;
-  base::Optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
+  absl::optional<base::TimeTicks> started_navigation_timestamp_;
+  absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
 
   std::unique_ptr<BackForwardCacheCanStoreDocumentResult> page_store_result_;
 
@@ -275,11 +275,11 @@ class BackForwardCacheMetrics
   bool previous_navigation_is_history_ = false;
   bool previous_navigation_is_served_from_bfcache_ = false;
 
-  base::Optional<base::TimeTicks> renderer_killed_timestamp_;
+  absl::optional<base::TimeTicks> renderer_killed_timestamp_;
 
   // The reason why the last attempted navigation in the frame used or didn't
   // use a new BrowsingInstance.
-  base::Optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
+  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
 
   DISALLOW_COPY_AND_ASSIGN(BackForwardCacheMetrics);
 };

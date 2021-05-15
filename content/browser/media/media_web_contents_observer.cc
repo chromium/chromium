@@ -40,7 +40,7 @@ AudibleMetrics* GetAudibleMetrics() {
 static void OnAudioOutputDeviceIdTranslated(
     base::WeakPtr<MediaWebContentsObserver> observer,
     const MediaPlayerId& player_id,
-    const base::Optional<std::string>& raw_device_id) {
+    const absl::optional<std::string>& raw_device_id) {
   if (!raw_device_id)
     return;
 
@@ -246,7 +246,7 @@ bool MediaWebContentsObserver::IsPictureInPictureAllowedForFullscreenVideo()
   return *picture_in_picture_allowed_in_fullscreen_;
 }
 
-const base::Optional<MediaPlayerId>&
+const absl::optional<MediaPlayerId>&
 MediaWebContentsObserver::GetFullscreenVideoMediaPlayerId() const {
   return fullscreen_player_;
 }
@@ -485,7 +485,7 @@ void MediaWebContentsObserver::OnAudioOutputSinkChanged(
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
          const std::string& hashed_device_id,
-         base::OnceCallback<void(const base::Optional<std::string>&)>
+         base::OnceCallback<void(const absl::optional<std::string>&)>
              callback) {
         MediaStreamManager::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT, salt,

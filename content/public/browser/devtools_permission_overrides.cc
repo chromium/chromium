@@ -18,7 +18,7 @@ DevToolsPermissionOverrides& DevToolsPermissionOverrides::operator=(
     DevToolsPermissionOverrides&& other) = default;
 
 void DevToolsPermissionOverrides::Set(
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
   PermissionOverrides& origin_overrides =
@@ -37,23 +37,23 @@ void DevToolsPermissionOverrides::Set(
   }
 }
 
-base::Optional<PermissionStatus> DevToolsPermissionOverrides::Get(
+absl::optional<PermissionStatus> DevToolsPermissionOverrides::Get(
     const url::Origin& origin,
     PermissionType permission) const {
   auto current_override = overrides_.find(origin);
   if (current_override == overrides_.end())
     current_override = overrides_.find(global_overrides_origin_);
   if (current_override == overrides_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto new_status = current_override->second.find(permission);
   if (new_status != current_override->second.end())
-    return base::make_optional(new_status->second);
-  return base::nullopt;
+    return absl::make_optional(new_status->second);
+  return absl::nullopt;
 }
 
 const PermissionOverrides& DevToolsPermissionOverrides::GetAll(
-    const base::Optional<url::Origin>& origin) const {
+    const absl::optional<url::Origin>& origin) const {
   static const base::NoDestructor<PermissionOverrides> empty_overrides;
   auto it = origin ? overrides_.find(*origin) : overrides_.end();
   if (it == overrides_.end())
@@ -64,12 +64,12 @@ const PermissionOverrides& DevToolsPermissionOverrides::GetAll(
 }
 
 void DevToolsPermissionOverrides::Reset(
-    const base::Optional<url::Origin>& origin) {
+    const absl::optional<url::Origin>& origin) {
   overrides_.erase(origin.value_or(global_overrides_origin_));
 }
 
 void DevToolsPermissionOverrides::GrantPermissions(
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     const std::vector<PermissionType>& permissions) {
   const std::vector<PermissionType>& kAllPermissionTypes =
       GetAllPermissionTypes();

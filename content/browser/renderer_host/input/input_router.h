@@ -79,10 +79,10 @@ class InputRouter {
   virtual void SetFrameTreeNodeId(int frameTreeNodeId) = 0;
 
   // Return the currently allowed touch-action.
-  virtual base::Optional<cc::TouchAction> AllowedTouchAction() = 0;
+  virtual absl::optional<cc::TouchAction> AllowedTouchAction() = 0;
 
   // Return the currently active touch-action.
-  virtual base::Optional<cc::TouchAction> ActiveTouchAction() = 0;
+  virtual absl::optional<cc::TouchAction> ActiveTouchAction() = 0;
 
   virtual void SetForceEnableZoom(bool enabled) = 0;
 

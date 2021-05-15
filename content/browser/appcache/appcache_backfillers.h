@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "sql/database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -33,9 +33,9 @@ class AppCacheBackfillerVersion8 {
   template <typename ForEachCallable>
   bool ForEachEntry(int64_t cache_id, const ForEachCallable& callable);
 
-  // Gets the manifest URL of a group. Returns base::nullopt if the database
+  // Gets the manifest URL of a group. Returns absl::nullopt if the database
   // query failed.
-  base::Optional<std::string> GetManifestUrlForGroup(int64_t group_id);
+  absl::optional<std::string> GetManifestUrlForGroup(int64_t group_id);
 
   // Updates the padding size of the Entry record identified by |response_id|.
   // Returns whether the database statement succeeded.
@@ -74,7 +74,7 @@ class AppCacheBackfillerVersion9 {
   bool UpdateCacheManifestScope(int64_t cache_id,
                                 const std::string& manifest_scope);
 
-  base::Optional<std::string> GetManifestUrlForGroup(int64_t group_id);
+  absl::optional<std::string> GetManifestUrlForGroup(int64_t group_id);
 
   // The AppCacheDatabase instance being backfilled.
   sql::Database* const db_;

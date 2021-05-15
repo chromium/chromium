@@ -151,10 +151,10 @@ class CONTENT_EXPORT VideoCaptureManager
   bool GetDeviceFormatsInUse(
       const media::VideoCaptureSessionId& capture_session_id,
       media::VideoCaptureFormats* formats_in_use);
-  // Retrieves the format currently in use.  Returns base::nullopt if the
+  // Retrieves the format currently in use.  Returns absl::nullopt if the
   // |stream_type|, |device_id| pair is not found. Returns in-use format of the
   // device otherwise.
-  base::Optional<media::VideoCaptureFormat> GetDeviceFormatInUse(
+  absl::optional<media::VideoCaptureFormat> GetDeviceFormatInUse(
       blink::mojom::MediaStreamType stream_type,
       const std::string& device_id);
 

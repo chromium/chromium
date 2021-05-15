@@ -547,7 +547,7 @@ void URLLoaderInterceptor::WriteResponse(
     base::StringPiece headers,
     base::StringPiece body,
     network::mojom::URLLoaderClient* client,
-    base::Optional<net::SSLInfo> ssl_info) {
+    absl::optional<net::SSLInfo> ssl_info) {
   net::HttpResponseInfo info;
   info.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
@@ -564,7 +564,7 @@ void URLLoaderInterceptor::WriteResponse(
     const std::string& relative_path,
     network::mojom::URLLoaderClient* client,
     const std::string* headers,
-    base::Optional<net::SSLInfo> ssl_info) {
+    absl::optional<net::SSLInfo> ssl_info) {
   return WriteResponse(GetDataFilePath(relative_path), client, headers,
                        std::move(ssl_info));
 }
@@ -573,7 +573,7 @@ void URLLoaderInterceptor::WriteResponse(
     const base::FilePath& file_path,
     network::mojom::URLLoaderClient* client,
     const std::string* headers,
-    base::Optional<net::SSLInfo> ssl_info) {
+    absl::optional<net::SSLInfo> ssl_info) {
   base::ScopedAllowBlockingForTesting allow_io;
   std::string headers_str;
   if (headers) {

@@ -59,7 +59,7 @@ void ChromeAppCacheService::Shutdown() {
 bool ChromeAppCacheService::CanLoadAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetContentClient()->browser()->AllowAppCache(
       manifest_url, site_for_cookies, top_frame_origin, browser_context_);
@@ -68,7 +68,7 @@ bool ChromeAppCacheService::CanLoadAppCache(
 bool ChromeAppCacheService::CanCreateAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetContentClient()->browser()->AllowAppCache(
       manifest_url, site_for_cookies, top_frame_origin, browser_context_);

@@ -43,7 +43,7 @@ class TestNetworkContext : public network::TestNetworkContext {
                    const std::string& group,
                    const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
-                   const base::Optional<std::string>& user_agent,
+                   const absl::optional<std::string>& user_agent,
                    base::Value body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(

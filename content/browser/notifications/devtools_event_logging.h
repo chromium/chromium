@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -37,8 +37,8 @@ void LogNotificationScheduledEventToDevTools(
 void LogNotificationClickedEventToDevTools(
     BrowserContext* browser_context,
     const NotificationDatabaseData& data,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply);
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply);
 
 }  // namespace notifications
 }  // namespace content

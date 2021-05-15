@@ -80,7 +80,7 @@ SignedExchangeCertFetcher::CreateAndStart(
     bool force_fetch,
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     net::IsolationInfo isolation_info) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::CreateAndStart");
@@ -101,7 +101,7 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
     bool force_fetch,
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     net::IsolationInfo isolation_info)
     : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       throttles_(std::move(throttles)),

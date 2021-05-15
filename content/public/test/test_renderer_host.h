@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
@@ -21,6 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/page_transition_types.h"
@@ -136,7 +136,7 @@ class RenderFrameHostTester {
 
   // Simulates the receipt of a manifest URL.
   virtual void SimulateManifestURLUpdate(
-      const base::Optional<GURL>& manifest_url) = 0;
+      const absl::optional<GURL>& manifest_url) = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.

@@ -6,8 +6,8 @@
 #define CONTENT_TEST_PORTAL_PORTAL_ACTIVATED_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/test/portal/portal_interceptor_for_testing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 
 namespace base {
@@ -52,7 +52,7 @@ class PortalActivatedObserver : public PortalInterceptorForTesting::Observer {
 
   const base::WeakPtr<PortalInterceptorForTesting> interceptor_;
   bool has_activated_ = false;
-  base::Optional<blink::mojom::PortalActivateResult> result_;
+  absl::optional<blink::mojom::PortalActivateResult> result_;
   base::RunLoop* run_loop_ = nullptr;
 };
 

@@ -407,7 +407,7 @@ std::vector<device::CableDiscoveryData> GetTestCableExtension() {
 
 device::AuthenticatorData AuthDataFromMakeCredentialResponse(
     const MakeCredentialAuthenticatorResponsePtr& response) {
-  base::Optional<Value> attestation_value =
+  absl::optional<Value> attestation_value =
       Reader::Read(response->attestation_object);
   CHECK(attestation_value);
   const auto& attestation = attestation_value->GetMap();
@@ -415,7 +415,7 @@ device::AuthenticatorData AuthDataFromMakeCredentialResponse(
   const auto auth_data_it = attestation.find(Value(device::kAuthDataKey));
   CHECK(auth_data_it != attestation.end());
   const std::vector<uint8_t>& auth_data = auth_data_it->second.GetBytestring();
-  base::Optional<device::AuthenticatorData> parsed_auth_data =
+  absl::optional<device::AuthenticatorData> parsed_auth_data =
       device::AuthenticatorData::DecodeAuthenticatorData(auth_data);
   return std::move(parsed_auth_data.value());
 }
@@ -664,7 +664,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
   }
 
  protected:
-  base::Optional<base::test::ScopedFeatureList> scoped_feature_list_;
+  absl::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_global_values_ =
           device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
@@ -1628,12 +1628,12 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 // WebAuthentuicationDelegate embedder interface.
 class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
-  base::Optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost*) override {
     return is_uvpaa_override;
   }
 
-  base::Optional<std::string> MaybeGetRelyingPartyIdOverride(
+  absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_rp_id,
       const url::Origin& caller_origin) override {
     return rp_id_override;
@@ -1652,7 +1652,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   bool IsFocused(WebContents* web_contents) override { return is_focused; }
 
 #if defined(OS_MAC)
-  base::Optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       BrowserContext* browser_context) override {
     return touch_id_authenticator_config;
   }
@@ -1660,11 +1660,11 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
-  base::Optional<bool> is_uvpaa_override;
+  absl::optional<bool> is_uvpaa_override;
 
   // If set, the delegate will override the RP ID used for WebAuthn requests
   // with this value.
-  base::Optional<std::string> rp_id_override;
+  absl::optional<std::string> rp_id_override;
 
   // Indicates whether individual attestation should be permitted by the
   // delegate.
@@ -1679,7 +1679,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
 #if defined(OS_MAC)
   // Configuration data for the macOS platform authenticator.
-  base::Optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
+  absl::optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
 #endif
 };
 
@@ -1784,7 +1784,7 @@ class TestAuthenticatorRequestDelegate
   }
 
   base::OnceClosure action_callbacks_registered_callback_;
-  base::Optional<base::OnceClosure> cancel_callback_;
+  absl::optional<base::OnceClosure> cancel_callback_;
   const AttestationConsent attestation_consent_;
   base::OnceClosure started_over_callback_;
   bool attestation_consent_queried_ = false;
@@ -1905,7 +1905,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
       const device::AuthenticatorData auth_data =
           AuthDataFromMakeCredentialResponse(result.response);
 
-      base::Optional<Value> attestation_value =
+      absl::optional<Value> attestation_value =
           Reader::Read(result.response->attestation_object);
       ASSERT_TRUE(attestation_value);
       ASSERT_TRUE(attestation_value->is_map());
@@ -2064,7 +2064,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
           kExtensionOrigin;
     } else {
       test_client_.GetTestWebAuthenticationDelegate()->rp_id_override =
-          base::nullopt;
+          absl::nullopt;
     }
 
     std::vector<uint8_t> credential_id;
@@ -3589,12 +3589,12 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
 
   static constexpr struct {
     device::CoseAlgorithmIdentifier algo;
-    base::Optional<int> evp_id;
+    absl::optional<int> evp_id;
   } kTests[] = {
       {device::CoseAlgorithmIdentifier::kEs256, EVP_PKEY_EC},
       {device::CoseAlgorithmIdentifier::kRs256, EVP_PKEY_RSA},
       {device::CoseAlgorithmIdentifier::kEdDSA, EVP_PKEY_ED25519},
-      {device::CoseAlgorithmIdentifier::kInvalidForTesting, base::nullopt},
+      {device::CoseAlgorithmIdentifier::kInvalidForTesting, absl::nullopt},
   };
 
   for (const auto& test : kTests) {
@@ -3912,7 +3912,7 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
   }
 
   static bool HasUV(const GetAssertionAuthenticatorResponsePtr& response) {
-    base::Optional<device::AuthenticatorData> auth_data =
+    absl::optional<device::AuthenticatorData> auth_data =
         device::AuthenticatorData::DecodeAuthenticatorData(
             response->info->authenticator_data);
     return auth_data->obtained_user_verification();
@@ -3945,7 +3945,7 @@ class PINTestAuthenticatorRequestDelegate
   PINTestAuthenticatorRequestDelegate(
       bool supports_pin,
       const std::list<PINExpectation>& pins,
-      base::Optional<InterestingFailureReason>* failure_reason)
+      absl::optional<InterestingFailureReason>* failure_reason)
       : supports_pin_(supports_pin),
         expected_(pins),
         failure_reason_(failure_reason) {}
@@ -3987,7 +3987,7 @@ class PINTestAuthenticatorRequestDelegate
  private:
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
-  base::Optional<InterestingFailureReason>* const failure_reason_;
+  absl::optional<InterestingFailureReason>* const failure_reason_;
   DISALLOW_COPY_AND_ASSIGN(PINTestAuthenticatorRequestDelegate);
 };
 
@@ -4009,7 +4009,7 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   bool supports_pin = true;
   std::list<PINExpectation> expected;
-  base::Optional<InterestingFailureReason> failure_reason;
+  absl::optional<InterestingFailureReason> failure_reason;
 };
 
 class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
@@ -5462,7 +5462,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   ResidentKeyTestAuthenticatorRequestDelegate(
       std::string expected_accounts,
       std::vector<uint8_t> selected_user_id,
-      base::Optional<InterestingFailureReason>* failure_reason,
+      absl::optional<InterestingFailureReason>* failure_reason,
       bool* is_conditional)
       : expected_accounts_(expected_accounts),
         selected_user_id_(selected_user_id),
@@ -5531,7 +5531,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
  private:
   const std::string expected_accounts_;
   const std::vector<uint8_t> selected_user_id_;
-  base::Optional<InterestingFailureReason>* const failure_reason_;
+  absl::optional<InterestingFailureReason>* const failure_reason_;
   bool* const is_conditional_;
 };
 
@@ -5558,7 +5558,7 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
   std::string expected_accounts;
   std::vector<uint8_t> selected_user_id;
   bool is_conditional = false;
-  base::Optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
+  absl::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
       failure_reason;
 };
 
@@ -5753,7 +5753,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // with no identifying user info because the UI is bad in that case: we can
@@ -5769,7 +5769,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleWithPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, "Test User"));
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, "Test User"));
 
   // |SelectAccount| should be called when PII is available.
   test_client_.expected_accounts = "01020304::Test User";
@@ -5810,7 +5810,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUVDiscouraged) {
 
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
@@ -5946,7 +5946,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobRead) {
     virtual_device_factory_->SetCtap2Config(config);
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
         /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-        /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+        /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
     if (test.large_blob_set) {
       virtual_device_factory_->mutable_state()->InjectLargeBlob(
@@ -6011,7 +6011,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     const std::vector<uint8_t> cred_id = {4, 3, 2, 1};
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
         cred_id, kTestRelyingPartyId,
-        /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+        /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
     if (test.large_blob_set) {
       virtual_device_factory_->mutable_state()->InjectLargeBlob(
@@ -6037,7 +6037,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     EXPECT_TRUE(result.response->echo_large_blob_written);
     EXPECT_EQ(test.did_write_large_blob, result.response->large_blob_written);
     if (test.did_write_large_blob) {
-      base::Optional<std::vector<uint8_t>> compressed_blob =
+      absl::optional<std::vector<uint8_t>> compressed_blob =
           virtual_device_factory_->mutable_state()->GetLargeBlob(
               virtual_device_factory_->mutable_state()
                   ->registrations.begin()
@@ -6247,7 +6247,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, AuthenticatorSetsCredProtect) {
         EXPECT_EQ(AuthenticatorStatus::SUCCESS, status);
         ASSERT_EQ(
             1u, virtual_device_factory_->mutable_state()->registrations.size());
-        const base::Optional<device::CredProtect> result =
+        const absl::optional<device::CredProtect> result =
             virtual_device_factory_->mutable_state()
                 ->registrations.begin()
                 ->second.protection;
@@ -6381,7 +6381,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
   virtual_device_factory_->SetCtap2Config(config);
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
@@ -6434,7 +6434,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
 TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
   NavigateAndCommit(GURL(kTestOrigin1));
 
-  base::Optional<device::PublicKeyCredentialDescriptor> credential;
+  absl::optional<device::PublicKeyCredentialDescriptor> credential;
   for (bool hmac_secret_supported : {false, true}) {
     // Setting the PRF extension on an authenticator that doesn't support it
     // should cause the extension to be echoed, but with enabled=false.
@@ -6636,7 +6636,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
 
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
@@ -6999,7 +6999,7 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
               std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/base::nullopt);
+          /*contact_id=*/absl::nullopt);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
@@ -7107,7 +7107,7 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   pairings.emplace_back(DummyPairing());
   // Passing |nullopt| as the callback here causes all contact IDs to be
   // rejected.
-  auto network_context = device::cablev2::NewMockTunnelServer(base::nullopt);
+  auto network_context = device::cablev2::NewMockTunnelServer(absl::nullopt);
   auto callback_and_event_stream =
       device::cablev2::Discovery::EventStream<size_t>::New();
   auto discovery = std::make_unique<device::cablev2::Discovery>(

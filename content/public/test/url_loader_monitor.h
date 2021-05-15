@@ -9,12 +9,12 @@
 #include <memory>
 #include <set>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -37,7 +37,7 @@ class URLLoaderMonitor {
 
   // Returns the network::ResourceRequest for the most recently observed request
   // to |url|. If no such request has been observed, returns nullptr.
-  base::Optional<network::ResourceRequest> GetRequestInfo(const GURL& url);
+  absl::optional<network::ResourceRequest> GetRequestInfo(const GURL& url);
 
   // Waits for the URLs passed in to the constructor to all be observers. All
   // URLs observed after the constructor is invoked are counted.

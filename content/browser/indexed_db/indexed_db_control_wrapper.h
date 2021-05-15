@@ -60,7 +60,7 @@ class CONTENT_EXPORT IndexedDBControlWrapper
  private:
   void BindRemoteIfNeeded();
 
-  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
   scoped_refptr<IndexedDBContextImpl> context_;

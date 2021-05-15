@@ -32,7 +32,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       if (file_types)
         out_params_->file_types = *file_types;
       else
-        out_params_->file_types = base::nullopt;
+        out_params_->file_types = absl::nullopt;
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
@@ -75,7 +75,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       if (file_types)
         out_params_->file_types = *file_types;
       else
-        out_params_->file_types = base::nullopt;
+        out_params_->file_types = absl::nullopt;
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;

@@ -1183,8 +1183,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New(
           initiator_frame_host_
-              ? base::make_optional(initiator_frame_host_->GetFrameToken())
-              : base::nullopt,
+              ? absl::make_optional(initiator_frame_host_->GetFrameToken())
+              : absl::nullopt,
           std::string() /* headers */, net::LOAD_NORMAL,
           false /* skip_service_worker */,
           blink::mojom::RequestContextType::HYPERLINK,
@@ -1194,11 +1194,11 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           GURL() /* searchable_form_url */,
           std::string() /* searchable_form_encoding */,
           GURL() /* client_side_redirect_url */,
-          base::nullopt /* detools_initiator_info */,
+          absl::nullopt /* detools_initiator_info */,
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
-          base::nullopt /* web_bundle_token */);
+          absl::nullopt /* web_bundle_token */);
   auto common_params = CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->url = navigation_url_;

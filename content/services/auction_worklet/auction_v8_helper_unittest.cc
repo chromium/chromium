@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "gin/converter.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
@@ -37,7 +37,7 @@ TEST_F(AuctionV8HelperTest, Basic) {
   v8::Local<v8::UnboundScript> script;
   {
     v8::Context::Scope ctx(helper_.scratch_context());
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     ASSERT_TRUE(helper_
                     .Compile("function foo() { return 1;}",
                              GURL("https://foo.test/"), error_msg)
@@ -47,7 +47,7 @@ TEST_F(AuctionV8HelperTest, Basic) {
 
   for (v8::Local<v8::Context> context :
        {helper_.scratch_context(), helper_.CreateContext()}) {
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     v8::Context::Scope ctx(context);
     v8::Local<v8::Value> result;
     ASSERT_TRUE(helper_
@@ -93,7 +93,7 @@ TEST_F(AuctionV8HelperTest, Timeout) {
     v8::Context::Scope context_scope(context);
 
     v8::Local<v8::UnboundScript> script;
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     ASSERT_TRUE(helper_
                     .Compile(hanging_script.script, GURL("https://foo.test/"),
                              error_msg)
@@ -122,7 +122,7 @@ TEST_F(AuctionV8HelperTest, Timeout) {
   v8::Local<v8::Context> context = helper_.CreateContext();
   v8::Context::Scope context_scope(context);
   v8::Local<v8::UnboundScript> script;
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   ASSERT_TRUE(helper_
                   .Compile("function foo() { return 1;}",
                            GURL("https://foo.test/"), error_msg)
@@ -147,7 +147,7 @@ TEST_F(AuctionV8HelperTest, NoTime) {
 
   // Make sure Date() is not accessible.
   v8::Local<v8::UnboundScript> script;
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   ASSERT_TRUE(helper_
                   .Compile("function foo() { return Date();}",
                            GURL("https://foo.test/"), error_msg)
@@ -167,7 +167,7 @@ TEST_F(AuctionV8HelperTest, NoTime) {
 TEST_F(AuctionV8HelperTest, CompileError) {
   v8::Local<v8::UnboundScript> script;
   v8::Context::Scope ctx(helper_.scratch_context());
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   ASSERT_FALSE(
       helper_.Compile("function foo() { ", GURL("https://foo.test/"), error_msg)
           .ToLocal(&script));
@@ -181,7 +181,7 @@ TEST_F(AuctionV8HelperTest, RunErrorTopLevel) {
   v8::Local<v8::UnboundScript> script;
   {
     v8::Context::Scope ctx(helper_.scratch_context());
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     ASSERT_TRUE(helper_
                     .Compile("\n\nthrow new Error('I am an error');",
                              GURL("https://foo.test/"), error_msg)
@@ -190,7 +190,7 @@ TEST_F(AuctionV8HelperTest, RunErrorTopLevel) {
   }
 
   v8::Local<v8::Context> context = helper_.CreateContext();
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   v8::Context::Scope ctx(context);
   v8::Local<v8::Value> result;
   ASSERT_FALSE(helper_
@@ -207,7 +207,7 @@ TEST_F(AuctionV8HelperTest, TargetFunctionNotFound) {
   v8::Local<v8::UnboundScript> script;
   {
     v8::Context::Scope ctx(helper_.scratch_context());
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     ASSERT_TRUE(helper_
                     .Compile("function foo() { return 1;}",
                              GURL("https://foo.test/"), error_msg)
@@ -217,7 +217,7 @@ TEST_F(AuctionV8HelperTest, TargetFunctionNotFound) {
 
   v8::Local<v8::Context> context = helper_.CreateContext();
 
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   v8::Context::Scope ctx(context);
   v8::Local<v8::Value> result;
   ASSERT_FALSE(helper_
@@ -235,7 +235,7 @@ TEST_F(AuctionV8HelperTest, TargetFunctionError) {
   v8::Local<v8::UnboundScript> script;
   {
     v8::Context::Scope ctx(helper_.scratch_context());
-    base::Optional<std::string> error_msg;
+    absl::optional<std::string> error_msg;
     ASSERT_TRUE(helper_
                     .Compile("function foo() { return notfound;}",
                              GURL("https://foo.test/"), error_msg)
@@ -245,7 +245,7 @@ TEST_F(AuctionV8HelperTest, TargetFunctionError) {
 
   v8::Local<v8::Context> context = helper_.CreateContext();
 
-  base::Optional<std::string> error_msg;
+  absl::optional<std::string> error_msg;
   v8::Context::Scope ctx(context);
   v8::Local<v8::Value> result;
   ASSERT_FALSE(helper_

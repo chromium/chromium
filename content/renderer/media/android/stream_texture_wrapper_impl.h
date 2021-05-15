@@ -101,7 +101,7 @@ class CONTENT_EXPORT StreamTextureWrapperImpl
   void CreateVideoFrame(const gpu::Mailbox& mailbox,
                         const gfx::Size& coded_size,
                         const gfx::Rect& visible_rect,
-                        const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
+                        const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
 
   void SetCurrentFrameInternal(scoped_refptr<media::VideoFrame> video_frame);
 

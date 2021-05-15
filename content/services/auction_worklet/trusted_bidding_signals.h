@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
@@ -36,7 +36,7 @@ class TrustedBiddingSignals {
  public:
   using LoadSignalsCallback =
       base::OnceCallback<void(bool success,
-                              base::Optional<std::string> error_msg)>;
+                              absl::optional<std::string> error_msg)>;
 
   // Starts loading the JSON data on construction. `trusted_bidding_signals_url`
   // must be the base URL (no query params added). Callback will be invoked
@@ -66,7 +66,7 @@ class TrustedBiddingSignals {
  private:
   void OnDownloadComplete(std::vector<std::string> trusted_bidding_signals_keys,
                           std::unique_ptr<std::string> body,
-                          base::Optional<std::string> error_msg);
+                          absl::optional<std::string> error_msg);
 
   const GURL trusted_bidding_signals_url_;  // original, for error messages.
   AuctionV8Helper* const v8_helper_;

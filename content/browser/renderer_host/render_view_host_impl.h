@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -35,6 +34,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -155,7 +155,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // |proxy_route_id| is only used when creating a RenderView in an inactive
   //   state.
   virtual bool CreateRenderView(
-      const base::Optional<blink::FrameToken>& opener_frame_token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener);
 
@@ -263,17 +263,17 @@ class CONTENT_EXPORT RenderViewHostImpl
   }
 
   void OnThemeColorChanged(RenderFrameHostImpl* rfh,
-                           const base::Optional<SkColor>& theme_color);
+                           const absl::optional<SkColor>& theme_color);
 
   void DidChangeBackgroundColor(RenderFrameHostImpl* rfh,
                                 const SkColor& background_color,
                                 bool color_adjust);
 
-  base::Optional<SkColor> theme_color() const {
+  absl::optional<SkColor> theme_color() const {
     return main_frame_theme_color_;
   }
 
-  base::Optional<SkColor> background_color() const {
+  absl::optional<SkColor> background_color() const {
     return main_frame_background_color_;
   }
 
@@ -446,10 +446,10 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
-  base::Optional<SkColor> main_frame_theme_color_;
+  absl::optional<SkColor> main_frame_theme_color_;
 
   // The background color for the underlying document as computed by CSS.
-  base::Optional<SkColor> main_frame_background_color_;
+  absl::optional<SkColor> main_frame_background_color_;
 
   // Contents MIME type for the main document. It can be used to check whether
   // we can do something for special contents.

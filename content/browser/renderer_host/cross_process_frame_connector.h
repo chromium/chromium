@@ -286,7 +286,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
                                     bool display_locked);
   void UpdateViewportIntersection(
       const blink::mojom::ViewportIntersectionState& intersection_state,
-      const base::Optional<blink::FrameVisualProperties>& visual_properties);
+      const absl::optional<blink::FrameVisualProperties>& visual_properties);
 
   // These enums back crashed frame histograms - see MaybeLogCrash() and
   // MaybeLogShownCrash() below.  Please do not modify or remove existing enum

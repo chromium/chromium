@@ -86,7 +86,7 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   void ApplyOverrides(net::HttpRequestHeaders* headers);
   bool ApplyUserAgentMetadataOverrides(
-      base::Optional<blink::UserAgentMetadata>* override_out);
+      absl::optional<blink::UserAgentMetadata>* override_out);
 
  private:
   WebContentsImpl* GetWebContents();
@@ -105,7 +105,7 @@ class EmulationHandler : public DevToolsDomainHandler,
   // |user_agent_metadata_| is meaningful if |user_agent_| is non-empty.
   // In that case nullopt will disable sending of client hints, and a
   // non-nullopt value will be sent.
-  base::Optional<blink::UserAgentMetadata> user_agent_metadata_;
+  absl::optional<blink::UserAgentMetadata> user_agent_metadata_;
   std::string accept_language_;
 
   RenderFrameHostImpl* host_;

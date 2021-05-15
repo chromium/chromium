@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -25,6 +24,7 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
@@ -79,7 +79,7 @@ class CONTENT_EXPORT WebContentsViewAura
                          const ui::DropTargetEvent& event,
                          std::unique_ptr<ui::OSExchangeData> data,
                          base::ScopedClosureRunner end_drag_runner,
-                         base::Optional<gfx::PointF> transformed_pt,
+                         absl::optional<gfx::PointF> transformed_pt,
                          gfx::PointF screen_pt);
     OnPerformDropContext(OnPerformDropContext&& other);
     ~OnPerformDropContext();
@@ -88,7 +88,7 @@ class CONTENT_EXPORT WebContentsViewAura
     ui::DropTargetEvent event;
     std::unique_ptr<ui::OSExchangeData> data;
     base::ScopedClosureRunner end_drag_runner;
-    base::Optional<gfx::PointF> transformed_pt;
+    absl::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
   };
 
@@ -228,15 +228,15 @@ class CONTENT_EXPORT WebContentsViewAura
   void DragEnteredCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
   void DragUpdatedCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
   void PerformDropCallback(ui::DropTargetEvent event,
                            std::unique_ptr<ui::OSExchangeData> data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
 
   // Completes a drag exit operation by communicating with the renderer process.
   void CompleteDragExit();

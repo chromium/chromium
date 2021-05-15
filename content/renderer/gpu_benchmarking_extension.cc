@@ -299,7 +299,7 @@ bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
   return false;
 }
 
-base::Optional<gfx::Vector2dF> ToVector(const std::string& direction,
+absl::optional<gfx::Vector2dF> ToVector(const std::string& direction,
                                         float distance) {
   if (direction == "down") {
     return gfx::Vector2dF(0, distance);
@@ -318,7 +318,7 @@ base::Optional<gfx::Vector2dF> ToVector(const std::string& direction,
   } else if (direction == "downright") {
     return gfx::Vector2dF(distance, distance);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 int ToKeyModifiers(const base::StringPiece& key) {
@@ -788,7 +788,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   // Scroll by percentage does not require speed in pixels
   DCHECK(!scroll_by_percentage || (speed_in_pixels_s == 800));
 
-  base::Optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
   if (!pixels_to_scrol_vector.has_value())
     return false;
@@ -967,9 +967,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
     fling_velocity = 1000;
   }
 
-  base::Optional<gfx::Vector2dF> pixels_to_scrol_vector =
+  absl::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
-  base::Optional<gfx::Vector2dF> fling_velocity_vector =
+  absl::optional<gfx::Vector2dF> fling_velocity_vector =
       ToVector(direction, fling_velocity);
   if (!pixels_to_scrol_vector.has_value() ||
       !fling_velocity_vector.has_value()) {

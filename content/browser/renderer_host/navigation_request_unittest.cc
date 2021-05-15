@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/ssl_status.h"
@@ -24,6 +23,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -128,7 +128,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // throttle checks when they are finished.
   void SimulateWillFailRequest(
       net::Error net_error_code,
-      const base::Optional<net::SSLInfo> ssl_info = base::nullopt) {
+      const absl::optional<net::SSLInfo> ssl_info = absl::nullopt) {
     was_callback_called_ = false;
     callback_result_ = NavigationThrottle::DEFER;
     request_->set_net_error(net_error_code);
@@ -209,7 +209,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, nullptr /* post_body */,
-        nullptr /* navigation_ui_data */, base::nullopt /* impression */);
+        nullptr /* navigation_ui_data */, absl::nullopt /* impression */);
     request_->StartNavigation(true);
   }
 

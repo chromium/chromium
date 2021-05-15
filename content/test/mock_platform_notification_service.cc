@@ -120,8 +120,8 @@ void MockPlatformNotificationService::RecordNotificationUkmEvent(
 
 void MockPlatformNotificationService::SimulateClick(
     const std::string& title,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto notification_id_iter = notification_id_map_.find(title);
   if (notification_id_iter == notification_id_map_.end())

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
 namespace content {
@@ -140,7 +140,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
   recognizer_remote->GetPrediction(
       std::move(strokes), handwriting::mojom::HandwritingHints::New(),
       base::BindLambdaForTesting(
-          [&](base::Optional<std::vector<
+          [&](absl::optional<std::vector<
                   handwriting::mojom::HandwritingPredictionPtr>> result) {
             is_callback_called = true;
             ASSERT_TRUE(result.has_value());

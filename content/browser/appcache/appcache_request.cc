@@ -31,10 +31,10 @@ int AppCacheRequest::GetResponseCode() const {
   return 0;
 }
 
-base::Optional<url::Origin> AppCacheRequest::GetTopFrameOrigin() const {
+absl::optional<url::Origin> AppCacheRequest::GetTopFrameOrigin() const {
   return request_.trusted_params
              ? request_.trusted_params->isolation_info.top_frame_origin()
-             : base::nullopt;
+             : absl::nullopt;
 }
 
 std::string AppCacheRequest::GetResponseHeaderByName(
@@ -50,8 +50,8 @@ void AppCacheRequest::UpdateWithRedirectInfo(
   bool not_used_clear_body;
   net::RedirectUtil::UpdateHttpRequest(
       request_.url, request_.method, redirect_info,
-      base::nullopt /* removed_request_headers */,
-      base::nullopt /* modified_request_headers */, &request_.headers,
+      absl::nullopt /* removed_request_headers */,
+      absl::nullopt /* modified_request_headers */, &request_.headers,
       &not_used_clear_body);
   request_.url = redirect_info.new_url;
   request_.method = redirect_info.new_method;

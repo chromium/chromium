@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,6 +16,7 @@
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "url/gurl.h"
 
@@ -40,8 +40,8 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   CrossOriginEmbedderPolicyReporter(
       StoragePartition* storage_partition,
       const GURL& context_url,
-      const base::Optional<std::string>& endpoint,
-      const base::Optional<std::string>& report_only_endpoint,
+      const absl::optional<std::string>& endpoint,
+      const absl::optional<std::string>& report_only_endpoint,
       const net::NetworkIsolationKey& network_isolation_key);
   ~CrossOriginEmbedderPolicyReporter() override;
   CrossOriginEmbedderPolicyReporter(const CrossOriginEmbedderPolicyReporter&) =
@@ -83,8 +83,8 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   StoragePartition* const storage_partition_;
 
   const GURL context_url_;
-  const base::Optional<std::string> endpoint_;
-  const base::Optional<std::string> report_only_endpoint_;
+  const absl::optional<std::string> endpoint_;
+  const absl::optional<std::string> report_only_endpoint_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::ReceiverSet<network::mojom::CrossOriginEmbedderPolicyReporter>

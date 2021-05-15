@@ -424,11 +424,11 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
           ? metadata.response().alpn_negotiated_protocol()
           : "unknown";
 
-  base::Optional<std::string> mime_type;
+  absl::optional<std::string> mime_type;
   if (metadata.response().has_mime_type())
     mime_type = metadata.response().mime_type();
 
-  base::Optional<std::string> request_method;
+  absl::optional<std::string> request_method;
   if (metadata.response().has_request_method())
     request_method = metadata.response().request_method();
 
@@ -463,7 +463,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
-      /*has_range_requested=*/false, /*auth_challenge_info=*/base::nullopt);
+      /*has_range_requested=*/false, /*auth_challenge_info=*/absl::nullopt);
 }
 
 int64_t CalculateSideDataPadding(
@@ -700,7 +700,7 @@ void LegacyCacheStorageCache::BatchOperation(
   // This method may produce a warning message that should be returned in the
   // final VerboseErrorCallback.  A message may be present in both the failure
   // and success paths.
-  base::Optional<std::string> message;
+  absl::optional<std::string> message;
 
   if (backend_state_ == BACKEND_CLOSED) {
     scheduler_task_runner_->PostTask(
@@ -794,7 +794,7 @@ void LegacyCacheStorageCache::BatchDidGetUsageAndQuota(
     int64_t trace_id,
     VerboseErrorCallback callback,
     BadMessageCallback bad_message_callback,
-    base::Optional<std::string> message,
+    absl::optional<std::string> message,
     uint64_t space_required,
     uint64_t side_data_size,
     blink::mojom::QuotaStatusCode status_code,
@@ -883,7 +883,7 @@ void LegacyCacheStorageCache::BatchDidGetUsageAndQuota(
 void LegacyCacheStorageCache::BatchDidOneOperation(
     base::OnceClosure completion_closure,
     VerboseErrorCallback error_callback,
-    base::Optional<std::string> message,
+    absl::optional<std::string> message,
     int64_t trace_id,
     CacheStorageError error) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
@@ -902,7 +902,7 @@ void LegacyCacheStorageCache::BatchDidOneOperation(
 
 void LegacyCacheStorageCache::BatchDidAllOperations(
     VerboseErrorCallback callback,
-    base::Optional<std::string> message,
+    absl::optional<std::string> message,
     int64_t trace_id) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "LegacyCacheStorageCache::BatchDidAllOperations",

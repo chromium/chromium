@@ -399,7 +399,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
   // also transient, there is also nothing to do. Otherwise, the session needs
   // to request audio focus again.
   if (audio_focus_state_ == State::ACTIVE) {
-    base::Optional<AudioFocusType> current_focus_type =
+    absl::optional<AudioFocusType> current_focus_type =
         delegate_->GetCurrentFocusType();
     if (current_focus_type == AudioFocusType::kGain ||
         current_focus_type == required_audio_focus_type) {
@@ -526,7 +526,7 @@ void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
 }
 
 void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
-  base::Optional<media_session::MediaPosition> position;
+  absl::optional<media_session::MediaPosition> position;
 
   // If there was a position specified from Blink then we should use that.
   if (routed_service_ && routed_service_->position())
@@ -1136,7 +1136,7 @@ void MediaSessionImpl::ExitPictureInPicture() {
       normal_players_.begin()->first.player_id);
 }
 
-void MediaSessionImpl::SetAudioSinkId(const base::Optional<std::string>& id) {
+void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {
   audio_device_id_for_origin_ = id;
 
   for (const auto& it : normal_players_) {

@@ -258,7 +258,7 @@ class AuctionRunnerTest : public testing::Test {
       const url::Origin& owner,
       const std::string& name,
       const GURL& bidding_url,
-      const base::Optional<GURL>& trusted_bidding_signals_url,
+      const absl::optional<GURL>& trusted_bidding_signals_url,
       const std::vector<std::string>& trusted_bidding_signals_keys,
       const GURL& ad_url) {
     std::vector<blink::mojom::InterestGroupAdPtr> ads;
@@ -277,7 +277,7 @@ class AuctionRunnerTest : public testing::Test {
         blink::mojom::InterestGroup::New(
             base::Time::Max(), owner, name, bidding_url,
             GURL() /* update_url */, trusted_bidding_signals_url,
-            trusted_bidding_signals_keys, base::nullopt, std::move(ads)),
+            trusted_bidding_signals_keys, absl::nullopt, std::move(ads)),
         mojom::BiddingBrowserSignals::New(3, 5, std::move(previous_wins)));
   }
 
@@ -581,10 +581,10 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
 
   std::vector<mojom::BiddingInterestGroupPtr> bidders;
   bidders.push_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
-                                      base::nullopt, {"k1", "k2"},
+                                      absl::nullopt, {"k1", "k2"},
                                       GURL("https://ad1.com")));
   bidders.push_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
-                                      base::nullopt, {"l1", "l2"},
+                                      absl::nullopt, {"l1", "l2"},
                                       GURL("https://ad2.com")));
 
   Result res = RunAuctionAndWait(

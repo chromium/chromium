@@ -46,16 +46,16 @@ class PepperProxyLookupHelper::UIThreadHelper
         receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(
         &UIThreadHelper::OnProxyLookupComplete, base::Unretained(this),
-        net::ERR_ABORTED, base::nullopt));
+        net::ERR_ABORTED, absl::nullopt));
     if (!std::move(look_up_proxy_for_url_callback)
              .Run(url, std::move(proxy_lookup_client))) {
-      OnProxyLookupComplete(net::ERR_FAILED, base::nullopt);
+      OnProxyLookupComplete(net::ERR_FAILED, absl::nullopt);
     }
   }
 
   void OnProxyLookupComplete(
       int32_t net_error,
-      const base::Optional<net::ProxyInfo>& proxy_info) override {
+      const absl::optional<net::ProxyInfo>& proxy_info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     receiver_.reset();
@@ -98,7 +98,7 @@ void PepperProxyLookupHelper::Start(
 }
 
 void PepperProxyLookupHelper::OnProxyLookupComplete(
-    base::Optional<net::ProxyInfo> proxy_info) {
+    absl::optional<net::ProxyInfo> proxy_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::move(look_up_complete_callback_).Run(std::move(proxy_info));

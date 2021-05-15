@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
@@ -31,6 +30,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
@@ -249,9 +249,9 @@ class RenderProcessHostBadIpcMessageWaiter {
       RenderProcessHost* render_process_host);
 
   // Waits until the renderer process exits.  Returns the bad message that made
-  // //content kill the renderer.  |base::nullopt| is returned if the renderer
+  // //content kill the renderer.  |absl::nullopt| is returned if the renderer
   // was killed outside of //content or exited normally.
-  base::Optional<bad_message::BadMessageReason> Wait() WARN_UNUSED_RESULT;
+  absl::optional<bad_message::BadMessageReason> Wait() WARN_UNUSED_RESULT;
 
  private:
   RenderProcessHostKillWaiter internal_waiter_;

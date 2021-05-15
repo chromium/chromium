@@ -86,7 +86,7 @@ class WebBundleURLLoaderFactory::EntryLoader final
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override {}
+      const absl::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -173,7 +173,7 @@ class WebBundleURLLoaderFactory::EntryLoader final
   base::WeakPtr<WebBundleURLLoaderFactory> factory_;
   mojo::Remote<network::mojom::URLLoaderClient> loader_client_;
   const int frame_tree_node_id_;
-  base::Optional<net::HttpByteRange> byte_range_;
+  absl::optional<net::HttpByteRange> byte_range_;
 
   base::WeakPtrFactory<EntryLoader> weak_factory_{this};
 

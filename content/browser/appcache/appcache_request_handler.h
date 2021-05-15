@@ -77,7 +77,7 @@ class CONTENT_EXPORT AppCacheRequestHandler
       blink::ThrottlingURLLoader* url_loader,
       bool* skip_other_interceptors,
       bool* will_return_unsafe_redirect) override;
-  base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
+  absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
   // These methods are used for subresource loading by the

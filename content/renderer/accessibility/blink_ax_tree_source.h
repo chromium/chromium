@@ -10,8 +10,8 @@
 #include <set>
 #include <string>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "ui/accessibility/ax_common.h"
@@ -88,7 +88,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
   }
   void RemoveImageAnnotator() {
     image_annotator_ = nullptr;
-    first_unlabeled_image_id_ = base::nullopt;
+    first_unlabeled_image_id_ = absl::nullopt;
   }
 
   // Query or update a set of IDs for which we should load inline text boxes.
@@ -196,7 +196,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
   //
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
-  mutable base::Optional<int32_t> first_unlabeled_image_id_ = base::nullopt;
+  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
 
   // Current bounding box of every object, so we can detect when it moves.
   mutable std::unordered_map<int, ui::AXRelativeBounds> cached_bounding_boxes_;

@@ -35,19 +35,19 @@ NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
     NavigationThrottle::ThrottleAction action)
     : NavigationThrottle::ThrottleCheckResult(action,
                                               DefaultNetErrorCode(action),
-                                              base::nullopt) {}
+                                              absl::nullopt) {}
 
 NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
     NavigationThrottle::ThrottleAction action,
     net::Error net_error_code)
     : NavigationThrottle::ThrottleCheckResult(action,
                                               net_error_code,
-                                              base::nullopt) {}
+                                              absl::nullopt) {}
 
 NavigationThrottle::ThrottleCheckResult::ThrottleCheckResult(
     NavigationThrottle::ThrottleAction action,
     net::Error net_error_code,
-    base::Optional<std::string> error_page_content)
+    absl::optional<std::string> error_page_content)
     : action_(action),
       net_error_code_(net_error_code),
       error_page_content_(error_page_content) {}

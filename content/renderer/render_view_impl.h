@@ -137,7 +137,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,
       bool& consumed_user_gesture,
-      const base::Optional<blink::WebImpression>& impression) override;
+      const absl::optional<blink::WebImpression>& impression) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool CanUpdateLayout() override;
   void OnPageFrozenChanged(bool frozen) override;

@@ -17,7 +17,7 @@ StorableImpression::StorableImpression(
     base::Time expiry_time,
     SourceType source_type,
     int64_t priority,
-    const base::Optional<int64_t>& impression_id)
+    const absl::optional<int64_t>& impression_id)
     : impression_data_(impression_data),
       impression_origin_(impression_origin),
       conversion_origin_(conversion_origin),

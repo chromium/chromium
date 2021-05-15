@@ -9,11 +9,11 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_params.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 
 namespace net {
@@ -87,7 +87,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) = 0;
 
   // Called if the request fails before receving a response. Specific

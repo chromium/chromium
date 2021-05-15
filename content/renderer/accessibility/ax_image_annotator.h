@@ -12,13 +12,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -85,7 +85,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
    private:
     image_annotation::ImageProcessor image_processor_;
     ax::mojom::ImageAnnotationStatus status_;
-    base::Optional<std::string> annotation_;
+    absl::optional<std::string> annotation_;
   };
 
   // Retrieves the image data from the renderer.

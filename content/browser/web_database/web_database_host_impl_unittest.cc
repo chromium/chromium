@@ -211,7 +211,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
   bool success_callback_was_called = false;
   auto success_callback = base::BindLambdaForTesting(
       [&](base::File) { success_callback_was_called = true; });
-  base::Optional<std::string> error_callback_message;
+  absl::optional<std::string> error_callback_message;
 
   mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
       [&](const std::string& message) { error_callback_message = message; }));

@@ -52,7 +52,7 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
     const GURL& url,
     const GURL& scope,
     bool is_installed_version,
-    base::Optional<network::CrossOriginEmbedderPolicy>
+    absl::optional<network::CrossOriginEmbedderPolicy>
         cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
@@ -216,7 +216,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
        protocol::NetworkHandler::ForAgentHost(it->second.get())) {
     network->RequestSent(request_id, std::string(), request,
                          protocol::Network::Initiator::TypeEnum::Preload,
-                         /*initiator_url=*/base::nullopt,
+                         /*initiator_url=*/absl::nullopt,
                          /*initiator_devtools_request_id=*/"", timestamp);
   }
 }

@@ -61,7 +61,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
     blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
     for (auto& test_font_name_index : kExpectedTestFonts) {
-      base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+      absl::optional<blink::FontTableMatcher::MatchResult> match_result =
           font_table_matcher.MatchName(test_font_name_index.font_name);
       ASSERT_TRUE(match_result) << "No font matched for font name: "
                                 << test_font_name_index.font_name;
@@ -118,7 +118,7 @@ TEST_P(DWriteFontLookupTableBuilderTimeoutTest, TestTimeout) {
         blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
         for (auto& test_font_name_index : kExpectedTestFonts) {
-          base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+          absl::optional<blink::FontTableMatcher::MatchResult> match_result =
               font_table_matcher.MatchName(test_font_name_index.font_name);
           ASSERT_TRUE(!match_result);
         }

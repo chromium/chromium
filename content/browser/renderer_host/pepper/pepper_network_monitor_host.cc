@@ -41,7 +41,7 @@ bool CanUseNetworkMonitor(bool external_plugin,
 
 void OnGetNetworkList(
     base::OnceCallback<void(const net::NetworkInterfaceList&)> callback,
-    const base::Optional<net::NetworkInterfaceList>& networks) {
+    const absl::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
                          ? content::GetUIThreadTaskRunner({})

@@ -54,7 +54,7 @@ PaymentAppProviderUtil::CreateBlankCanMakePaymentResponse(
   return payments::mojom::CanMakePaymentResponse::New(
       response_type, /*can_make_payment=*/false,
       /*ready_for_minimal_ui=*/false,
-      /*account_balance=*/base::nullopt);
+      /*account_balance=*/absl::nullopt);
 }
 
 // static
@@ -63,9 +63,9 @@ PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
     payments::mojom::PaymentEventResponseType response_type) {
   return payments::mojom::PaymentHandlerResponse::New(
       /*method_name=*/"", /*stringified_details=*/"", response_type,
-      /*payer_name=*/base::nullopt, /*payer_email=*/base::nullopt,
-      /*payer_phone=*/base::nullopt, /*shipping_address=*/nullptr,
-      /*shipping_option=*/base::nullopt);
+      /*payer_name=*/absl::nullopt, /*payer_email=*/absl::nullopt,
+      /*payer_phone=*/absl::nullopt, /*shipping_address=*/nullptr,
+      /*shipping_option=*/absl::nullopt);
 }
 
 }  // namespace content

@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -34,6 +33,7 @@
 #include "net/nqe/network_quality_estimator_params.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -76,7 +76,7 @@ double GetRandomMultiplier(const std::string& host) {
 }
 
 unsigned long RoundRtt(const std::string& host,
-                       const base::Optional<base::TimeDelta>& rtt) {
+                       const absl::optional<base::TimeDelta>& rtt) {
   if (!rtt.has_value()) {
     // RTT is unavailable. So, return the fastest value.
     return 0;
@@ -95,7 +95,7 @@ unsigned long RoundRtt(const std::string& host,
 }
 
 double RoundKbpsToMbps(const std::string& host,
-                       const base::Optional<int32_t>& downlink_kbps) {
+                       const absl::optional<int32_t>& downlink_kbps) {
   // Limit the size of the buckets and the maximum reported value to reduce
   // fingerprinting.
   static const size_t kGranularityKbps = 50;
@@ -173,23 +173,23 @@ std::string DoubleToSpecCompliantString(double value) {
 
 // Return the effective connection type value overridden for web APIs.
 // If no override value has been set, a null value is returned.
-base::Optional<net::EffectiveConnectionType>
+absl::optional<net::EffectiveConnectionType>
 GetWebHoldbackEffectiveConnectionType() {
   if (!base::FeatureList::IsEnabled(
           features::kNetworkQualityEstimatorWebHoldback)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::string effective_connection_type_param =
       base::GetFieldTrialParamValueByFeature(
           features::kNetworkQualityEstimatorWebHoldback,
           "web_effective_connection_type_override");
 
-  base::Optional<net::EffectiveConnectionType> effective_connection_type =
+  absl::optional<net::EffectiveConnectionType> effective_connection_type =
       net::GetEffectiveConnectionTypeForName(effective_connection_type_param);
   DCHECK(effective_connection_type_param.empty() || effective_connection_type);
 
   if (!effective_connection_type)
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK_NE(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
             effective_connection_type.value());
   return effective_connection_type;
@@ -276,7 +276,7 @@ void AddRttHeader(net::HttpRequestHeaders* headers,
                   const GURL& url) {
   DCHECK(headers);
 
-  base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+  absl::optional<net::EffectiveConnectionType> web_holdback_ect =
       GetWebHoldbackEffectiveConnectionType();
 
   base::TimeDelta http_rtt;
@@ -297,7 +297,7 @@ void AddDownlinkHeader(net::HttpRequestHeaders* headers,
                        network::NetworkQualityTracker* network_quality_tracker,
                        const GURL& url) {
   DCHECK(headers);
-  base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+  absl::optional<net::EffectiveConnectionType> web_holdback_ect =
       GetWebHoldbackEffectiveConnectionType();
 
   int32_t downlink_throughput_kbps;
@@ -328,7 +328,7 @@ void AddEctHeader(net::HttpRequestHeaders* headers,
   DCHECK_EQ(blink::kWebEffectiveConnectionTypeMappingCount,
             static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
-  base::Optional<net::EffectiveConnectionType> web_holdback_ect =
+  absl::optional<net::EffectiveConnectionType> web_holdback_ect =
       GetWebHoldbackEffectiveConnectionType();
 
   int effective_connection_type;
@@ -462,14 +462,14 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     FrameTreeNode* frame_tree_node,
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers) {
-  base::Optional<blink::UserAgentMetadata> ua_metadata;
+  absl::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
   if (override_ua) {
     NavigatorDelegate* nav_delegate =
         frame_tree_node ? frame_tree_node->navigator().GetDelegate() : nullptr;
     ua_metadata =
         nav_delegate ? nav_delegate->GetUserAgentOverride().ua_metadata_override
-                     : base::nullopt;
+                     : absl::nullopt;
     // If a custom UA override is set, but no value is provided for UA client
     // hints, disable them.
     disable_due_to_custom_ua = !ua_metadata.has_value();
@@ -570,12 +570,12 @@ bool ShouldAddClientHints(const GURL& url,
 }
 
 unsigned long RoundRttForTesting(const std::string& host,
-                                 const base::Optional<base::TimeDelta>& rtt) {
+                                 const absl::optional<base::TimeDelta>& rtt) {
   return RoundRtt(host, rtt);
 }
 
 double RoundKbpsToMbpsForTesting(const std::string& host,
-                                 const base::Optional<int32_t>& downlink_kbps) {
+                                 const absl::optional<int32_t>& downlink_kbps) {
   return RoundKbpsToMbps(host, downlink_kbps);
 }
 
@@ -717,7 +717,7 @@ void AddNavigationRequestClientHintsHeaders(
                                container_policy);
 }
 
-base::Optional<std::vector<network::mojom::WebClientHintsType>>
+absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNagivation(
     const GURL& url,
     const ::network::mojom::ParsedHeadersPtr& headers,
@@ -729,10 +729,10 @@ ParseAndPersistAcceptCHForNagivation(
   DCHECK(headers);
 
   if (!headers->accept_ch)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!IsValidURLForClientHints(url))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Client hints should only be enabled when JavaScript is enabled. Platforms
   // which enable/disable JavaScript on a per-origin basis should implement
@@ -741,18 +741,18 @@ ParseAndPersistAcceptCHForNagivation(
   // WebPreferences setting.
   if (!delegate->IsJavaScriptAllowed(url) ||
       !IsJavascriptEnabled(frame_tree_node)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Only the main frame should parse accept-CH.
   if (!frame_tree_node->IsMainFrame())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<std::vector<network::mojom::WebClientHintsType>> parsed =
+  absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed =
       blink::FilterAcceptCH(headers->accept_ch.value(), LangClientHintEnabled(),
                             delegate->UserAgentClientHintEnabled());
   if (!parsed.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta persist_duration;
   if (IsPermissionsPolicyForClientHintsEnabled()) {

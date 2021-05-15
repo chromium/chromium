@@ -104,7 +104,7 @@ void RecordGetPrimaryServicesOutcome(
 // Records the UUID of the service used when calling getPrimaryService.
 void RecordGetPrimaryServicesServices(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<device::BluetoothUUID>& service);
+    const absl::optional<device::BluetoothUUID>& service);
 
 // getCharacteristic() and getCharacteristics() Metrics
 
@@ -154,7 +154,7 @@ void RecordGetCharacteristicsOutcome(
 // Records the UUID of the characteristic used when calling getCharacteristic.
 void RecordGetCharacteristicsCharacteristic(
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<device::BluetoothUUID>& characteristic);
+    const absl::optional<device::BluetoothUUID>& characteristic);
 
 // Records the outcome of the cache query for getDescriptors. Should only be
 // called if QueryCacheForService fails.

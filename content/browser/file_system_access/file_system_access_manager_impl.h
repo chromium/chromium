@@ -223,7 +223,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   }
 
   void SetFilePickerResultForTesting(
-      base::Optional<FileSystemChooser::ResultEntry> result_entry) {
+      absl::optional<FileSystemChooser::ResultEntry> result_entry) {
     auto_file_picker_result_for_test_ = result_entry;
   }
 
@@ -396,7 +396,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
            std::unique_ptr<FileSystemAccessDataTransferTokenImpl>>
       data_transfer_tokens_;
 
-  base::Optional<FileSystemChooser::ResultEntry>
+  absl::optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_;
 
   base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_{this};

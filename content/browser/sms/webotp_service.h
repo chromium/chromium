@@ -93,13 +93,13 @@ class CONTENT_EXPORT WebOTPService
 
   const OriginList origin_list_;
   ReceiveCallback callback_;
-  base::Optional<std::string> one_time_code_;
+  absl::optional<std::string> one_time_code_;
   base::TimeTicks start_time_;
   base::TimeTicks receive_time_;
   // Timer to trigger timeout for any pending request. We (re)arm the timer
   // every time we receive a new request.
   base::DelayTimer timeout_timer_;
-  base::Optional<FailureType> prompt_failure_;
+  absl::optional<FailureType> prompt_failure_;
 
   // The ptr is valid only when we are handling an incoming otp response.
   std::unique_ptr<UserConsentHandler> consent_handler_;

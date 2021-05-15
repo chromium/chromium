@@ -43,10 +43,10 @@ namespace content {
 namespace {
 
 EmbeddedWorkerInstance::StatusCallback ReceiveStatus(
-    base::Optional<blink::ServiceWorkerStatusCode>* out_status,
+    absl::optional<blink::ServiceWorkerStatusCode>* out_status,
     base::OnceClosure quit) {
   return base::BindOnce(
-      [](base::Optional<blink::ServiceWorkerStatusCode>* out_status,
+      [](absl::optional<blink::ServiceWorkerStatusCode>* out_status,
          base::OnceClosure quit, blink::ServiceWorkerStatusCode status) {
         *out_status = status;
         std::move(quit).Run();
@@ -74,14 +74,14 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
 
   struct EventLog {
     EventType type;
-    base::Optional<EmbeddedWorkerStatus> status;
-    base::Optional<blink::mojom::ServiceWorkerStartStatus> start_status;
+    absl::optional<EmbeddedWorkerStatus> status;
+    absl::optional<blink::mojom::ServiceWorkerStartStatus> start_status;
   };
 
   void RecordEvent(EventType type,
-                   base::Optional<EmbeddedWorkerStatus> status = base::nullopt,
-                   base::Optional<blink::mojom::ServiceWorkerStartStatus>
-                       start_status = base::nullopt) {
+                   absl::optional<EmbeddedWorkerStatus> status = absl::nullopt,
+                   absl::optional<blink::mojom::ServiceWorkerStartStatus>
+                       start_status = absl::nullopt) {
     EventLog log = {type, status, start_status};
     events_.push_back(log);
   }
@@ -93,7 +93,7 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
                  bool has_fetch_handler) override {
     has_fetch_handler_ = has_fetch_handler;
-    RecordEvent(STARTED, base::nullopt, status);
+    RecordEvent(STARTED, absl::nullopt, status);
   }
   void OnStopped(EmbeddedWorkerStatus old_status) override {
     RecordEvent(STOPPED, old_status);
@@ -132,7 +132,7 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
   void StartWorkerUntilStartSent(
       EmbeddedWorkerInstance* worker,
       blink::mojom::EmbeddedWorkerStartParamsPtr params) {
-    base::Optional<blink::ServiceWorkerStatusCode> status;
+    absl::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop loop;
     worker->Start(std::move(params),
                   ReceiveStatus(&status, loop.QuitClosure()));
@@ -437,7 +437,7 @@ TEST_F(EmbeddedWorkerInstanceTest, FailToSendStartIPC) {
 
   // Attempt to start the worker. From the browser process's point of view, the
   // start IPC was sent.
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop loop;
   worker->Start(CreateStartParams(pair.second),
                 ReceiveStatus(&status, loop.QuitClosure()));
@@ -465,7 +465,7 @@ TEST_F(EmbeddedWorkerInstanceTest, RemoveRemoteInterface) {
   worker->AddObserver(this);
 
   // Attempt to start the worker.
-  base::Optional<blink::ServiceWorkerStatusCode> status;
+  absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop loop;
   auto* client = helper_->AddNewPendingInstanceClient<
       DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get());

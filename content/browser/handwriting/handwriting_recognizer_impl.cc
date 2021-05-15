@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -32,7 +32,7 @@ void HandwritingRecognizerImpl::GetPrediction(
     std::vector<handwriting::mojom::HandwritingStrokePtr> strokes,
     handwriting::mojom::HandwritingHintsPtr hints,
     GetPredictionCallback callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace content

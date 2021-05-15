@@ -198,7 +198,7 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
     return;
 
   // Reset |next_trigger_| to keep track of the next trigger timestamp.
-  next_trigger_ = base::nullopt;
+  next_trigger_ = absl::nullopt;
 
   // Iterate over all notifications and delete all expired ones.
   std::set<std::string> close_notification_ids;
@@ -981,7 +981,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
 
   // Only store resources for notifications that will be scheduled.
   if (!CanTrigger(write_database_data))
-    write_database_data.notification_resources = base::nullopt;
+    write_database_data.notification_resources = absl::nullopt;
 
   NotificationDatabase::Status status =
       database_->WriteNotificationData(origin, write_database_data);

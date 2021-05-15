@@ -14,7 +14,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(USE_AURA)
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/cursor.h"
 #endif
 
@@ -76,7 +76,7 @@ class CONTENT_EXPORT WebCursor {
 #endif
 
 #if defined(USE_AURA)
-  base::Optional<ui::Cursor> custom_cursor_;
+  absl::optional<ui::Cursor> custom_cursor_;
 #endif
 };
 

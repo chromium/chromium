@@ -24,7 +24,7 @@ class FocusChangedObserver : public WebContentsObserver {
   void OnFocusChangedInPage(FocusedNodeDetails*) override;
 
   base::RunLoop run_loop_;
-  base::Optional<FocusedNodeDetails> observed_details_;
+  absl::optional<FocusedNodeDetails> observed_details_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusChangedObserver);
 };

@@ -44,7 +44,7 @@ class TestWebUIListenerObserver : public TestWebUI::JavascriptCallObserver {
   base::RunLoop run_loop_;
 
   // Only filled when a matching listener call has been observed.
-  base::Optional<std::vector<base::Value>> call_args_;
+  absl::optional<std::vector<base::Value>> call_args_;
 };
 
 }  // namespace content

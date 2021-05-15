@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/values.h"
@@ -29,6 +28,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -93,7 +93,7 @@ class MockURLLoader final : public network::mojom::URLLoader {
                void(const std::vector<std::string>&,
                     const net::HttpRequestHeaders&,
                     const net::HttpRequestHeaders&,
-                    const base::Optional<GURL>&));
+                    const absl::optional<GURL>&));
   MOCK_METHOD2(SetPriority,
                void(net::RequestPriority priority,
                     int32_t intra_priority_value));
@@ -136,14 +136,14 @@ class URLLoaderFactoryForMockLoader final
   }
   void CloseClientPipe() { client_remote_.reset(); }
 
-  base::Optional<network::ResourceRequest> url_request() const {
+  absl::optional<network::ResourceRequest> url_request() const {
     return url_request_;
   }
 
  private:
   std::unique_ptr<MockURLLoader> loader_;
   mojo::Remote<network::mojom::URLLoaderClient> client_remote_;
-  base::Optional<network::ResourceRequest> url_request_;
+  absl::optional<network::ResourceRequest> url_request_;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForMockLoader);
 };
@@ -184,7 +184,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
     cbor_array.push_back(cbor::Value(u8"\U0001F4DC\u26D3"));
     cbor_array.push_back(cbor::Value(std::move(cbor_map)));
 
-    base::Optional<std::vector<uint8_t>> serialized =
+    absl::optional<std::vector<uint8_t>> serialized =
         cbor::Writer::Write(cbor::Value(std::move(cbor_array)));
     if (!serialized)
       return std::string();
@@ -230,7 +230,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &mock_loader_factory_),
         std::move(throttles_), url, force_fetch, std::move(callback),
-        nullptr /* devtools_proxy */, base::nullopt /* throttling_profile_id */,
+        nullptr /* devtools_proxy */, absl::nullopt /* throttling_profile_id */,
         net::IsolationInfo());
   }
 

@@ -73,9 +73,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // Deletes `auction`.
   void OnAuctionComplete(RunAdAuctionCallback callback,
                          AdAuction* auction,
-                         base::Optional<GURL> render_url,
-                         base::Optional<GURL> bidder_report_url,
-                         base::Optional<GURL> seller_report_url);
+                         absl::optional<GURL> render_url,
+                         absl::optional<GURL> bidder_report_url,
+                         absl::optional<GURL> seller_report_url);
 
   void OnWorkletServiceCrash();
 

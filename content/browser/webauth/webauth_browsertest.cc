@@ -532,9 +532,9 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*cable_registration_data=*/nullptr,
         /*hmac_create_secret=*/false, /*prf_enable=*/false,
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
-        /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
+        /*enforce_protection_policy=*/false, /*appid_exclude=*/absl::nullopt,
         /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
-        /*is_payment_credential_creation=*/false, /*cred_blob=*/base::nullopt);
+        /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt);
 
     return mojo_options;
   }
@@ -555,10 +555,10 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New(
         /*is_conditional=*/false, kTestChallenge,
         base::TimeDelta::FromSeconds(30), "acme.com", std::move(credentials),
-        device::UserVerificationRequirement::kPreferred, base::nullopt,
+        device::UserVerificationRequirement::kPreferred, absl::nullopt,
         std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
-        /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt,
+        /*large_blob_read=*/false, /*large_blob_write=*/absl::nullopt,
         /*get_cred_blob=*/false);
     return mojo_options;
   }
@@ -1148,7 +1148,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 // DOMMessageQueues, this allows other functions that depend on ExecuteScript
 // (and thus trigger the broadcast of values) to run while this function is
 // waiting for a specific result.
-base::Optional<std::string> ExecuteScriptAndExtractPrefixedString(
+absl::optional<std::string> ExecuteScriptAndExtractPrefixedString(
     WebContents* web_contents,
     const std::string& script,
     const std::string& result_prefix) {
@@ -1159,13 +1159,13 @@ base::Optional<std::string> ExecuteScriptAndExtractPrefixedString(
   for (;;) {
     std::string json;
     if (!dom_message_queue.WaitForMessage(&json)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
-    base::Optional<base::Value> result =
+    absl::optional<base::Value> result =
         base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
     if (!result) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     std::string str;
@@ -1288,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   // The plain ExecuteScriptAndExtractString cannot be used because
   // NavigateIframeToURL uses it internally and they get confused about which
   // message is for whom.
-  base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+  absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(),
       BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
   ASSERT_TRUE(result);
@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
           // Can't use NavigateIframeToURL here because in the
           // BEFORE_NAVIGATION case we are racing AuthenticatorImpl and
           // NavigateIframeToURL can get confused by the "OK" message.
-          base::Optional<std::string> result =
+          absl::optional<std::string> result =
               ExecuteScriptAndExtractPrefixedString(
                   web_contents,
                   "document.getElementById('test_iframe').src = "
@@ -1347,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     // The plain ExecuteScriptAndExtractString cannot be used because
     // NavigateIframeToURL uses it internally and they get confused about which
     // message is for whom.
-    base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+    absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
         shell()->web_contents(), BuildCreateCallWithParameters(parameters),
         "webauth: ");
     ASSERT_TRUE(result);
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
   auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
   virtual_device_factory->set_win_webauthn_api(&fake_api);
 
-  base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+  absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(),
       BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
   ASSERT_TRUE(result);
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   for (const auto& error : errors) {
     fake_api.set_hresult(error.first);
 
-    base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+    absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
         shell()->web_contents(),
         BuildCreateCallWithParameters(CreateParameters()), "webauth: ");
     EXPECT_TRUE(result);
@@ -1463,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinGetAssertion) {
       "allowCredentials: [{ type: 'public-key', id: new "
       "TextEncoder().encode('AAA')}]";
 
-  base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+  absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
       shell()->web_contents(), BuildGetCallWithParameters(get_parameters),
       "webauth: ");
   ASSERT_TRUE(result);
@@ -1491,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   for (const auto& error : errors) {
     fake_api.set_hresult(error);
 
-    base::Optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
+    absl::optional<std::string> result = ExecuteScriptAndExtractPrefixedString(
         shell()->web_contents(), BuildGetCallWithParameters(GetParameters()),
         "webauth: ");
     ASSERT_EQ(*result, kNotAllowedErrorMessage);

@@ -192,7 +192,7 @@ void WebThemeEngineDefault::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     blink::mojom::ColorScheme color_scheme,
-    const base::Optional<SkColor>& accent_color) {
+    const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);
@@ -224,7 +224,7 @@ gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
       NativeThemePart(part));
 }
 
-base::Optional<SkColor> WebThemeEngineDefault::GetSystemColor(
+absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
     blink::WebThemeEngine::SystemThemeColor system_theme_color) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
       NativeSystemThemeColor(system_theme_color));

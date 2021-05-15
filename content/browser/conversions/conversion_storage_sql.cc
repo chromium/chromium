@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_storage_sql_migrations.h"
@@ -24,6 +23,7 @@
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -264,7 +264,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   ConversionReport report(impression_to_attribute, conversion.conversion_data(),
                           /*conversion_time=*/current_time,
                           /*report_time=*/current_time,
-                          /*conversion_id=*/base::nullopt);
+                          /*conversion_id=*/absl::nullopt);
 
   // Allow the delegate to make arbitrary changes to the new conversion report
   // before we add it storage.

@@ -10,10 +10,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "gin/public/isolate_holder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
@@ -115,7 +115,7 @@ class AuctionV8Helper {
   v8::MaybeLocal<v8::UnboundScript> Compile(
       const std::string& src,
       const GURL& src_url,
-      base::Optional<std::string>& error_out);
+      absl::optional<std::string>& error_out);
 
   // Binds a script and runs it in the passed in context, returning the result.
   // Note that the returned value could include references to objects or
@@ -133,7 +133,7 @@ class AuctionV8Helper {
                                       v8::Local<v8::UnboundScript> script,
                                       base::StringPiece script_name,
                                       base::span<v8::Local<v8::Value>> args,
-                                      base::Optional<std::string>& error_out);
+                                      absl::optional<std::string>& error_out);
 
   void set_script_timeout_for_testing(base::TimeDelta script_timeout) {
     script_timeout_ = script_timeout;

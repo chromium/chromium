@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -98,7 +98,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // the browser process (e.g. by typing a url) won't have a navigation type.
   virtual void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) {}
+      absl::optional<blink::WebNavigationType> navigation_type) {}
 
   // Called when a navigation has just committed and |document_loader|
   // will start loading a new document in the RenderFrame.

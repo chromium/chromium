@@ -5,10 +5,10 @@
 #ifndef CONTENT_PUBLIC_TEST_FAKE_LOCAL_FRAME_H_
 #define CONTENT_PUBLIC_TEST_FAKE_LOCAL_FRAME_H_
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
@@ -71,7 +71,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
-                           const base::Optional<blink::RemoteFrameToken>&
+                           const absl::optional<blink::RemoteFrameToken>&
                                source_frame_token) override;
   void AdvanceFocusInForm(blink::mojom::FocusType focus_type) override;
   void ReportContentSecurityPolicyViolation(
@@ -79,7 +79,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;
   void OnScreensChange() override;
   void PostMessageEvent(
-      const base::Optional<blink::RemoteFrameToken>& source_frame_token,
+      const absl::optional<blink::RemoteFrameToken>& source_frame_token,
       const std::u16string& source_origin,
       const std::u16string& target_origin,
       blink::TransferableMessage message) override;
@@ -115,7 +115,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void BindReportingObserver(
       mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) override;
   void UpdateOpener(
-      const base::Optional<blink::FrameToken>& opener_frame_token) override;
+      const absl::optional<blink::FrameToken>& opener_frame_token) override;
   void MixedContentFound(
       const GURL& main_resource_url,
       const GURL& mixed_content_url,

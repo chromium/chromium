@@ -15,9 +15,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
@@ -273,7 +273,7 @@ class EventSender {
 
   std::unique_ptr<blink::ContextMenuData> last_context_menu_data_;
 
-  base::Optional<blink::WebDragData> current_drag_data_;
+  absl::optional<blink::WebDragData> current_drag_data_;
 
   // Location of the touch point that initiated a gesture.
   gfx::PointF current_gesture_location_;

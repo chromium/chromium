@@ -6,7 +6,6 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -26,6 +25,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -190,7 +190,7 @@ int UtilityMain(const MainFunctionParams& parameters) {
   // TODO(leonhsl): Once http://crbug.com/646833 got resolved, re-enable
   // base::HighResolutionTimerManager here for future possible usage of high
   // resolution timer in service utility process.
-  base::Optional<base::HighResolutionTimerManager> hi_res_timer_manager;
+  absl::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
   if (base::PowerMonitor::IsInitialized()) {
     hi_res_timer_manager.emplace();
   }

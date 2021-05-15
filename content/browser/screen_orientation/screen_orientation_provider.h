@@ -8,12 +8,12 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -72,7 +72,7 @@ class CONTENT_EXPORT ScreenOrientationProvider
 
   // Lock that require orientation changes are not completed until
   // OnOrientationChange.
-  base::Optional<device::mojom::ScreenOrientationLockType>
+  absl::optional<device::mojom::ScreenOrientationLockType>
       pending_lock_orientation_;
 
   LockOrientationCallback pending_callback_;

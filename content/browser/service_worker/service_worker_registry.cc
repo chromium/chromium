@@ -247,7 +247,7 @@ void ServiceWorkerRegistry::FindRegistrationForId(
 void ServiceWorkerRegistry::FindRegistrationForIdOnly(
     int64_t registration_id,
     FindRegistrationCallback callback) {
-  FindRegistrationForIdInternal(registration_id, /*origin=*/base::nullopt,
+  FindRegistrationForIdInternal(registration_id, /*origin=*/absl::nullopt,
                                 std::move(callback));
 }
 
@@ -724,7 +724,7 @@ void ServiceWorkerRegistry::Start() {
 
 void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     int64_t registration_id,
-    const base::Optional<storage::StorageKey>& key,
+    const absl::optional<storage::StorageKey>& key,
     FindRegistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Registration lookup is expected to abort when storage is disabled.
@@ -735,7 +735,7 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
   }
 
   // Lookup live registration first.
-  base::Optional<scoped_refptr<ServiceWorkerRegistration>> registration =
+  absl::optional<scoped_refptr<ServiceWorkerRegistration>> registration =
       FindFromLiveRegistrationsForId(registration_id);
   if (registration) {
     blink::ServiceWorkerStatusCode status =
@@ -868,7 +868,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   return registration;
 }
 
-base::Optional<scoped_refptr<ServiceWorkerRegistration>>
+absl::optional<scoped_refptr<ServiceWorkerRegistration>>
 ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -886,7 +886,7 @@ ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
   }
   // There is no live registration. Storage lookup is required. Returning
   // nullopt results in storage lookup.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ServiceWorkerRegistry::DoomUncommittedResources(

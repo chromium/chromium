@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_response_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpByteRange;
@@ -189,7 +189,7 @@ class TestDownloadHttpResponse {
 
     // Offset of body to pause the response sending. A -1 offset will pause
     // the response before header is sent.
-    base::Optional<int64_t> pause_offset;
+    absl::optional<int64_t> pause_offset;
   };
 
   // Information about completed requests.

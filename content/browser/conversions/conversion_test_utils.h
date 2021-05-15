@@ -62,14 +62,14 @@ class ConfigurableConversionTestBrowserClient
   // an operation if all origins match in
   // `AllowConversionMeasurementOperation()`.
   void BlockConversionMeasurementInContext(
-      base::Optional<url::Origin> impression_origin,
-      base::Optional<url::Origin> conversion_origin,
-      base::Optional<url::Origin> reporting_origin);
+      absl::optional<url::Origin> impression_origin,
+      absl::optional<url::Origin> conversion_origin,
+      absl::optional<url::Origin> reporting_origin);
 
  private:
-  base::Optional<url::Origin> blocked_impression_origin_;
-  base::Optional<url::Origin> blocked_conversion_origin_;
-  base::Optional<url::Origin> blocked_reporting_origin_;
+  absl::optional<url::Origin> blocked_impression_origin_;
+  absl::optional<url::Origin> blocked_conversion_origin_;
+  absl::optional<url::Origin> blocked_reporting_origin_;
 };
 
 class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
@@ -168,25 +168,25 @@ class TestConversionManager : public ConversionManager {
     return last_conversion_destination_;
   }
 
-  const base::Optional<StorableImpression::SourceType>&
+  const absl::optional<StorableImpression::SourceType>&
   last_impression_source_type() {
     return last_impression_source_type_;
   }
 
-  const base::Optional<url::Origin>& last_impression_origin() {
+  const absl::optional<url::Origin>& last_impression_origin() {
     return last_impression_origin_;
   }
 
-  const base::Optional<int64_t> last_attribution_source_priority() {
+  const absl::optional<int64_t> last_attribution_source_priority() {
     return last_attribution_source_priority_;
   }
 
  private:
   ConversionPolicy policy_;
   net::SchemefulSite last_conversion_destination_;
-  base::Optional<StorableImpression::SourceType> last_impression_source_type_;
-  base::Optional<url::Origin> last_impression_origin_;
-  base::Optional<int64_t> last_attribution_source_priority_;
+  absl::optional<StorableImpression::SourceType> last_impression_source_type_;
+  absl::optional<url::Origin> last_impression_origin_;
+  absl::optional<int64_t> last_attribution_source_priority_;
   size_t num_impressions_ = 0;
   size_t num_conversions_ = 0;
 
@@ -216,7 +216,7 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetPriority(int64_t priority);
 
-  ImpressionBuilder& SetImpressionId(base::Optional<int64_t> impression_id);
+  ImpressionBuilder& SetImpressionId(absl::optional<int64_t> impression_id);
 
   StorableImpression Build() const;
 
@@ -229,7 +229,7 @@ class ImpressionBuilder {
   url::Origin reporting_origin_;
   StorableImpression::SourceType source_type_;
   int64_t priority_;
-  base::Optional<int64_t> impression_id_;
+  absl::optional<int64_t> impression_id_;
 };
 
 // Returns a StorableConversion with default data which matches the default

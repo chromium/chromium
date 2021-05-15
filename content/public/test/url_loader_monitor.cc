@@ -23,12 +23,12 @@ URLLoaderMonitor::~URLLoaderMonitor() {
   interceptor_.reset();
 }
 
-base::Optional<network::ResourceRequest> URLLoaderMonitor::GetRequestInfo(
+absl::optional<network::ResourceRequest> URLLoaderMonitor::GetRequestInfo(
     const GURL& url) {
   base::AutoLock autolock(lock_);
   const auto resource_request = resource_request_map_.find(url);
   if (resource_request == resource_request_map_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return resource_request->second;
 }
 

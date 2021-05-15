@@ -86,7 +86,7 @@ void ManifestManagerHost::OnRequestManifestResponse(
 }
 
 void ManifestManagerHost::ManifestUrlChanged(
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   if (!manifest_manager_frame_->IsCurrent())
     return;
 

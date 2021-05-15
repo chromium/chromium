@@ -66,7 +66,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
     AllowServiceWorkerCallLog(
         const GURL& scope,
         const GURL& site_for_cookies,
-        const base::Optional<url::Origin>& top_frame_origin,
+        const absl::optional<url::Origin>& top_frame_origin,
         const GURL& script_url)
         : scope(scope),
           site_for_cookies(site_for_cookies),
@@ -74,7 +74,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
           script_url(script_url) {}
     const GURL scope;
     const GURL site_for_cookies;
-    const base::Optional<url::Origin> top_frame_origin;
+    const absl::optional<url::Origin> top_frame_origin;
     const GURL script_url;
   };
 
@@ -83,7 +83,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
     logs_.emplace_back(scope, site_for_cookies, top_frame_origin, script_url);
@@ -157,7 +157,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   PrepareServiceWorkerContainerHostWithSiteForCookies(
       const GURL& document_url,
       const net::SiteForCookies& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) {
+      const absl::optional<url::Origin>& top_frame_origin) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     CreateContainerHostInternal(document_url, site_for_cookies,
                                 top_frame_origin, &remote_endpoint);
@@ -221,7 +221,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce([](blink::mojom::ServiceWorkerErrorType* out_error,
                           blink::mojom::ServiceWorkerErrorType error,
-                          const base::Optional<std::string>& error_msg,
+                          const absl::optional<std::string>& error_msg,
                           blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                               registration) { *out_error = error; },
                        &error));
@@ -242,7 +242,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
             [](blink::mojom::ServiceWorkerErrorType* out_error,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr* out_info,
                blink::mojom::ServiceWorkerErrorType error,
-               const base::Optional<std::string>& error_msg,
+               const absl::optional<std::string>& error_msg,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                    registration) {
               *out_error = error;
@@ -261,8 +261,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     container_host->GetRegistrations(base::BindOnce(
         [](blink::mojom::ServiceWorkerErrorType* out_error,
            blink::mojom::ServiceWorkerErrorType error,
-           const base::Optional<std::string>& error_msg,
-           base::Optional<std::vector<
+           const absl::optional<std::string>& error_msg,
+           absl::optional<std::vector<
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>> infos) {
           *out_error = error;
         },
@@ -328,7 +328,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostInternal(
       const GURL& document_url,
       const net::SiteForCookies& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin,
+      const absl::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(helper_->mock_render_process_id(),

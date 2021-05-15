@@ -105,9 +105,9 @@ class SynchronousCompositorControlHost
   void ReturnFrame(
       uint32_t layer_tree_frame_sink_id,
       uint32_t metadata_version,
-      const base::Optional<viz::LocalSurfaceId>& local_surface_id,
-      base::Optional<viz::CompositorFrame> frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list) override {
+      const absl::optional<viz::LocalSurfaceId>& local_surface_id,
+      absl::optional<viz::CompositorFrame> frame,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list) override {
     if (frame && (!local_surface_id || !local_surface_id->is_valid())) {
       bad_message::ReceivedBadMessage(
           process_id_, bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
@@ -239,9 +239,9 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
 
   uint32_t layer_tree_frame_sink_id;
   uint32_t metadata_version = 0u;
-  base::Optional<viz::LocalSurfaceId> local_surface_id;
-  base::Optional<viz::CompositorFrame> compositor_frame;
-  base::Optional<viz::HitTestRegionList> hit_test_region_list;
+  absl::optional<viz::LocalSurfaceId> local_surface_id;
+  absl::optional<viz::CompositorFrame> compositor_frame;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
 
   {
@@ -316,7 +316,7 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
       allow_base_sync_primitives;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
-  base::Optional<viz::CompositorFrameMetadata> metadata;
+  absl::optional<viz::CompositorFrameMetadata> metadata;
   ScopedSetSkCanvas set_sk_canvas(canvas);
   blink::mojom::SyncCompositorDemandDrawSwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawSwParams::New();  // Unused.
@@ -384,7 +384,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
   if (!software_draw_shm_)
     return false;
 
-  base::Optional<viz::CompositorFrameMetadata> metadata;
+  absl::optional<viz::CompositorFrameMetadata> metadata;
   uint32_t metadata_version = 0u;
   blink::mojom::SyncCompositorCommonRendererParamsPtr common_renderer_params;
   {

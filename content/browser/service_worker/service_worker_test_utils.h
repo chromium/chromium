@@ -39,7 +39,7 @@ class ServiceWorkerVersion;
 template <typename Arg>
 void ReceiveResult(BrowserThread::ID run_quit_thread,
                    base::OnceClosure quit,
-                   base::Optional<Arg>* out,
+                   absl::optional<Arg>* out,
                    Arg actual) {
   *out = actual;
   if (!quit.is_null()) {
@@ -51,13 +51,13 @@ void ReceiveResult(BrowserThread::ID run_quit_thread,
 template <typename Arg>
 base::OnceCallback<void(Arg)> CreateReceiver(BrowserThread::ID run_quit_thread,
                                              base::OnceClosure quit,
-                                             base::Optional<Arg>* out) {
+                                             absl::optional<Arg>* out) {
   return base::BindOnce(&ReceiveResult<Arg>, run_quit_thread, std::move(quit),
                         out);
 }
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
-ReceiveServiceWorkerStatus(base::Optional<blink::ServiceWorkerStatusCode>* out,
+ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure);
 
 blink::ServiceWorkerStatusCode StartServiceWorker(
@@ -383,7 +383,7 @@ class MockServiceWorkerDataPipeStateNotifier
   // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
   void OnComplete(int32_t status) override;
 
-  base::Optional<int32_t> complete_status_;
+  absl::optional<int32_t> complete_status_;
   base::OnceClosure on_complete_callback_;
   mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
       this};

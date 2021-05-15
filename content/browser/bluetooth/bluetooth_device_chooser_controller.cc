@@ -196,7 +196,7 @@ bool MatchesFilters(
     const std::string* device_name,
     const UUIDSet& device_uuids,
     const ManufacturerDataMap& device_manufacturer_data,
-    const base::Optional<
+    const absl::optional<
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
   DCHECK(HasValidFilter(filters));
   for (const auto& filter : filters.value()) {
@@ -338,13 +338,13 @@ void BluetoothDeviceChooserController::GetDevice(
 
 void BluetoothDeviceChooserController::AddFilteredDevice(
     const device::BluetoothDevice& device) {
-  base::Optional<std::string> device_name = device.GetName();
+  absl::optional<std::string> device_name = device.GetName();
   if (chooser_.get()) {
     if (options_->accept_all_devices ||
         MatchesFilters(device_name ? &device_name.value() : nullptr,
                        device.GetUUIDs(), device.GetManufacturerData(),
                        options_->filters)) {
-      base::Optional<int8_t> rssi = device.GetInquiryRSSI();
+      absl::optional<int8_t> rssi = device.GetInquiryRSSI();
       std::string device_id = device.GetAddress();
       device_ids_.insert(device_id);
       chooser_->AddOrUpdateDevice(
@@ -534,7 +534,7 @@ void BluetoothDeviceChooserController::PostErrorCallback(
 // static
 std::unique_ptr<device::BluetoothDiscoveryFilter>
 BluetoothDeviceChooserController::ComputeScanFilter(
-    const base::Optional<
+    const absl::optional<
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
   // There isn't much support for GATT over BR/EDR from neither platforms nor
   // devices so performing a Dual scan will find devices that the API is not

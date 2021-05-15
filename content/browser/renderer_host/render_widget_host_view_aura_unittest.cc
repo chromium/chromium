@@ -365,8 +365,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     last_forwarded_gesture_event_ = gesture_event;
   }
 
-  base::Optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent() {
-    base::Optional<WebGestureEvent> ret;
+  absl::optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent() {
+    absl::optional<WebGestureEvent> ret;
     last_forwarded_gesture_event_.swap(ret);
     return ret;
   }
@@ -448,7 +448,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   bool new_content_rendering_timeout_fired_ = false;
   MockWidgetInputHandler input_handler_;
   MockWidget widget_;
-  base::Optional<WebGestureEvent> last_forwarded_gesture_event_;
+  absl::optional<WebGestureEvent> last_forwarded_gesture_event_;
 };
 
 class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
@@ -466,7 +466,7 @@ class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
 
  private:
   bool keyboard_lock_active_ = false;
-  base::Optional<ui::DomCode> locked_key_;
+  absl::optional<ui::DomCode> locked_key_;
 
   DISALLOW_COPY_AND_ASSIGN(TestScopedKeyboardHook);
 };
@@ -2372,7 +2372,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   // cancel to cancel any ongoing flings before the start of this scroll.
   view_->OnScrollEvent(&scroll_event);
   base::RunLoop().RunUntilIdle();
-  base::Optional<WebGestureEvent> last_gesture =
+  absl::optional<WebGestureEvent> last_gesture =
       widget_host_->GetAndResetLastForwardedGestureEvent();
   ASSERT_TRUE(last_gesture);
   EXPECT_EQ(WebInputEvent::Type::kGestureFlingCancel, last_gesture->GetType());
@@ -6795,7 +6795,7 @@ class MockDelegatedInkPointRenderer
 
  private:
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_;
-  base::Optional<gfx::DelegatedInkPoint> delegated_ink_point_;
+  absl::optional<gfx::DelegatedInkPoint> delegated_ink_point_;
   bool prediction_reset_ = false;
 };
 

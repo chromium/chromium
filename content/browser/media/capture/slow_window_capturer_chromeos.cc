@@ -101,7 +101,7 @@ void SlowWindowCapturerChromeOS::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void SlowWindowCapturerChromeOS::ChangeTarget(
-    const base::Optional<viz::FrameSinkId>& frame_sink_id,
+    const absl::optional<viz::FrameSinkId>& frame_sink_id,
     const viz::SubtreeCaptureId& subtree_capture_id) {
   // The SlowWindowCapturerChromeOS does not capture from compositor frame
   // sinks.

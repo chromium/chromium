@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "content/common/content_export.h"
@@ -24,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -135,7 +135,7 @@ class CONTENT_EXPORT WebBundleReader final
   void OnParserDisconnected();
   void Reconnect();
   void ReconnectForFile(base::File file);
-  void DidReconnect(base::Optional<std::string> error);
+  void DidReconnect(absl::optional<std::string> error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

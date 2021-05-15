@@ -20,7 +20,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
@@ -57,6 +56,7 @@
 #include "ppapi/shared_impl/tracked_callback.h"
 #include "ppapi/thunk/ppb_gamepad_api.h"
 #include "ppapi/thunk/resource_creation_api.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
@@ -798,7 +798,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     gfx::Rect caret;
     gfx::Rect caret_bounds;
   };
-  base::Optional<TextInputCaretInfo> text_input_caret_info_;
+  absl::optional<TextInputCaretInfo> text_input_caret_info_;
   ui::TextInputType text_input_type_;
 
   // Text selection status.

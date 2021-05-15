@@ -235,11 +235,11 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      base::make_optional(
+      absl::make_optional(
           url::Origin::Create(GURL("https://impression.example"))),
-      base::make_optional(
+      absl::make_optional(
           url::Origin::Create(GURL("https://conversion.example"))),
-      base::make_optional(
+      absl::make_optional(
           url::Origin::Create(GURL("https://reporting.example"))));
 
   struct {

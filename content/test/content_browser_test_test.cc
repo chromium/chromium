@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
   base::GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  base::Optional<base::Value> root =
+  absl::optional<base::Value> root =
       base::test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 

@@ -41,7 +41,7 @@ class RateLimitTableTest : public testing::Test {
                             /*conversion_data=*/"",
                             /*conversion_time=*/clock()->Now(),
                             /*report_time=*/clock()->Now(),
-                            /*conversion_id=*/base::nullopt);
+                            /*conversion_id=*/absl::nullopt);
   }
 
   size_t GetRateLimitRows(sql::Database* db) {

@@ -6,9 +6,9 @@
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_THROTTLE_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -109,7 +109,7 @@ class CONTENT_EXPORT NavigationThrottle {
     // Construct with an action, error, and error page HTML.
     ThrottleCheckResult(ThrottleAction action,
                         net::Error net_error_code,
-                        base::Optional<std::string> error_page_content);
+                        absl::optional<std::string> error_page_content);
 
     ThrottleCheckResult(const ThrottleCheckResult& other);
 
@@ -117,14 +117,14 @@ class CONTENT_EXPORT NavigationThrottle {
 
     ThrottleAction action() const { return action_; }
     net::Error net_error_code() const { return net_error_code_; }
-    const base::Optional<std::string>& error_page_content() {
+    const absl::optional<std::string>& error_page_content() {
       return error_page_content_;
     }
 
    private:
     ThrottleAction action_;
     net::Error net_error_code_;
-    base::Optional<std::string> error_page_content_;
+    absl::optional<std::string> error_page_content_;
   };
 
   NavigationThrottle(NavigationHandle* navigation_handle);

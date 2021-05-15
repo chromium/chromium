@@ -82,7 +82,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       RegisterData data,
       const std::string& push_subscription_id,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth,
       blink::mojom::PushRegistrationStatus status);
@@ -90,7 +90,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
   void DidPersistRegistrationOnSW(
       RegisterData data,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth,
       blink::mojom::PushRegistrationStatus push_registration_status,
@@ -104,7 +104,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       RegisterData data,
       blink::mojom::PushRegistrationStatus status,
       const GURL& endpoint,
-      const base::Optional<base::Time>& expiration_time,
+      const absl::optional<base::Time>& expiration_time,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth);
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
@@ -24,6 +23,7 @@
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -105,7 +105,7 @@ class CONTENT_EXPORT SignedExchangeLoader final
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -114,9 +114,9 @@ class CONTENT_EXPORT SignedExchangeLoader final
   void ConnectToClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  const base::Optional<GURL>& fallback_url() const { return fallback_url_; }
+  const absl::optional<GURL>& fallback_url() const { return fallback_url_; }
 
-  const base::Optional<GURL>& inner_request_url() const {
+  const absl::optional<GURL>& inner_request_url() const {
     return inner_request_url_;
   }
 
@@ -181,22 +181,22 @@ class CONTENT_EXPORT SignedExchangeLoader final
   const int frame_tree_node_id_;
   scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder_;
 
-  base::Optional<net::SSLInfo> ssl_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
 
   std::string content_type_;
 
-  base::Optional<GURL> fallback_url_;
-  base::Optional<GURL> inner_request_url_;
+  absl::optional<GURL> fallback_url_;
+  absl::optional<GURL> inner_request_url_;
 
   struct OuterResponseLengthInfo {
     int64_t encoded_data_length;
     int64_t decoded_body_length;
   };
   // Set when URLLoaderClient::OnComplete() is called.
-  base::Optional<OuterResponseLengthInfo> outer_response_length_info_;
+  absl::optional<OuterResponseLengthInfo> outer_response_length_info_;
 
   // Set when |body_data_pipe_adapter_| finishes loading the decoded body.
-  base::Optional<int> decoded_body_read_result_;
+  absl::optional<int> decoded_body_read_result_;
   const std::string accept_langs_;
 
   // Keep the signed exchange info to be stored to

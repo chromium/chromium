@@ -244,8 +244,8 @@ void SharedWorkerHost::Start(
       std::move(renderer_preferences), std::move(preference_watcher_receiver),
       std::move(content_settings), service_worker_handle_->TakeContainerInfo(),
       appcache_handle_
-          ? base::make_optional(appcache_handle_->appcache_host_id())
-          : base::nullopt,
+          ? absl::make_optional(appcache_handle_->appcache_host_id())
+          : absl::nullopt,
       std::move(main_script_load_params),
       std::move(subresource_loader_factories), std::move(controller),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
@@ -294,7 +294,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
       GetProcessHost()->GetBrowserContext(),
       /*frame=*/nullptr, GetProcessHost()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource, origin,
-      /*navigation_id=*/base::nullopt,
+      /*navigation_id=*/absl::nullopt,
       ukm::SourceIdObj::FromInt64(ukm_source_id_), &default_factory_receiver,
       &factory_params->header_client, bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr, &factory_params->factory_override);

@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace auction_worklet {
@@ -30,10 +30,10 @@ extern const char kAllowFledgeHeader[];
 // null, and `http_status` is ignored.
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 base::Optional<std::string> mime_type,
-                 base::Optional<std::string> charset,
+                 absl::optional<std::string> mime_type,
+                 absl::optional<std::string> charset,
                  const std::string content,
-                 base::Optional<std::string> headers = kAllowFledgeHeader,
+                 absl::optional<std::string> headers = kAllowFledgeHeader,
                  net::HttpStatusCode http_status = net::HTTP_OK,
                  network::TestURLLoaderFactory::Redirects redirects =
                      network::TestURLLoaderFactory::Redirects());

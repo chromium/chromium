@@ -91,7 +91,7 @@ void BackgroundTracingConfigImpl::IntoDict(base::DictionaryValue* dict) {
   if (category_preset_ == CUSTOM_CATEGORY_PRESET) {
     dict->SetString(kConfigCustomCategoriesKey, custom_categories_);
   } else if (category_preset_ == CUSTOM_TRACE_CONFIG) {
-    base::Optional<base::Value> trace_config =
+    absl::optional<base::Value> trace_config =
         base::JSONReader::Read(trace_config_.ToString());
     if (trace_config) {
       dict->SetKey(kConfigTraceConfigKey, std::move(*trace_config));

@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/sms/sms_metrics.h"
 #include "content/browser/sms/user_consent_handler.h"
@@ -27,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 
@@ -141,14 +141,14 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host());
   if (!web_contents->GetDelegate()) {
-    std::move(callback).Run(SmsStatus::kCancelled, base::nullopt);
+    std::move(callback).Run(SmsStatus::kCancelled, absl::nullopt);
     return;
   }
 
   DCHECK(!origin_list_.empty());
   // Abort the last request if there is we have not yet handled it.
   if (callback_) {
-    std::move(callback_).Run(SmsStatus::kCancelled, base::nullopt);
+    std::move(callback_).Run(SmsStatus::kCancelled, absl::nullopt);
     fetcher_->Unsubscribe(origin_list_, this);
   }
 
@@ -281,7 +281,7 @@ void WebOTPService::NavigationEntryCommitted(
 void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Optional<std::string> code = base::nullopt;
+  absl::optional<std::string> code = absl::nullopt;
   if (status == SmsStatus::kSuccess) {
     DCHECK(one_time_code_);
     code = one_time_code_;

@@ -142,10 +142,10 @@ void BackForwardCacheMetrics::DidCommitNavigation(
 
   // BackForwardCacheMetrics can be reused when reloading. Reset fields for UKM
   // for the next navigation.
-  navigated_away_from_main_document_timestamp_ = base::nullopt;
-  started_navigation_timestamp_ = base::nullopt;
-  renderer_killed_timestamp_ = base::nullopt;
-  browsing_instance_swap_result_ = base::nullopt;
+  navigated_away_from_main_document_timestamp_ = absl::nullopt;
+  started_navigation_timestamp_ = absl::nullopt;
+  renderer_killed_timestamp_ = absl::nullopt;
+  browsing_instance_swap_result_ = absl::nullopt;
 }
 
 void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
@@ -439,7 +439,7 @@ uint64_t BackForwardCacheMetrics::MetricValue(
 }
 
 void BackForwardCacheMetrics::SetBrowsingInstanceSwapResult(
-    base::Optional<ShouldSwapBrowsingInstance> reason) {
+    absl::optional<ShouldSwapBrowsingInstance> reason) {
   browsing_instance_swap_result_ = reason;
 }
 

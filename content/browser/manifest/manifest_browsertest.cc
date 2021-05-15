@@ -158,7 +158,7 @@ class ManifestBrowserTest : public ContentBrowserTest,
 
   void DidUpdateWebManifestURL(
       RenderFrameHost* rfh,
-      const base::Optional<GURL>& manifest_url) override {
+      const absl::optional<GURL>& manifest_url) override {
     if (!manifest_url) {
       reported_manifest_urls_.emplace_back();
       return;

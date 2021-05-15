@@ -39,7 +39,7 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const base::Optional<gpu::VulkanYCbCrInfo>&)>;
+      const absl::optional<gpu::VulkanYCbCrInfo>&)>;
 
   ~StreamTextureProxy() override;
 
@@ -57,7 +57,7 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gpu::Mailbox& mailbox,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
 
   // Sends an IPC to the GPU process.
   // Asks the StreamTexture to forward its SurfaceTexture to the

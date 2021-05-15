@@ -187,7 +187,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
       base::WeakPtr<FileSystemManagerImpl> file_system_manager,
       GetPlatformPathCallback callback);
   // Returns an error if |url| is invalid.
-  base::Optional<base::File::Error> ValidateFileSystemURL(
+  absl::optional<base::File::Error> ValidateFileSystemURL(
       const storage::FileSystemURL& url);
 
   storage::FileSystemOperationRunner* operation_runner() {

@@ -19,11 +19,11 @@ class MockAppCachePolicy : public AppCachePolicy {
   bool CanLoadAppCache(
       const GURL& manifest_url,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) override;
+      const absl::optional<url::Origin>& top_frame_origin) override;
   bool CanCreateAppCache(
       const GURL& manifest_url,
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) override;
+      const absl::optional<url::Origin>& top_frame_origin) override;
   bool IsOriginTrialRequiredForAppCache() override;
 
   bool can_load_return_value_;

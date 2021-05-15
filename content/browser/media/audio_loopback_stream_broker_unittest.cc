@@ -77,7 +77,7 @@ class MockRendererAudioInputStreamFactoryClient
           client_receiver,
       media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
-      const base::Optional<base::UnguessableToken>& stream_id) override {
+      const absl::optional<base::UnguessableToken>& stream_id) override {
     // Loopback streams have no stream ids.
     EXPECT_FALSE(stream_id.has_value());
     input_stream_.Bind(std::move(input_stream));

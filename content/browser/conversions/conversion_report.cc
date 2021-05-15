@@ -12,7 +12,7 @@ ConversionReport::ConversionReport(const StorableImpression& impression,
                                    const std::string& conversion_data,
                                    base::Time conversion_time,
                                    base::Time report_time,
-                                   const base::Optional<int64_t>& conversion_id)
+                                   const absl::optional<int64_t>& conversion_id)
     : impression(impression),
       conversion_data(conversion_data),
       conversion_time(conversion_time),

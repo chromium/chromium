@@ -12,9 +12,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -37,8 +37,8 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   // indicates which action was clicked. |reply| indicates the user reply.
   // Must be called on the UI thread.
   void SimulateClick(const std::string& title,
-                     const base::Optional<int>& action_index,
-                     const base::Optional<std::u16string>& reply);
+                     const absl::optional<int>& action_index,
+                     const absl::optional<std::u16string>& reply);
 
   // Simulates the closing a notification titled |title|. Must be called on
   // the UI thread.

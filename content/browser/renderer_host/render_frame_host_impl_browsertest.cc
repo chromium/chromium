@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -80,6 +79,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
@@ -3423,11 +3423,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(22, child_count);
 
   // innermost frame navigation.
-  EXPECT_EQ(base::nullopt, child->current_frame_host()
+  EXPECT_EQ(absl::nullopt, child->current_frame_host()
                                ->ComputeIsolationInfoForNavigation(b_url)
                                .party_context());
   // innermost frame subresource.
-  EXPECT_EQ(base::nullopt, child->current_frame_host()
+  EXPECT_EQ(absl::nullopt, child->current_frame_host()
                                ->GetIsolationInfoForSubresources()
                                .party_context());
 
@@ -3437,7 +3437,7 @@ IN_PROC_BROWSER_TEST_F(
                      .party_context()
                      ->size());
   // parent of innermost frame subresource.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             child->parent()->GetIsolationInfoForSubresources().party_context());
 }
 

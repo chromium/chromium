@@ -48,7 +48,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
   void QueueInterventionReport(const GURL& url,
                                const std::string& id,
                                const std::string& message,
-                               const base::Optional<std::string>& source_file,
+                               const absl::optional<std::string>& source_file,
                                int line_number,
                                int column_number) override {
     auto body = std::make_unique<base::DictionaryValue>();
@@ -65,9 +65,9 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
 
   void QueueDeprecationReport(const GURL& url,
                               const std::string& id,
-                              base::Optional<base::Time> anticipated_removal,
+                              absl::optional<base::Time> anticipated_removal,
                               const std::string& message,
-                              const base::Optional<std::string>& source_file,
+                              const absl::optional<std::string>& source_file,
                               int line_number,
                               int column_number) override {
     auto body = std::make_unique<base::DictionaryValue>();
@@ -88,12 +88,12 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
   void QueueCspViolationReport(const GURL& url,
                                const std::string& group,
                                const std::string& document_url,
-                               const base::Optional<std::string>& referrer,
-                               const base::Optional<std::string>& blocked_url,
+                               const absl::optional<std::string>& referrer,
+                               const absl::optional<std::string>& blocked_url,
                                const std::string& effective_directive,
                                const std::string& original_policy,
-                               const base::Optional<std::string>& source_file,
-                               const base::Optional<std::string>& script_sample,
+                               const absl::optional<std::string>& source_file,
+                               const absl::optional<std::string>& script_sample,
                                const std::string& disposition,
                                uint16_t status_code,
                                int line_number,
@@ -123,8 +123,8 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const GURL& url,
       const std::string& policy_id,
       const std::string& disposition,
-      const base::Optional<std::string>& message,
-      const base::Optional<std::string>& source_file,
+      const absl::optional<std::string>& message,
+      const absl::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
     auto body = std::make_unique<base::DictionaryValue>();
@@ -147,8 +147,8 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const std::string& group,
       const std::string& policy_id,
       const std::string& disposition,
-      const base::Optional<std::string>& message,
-      const base::Optional<std::string>& source_file,
+      const absl::optional<std::string>& message,
+      const absl::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
     auto body = std::make_unique<base::DictionaryValue>();
@@ -178,7 +178,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
 
     rph->GetStoragePartition()->GetNetworkContext()->QueueReport(
         type, group, url, network_isolation_key_,
-        /*user_agent=*/base::nullopt,
+        /*user_agent=*/absl::nullopt,
         base::Value::FromUniquePtrValue(std::move(body)));
   }
 

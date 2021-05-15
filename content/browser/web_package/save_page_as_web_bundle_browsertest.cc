@@ -60,15 +60,15 @@ data_decoder::mojom::SerializedResourceInfoPtr GetResourceInfo(
   return info_out;
 }
 
-base::Optional<mojo_base::BigBuffer> GetResourceBody(
+absl::optional<mojo_base::BigBuffer> GetResourceBody(
     mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle>& snapshot,
     uint64_t index) {
-  base::Optional<mojo_base::BigBuffer> data_out;
+  absl::optional<mojo_base::BigBuffer> data_out;
   base::RunLoop run_loop;
   snapshot->GetResourceBody(
       index,
       base::BindLambdaForTesting(
-          [&run_loop, &data_out](base::Optional<mojo_base::BigBuffer> data) {
+          [&run_loop, &data_out](absl::optional<mojo_base::BigBuffer> data) {
             data_out = std::move(data);
             run_loop.Quit();
           }));

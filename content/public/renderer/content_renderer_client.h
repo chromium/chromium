@@ -15,12 +15,12 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/supported_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -357,7 +357,7 @@ class CONTENT_EXPORT ContentRendererClient {
   // more functional tuning on platforms with known implementation and hardware
   // limitations.
   // This is currently not supported when running the Chrome audio service.
-  virtual base::Optional<std::string>
+  virtual absl::optional<std::string>
   WebRTCPlatformSpecificAudioProcessingConfiguration();
 
   // Notifies that a worker context has been created. This function is called
@@ -395,7 +395,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual void DidSetUserAgent(const std::string& user_agent);
 
   // Optionally returns audio renderer algorithm parameters.
-  virtual base::Optional<::media::AudioRendererAlgorithmParameters>
+  virtual absl::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters);
 };

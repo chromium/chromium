@@ -59,12 +59,12 @@ struct CloseFileResult {
                   std::string* digest)
       : save_status(status), file_size(size) {
     if (digest)
-      file_digest = base::Optional<std::string>(*digest);
+      file_digest = absl::optional<std::string>(*digest);
   }
 
   content::mojom::MhtmlSaveStatus save_status;
   int64_t file_size;
-  base::Optional<std::string> file_digest;
+  absl::optional<std::string> file_digest;
 
   content::MHTMLGenerationResult toMHTMLGenerationResult() const {
     return content::MHTMLGenerationResult(file_size,

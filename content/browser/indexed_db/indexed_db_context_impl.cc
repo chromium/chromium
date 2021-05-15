@@ -743,7 +743,7 @@ base::Time IndexedDBContextImpl::GetOriginLastModified(const Origin& origin) {
   }
 
   base::FilePath idb_directory = GetLevelDBPath(origin);
-  base::Optional<base::File::Info> info =
+  absl::optional<base::File::Info> info =
       filesystem_proxy_->GetFileInfo(idb_directory);
   if (!info.has_value())
     return base::Time();

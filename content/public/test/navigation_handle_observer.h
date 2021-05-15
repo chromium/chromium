@@ -38,7 +38,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   int64_t navigation_id() { return navigation_id_; }
   bool is_download() { return is_download_; }
   ukm::SourceId next_page_ukm_source_id() { return next_page_ukm_source_id_; }
-  base::Optional<net::AuthChallengeInfo> auth_challenge_info() {
+  absl::optional<net::AuthChallengeInfo> auth_challenge_info() {
     return auth_challenge_info_;
   }
   const net::ResolveErrorInfo& resolve_error_info() {
@@ -70,7 +70,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   int64_t navigation_id_ = -1;
   bool is_download_ = false;
   ukm::SourceId next_page_ukm_source_id_ = ukm::kInvalidSourceId;
-  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
+  absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
   net::ResolveErrorInfo resolve_error_info_;
   base::TimeTicks navigation_start_;
   NavigationHandleTiming navigation_handle_timing_;

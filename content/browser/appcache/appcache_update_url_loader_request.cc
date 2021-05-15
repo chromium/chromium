@@ -93,7 +93,7 @@ void AppCacheUpdateJob::UpdateURLLoaderRequest::SetSiteForCookies(
 }
 
 void AppCacheUpdateJob::UpdateURLLoaderRequest::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   request_.request_initiator = initiator;
 }
 

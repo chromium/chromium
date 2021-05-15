@@ -30,7 +30,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -162,6 +161,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -1388,11 +1388,11 @@ void WebContentsImpl::OnScreenOrientationChange() {
   screen_orientation_provider_->OnOrientationChange();
 }
 
-base::Optional<SkColor> WebContentsImpl::GetThemeColor() {
+absl::optional<SkColor> WebContentsImpl::GetThemeColor() {
   return GetRenderViewHost()->theme_color();
 }
 
-base::Optional<SkColor> WebContentsImpl::GetBackgroundColor() {
+absl::optional<SkColor> WebContentsImpl::GetBackgroundColor() {
   return GetRenderViewHost()->background_color();
 }
 
@@ -1580,7 +1580,7 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
 
 void WebContentsImpl::NotifyManifestUrlChanged(
     RenderFrameHost* rfh,
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   // TODO(crbug.com/1201237): update the app manifest code for MPArch.
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyManifestUrlChanged",
                         "render_frame_host", rfh, "manifest_url", manifest_url);
@@ -3815,7 +3815,7 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
   // TODO(danakj): Why do we defer this show step until the renderer asks for it
   // when it will always do so. What needs to happen in the renderer before we
   // reach here?
-  base::Optional<CreatedWindow> owned_created = GetCreatedWindow(
+  absl::optional<CreatedWindow> owned_created = GetCreatedWindow(
       opener->GetProcess()->GetID(), main_frame_widget_route_id);
 
   // The browser may have rejected the request to make a new window, or the
@@ -3907,7 +3907,7 @@ void WebContentsImpl::ShowCreatedWidget(int process_id,
   render_widget_host_impl->Init();
 }
 
-base::Optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
+absl::optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
     int process_id,
     int main_frame_widget_route_id) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::GetCreatedWindow",
@@ -3920,7 +3920,7 @@ base::Optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
   // Certain systems can block the creation of new windows. If we didn't succeed
   // in creating one, just return NULL.
   if (iter == pending_contents_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   CreatedWindow result = std::move(iter->second);
   WebContentsImpl* new_contents = result.contents.get();
@@ -3933,7 +3933,7 @@ base::Optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
 
   if (!new_contents->GetMainFrame()->GetProcess()->IsInitializedAndNotDead() ||
       !new_contents->GetMainFrame()->GetView()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return result;
@@ -4101,7 +4101,7 @@ std::string WebContentsImpl::DumpAccessibilityTree(
 
 void WebContentsImpl::RecordAccessibilityEvents(
     bool start_recording,
-    base::Optional<ui::AXEventCallback> callback) {
+    absl::optional<ui::AXEventCallback> callback) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecordAccessibilityEvents");
   // Only pass a callback to RecordAccessibilityEvents when starting to record.
@@ -4209,7 +4209,7 @@ WebContentsImpl::GetOrCreateRootBrowserAccessibilityManager() {
 
 void WebContentsImpl::ExecuteEditCommand(
     const std::string& command,
-    const base::Optional<std::u16string>& value) {
+    const absl::optional<std::u16string>& value) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ExecuteEditCommand");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -4450,11 +4450,11 @@ void WebContentsImpl::CollapseSelection() {
 }
 
 void WebContentsImpl::ScrollToTopOfDocument() {
-  ExecuteEditCommand("ScrollToBeginningOfDocument", base::nullopt);
+  ExecuteEditCommand("ScrollToBeginningOfDocument", absl::nullopt);
 }
 
 void WebContentsImpl::ScrollToBottomOfDocument() {
-  ExecuteEditCommand("ScrollToEndOfDocument", base::nullopt);
+  ExecuteEditCommand("ScrollToEndOfDocument", absl::nullopt);
 }
 
 void WebContentsImpl::Replace(const std::u16string& word) {
@@ -5575,7 +5575,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // Referrer and initiator are not important, because view-source should not
   // hit the network, but should be served from the cache instead.
   Referrer referrer_for_view_source;
-  base::Optional<url::Origin> initiator_for_view_source = base::nullopt;
+  absl::optional<url::Origin> initiator_for_view_source = absl::nullopt;
   // Do not restore title, derive it from the url.
   std::u16string title_for_view_source;
   auto navigation_entry = std::make_unique<NavigationEntryImpl>(
@@ -7404,7 +7404,7 @@ bool WebContentsImpl::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const base::Optional<std::u16string>& untrusted_stack_trace) {
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidAddMessageToConsole",
                         "message", message);
 
@@ -7648,7 +7648,7 @@ void WebContentsImpl::ReattachOuterDelegateIfNeeded() {
 
 bool WebContentsImpl::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
-    const base::Optional<blink::FrameToken>& opener_frame_token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
     RenderFrameProxyHost* proxy_host) {
   TRACE_EVENT1("browser,navigation",
                "WebContentsImpl::CreateRenderViewForRenderManager",
@@ -8351,12 +8351,12 @@ int WebContentsImpl::GetCurrentlyPlayingVideoCount() {
   return currently_playing_video_count_;
 }
 
-base::Optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {
-  base::Optional<MediaPlayerId> id =
+absl::optional<gfx::Size> WebContentsImpl::GetFullscreenVideoSize() {
+  absl::optional<MediaPlayerId> id =
       media_web_contents_observer_->GetFullscreenVideoMediaPlayerId();
   if (id && base::Contains(cached_video_sizes_, id.value()))
-    return base::Optional<gfx::Size>(cached_video_sizes_[id.value()]);
-  return base::nullopt;
+    return absl::optional<gfx::Size>(cached_video_sizes_[id.value()]);
+  return absl::nullopt;
 }
 
 void WebContentsImpl::AudioContextPlaybackStarted(RenderFrameHostImpl* host,

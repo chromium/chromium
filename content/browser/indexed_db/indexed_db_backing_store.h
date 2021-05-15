@@ -235,7 +235,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // opposed to being ephemeral and owned by the WriteBlobToFile callbacks)
     // because the transaction needs to be able to cancel this operation in
     // Rollback().
-    base::Optional<BlobWriteState> write_state_
+    absl::optional<BlobWriteState> write_state_
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Set to true between CommitPhaseOne and CommitPhaseTwo/Rollback, to

@@ -24,7 +24,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -58,6 +57,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom.h"
@@ -249,7 +249,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void RemoveObserver(RenderWidgetHostObserver* observer) override;
   void GetScreenInfo(blink::ScreenInfo* result) override;
   float GetDeviceScaleFactor() override;
-  base::Optional<cc::TouchAction> GetAllowedTouchAction() override;
+  absl::optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   using DragOperationCallback =
       base::OnceCallback<void(::ui::mojom::DragOperation)>;
@@ -772,7 +772,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // If |codes| has no value then all keys will be locked, otherwise only the
   // keys specified will be intercepted and routed to the web page.
   // Returns true if the lock request was successfully registered.
-  bool RequestKeyboardLock(base::Optional<base::flat_set<ui::DomCode>> codes);
+  bool RequestKeyboardLock(absl::optional<base::flat_set<ui::DomCode>> codes);
 
   // Cancels a previous keyboard lock request.
   void CancelKeyboardLock();
@@ -834,10 +834,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   }
 
   // Returns the visual properties that were last sent to the renderer.
-  base::Optional<blink::VisualProperties>
+  absl::optional<blink::VisualProperties>
   GetLastVisualPropertiesSentToRendererForTesting();
 
-  base::Optional<blink::VisualProperties> LastComputedVisualProperties() const;
+  absl::optional<blink::VisualProperties> LastComputedVisualProperties() const;
 
   // Generates widget creation params that will be passed to the renderer to
   // create a new widget. As a side effect, this resets various widget and frame
@@ -1292,7 +1292,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool pending_mouse_lock_request_ = false;
   bool mouse_lock_raw_movement_ = false;
   // Stores the keyboard keys to lock while waiting for a pending lock request.
-  base::Optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;
+  absl::optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;
   bool keyboard_lock_requested_ = false;
   bool keyboard_lock_allowed_ = false;
 
@@ -1361,8 +1361,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       frame_widget_input_handler_;
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
 
-  base::Optional<uint16_t> screen_orientation_angle_for_testing_;
-  base::Optional<blink::mojom::ScreenOrientation>
+  absl::optional<uint16_t> screen_orientation_angle_for_testing_;
+  absl::optional<blink::mojom::ScreenOrientation>
       screen_orientation_type_for_testing_;
 
   bool force_enable_zoom_ = false;

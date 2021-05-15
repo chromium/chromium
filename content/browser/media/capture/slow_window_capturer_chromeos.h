@@ -67,7 +67,7 @@ class SlowWindowCapturerChromeOS final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const base::Optional<viz::FrameSinkId>& frame_sink_id,
+  void ChangeTarget(const absl::optional<viz::FrameSinkId>& frame_sink_id,
                     const viz::SubtreeCaptureId& subtree_capture_id) final;
   void Start(
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer) final;

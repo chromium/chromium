@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
@@ -135,7 +135,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // this is also used for the ID of this PrerenderHost.
   int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
-  base::Optional<FinalStatus> final_status_;
+  absl::optional<FinalStatus> final_status_;
 
   std::unique_ptr<PageHolder> page_holder_;
 

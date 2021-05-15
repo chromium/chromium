@@ -1847,7 +1847,7 @@ base::UnguessableToken RenderFrameHostImpl::GetDevToolsFrameToken() {
   return frame_tree_node_->devtools_frame_token();
 }
 
-base::Optional<base::UnguessableToken>
+absl::optional<base::UnguessableToken>
 RenderFrameHostImpl::GetEmbeddingToken() {
   return embedding_token_;
 }
@@ -1860,7 +1860,7 @@ bool RenderFrameHostImpl::IsFrameDisplayNone() {
   return frame_tree_node()->frame_owner_properties().is_display_none;
 }
 
-const base::Optional<gfx::Size>& RenderFrameHostImpl::GetFrameSize() {
+const absl::optional<gfx::Size>& RenderFrameHostImpl::GetFrameSize() {
   return frame_size_;
 }
 
@@ -1933,7 +1933,7 @@ void RenderFrameHostImpl::GetCanonicalUrlForSharing(
   if (IsRenderFrameCreated()) {
     GetAssociatedLocalFrame()->GetCanonicalUrlForSharing(std::move(callback));
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 
@@ -2629,7 +2629,7 @@ bool RenderFrameHostImpl::RequiresPerformActionPointInPixels() const {
 
 bool RenderFrameHostImpl::CreateRenderFrame(
     int previous_routing_id,
-    const base::Optional<blink::FrameToken>& opener_frame_token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::CreateRenderFrame");
@@ -3001,8 +3001,8 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const std::u16string& message,
     int32_t line_no,
-    const base::Optional<std::u16string>& source_id,
-    const base::Optional<std::u16string>& untrusted_stack_trace) {
+    const absl::optional<std::u16string>& source_id,
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   std::u16string updated_source_id;
   if (source_id.has_value())
     updated_source_id = *source_id;
@@ -4190,7 +4190,7 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
 }
 
 void RenderFrameHostImpl::UpdateManifestURL(
-    const base::Optional<GURL>& manifest_url) {
+    const absl::optional<GURL>& manifest_url) {
   DCHECK(!GetParent());
   document_associated_data_->manifest_url = manifest_url.value_or(GURL());
 }
@@ -4580,7 +4580,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
 }
 
 void RenderFrameHostImpl::UpdateTitle(
-    const base::Optional<::std::u16string>& title,
+    const absl::optional<::std::u16string>& title,
     base::i18n::TextDirection title_direction) {
   // This message should only be sent for top-level frames.
   if (!is_main_frame())
@@ -4746,7 +4746,7 @@ void RenderFrameHostImpl::VisibilityChanged(
 }
 
 void RenderFrameHostImpl::DidChangeThemeColor(
-    base::Optional<SkColor> theme_color) {
+    absl::optional<SkColor> theme_color) {
   render_view_host_->OnThemeColorChanged(this, theme_color);
 }
 
@@ -5467,7 +5467,7 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 }
 
 void RenderFrameHostImpl::DidChangeOpener(
-    const base::Optional<blink::LocalFrameToken>& opener_frame_token) {
+    const absl::optional<blink::LocalFrameToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
                                                       GetSiteInstance());
 }
@@ -6695,7 +6695,7 @@ void RenderFrameHostImpl::AdvanceFocus(blink::mojom::FocusType type,
   DCHECK(!source_proxy ||
          (source_proxy->GetProcess()->GetID() == GetProcess()->GetID()));
 
-  base::Optional<blink::RemoteFrameToken> frame_token;
+  absl::optional<blink::RemoteFrameToken> frame_token;
   if (source_proxy)
     frame_token = source_proxy->GetFrameToken();
 
@@ -6750,8 +6750,8 @@ void RenderFrameHostImpl::CommitNavigation(
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     bool is_view_source,
-    base::Optional<SubresourceLoaderParams> subresource_loader_params,
-    base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    absl::optional<SubresourceLoaderParams> subresource_loader_params,
+    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     const base::UnguessableToken& devtools_navigation_token,
@@ -6916,7 +6916,7 @@ void RenderFrameHostImpl::CommitNavigation(
               browser_context, this, GetProcess()->GetID(),
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
               main_world_origin_for_url_loader_factory,
-              base::nullopt /* navigation_id */, next_page_ukm_source_id,
+              absl::nullopt /* navigation_id */, next_page_ukm_source_id,
               &appcache_proxied_receiver, nullptr /* header_client */,
               nullptr /* bypass_redirect_checks */,
               nullptr /* disable_secure_dns */, nullptr /* factory_override */);
@@ -6947,7 +6947,7 @@ void RenderFrameHostImpl::CommitNavigation(
           browser_context, this, GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
           main_world_origin_for_url_loader_factory,
-          base::nullopt /* navigation_id */, next_page_ukm_source_id,
+          absl::nullopt /* navigation_id */, next_page_ukm_source_id,
           &factory_receiver, nullptr /* header_client */,
           nullptr /* bypass_redirect_checks */,
           nullptr /* disable_secure_dns */, nullptr /* factory_override */);
@@ -7255,7 +7255,7 @@ void RenderFrameHostImpl::FailedNavigation(
     bool has_stale_copy_in_cache,
     int error_code,
     int extended_error_code,
-    const base::Optional<std::string>& error_page_content) {
+    const absl::optional<std::string>& error_page_content) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::FailedNavigation",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
                "error", error_code);
@@ -8075,7 +8075,7 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       GetBrowserContext(), this, GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      request_initiator, base::nullopt /* navigation_id */, ukm_source_id,
+      request_initiator, absl::nullopt /* navigation_id */, ukm_source_id,
       factory_receiver, header_client, bypass_redirect_checks,
       disable_secure_dns, factory_override);
 
@@ -8483,7 +8483,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalFrameRoutingId(),
-          /*creator_worker_token=*/base::nullopt,
+          /*creator_worker_token=*/absl::nullopt,
           /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
           last_committed_origin_, isolation_info_,
           cross_origin_embedder_policy_,
@@ -9610,7 +9610,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
       NavigationRequest::IsLoadDataWithBaseURL(
           navigation_request->common_params());
 
-  base::Optional<std::string> data_url_as_string;
+  absl::optional<std::string> data_url_as_string;
 #if defined(OS_ANDROID)
   data_url_as_string = navigation_request->commit_params().data_url_as_string;
 #endif
@@ -9732,7 +9732,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
       "crash" /* type */, "default" /* group */, last_committed_url_,
-      isolation_info_.network_isolation_key(), base::nullopt, std::move(body));
+      isolation_info_.network_isolation_key(), absl::nullopt, std::move(body));
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(
@@ -9745,7 +9745,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
-    base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ControllerServiceWorkerInfoPtr controller,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
@@ -9774,7 +9774,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     bool has_stale_copy_in_cache,
     int32_t error_code,
     int32_t extended_error_code,
-    const base::Optional<std::string>& error_page_content,
+    const absl::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::PolicyContainerPtr policy_container) {
@@ -10007,7 +10007,7 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
 }
 
 void RenderFrameHostImpl::PostMessageEvent(
-    const base::Optional<blink::RemoteFrameToken>& source_token,
+    const absl::optional<blink::RemoteFrameToken>& source_token,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {
@@ -10259,7 +10259,7 @@ bool CalculateURLIsUnreachable(
 
   // For cross-document navigations, we can know by checking
   // NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL().
-  base::Optional<std::string> data_url_as_string;
+  absl::optional<std::string> data_url_as_string;
 #if defined(OS_ANDROID)
   data_url_as_string = request->commit_params().data_url_as_string;
 #endif
@@ -11259,7 +11259,7 @@ void RenderFrameHostImpl::DidDeleteOutOfProcessPepperInstance(
 void RenderFrameHostImpl::OpenChannelToPepperPlugin(
     const url::Origin& embedder_origin,
     const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock,
+    const absl::optional<url::Origin>& origin_lock,
     OpenChannelToPepperPluginCallback callback) {
   RenderProcessHostImpl* process =
       static_cast<RenderProcessHostImpl*>(GetProcess());

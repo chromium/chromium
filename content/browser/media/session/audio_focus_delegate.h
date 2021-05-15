@@ -36,7 +36,7 @@ class AudioFocusDelegate {
   virtual void AbandonAudioFocus() = 0;
 
   // Retrieves the current |AudioFocusType| for the associated |MediaSession|.
-  virtual base::Optional<media_session::mojom::AudioFocusType>
+  virtual absl::optional<media_session::mojom::AudioFocusType>
   GetCurrentFocusType() const = 0;
 
   // |MediaSession| should call this when it's state changes.

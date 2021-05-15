@@ -283,7 +283,7 @@ using content::DropData;
     // TODO(https://crbug.com/898608): The |downloadFileName_| and
     // |downloadURL_| values should be computed by the caller.
     if (_dropData->download_metadata.empty()) {
-      base::Optional<base::FilePath> suggestedFilename =
+      absl::optional<base::FilePath> suggestedFilename =
           _dropData->GetSafeFilenameForImageFileContents();
       if (suggestedFilename) {
         _downloadFileName = std::move(*suggestedFilename);

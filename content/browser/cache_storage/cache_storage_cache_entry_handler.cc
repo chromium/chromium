@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -18,6 +17,7 @@
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace content {
@@ -214,7 +214,7 @@ int CacheStorageCacheEntryHandler::DiskCacheBlobEntry::GetSize(
 
 void CacheStorageCacheEntryHandler::DiskCacheBlobEntry::Invalidate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_handle_ = base::nullopt;
+  cache_handle_ = absl::nullopt;
   entry_handler_ = nullptr;
   disk_cache_entry_ = nullptr;
 }

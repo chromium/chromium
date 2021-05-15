@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/services/storage/public/cpp/storage_key.h"
@@ -30,6 +29,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -188,7 +188,7 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
                               tentative_resource_request.trusted_params
                                   ? tentative_resource_request.trusted_params
                                         ->isolation_info.top_frame_origin()
-                                  : base::nullopt);
+                                  : absl::nullopt);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(

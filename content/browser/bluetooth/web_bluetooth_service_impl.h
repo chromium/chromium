@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
@@ -34,6 +33,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace url {
@@ -51,7 +51,7 @@ class RenderFrameHost;
 class RenderProcessHost;
 
 bool HasValidFilter(
-    const base::Optional<
+    const absl::optional<
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
 // Implementation of Mojo WebBluetoothService located in
@@ -149,11 +149,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                      device::BluetoothDevice* device) override;
   void DeviceAdvertisementReceived(
       const std::string& device_address,
-      const base::Optional<std::string>& device_name,
-      const base::Optional<std::string>& advertisement_name,
-      base::Optional<int8_t> rssi,
-      base::Optional<int8_t> tx_power,
-      base::Optional<uint16_t> appearance,
+      const absl::optional<std::string>& device_name,
+      const absl::optional<std::string>& advertisement_name,
+      absl::optional<int8_t> rssi,
+      absl::optional<int8_t> tx_power,
+      absl::optional<uint16_t> appearance,
       const device::BluetoothDevice::UUIDList& advertised_uuids,
       const device::BluetoothDevice::ServiceDataMap& service_data_map,
       const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map)
@@ -187,12 +187,12 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void RemoteServerGetPrimaryServices(
       const blink::WebBluetoothDeviceId& device_id,
       blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-      const base::Optional<device::BluetoothUUID>& services_uuid,
+      const absl::optional<device::BluetoothUUID>& services_uuid,
       RemoteServerGetPrimaryServicesCallback callback) override;
   void RemoteServiceGetCharacteristics(
       const std::string& service_instance_id,
       blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-      const base::Optional<device::BluetoothUUID>& characteristics_uuid,
+      const absl::optional<device::BluetoothUUID>& characteristics_uuid,
       RemoteServiceGetCharacteristicsCallback callback) override;
   void RemoteCharacteristicReadValue(
       const std::string& characteristic_instance_id,
@@ -213,7 +213,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void RemoteCharacteristicGetDescriptors(
       const std::string& service_instance_id,
       blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-      const base::Optional<device::BluetoothUUID>& characteristics_uuid,
+      const absl::optional<device::BluetoothUUID>& characteristics_uuid,
       RemoteCharacteristicGetDescriptorsCallback callback) override;
   void RemoteDescriptorReadValue(
       const std::string& characteristic_instance_id,
@@ -279,7 +279,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   void RemoteServerGetPrimaryServicesImpl(
       const blink::WebBluetoothDeviceId& device_id,
       blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-      const base::Optional<device::BluetoothUUID>& services_uuid,
+      const absl::optional<device::BluetoothUUID>& services_uuid,
       RemoteServerGetPrimaryServicesCallback callback,
       device::BluetoothDevice* device);
 
@@ -304,7 +304,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BluetoothRemoteGattCharacteristic::ReadRemoteCharacteristic.
   void OnCharacteristicReadValue(
       RemoteCharacteristicReadValueCallback callback,
-      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::WriteRemoteCharacteristic.
@@ -332,7 +332,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // Callbacks for BluetoothRemoteGattDescriptor::ReadRemoteDescriptor.
   void OnDescriptorReadValue(
       RemoteDescriptorReadValueCallback callback,
-      base::Optional<device::BluetoothGattService::GattErrorCode> error_code,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Callbacks for BluetoothRemoteGattDescriptor::WriteRemoteDescriptor.
@@ -380,7 +380,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   void StoreAllowedScanOptions(
       const blink::mojom::WebBluetoothRequestLEScanOptions& options);
-  bool AreScanFiltersAllowed(const base::Optional<ScanFilters>& filters) const;
+  bool AreScanFiltersAllowed(const absl::optional<ScanFilters>& filters) const;
 
   // Clears all state (maps, sets, etc).
   void ClearState();

@@ -168,7 +168,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   } else {
     // All OK!
     std::move(auction_downloader_callback_)
-        .Run(std::move(body), base::nullopt /* error_msg */);
+        .Run(std::move(body), absl::nullopt /* error_msg */);
   }
 }
 

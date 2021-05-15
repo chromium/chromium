@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -27,6 +26,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -431,8 +431,8 @@ void StorageHandler::OverrideQuotaForOrigin(
 
   quota_override_handle_->OverrideQuotaForOrigin(
       origin,
-      quota_size.isJust() ? base::make_optional(quota_size.fromJust())
-                          : base::nullopt,
+      quota_size.isJust() ? absl::make_optional(quota_size.fromJust())
+                          : absl::nullopt,
       base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
                      std::move(callback)));
 }

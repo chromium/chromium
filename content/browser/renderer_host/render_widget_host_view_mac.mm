@@ -18,7 +18,6 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -48,6 +47,7 @@
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
@@ -895,7 +895,7 @@ void RenderWidgetHostViewMac::TakeFallbackContentFrom(
   RenderWidgetHostViewMac* view_mac =
       static_cast<RenderWidgetHostViewMac*>(view);
   ScopedCAActionDisabler disabler;
-  base::Optional<SkColor> color = view_mac->GetBackgroundColor();
+  absl::optional<SkColor> color = view_mac->GetBackgroundColor();
   if (color)
     SetBackgroundColor(*color);
 
@@ -1167,8 +1167,8 @@ bool RenderWidgetHostViewMac::IsUnadjustedMouseMovementSupported() {
 }
 
 bool RenderWidgetHostViewMac::LockKeyboard(
-    base::Optional<base::flat_set<ui::DomCode>> dom_codes) {
-  base::Optional<std::vector<uint32_t>> uint_dom_codes;
+    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
+  absl::optional<std::vector<uint32_t>> uint_dom_codes;
   if (dom_codes) {
     uint_dom_codes.emplace();
     for (const auto& dom_code : *dom_codes)
@@ -1362,13 +1362,13 @@ void RenderWidgetHostViewMac::UpdateBackgroundColor() {
   browser_compositor_->SetBackgroundColor(color);
 }
 
-base::Optional<SkColor> RenderWidgetHostViewMac::GetBackgroundColor() {
+absl::optional<SkColor> RenderWidgetHostViewMac::GetBackgroundColor() {
   // This is used to specify a color to temporarily show while waiting for web
   // content. This should never return transparent, since that will cause bugs
   // where views are initialized as having a transparent background
   // inappropriately.
   // https://crbug.com/735407
-  base::Optional<SkColor> color =
+  absl::optional<SkColor> color =
       RenderWidgetHostViewBase::GetBackgroundColor();
   return (color && *color == SK_ColorTRANSPARENT) ? SK_ColorWHITE : color;
 }
@@ -1380,7 +1380,7 @@ void RenderWidgetHostViewMac::SetBackgroundLayerColor(SkColor color) {
   ns_view_->SetBackgroundColor(color);
 }
 
-base::Optional<DisplayFeature> RenderWidgetHostViewMac::GetDisplayFeature() {
+absl::optional<DisplayFeature> RenderWidgetHostViewMac::GetDisplayFeature() {
   return display_feature_;
 }
 
@@ -1389,7 +1389,7 @@ void RenderWidgetHostViewMac::SetDisplayFeatureForTesting(
   if (display_feature)
     display_feature_ = *display_feature;
   else
-    display_feature_ = base::nullopt;
+    display_feature_ = absl::nullopt;
 }
 
 gfx::NativeViewAccessible
@@ -1849,7 +1849,7 @@ void RenderWidgetHostViewMac::SyncGetFirstRectForRange(
 
 void RenderWidgetHostViewMac::ExecuteEditCommand(const std::string& command) {
   if (host()->delegate()) {
-    host()->delegate()->ExecuteEditCommand(command, base::nullopt);
+    host()->delegate()->ExecuteEditCommand(command, absl::nullopt);
   }
 }
 

@@ -37,8 +37,8 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     int worker_process_id,
-    base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
-    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
+    absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,

@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -35,14 +35,14 @@ class CONTENT_EXPORT ActiveMediaSessionController
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override {}
+      const absl::optional<media_session::MediaMetadata>& metadata) override {}
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override {}
+      const absl::optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
@@ -69,7 +69,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
 
   // Returns nullopt if the action is not supported via hardware keys (e.g.
   // SeekBackward).
-  base::Optional<ui::KeyboardCode> MediaSessionActionToKeyCode(
+  absl::optional<ui::KeyboardCode> MediaSessionActionToKeyCode(
       media_session::mojom::MediaSessionAction action) const;
 
   void MaybePerformAction(media_session::mojom::MediaSessionAction action);
@@ -91,7 +91,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
       media_controller_observer_receiver_{this};
 
   // Stores the current playback position.
-  base::Optional<media_session::MediaPosition> position_;
+  absl::optional<media_session::MediaPosition> position_;
 };
 
 }  // namespace content

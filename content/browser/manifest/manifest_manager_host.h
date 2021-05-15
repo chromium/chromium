@@ -64,7 +64,7 @@ class ManifestManagerHost
                                  const blink::Manifest& manifest);
 
   // blink::mojom::ManifestUrlChangeObserver:
-  void ManifestUrlChanged(const base::Optional<GURL>& manifest_url) override;
+  void ManifestUrlChanged(const absl::optional<GURL>& manifest_url) override;
 
   RenderFrameHostImpl* manifest_manager_frame_;
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;

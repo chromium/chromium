@@ -40,7 +40,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       const GURL& url,
       const GURL& scope,
       bool is_installed_version,
-      base::Optional<network::CrossOriginEmbedderPolicy>
+      absl::optional<network::CrossOriginEmbedderPolicy>
           cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
@@ -57,7 +57,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
-  base::Optional<network::CrossOriginEmbedderPolicy>
+  absl::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
 
   void WorkerRestarted(int worker_process_id, int worker_route_id);
@@ -119,7 +119,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   GURL scope_;
   base::Time version_installed_time_;
   base::Time version_doomed_time_;
-  base::Optional<network::CrossOriginEmbedderPolicy>
+  absl::optional<network::CrossOriginEmbedderPolicy>
       cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;

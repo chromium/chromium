@@ -95,7 +95,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void CreateFrameProxy(
       const blink::RemoteFrameToken& token,
       int32_t routing_id,
-      const base::Optional<blink::FrameToken>& opener_frame_token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
       int32_t view_routing_id,
       int32_t parent_routing_id,
       blink::mojom::FrameReplicationStatePtr replicated_state,

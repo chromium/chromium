@@ -205,7 +205,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     std::unique_ptr<ContentIndexEntry> out_entry;
     database_->GetEntry(service_worker_registration_id_, description_id,
                         base::BindLambdaForTesting(
-                            [&](base::Optional<ContentIndexEntry> entry) {
+                            [&](absl::optional<ContentIndexEntry> entry) {
                               if (entry)
                                 out_entry = std::make_unique<ContentIndexEntry>(
                                     std::move(*entry));

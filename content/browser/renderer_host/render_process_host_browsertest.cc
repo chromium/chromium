@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
@@ -48,6 +47,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if defined(OS_WIN)
@@ -1282,15 +1282,15 @@ class IsProcessBackgroundedObserver : public RenderProcessHostInternalObserver {
 
   // Returns the latest recorded value if there was one and resets the recorded
   // value to |nullopt|.
-  base::Optional<bool> TakeValue() {
+  absl::optional<bool> TakeValue() {
     auto value = backgrounded_;
-    backgrounded_ = base::nullopt;
+    backgrounded_ = absl::nullopt;
     return value;
   }
 
  private:
   // Stores the last observed value of IsProcessBackgrounded for a host.
-  base::Optional<bool> backgrounded_;
+  absl::optional<bool> backgrounded_;
   base::ScopedObservation<RenderProcessHostImpl,
                           RenderProcessHostInternalObserver,
                           &RenderProcessHostImpl::AddInternalObserver,

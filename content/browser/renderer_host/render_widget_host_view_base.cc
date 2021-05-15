@@ -329,14 +329,14 @@ void RenderWidgetHostViewBase::SetBackgroundColor(SkColor color) {
   }
 }
 
-base::Optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
+absl::optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
   if (content_background_color_)
     return content_background_color_;
   return default_background_color_;
 }
 
 bool RenderWidgetHostViewBase::IsBackgroundColorOpaque() {
-  base::Optional<SkColor> bg_color = GetBackgroundColor();
+  absl::optional<SkColor> bg_color = GetBackgroundColor();
   return bg_color ? SkColorGetA(*bg_color) == SK_AlphaOPAQUE : true;
 }
 
@@ -371,7 +371,7 @@ bool RenderWidgetHostViewBase::GetIsMouseLockedUnadjustedMovementForTesting() {
 }
 
 bool RenderWidgetHostViewBase::LockKeyboard(
-    base::Optional<base::flat_set<ui::DomCode>> codes) {
+    absl::optional<base::flat_set<ui::DomCode>> codes) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

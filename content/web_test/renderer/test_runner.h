@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
 #include "content/web_test/common/web_test_constants.h"
@@ -27,6 +26,7 @@
 #include "content/web_test/renderer/gamepad_controller.h"
 #include "content/web_test/renderer/layout_dump.h"
 #include "content/web_test/renderer/web_test_content_settings_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -290,7 +290,7 @@ class TestRunner {
     bool is_frozen() const { return GetStateValue(kKeyFrozen); }
 
     bool GetStateValue(const char* key) const {
-      base::Optional<bool> value = states_.current_values().FindBoolPath(key);
+      absl::optional<bool> value = states_.current_values().FindBoolPath(key);
       DCHECK(value.has_value());
       return value.value();
     }

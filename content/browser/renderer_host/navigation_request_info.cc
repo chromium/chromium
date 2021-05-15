@@ -22,7 +22,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool obey_origin_policy,
     net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    const base::Optional<std::vector<net::SourceStream::SourceType>>&
+    const absl::optional<std::vector<net::SourceStream::SourceType>>&
         devtools_accepted_stream_types)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),

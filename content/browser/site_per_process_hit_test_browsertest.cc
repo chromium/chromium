@@ -4345,12 +4345,12 @@ class SetCursorInterceptor
 
   void Wait() { run_loop_.Run(); }
 
-  base::Optional<ui::Cursor> cursor() const { return cursor_; }
+  absl::optional<ui::Cursor> cursor() const { return cursor_; }
 
  private:
   base::RunLoop run_loop_;
   RenderWidgetHostImpl* render_widget_host_;
-  base::Optional<ui::Cursor> cursor_;
+  absl::optional<ui::Cursor> cursor_;
 };
 
 // Verify that we receive a mouse cursor update message when we mouse over

@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/optional.h"
 #include "crypto/ec_private_key.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_u2f_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -48,7 +48,7 @@ bool VirtualAuthenticator::AddRegistration(
     const std::string& rp_id,
     base::span<const uint8_t> private_key,
     int32_t counter) {
-  base::Optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
+  absl::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
   if (!fido_private_key)
@@ -69,7 +69,7 @@ bool VirtualAuthenticator::AddResidentRegistration(
     base::span<const uint8_t> private_key,
     int32_t counter,
     std::vector<uint8_t> user_handle) {
-  base::Optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
+  absl::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
   if (!fido_private_key)
@@ -140,13 +140,13 @@ void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
                                         GetLargeBlobCallback callback) {
   auto registration = state_->registrations.find(key_handle);
   if (registration == state_->registrations.end()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
-  base::Optional<std::vector<uint8_t>> blob =
+  absl::optional<std::vector<uint8_t>> blob =
       state_->GetLargeBlob(registration->second);
   if (!blob) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   data_decoder_.GzipUncompress(

@@ -216,7 +216,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kOperationFailed),
-        base::nullopt);
+        absl::nullopt);
     return;
   }
 
@@ -225,7 +225,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (parent_url.type() != child_url.type()) {
-    std::move(callback).Run(file_system_access_error::Ok(), base::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
     return;
   }
 
@@ -238,8 +238,8 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     std::move(callback).Run(
         file_system_access_error::Ok(),
         possible_child->type() == HandleType::kDirectory
-            ? base::make_optional(std::vector<std::string>())
-            : base::nullopt);
+            ? absl::make_optional(std::vector<std::string>())
+            : absl::nullopt);
     return;
   }
 
@@ -250,7 +250,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     // case the child path is already the relative path.
     relative_path = child_path;
   } else if (!parent_path.AppendRelativePath(child_path, &relative_path)) {
-    std::move(callback).Run(file_system_access_error::Ok(), base::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
     return;
   }
 

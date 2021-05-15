@@ -53,7 +53,7 @@ constexpr uint8_t kMessageHeader[] =
 constexpr base::TimeDelta kOneWeek = base::TimeDelta::FromDays(7);
 constexpr base::TimeDelta kFourWeeks = base::TimeDelta::FromDays(4 * 7);
 
-base::Optional<crypto::SignatureVerifier::SignatureAlgorithm>
+absl::optional<crypto::SignatureVerifier::SignatureAlgorithm>
 GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
                       SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "GetSignatureAlgorithm");
@@ -63,7 +63,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
           &spki)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(devtools_proxy,
                                                     "Failed to extract SPKI.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   CBS cbs;
@@ -72,7 +72,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
   if (!pkey || CBS_len(&cbs) != 0) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse public key.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int pkey_id = EVP_PKEY_id(pkey.get());
@@ -82,7 +82,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
         base::StringPrintf("Unsupported public key type: %d. Only ECDSA keys "
                            "on the secp256r1 curve are supported.",
                            pkey_id));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const EC_GROUP* group = EC_KEY_get0_group(EVP_PKEY_get0_EC_KEY(pkey.get()));
@@ -94,7 +94,7 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
       base::StringPrintf("Unsupported EC group: %d. Only ECDSA keys on the "
                          "secp256r1 curve are supported.",
                          curve_name));
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool VerifySignature(base::span<const uint8_t> sig,
@@ -291,7 +291,7 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
 
   auto message = GenerateSignedMessage(version, envelope);
 
-  base::Optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+  absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
       GetSignatureAlgorithm(certificate, devtools_proxy);
   if (!algorithm)
     return Result::kErrUnsupportedCertType;

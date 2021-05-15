@@ -5,7 +5,6 @@
 #include <map>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -36,6 +35,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // The tests in this file use the Network Service implementation of
@@ -72,7 +72,7 @@ class ReadWriteWaiter {
  private:
   void OnAccept(
       int result,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> accepted_socket,
       mojo::ScopedDataPipeConsumerHandle consumer_handle,
       mojo::ScopedDataPipeProducerHandle producer_handle) {
@@ -254,7 +254,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
         base::BindLambdaForTesting(
             [&local_addr, &run_loop](
                 int32_t result,
-                const base::Optional<net::IPEndPoint>& local_addr_out) {
+                const absl::optional<net::IPEndPoint>& local_addr_out) {
               DCHECK_EQ(result, net::OK);
               DCHECK(local_addr_out.has_value());
               local_addr = *local_addr_out;

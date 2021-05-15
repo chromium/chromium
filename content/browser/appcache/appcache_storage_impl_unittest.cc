@@ -1828,7 +1828,7 @@ class AppCacheStorageImplTest : public testing::Test {
   TestBrowserContext browser_context_;
   base::test::ScopedFeatureList appcache_require_origin_trial_feature_;
   // Delayed initialization to avoid data races with feature list.
-  base::Optional<base::WeakPtrFactory<StoragePartitionImpl>>
+  absl::optional<base::WeakPtrFactory<StoragePartitionImpl>>
       weak_partition_factory_;
 
   // Test data

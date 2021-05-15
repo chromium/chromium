@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class RenderFrameHost;

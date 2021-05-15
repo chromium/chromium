@@ -236,7 +236,7 @@ class WebTestControlHost : public WebContentsObserver,
   void SimulateWebNotificationClick(
       const std::string& title,
       int32_t action_index,
-      const base::Optional<std::u16string>& reply) override;
+      const absl::optional<std::u16string>& reply) override;
   void SimulateWebNotificationClose(const std::string& title,
                                     bool by_user) override;
   void SimulateWebContentIndexDelete(const std::string& id) override;
@@ -377,8 +377,8 @@ class WebTestControlHost : public WebContentsObserver,
 
   mojom::WebTestRendererDumpResultPtr renderer_dump_result_;
   std::string navigation_history_dump_;
-  base::Optional<SkBitmap> pixel_dump_;
-  base::Optional<std::string> layout_dump_;
+  absl::optional<SkBitmap> pixel_dump_;
+  absl::optional<std::string> layout_dump_;
   std::string actual_pixel_hash_;
   // By default a test that opens other windows will have them closed at the end
   // of the test before checking for leaks. It may specify that it has closed

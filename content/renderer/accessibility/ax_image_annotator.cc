@@ -234,7 +234,7 @@ AXImageAnnotator::ImageInfo::ImageInfo(const blink::WebAXObject& image)
     : image_processor_(
           base::BindRepeating(&AXImageAnnotator::GetImageData, image)),
       status_(ax::mojom::ImageAnnotationStatus::kAnnotationPending),
-      annotation_(base::nullopt) {}
+      annotation_(absl::nullopt) {}
 
 AXImageAnnotator::ImageInfo::~ImageInfo() = default;
 

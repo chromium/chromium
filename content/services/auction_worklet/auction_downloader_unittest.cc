@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -19,6 +18,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace auction_worklet {
@@ -59,7 +59,7 @@ class AuctionDownloaderTest : public testing::Test {
 
  protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
-                                base::Optional<std::string> error) {
+                                absl::optional<std::string> error) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
@@ -77,7 +77,7 @@ class AuctionDownloaderTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
-  base::Optional<std::string> error_;
+  absl::optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
 };
@@ -155,7 +155,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, base::nullopt);
+              kAsciiResponseBody, absl::nullopt);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
@@ -203,7 +203,7 @@ TEST_F(AuctionDownloaderTest, MimeType) {
       last_error_msg());
 
   // Javascript request, no response type.
-  AddResponse(&url_loader_factory_, url_, base::nullopt, kUtf8Charset,
+  AddResponse(&url_loader_factory_, url_, absl::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
@@ -239,7 +239,7 @@ TEST_F(AuctionDownloaderTest, MimeType) {
       last_error_msg());
 
   // JSON request, no response type.
-  AddResponse(&url_loader_factory_, url_, base::nullopt, kUtf8Charset,
+  AddResponse(&url_loader_factory_, url_, absl::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
@@ -403,17 +403,17 @@ TEST_F(AuctionDownloaderTest, Charset) {
       last_error_msg());
 
   // Null charset should act like UTF-8.
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
               kAsciiResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kAsciiResponseBody, *body);
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
               kUtf8ResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kUtf8ResponseBody, *body);
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, base::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
               kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(

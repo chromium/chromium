@@ -39,7 +39,7 @@ WorkletLoader::WorkletLoader(
 WorkletLoader::~WorkletLoader() = default;
 
 void WorkletLoader::OnDownloadComplete(std::unique_ptr<std::string> body,
-                                       base::Optional<std::string> error_msg) {
+                                       absl::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
 
   auction_downloader_.reset();

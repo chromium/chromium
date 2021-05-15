@@ -118,7 +118,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   void SetIsOnSubframe(bool) override;
   bool IsOnSubframe() const override;
   net::SiteForCookies SiteForCookies() const override;
-  base::Optional<blink::WebSecurityOrigin> TopFrameOrigin() const override;
+  absl::optional<blink::WebSecurityOrigin> TopFrameOrigin() const override;
   void SetSubresourceFilterBuilder(
       std::unique_ptr<blink::WebDocumentSubresourceFilter::Builder>) override;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> TakeSubresourceFilter()
@@ -321,7 +321,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // blocked.
   scoped_refptr<blink::WebFrameRequestBlocker> frame_request_blocker_;
   net::SiteForCookies site_for_cookies_;
-  base::Optional<url::Origin> top_frame_origin_;
+  absl::optional<url::Origin> top_frame_origin_;
 
   blink::RendererPreferences renderer_preferences_;
 

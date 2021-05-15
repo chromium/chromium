@@ -118,7 +118,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   // at for lazy initialization, and used as a signal for if the database is
   // closed. This is initialized in the first call to LazyInit() to avoid doing
   // additional work in the constructor, see https://crbug.com/1121307.
-  base::Optional<DbStatus> db_init_status_;
+  absl::optional<DbStatus> db_init_status_;
 
   // May be null if the database:
   //  - could not be opened

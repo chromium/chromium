@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
@@ -28,7 +28,7 @@ class WorkletLoader {
   // persisting any state.
   using LoadWorkletCallback = base::OnceCallback<void(
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      base::Optional<std::string> error_msg)>;
+      absl::optional<std::string> error_msg)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
@@ -43,7 +43,7 @@ class WorkletLoader {
 
  private:
   void OnDownloadComplete(std::unique_ptr<std::string> body,
-                          base::Optional<std::string> error_msg);
+                          absl::optional<std::string> error_msg);
 
   const GURL script_source_url_;
   AuctionV8Helper* const v8_helper_;

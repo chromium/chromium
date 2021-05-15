@@ -20,7 +20,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -122,6 +121,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -289,7 +289,7 @@ void AddAdditionalRequestHeaders(
     BrowserContext* browser_context,
     const std::string& method,
     const std::string& user_agent_override,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     blink::mojom::Referrer* referrer,
     FrameTreeNode* frame_tree_node) {
   if (!url.SchemeIsHTTPOrHTTPS())
@@ -333,7 +333,7 @@ void AddAdditionalRequestHeaders(
     const blink::DocumentPolicyFeatureState& required_policy =
         frame_tree_node->effective_frame_policy().required_document_policy;
     if (!required_policy.empty()) {
-      base::Optional<std::string> policy_header =
+      absl::optional<std::string> policy_header =
           blink::DocumentPolicy::Serialize(required_policy);
       DCHECK(policy_header);
       headers->SetHeader("Sec-Required-Document-Policy", policy_header.value());
@@ -417,7 +417,7 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 void RecordStartToCommitMetrics(base::TimeTicks navigation_start_time,
                                 ui::PageTransition transition,
                                 const base::TimeTicks& ready_to_commit_time,
-                                base::Optional<bool> is_background,
+                                absl::optional<bool> is_background,
                                 bool is_same_process,
                                 bool is_main_frame) {
   base::TimeTicks now = base::TimeTicks::Now();
@@ -539,7 +539,7 @@ void RecordReadyToCommitMetrics(
 
   // TimeToReadyToCommit2
   {
-    constexpr base::Optional<bool> kIsBackground = base::nullopt;
+    constexpr absl::optional<bool> kIsBackground = absl::nullopt;
     base::TimeDelta delta =
         ready_to_commit_time - common_params.navigation_start;
 
@@ -817,7 +817,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     NavigationEntryImpl* entry,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
-    const base::Optional<blink::Impression>& impression) {
+    const absl::optional<blink::Impression>& impression) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
   // TODO(arthursonzogni): Form submission with the "GET" method is possible.
   // This is not currently handled here.
@@ -826,12 +826,12 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   network::mojom::RequestDestination destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
-  base::Optional<network::ResourceRequest::WebBundleTokenParams>
+  absl::optional<network::ResourceRequest::WebBundleTokenParams>
       web_bundle_token_params;
   if (frame_entry && frame_entry->subresource_web_bundle_navigation_info()) {
     auto* bundle_info = frame_entry->subresource_web_bundle_navigation_info();
     web_bundle_token_params =
-        base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
             bundle_info->bundle_url(), bundle_info->token(),
             bundle_info->render_process_id()));
   }
@@ -844,7 +844,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       false /* was_initiated_by_link_click */, GURL() /* searchable_form_url */,
       std::string() /* searchable_form_encoding */,
       GURL() /* client_side_redirect_url */,
-      base::nullopt /* devtools_initiator_info */,
+      absl::nullopt /* devtools_initiator_info */,
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
@@ -934,7 +934,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // renderer and sent to the browser instead of being measured here.
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          base::nullopt, network::mojom::WebSandboxFlags(), override_user_agent,
+          absl::nullopt, network::mojom::WebSandboxFlags(), override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
@@ -954,7 +954,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*is_view_source=*/false,
           /*should_clear_history_list=*/false,
           /*navigation_timing=*/mojom::NavigationTiming::New(),
-          /*appcache_host_id=*/base::nullopt,
+          /*appcache_host_id=*/absl::nullopt,
           mojom::WasActivatedOption::kUnknown,
           /*navigation_token=*/base::UnguessableToken::Create(),
           /*prefetched_signed_exchanges=*/
@@ -1077,7 +1077,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           -1 /* current_history_list_offset */,
           -1 /* current_history_list_length */, false /* was_discard */,
           false /* is_view_source */, false /* should_clear_history_list */,
-          mojom::NavigationTiming::New(), base::nullopt /* appcache_host_id */,
+          mojom::NavigationTiming::New(), absl::nullopt /* appcache_host_id */,
           mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create() /* navigation_token */,
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
@@ -1116,7 +1116,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
     navigation_request->begin_params_->web_bundle_token =
-        base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
             subresource_web_bundle_navigation_info->bundle_url(),
             subresource_web_bundle_navigation_info->token(),
             subresource_web_bundle_navigation_info->render_process_id()));
@@ -1522,7 +1522,7 @@ void NavigationRequest::BeginNavigation() {
     // for aborted loads).
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /*skip_throttles*/, base::nullopt /*error_page_content*/,
+        false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
         false /*collapse_frame*/);
     return;
   }
@@ -1541,7 +1541,7 @@ void NavigationRequest::BeginNavigation() {
     StartNavigation(false);
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,
-                            base::nullopt /* error_page_content */,
+                            absl::nullopt /* error_page_content */,
                             false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -1557,7 +1557,7 @@ void NavigationRequest::BeginNavigation() {
     StartNavigation(false);
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles  */, base::nullopt /* error_page_content */,
+        false /* skip_throttles  */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
@@ -1570,7 +1570,7 @@ void NavigationRequest::BeginNavigation() {
   if (CheckAboutSrcDoc() == AboutSrcDocCheckResult::BLOCK_REQUEST) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
-        true /* skip_throttles */, base::nullopt /* error_page_content*/,
+        true /* skip_throttles */, absl::nullopt /* error_page_content*/,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -1628,7 +1628,7 @@ void NavigationRequest::BeginNavigation() {
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-      const base::Optional<network::mojom::BlockedByResponseReason>
+      const absl::optional<network::mojom::BlockedByResponseReason>
           coop_requires_blocking = coop_status_.EnforceCOOP(
               policy_container_navigation_bundle_->FinalPolicies()
                   .cross_origin_opener_policy,
@@ -1654,7 +1654,7 @@ void NavigationRequest::BeginNavigation() {
                             was_opener_suppressed_);
       SCOPED_CRASH_KEY_BOOL("nav_request", "is_main_frame", IsInMainFrame());
       SCOPED_CRASH_KEY_BOOL("nav_request", "got_initiator_routing_id",
-                            GetInitiatorFrameToken() != base::nullopt);
+                            GetInitiatorFrameToken() != absl::nullopt);
       SCOPED_CRASH_KEY_BOOL("nav_request", "is_renderer_initiated",
                             IsRendererInitiated());
       // Crash keys capturing values affecting whether
@@ -1976,7 +1976,7 @@ NavigationRequest::TakePolicyContainerHost() {
   // we do not use the bundle after we moved its contents.
   scoped_refptr<PolicyContainerHost> host =
       std::move(*policy_container_navigation_bundle_).TakePolicyContainerHost();
-  policy_container_navigation_bundle_ = base::nullopt;
+  policy_container_navigation_bundle_ = absl::nullopt;
 
   return host;
 }
@@ -2063,7 +2063,7 @@ void NavigationRequest::OnRequestRedirected(
     // edge case to silently cancel navigations. See https://crbug.com/941653.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -2084,7 +2084,7 @@ void NavigationRequest::OnRequestRedirected(
     // net::ERR_UNSAFE_REDIRECT and an error page. See https://crbug.com/941653.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -2092,26 +2092,26 @@ void NavigationRequest::OnRequestRedirected(
   }
 
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-  const base::Optional<network::mojom::BlockedByResponseReason>
+  const absl::optional<network::mojom::BlockedByResponseReason>
       coop_requires_blocking = coop_status_.EnforceCOOP(
           coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
           origin, network_isolation_key);
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
   }
 
-  const base::Optional<network::mojom::BlockedByResponseReason>
+  const absl::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
   if (coep_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coep_requires_blocking),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -2165,7 +2165,7 @@ void NavigationRequest::OnRequestRedirected(
   if (net_error != net::OK) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net_error), false /*skip_throttles*/,
-        base::nullopt /*error_page_content*/, false /*collapse_frame*/);
+        absl::nullopt /*error_page_content*/, false /*collapse_frame*/);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -2178,7 +2178,7 @@ void NavigationRequest::OnRequestRedirected(
           LegacyProtocolInSubresourceCheckResult::BLOCK_REQUEST) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        false /*skip_throttles*/, base::nullopt /*error_page_content*/,
+        false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
         false /*collapse_frame*/);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
@@ -2517,7 +2517,7 @@ void NavigationRequest::OnResponseStarted(
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
     net::NetworkIsolationKey network_isolation_key,
-    base::Optional<SubresourceLoaderParams> subresource_loader_params,
+    absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
@@ -2558,7 +2558,7 @@ void NavigationRequest::OnResponseStarted(
       CSPEmbeddedEnforcementResult::BLOCK_RESPONSE) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CSP),
-        true /* skip_throttles */, base::nullopt /* error_page_content*/,
+        true /* skip_throttles */, absl::nullopt /* error_page_content*/,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
@@ -2570,7 +2570,7 @@ void NavigationRequest::OnResponseStarted(
     // TODO(pmeuleman) Move the enforcement of COOP to after
     // ComputePoliciesToCommit and use the origin from
     // GetOriginForURLLoaderFactory.
-    const base::Optional<network::mojom::BlockedByResponseReason>
+    const absl::optional<network::mojom::BlockedByResponseReason>
         coop_requires_blocking = coop_status_.EnforceCOOP(
             coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
             origin, network_isolation_key);
@@ -2581,7 +2581,7 @@ void NavigationRequest::OnResponseStarted(
       // of a download.
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(*coop_requires_blocking),
-          false /* skip_throttles */, base::nullopt /* error_page_content */,
+          false /* skip_throttles */, absl::nullopt /* error_page_content */,
           false /* collapse_frame */);
       // DO NOT ADD CODE after this. The previous call to
       // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -2612,8 +2612,8 @@ void NavigationRequest::OnResponseStarted(
   // Update the AppCache params of the commit params.
   commit_params_->appcache_host_id =
       appcache_handle_
-          ? base::make_optional(appcache_handle_->appcache_host_id())
-          : base::nullopt;
+          ? absl::make_optional(appcache_handle_->appcache_host_id())
+          : absl::nullopt;
 
   const bool is_first_response = commit_params_->redirects.empty();
   UpdateNavigationHandleTimingsOnResponseReceived(is_first_response);
@@ -2676,21 +2676,21 @@ void NavigationRequest::OnResponseStarted(
   if (is_mhtml_archive && !IsInMainFrame() && response_should_be_rendered_) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
-        false /* skip_throttles */, base::nullopt /* error_page_contnet */,
+        false /* skip_throttles */, absl::nullopt /* error_page_contnet */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
   }
 
-  const base::Optional<network::mojom::BlockedByResponseReason>
+  const absl::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
   if (coep_requires_blocking) {
     // TODO(https://crbug.com/1172169): Investigate what must be done in case of
     // a download.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coep_requires_blocking),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -2739,7 +2739,7 @@ void NavigationRequest::OnResponseStarted(
                                     network::mojom::BlockedByResponseReason::
                                         kCoepFrameResourceNeedsCoepHeader),
                                 false /* skip_throttles */,
-                                base::nullopt /* error_page_content */,
+                                absl::nullopt /* error_page_content */,
                                 false /* collapse_frame */);
         // DO NOT ADD CODE after this. The previous call to
         // OnRequestFailedInternal has destroyed the NavigationRequest.
@@ -2939,7 +2939,7 @@ void NavigationRequest::OnResponseStarted(
                       (response_head_->headers->response_code() / 100 != 2))) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_INVALID_RESPONSE),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
+        false /* skip_throttles */, absl::nullopt /* error_page_content */,
         false /* collapse_frame */);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
@@ -2960,7 +2960,7 @@ void NavigationRequest::OnResponseStarted(
   if (net_error != net::OK) {
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,
-                            base::nullopt /* error_page_content */,
+                            absl::nullopt /* error_page_content */,
                             false /* collapse_frame */);
 
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
@@ -2978,14 +2978,14 @@ void NavigationRequest::OnRequestFailed(
 
   OnRequestFailedInternal(
       status, false /* skip_throttles */,
-      base::nullopt /* error_page_content */,
+      absl::nullopt /* error_page_content */,
       status.should_collapse_initiator /* collapse_frame */);
 }
 
 void NavigationRequest::OnRequestFailedInternal(
     const network::URLLoaderCompletionStatus& status,
     bool skip_throttles,
-    const base::Optional<std::string>& error_page_content,
+    const absl::optional<std::string>& error_page_content,
     bool collapse_frame) {
   CheckStateTransition(WILL_FAIL_REQUEST);
   DCHECK(!(status.error_code == net::ERR_ABORTED &&
@@ -3294,7 +3294,7 @@ void NavigationRequest::OnStartChecksComplete(
   // Give DevTools a chance to override begin params (headers, skip SW)
   // before actually loading resource.
   bool report_raw_headers = false;
-  base::Optional<std::vector<net::SourceStream::SourceType>>
+  absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
@@ -3533,7 +3533,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-          false /*skip_throttles*/, base::nullopt /*error_page_content*/,
+          false /*skip_throttles*/, absl::nullopt /*error_page_content*/,
           false /*collapse_frame*/);
       // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
       // destroyed the NavigationRequest.
@@ -3572,7 +3572,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
                          weak_factory_.GetWeakPtr(),
                          network::URLLoaderCompletionStatus(net::ERR_ABORTED),
                          false /* skip_throttles */,
-                         base::nullopt /* error_page_content */,
+                         absl::nullopt /* error_page_content */,
                          false /* collapse_frame */));
       // Unlike the other early returns, intentionally skip calling
       // `OnRequestFailedInternal()`. This allows the response body drainer to
@@ -3598,7 +3598,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       // destroyed the NavigationRequest.
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-          true /* skip_throttles */, base::nullopt /* error_page_content */,
+          true /* skip_throttles */, absl::nullopt /* error_page_content */,
           false /* collapse_frame */);
       return;
     }
@@ -3646,7 +3646,7 @@ void NavigationRequest::OnCommitDeferringConditionChecksComplete() {
 }
 
 void NavigationRequest::CommitErrorPage(
-    const base::Optional<std::string>& error_page_content) {
+    const absl::optional<std::string>& error_page_content) {
   DCHECK(!IsSameDocument());
 
   UpdateCommitNavigationParamsHistory();
@@ -3806,7 +3806,7 @@ void NavigationRequest::CommitNavigation() {
   ClientHintsControllerDelegate* client_hints_delegate =
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
-    base::Optional<std::vector<network::mojom::WebClientHintsType>>
+    absl::optional<std::vector<network::mojom::WebClientHintsType>>
         opt_in_hints_from_response;
     if (response()) {
       opt_in_hints_from_response = ParseAndPersistAcceptCHForNagivation(
@@ -4997,7 +4997,7 @@ void NavigationRequest::DidCommitNavigation(
   // another document without error.
   if (!IsSameDocument() && state_ != DID_COMMIT_ERROR_PAGE) {
     ui::PageTransition transition = common_params_->transition;
-    base::Optional<bool> is_background =
+    absl::optional<bool> is_background =
         render_frame_host_->GetProcess()->IsProcessBackgrounded();
 
     RecordStartToCommitMetrics(
@@ -5238,7 +5238,7 @@ bool NavigationRequest::IsLoadDataWithBaseURL(
 bool NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
     bool is_main_frame,
     const mojom::CommonNavigationParams& common_params,
-    const base::Optional<std::string>& data_url_as_string) {
+    const absl::optional<std::string>& data_url_as_string) {
   if (!is_main_frame || !IsLoadDataWithBaseURL(common_params))
     return false;
 
@@ -5679,11 +5679,11 @@ const net::HttpRequestHeaders& NavigationRequest::GetRequestHeaders() {
   return *request_headers_;
 }
 
-const base::Optional<net::SSLInfo>& NavigationRequest::GetSSLInfo() {
+const absl::optional<net::SSLInfo>& NavigationRequest::GetSSLInfo() {
   return ssl_info_;
 }
 
-const base::Optional<net::AuthChallengeInfo>&
+const absl::optional<net::AuthChallengeInfo>&
 NavigationRequest::GetAuthChallengeInfo() {
   return auth_challenge_info_;
 }
@@ -5768,11 +5768,11 @@ const std::string& NavigationRequest::GetHrefTranslate() {
   return common_params().href_translate;
 }
 
-const base::Optional<blink::Impression>& NavigationRequest::GetImpression() {
+const absl::optional<blink::Impression>& NavigationRequest::GetImpression() {
   return begin_params().impression;
 }
 
-const base::Optional<blink::LocalFrameToken>&
+const absl::optional<blink::LocalFrameToken>&
 NavigationRequest::GetInitiatorFrameToken() {
   return initiator_frame_token_;
 }
@@ -5781,7 +5781,7 @@ int NavigationRequest::GetInitiatorProcessID() {
   return initiator_process_id_;
 }
 
-const base::Optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
+const absl::optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
   return common_params().initiator_origin;
 }
 
@@ -5949,18 +5949,18 @@ void NavigationRequest::ForceEnableOriginTrials(
   commit_params_->force_enabled_origin_trials = trials;
 }
 
-base::Optional<network::mojom::BlockedByResponseReason>
+absl::optional<network::mojom::BlockedByResponseReason>
 NavigationRequest::EnforceCOEP() {
   // https://html.spec.whatwg.org/#check-a-navigation-response's-adherence-to-its-embedder-policy
   auto* parent_frame = GetParentFrame();
   if (!parent_frame) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const auto& url = common_params_->url;
   // Some special URLs not loaded using the network are inheriting the
   // Cross-Origin-Embedder-Policy header from their parent.
   if (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return network::CrossOriginResourcePolicy::IsNavigationBlocked(
       url, redirect_chain_[0], parent_frame->GetLastCommittedOrigin(),

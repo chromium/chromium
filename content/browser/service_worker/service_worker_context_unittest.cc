@@ -280,10 +280,10 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   };
   struct EventLog {
     EventType type;
-    base::Optional<GURL> url;
-    base::Optional<int64_t> version_id;
-    base::Optional<int64_t> registration_id;
-    base::Optional<bool> is_running;
+    absl::optional<GURL> url;
+    absl::optional<int64_t> version_id;
+    absl::optional<int64_t> registration_id;
+    absl::optional<bool> is_running;
   };
 
   explicit TestServiceWorkerContextObserver(ServiceWorkerContext* context) {

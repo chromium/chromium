@@ -63,7 +63,7 @@ SignedExchangeValidityPinger::CreateAndStart(
     const GURL& validity_url,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     base::OnceClosure callback) {
   auto pinger = base::WrapUnique<SignedExchangeValidityPinger>(
       new SignedExchangeValidityPinger(std::move(callback)));
@@ -80,7 +80,7 @@ void SignedExchangeValidityPinger::Start(
     const GURL& validity_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id) {
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(
       base::FeatureList::IsEnabled(features::kSignedHTTPExchangePingValidity));
 

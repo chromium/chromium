@@ -5,8 +5,8 @@
 #ifndef CONTENT_TEST_MOCK_DISPLAY_FEATURE_H_
 #define CONTENT_TEST_MOCK_DISPLAY_FEATURE_H_
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

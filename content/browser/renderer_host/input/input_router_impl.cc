@@ -248,11 +248,11 @@ void InputRouterImpl::SetForceEnableZoom(bool enabled) {
   touch_action_filter_.SetForceEnableZoom(enabled);
 }
 
-base::Optional<cc::TouchAction> InputRouterImpl::AllowedTouchAction() {
+absl::optional<cc::TouchAction> InputRouterImpl::AllowedTouchAction() {
   return touch_action_filter_.allowed_touch_action();
 }
 
-base::Optional<cc::TouchAction> InputRouterImpl::ActiveTouchAction() {
+absl::optional<cc::TouchAction> InputRouterImpl::ActiveTouchAction() {
   return touch_action_filter_.active_touch_action();
 }
 
@@ -740,7 +740,7 @@ void InputRouterImpl::UpdateTouchAckTimeoutEnabled() {
   // TouchAction::kNone will prevent scrolling, in which case the timeout serves
   // little purpose. It's also a strong signal that touch handling is critical
   // to page functionality, so the timeout could do more harm than good.
-  base::Optional<cc::TouchAction> allowed_touch_action =
+  absl::optional<cc::TouchAction> allowed_touch_action =
       touch_action_filter_.allowed_touch_action();
   cc::TouchAction compositor_allowed_touch_action =
       touch_action_filter_.compositor_allowed_touch_action();

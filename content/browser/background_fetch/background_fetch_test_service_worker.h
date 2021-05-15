@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

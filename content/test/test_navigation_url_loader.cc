@@ -101,7 +101,7 @@ void TestNavigationURLLoader::CallOnResponseStarted(
       mojo::ScopedDataPipeConsumerHandle(),
       GlobalRequestID::MakeBrowserInitiated(), false,
       blink::NavigationDownloadPolicy(),
-      request_info_->isolation_info.network_isolation_key(), base::nullopt,
+      request_info_->isolation_info.network_isolation_key(), absl::nullopt,
       std::move(early_hints));
 }
 

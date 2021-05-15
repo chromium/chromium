@@ -108,8 +108,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // GetAXTree() is about the page with the url "about:blank".
   bool IsAboutBlank();
 
-  base::Optional<ax::mojom::Event> event_to_wait_for_;
-  base::Optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
+  absl::optional<ax::mojom::Event> event_to_wait_for_;
+  absl::optional<ui::AXEventGenerator::Event> generated_event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
   int event_target_id_ = 0;
   RenderFrameHostImpl* event_render_frame_host_ = nullptr;

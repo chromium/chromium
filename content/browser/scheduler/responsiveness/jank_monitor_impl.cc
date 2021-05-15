@@ -293,7 +293,7 @@ JankMonitorImpl::ThreadExecutionState::ThreadExecutionState() {
 
 JankMonitorImpl::ThreadExecutionState::~ThreadExecutionState() = default;
 
-base::Optional<const void*>
+absl::optional<const void*>
 JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(monitor_sequence_checker_);
 
@@ -306,7 +306,7 @@ JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
              (now - task_execution_metadata_.back().execution_start_time) <
                  jank_threshold)) {
     // Most tasks are unlikely to be janky.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Mark that the target thread is janky and notify the monitor thread.

@@ -5,7 +5,6 @@
 #include <map>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -36,6 +35,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 // The tests in this file use a mock implementation of NetworkContext, to test
@@ -152,7 +152,7 @@ class MockHostResolver : public network::mojom::HostResolver {
         host, network_isolation_key,
         net::NetLogWithSource::Make(net::NetLog::Get(),
                                     net::NetLogSourceType::NONE),
-        base::nullopt);
+        absl::nullopt);
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
 
@@ -203,7 +203,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   // network::TestNetworkContext:
   void CreateTCPConnectedSocket(
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -227,14 +227,14 @@ class MockNetworkContext : public network::TestNetworkContext {
   }
 
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
     DCHECK(!config_overrides.has_value());
     DCHECK(!internal_resolver_);
     DCHECK(!host_resolver_);
 
     internal_resolver_ = net::HostResolver::CreateStandaloneResolver(
-        net::NetLog::Get(), /*options=*/base::nullopt, host_mapping_rules_,
+        net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules_,
         /*enable_caching=*/false);
     host_resolver_ = std::make_unique<MockHostResolver>(
         std::move(receiver), internal_resolver_.get());

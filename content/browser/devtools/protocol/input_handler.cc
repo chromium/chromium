@@ -340,7 +340,7 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
   }
 
   blink::mojom::DragDataPtr mojo_data =
-      blink::mojom::DragData::New(std::move(items), base::nullopt,
+      blink::mojom::DragData::New(std::move(items), absl::nullopt,
                                   network::mojom::ReferrerPolicy::kDefault);
   return DragDataToDropData(*mojo_data);
 }
@@ -843,7 +843,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
     Maybe<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> maybe_point) {
+    absl::optional<gfx::PointF> maybe_point) {
   if (!target || !maybe_point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -958,7 +958,7 @@ void InputHandler::OnWidgetForDispatchMouseEvent(
     std::unique_ptr<blink::WebMouseEvent> mouse_event,
     blink::WebMouseWheelEvent* wheel_event,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> point) {
+    absl::optional<gfx::PointF> point) {
   if (!target || !point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1151,7 +1151,7 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
     std::unique_ptr<DispatchTouchEventCallback> callback,
     std::vector<blink::WebTouchEvent> events,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> transformed) {
+    absl::optional<gfx::PointF> transformed) {
   if (!target || !transformed.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;

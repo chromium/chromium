@@ -1707,7 +1707,7 @@ HandlerWrappingLocalTrustTokenFulfiller::
 void HandlerWrappingLocalTrustTokenFulfiller::FulfillTrustTokenIssuance(
     network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
     FulfillTrustTokenIssuanceCallback callback) {
-  base::Optional<std::string> maybe_result =
+  absl::optional<std::string> maybe_result =
       handler_.Issue(std::move(request->request));
   if (maybe_result) {
     std::move(callback).Run(

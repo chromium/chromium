@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -88,14 +88,14 @@ class TestNavigationObserver {
 
   // Returns the initiator origin of the last finished navigation (that matched
   // URL / net error filters, if set).
-  const base::Optional<url::Origin>& last_initiator_origin() const {
+  const absl::optional<url::Origin>& last_initiator_origin() const {
     return last_navigation_initiator_origin_;
   }
 
   // Returns the frame token of the initiator RenderFrameHost of the last
   // finished navigation. This is defined if and only if
   // last_initiator_process_id below is.
-  const base::Optional<blink::LocalFrameToken>& last_initiator_frame_token()
+  const absl::optional<blink::LocalFrameToken>& last_initiator_frame_token()
       const {
     return last_initiator_frame_token_;
   }
@@ -151,8 +151,8 @@ class TestNavigationObserver {
 
   TestNavigationObserver(WebContents* web_contents,
                          int number_of_navigations,
-                         const base::Optional<GURL>& target_url,
-                         base::Optional<net::Error> target_error,
+                         const absl::optional<GURL>& target_url,
+                         absl::optional<net::Error> target_error,
                          MessageLoopRunner::QuitMode quit_mode =
                              MessageLoopRunner::QuitMode::IMMEDIATE,
                          bool ignore_uncommitted_navigations = true);
@@ -192,11 +192,11 @@ class TestNavigationObserver {
 
   // The URL to wait for.
   // If this is nullopt, any URL counts.
-  const base::Optional<GURL> target_url_;
+  const absl::optional<GURL> target_url_;
 
   // The net error of the finished navigation to wait for.
   // If this is nullopt, any net::Error counts.
-  const base::Optional<net::Error> target_error_;
+  const absl::optional<net::Error> target_error_;
 
   // Whether to ignore navigations that finish but don't commit.
   bool ignore_uncommitted_navigations_;
@@ -208,12 +208,12 @@ class TestNavigationObserver {
   bool last_navigation_succeeded_;
 
   // The initiator origin of the last navigation.
-  base::Optional<url::Origin> last_navigation_initiator_origin_;
+  absl::optional<url::Origin> last_navigation_initiator_origin_;
 
   // The frame token of the initiator frame for the last observed
   // navigation. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  base::Optional<blink::LocalFrameToken> last_initiator_frame_token_;
+  absl::optional<blink::LocalFrameToken> last_initiator_frame_token_;
 
   // The process id of the initiator frame for the last observed navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is

@@ -70,20 +70,20 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   void OnRegistered(
       std::unique_ptr<WebServiceWorkerRegistrationCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const base::Optional<std::string>& error_msg,
+      const absl::optional<std::string>& error_msg,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration);
 
   void OnDidGetRegistration(
       std::unique_ptr<WebServiceWorkerGetRegistrationCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const base::Optional<std::string>& error_msg,
+      const absl::optional<std::string>& error_msg,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration);
 
   void OnDidGetRegistrations(
       std::unique_ptr<WebServiceWorkerGetRegistrationsCallbacks> callbacks,
       blink::mojom::ServiceWorkerErrorType error,
-      const base::Optional<std::string>& error_msg,
-      base::Optional<
+      const absl::optional<std::string>& error_msg,
+      absl::optional<
           std::vector<blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>>
           infos);
 

@@ -417,8 +417,8 @@ class RequestInterceptor {
   const GURL url_to_intercept_;
   URLLoaderInterceptor interceptor_;
 
-  base::Optional<url::Origin> request_initiator_to_inject_;
-  base::Optional<network::mojom::RequestMode> request_mode_to_inject_;
+  absl::optional<url::Origin> request_initiator_to_inject_;
+  absl::optional<network::mojom::RequestMode> request_mode_to_inject_;
 
   // |pending_test_client_remote_| below is used to transition results of
   // |test_client_.CreateRemote()| into IO thread.

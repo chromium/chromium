@@ -37,7 +37,7 @@ void WebBundleRedirectURLLoader::OnReadyToRedirect(
           ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
           : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
       resource_request.referrer_policy, resource_request.referrer.spec(), 303,
-      url, /*referrer_policy_header=*/base::nullopt,
+      url, /*referrer_policy_header=*/absl::nullopt,
       /*insecure_scheme_was_upgraded=*/false, /*copy_fragment=*/true,
       /*is_signed_exchange_fallback_redirect=*/false);
   client_->OnReceiveRedirect(redirect_info, std::move(response_head));

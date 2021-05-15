@@ -10,11 +10,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/trace_event/trace_event.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 const base::Feature kForegroundRadioStateCountWakeups{
     "ForegroundRadioStateCountWakeups", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -28,7 +28,7 @@ void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes, int wakeups) {
 
   if (base::android::RadioUtils::GetConnectionType() ==
       base::android::RadioConnectionType::kWifi) {
-    base::Optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
+    absl::optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
     if (!maybe_level.has_value())
       return;
 
@@ -47,7 +47,7 @@ void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes, int wakeups) {
         "Power.ForegroundRadio.ReceivedKiB.Wifi.30Seconds", wifi_level,
         rx_bytes, 1024);
   } else {
-    base::Optional<base::android::RadioSignalLevel> maybe_level =
+    absl::optional<base::android::RadioSignalLevel> maybe_level =
         base::android::RadioUtils::GetCellSignalLevel();
     if (!maybe_level.has_value())
       return;

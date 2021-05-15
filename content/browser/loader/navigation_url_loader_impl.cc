@@ -15,7 +15,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
@@ -87,6 +86,7 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -1023,7 +1023,7 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
             container_host->SetControllerRegistration(
                 nullptr, false /* notify_controllerchange */);
             container_host->UpdateUrls(GURL(), net::SiteForCookies(),
-                                       base::nullopt);
+                                       absl::nullopt);
           }
         }
       }

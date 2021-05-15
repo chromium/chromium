@@ -106,7 +106,7 @@ class RedirectResponseURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override {
+      const absl::optional<GURL>& new_url) override {
     NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
@@ -151,7 +151,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     // DevTools' Security panel.
     if (request.destination != network::mojom::RequestDestination::kDocument &&
         !request.report_raw_headers) {
-      response_->ssl_info = base::nullopt;
+      response_->ssl_info = absl::nullopt;
     }
     UpdateRequestResponseStartTime(response_.get());
     response_->encoded_data_length = 0;
@@ -187,13 +187,13 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
   ~InnerResponseURLLoader() override {}
 
  private:
-  static base::Optional<std::string> GetHeaderString(
+  static absl::optional<std::string> GetHeaderString(
       const network::mojom::URLResponseHead& response,
       const std::string& header_name) {
     DCHECK(response.headers);
     std::string header_value;
     if (!response.headers->GetNormalizedHeader(header_name, &header_value))
-      return base::nullopt;
+      return absl::nullopt;
     return header_value;
   }
 
@@ -243,7 +243,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override {
+      const absl::optional<GURL>& new_url) override {
     NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
@@ -426,14 +426,14 @@ class PrefetchedNavigationLoaderInterceptor
     NOTREACHED();
   }
 
-  base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
+  absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override {
     if (state_ != State::kInnerResponseRequested)
-      return base::nullopt;
+      return absl::nullopt;
 
     SubresourceLoaderParams params;
     params.prefetched_signed_exchanges = std::move(info_list_);
-    return base::make_optional(std::move(params));
+    return absl::make_optional(std::move(params));
   }
 
  private:
@@ -553,7 +553,7 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
     std::string link_url;
-    std::unordered_map<std::string, base::Optional<std::string>> link_params;
+    std::unordered_map<std::string, absl::optional<std::string>> link_params;
     if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
                                                 &link_url, &link_params)) {
       continue;

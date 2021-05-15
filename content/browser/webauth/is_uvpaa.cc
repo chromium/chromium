@@ -30,7 +30,7 @@ namespace content {
 void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
-  const base::Optional<device::fido::mac::AuthenticatorConfig> config =
+  const absl::optional<device::fido::mac::AuthenticatorConfig> config =
       GetContentClient()
           ->browser()
           ->GetWebAuthenticationDelegate()

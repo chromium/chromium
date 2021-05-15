@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
 namespace network {
@@ -121,7 +121,7 @@ class ObjectNavigationFallbackBodyLoader
   // `response_body_drainer_` will be reset to null when the response body is
   // completely drained.
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
-  base::Optional<network::URLLoaderCompletionStatus> status_;
+  absl::optional<network::URLLoaderCompletionStatus> status_;
   blink::mojom::ResourceTimingInfoPtr timing_info_;
   std::string server_timing_value_;
   base::WeakPtr<NavigationRequest> navigation_request_;

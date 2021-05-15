@@ -45,13 +45,13 @@ class MockManagerWithRequests : public MockPermissionManager {
       (override));
   MOCK_METHOD(void,
               SetPermissionOverridesForDevTools,
-              (const base::Optional<url::Origin>& origin,
+              (const absl::optional<url::Origin>& origin,
                const PermissionOverrides& overrides),
               (override));
   MOCK_METHOD(void, ResetPermissionOverridesForDevTools, (), (override));
   MOCK_METHOD(bool,
               IsPermissionOverridableByDevTools,
-              (PermissionType, const base::Optional<url::Origin>&),
+              (PermissionType, const absl::optional<url::Origin>&),
               (override));
 
  private:
@@ -98,7 +98,7 @@ TEST_F(PermissionControllerImplTest, ResettingOverridesForwardsReset) {
 }
 
 TEST_F(PermissionControllerImplTest, SettingOverridesForwardsUpdates) {
-  auto kTestOrigin = base::make_optional(url::Origin::Create(GURL(kTestUrl)));
+  auto kTestOrigin = absl::make_optional(url::Origin::Create(GURL(kTestUrl)));
   EXPECT_CALL(*mock_manager(),
               SetPermissionOverridesForDevTools(
                   kTestOrigin, testing::ElementsAre(testing::Pair(

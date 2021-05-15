@@ -196,7 +196,7 @@ void MediaStreamDispatcherHost::CancelRequest(int page_request_id) {
 
 void MediaStreamDispatcherHost::StopStreamDevice(
     const std::string& device_id,
-    const base::Optional<base::UnguessableToken>& session_id) {
+    const absl::optional<base::UnguessableToken>& session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   media_stream_manager_->StopStreamDevice(
@@ -254,7 +254,7 @@ void MediaStreamDispatcherHost::CloseDevice(const std::string& label) {
 }
 
 void MediaStreamDispatcherHost::SetCapturingLinkSecured(
-    const base::Optional<base::UnguessableToken>& session_id,
+    const absl::optional<base::UnguessableToken>& session_id,
     blink::mojom::MediaStreamType type,
     bool is_secure) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

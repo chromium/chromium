@@ -109,10 +109,10 @@ class MockNavigationHandle : public NavigationHandle {
     return response_headers_.get();
   }
   MOCK_METHOD0(GetConnectionInfo, net::HttpResponseInfo::ConnectionInfo());
-  const base::Optional<net::SSLInfo>& GetSSLInfo() override {
+  const absl::optional<net::SSLInfo>& GetSSLInfo() override {
     return ssl_info_;
   }
-  const base::Optional<net::AuthChallengeInfo>& GetAuthChallengeInfo()
+  const absl::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo()
       override {
     return auth_challenge_info_;
   }
@@ -132,15 +132,15 @@ class MockNavigationHandle : public NavigationHandle {
   bool WasResponseCached() override { return was_response_cached_; }
   const net::ProxyServer& GetProxyServer() override { return proxy_server_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
-  const base::Optional<blink::Impression>& GetImpression() override {
+  const absl::optional<blink::Impression>& GetImpression() override {
     return impression_;
   }
-  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
+  const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override {
     return initiator_frame_token_;
   }
   int GetInitiatorProcessID() override { return initiator_process_id_; }
-  const base::Optional<url::Origin>& GetInitiatorOrigin() override {
+  const absl::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
   const std::vector<std::string>& GetDnsAliases() override {
@@ -254,18 +254,18 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_error_page_ = false;
   net::HttpRequestHeaders request_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  base::Optional<net::SSLInfo> ssl_info_;
-  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
+  absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
   net::ResolveErrorInfo resolve_error_info_;
   content::GlobalRequestID global_request_id_;
   bool is_form_submission_ = false;
   bool was_response_cached_ = false;
   net::ProxyServer proxy_server_;
-  base::Optional<url::Origin> initiator_origin_;
+  absl::optional<url::Origin> initiator_origin_;
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
-  base::Optional<blink::Impression> impression_;
-  base::Optional<blink::LocalFrameToken> initiator_frame_token_;
+  absl::optional<blink::Impression> impression_;
+  absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 

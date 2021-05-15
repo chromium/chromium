@@ -21,7 +21,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -32,6 +31,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "ipc/ipc_channel_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -90,7 +90,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const url::Origin& embedder_origin,
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
-      const base::Optional<url::Origin>& origin_lock);
+      const absl::optional<url::Origin>& origin_lock);
 
   // Opens a channel to a plugin process for the given mime type, starting
   // a new plugin process if necessary.  This must be called on the IO thread
@@ -99,7 +99,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                                 const url::Origin& embedder_origin,
                                 const base::FilePath& plugin_path,
                                 const base::FilePath& profile_data_directory,
-                                const base::Optional<url::Origin>& origin_lock,
+                                const absl::optional<url::Origin>& origin_lock,
                                 PpapiPluginProcessHost::PluginClient* client);
 
   // Used to monitor plugin stability.
@@ -127,7 +127,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   PpapiPluginProcessHost* FindPpapiPluginProcess(
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
-      const base::Optional<url::Origin>& origin_lock);
+      const absl::optional<url::Origin>& origin_lock);
 
   void RegisterPepperPlugins();
 

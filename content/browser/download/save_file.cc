@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

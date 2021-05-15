@@ -78,7 +78,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
-  static base::Optional<net::IPEndPoint> GetLocalAddrForTesting(
+  static absl::optional<net::IPEndPoint> GetLocalAddrForTesting(
       const blink::mojom::DirectSocketOptions& options);
 
  private:

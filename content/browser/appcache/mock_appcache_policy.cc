@@ -18,7 +18,7 @@ MockAppCachePolicy::~MockAppCachePolicy() = default;
 bool MockAppCachePolicy::CanLoadAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   requested_manifest_url_ = manifest_url;
   return can_load_return_value_;
 }
@@ -26,7 +26,7 @@ bool MockAppCachePolicy::CanLoadAppCache(
 bool MockAppCachePolicy::CanCreateAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) {
+    const absl::optional<url::Origin>& top_frame_origin) {
   requested_manifest_url_ = manifest_url;
   return can_create_return_value_;
 }

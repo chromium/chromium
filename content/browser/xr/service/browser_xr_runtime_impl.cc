@@ -503,7 +503,7 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
 }
 
 #if defined(OS_WIN)
-base::Optional<LUID> BrowserXRRuntimeImpl::GetLuid() const {
+absl::optional<LUID> BrowserXRRuntimeImpl::GetLuid() const {
   return device_data_->luid;
 }
 #endif

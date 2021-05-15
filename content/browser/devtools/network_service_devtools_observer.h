@@ -44,13 +44,13 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
-      const base::Optional<std::string>& response_headers_text,
+      const absl::optional<std::string>& response_headers_text,
       network::mojom::IPAddressSpace resource_address_space) override;
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
   void OnPrivateNetworkRequest(
-      const base::Optional<std::string>& devtools_request_id,
+      const absl::optional<std::string>& devtools_request_id,
       const GURL& url,
       bool is_warning,
       network::mojom::IPAddressSpace resource_address_space,
@@ -67,8 +67,8 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
   void OnCorsPreflightRequestCompleted(
       const base::UnguessableToken& devtools_request_id,
       const network::URLLoaderCompletionStatus& status) override;
-  void OnCorsError(const base::Optional<std::string>& devtool_request_id,
-                   const base::Optional<::url::Origin>& initiator_origin,
+  void OnCorsError(const absl::optional<std::string>& devtool_request_id,
+                   const absl::optional<::url::Origin>& initiator_origin,
                    const GURL& url,
                    const network::CorsErrorStatus& status) override;
   void Clone(mojo::PendingReceiver<network::mojom::DevToolsObserver> listener)

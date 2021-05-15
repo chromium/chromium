@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   EXPECT_TRUE(trace_receiver_helper.trace_received());
 
-  base::Optional<base::Value> trace_json =
+  absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.file_contents());
   ASSERT_TRUE(trace_json);
   auto* metadata_json = static_cast<base::DictionaryValue*>(
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, CustomConfig) {
 
   EXPECT_TRUE(trace_receiver_helper.trace_received());
 
-  base::Optional<base::Value> trace_json =
+  absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.file_contents());
   ASSERT_TRUE(trace_json);
   auto* metadata_json = static_cast<base::DictionaryValue*>(

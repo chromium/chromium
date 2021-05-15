@@ -167,10 +167,10 @@ TEST_F(ConversionHostTest,
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      base::nullopt /* impression_origin */,
-      base::make_optional(
+      absl::nullopt /* impression_origin */,
+      absl::make_optional(
           url::Origin::Create(GURL("https://blocked-top.example"))),
-      base::make_optional(
+      absl::make_optional(
           url::Origin::Create(GURL("https://blocked-reporting.example"))));
 
   struct {
@@ -296,9 +296,9 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      base::nullopt /* impression_origin */,
-      base::make_optional(url::Origin::Create(GURL("https://top.example"))),
-      base::make_optional(
+      absl::nullopt /* impression_origin */,
+      absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
+      absl::make_optional(
           url::Origin::Create(GURL("https://embedded.example"))));
 
   struct {
@@ -338,9 +338,9 @@ TEST_F(ConversionHostTest,
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      base::make_optional(url::Origin::Create(GURL("https://top.example"))),
-      base::nullopt /* conversion_origin */,
-      base::make_optional(
+      absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
+      absl::nullopt /* conversion_origin */,
+      absl::make_optional(
           url::Origin::Create(GURL("https://embedded.example"))));
 
   struct {

@@ -159,7 +159,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // Returns the grammar fragment which contains |range|. If non-existent,
   // returns an empty Fragment.
-  base::Optional<ui::GrammarFragment> GetGrammarFragment(
+  absl::optional<ui::GrammarFragment> GetGrammarFragment(
       gfx::Range range) const;
 
   // Returns the selection bounds information for |view|. If |view| == nullptr,

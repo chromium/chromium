@@ -1935,7 +1935,7 @@ bool SetCookie(BrowserContext* browser_context,
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, value, base::Time::Now(), base::nullopt /* server_time */));
+      url, value, base::Time::Now(), absl::nullopt /* server_time */));
   DCHECK(cc.get());
 
   net::CookieOptions options;
@@ -2215,7 +2215,7 @@ RenderWidgetHost* GetKeyboardLockWidget(WebContents* web_contents) {
 }
 
 bool RequestKeyboardLock(WebContents* web_contents,
-                         base::Optional<base::flat_set<ui::DomCode>> codes) {
+                         absl::optional<base::flat_set<ui::DomCode>> codes) {
   DCHECK(!codes.has_value() || !codes.value().empty());
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
@@ -2383,8 +2383,8 @@ RenderProcessHostKillWaiter::RenderProcessHostKillWaiter(
                     RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT),
       uma_name_(uma_name) {}
 
-base::Optional<int> RenderProcessHostKillWaiter::Wait() {
-  base::Optional<bad_message::BadMessageReason> result;
+absl::optional<int> RenderProcessHostKillWaiter::Wait() {
+  absl::optional<bad_message::BadMessageReason> result;
 
   // Wait for the renderer kill.
   exit_watcher_.Wait();
@@ -2436,14 +2436,14 @@ RenderProcessHostBadMojoMessageWaiter::
       RenderProcessHostImpl::BadMojoMessageCallbackForTesting());
 }
 
-base::Optional<std::string> RenderProcessHostBadMojoMessageWaiter::Wait() {
-  base::Optional<int> bad_message_reason = kill_waiter_.Wait();
+absl::optional<std::string> RenderProcessHostBadMojoMessageWaiter::Wait() {
+  absl::optional<int> bad_message_reason = kill_waiter_.Wait();
   if (!bad_message_reason.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   if (bad_message_reason.value() != bad_message::RPH_MOJO_PROCESS_ERROR) {
     LOG(ERROR) << "Unexpected |bad_message_reason|: "
                << bad_message_reason.value();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return observed_mojo_error_;
@@ -3088,7 +3088,7 @@ void WebContentsConsoleObserver::OnDidAddMessageToConsole(
     const std::u16string& message_contents,
     int32_t line_no,
     const std::u16string& source_id,
-    const base::Optional<std::u16string>& untrusted_stack_trace) {
+    const absl::optional<std::u16string>& untrusted_stack_trace) {
   Message message(
       {source_frame, log_level, message_contents, line_no, source_id});
   if (filter_ && !filter_.Run(message))
@@ -3332,7 +3332,7 @@ int LoadBasicRequest(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& url,
     int load_flags,
-    const base::Optional<url::Origin>& request_initiator = base::nullopt) {
+    const absl::optional<url::Origin>& request_initiator = absl::nullopt) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->load_flags = load_flags;

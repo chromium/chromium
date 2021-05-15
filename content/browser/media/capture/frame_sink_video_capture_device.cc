@@ -304,8 +304,8 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
   target_ = frame_sink_id;
   if (capturer_) {
     capturer_->ChangeTarget(target_.is_valid()
-                                ? base::make_optional<viz::FrameSinkId>(target_)
-                                : base::nullopt,
+                                ? absl::make_optional<viz::FrameSinkId>(target_)
+                                : absl::nullopt,
                             viz::SubtreeCaptureId());
   }
 }

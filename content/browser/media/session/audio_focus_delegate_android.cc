@@ -54,7 +54,7 @@ void AudioFocusDelegateAndroid::AbandonAudioFocus() {
   Java_AudioFocusDelegate_abandonAudioFocus(env, j_media_session_delegate_);
 }
 
-base::Optional<media_session::mojom::AudioFocusType>
+absl::optional<media_session::mojom::AudioFocusType>
 AudioFocusDelegateAndroid::GetCurrentFocusType() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(env);

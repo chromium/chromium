@@ -34,7 +34,7 @@ using LineIndexer =
     ui::AXTreeIndexer<GetDOMId, NSArray*, ChildrenOf, NodeComparator>;
 
 // Implements stateful id values. Can be either id or be in
-// error or not applciable state. Similar to base::Optional, but tri-state
+// error or not applciable state. Similar to absl::optional, but tri-state
 // allowing nullable values.
 class CONTENT_EXPORT OptionalNSObject final {
  public:

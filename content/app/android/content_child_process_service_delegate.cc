@@ -161,7 +161,7 @@ void JNI_ContentChildProcessServiceDelegate_RetrieveFileDescriptorsIdsToKeys(
   std::vector<int> ids;
   std::vector<std::string> keys;
   if (!file_switch_value.empty()) {
-    base::Optional<std::map<int, std::string>> ids_to_keys_from_command_line =
+    absl::optional<std::map<int, std::string>> ids_to_keys_from_command_line =
         ParseSharedFileSwitchValue(file_switch_value);
     if (ids_to_keys_from_command_line) {
       for (auto iter : *ids_to_keys_from_command_line) {

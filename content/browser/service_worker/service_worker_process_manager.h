@@ -73,7 +73,7 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   blink::ServiceWorkerStatusCode AllocateWorkerProcess(
       int embedded_worker_id,
       const GURL& script_url,
-      const base::Optional<network::CrossOriginEmbedderPolicy>&
+      const absl::optional<network::CrossOriginEmbedderPolicy>&
           cross_origin_embedder_policy,
       bool can_use_existing_process,
       AllocatedProcessInfo* out_info);

@@ -44,12 +44,12 @@ void SendCdmAvailableUMA(const std::string& key_system, bool available) {
 // Returns a CdmCapability with codecs specified on command line. Returns null
 // if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
 // codecs specified.
-base::Optional<media::CdmCapability>
+absl::optional<media::CdmCapability>
 GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line || !command_line->HasSwitch(
                            switches::kOverrideHardwareSecureCodecsForTesting)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto overridden_codecs_string = command_line->GetSwitchValueASCII(
@@ -72,7 +72,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 
   if (video_codecs.empty()) {
     DVLOG(1) << "No codec codec specified on command line";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Overridden codecs assume CENC and temporary session support.
@@ -85,13 +85,13 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 
 // Software secure capability can be obtained synchronously in all supported
 // cases. If needed, this can be easily converted to an asynchronous call.
-base::Optional<media::CdmCapability> GetSoftwareSecureCapability(
+absl::optional<media::CdmCapability> GetSoftwareSecureCapability(
     const std::string& key_system) {
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
     SendCdmAvailableUMA(key_system, false);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SendCdmAvailableUMA(key_system, true);
@@ -99,7 +99,7 @@ base::Optional<media::CdmCapability> GetSoftwareSecureCapability(
   if (!cdm_info->capability) {
     DVLOG(1) << "Lazy initialization of SoftwareSecure CdmCapability not "
                 "supported!";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return cdm_info->capability;
@@ -107,7 +107,7 @@ base::Optional<media::CdmCapability> GetSoftwareSecureCapability(
 
 // Trying to get hardware secure capability synchronously. If lazy
 // initialization is needed, set `lazy_initialize` to true.
-base::Optional<media::CdmCapability> GetHardwareSecureCapability(
+absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     const std::string& key_system,
     bool* lazy_initialize) {
   *lazy_initialize = false;
@@ -118,7 +118,7 @@ base::Optional<media::CdmCapability> GetHardwareSecureCapability(
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif
 
@@ -139,14 +139,14 @@ base::Optional<media::CdmCapability> GetHardwareSecureCapability(
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
     DVLOG(1) << "Hardware secure codecs not supported because accelerated "
                 "video decode disabled";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
   if (!cdm_info) {
     DVLOG(1) << "No Hardware secure decryption CDM registered";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (cdm_info->capability) {
@@ -156,7 +156,7 @@ base::Optional<media::CdmCapability> GetHardwareSecureCapability(
 
   DVLOG(1) << "Lazy initialization of CdmCapability";
   *lazy_initialize = true;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -220,7 +220,7 @@ void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
   GetMediaFoundationServiceHardwareSecureCdmCapability(
       key_system, cdm_info->path, std::move(cdm_capability_cb));
 #else
-  std::move(cdm_capability_cb).Run(base::nullopt);
+  std::move(cdm_capability_cb).Run(absl::nullopt);
 #endif  // defined(OS_WIN)
 }
 
@@ -233,7 +233,7 @@ void KeySystemSupportImpl::OnHardwareSecureCapability(
     const std::string& key_system,
     IsKeySystemSupportedCallback callback,
     bool lazy_initialize,
-    base::Optional<media::CdmCapability> hw_secure_capability) {
+    absl::optional<media::CdmCapability> hw_secure_capability) {
   // See comment above. This could be called multiple times when we have
   // parallel `IsKeySystemSupported()` calls from different renderer processes.
   // This is okay and won't cause collision or corruption of data.

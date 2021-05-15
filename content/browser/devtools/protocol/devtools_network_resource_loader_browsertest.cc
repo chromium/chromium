@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
       source_map_url, protocol::DevToolsNetworkResourceLoader::Caching::kBypass,
       base::BindOnce(CheckSuccess, this, &run_loop));
   run_loop.Run();
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(source_map_url);
   EXPECT_TRUE(request->load_flags & net::LOAD_BYPASS_CACHE);
 }
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(DevtoolsNetworkResourceLoaderTest,
                    base::BindOnce(CheckSuccess, this, &run_loop));
   run_loop.Run();
 
-  base::Optional<network::ResourceRequest> request =
+  absl::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(source_map_url);
   EXPECT_TRUE(
       frame->ComputeSiteForCookies().IsEquivalent(request->site_for_cookies));

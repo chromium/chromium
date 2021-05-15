@@ -22,7 +22,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -50,6 +49,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -541,7 +541,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   void set_cross_origin_embedder_policy(
       network::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
-  const base::Optional<network::CrossOriginEmbedderPolicy>&
+  const absl::optional<network::CrossOriginEmbedderPolicy>&
   cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
   }
@@ -934,9 +934,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // by the renderer process.
   //
   // PlzServiceWorker(https://crbug.com/996511):
-  // Once landed, there is no more need to use an base::Optional here. The COEP
+  // Once landed, there is no more need to use an absl::optional here. The COEP
   // header is going to be known from the beginning and can be mark as 'const'.
-  base::Optional<network::CrossOriginEmbedderPolicy>
+  absl::optional<network::CrossOriginEmbedderPolicy>
       cross_origin_embedder_policy_;
 
   Status status_ = NEW;

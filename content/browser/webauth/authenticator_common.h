@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -29,6 +28,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
@@ -164,7 +164,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(
       device::MakeCredentialStatus status_code,
-      base::Optional<device::AuthenticatorMakeCredentialResponse> response_data,
+      absl::optional<device::AuthenticatorMakeCredentialResponse> response_data,
       const device::FidoAuthenticator* authenticator);
 
   // Callback to complete the registration process once a decision about
@@ -176,7 +176,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Callback to handle the async response from a U2fDevice.
   void OnSignResponse(
       device::GetAssertionStatus status_code,
-      base::Optional<std::vector<device::AuthenticatorGetAssertionResponse>>
+      absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
           response_data,
       const device::FidoAuthenticator* authenticator);
 
@@ -238,13 +238,13 @@ class CONTENT_EXPORT AuthenticatorCommon {
   scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
   std::unique_ptr<base::OneShotTimer> timer_ =
       std::make_unique<base::OneShotTimer>();
-  base::Optional<std::string> app_id_;
-  base::Optional<device::CtapMakeCredentialRequest>
+  absl::optional<std::string> app_id_;
+  absl::optional<device::CtapMakeCredentialRequest>
       ctap_make_credential_request_;
-  base::Optional<device::MakeCredentialRequestHandler::Options>
+  absl::optional<device::MakeCredentialRequestHandler::Options>
       make_credential_options_;
-  base::Optional<device::CtapGetAssertionRequest> ctap_get_assertion_request_;
-  base::Optional<device::CtapGetAssertionOptions> ctap_get_assertion_options_;
+  absl::optional<device::CtapGetAssertionRequest> ctap_get_assertion_request_;
+  absl::optional<device::CtapGetAssertionOptions> ctap_get_assertion_options_;
   // awaiting_attestation_response_ is true if the embedder has been queried
   // about an attestsation decision and the response is still pending.
   bool awaiting_attestation_response_ = false;

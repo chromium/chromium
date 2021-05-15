@@ -65,7 +65,7 @@ void NetworkServiceDevToolsObserver::OnRawResponse(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& response_cookie_list,
     std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
-    const base::Optional<std::string>& response_headers_text,
+    const absl::optional<std::string>& response_headers_text,
     network::mojom::IPAddressSpace resource_address_space) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
@@ -86,7 +86,7 @@ void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
 }
 
 void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
-    const base::Optional<std::string>& devtools_request_id,
+    const absl::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
@@ -177,8 +177,8 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(
 }
 
 void NetworkServiceDevToolsObserver::OnCorsError(
-    const base::Optional<std::string>& devtools_request_id,
-    const base::Optional<::url::Origin>& initiator_origin,
+    const absl::optional<std::string>& devtools_request_id,
+    const absl::optional<::url::Origin>& initiator_origin,
     const GURL& url,
     const network::CorsErrorStatus& cors_error_status) {
   if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)

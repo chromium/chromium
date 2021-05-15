@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -25,7 +25,7 @@ struct CONTENT_EXPORT ConversionReport {
                    const std::string& conversion_data,
                    base::Time conversion_time,
                    base::Time report_time,
-                   const base::Optional<int64_t>& conversion_id);
+                   const absl::optional<int64_t>& conversion_id);
   ConversionReport(const ConversionReport& other);
   ~ConversionReport();
 
@@ -48,7 +48,7 @@ struct CONTENT_EXPORT ConversionReport {
 
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
-  const base::Optional<int64_t> conversion_id;
+  const absl::optional<int64_t> conversion_id;
 };
 
 // Only used for logging.

@@ -48,7 +48,7 @@ class TestNetworkContext : public network::TestNetworkContext {
                    const std::string& group,
                    const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
-                   const base::Optional<std::string>& user_agent,
+                   const absl::optional<std::string>& user_agent,
                    base::Value body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
@@ -189,7 +189,7 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
 TEST_F(CrossOriginEmbedderPolicyReporterTest, NullEndpointsForCorp) {
   const GURL kContextUrl("https://example.com/path");
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
 
   reporter.QueueCorpViolationReport(GURL("https://www1.example.com/y"),
@@ -270,7 +270,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForCorp) {
   TestObserver observer(observer_remote.InitWithNewPipeAndPassReceiver());
 
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
   reporter.BindObserver(std::move(observer_remote));
   reporter.QueueCorpViolationReport(GURL("https://u:p@www1.example.com/x"),
@@ -335,7 +335,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, Clone) {
 TEST_F(CrossOriginEmbedderPolicyReporterTest, NullEndpointsForNavigation) {
   const GURL kContextUrl("https://example.com/path");
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
 
   reporter.QueueNavigationReport(GURL("https://www1.example.com/y"),
@@ -378,7 +378,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForNavigation) {
   TestObserver observer(observer_remote.InitWithNewPipeAndPassReceiver());
 
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
   reporter.BindObserver(std::move(observer_remote));
   reporter.QueueNavigationReport(GURL("https://www1.example.com/x#foo?bar=baz"),
@@ -432,7 +432,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest,
        NullEndpointsForWorkerInitialization) {
   const GURL kContextUrl("https://example.com/path");
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
 
   reporter.QueueWorkerInitializationReport(
@@ -479,7 +479,7 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForWorkerInitialization) {
   TestObserver observer(observer_remote.InitWithNewPipeAndPassReceiver());
 
   CrossOriginEmbedderPolicyReporter reporter(storage_partition(), kContextUrl,
-                                             base::nullopt, base::nullopt,
+                                             absl::nullopt, absl::nullopt,
                                              net::NetworkIsolationKey());
   reporter.BindObserver(std::move(observer_remote));
   reporter.QueueWorkerInitializationReport(

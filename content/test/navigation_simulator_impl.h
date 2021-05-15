@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -21,6 +20,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
@@ -304,10 +304,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =
       net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN;
   net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
-  base::Optional<net::SSLInfo> ssl_info_;
-  base::Optional<blink::PageState> page_state_;
-  base::Optional<url::Origin> origin_;
-  base::Optional<blink::Impression> impression_;
+  absl::optional<net::SSLInfo> ssl_info_;
+  absl::optional<blink::PageState> page_state_;
+  absl::optional<url::Origin> origin_;
+  absl::optional<blink::Impression> impression_;
   int64_t post_id_ = -1;
 
   // Any DNS aliases, as read from CNAME records, for the request URL that
@@ -327,7 +327,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;
-  base::Optional<bool> did_create_new_entry_;
+  absl::optional<bool> did_create_new_entry_;
   bool was_aborted_prior_to_ready_to_commit_ = false;
 
   bool early_hints_preload_link_header_received_ = false;
@@ -346,7 +346,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // Holds the last ThrottleCheckResult calculated by the navigation's
   // throttles. Will be unset before WillStartRequest is finished. Will be unset
   // while throttles are being run, but before they finish.
-  base::Optional<NavigationThrottle::ThrottleCheckResult>
+  absl::optional<NavigationThrottle::ThrottleCheckResult>
       last_throttle_check_result_;
 
   // GlobalRequestID for the associated NavigationHandle. Only valid after

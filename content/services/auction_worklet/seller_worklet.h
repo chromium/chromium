@@ -11,9 +11,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -53,8 +53,8 @@ class SellerWorklet {
   // `errors` is a vector of any errors that occurred while running the
   // script.
   using ReportResultCallback = base::OnceCallback<void(
-      const base::Optional<std::string>& signals_for_winner,
-      const base::Optional<GURL>& report_url,
+      const absl::optional<std::string>& signals_for_winner,
+      const absl::optional<GURL>& report_url,
       const std::vector<std::string>& errors)>;
 
   // Starts loading the worklet script on construction. Callback will be invoked
@@ -96,7 +96,7 @@ class SellerWorklet {
  private:
   void OnDownloadComplete(
       std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-      base::Optional<std::string> error_msg);
+      absl::optional<std::string> error_msg);
 
   AuctionV8Helper* const v8_helper_;
 

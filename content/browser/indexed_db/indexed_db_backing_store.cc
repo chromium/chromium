@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -60,6 +59,7 @@
 #include "storage/browser/file_system/local_file_stream_writer.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
@@ -406,7 +406,7 @@ bool DecodeExternalObjects(const std::string& data,
 
 bool IsPathTooLong(storage::FilesystemProxy* filesystem,
                    const base::FilePath& leveldb_dir) {
-  base::Optional<int> limit =
+  absl::optional<int> limit =
       filesystem->GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
@@ -922,7 +922,7 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
           base::FilePath path =
               GetBlobFileName(metadata.id, object.blob_number());
 
-          base::Optional<base::File::Info> info =
+          absl::optional<base::File::Info> info =
               filesystem_proxy_->GetFileInfo(path);
           if (!info.has_value()) {
             return leveldb::Status::Corruption(
@@ -1010,7 +1010,7 @@ Status IndexedDBBackingStore::ValidateBlobFiles(
 
           base::FilePath path =
               GetBlobFileName(metadata.id, object.blob_number());
-          base::Optional<base::File::Info> info =
+          absl::optional<base::File::Info> info =
               filesystem_proxy_->GetFileInfo(path);
           if (!info.has_value()) {
             return leveldb::Status::Corruption(
@@ -3592,11 +3592,11 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           // Android doesn't seem to consistently be able to set file
           // modification times. The timestamp is not checked during reading
           // on Android either. https://crbug.com/1045488
-          base::Optional<base::Time> last_modified;
+          absl::optional<base::Time> last_modified;
 #if !defined(OS_ANDROID)
           last_modified = entry.last_modified().is_null()
-                              ? base::nullopt
-                              : base::make_optional(entry.last_modified());
+                              ? absl::nullopt
+                              : absl::make_optional(entry.last_modified());
 #endif
           blob_storage_context->WriteBlobToFile(
               std::move(pending_blob),

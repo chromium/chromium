@@ -59,7 +59,7 @@ class CONTENT_EXPORT SynchronousCompositor {
     std::unique_ptr<viz::CompositorFrame> frame;
     // Invalid if |frame| is nullptr.
     viz::LocalSurfaceId local_surface_id;
-    base::Optional<viz::HitTestRegionList> hit_test_region_list;
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Frame);

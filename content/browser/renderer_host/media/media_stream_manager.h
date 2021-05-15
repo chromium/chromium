@@ -37,7 +37,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
@@ -52,6 +51,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/permission_controller.h"
 #include "media/base/video_facing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -332,7 +332,7 @@ class CONTENT_EXPORT MediaStreamManager
       url::Origin security_origin,
       std::string hmac_device_id,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
   // Overload that allows for a blink::mojom::MediaDeviceType to be specified
   // instead of a blink::mojom::MediaStreamType. This allows for getting the raw
   // device ID from the HMAC of an audio output device.
@@ -342,7 +342,7 @@ class CONTENT_EXPORT MediaStreamManager
       url::Origin security_origin,
       std::string hmac_device_id,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   // Returns true if the renderer process identified with |render_process_id|
   // is allowed to access |origin|.
@@ -474,7 +474,7 @@ class CONTENT_EXPORT MediaStreamManager
   void PostRequestToUI(
       const std::string& label,
       const MediaDeviceEnumeration& enumeration,
-      const base::Optional<media::AudioParameters>& output_parameters);
+      const absl::optional<media::AudioParameters>& output_parameters);
   // Returns true if a device with |device_id| has already been requested with
   // a render procecss_id and render_frame_id and type equal to the the values
   // in |request|. If it has been requested, |device_info| contain information
@@ -602,7 +602,7 @@ class CONTENT_EXPORT MediaStreamManager
   // Always initialized on Windows.
   // On other platforms, initialized when no audio task runner is provided in
   // the constructor.
-  base::Optional<base::Thread> video_capture_thread_;
+  absl::optional<base::Thread> video_capture_thread_;
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
 

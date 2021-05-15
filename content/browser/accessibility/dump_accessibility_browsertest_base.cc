@@ -176,7 +176,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     return;
   }
 
-  base::Optional<std::vector<std::string>> expected_lines =
+  absl::optional<std::vector<std::string>> expected_lines =
       test_helper_.LoadExpectationFile(expected_file);
   if (!expected_lines) {
     LOG(INFO) << "Skipping this test on this platform.";

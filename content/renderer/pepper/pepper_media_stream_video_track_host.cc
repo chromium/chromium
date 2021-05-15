@@ -451,14 +451,14 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   }
 
  private:
-  base::Optional<media::VideoCaptureFormat> GetCurrentFormat() const override {
+  absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override {
     if (host_) {
-      return base::Optional<media::VideoCaptureFormat>(
+      return absl::optional<media::VideoCaptureFormat>(
           media::VideoCaptureFormat(
               host_->plugin_frame_size_, kDefaultOutputFrameRate,
               ToPixelFormat(host_->plugin_frame_format_)));
     }
-    return base::Optional<media::VideoCaptureFormat>();
+    return absl::optional<media::VideoCaptureFormat>();
   }
 
   const base::WeakPtr<PepperMediaStreamVideoTrackHost> host_;

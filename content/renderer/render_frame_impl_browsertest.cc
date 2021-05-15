@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,6 +44,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
@@ -138,7 +138,7 @@ class RenderFrameImplTest : public RenderViewTest {
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
-        MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
+        MSG_ROUTING_NONE, absl::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), std::move(frame_replication_state),
         std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true,
@@ -540,7 +540,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
     receiver_.WaitForIncomingCall();
   }
 
-  const base::Optional<SourceAnnotation>& ping_source() const {
+  const absl::optional<SourceAnnotation>& ping_source() const {
     return ping_source_;
   }
 
@@ -551,7 +551,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
 
  private:
   mojo::Receiver<mojom::FrameHostTestInterface> receiver_{this};
-  base::Optional<SourceAnnotation> ping_source_;
+  absl::optional<SourceAnnotation> ping_source_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameHostTestInterfaceImpl);
 };
@@ -663,8 +663,8 @@ class ScopedNewFrameInterfaceProviderExerciser {
  public:
   explicit ScopedNewFrameInterfaceProviderExerciser(
       FrameCreationObservingRendererClient* frame_creation_observer,
-      const base::Optional<std::string>& html_override_for_first_load =
-          base::nullopt)
+      const absl::optional<std::string>& html_override_for_first_load =
+          absl::nullopt)
       : frame_creation_observer_(frame_creation_observer),
         html_override_for_first_load_(html_override_for_first_load) {
     frame_creation_observer_->set_callback(base::BindRepeating(
@@ -725,11 +725,11 @@ class ScopedNewFrameInterfaceProviderExerciser {
 
   FrameCreationObservingRendererClient* frame_creation_observer_;
   TestRenderFrame* frame_ = nullptr;
-  base::Optional<std::string> html_override_for_first_load_;
+  absl::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
-  base::Optional<FrameCommitWaiter> frame_commit_waiter_;
-  base::Optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
+  absl::optional<FrameCommitWaiter> frame_commit_waiter_;
+  absl::optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
 
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_for_initial_empty_document_;

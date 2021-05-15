@@ -40,7 +40,7 @@ void WebBluetoothPairingManager::PairForCharacteristicReadValue(
     std::move(read_callback)
         .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
                  BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN),
-             /*value=*/base::nullopt);
+             /*value=*/absl::nullopt);
     return;
   }
 
@@ -78,7 +78,7 @@ void WebBluetoothPairingManager::OnReadCharacteristicValuePairFailure(
 
   std::move(read_callback)
       .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(error_code),
-           /*value=*/base::nullopt);
+           /*value=*/absl::nullopt);
 }
 
 void WebBluetoothPairingManager::RequestPinCode(BluetoothDevice* device) {

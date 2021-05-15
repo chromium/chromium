@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -21,7 +21,7 @@ struct SelectFileDialogParams {
   ~SelectFileDialogParams();
 
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_NONE;
-  base::Optional<ui::SelectFileDialog::FileTypeInfo> file_types;
+  absl::optional<ui::SelectFileDialog::FileTypeInfo> file_types;
   gfx::NativeWindow owning_window = {};
   int file_type_index = -1;
   base::FilePath default_path;

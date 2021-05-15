@@ -32,7 +32,7 @@ PictureInPictureServiceImpl* PictureInPictureServiceImpl::CreateForTesting(
 void PictureInPictureServiceImpl::StartSession(
     uint32_t player_id,
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-    const base::Optional<viz::SurfaceId>& surface_id,
+    const absl::optional<viz::SurfaceId>& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,

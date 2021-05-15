@@ -377,7 +377,7 @@ class WebBluetoothServiceImpl::ScanningClient
  private:
   void AddFilteredDeviceToPrompt(
       const std::string& device_id,
-      const base::Optional<std::string>& device_name) {
+      const absl::optional<std::string>& device_name) {
     bool should_update_name = device_name.has_value();
     std::u16string device_name_for_display =
         base::UTF8ToUTF16(device_name.value_or(""));
@@ -392,7 +392,7 @@ class WebBluetoothServiceImpl::ScanningClient
 };
 
 bool HasValidFilter(
-    const base::Optional<
+    const absl::optional<
         std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters) {
   if (!filters) {
     return false;
@@ -656,7 +656,7 @@ void WebBluetoothServiceImpl::DeviceChanged(BluetoothAdapter* adapter,
   }
 
   if (!device->IsGattConnected()) {
-    base::Optional<blink::WebBluetoothDeviceId> device_id =
+    absl::optional<blink::WebBluetoothDeviceId> device_id =
         connected_devices_->CloseConnectionToDeviceWithAddress(
             device->GetAddress());
 
@@ -668,11 +668,11 @@ void WebBluetoothServiceImpl::DeviceChanged(BluetoothAdapter* adapter,
 
 void WebBluetoothServiceImpl::DeviceAdvertisementReceived(
     const std::string& device_address,
-    const base::Optional<std::string>& device_name,
-    const base::Optional<std::string>& advertisement_name,
-    base::Optional<int8_t> rssi,
-    base::Optional<int8_t> tx_power,
-    base::Optional<uint16_t> appearance,
+    const absl::optional<std::string>& device_name,
+    const absl::optional<std::string>& advertisement_name,
+    absl::optional<int8_t> rssi,
+    absl::optional<int8_t> tx_power,
+    absl::optional<uint16_t> appearance,
     const BluetoothDevice::UUIDList& advertised_uuids,
     const BluetoothDevice::ServiceDataMap& service_data_map,
     const BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {
@@ -935,7 +935,7 @@ void WebBluetoothServiceImpl::RemoteServerDisconnect(
 void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
     const blink::WebBluetoothDeviceId& device_id,
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<BluetoothUUID>& services_uuid,
+    const absl::optional<BluetoothUUID>& services_uuid,
     RemoteServerGetPrimaryServicesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RecordGetPrimaryServicesServices(quantity, services_uuid);
@@ -943,7 +943,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
   if (!IsAllowedToAccessAtLeastOneService(device_id)) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE,
-        /*service=*/base::nullopt);
+        /*service=*/absl::nullopt);
     return;
   }
 
@@ -951,7 +951,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
       !IsAllowedToAccessService(device_id, services_uuid.value())) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_SERVICE,
-        /*service=*/base::nullopt);
+        /*service=*/absl::nullopt);
     return;
   }
 
@@ -964,7 +964,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
     RecordGetPrimaryServicesOutcome(quantity, query_result.outcome);
     std::move(callback).Run(query_result.GetWebResult(),
-                            base::nullopt /* service */);
+                            absl::nullopt /* service */);
     return;
   }
 
@@ -989,7 +989,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServices(
 void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
     const std::string& service_instance_id,
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<BluetoothUUID>& characteristics_uuid,
+    const absl::optional<BluetoothUUID>& characteristics_uuid,
     RemoteServiceGetCharacteristicsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -999,7 +999,7 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
       BluetoothBlocklist::Get().IsExcluded(characteristics_uuid.value())) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_CHARACTERISTIC_UUID,
-        base::nullopt /* characteristics */);
+        absl::nullopt /* characteristics */);
     return;
   }
 
@@ -1012,7 +1012,7 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
     std::move(callback).Run(query_result.GetWebResult(),
-                            base::nullopt /* characteristics */);
+                            absl::nullopt /* characteristics */);
     return;
   }
 
@@ -1057,13 +1057,13 @@ void WebBluetoothServiceImpl::RemoteServiceGetCharacteristics(
       characteristics_uuid
           ? blink::mojom::WebBluetoothResult::CHARACTERISTIC_NOT_FOUND
           : blink::mojom::WebBluetoothResult::NO_CHARACTERISTICS_FOUND,
-      base::nullopt /* characteristics */);
+      absl::nullopt /* characteristics */);
 }
 
 void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
     const std::string& characteristic_instance_id,
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<BluetoothUUID>& descriptors_uuid,
+    const absl::optional<BluetoothUUID>& descriptors_uuid,
     RemoteCharacteristicGetDescriptorsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1071,7 +1071,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
       BluetoothBlocklist::Get().IsExcluded(descriptors_uuid.value())) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_DESCRIPTOR_UUID,
-        base::nullopt /* descriptor */);
+        absl::nullopt /* descriptor */);
     return;
   }
 
@@ -1084,7 +1084,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
     std::move(callback).Run(query_result.GetWebResult(),
-                            base::nullopt /* descriptor */);
+                            absl::nullopt /* descriptor */);
     return;
   }
 
@@ -1124,7 +1124,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicGetDescriptors(
   std::move(callback).Run(
       descriptors_uuid ? blink::mojom::WebBluetoothResult::DESCRIPTOR_NOT_FOUND
                        : blink::mojom::WebBluetoothResult::NO_DESCRIPTORS_FOUND,
-      base::nullopt /* descriptors */);
+      absl::nullopt /* descriptors */);
 }
 
 void WebBluetoothServiceImpl::RemoteCharacteristicReadValue(
@@ -1141,14 +1141,14 @@ void WebBluetoothServiceImpl::RemoteCharacteristicReadValue(
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
     std::move(callback).Run(query_result.GetWebResult(),
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
   if (BluetoothBlocklist::Get().IsExcludedFromReads(
           query_result.characteristic->GetUUID())) {
     std::move(callback).Run(blink::mojom::WebBluetoothResult::BLOCKLISTED_READ,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -1316,14 +1316,14 @@ void WebBluetoothServiceImpl::RemoteDescriptorReadValue(
 
   if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
     std::move(callback).Run(query_result.GetWebResult(),
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
   if (BluetoothBlocklist::Get().IsExcludedFromReads(
           query_result.descriptor->GetUUID())) {
     std::move(callback).Run(blink::mojom::WebBluetoothResult::BLOCKLISTED_READ,
-                            base::nullopt /* value */);
+                            absl::nullopt /* value */);
     return;
   }
 
@@ -1756,7 +1756,7 @@ void WebBluetoothServiceImpl::OnDiscoverySessionErrorForWatchAdvertisements() {
 void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
     const blink::WebBluetoothDeviceId& device_id,
     blink::mojom::WebBluetoothGATTQueryQuantity quantity,
-    const base::Optional<BluetoothUUID>& services_uuid,
+    const absl::optional<BluetoothUUID>& services_uuid,
     RemoteServerGetPrimaryServicesCallback callback,
     BluetoothDevice* device) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1768,7 +1768,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
     RecordGetPrimaryServicesOutcome(
         quantity, UMAGetPrimaryServiceOutcome::DEVICE_DISCONNECTED);
     std::move(callback).Run(blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND,
-                            base::nullopt /* services */);
+                            absl::nullopt /* services */);
     return;
   }
 
@@ -1818,7 +1818,7 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
   std::move(callback).Run(
       services_uuid ? blink::mojom::WebBluetoothResult::SERVICE_NOT_FOUND
                     : blink::mojom::WebBluetoothResult::NO_SERVICES_FOUND,
-      base::nullopt /* services */);
+      absl::nullopt /* services */);
 }
 
 void WebBluetoothServiceImpl::OnGetDevice(
@@ -1900,12 +1900,12 @@ void WebBluetoothServiceImpl::OnCreateGATTConnectionFailed(
 
 void WebBluetoothServiceImpl::OnCharacteristicReadValue(
     RemoteCharacteristicReadValueCallback callback,
-    base::Optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
     std::move(callback).Run(TranslateGATTError(error_code.value()),
-                            /*value=*/base::nullopt);
+                            /*value=*/absl::nullopt);
     return;
   }
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS, value);
@@ -1960,12 +1960,12 @@ void WebBluetoothServiceImpl::OnStopNotifySessionComplete(
 
 void WebBluetoothServiceImpl::OnDescriptorReadValue(
     RemoteDescriptorReadValueCallback callback,
-    base::Optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
     std::move(callback).Run(TranslateGATTError(error_code.value()),
-                            /*value=*/base::nullopt);
+                            /*value=*/absl::nullopt);
     return;
   }
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS, value);
@@ -2176,7 +2176,7 @@ void WebBluetoothServiceImpl::StoreAllowedScanOptions(
 }
 
 bool WebBluetoothServiceImpl::AreScanFiltersAllowed(
-    const base::Optional<ScanFilters>& filters) const {
+    const absl::optional<ScanFilters>& filters) const {
   if (accept_all_advertisements_) {
     // Previously allowed accepting all advertisements and no filters. In this
     // case since filtered advertisements are a subset of all advertisements,

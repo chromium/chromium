@@ -89,7 +89,7 @@ void MockMediaSessionPlayerObserver::OnSetAudioSinkId(
   players_[player_id].audio_sink_id_ = raw_device_id;
 }
 
-base::Optional<media_session::MediaPosition>
+absl::optional<media_session::MediaPosition>
 MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));

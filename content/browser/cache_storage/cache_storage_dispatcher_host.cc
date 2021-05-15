@@ -140,7 +140,7 @@ bool ResponseBlockedByCrossOriginResourcePolicy(
   if (response->response_type != FetchResponseType::kOpaque)
     return false;
 
-  base::Optional<std::string> corp_header_value;
+  absl::optional<std::string> corp_header_value;
   auto corp_header =
       response->headers.find(network::CrossOriginResourcePolicy::kHeaderName);
   if (corp_header != response->headers.end())
@@ -559,7 +559,7 @@ class CacheStorageDispatcherHost::CacheImpl
     content::CacheStorageCache* cache = cache_handle_.value();
     if (!cache) {
       std::move(cb).Run(CacheStorageVerboseError::New(
-          CacheStorageError::kErrorNotFound, base::nullopt));
+          CacheStorageError::kErrorNotFound, absl::nullopt));
       return;
     }
 

@@ -45,7 +45,7 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   void Update(
       uint32_t player_id,
       mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-      const base::Optional<viz::SurfaceId>& surface_id,
+      const absl::optional<viz::SurfaceId>& surface_id,
       const gfx::Size& natural_size,
       bool show_play_pause_button) final;
 

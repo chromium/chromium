@@ -120,8 +120,8 @@ void InvokeScoreAdCallbackAsync(SellerWorklet::ScoreAdCallback callback,
 
 void InvokeReportResultCallbackAsync(
     SellerWorklet::ReportResultCallback callback,
-    const base::Optional<std::string>& signals_for_winner,
-    const base::Optional<GURL>& report_url,
+    const absl::optional<std::string>& signals_for_winner,
+    const absl::optional<GURL>& report_url,
     const std::vector<std::string>& errors) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), signals_for_winner,
@@ -202,7 +202,7 @@ void SellerWorklet::ScoreAd(
 
   v8::Local<v8::Value> score_ad_result;
   double score;
-  base::Optional<std::string> error_msg_out;
+  absl::optional<std::string> error_msg_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "scoreAd", args,
                        error_msg_out)
@@ -258,8 +258,8 @@ void SellerWorklet::ReportResult(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_, context, auction_config, &args)) {
-    std::move(callback).Run(base::nullopt /* signals_for_winner */,
-                            base::nullopt /* report_url */,
+    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
+                            absl::nullopt /* report_url */,
                             std::vector<std::string>() /* errors */);
     return;
   }
@@ -277,15 +277,15 @@ void SellerWorklet::ReportResult(
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
-    std::move(callback).Run(base::nullopt /* signals_for_winner */,
-                            base::nullopt /* report_url */,
+    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
+                            absl::nullopt /* report_url */,
                             std::vector<std::string>() /* errors */);
     return;
   }
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> signals_for_winner_value;
-  base::Optional<std::string> error_msg_out;
+  absl::optional<std::string> error_msg_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "reportResult",
                        args, error_msg_out)
@@ -293,8 +293,8 @@ void SellerWorklet::ReportResult(
     std::vector<std::string> errors;
     if (error_msg_out)
       errors.emplace_back(std::move(error_msg_out).value());
-    std::move(callback).Run(base::nullopt /* signals_for_winner */,
-                            base::nullopt /* report_url */, errors);
+    std::move(callback).Run(absl::nullopt /* signals_for_winner */,
+                            absl::nullopt /* report_url */, errors);
     return;
   }
 
@@ -312,7 +312,7 @@ void SellerWorklet::ReportResult(
 
 void SellerWorklet::OnDownloadComplete(
     std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-    base::Optional<std::string> error_msg) {
+    absl::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
 
   worklet_loader_.reset();

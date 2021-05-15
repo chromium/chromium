@@ -640,7 +640,7 @@ class CacheStorageManagerTest : public testing::Test {
     auto response = blink::mojom::FetchAPIResponse::New(
         std::vector<GURL>({request->url}), status_code, "OK", response_type,
         padding, network::mojom::FetchResponseSource::kUnspecified,
-        response_headers, /*mime_type=*/base::nullopt,
+        response_headers, /*mime_type=*/absl::nullopt,
         net::HttpRequestHeaders::kGetMethod, std::move(blob),
         blink::mojom::ServiceWorkerResponseError::kUnknown, base::Time(),
         /*cache_storage_cache_name=*/std::string(),
@@ -651,7 +651,7 @@ class CacheStorageManagerTest : public testing::Test {
         net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
-        /*auth_challenge_info=*/base::nullopt);
+        /*auth_challenge_info=*/absl::nullopt);
 
     blink::mojom::BatchOperationPtr operation =
         blink::mojom::BatchOperation::New();

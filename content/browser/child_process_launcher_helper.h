@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
@@ -20,6 +19,7 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -115,9 +115,9 @@ class ChildProcessLauncherHelper :
 
 #if !defined(OS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
-  // specific. Returns |base::nullopt| if the helper should initialize
+  // specific. Returns |absl::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
-  base::Optional<mojo::NamedPlatformChannel>
+  absl::optional<mojo::NamedPlatformChannel>
   CreateNamedPlatformChannelOnClientThread();
 #endif
 
@@ -224,13 +224,13 @@ class ChildProcessLauncherHelper :
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
   // |CreateNamedPlatformChannelOnClientThread()|.
-  base::Optional<mojo::PlatformChannel> mojo_channel_;
+  absl::optional<mojo::PlatformChannel> mojo_channel_;
 
 #if !defined(OS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
   // |CreateNamedPlatformChannelOnClientThread()|.
-  base::Optional<mojo::NamedPlatformChannel> mojo_named_channel_;
+  absl::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
 #endif
 
   bool terminate_on_shutdown_;

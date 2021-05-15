@@ -45,7 +45,7 @@ bool ForEachCache(sql::Database* db, const ForEachCallable& callable) {
 
 bool AppCacheBackfillerVersion8::BackfillPaddingSizes() {
   return ForEachCache(db_, [&](int64_t cache_id, int64_t group_id) -> bool {
-    base::Optional<std::string> manifest_url = GetManifestUrlForGroup(group_id);
+    absl::optional<std::string> manifest_url = GetManifestUrlForGroup(group_id);
     if (!manifest_url.has_value())
       return false;
 
@@ -81,14 +81,14 @@ bool AppCacheBackfillerVersion8::ForEachEntry(int64_t cache_id,
   return true;
 }
 
-base::Optional<std::string> AppCacheBackfillerVersion8::GetManifestUrlForGroup(
+absl::optional<std::string> AppCacheBackfillerVersion8::GetManifestUrlForGroup(
     int64_t group_id) {
   static const char kSql[] =
       "SELECT manifest_url, group_id FROM Groups WHERE group_id = ?";
   sql::Statement statement(db_->GetUniqueStatement(kSql));
   statement.BindInt64(0, group_id);
   if (!statement.Step())
-    return base::nullopt;
+    return absl::nullopt;
   return statement.ColumnString(0);
 }
 
@@ -116,7 +116,7 @@ bool AppCacheBackfillerVersion8::UpdateCachePaddingSize(int64_t cache_id,
 
 bool AppCacheBackfillerVersion9::BackfillManifestParserVersionAndScope() {
   return ForEachCache(db_, [&](int64_t cache_id, int64_t group_id) -> bool {
-    base::Optional<std::string> manifest_url = GetManifestUrlForGroup(group_id);
+    absl::optional<std::string> manifest_url = GetManifestUrlForGroup(group_id);
     if (!manifest_url.has_value())
       return false;
 
@@ -159,14 +159,14 @@ bool AppCacheBackfillerVersion9::UpdateCacheManifestScope(
   return statement.Run();
 }
 
-base::Optional<std::string> AppCacheBackfillerVersion9::GetManifestUrlForGroup(
+absl::optional<std::string> AppCacheBackfillerVersion9::GetManifestUrlForGroup(
     int64_t group_id) {
   static const char kSql[] =
       "SELECT manifest_url, group_id FROM Groups WHERE group_id = ?";
   sql::Statement statement(db_->GetUniqueStatement(kSql));
   statement.BindInt64(0, group_id);
   if (!statement.Step())
-    return base::nullopt;
+    return absl::nullopt;
   return statement.ColumnString(0);
 }
 

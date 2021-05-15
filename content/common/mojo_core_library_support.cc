@@ -11,20 +11,20 @@
 namespace content {
 
 bool IsMojoCoreSharedLibraryEnabled() {
-  return GetMojoCoreSharedLibraryPath() != base::nullopt;
+  return GetMojoCoreSharedLibraryPath() != absl::nullopt;
 }
 
-base::Optional<base::FilePath> GetMojoCoreSharedLibraryPath() {
+absl::optional<base::FilePath> GetMojoCoreSharedLibraryPath() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (!command_line.HasSwitch(switches::kMojoCoreLibraryPath))
-    return base::nullopt;
+    return absl::nullopt;
   return command_line.GetSwitchValuePath(switches::kMojoCoreLibraryPath);
 #else
   // Content does not yet properly support dynamic Mojo Core on platforms other
   // than Linux and Chrome OS.
-  return base::nullopt;
+  return absl::nullopt;
 #endif
 }
 

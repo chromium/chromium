@@ -47,7 +47,7 @@ bool RenderMediaClient::IsSupportedBitstreamAudioCodec(
   return GetContentClient()->renderer()->IsSupportedBitstreamAudioCodec(codec);
 }
 
-base::Optional<::media::AudioRendererAlgorithmParameters>
+absl::optional<::media::AudioRendererAlgorithmParameters>
 RenderMediaClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {
   return GetContentClient()->renderer()->GetAudioRendererAlgorithmParameters(

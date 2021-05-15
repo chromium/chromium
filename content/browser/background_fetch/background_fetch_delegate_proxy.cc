@@ -201,8 +201,8 @@ class BackgroundFetchDelegateProxy::Core
   }
 
   void UpdateUI(const std::string& job_unique_id,
-                const base::Optional<std::string>& title,
-                const base::Optional<SkBitmap>& icon) {
+                const absl::optional<std::string>& title,
+                const absl::optional<SkBitmap>& icon) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     if (auto* delegate = browser_context_->GetBackgroundFetchDelegate())
@@ -405,8 +405,8 @@ void BackgroundFetchDelegateProxy::StartRequest(
 
 void BackgroundFetchDelegateProxy::UpdateUI(
     const std::string& job_unique_id,
-    const base::Optional<std::string>& title,
-    const base::Optional<SkBitmap>& icon,
+    const absl::optional<std::string>& title,
+    const absl::optional<SkBitmap>& icon,
     blink::mojom::BackgroundFetchRegistrationService::UpdateUICallback
         update_ui_callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());

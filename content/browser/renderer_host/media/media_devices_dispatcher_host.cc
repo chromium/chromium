@@ -411,7 +411,7 @@ void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
 
 void MediaDevicesDispatcherHost::GotAudioInputParameters(
     size_t index,
-    const base::Optional<media::AudioParameters>& parameters) {
+    const absl::optional<media::AudioParameters>& parameters) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(pending_audio_input_capabilities_requests_.size(), 0U);
   DCHECK_GT(current_audio_input_capabilities_.size(), index);

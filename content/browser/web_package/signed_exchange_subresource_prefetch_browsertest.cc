@@ -181,12 +181,12 @@ class NavigationHandleSXGAttributeObserver : public WebContentsObserver {
         navigation_handle->HasPrefetchedAlternativeSubresourceSignedExchange();
   }
 
-  const base::Optional<bool>& had_prefetched_alt_sxg() const {
+  const absl::optional<bool>& had_prefetched_alt_sxg() const {
     return had_prefetched_alt_sxg_;
   }
 
  private:
-  base::Optional<bool> had_prefetched_alt_sxg_;
+  absl::optional<bool> had_prefetched_alt_sxg_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationHandleSXGAttributeObserver);
 };

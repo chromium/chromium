@@ -1624,15 +1624,15 @@ void WebTestControlHost::ClearAllDatabases() {
 void WebTestControlHost::SimulateWebNotificationClick(
     const std::string& title,
     int32_t action_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<std::u16string>& reply) {
   auto* client = WebTestContentBrowserClient::Get();
   auto* context = client->GetWebTestBrowserContext();
   auto* service = client->GetPlatformNotificationService(context);
   static_cast<MockPlatformNotificationService*>(service)->SimulateClick(
       title,
       action_index == std::numeric_limits<int32_t>::min()
-          ? base::Optional<int>()
-          : base::Optional<int>(action_index),
+          ? absl::optional<int>()
+          : absl::optional<int>(action_index),
       reply);
 }
 

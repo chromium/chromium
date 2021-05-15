@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_hooks.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
@@ -42,6 +41,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -115,7 +115,7 @@ void PopulateFDsFromCommandLine() {
   if (shared_file_param.empty())
     return;
 
-  base::Optional<std::map<int, std::string>> shared_file_descriptors =
+  absl::optional<std::map<int, std::string>> shared_file_descriptors =
       ParseSharedFileSwitchValue(shared_file_param);
   if (!shared_file_descriptors)
     return;

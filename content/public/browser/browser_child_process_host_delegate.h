@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -33,7 +33,7 @@ class CONTENT_EXPORT BrowserChildProcessHostDelegate : public IPC::Listener {
 
   // Returns a string identifying the primary service running in the child
   // process, if any.
-  virtual base::Optional<std::string> GetServiceName();
+  virtual absl::optional<std::string> GetServiceName();
 
   // Binds an interface receiver in the host process, as requested by the child
   // process.

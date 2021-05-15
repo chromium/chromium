@@ -264,7 +264,7 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
   full->update_url = GURL("https://full.example.com/update");
   full->trusted_bidding_signals_url = GURL("https://full.example.com/signals");
   full->trusted_bidding_signals_keys =
-      base::make_optional(std::vector<std::string>{"a", "b", "c", "d"});
+      absl::make_optional(std::vector<std::string>{"a", "b", "c", "d"});
   full->user_bidding_signals = "foo";
   full->ads = std::vector<blink::mojom::InterestGroupAdPtr>();
   full->ads->emplace_back(blink::mojom::InterestGroupAd::New(

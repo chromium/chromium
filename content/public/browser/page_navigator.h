@@ -77,7 +77,7 @@ struct CONTENT_EXPORT OpenURLParams {
   // drop), and the frame with the corresponding token may have been deleted
   // before the navigation begins. This parameter is defined if and only if
   // |initiator_process_id| below is.
-  base::Optional<blink::LocalFrameToken> initiator_frame_token;
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the RenderFrameHost that initiated the
   // navigation. This is defined if and only if |initiator_frame_token| above
@@ -85,7 +85,7 @@ struct CONTENT_EXPORT OpenURLParams {
   int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
 
   // The origin of the initiator of the navigation.
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 
   // SiteInstance of the frame that initiated the navigation or null if we
   // don't know it.
@@ -154,7 +154,7 @@ struct CONTENT_EXPORT OpenURLParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<blink::Impression> impression;
+  absl::optional<blink::Impression> impression;
 };
 
 class PageNavigator {

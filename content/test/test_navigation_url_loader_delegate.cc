@@ -62,7 +62,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
     net::NetworkIsolationKey network_isolation_key,
-    base::Optional<SubresourceLoaderParams> subresource_loader_params,
+    absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;
   response_head_ = std::move(response_head);

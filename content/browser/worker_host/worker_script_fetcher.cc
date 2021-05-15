@@ -193,7 +193,7 @@ void WorkerScriptFetcher::OnComplete(
   // We can reach here only when loading fails before receiving a response_head.
   DCHECK_NE(net::OK, status.error_code);
   std::move(callback_).Run(nullptr /* main_script_load_params */,
-                           base::nullopt /* subresource_loader_params */,
+                           absl::nullopt /* subresource_loader_params */,
                            false /* success */);
   delete this;
 }

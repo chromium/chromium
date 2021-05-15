@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/bind.h"
@@ -48,6 +47,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -1439,7 +1439,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
   bool update_found_ = false;
   bool registration_failed_ = false;
   bool force_start_worker_failure_ = false;
-  base::Optional<bool> will_be_terminated_;
+  absl::optional<bool> will_be_terminated_;
 
   // These are used only when ServiceWorkerImportedScriptUpdateCheck is enabled.
   FakeNetwork fake_network_;

@@ -28,8 +28,8 @@ GURL StripUsernameAndPassword(const GURL& url) {
 CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
     StoragePartition* storage_partition,
     const GURL& context_url,
-    const base::Optional<std::string>& endpoint,
-    const base::Optional<std::string>& report_only_endpoint,
+    const absl::optional<std::string>& endpoint,
+    const absl::optional<std::string>& report_only_endpoint,
     const net::NetworkIsolationKey& network_isolation_key)
     : storage_partition_(storage_partition),
       context_url_(context_url),
@@ -87,7 +87,7 @@ void CrossOriginEmbedderPolicyReporter::Clone(
 void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     std::initializer_list<std::pair<base::StringPiece, base::StringPiece>> body,
     bool report_only) {
-  const base::Optional<std::string>& endpoint =
+  const absl::optional<std::string>& endpoint =
       report_only ? report_only_endpoint_ : endpoint_;
   const char* const disposition = report_only ? "reporting" : "enforce";
   if (observer_) {
@@ -112,7 +112,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
 
     storage_partition_->GetNetworkContext()->QueueReport(
         kType, *endpoint, context_url_, network_isolation_key_,
-        /*user_agent=*/base::nullopt, std::move(body_to_pass));
+        /*user_agent=*/absl::nullopt, std::move(body_to_pass));
   }
 }
 

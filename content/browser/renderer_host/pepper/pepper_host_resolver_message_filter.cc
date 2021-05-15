@@ -159,7 +159,7 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
   receiver_.set_disconnect_handler(
       base::BindOnce(&PepperHostResolverMessageFilter::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   host_resolve_context_ = context->MakeReplyMessageContext();
 
   return PP_OK_COMPLETIONPENDING;
@@ -168,7 +168,7 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
 void PepperHostResolverMessageFilter::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 
@@ -184,7 +184,7 @@ void PepperHostResolverMessageFilter::OnComplete(
 
 void PepperHostResolverMessageFilter::OnLookupFinished(
     int net_result,
-    const base::Optional<net::AddressList>& addresses,
+    const absl::optional<net::AddressList>& addresses,
     const ReplyMessageContext& context) {
   if (net_result != net::OK) {
     SendResolveError(NetErrorToPepperError(net_result), context);

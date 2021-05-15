@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -29,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
@@ -235,7 +235,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       RenderProcessHost* rph,
       int routing_id,
       const url::Origin& origin,
-      const base::Optional<network::CrossOriginEmbedderPolicy>&
+      const absl::optional<network::CrossOriginEmbedderPolicy>&
           cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
@@ -256,8 +256,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
 
   // Returns the unique token that has been generated to identify this worker
   // instance, and its corresponding GlobalScope in the renderer process. If the
-  // service worker is not currently running, this is base::nullopt.
-  const base::Optional<blink::ServiceWorkerToken>& token() const {
+  // service worker is not currently running, this is absl::nullopt.
+  const absl::optional<blink::ServiceWorkerToken>& token() const {
     return token_;
   }
 
@@ -399,7 +399,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // the browser process, but not persistent across service worker restarts.
   // This token is set every time the worker starts, and is plumbed through to
   // the corresponding ServiceWorkerGlobalScope in the renderer process.
-  base::Optional<blink::ServiceWorkerToken> token_;
+  absl::optional<blink::ServiceWorkerToken> token_;
 
   base::WeakPtrFactory<EmbeddedWorkerInstance> weak_factory_{this};
 

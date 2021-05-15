@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -54,6 +53,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -742,7 +742,7 @@ void PageHandler::CaptureScreenshot(
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        screenshot_format, screenshot_quality, gfx::Size(),
                        gfx::Size(), blink::DeviceEmulationParams(),
-                       base::nullopt),
+                       absl::nullopt),
         false);
     return;
   }
@@ -805,7 +805,7 @@ void PageHandler::CaptureScreenshot(
     }
   }
 
-  base::Optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
+  absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
   if (capture_beyond_viewport.fromMaybe(false)) {
     blink::web_pref::WebPreferences original_web_prefs =
         host_->GetRenderViewHost()->GetDelegate()->GetOrCreateWebPreferences();
@@ -1164,7 +1164,7 @@ void PageHandler::ScreenshotCaptured(
     const gfx::Size& original_view_size,
     const gfx::Size& requested_image_size,
     const blink::DeviceEmulationParams& original_emulation_params,
-    const base::Optional<blink::web_pref::WebPreferences>&
+    const absl::optional<blink::web_pref::WebPreferences>&
         maybe_original_web_prefs,
     const gfx::Image& image) {
   if (original_view_size.width()) {

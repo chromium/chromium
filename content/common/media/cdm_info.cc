@@ -10,7 +10,7 @@ namespace content {
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 base::Optional<media::CdmCapability> capability,
+                 absl::optional<media::CdmCapability> capability,
                  bool supports_sub_key_systems,
                  const std::string& name,
                  const base::Token& guid,
@@ -31,7 +31,7 @@ CdmInfo::CdmInfo(const std::string& key_system,
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 base::Optional<media::CdmCapability> capability)
+                 absl::optional<media::CdmCapability> capability)
     : key_system(key_system),
       robustness(robustness),
       capability(std::move(capability)) {

@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/file_info.h"
 #include "url/gurl.h"
 
@@ -68,9 +68,9 @@ struct CONTENT_EXPORT DropData {
   DropData(const DropData& other);
   ~DropData();
 
-  // Returns a sanitized filename to use for the dragged image, or base::nullopt
+  // Returns a sanitized filename to use for the dragged image, or absl::nullopt
   // if no sanitized name could be synthesized.
-  base::Optional<base::FilePath> GetSafeFilenameForImageFileContents() const;
+  absl::optional<base::FilePath> GetSafeFilenameForImageFileContents() const;
 
   int view_id = MSG_ROUTING_NONE;
 
@@ -102,12 +102,12 @@ struct CONTENT_EXPORT DropData {
   std::vector<FileSystemFileInfo> file_system_files;
 
   // User is dragging plain text into the webview.
-  base::Optional<std::u16string> text;
+  absl::optional<std::u16string> text;
 
   // User is dragging text/html into the webview (e.g., out of Firefox).
   // |html_base_url| is the URL that the html fragment is taken from (used to
   // resolve relative links).  It's ok for |html_base_url| to be empty.
-  base::Optional<std::u16string> html;
+  absl::optional<std::u16string> html;
   GURL html_base_url;
 
   // User is dragging an image out of the WebView.

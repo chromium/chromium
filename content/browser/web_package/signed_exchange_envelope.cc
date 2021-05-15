@@ -285,7 +285,7 @@ bool ParseResponseMap(const cbor::Value& value,
 }  // namespace
 
 // static
-base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
+absl::optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
     SignedExchangeVersion version,
     const signed_exchange_utils::URLWithRawString& fallback_url,
     base::StringPiece signature_header_field,
@@ -297,13 +297,13 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   const auto& request_url = fallback_url;
 
   cbor::Reader::DecoderError error;
-  base::Optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
+  absl::optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf("Failed to decode Value. CBOR error: %s",
                            cbor::Reader::ErrorCodeToString(error)));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SignedExchangeEnvelope ret;
@@ -313,16 +313,16 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!ParseResponseMap(*value, &ret, devtools_proxy)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse response map.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
+  absl::optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
       signatures = SignedExchangeSignatureHeaderField::ParseSignature(
           signature_header_field, devtools_proxy);
   if (!signatures || signatures->empty()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse signature header field.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // TODO(https://crbug.com/850475): Support multiple signatures.
@@ -336,7 +336,7 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!url::IsSameOriginWith(request_url.url, validity_url)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Validity URL must be same-origin with request URL.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::move(ret);

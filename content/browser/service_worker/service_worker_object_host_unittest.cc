@@ -132,7 +132,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     version_->SetStatus(ServiceWorkerVersion::INSTALLING);
 
     // Make the registration findable via storage functions.
-    base::Optional<blink::ServiceWorkerStatusCode> status;
+    absl::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
     helper_->context()->registry()->StoreRegistration(
         registration_.get(), version_.get(),
@@ -185,7 +185,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
                       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr*
                           out_registration_info,
                       blink::mojom::ServiceWorkerErrorType error,
-                      const base::Optional<std::string>& error_msg,
+                      const absl::optional<std::string>& error_msg,
                       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                           registration) {
                      ASSERT_EQ(blink::mojom::ServiceWorkerErrorType::kNone,

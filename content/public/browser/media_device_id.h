@@ -51,7 +51,7 @@ CONTENT_EXPORT void GetMediaDeviceIDForHMAC(
     std::string salt,
     url::Origin security_origin,
     std::string hmac_device_id,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
 CONTENT_EXPORT bool IsValidDeviceId(const std::string& device_id);
 

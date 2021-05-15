@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_VALIDITY_PINGER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -37,7 +37,7 @@ class CONTENT_EXPORT SignedExchangeValidityPinger
       const GURL& validity_url,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
       base::OnceClosure callback);
 
   ~SignedExchangeValidityPinger() override;
@@ -48,7 +48,7 @@ class CONTENT_EXPORT SignedExchangeValidityPinger
       const GURL& validity_url,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id);
+      const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;

@@ -97,7 +97,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // are tracked by the delegate. This method should only be called by the
   // PermissionController owning the delegate.
   virtual void SetPermissionOverridesForDevTools(
-      const base::Optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& origin,
       const PermissionOverrides& overrides) {}
 
   // Removes overrides that have been set, if any, for all origins. If delegate
@@ -108,7 +108,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // DevToolsPermissionOverrides.
   virtual bool IsPermissionOverridableByDevTools(
       PermissionType permission,
-      const base::Optional<url::Origin>& origin);
+      const absl::optional<url::Origin>& origin);
 };
 
 }  // namespace content

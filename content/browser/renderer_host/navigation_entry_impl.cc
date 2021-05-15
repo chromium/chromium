@@ -53,7 +53,7 @@ int CreateUniqueEntryID() {
 
 void RecursivelyGenerateFrameEntries(
     const blink::ExplodedFrameState& state,
-    const std::vector<base::Optional<std::u16string>>& referenced_files,
+    const std::vector<absl::optional<std::u16string>>& referenced_files,
     NavigationEntryImpl::TreeNode* node) {
   // Set a single-frame PageState on the entry.
   blink::ExplodedPageState page_state;
@@ -77,7 +77,7 @@ void RecursivelyGenerateFrameEntries(
       nullptr, GURL(state.url_string.value_or(std::u16string())),
       // TODO(nasko): Supply valid origin once the value is persisted across
       // session restore.
-      base::nullopt /* origin */,
+      absl::nullopt /* origin */,
       Referrer(GURL(state.referrer.value_or(std::u16string())),
                state.referrer_policy),
       state.initiator_origin, std::vector<GURL>(),
@@ -92,7 +92,7 @@ void RecursivelyGenerateFrameEntries(
   // Don't pass the file list to subframes, since that would result in multiple
   // copies of it ending up in the combined list in GetPageState (via
   // RecursivelyGenerateFrameState).
-  std::vector<base::Optional<std::u16string>> empty_file_list;
+  std::vector<absl::optional<std::u16string>> empty_file_list;
 
   for (const blink::ExplodedFrameState& child_state : state.children) {
     node->children.push_back(
@@ -102,16 +102,16 @@ void RecursivelyGenerateFrameEntries(
   }
 }
 
-base::Optional<std::u16string> UrlToOptionalString16(const GURL& url) {
+absl::optional<std::u16string> UrlToOptionalString16(const GURL& url) {
   if (!url.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
   return base::UTF8ToUTF16(url.spec());
 }
 
 void RecursivelyGenerateFrameState(
     NavigationEntryImpl::TreeNode* node,
     blink::ExplodedFrameState* state,
-    std::vector<base::Optional<std::u16string>>* referenced_files) {
+    std::vector<absl::optional<std::u16string>>* referenced_files) {
   // The FrameNavigationEntry's PageState contains just the ExplodedFrameState
   // for that particular frame.
   blink::ExplodedPageState exploded_page_state;
@@ -309,7 +309,7 @@ NavigationEntryImpl::NavigationEntryImpl()
     : NavigationEntryImpl(nullptr,
                           GURL(),
                           Referrer(),
-                          base::nullopt,
+                          absl::nullopt,
                           std::u16string(),
                           ui::PAGE_TRANSITION_LINK,
                           false,
@@ -319,7 +319,7 @@ NavigationEntryImpl::NavigationEntryImpl(
     scoped_refptr<SiteInstanceImpl> instance,
     const GURL& url,
     const Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     const std::u16string& title,
     ui::PageTransition transition_type,
     bool is_renderer_initiated,
@@ -333,7 +333,7 @@ NavigationEntryImpl::NavigationEntryImpl(
               std::move(instance),
               nullptr,
               url,
-              base::nullopt /* origin */,
+              absl::nullopt /* origin */,
               referrer,
               initiator_origin,
               std::vector<GURL>(),
@@ -632,7 +632,7 @@ const std::vector<GURL>& NavigationEntryImpl::GetRedirectChain() {
   return root_node()->frame_entry->redirect_chain();
 }
 
-const base::Optional<ReplacedNavigationEntryData>&
+const absl::optional<ReplacedNavigationEntryData>&
 NavigationEntryImpl::GetReplacedEntryData() {
   return replaced_entry_data_;
 }
@@ -747,7 +747,7 @@ mojom::CommitNavigationParamsPtr
 NavigationEntryImpl::ConstructCommitNavigationParams(
     const FrameNavigationEntry& frame_entry,
     const GURL& original_url,
-    const base::Optional<url::Origin>& origin_to_commit,
+    const absl::optional<url::Origin>& origin_to_commit,
     const std::string& original_method,
     const base::flat_map<std::string, bool>& subframe_unique_names,
     bool intended_as_new_entry,
@@ -790,7 +790,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           pending_offset_to_send, current_offset_to_send,
           current_length_to_send, false, IsViewSourceMode(),
           should_clear_history_list(), mojom::NavigationTiming::New(),
-          base::nullopt, mojom::WasActivatedOption::kUnknown,
+          absl::nullopt, mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
           std::vector<mojom::PrefetchedSignedExchangeInfoPtr>(),
 #if defined(OS_ANDROID)
@@ -861,9 +861,9 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     SiteInstanceImpl* site_instance,
     scoped_refptr<SiteInstanceImpl> source_site_instance,
     const GURL& url,
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     const Referrer& referrer,
-    const base::Optional<url::Origin>& initiator_origin,
+    const absl::optional<url::Origin>& initiator_origin,
     const std::vector<GURL>& redirect_chain,
     const blink::PageState& page_state,
     const std::string& method,

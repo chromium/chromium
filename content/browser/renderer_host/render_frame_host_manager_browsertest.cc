@@ -3001,7 +3001,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   std::unique_ptr<NavigationEntryImpl> cloned_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url1, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD,
+              url1, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
               false, std::string(),
               shell()->web_contents()->GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));

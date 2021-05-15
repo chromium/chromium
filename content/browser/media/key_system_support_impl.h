@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -38,7 +38,7 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   friend class KeySystemSupportImplTest;
 
   using CdmCapabilityCB =
-      base::OnceCallback<void(base::Optional<media::CdmCapability>)>;
+      base::OnceCallback<void(absl::optional<media::CdmCapability>)>;
   using HardwareSecureCapabilityCB =
       base::RepeatingCallback<void(const std::string&, CdmCapabilityCB)>;
 
@@ -53,7 +53,7 @@ class CONTENT_EXPORT KeySystemSupportImpl final
       const std::string& key_system,
       IsKeySystemSupportedCallback callback,
       bool lazy_initialize,
-      base::Optional<media::CdmCapability> hw_secure_capability);
+      absl::optional<media::CdmCapability> hw_secure_capability);
 
   HardwareSecureCapabilityCB hw_secure_capability_cb_for_testing_;
 

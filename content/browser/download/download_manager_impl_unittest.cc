@@ -20,7 +20,6 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -46,6 +45,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using base::test::RunOnceCallback;
@@ -142,7 +142,7 @@ class MockDownloadItemFactory
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -222,7 +222,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
     const GURL& site_url,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -531,7 +531,7 @@ class DownloadManagerTest : public testing::Test {
       download::DownloadDangerType danger_type,
       download::DownloadItem::MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
-      base::Optional<download::DownloadSchedule> download_schedule,
+      absl::optional<download::DownloadSchedule> download_schedule,
       download::DownloadInterruptReason interrupt_reason) {
     callback_called_ = true;
     target_path_ = target_path;
@@ -575,7 +575,7 @@ class DownloadManagerTest : public testing::Test {
   download::DownloadItem::TargetDisposition target_disposition_;
   download::DownloadDangerType danger_type_;
   base::FilePath intermediate_path_;
-  base::Optional<download::DownloadSchedule> download_schedule_;
+  absl::optional<download::DownloadSchedule> download_schedule_;
   download::DownloadInterruptReason interrupt_reason_;
 
   std::vector<GURL> download_urls_;
@@ -783,7 +783,7 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
       download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false, false, false,
       base::Time::Now(), true,
       std::vector<download::DownloadItem::ReceivedSlice>(),
-      base::nullopt /*download_schedule*/, nullptr /* download_entry */);
+      absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
   in_progress_manager->AddDownloadItem(std::move(in_progress_item));
   SetInProgressDownloadManager(std::move(in_progress_manager));
   EXPECT_CALL(GetMockObserver(), OnDownloadCreated(download_manager_.get(), _))

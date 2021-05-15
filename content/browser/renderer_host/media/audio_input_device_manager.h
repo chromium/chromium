@@ -95,8 +95,8 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   void OpenedOnIOThread(
       const base::UnguessableToken& session_id,
       const blink::MediaStreamDevice& device,
-      const base::Optional<media::AudioParameters>& input_params,
-      const base::Optional<std::string>& matched_output_device_id);
+      const absl::optional<media::AudioParameters>& input_params,
+      const absl::optional<std::string>& matched_output_device_id);
 
   // Callback called on IO thread with the session_id referencing the closed
   // device.

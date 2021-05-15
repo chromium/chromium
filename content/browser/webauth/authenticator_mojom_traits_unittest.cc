@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -17,6 +16,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -130,12 +130,12 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialRpEntity) {
       PublicKeyCredentialRpEntity(std::string(kRpId)),
       PublicKeyCredentialRpEntity(std::string(kRpId))};
   // TODO(kenrb): There is a mismatch between the types, where
-  // device::PublicKeyCredentialRpEntity can have base::nullopt for
+  // device::PublicKeyCredentialRpEntity can have absl::nullopt for
   // the name but the mapped mojom type is not optional. This should
-  // be corrected at some point. We can't currently test base::nullopt
+  // be corrected at some point. We can't currently test absl::nullopt
   // because it won't serialize.
   success_cases[0].name = std::string(kRpName);
-  success_cases[0].icon_url = base::nullopt;
+  success_cases[0].icon_url = absl::nullopt;
   success_cases[1].name = std::string(kRpName);
   success_cases[1].icon_url = GURL(kTestURL);
 
@@ -153,7 +153,7 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialUserEntity) {
   // PublicKeyCredentialRpEntity::name above.
   success_cases[0].name = std::string(kRpName);
   success_cases[0].display_name = std::string(kRpName);
-  success_cases[0].icon_url = base::nullopt;
+  success_cases[0].icon_url = absl::nullopt;
   success_cases[1].name = std::string(kRpName);
   success_cases[1].display_name = std::string(kRpName);
   success_cases[1].icon_url = GURL(kTestURL);

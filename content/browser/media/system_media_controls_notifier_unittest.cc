@@ -62,9 +62,9 @@ class SystemMediaControlsNotifierTest : public testing::Test {
       metadata.title = title;
       metadata.artist = artist;
       notifier_->MediaSessionMetadataChanged(
-          base::Optional<media_session::MediaMetadata>(metadata));
+          absl::optional<media_session::MediaMetadata>(metadata));
     } else {
-      notifier_->MediaSessionMetadataChanged(base::nullopt);
+      notifier_->MediaSessionMetadataChanged(absl::nullopt);
     }
   }
 

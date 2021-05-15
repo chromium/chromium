@@ -234,7 +234,7 @@ void FileSystemManagerImpl::ResolveURL(const GURL& filesystem_url,
                                        ResolveURLCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(filesystem_url));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(blink::mojom::FileSystemInfo::New(),
                             base::FilePath(), false, opt_error.value());
@@ -259,7 +259,7 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL src_url(context_->CrackURL(src_path));
   FileSystemURL dest_url(context_->CrackURL(dest_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
   if (!opt_error)
     opt_error = ValidateFileSystemURL(dest_url);
   if (opt_error) {
@@ -287,7 +287,7 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL src_url(context_->CrackURL(src_path));
   FileSystemURL dest_url(context_->CrackURL(dest_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
   if (!opt_error)
     opt_error = ValidateFileSystemURL(dest_url);
   if (opt_error) {
@@ -313,7 +313,7 @@ void FileSystemManagerImpl::Remove(const GURL& path,
                                    RemoveCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(opt_error.value());
     return;
@@ -332,7 +332,7 @@ void FileSystemManagerImpl::ReadMetadata(const GURL& path,
                                          ReadMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(base::File::Info(), opt_error.value());
     return;
@@ -359,7 +359,7 @@ void FileSystemManagerImpl::Create(const GURL& path,
                                    CreateCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(opt_error.value());
     return;
@@ -387,7 +387,7 @@ void FileSystemManagerImpl::Exists(const GURL& path,
                                    ExistsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(opt_error.value());
     return;
@@ -414,7 +414,7 @@ void FileSystemManagerImpl::ReadDirectory(
         pending_listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   mojo::Remote<blink::mojom::FileSystemOperationListener> listener(
       std::move(pending_listener));
   if (opt_error) {
@@ -437,7 +437,7 @@ void FileSystemManagerImpl::ReadDirectorySync(
     ReadDirectorySyncCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(std::vector<filesystem::mojom::DirectoryEntryPtr>(),
                             opt_error.value());
@@ -467,7 +467,7 @@ void FileSystemManagerImpl::Write(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   FileSystemURL url(context_->CrackURL(file_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   mojo::Remote<blink::mojom::FileSystemOperationListener> listener(
       std::move(pending_listener));
   if (opt_error) {
@@ -499,7 +499,7 @@ void FileSystemManagerImpl::WriteSync(const GURL& file_path,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   FileSystemURL url(context_->CrackURL(file_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(0, opt_error.value());
     return;
@@ -526,7 +526,7 @@ void FileSystemManagerImpl::Truncate(
     TruncateCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(file_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(opt_error.value());
     return;
@@ -550,7 +550,7 @@ void FileSystemManagerImpl::TruncateSync(const GURL& file_path,
                                          TruncateSyncCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   FileSystemURL url(context_->CrackURL(file_path));
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(opt_error.value());
     return;
@@ -575,7 +575,7 @@ void FileSystemManagerImpl::CreateSnapshotFile(
   // Make sure if this file can be read by the renderer as this is
   // called when the renderer is about to create a new File object
   // (for reading the file).
-  base::Optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
+  absl::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(base::File::Info(), base::FilePath(),
                             opt_error.value(), mojo::NullRemote());
@@ -845,7 +845,7 @@ void FileSystemManagerImpl::GetPlatformPathOnFileThread(
           std::move(file_system_manager), std::move(callback)));
 }
 
-base::Optional<base::File::Error> FileSystemManagerImpl::ValidateFileSystemURL(
+absl::optional<base::File::Error> FileSystemManagerImpl::ValidateFileSystemURL(
     const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!FileSystemURLIsValid(context_.get(), url))
@@ -857,7 +857,7 @@ base::Optional<base::File::Error> FileSystemManagerImpl::ValidateFileSystemURL(
   if (url.type() == storage::kFileSystemTypePluginPrivate)
     return base::File::FILE_ERROR_SECURITY;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 FileSystemManagerImpl::OperationListenerID FileSystemManagerImpl::AddOpListener(

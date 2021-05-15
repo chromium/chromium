@@ -39,7 +39,7 @@ class ServiceProcessObserver : public ServiceProcessHost::Observer {
   }
 
  private:
-  base::Optional<base::RunLoop> launch_wait_loop_;
+  absl::optional<base::RunLoop> launch_wait_loop_;
   int instances_started_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceProcessObserver);

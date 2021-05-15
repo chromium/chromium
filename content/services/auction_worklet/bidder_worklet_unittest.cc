@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -23,6 +22,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -82,7 +82,7 @@ class BidderWorkletTest : public testing::Test {
 
     interest_group_ads_.clear();
     interest_group_ads_.push_back(blink::mojom::InterestGroupAd::New(
-        GURL("https://response.test/"), base::nullopt /* metadata */));
+        GURL("https://response.test/"), absl::nullopt /* metadata */));
 
     interest_group_trusted_bidding_signals_url_.reset();
     interest_group_trusted_bidding_signals_keys_.reset();
@@ -110,7 +110,7 @@ class BidderWorkletTest : public testing::Test {
   // specified return line Then runs the script, expecting the provided result.
   void RunGenerateBidWithReturnValueExpectingResult(
       const std::string& raw_return_value,
-      const base::Optional<BidderWorklet::Bid> expected_bid,
+      const absl::optional<BidderWorklet::Bid> expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(raw_return_value), expected_bid,
@@ -121,7 +121,7 @@ class BidderWorkletTest : public testing::Test {
   // Javascript Then runs the script, expecting the provided result.
   void RunGenerateBidWithJavascriptExpectingResult(
       const std::string& javascript,
-      const base::Optional<BidderWorklet::Bid> expected_bid,
+      const absl::optional<BidderWorklet::Bid> expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
@@ -131,7 +131,7 @@ class BidderWorkletTest : public testing::Test {
 
   // Loads and runs a generateBid() script, expecting the provided result.
   void RunGenerateBidExpectingResult(
-      const base::Optional<BidderWorklet::Bid> expected_bid,
+      const absl::optional<BidderWorklet::Bid> expected_bid,
       std::vector<std::string> expected_errors = std::vector<std::string>()) {
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
@@ -148,7 +148,7 @@ class BidderWorkletTest : public testing::Test {
   // specified body. Then runs the script, expecting the provided result.
   void RunReportWinWithFunctionBodyExpectingResult(
       const std::string& function_body,
-      const base::Optional<GURL>& expected_report_url,
+      const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     RunReportWinWithJavascriptExpectingResult(
@@ -160,7 +160,7 @@ class BidderWorkletTest : public testing::Test {
   // specified Javascript. Then runs the script, expecting the provided result.
   void RunReportWinWithJavascriptExpectingResult(
       const std::string& javascript,
-      const base::Optional<GURL>& expected_report_url,
+      const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     SCOPED_TRACE(javascript);
@@ -172,7 +172,7 @@ class BidderWorkletTest : public testing::Test {
   // Loads and runs a reportWin() with the provided return line, expecting the
   // supplied result.
   void RunReportWinExpectingResult(
-      const base::Optional<GURL>& expected_report_url,
+      const absl::optional<GURL>& expected_report_url,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
     auto bidder_worket = CreateWorkletAndGenerateBid();
@@ -184,7 +184,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
             [&run_loop, &expected_report_url, &expected_errors](
-                const base::Optional<GURL>& report_url,
+                const absl::optional<GURL>& report_url,
                 const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
@@ -228,11 +228,11 @@ class BidderWorkletTest : public testing::Test {
     auto bidder_worket = std::make_unique<BidderWorklet>(
         &v8_helper_, &url_loader_factory_, std::move(bidding_interest_group),
         null_auction_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(auction_signals_),
+            ? absl::nullopt
+            : absl::make_optional<std::string>(auction_signals_),
         null_per_buyer_signals_
-            ? base::nullopt
-            : base::make_optional<std::string>(per_buyer_signals_),
+            ? absl::nullopt
+            : absl::make_optional<std::string>(per_buyer_signals_),
         browser_signal_top_window_origin_, browser_signal_seller_origin_,
         auction_start_time_,
         base::BindOnce(&BidderWorkletTest::CreateWorkletCallback,
@@ -245,7 +245,7 @@ class BidderWorkletTest : public testing::Test {
     return bidder_worket;
   }
 
-  const base::Optional<BidderWorklet::Bid>& bid() const { return bid_; }
+  const absl::optional<BidderWorklet::Bid>& bid() const { return bid_; }
   const std::vector<std::string> bid_errors() const { return bid_errors_; }
 
  protected:
@@ -258,7 +258,7 @@ class BidderWorkletTest : public testing::Test {
     return out;
   }
 
-  void CreateWorkletCallback(base::Optional<BidderWorklet::Bid> bid,
+  void CreateWorkletCallback(absl::optional<BidderWorklet::Bid> bid,
                              const std::vector<std::string>& errors) {
     bid_ = std::move(bid);
     bid_errors_ = errors;
@@ -276,8 +276,8 @@ class BidderWorkletTest : public testing::Test {
   // string. An empty string means nullptr.
   std::string interest_group_user_bidding_signals_;
   std::vector<blink::mojom::InterestGroupAdPtr> interest_group_ads_;
-  base::Optional<GURL> interest_group_trusted_bidding_signals_url_;
-  base::Optional<std::vector<std::string>>
+  absl::optional<GURL> interest_group_trusted_bidding_signals_url_;
+  absl::optional<std::vector<std::string>>
       interest_group_trusted_bidding_signals_keys_;
   int browser_signal_join_count_;
   int browser_signal_bid_count_;
@@ -308,7 +308,7 @@ class BidderWorkletTest : public testing::Test {
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
 
   // Values passed to the GenerateBidCallback().
-  base::Optional<BidderWorklet::Bid> bid_;
+  absl::optional<BidderWorklet::Bid> bid_;
   std::vector<std::string> bid_errors_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -320,7 +320,7 @@ TEST_F(BidderWorkletTest, NetworkError) {
                                   CreateBasicGenerateBidScript(),
                                   net::HTTP_NOT_FOUND);
   RunGenerateBidExpectingResult(
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"Failed to load https://url.test/ HTTP status = 404 Not Found."});
 }
 
@@ -382,12 +382,12 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: globalThis.not_defined, bid:1, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: function() {return 1;}, bid:1, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -400,7 +400,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: a, bid:1, render:"https://response.test/"};
         }
       )",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -425,34 +425,34 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-10, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1.5, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
 
   // Infinite and NaN bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1/0, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1/0, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0/0, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */);
+      absl::nullopt /* expected_bid */);
 
   // Non-numeric bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:"1", render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1], render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -468,42 +468,42 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
   // Disallowed schemes.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"chrome-extension://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"about:blank"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"data:,foo"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
 
   // Invalid URLs.
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:"test"})", base::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:1, render:"test"})", absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned "
        "render_url isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:1, render:9})", base::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:1, render:9})", absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -513,22 +513,22 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 
   // No return value.
   RunGenerateBidWithReturnValueExpectingResult(
-      "", base::nullopt /* expected_bid */,
+      "", absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value not an object."});
 
   // Missing value.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:"a", render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
   RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: ["ad"], bid:"a"})", base::nullopt /* expected_bid */,
+      R"({ad: ["ad"], bid:"a"})", absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() return value "
        "has incorrect structure."});
 
@@ -539,18 +539,18 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
           return {ad: ["ad"], bid:1, render:"https://response.test/"};
         }
       )",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "", base::nullopt /* expected_bid */,
+      "", absl::nullopt /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "5", base::nullopt /* expected_bid */,
+      "5", absl::nullopt /* expected_bid */,
       {"https://url.test/ `generateBid` is not a function."});
 
   // Throw exception.
   RunGenerateBidWithJavascriptExpectingResult(
-      "shrimp", base::nullopt /* expected_bid */,
+      "shrimp", absl::nullopt /* expected_bid */,
       {"https://url.test/:1 Uncaught ReferenceError: "
        "shrimp is not defined."});
 }
@@ -559,7 +559,7 @@ TEST_F(BidderWorkletTest, GenerateBidResult) {
 TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/:4 Uncaught ReferenceError: Date is not defined."});
 }
 
@@ -606,7 +606,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
             R"({ad: %s, bid:1, render:"https://response.test/"})",
             test_case.name),
         test_case.is_json
-            ? base::Optional<BidderWorklet::Bid>()
+            ? absl::optional<BidderWorklet::Bid>()
             : BidderWorklet::Bid(R"("foo")", 1, GURL("https://response.test/"),
                                  base::TimeDelta()));
 
@@ -716,7 +716,7 @@ TEST_F(BidderWorkletTest, GenerateBidBasicInputParameters) {
   // A bid URL that's not in the InterestGroup's ads list should fail.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response2.test/"})",
-      base::nullopt /* expected_bid */,
+      absl::nullopt /* expected_bid */,
       {"https://url.test/ generateBid() returned render_url isn't one of "
        "the registered creative URLs."});
 
@@ -942,10 +942,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
 
 TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "", base::nullopt /* expected_report_url */);
+      "", absl::nullopt /* expected_report_url */);
   RunReportWinWithFunctionBodyExpectingResult(
       R"(return "https://ignored.test/")",
-      base::nullopt /* expected_report_url */);
+      absl::nullopt /* expected_report_url */);
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test"))", GURL("https://foo.test/"));
@@ -954,23 +954,23 @@ TEST_F(BidderWorkletTest, ReportWin) {
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("http://http.not.allowed.test"))",
-      base::nullopt /* expected_report_url */,
+      absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("file:///file.not.allowed.test"))",
-      base::nullopt /* expected_report_url */,
+      absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo(""))", base::nullopt /* expected_report_url */,
+      R"(sendReportTo(""))", absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught TypeError: sendReportTo must be passed a "
        "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
-      base::nullopt /* expected_report_url */,
+      absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught TypeError: sendReportTo may be called at "
        "most once."});
 }
@@ -979,7 +979,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
 TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test/" + Date().toString()))",
-      base::nullopt /* expected_report_url */,
+      absl::nullopt /* expected_report_url */,
       {"https://url.test/:9 Uncaught ReferenceError: Date is not defined."});
 }
 
@@ -1058,20 +1058,20 @@ TEST_F(BidderWorkletTest, ReportWinParameters) {
     if (!test_case.is_json || !test_case.passed_to_generate_bid) {
       RunReportWinWithFunctionBodyExpectingResult(
           base::StringPrintf("sendReportTo(%s)", test_case.name),
-          test_case.is_json ? base::Optional<GURL>()
+          test_case.is_json ? absl::optional<GURL>()
                             : GURL("https://foo.test/"),
           {test_case.expect_errors});
     } else {
       // JSON values passed the generateBid() result in failures there, before
       // reportWin is called.
       RunGenerateBidWithJavascriptExpectingResult(
-          CreateBasicGenerateBidScript(), base::nullopt /* expected_bid */);
+          CreateBasicGenerateBidScript(), absl::nullopt /* expected_bid */);
     }
 
     *test_case.value_ptr = R"(["https://foo.test/"])";
     RunReportWinWithFunctionBodyExpectingResult(
         base::StringPrintf("sendReportTo(%s[0])", test_case.name),
-        test_case.is_json ? GURL("https://foo.test/") : base::Optional<GURL>(),
+        test_case.is_json ? GURL("https://foo.test/") : absl::optional<GURL>(),
         {test_case.expect_errors_array});
 
     SetDefaultParameters();
@@ -1189,7 +1189,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         seller_signals_, browser_signal_render_url_,
         browser_signal_ad_render_fingerprint_, browser_signal_bid_,
         base::BindLambdaForTesting(
-            [&run_loop](const base::Optional<GURL>& report_url,
+            [&run_loop](const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
               EXPECT_TRUE(errors.empty());

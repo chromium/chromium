@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "net/http/http_response_headers.h"
@@ -16,6 +15,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace auction_worklet {
 
@@ -26,10 +26,10 @@ const char kAllowFledgeHeader[] = "X-Allow-FLEDGE: true";
 
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 base::Optional<std::string> mime_type,
-                 base::Optional<std::string> charset,
+                 absl::optional<std::string> mime_type,
+                 absl::optional<std::string> charset,
                  const std::string content,
-                 base::Optional<std::string> headers,
+                 absl::optional<std::string> headers,
                  net::HttpStatusCode http_status,
                  network::TestURLLoaderFactory::Redirects redirects) {
   auto head = network::mojom::URLResponseHead::New();
@@ -57,14 +57,14 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
                            const GURL& url,
                            const std::string content) {
-  AddResponse(url_loader_factory, url, kJavascriptMimeType, base::nullopt,
+  AddResponse(url_loader_factory, url, kJavascriptMimeType, absl::nullopt,
               content);
 }
 
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content) {
-  AddResponse(url_loader_factory, url, kJsonMimeType, base::nullopt, content);
+  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content);
 }
 
 }  // namespace auction_worklet

@@ -504,7 +504,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
 
 base::Value GetDevicePerfInfo() {
   auto list = base::Value(base::Value::Type::LIST);
-  const base::Optional<gpu::DevicePerfInfo> device_perf_info =
+  const absl::optional<gpu::DevicePerfInfo> device_perf_info =
       gpu::GetDevicePerfInfo();
   if (device_perf_info.has_value()) {
     list.Append(NewDescriptionValuePair(

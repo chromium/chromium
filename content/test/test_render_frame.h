@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/common/navigation_params.mojom-forward.h"
 #include "content/renderer/render_frame_impl.h"
@@ -16,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 
 namespace content {
@@ -43,7 +43,7 @@ class TestRenderFrame : public RenderFrameImpl {
                          mojom::CommitNavigationParamsPtr request_params,
                          int error_code,
                          const net::ResolveErrorInfo& resolve_error_info,
-                         const base::Optional<std::string>& error_page_content);
+                         const absl::optional<std::string>& error_page_content);
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
 
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
@@ -75,7 +75,7 @@ class TestRenderFrame : public RenderFrameImpl {
   mojom::FrameHost* GetFrameHost() override;
 
   std::unique_ptr<MockFrameHost> mock_frame_host_;
-  base::Optional<std::string> next_navigation_html_override_;
+  absl::optional<std::string> next_navigation_html_override_;
 
   mojo::AssociatedRemote<mojom::NavigationClient> mock_navigation_client_;
 

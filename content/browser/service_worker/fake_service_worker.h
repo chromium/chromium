@@ -40,7 +40,7 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   // Returns after InitializeGlobalScope() is called.
   void RunUntilInitializeGlobalScope();
 
-  const base::Optional<base::TimeDelta>& idle_delay() const {
+  const absl::optional<base::TimeDelta>& idle_delay() const {
     return idle_delay_;
   }
 
@@ -89,13 +89,13 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       int action_index,
-      const base::Optional<std::u16string>& reply,
+      const absl::optional<std::u16string>& reply,
       DispatchNotificationClickEventCallback callback) override;
   void DispatchNotificationCloseEvent(
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       DispatchNotificationCloseEventCallback callback) override;
-  void DispatchPushEvent(const base::Optional<std::string>& payload,
+  void DispatchPushEvent(const absl::optional<std::string>& payload,
                          DispatchPushEventCallback callback) override;
   void DispatchPushSubscriptionChangeEvent(
       blink::mojom::PushSubscriptionPtr old_subscription,
@@ -151,8 +151,8 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
 
   mojo::Receiver<blink::mojom::ServiceWorker> receiver_{this};
 
-  // base::nullopt means SetIdleDelay() is not called.
-  base::Optional<base::TimeDelta> idle_delay_;
+  // absl::nullopt means SetIdleDelay() is not called.
+  absl::optional<base::TimeDelta> idle_delay_;
 };
 
 }  // namespace content

@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
@@ -26,6 +25,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -108,7 +108,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       int64_t trace_id,
       VerboseErrorCallback callback,
       BadMessageCallback bad_message_callback,
-      base::Optional<std::string> message,
+      absl::optional<std::string> message,
       uint64_t space_required,
       uint64_t side_data_size,
       blink::mojom::QuotaStatusCode status_code,
@@ -119,13 +119,13 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // completion.
   void BatchDidOneOperation(base::OnceClosure completion_closure,
                             VerboseErrorCallback error_callback,
-                            base::Optional<std::string> message,
+                            absl::optional<std::string> message,
                             int64_t trace_id,
                             blink::mojom::CacheStorageError error);
   // Callback invoked once all BatchDidOneOperation() calls have run.
   // Invokes |error_callback|.
   void BatchDidAllOperations(VerboseErrorCallback error_callback,
-                             base::Optional<std::string> message,
+                             absl::optional<std::string> message,
                              int64_t trace_id);
 
   void Keys(blink::mojom::FetchAPIRequestPtr request,

@@ -10,13 +10,13 @@
 
 #include "base/callback_forward.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/seller_worklet.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 
@@ -60,7 +60,7 @@ class AuctionRunner {
     bool bid_generate_complete = false;
 
     std::unique_ptr<BidderWorklet> bidder_worklet;
-    base::Optional<BidderWorklet::Bid> bid_result;
+    absl::optional<BidderWorklet::Bid> bid_result;
     double seller_score = 0;
   };
 
@@ -74,7 +74,7 @@ class AuctionRunner {
 
   void StartBidding();
   void OnGenerateBidComplete(BidState* state,
-                             base::Optional<BidderWorklet::Bid> bid,
+                             absl::optional<BidderWorklet::Bid> bid,
                              const std::vector<std::string>& errors);
 
   // True if all bid results and the seller script load are complete.
@@ -94,7 +94,7 @@ class AuctionRunner {
   void OnBidScored(double score, const std::vector<std::string>& errors);
 
   std::string AdRenderFingerprint(const BidState* state);
-  base::Optional<std::string> PerBuyerSignals(const BidState* state);
+  absl::optional<std::string> PerBuyerSignals(const BidState* state);
 
   void CompleteAuction();  // Indirectly deletes `this`, if there's no winner.
 
@@ -104,12 +104,12 @@ class AuctionRunner {
   void ReportSellerResult(const BidState* state);
   void OnReportSellerResultComplete(
       const BidState* best_bid,
-      const base::Optional<std::string>& signals_for_winner,
-      const base::Optional<GURL>& seller_report_url,
+      const absl::optional<std::string>& signals_for_winner,
+      const absl::optional<GURL>& seller_report_url,
       const std::vector<std::string>& errors);
   void ReportBidWin(const BidState* state);
   void OnReportBidWinComplete(const BidState* best_bid,
-                              const base::Optional<GURL>& bidder_report_url,
+                              const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
   // Destroys `this`.
@@ -146,11 +146,11 @@ class AuctionRunner {
   size_t seller_considering_ = 0;
 
   // Seller script reportResult() results.
-  base::Optional<std::string> signals_for_winner_;
-  base::Optional<GURL> seller_report_url_;
+  absl::optional<std::string> signals_for_winner_;
+  absl::optional<GURL> seller_report_url_;
 
   // Bidder script reportWin() results.
-  base::Optional<GURL> bidder_report_url_;
+  absl::optional<GURL> bidder_report_url_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

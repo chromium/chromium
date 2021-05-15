@@ -59,13 +59,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   MOCK_METHOD2(OnSetAudioSinkId,
                void(int player_id, const std::string& raw_device_id));
 
-  base::Optional<media_session::MediaPosition> GetPosition(
+  absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
     return position_;
   }
 
   void SetPosition(
-      const base::Optional<media_session::MediaPosition>& position) {
+      const absl::optional<media_session::MediaPosition>& position) {
     position_ = position;
   }
 
@@ -98,7 +98,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   const media_session::mojom::MediaAudioVideoState audio_video_state_;
 
-  base::Optional<media_session::MediaPosition> position_;
+  absl::optional<media_session::MediaPosition> position_;
 };
 
 }  // anonymous namespace
@@ -1051,7 +1051,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, PositionFromServiceCanBeReset) {
 
   observer.WaitForExpectedPosition(expected_position);
 
-  services_[main_frame_]->SetPositionState(base::nullopt);
+  services_[main_frame_]->SetPositionState(absl::nullopt);
 
   EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 

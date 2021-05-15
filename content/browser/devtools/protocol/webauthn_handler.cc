@@ -75,7 +75,7 @@ class GetCredentialCallbackAggregator
       const GetCredentialCallbackAggregator&) = delete;
 
   void OnLargeBlob(std::unique_ptr<WebAuthn::Credential> credential,
-                   const base::Optional<std::vector<uint8_t>>& blob) {
+                   const absl::optional<std::vector<uint8_t>>& blob) {
     if (blob) {
       credential->SetLargeBlob(Binary::fromVector(*blob));
     }
@@ -101,13 +101,13 @@ device::ProtocolVersion ConvertToProtocolVersion(base::StringPiece protocol) {
   return device::ProtocolVersion::kUnknown;
 }
 
-base::Optional<device::Ctap2Version> ConvertToCtap2Version(
+absl::optional<device::Ctap2Version> ConvertToCtap2Version(
     base::StringPiece version) {
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_0)
     return device::Ctap2Version::kCtap2_0;
   if (version == WebAuthn::Ctap2VersionEnum::Ctap2_1)
     return device::Ctap2Version::kCtap2_1;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<uint8_t> CopyBinaryToVector(const Binary& binary) {
@@ -371,7 +371,7 @@ void WebAuthnHandler::GetCredential(
       base::BindOnce(
           [](std::unique_ptr<WebAuthn::Credential> registration,
              std::unique_ptr<GetCredentialCallback> callback,
-             const base::Optional<std::vector<uint8_t>>& blob) {
+             const absl::optional<std::vector<uint8_t>>& blob) {
             if (blob) {
               registration->SetLargeBlob(Binary::fromVector(*blob));
             }

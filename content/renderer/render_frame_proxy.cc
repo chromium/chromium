@@ -85,7 +85,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     AgentSchedulingGroup& agent_scheduling_group,
     const blink::RemoteFrameToken& frame_token,
     int routing_id,
-    const base::Optional<blink::FrameToken>& opener_frame_token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
     int parent_routing_id,
     blink::mojom::FrameReplicationStatePtr replicated_state,

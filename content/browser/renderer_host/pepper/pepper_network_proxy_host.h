@@ -16,10 +16,10 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -74,7 +74,7 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
 
   void OnResolveProxyCompleted(ppapi::host::ReplyMessageContext context,
                                PepperProxyLookupHelper* pending_request,
-                               base::Optional<net::ProxyInfo> proxy_info);
+                               absl::optional<net::ProxyInfo> proxy_info);
   void SendFailureReply(int32_t error,
                         ppapi::host::ReplyMessageContext context);
 

@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -85,8 +85,8 @@ class ServiceBinderImpl {
                        std::move(*receiver), std::move(termination_callback)));
   }
 
-  static base::Optional<ServiceBinderImpl>& GetInstanceStorage() {
-    static base::NoDestructor<base::Optional<ServiceBinderImpl>> storage;
+  static absl::optional<ServiceBinderImpl>& GetInstanceStorage() {
+    static base::NoDestructor<absl::optional<ServiceBinderImpl>> storage;
     return *storage;
   }
 

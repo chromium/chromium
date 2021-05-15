@@ -113,7 +113,7 @@ class TestBrowserThread;
 //    protected:
 //     // Use this protected member directly from the test body to drive tasks
 //     // posted within a FooBase-based test.
-//     base::Optional<base::test::TaskEnvironment> task_environment_;
+//     absl::optional<base::test::TaskEnvironment> task_environment_;
 //   };
 //
 //   class ChromeFooBase : public FooBase {
@@ -179,7 +179,7 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
 
   void Init();
 
-  static constexpr bool UseRealIOThread(base::Optional<Options> options) {
+  static constexpr bool UseRealIOThread(absl::optional<Options> options) {
     if (!options)
       return false;
     return *options == Options::REAL_IO_THREAD;

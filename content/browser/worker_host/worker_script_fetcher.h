@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_FETCHER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -14,6 +13,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 
 namespace network {
@@ -42,7 +42,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
  public:
   using CreateAndStartCallback =
       base::OnceCallback<void(blink::mojom::WorkerMainScriptLoadParamsPtr,
-                              base::Optional<SubresourceLoaderParams>,
+                              absl::optional<SubresourceLoaderParams>,
                               bool /* success */)>;
 
   // Called on the IO thread, and calls |callback| on the IO thread when
@@ -96,7 +96,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
       this};
 
-  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
+  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;

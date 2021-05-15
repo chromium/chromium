@@ -9,7 +9,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -102,16 +102,16 @@ blink::mojom::ContentDescriptionPtr DescriptionFromProto(
   return result;
 }
 
-base::Optional<ContentIndexEntry> EntryFromSerializedProto(
+absl::optional<ContentIndexEntry> EntryFromSerializedProto(
     int64_t service_worker_registration_id,
     const std::string& serialized_proto) {
   proto::ContentEntry entry_proto;
   if (!entry_proto.ParseFromString(serialized_proto))
-    return base::nullopt;
+    return absl::nullopt;
 
   GURL launch_url(entry_proto.launch_url());
   if (!launch_url.is_valid())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto description = DescriptionFromProto(entry_proto.description());
   base::Time registration_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -575,7 +575,7 @@ void ContentIndexDatabase::GetEntry(
 
   auto wrapped_callback = base::BindOnce(
       [](ContentIndexContext::GetEntryCallback callback,
-         base::Optional<ContentIndexEntry> entry) {
+         absl::optional<ContentIndexEntry> entry) {
         GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), std::move(entry)));
       },
@@ -610,7 +610,7 @@ void ContentIndexDatabase::DidGetEntry(
   content_index::RecordDatabaseOperationStatus("GetEntry", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

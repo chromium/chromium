@@ -6,12 +6,12 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -31,7 +31,7 @@ ConversionReport GetReport(base::Time impression_time,
                               .Build(),
                           /*conversion_data=*/"123", conversion_time,
                           report_time,
-                          /*conversion_id=*/base::nullopt);
+                          /*conversion_id=*/absl::nullopt);
 }
 
 }  // namespace

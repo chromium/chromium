@@ -49,7 +49,7 @@ void OnReadComplete(web_package::mojom::BundleDataSource::ReadCallback callback,
                     int bytes_read) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (bytes_read != io_buf->size()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::vector<uint8_t> vec;
@@ -66,16 +66,16 @@ void OnCalculateSizeComplete(
     int net_error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (net_error != net::OK) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   if (offset >= blob_reader->total_size()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   uint64_t offset_plus_length;
   if (!base::CheckAdd(offset, length).AssignIfValid(&offset_plus_length)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   if (offset_plus_length > blob_reader->total_size())
@@ -84,7 +84,7 @@ void OnCalculateSizeComplete(
   auto set_read_range_status = blob_reader->SetReadRange(offset, length);
   if (set_read_range_status != storage::BlobReader::Status::DONE) {
     DCHECK_EQ(set_read_range_status, storage::BlobReader::Status::NET_ERROR);
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   auto* raw_blob_reader = blob_reader.get();
@@ -335,7 +335,7 @@ void WebBundleBlobDataSource::BlobDataSourceCore::OnBlobReadyForRead(
     ReadCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!blob_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   auto blob_reader = blob_->CreateReader();

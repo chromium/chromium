@@ -130,7 +130,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
  protected:
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
-  base::Optional<DisplayFeature> GetDisplayFeature() override;
+  absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
 
@@ -151,7 +151,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   std::unique_ptr<aura::Window> window_;
 #endif
 
-  base::Optional<DisplayFeature> display_feature_;
+  absl::optional<DisplayFeature> display_feature_;
 };
 
 // TestRenderViewHost ----------------------------------------------------------
@@ -203,7 +203,7 @@ class TestRenderViewHost
   // RenderViewHostImpl overrides.
   MockRenderProcessHost* GetProcess() override;
   bool CreateRenderView(
-      const base::Optional<blink::FrameToken>& opener_frame_token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener) override;
   bool IsTestRenderViewHost() const override;
@@ -224,7 +224,7 @@ class TestRenderViewHost
   }
 
   // The opener frame route id passed to CreateRenderView().
-  const base::Optional<blink::FrameToken>& opener_frame_token() const {
+  const absl::optional<blink::FrameToken>& opener_frame_token() const {
     return opener_frame_token_;
   }
 
@@ -251,7 +251,7 @@ class TestRenderViewHost
   int* delete_counter_;
 
   // See opener_frame_token() above.
-  base::Optional<blink::FrameToken> opener_frame_token_;
+  absl::optional<blink::FrameToken> opener_frame_token_;
 
   DISALLOW_COPY_AND_ASSIGN(TestRenderViewHost);
 };

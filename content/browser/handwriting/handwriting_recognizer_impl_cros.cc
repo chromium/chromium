@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // Supported language tags. At the moment, CrOS only ships two models.
@@ -29,15 +29,15 @@ bool LanguageTagsAreMatching(base::StringPiece a, base::StringPiece b) {
 }
 
 // Returns the model identifier (language in HandwritingRecognizerSpec) for
-// ml_service backend. Returns base::nullopt if language_tag isn't supported.
-base::Optional<std::string> GetModelIdentifier(base::StringPiece language_tag) {
+// ml_service backend. Returns absl::nullopt if language_tag isn't supported.
+absl::optional<std::string> GetModelIdentifier(base::StringPiece language_tag) {
   if (LanguageTagsAreMatching(language_tag, kLanguageTagEnglish))
     return "en";
 
   if (LanguageTagsAreMatching(language_tag, kLanguageTagGesture))
     return "gesture_in_context";
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -68,11 +68,11 @@ void OnModelBinding(
 // The callback for `mojom::HandwritingRecognizer::Recognize` (CrOS).
 void OnRecognitionResult(
     CrOSHandwritingRecognizerImpl::GetPredictionCallback callback,
-    base::Optional<std::vector<chromeos::machine_learning::web_platform::mojom::
+    absl::optional<std::vector<chromeos::machine_learning::web_platform::mojom::
                                    HandwritingPredictionPtr>>
         result_from_mlservice) {
   if (!result_from_mlservice.has_value()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::vector<handwriting::mojom::HandwritingPredictionPtr> result_to_blink;
@@ -117,7 +117,7 @@ void CrOSHandwritingRecognizerImpl::Create(
     return;
   }
 
-  base::Optional<std::string> model_spec_language =
+  absl::optional<std::string> model_spec_language =
       GetModelIdentifier(constraint_blink->languages[0]);
   if (!model_spec_language) {
     std::move(callback).Run(

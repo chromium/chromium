@@ -43,7 +43,7 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
     return direct_sockets_service().ValidateOptions(options);
   }
 
-  base::Optional<net::IPEndPoint> GetLocalAddr(
+  absl::optional<net::IPEndPoint> GetLocalAddr(
       const blink::mojom::DirectSocketOptions& options) {
     return DirectSocketsServiceImpl::GetLocalAddrForTesting(options);
   }
@@ -89,8 +89,8 @@ TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {
   blink::mojom::DirectSocketOptions options;
 
   // Test for default condition.
-  base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(options);
-  EXPECT_EQ(local_addr, base::nullopt);
+  absl::optional<net::IPEndPoint> local_addr = GetLocalAddr(options);
+  EXPECT_EQ(local_addr, absl::nullopt);
 
   // Test with IPv4 address and default port(0) provided.
   options.local_hostname = "12.34.56.78";

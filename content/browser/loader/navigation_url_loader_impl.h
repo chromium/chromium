@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
@@ -22,6 +21,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 
@@ -235,7 +235,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // Currently used by the AppCache loader to pass its factory to the
   // renderer which enables it to handle subresources.
-  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
+  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
   size_t interceptor_index_ = 0;
@@ -266,7 +266,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // the case that the response is intercepted by download, and OnComplete()
   // is already called while we are transferring the |url_loader_| and
   // response body to download code.
-  base::Optional<network::URLLoaderCompletionStatus> status_;
+  absl::optional<network::URLLoaderCompletionStatus> status_;
 
   // Before creating this URLLoaderRequestController on UI thread, the
   // embedder may have elected to proxy the URLLoaderFactory receiver, in

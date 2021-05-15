@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_APPCACHE_APPCACHE_POLICY_H_
 #define CONTENT_BROWSER_APPCACHE_APPCACHE_POLICY_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -26,14 +26,14 @@ class AppCachePolicy {
       const GURL& manifest_url,
 
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) = 0;
+      const absl::optional<url::Origin>& top_frame_origin) = 0;
 
   // Called prior to creating a new appcache. Returns true if allowed.
   virtual bool CanCreateAppCache(
       const GURL& manifest_url,
 
       const GURL& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) = 0;
+      const absl::optional<url::Origin>& top_frame_origin) = 0;
 
   // Returns true if origin trial tokens are required in order to fetch or
   // update manifests, as well as load any resources from such a manifest.

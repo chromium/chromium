@@ -10,13 +10,13 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/notifications/notification_database_data.pb.h"
 #include "content/browser/notifications/notification_database_resources.pb.h"
 #include "content/public/browser/notification_database_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -69,19 +69,19 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
     output->time_until_close_millis =
         base::TimeDelta::FromMilliseconds(message.time_until_close_millis());
   } else {
-    output->time_until_close_millis = base::nullopt;
+    output->time_until_close_millis = absl::nullopt;
   }
   if (message.has_time_until_first_click_millis()) {
     output->time_until_first_click_millis = base::TimeDelta::FromMilliseconds(
         message.time_until_first_click_millis());
   } else {
-    output->time_until_first_click_millis = base::nullopt;
+    output->time_until_first_click_millis = absl::nullopt;
   }
   if (message.has_time_until_last_click_millis()) {
     output->time_until_last_click_millis = base::TimeDelta::FromMilliseconds(
         message.time_until_last_click_millis());
   } else {
-    output->time_until_last_click_millis = base::nullopt;
+    output->time_until_last_click_millis = absl::nullopt;
   }
 
   switch (message.closed_reason()) {
@@ -176,12 +176,12 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
             base::TimeDelta::FromMicroseconds(
                 payload.show_trigger_timestamp()));
   } else {
-    notification_data->show_trigger_timestamp = base::nullopt;
+    notification_data->show_trigger_timestamp = absl::nullopt;
   }
 
   output->has_triggered = message.has_triggered();
 
-  output->notification_resources = base::nullopt;
+  output->notification_resources = absl::nullopt;
 
   return true;
 }

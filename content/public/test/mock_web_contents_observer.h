@@ -278,12 +278,12 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void, OnBackgroundColorChanged, (), (override));
   MOCK_METHOD(void,
               OnDidAddMessageToConsole,
-              (RenderFrameHost* source_frame,
+              (RenderFrameHost * source_frame,
                blink::mojom::ConsoleMessageLevel log_level,
                const std::u16string& message,
                int32_t line_no,
                const std::u16string& source_id,
-               const base::Optional<std::u16string>& untrusted_stack_trace),
+               const absl::optional<std::u16string>& untrusted_stack_trace),
               (override));
   MOCK_METHOD(void,
               MediaStartedPlaying,
@@ -336,8 +336,8 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               DidUpdateWebManifestURL,
-              (RenderFrameHost* target_frame,
-               const base::Optional<GURL>& manifest_url),
+              (RenderFrameHost * target_frame,
+               const absl::optional<GURL>& manifest_url),
               (override));
   MOCK_METHOD(void,
               OnInterfaceRequestFromFrame,

@@ -301,7 +301,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   //
   // TODO(fdoray): Move this to a more elaborate class that prevents BEST_EFFORT
   // tasks from running when resources are needed to respond to user actions.
-  base::Optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+  absl::optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
       scoped_best_effort_execution_fence_;
 
   // Unregister UI thread from hang watching on destruction.

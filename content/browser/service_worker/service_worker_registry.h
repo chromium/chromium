@@ -276,7 +276,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   void Start();
   void FindRegistrationForIdInternal(
       int64_t registration_id,
-      const base::Optional<storage::StorageKey>& key,
+      const absl::optional<storage::StorageKey>& key,
       FindRegistrationCallback callback);
   ServiceWorkerRegistration* FindInstallingRegistrationForClientUrl(
       const GURL& client_url,
@@ -296,7 +296,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // Looks up live registrations and returns an optional value which may contain
   // a "findable" registration. See the implementation of this method for
   // what "findable" means and when a registration is returned.
-  base::Optional<scoped_refptr<ServiceWorkerRegistration>>
+  absl::optional<scoped_refptr<ServiceWorkerRegistration>>
   FindFromLiveRegistrationsForId(int64_t registration_id);
 
   void DoomUncommittedResources(const std::vector<int64_t>& resource_ids);
@@ -467,7 +467,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // ServiceWorkerStorage once QuotaManager gets mojofied.
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   // For finding registrations being installed or uninstalled.
   using RegistrationRefsById =

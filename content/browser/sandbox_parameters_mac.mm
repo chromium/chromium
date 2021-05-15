@@ -15,7 +15,6 @@
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -31,6 +30,7 @@
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/common/pepper_plugin_info.h"
@@ -40,9 +40,9 @@ namespace content {
 
 namespace {
 
-base::Optional<base::FilePath>& GetNetworkTestCertsDirectory() {
+absl::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
   // Set by SetNetworkTestCertsDirectoryForTesting().
-  static base::NoDestructor<base::Optional<base::FilePath>>
+  static base::NoDestructor<absl::optional<base::FilePath>>
       network_test_certs_dir;
   return *network_test_certs_dir;
 }

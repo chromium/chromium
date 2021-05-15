@@ -61,7 +61,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
   for (const MediaSessionAction& action : actions_) {
-    base::Optional<ui::KeyboardCode> action_key_code =
+    absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (!action_key_code.has_value())
       continue;
@@ -73,7 +73,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   // to necessary media keys.
   actions_.clear();
   for (const MediaSessionAction& action : actions) {
-    base::Optional<ui::KeyboardCode> action_key_code =
+    absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (action_key_code.has_value()) {
       // It's okay to call this even on keys we're already listening to, since
@@ -92,7 +92,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 }
 
 void ActiveMediaSessionController::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   position_ = position;
 }
 
@@ -226,7 +226,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
   }
 }
 
-base::Optional<ui::KeyboardCode>
+absl::optional<ui::KeyboardCode>
 ActiveMediaSessionController::MediaSessionActionToKeyCode(
     MediaSessionAction action) const {
   switch (action) {
@@ -251,7 +251,7 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

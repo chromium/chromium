@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
@@ -18,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 #include "content/public/browser/jank_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace responsiveness {
@@ -71,8 +71,8 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
     void DidRunTaskOrEvent(const void* opaque_identifier);
 
     // Checks the jankiness of the target thread. Returns the opaque identifier
-    // of the janky task or base::nullopt if the current task is not janky.
-    base::Optional<const void*> CheckJankiness();
+    // of the janky task or absl::nullopt if the current task is not janky.
+    absl::optional<const void*> CheckJankiness();
     void AssertOnTargetThread();
 
    private:

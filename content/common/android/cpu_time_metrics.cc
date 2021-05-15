@@ -436,7 +436,7 @@ class ProcessCpuTimeMetricsReporter
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
-    base::Optional<bool> was_visible = is_visible_;
+    absl::optional<bool> was_visible = is_visible_;
     is_visible_ = visible;
 
     if (collection_in_progress_.load(std::memory_order_relaxed))
@@ -449,7 +449,7 @@ class ProcessCpuTimeMetricsReporter
   // power_scheduler::PowerModeArbiter::Observer implementation:
   void OnPowerModeChanged(power_scheduler::PowerMode old_mode,
                           power_scheduler::PowerMode new_mode) override {
-    base::Optional<power_scheduler::PowerMode> old_power_mode =
+    absl::optional<power_scheduler::PowerMode> old_power_mode =
         power_mode_.has_value() ? power_mode_ : old_mode;
     power_mode_ = new_mode;
 
@@ -465,8 +465,8 @@ class ProcessCpuTimeMetricsReporter
   }
 
   void PostCollectionTask(
-      base::Optional<bool> was_visible,
-      base::Optional<power_scheduler::PowerMode> power_mode) {
+      absl::optional<bool> was_visible,
+      absl::optional<power_scheduler::PowerMode> power_mode) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
     // PostTask() applies a barrier, so this will be applied before the thread
     // pool task executes and sets |collection_in_progress_| back to false.
@@ -480,8 +480,8 @@ class ProcessCpuTimeMetricsReporter
   }
 
   void CollectAndReportCpuTimeOnThreadPool(
-      base::Optional<bool> was_visible,
-      base::Optional<power_scheduler::PowerMode> power_mode) {
+      absl::optional<bool> was_visible,
+      absl::optional<power_scheduler::PowerMode> power_mode) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
 
     // This might overflow. We only care that it is different for each cycle.
@@ -860,8 +860,8 @@ class ProcessCpuTimeMetricsReporter
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   int task_counter_ = 0;
   int reporting_interval_ = 0;  // set in constructor.
-  base::Optional<bool> is_visible_;
-  base::Optional<power_scheduler::PowerMode> power_mode_;
+  absl::optional<bool> is_visible_;
+  absl::optional<power_scheduler::PowerMode> power_mode_;
 
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);

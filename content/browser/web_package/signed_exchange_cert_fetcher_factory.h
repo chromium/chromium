@@ -44,7 +44,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcherFactory {
   static std::unique_ptr<SignedExchangeCertFetcherFactory> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      const base::Optional<base::UnguessableToken>& throttling_profile_id,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
 };
 

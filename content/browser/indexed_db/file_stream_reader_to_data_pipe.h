@@ -48,7 +48,7 @@ class CONTENT_EXPORT FileStreamReaderToDataPipe {
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   // Optional so that its construction can be deferred.
-  base::Optional<mojo::SimpleWatcher> writable_handle_watcher_;
+  absl::optional<mojo::SimpleWatcher> writable_handle_watcher_;
 
   base::WeakPtrFactory<FileStreamReaderToDataPipe> weak_factory_{this};
 };

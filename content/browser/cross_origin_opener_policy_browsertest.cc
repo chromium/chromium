@@ -2775,8 +2775,8 @@ IN_PROC_BROWSER_TEST_F(CoopReportingOriginTrialBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
   network::CrossOriginOpenerPolicy coop =
       current_frame_host()->cross_origin_opener_policy();
-  EXPECT_EQ(coop.reporting_endpoint, base::nullopt);
-  EXPECT_EQ(coop.report_only_reporting_endpoint, base::nullopt);
+  EXPECT_EQ(coop.reporting_endpoint, absl::nullopt);
+  EXPECT_EQ(coop.report_only_reporting_endpoint, absl::nullopt);
   EXPECT_EQ(coop.value,
             network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep);
   EXPECT_EQ(coop.report_only_value,

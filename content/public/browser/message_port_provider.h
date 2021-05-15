@@ -10,10 +10,10 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
 #if defined(OS_ANDROID)
@@ -55,7 +55,7 @@ class CONTENT_EXPORT MessagePortProvider {
   static void PostMessageToFrame(
       WebContents* web_contents,
       const std::u16string& source_origin,
-      const base::Optional<std::u16string>& target_origin,
+      const absl::optional<std::u16string>& target_origin,
       const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
 #endif  // OS_FUCHSIA || BUILDFLAG(IS_CHROMECAST)

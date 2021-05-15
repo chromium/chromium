@@ -103,7 +103,7 @@ class KeySystemSupportImplTest : public testing::Test {
   // Registers |key_system| with |capability|. All other values for CdmInfo have
   // some default value as they're not returned by IsKeySystemSupported().
   void Register(const std::string& key_system,
-                base::Optional<media::CdmCapability> capability,
+                absl::optional<media::CdmCapability> capability,
                 Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 
@@ -190,7 +190,7 @@ TEST_F(KeySystemSupportImplTest, MissingKeySystem) {
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
-  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+  Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
       .WillOnce(RunOnceCallback<1>(TestCdmCapability()));
@@ -204,10 +204,10 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_Supported) {
 
 TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
   scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
-  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+  Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   EXPECT_CALL(hw_secure_capability_cb_, Run("KeySystem", _))
-      .WillOnce(RunOnceCallback<1>(base::nullopt));
+      .WillOnce(RunOnceCallback<1>(absl::nullopt));
   EXPECT_FALSE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_);
 
@@ -219,7 +219,7 @@ TEST_F(KeySystemSupportImplTest, LazyInitialize_NotSupported) {
 TEST_F(KeySystemSupportImplTest,
        LazyInitialize_HardwareSecureDecryptionDisabled) {
   scoped_feature_list_.InitAndDisableFeature(media::kHardwareSecureDecryption);
-  Register("KeySystem", base::nullopt, Robustness::kHardwareSecure);
+  Register("KeySystem", absl::nullopt, Robustness::kHardwareSecure);
 
   EXPECT_FALSE(IsSupported("KeySystem"));
   EXPECT_FALSE(capability_);

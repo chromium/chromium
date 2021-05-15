@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
@@ -19,6 +18,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
 namespace content {
@@ -55,13 +55,13 @@ class TestOverlayWindow : public OverlayWindow {
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
   cc::Layer* GetLayerForTesting() override { return nullptr; }
 
-  const base::Optional<PlaybackState>& playback_state() const {
+  const absl::optional<PlaybackState>& playback_state() const {
     return playback_state_;
   }
 
  private:
   gfx::Size size_;
-  base::Optional<PlaybackState> playback_state_;
+  absl::optional<PlaybackState> playback_state_;
 
   DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };

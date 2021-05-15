@@ -74,7 +74,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
         GURL(kPreloadPath), network::mojom::LinkRelAttribute::kPreload,
         network::mojom::LinkAsAttribute::kScript,
         network::mojom::CrossOriginAttribute::kUnspecified,
-        /*mime_type=*/base::nullopt);
+        /*mime_type=*/absl::nullopt);
     auto hints = network::mojom::EarlyHints::New();
     hints->headers = network::mojom::ParsedHeaders::New();
     hints->headers->link_headers.push_back(std::move(link_header));

@@ -161,7 +161,7 @@ class WebDragSourceAura : public content::WebContentsObserver {
 // necessary.
 void PrepareDragForFileContents(const DropData& drop_data,
                                 ui::OSExchangeDataProvider* provider) {
-  base::Optional<base::FilePath> filename =
+  absl::optional<base::FilePath> filename =
       drop_data.GetSafeFilenameForImageFileContents();
   if (filename)
     provider->SetFileContents(*filename, drop_data.file_contents);
@@ -396,7 +396,7 @@ WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data,
     base::ScopedClosureRunner end_drag_runner,
-    base::Optional<gfx::PointF> transformed_pt,
+    absl::optional<gfx::PointF> transformed_pt,
     gfx::PointF screen_pt)
     : target_rwh(target_rwh->GetWeakPtr()),
       event(event),
@@ -1227,7 +1227,7 @@ void WebContentsViewAura::DragEnteredCallback(
     ui::DropTargetEvent event,
     std::unique_ptr<DropData> drop_data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> transformed_pt) {
+    absl::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = true;
   if (!target)
     return;
@@ -1294,7 +1294,7 @@ void WebContentsViewAura::DragUpdatedCallback(
     ui::DropTargetEvent event,
     std::unique_ptr<DropData> drop_data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> transformed_pt) {
+    absl::optional<gfx::PointF> transformed_pt) {
   // If drag is not in progress it means drag has already finished and we get
   // this callback after that already. This happens for example when drag leaves
   // out window and we get the exit signal while still waiting for this
@@ -1405,7 +1405,7 @@ void WebContentsViewAura::PerformDropCallback(
     ui::DropTargetEvent event,
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    base::Optional<gfx::PointF> transformed_pt) {
+    absl::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = false;
   base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
 

@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -25,6 +24,7 @@
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -36,7 +36,7 @@ namespace {
 
 bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
                            v8::Local<v8::Context> context,
-                           const base::Optional<std::string>& maybe_json,
+                           const absl::optional<std::string>& maybe_json,
                            std::vector<v8::Local<v8::Value>>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   if (maybe_json.has_value()) {
@@ -53,7 +53,7 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
 //
 // TODO(mmenke): Remove once this class switches over to using Mojo.
 void InvokeReportWinCallbackAsync(BidderWorklet::ReportWinCallback callback,
-                                  const base::Optional<GURL>& report_url,
+                                  const absl::optional<GURL>& report_url,
                                   const std::vector<std::string>& errors) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), report_url, errors));
@@ -83,8 +83,8 @@ BidderWorklet::BidderWorklet(
     AuctionV8Helper* v8_helper,
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojom::BiddingInterestGroupPtr bidding_interest_group,
-    const base::Optional<std::string>& auction_signals_json,
-    const base::Optional<std::string>& per_buyer_signals_json,
+    const absl::optional<std::string>& auction_signals_json,
+    const absl::optional<std::string>& per_buyer_signals_json,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_seller_origin,
     base::Time auction_start_time,
@@ -153,7 +153,7 @@ void BidderWorklet::ReportWin(
       !AppendJsonValueOrNull(v8_helper_, context, per_buyer_signals_json_,
                              &args) ||
       !v8_helper_->AppendJsonValue(context, seller_signals_json, &args)) {
-    std::move(callback).Run(base::nullopt /* report_url */,
+    std::move(callback).Run(absl::nullopt /* report_url */,
                             std::vector<std::string>() /* errors */);
     return;
   }
@@ -172,7 +172,7 @@ void BidderWorklet::ReportWin(
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid)) {
-    std::move(callback).Run(base::nullopt /* report_url */,
+    std::move(callback).Run(absl::nullopt /* report_url */,
                             std::vector<std::string>() /* errors */);
     return;
   }
@@ -180,7 +180,7 @@ void BidderWorklet::ReportWin(
 
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
-  base::Optional<std::string> error_msg_out;
+  absl::optional<std::string> error_msg_out;
   if (v8_helper_
           ->RunScript(context, worklet_script_->Get(isolate), "reportWin", args,
                       error_msg_out)
@@ -188,7 +188,7 @@ void BidderWorklet::ReportWin(
     std::vector<std::string> errors;
     if (error_msg_out)
       errors.push_back(std::move(error_msg_out).value());
-    std::move(callback).Run(base::nullopt /* report_url */, errors);
+    std::move(callback).Run(absl::nullopt /* report_url */, errors);
     return;
   }
 
@@ -200,7 +200,7 @@ void BidderWorklet::ReportWin(
 
 void BidderWorklet::OnScriptDownloaded(
     std::unique_ptr<v8::Global<v8::UnboundScript>> worklet_script,
-    base::Optional<std::string> error_msg) {
+    absl::optional<std::string> error_msg) {
   DCHECK(load_script_and_generate_bid_callback_);
 
   if (worklet_script == nullptr) {
@@ -217,7 +217,7 @@ void BidderWorklet::OnScriptDownloaded(
 
 void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     bool load_result,
-    base::Optional<std::string> error_msg) {
+    absl::optional<std::string> error_msg) {
   // Worklet results should still be pending.
   DCHECK(load_script_and_generate_bid_callback_);
   DCHECK(trusted_bidding_signals_loading_);
@@ -345,7 +345,7 @@ void BidderWorklet::GenerateBidIfReady() {
   args.push_back(browser_signals);
 
   v8::Local<v8::Value> generate_bid_result;
-  base::Optional<std::string> error_msg_out;
+  absl::optional<std::string> error_msg_out;
   if (!v8_helper_
            ->RunScript(context, worklet_script_->Get(isolate), "generateBid",
                        args, error_msg_out)
@@ -413,7 +413,7 @@ void BidderWorklet::GenerateBidIfReady() {
 }
 
 void BidderWorklet::InvokeBidCallbackOnError(
-    base::Optional<std::string> error_msg) {
+    absl::optional<std::string> error_msg) {
   std::vector<std::string> errors;
   if (error_msg)
     errors.emplace_back(std::move(error_msg).value());
@@ -421,7 +421,7 @@ void BidderWorklet::InvokeBidCallbackOnError(
     errors.emplace_back(std::move(trusted_bidding_signals_error_msg_).value());
   }
   std::move(load_script_and_generate_bid_callback_)
-      .Run(base::nullopt /* bid */, errors);
+      .Run(absl::nullopt /* bid */, errors);
 }
 
 }  // namespace auction_worklet

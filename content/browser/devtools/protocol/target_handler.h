@@ -158,7 +158,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::string owner_target_id_;
   DevToolsSession* root_session_;
   base::flat_set<Throttle*> throttles_;
-  base::Optional<net::ProxyConfig> pending_proxy_config_;
+  absl::optional<net::ProxyConfig> pending_proxy_config_;
   base::WeakPtrFactory<TargetHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TargetHandler);

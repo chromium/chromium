@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/browser/media/audio_muting_session.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 namespace mojom {
@@ -73,7 +73,7 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
 
   // Constructed only if the loopback source playback should be muted while the
   // loopback stream is running.
-  base::Optional<AudioMutingSession> muter_;
+  absl::optional<AudioMutingSession> muter_;
 
   mojo::Remote<blink::mojom::RendererAudioInputStreamFactoryClient>
       renderer_factory_client_;

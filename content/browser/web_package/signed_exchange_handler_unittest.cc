@@ -245,7 +245,7 @@ class SignedExchangeHandlerTest
     SignedExchangeHandler::SetNetworkContextForTesting(nullptr);
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
     signed_exchange_utils::SetVerificationTimeForTesting(
-        base::Optional<base::Time>());
+        absl::optional<base::Time>());
     SetBrowserClientForTesting(original_client_);
   }
 
@@ -383,12 +383,12 @@ class SignedExchangeHandlerTest
   }
 
   void ExpectHistogramValues(
-      base::Optional<SignedExchangeSignatureVerifier::Result> signature_result,
-      base::Optional<int32_t> cert_result,
-      base::Optional<net::ct::CTPolicyCompliance> ct_result,
-      base::Optional<net::OCSPVerifyResult::ResponseStatus>
+      absl::optional<SignedExchangeSignatureVerifier::Result> signature_result,
+      absl::optional<int32_t> cert_result,
+      absl::optional<net::ct::CTPolicyCompliance> ct_result,
+      absl::optional<net::OCSPVerifyResult::ResponseStatus>
           ocsp_response_status,
-      base::Optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
+      absl::optional<net::OCSPRevocationStatus> ocsp_revocation_status) {
     // CertVerificationResult histogram records negated net::Error code.
     if (cert_result.has_value())
       *cert_result = -*cert_result;
@@ -435,7 +435,7 @@ class SignedExchangeHandlerTest
 
   template <typename T>
   void ExpectZeroOrUniqueSample(const std::string& histogram_name,
-                                base::Optional<T> expected_value) {
+                                absl::optional<T> expected_value) {
     if (expected_value.has_value())
       histogram_tester_.ExpectUniqueSample(histogram_name, *expected_value, 1);
     else
@@ -706,9 +706,9 @@ TEST_P(SignedExchangeHandlerTest, CertSha256Mismatch) {
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
-      base::nullopt /* cert_result */, base::nullopt /* ct_result */,
-      base::nullopt /* ocsp_response_status */,
-      base::nullopt /* ocsp_revocation_status */);
+      absl::nullopt /* cert_result */, absl::nullopt /* ct_result */,
+      absl::nullopt /* ocsp_response_status */,
+      absl::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -736,8 +736,8 @@ TEST_P(SignedExchangeHandlerTest, VerifyCertFailure) {
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::ERR_CERT_INVALID,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
-      base::nullopt /* ocsp_response_status */,
-      base::nullopt /* ocsp_revocation_status */);
+      absl::nullopt /* ocsp_response_status */,
+      absl::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
@@ -897,8 +897,8 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
                         net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        base::nullopt /* ocsp_response_status */,
-                        base::nullopt /* ocsp_revocation_status */);
+                        absl::nullopt /* ocsp_response_status */,
+                        absl::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 }
@@ -952,8 +952,8 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
                         net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-                        base::nullopt /* ocsp_response_status */,
-                        base::nullopt /* ocsp_revocation_status */);
+                        absl::nullopt /* ocsp_response_status */,
+                        absl::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
 

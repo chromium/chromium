@@ -77,7 +77,7 @@ bool ShellDownloadManagerDelegate::DetermineDownloadTarget(
         download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN,
-        download->GetForcedFilePath(), base::nullopt /*download_schedule*/,
+        download->GetForcedFilePath(), absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     return true;
   }
@@ -144,7 +144,7 @@ void ShellDownloadManagerDelegate::OnDownloadPathGenerated(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN,
         suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload")),
-        base::nullopt /*download_schedule*/,
+        absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     return;
   }
@@ -196,7 +196,7 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
                           download::DownloadItem::TARGET_DISPOSITION_PROMPT,
                           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
                           download::DownloadItem::MixedContentStatus::UNKNOWN,
-                          result, base::nullopt /*download_schedule*/,
+                          result, absl::nullopt /*download_schedule*/,
                           download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 

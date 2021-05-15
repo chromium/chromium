@@ -38,8 +38,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->process_id = frame->GetProcess()->GetID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()
-          ? base::make_optional(frame->GetLastCommittedURL())
-          : base::nullopt;
+          ? absl::make_optional(frame->GetLastCommittedURL())
+          : absl::nullopt;
   frame_info->is_bfcached = is_bfcached;
 
   SiteInstanceImpl* site_instance =
@@ -54,8 +54,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   frame_info->site_instance->site_url =
       site_instance->HasSite()
-          ? base::make_optional(site_instance->GetSiteInfo().site_url())
-          : base::nullopt;
+          ? absl::make_optional(site_instance->GetSiteInfo().site_url())
+          : absl::nullopt;
 
   // Only send a process lock URL if it's different from the site URL.  In the
   // common case they are the same, so we avoid polluting the UI with two
@@ -65,8 +65,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
                                   site_instance->GetSiteInfo().site_url();
   frame_info->site_instance->process_lock_url =
       should_show_lock_url
-          ? base::make_optional(site_instance->GetSiteInfo().process_lock_url())
-          : base::nullopt;
+          ? absl::make_optional(site_instance->GetSiteInfo().process_lock_url())
+          : absl::nullopt;
 
   frame_info->site_instance->is_origin_keyed =
       site_instance->GetSiteInfo().is_origin_keyed();

@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 #define CONTENT_BROWSER_ISOLATION_CONTEXT_H_
 
-#include "base/optional.h"
 #include "base/util/type_safety/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_or_resource_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

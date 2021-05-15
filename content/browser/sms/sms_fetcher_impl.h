@@ -10,13 +10,13 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/browser/sms/sms_queue.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/sms_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -56,9 +56,9 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   bool HasSubscribers() override;
 
  private:
-  void OnRemote(base::Optional<OriginList>,
-                base::Optional<std::string> one_time_code,
-                base::Optional<FailureType> failure_type);
+  void OnRemote(absl::optional<OriginList>,
+                absl::optional<std::string> one_time_code,
+                absl::optional<FailureType> failure_type);
 
   bool Notify(const OriginList& origin_list,
               const std::string& one_time_code,

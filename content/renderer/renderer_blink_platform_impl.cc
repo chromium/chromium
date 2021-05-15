@@ -578,7 +578,7 @@ bool RendererBlinkPlatformImpl::RTCSmoothnessAlgorithmEnabled() {
 
 //------------------------------------------------------------------------------
 
-base::Optional<double>
+absl::optional<double>
 RendererBlinkPlatformImpl::GetWebRtcMaxCaptureFrameRate() {
   const std::string max_fps_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -588,7 +588,7 @@ RendererBlinkPlatformImpl::GetWebRtcMaxCaptureFrameRate() {
     if (base::StringToDouble(max_fps_str, &value) && value >= 0.0)
       return value;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 scoped_refptr<media::AudioRendererSink>
@@ -606,7 +606,7 @@ RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
   return blink::WebAudioDeviceFactory::GetSourceLatencyType(source_type);
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 RendererBlinkPlatformImpl::GetWebRTCAudioProcessingConfiguration() {
   return GetContentClient()
       ->renderer()
@@ -677,16 +677,16 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
   *allow_mdns_obfuscation = true;
 }
 
-base::Optional<int> RendererBlinkPlatformImpl::GetAgcStartupMinimumVolume() {
+absl::optional<int> RendererBlinkPlatformImpl::GetAgcStartupMinimumVolume() {
   std::string min_volume_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAgcStartupMinVolume);
   int startup_min_volume;
   if (min_volume_str.empty() ||
       !base::StringToInt(min_volume_str, &startup_min_volume)) {
-    return base::Optional<int>();
+    return absl::optional<int>();
   }
-  return base::Optional<int>(startup_min_volume);
+  return absl::optional<int>(startup_min_volume);
 }
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(

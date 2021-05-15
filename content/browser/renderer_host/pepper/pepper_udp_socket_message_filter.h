@@ -133,7 +133,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
                           listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
                       int result,
-                      const base::Optional<net::IPEndPoint>& local_addr_out);
+                      const absl::optional<net::IPEndPoint>& local_addr_out);
   void OnBindComplete(mojo::PendingReceiver<network::mojom::UDPSocketListener>
                           listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
@@ -151,8 +151,8 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
 
   // network::mojom::UDPSocketListener override:
   void OnReceived(int result,
-                  const base::Optional<net::IPEndPoint>& src_addr,
-                  base::Optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
 
   void OnSendToCompleted(int net_result);
   void FinishPendingSend(int net_result);

@@ -9,9 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using device::BluetoothUUID;
 

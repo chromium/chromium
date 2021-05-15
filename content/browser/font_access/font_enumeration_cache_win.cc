@@ -28,11 +28,11 @@ constexpr HRESULT kErrorNoFullNameOrPostScriptName =
 constexpr HRESULT kErrorNoFamilyName =
     MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xD104);
 
-base::Optional<std::string> GetNativeString(
+absl::optional<std::string> GetNativeString(
     Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> names) {
   // Retrieve the native name. Try the "en-us" locale and if it's
   // not present, used the first available localized name.
-  base::Optional<std::string> native =
+  absl::optional<std::string> native =
       gfx::win::RetrieveLocalizedString(names.Get(), "en-us");
   if (!native) {
     native = gfx::win::RetrieveLocalizedString(names.Get(), "");
@@ -40,10 +40,10 @@ base::Optional<std::string> GetNativeString(
   return native;
 }
 
-base::Optional<std::string> GetLocalizedString(
+absl::optional<std::string> GetLocalizedString(
     Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> names,
     const std::string& locale) {
-  base::Optional<std::string> localized_name =
+  absl::optional<std::string> localized_name =
       gfx::win::RetrieveLocalizedString(names.Get(), locale);
   return localized_name;
 }
@@ -115,7 +115,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     family_result->exit_hresult = hr;
     return family_result;
   }
-  base::Optional<std::string> native_family_name =
+  absl::optional<std::string> native_family_name =
       GetNativeString(family_names);
   if (!native_family_name) {
     family_result->exit_hresult = kErrorNoFamilyName;
@@ -171,7 +171,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       return family_result;
     }
 
-    base::Optional<std::string> native_postscript_name =
+    absl::optional<std::string> native_postscript_name =
         GetNativeString(postscript_name);
     if (!native_postscript_name) {
       family_result->exit_hresult = kErrorNoFullNameOrPostScriptName;
@@ -194,7 +194,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       return family_result;
     }
 
-    base::Optional<std::string> localized_full_name =
+    absl::optional<std::string> localized_full_name =
         GetLocalizedString(full_name, locale);
     if (!localized_full_name)
       localized_full_name = GetLocalizedString(full_name, "");
@@ -226,7 +226,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
         return family_result;
       }
     }
-    base::Optional<std::string> native_style_name;
+    absl::optional<std::string> native_style_name;
     if (exists) {
       native_style_name = GetNativeString(style_name);
     }

@@ -1016,7 +1016,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
           continue;
         }
 
-        base::Optional<blink::FrameToken> frame_token =
+        absl::optional<blink::FrameToken> frame_token =
             save_item_frame_tree_node->render_manager()
                 ->GetFrameTokenForSiteInstance(target->GetSiteInstance());
 

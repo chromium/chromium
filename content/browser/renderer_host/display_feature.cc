@@ -44,7 +44,7 @@ std::vector<gfx::Rect> DisplayFeature::ComputeWindowSegments(
 }
 
 // static
-base::Optional<DisplayFeature> DisplayFeature::Create(Orientation orientation,
+absl::optional<DisplayFeature> DisplayFeature::Create(Orientation orientation,
                                                       int offset,
                                                       int mask_length,
                                                       int width,
@@ -52,23 +52,23 @@ base::Optional<DisplayFeature> DisplayFeature::Create(Orientation orientation,
                                                       ParamErrorEnum* error) {
   if (!width && !height) {
     *error = ParamErrorEnum::kDisplayFeatureWithZeroScreenSize;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (offset < 0 || mask_length < 0) {
     *error = ParamErrorEnum::kNegativeDisplayFeatureParams;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (orientation == Orientation::kVertical && offset + mask_length > width) {
     *error = ParamErrorEnum::kOutsideScreenWidth;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (orientation == Orientation::kHorizontal &&
       offset + mask_length > height) {
     *error = ParamErrorEnum::kOutsideScreenHeight;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return DisplayFeature{orientation, offset, mask_length};

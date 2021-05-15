@@ -89,7 +89,7 @@ void ServiceWorkerInstalledScriptsSender::StartSendingScript(
 
 void ServiceWorkerInstalledScriptsSender::OnStarted(
     network::mojom::URLResponseHeadPtr response_head,
-    base::Optional<mojo_base::BigBuffer> metadata,
+    absl::optional<mojo_base::BigBuffer> metadata,
     mojo::ScopedDataPipeConsumerHandle body_handle,
     mojo::ScopedDataPipeConsumerHandle meta_data_handle) {
   DCHECK(response_head);

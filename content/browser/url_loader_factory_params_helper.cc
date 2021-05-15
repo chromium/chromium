@@ -5,7 +5,6 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -22,6 +21,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
@@ -41,7 +41,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     const url::Origin& origin,
     const url::Origin& request_initiator_origin_lock,
     bool is_trusted,
-    const base::Optional<blink::LocalFrameToken>& top_frame_token,
+    const absl::optional<blink::LocalFrameToken>& top_frame_token,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -214,7 +214,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       request_initiator,  // origin
       request_initiator,  // request_initiator_origin_lock
       false,              // is_trusted
-      base::nullopt,      // top_frame_token
+      absl::nullopt,      // top_frame_token
       isolation_info,
       nullptr,  // client_security_state
       std::move(coep_reporter),

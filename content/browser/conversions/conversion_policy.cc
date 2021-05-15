@@ -70,7 +70,7 @@ std::string ConversionPolicy::GetSanitizedImpressionData(
 }
 
 base::Time ConversionPolicy::GetExpiryTimeForImpression(
-    const base::Optional<base::TimeDelta>& declared_expiry,
+    const absl::optional<base::TimeDelta>& declared_expiry,
     base::Time impression_time) const {
   static constexpr base::TimeDelta kDefaultImpressionExpiry =
       base::TimeDelta::FromDays(30);

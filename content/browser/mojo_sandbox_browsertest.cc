@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
   // The browser should not be considered sandboxed.
   EXPECT_FALSE(sandbox::policy::Sandbox::IsProcessSandboxed());
 
-  base::Optional<bool> maybe_is_sandboxed;
+  absl::optional<bool> maybe_is_sandboxed;
   base::RunLoop run_loop;
   test_service.set_disconnect_handler(run_loop.QuitClosure());
   test_service->IsProcessSandboxed(
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, NotIsProcessSandboxed) {
   // The browser should not be considered sandboxed.
   EXPECT_FALSE(sandbox::policy::Sandbox::IsProcessSandboxed());
 
-  base::Optional<bool> maybe_is_sandboxed;
+  absl::optional<bool> maybe_is_sandboxed;
   base::RunLoop run_loop;
   test_service.set_disconnect_handler(run_loop.QuitClosure());
   test_service->IsProcessSandboxed(

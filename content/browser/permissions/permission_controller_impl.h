@@ -34,10 +34,10 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // others. If no |origin| is specified, grant permissions to all origins in
   // the browser context.
   OverrideStatus GrantOverridesForDevTools(
-      const base::Optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& origin,
       const std::vector<PermissionType>& permissions);
   OverrideStatus SetOverrideForDevTools(
-      const base::Optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& origin,
       PermissionType permission,
       const blink::mojom::PermissionStatus& status);
   void ResetOverridesForDevTools();
@@ -91,12 +91,12 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   blink::mojom::PermissionStatus GetSubscriptionCurrentValue(
       const Subscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
-      const base::Optional<GURL>& origin = base::nullopt);
+      const absl::optional<GURL>& origin = absl::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   void OnDelegatePermissionStatusChange(Subscription* subscription,
                                         blink::mojom::PermissionStatus status);
   void UpdateDelegateOverridesForDevTools(
-      const base::Optional<url::Origin>& origin);
+      const absl::optional<url::Origin>& origin);
 
   DevToolsPermissionOverrides devtools_permission_overrides_;
 

@@ -125,7 +125,7 @@ void UtilityProcessHost::RunServiceDeprecated(
     mojo::ScopedMessagePipeHandle service_pipe,
     RunServiceDeprecatedCallback callback) {
   if (launch_state_ == LaunchState::kLaunchFailed) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -358,7 +358,7 @@ void UtilityProcessHost::OnProcessLaunched() {
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
   launch_state_ = LaunchState::kLaunchFailed;
   for (auto& callback : pending_run_service_callbacks_)
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   pending_run_service_callbacks_.clear();
 }
 
@@ -381,7 +381,7 @@ void UtilityProcessHost::OnProcessCrashed(int exit_code) {
   client->OnProcessCrashed();
 }
 
-base::Optional<std::string> UtilityProcessHost::GetServiceName() {
+absl::optional<std::string> UtilityProcessHost::GetServiceName() {
   return metrics_name_;
 }
 

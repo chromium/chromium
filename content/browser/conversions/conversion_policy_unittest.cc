@@ -87,7 +87,7 @@ TEST_F(ConversionPolicyTest, NoExpiryForImpression_DefaultUsed) {
   base::Time impression_time = base::Time::Now();
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(30),
             ConversionPolicy().GetExpiryTimeForImpression(
-                /*declared_expiry=*/base::nullopt, impression_time));
+                /*declared_expiry=*/absl::nullopt, impression_time));
 }
 
 TEST_F(ConversionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {

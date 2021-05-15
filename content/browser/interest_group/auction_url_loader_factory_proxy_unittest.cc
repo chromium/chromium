@@ -232,7 +232,7 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
   }
 
   void TryMakeRequest(const std::string& url,
-                      base::Optional<std::string> accept_value,
+                      absl::optional<std::string> accept_value,
                       ExpectedResponse expected_response) {
     network::ResourceRequest request;
     request.url = GURL(url);
@@ -261,21 +261,21 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, ExactURLMatch) {
   TryMakeRequest(kScoringWorkletUrl, kAcceptJson, ExpectedResponse::kReject);
   TryMakeRequest(kScoringWorkletUrl, "Unknown/Unknown",
                  ExpectedResponse::kReject);
-  TryMakeRequest(kScoringWorkletUrl, base::nullopt, ExpectedResponse::kReject);
+  TryMakeRequest(kScoringWorkletUrl, absl::nullopt, ExpectedResponse::kReject);
 
   TryMakeRequest(kBiddingWorkletUrl1, kAcceptJavascript,
                  ExpectedResponse::kUseTrustedFactory);
   TryMakeRequest(kBiddingWorkletUrl1, kAcceptJson, ExpectedResponse::kReject);
   TryMakeRequest(kBiddingWorkletUrl1, "Unknown/Unknown",
                  ExpectedResponse::kReject);
-  TryMakeRequest(kBiddingWorkletUrl1, base::nullopt, ExpectedResponse::kReject);
+  TryMakeRequest(kBiddingWorkletUrl1, absl::nullopt, ExpectedResponse::kReject);
   TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJavascript,
                  ExpectedResponse::kReject);
   TryMakeRequest(kTrustedBiddingSignalsUrl1, kAcceptJson,
                  ExpectedResponse::kReject);
   TryMakeRequest(kTrustedBiddingSignalsUrl1, "Unknown/Unknown",
                  ExpectedResponse::kReject);
-  TryMakeRequest(kTrustedBiddingSignalsUrl1, base::nullopt,
+  TryMakeRequest(kTrustedBiddingSignalsUrl1, absl::nullopt,
                  ExpectedResponse::kReject);
 
   TryMakeRequest(kBiddingWorkletUrl2, kAcceptJavascript,

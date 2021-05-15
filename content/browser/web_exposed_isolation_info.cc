@@ -8,7 +8,7 @@ namespace content {
 
 // static
 WebExposedIsolationInfo WebExposedIsolationInfo::CreateNonIsolated() {
-  return WebExposedIsolationInfo(base::nullopt /* origin */,
+  return WebExposedIsolationInfo(absl::nullopt /* origin */,
                                  false /* isolated_application */);
 }
 
@@ -23,7 +23,7 @@ WebExposedIsolationInfo WebExposedIsolationInfo::CreateIsolatedApplication(
 }
 
 WebExposedIsolationInfo::WebExposedIsolationInfo(
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     bool isolated_application)
     : origin_(origin), isolated_application_(isolated_application) {}
 

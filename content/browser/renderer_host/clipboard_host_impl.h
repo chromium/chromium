@@ -13,13 +13,13 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -86,7 +86,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
     void InvokeCallbacks();
 
     base::Time time_{base::Time::Now()};
-    base::Optional<ClipboardPasteContentAllowed> allowed_;
+    absl::optional<ClipboardPasteContentAllowed> allowed_;
     std::vector<IsClipboardPasteContentAllowedCallback> callbacks_;
   };
 

@@ -709,7 +709,7 @@ WebTestBluetoothAdapterProvider::GetDisconnectingHealthThermometer(
       measurement_interval.get();
 
   ON_CALL(*measurement_interval, ReadRemoteCharacteristic_(_))
-      .WillByDefault(RunCallbackWithResult<0>(/*error_code=*/base::nullopt,
+      .WillByDefault(RunCallbackWithResult<0>(/*error_code=*/absl::nullopt,
                                               std::vector<uint8_t>({1})));
 
   ON_CALL(*measurement_interval, WriteRemoteCharacteristic_(_, _, _, _))
@@ -737,7 +737,7 @@ WebTestBluetoothAdapterProvider::GetDisconnectingHealthThermometer(
                        BluetoothRemoteGattDescriptor::ValueCallback& callback) {
               std::vector<uint8_t> value(descriptorName.begin(),
                                          descriptorName.end());
-              std::move(callback).Run(/*error_code=*/base::nullopt, value);
+              std::move(callback).Run(/*error_code=*/absl::nullopt, value);
             }));
 
     ON_CALL(*user_description, WriteRemoteDescriptor_(_, _, _))
@@ -1022,7 +1022,7 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
             base::OnceClosure pending;
             if (succeeds) {
               pending = base::BindOnce(std::move(callback),
-                                       /*error_code=*/base::nullopt,
+                                       /*error_code=*/absl::nullopt,
                                        std::vector<uint8_t>({1}));
             } else {
               pending = base::BindOnce(std::move(callback),
@@ -1125,7 +1125,7 @@ scoped_refptr<NiceMockBluetoothAdapter> WebTestBluetoothAdapterProvider::
             base::OnceClosure pending;
             if (succeeds) {
               pending = base::BindOnce(std::move(callback),
-                                       /*error_code=*/base::nullopt,
+                                       /*error_code=*/absl::nullopt,
                                        std::vector<uint8_t>({1}));
             } else {
               pending = base::BindOnce(std::move(callback),
@@ -1523,10 +1523,10 @@ WebTestBluetoothAdapterProvider::GetGenericAccessService(
 
     // Read response.
     std::vector<uint8_t> device_name_value;
-    if (base::Optional<std::string> name = device->GetName())
+    if (absl::optional<std::string> name = device->GetName())
       device_name_value.assign(name.value().begin(), name.value().end());
     ON_CALL(*device_name, ReadRemoteCharacteristic_(_))
-        .WillByDefault(RunCallbackWithResult<0>(/*error_code=*/base::nullopt,
+        .WillByDefault(RunCallbackWithResult<0>(/*error_code=*/absl::nullopt,
                                                 device_name_value));
 
     // Write response.
@@ -1554,7 +1554,7 @@ WebTestBluetoothAdapterProvider::GetGenericAccessService(
 
     ON_CALL(*peripheral_privacy_flag, ReadRemoteCharacteristic_(_))
         .WillByDefault(
-            RunCallbackWithResult<0>(/*error_code=*/base::nullopt, value));
+            RunCallbackWithResult<0>(/*error_code=*/absl::nullopt, value));
 
     // Crash if WriteRemoteCharacteristic called. Not using GoogleMock's Expect
     // because this is used in web tests that may not report a mock
@@ -1622,7 +1622,7 @@ WebTestBluetoothAdapterProvider::GetHeartRateService(
 
   ON_CALL(*body_sensor_location_chest, ReadRemoteCharacteristic_(_))
       .WillByDefault(RunCallbackWithResult<0>(
-          /*error_code=*/base::nullopt, std::vector<uint8_t>({1} /* Chest */)));
+          /*error_code=*/absl::nullopt, std::vector<uint8_t>({1} /* Chest */)));
 
   // Body Sensor Location Characteristic (Wrist)
   std::unique_ptr<NiceMockBluetoothGattCharacteristic>
@@ -1632,7 +1632,7 @@ WebTestBluetoothAdapterProvider::GetHeartRateService(
 
   ON_CALL(*body_sensor_location_wrist, ReadRemoteCharacteristic_(_))
       .WillByDefault(RunCallbackWithResult<0>(
-          /*error_code=*/base::nullopt, std::vector<uint8_t>({2} /* Wrist */)));
+          /*error_code=*/absl::nullopt, std::vector<uint8_t>({2} /* Wrist */)));
 
   heart_rate->AddMockCharacteristic(std::move(heart_rate_measurement));
   heart_rate->AddMockCharacteristic(std::move(body_sensor_location_chest));

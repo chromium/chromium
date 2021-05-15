@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -57,6 +56,7 @@
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -189,7 +189,7 @@ class CONTENT_EXPORT NavigationRequest
       NavigationEntryImpl* entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      const base::Optional<blink::Impression>& impression);
+      const absl::optional<blink::Impression>& impression);
 
   // Creates a request for a renderer-initiated navigation.
   // Note: |body| is sent to the IO thread when calling BeginNavigation, and
@@ -317,8 +317,8 @@ class CONTENT_EXPORT NavigationRequest
                                   const std::string& header_value) override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
   net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() override;
-  const base::Optional<net::SSLInfo>& GetSSLInfo() override;
-  const base::Optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;
+  const absl::optional<net::SSLInfo>& GetSSLInfo() override;
+  const absl::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;
   net::ResolveErrorInfo GetResolveErrorInfo() override;
   net::IsolationInfo GetIsolationInfo() override;
   void RegisterThrottleForTesting(
@@ -339,11 +339,11 @@ class CONTENT_EXPORT NavigationRequest
   bool WasResponseCached() override;
   const net::ProxyServer& GetProxyServer() override;
   const std::string& GetHrefTranslate() override;
-  const base::Optional<blink::Impression>& GetImpression() override;
-  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
+  const absl::optional<blink::Impression>& GetImpression() override;
+  const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
   int GetInitiatorProcessID() override;
-  const base::Optional<url::Origin>& GetInitiatorOrigin() override;
+  const absl::optional<url::Origin>& GetInitiatorOrigin() override;
   const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() override;
@@ -751,7 +751,7 @@ class CONTENT_EXPORT NavigationRequest
   static bool IsLoadDataWithBaseURLAndUnreachableURL(
       bool is_main_frame,
       const mojom::CommonNavigationParams& common_params,
-      const base::Optional<std::string>& data_url_as_string);
+      const absl::optional<std::string>& data_url_as_string);
 
   // Will calculate an *approximation* of the origin that this NavigationRequest
   // will commit.  (An "approximation", because sandboxing is not taken into
@@ -923,7 +923,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
@@ -937,7 +937,7 @@ class CONTENT_EXPORT NavigationRequest
   void OnRequestFailedInternal(
       const network::URLLoaderCompletionStatus& status,
       bool skip_throttles,
-      const base::Optional<std::string>& error_page_content,
+      const absl::optional<std::string>& error_page_content,
       bool collapse_frame);
 
   // Helper to determine whether an error page for the provided error code
@@ -966,7 +966,7 @@ class CONTENT_EXPORT NavigationRequest
   // Called either by OnFailureChecksComplete() or OnRequestFailed() directly.
   // |error_page_content| contains the content of the error page (i.e. flattened
   // HTML, JS, CSS).
-  void CommitErrorPage(const base::Optional<std::string>& error_page_content);
+  void CommitErrorPage(const absl::optional<std::string>& error_page_content);
 
   // Have a RenderFrameHost commit the navigation. The NavigationRequest will
   // be destroyed after this call.
@@ -1244,7 +1244,7 @@ class CONTENT_EXPORT NavigationRequest
 
   void CreateCoepReporter(StoragePartition* storage_partition);
 
-  base::Optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
+  absl::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
   // Check the COOP value of the page is compatible with the COEP value of each
   // of its documents. COOP:kSameOriginPlusCoep is incompatible with COEP:kNone.
@@ -1402,8 +1402,8 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints_;
-  base::Optional<net::SSLInfo> ssl_info_;
-  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
+  absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
   bool is_download_ = false;
   GlobalRequestID request_id_;
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
@@ -1435,13 +1435,13 @@ class CONTENT_EXPORT NavigationRequest
   // Used in the network service world to pass the subressource loader params
   // to the renderer. Used by AppCache and ServiceWorker, and
   // SignedExchangeSubresourcePrefetch.
-  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
+  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   // See comment on accessor.
   const base::UnguessableToken devtools_navigation_token_ =
       base::UnguessableToken::Create();
 
-  base::Optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+  absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
       subresource_overrides_;
 
   // The NavigationClient interface for that requested this navigation in the
@@ -1587,7 +1587,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The headers used for the request. The value of this comes from
   // |begin_params_->headers|. If not set, it needs to be calculated.
-  base::Optional<net::HttpRequestHeaders> request_headers_;
+  absl::optional<net::HttpRequestHeaders> request_headers_;
 
   // Used to update the request's headers. When modified during the navigation
   // start, the headers will be applied to the initial network request. When
@@ -1613,7 +1613,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // If non-empty, it represents the IsolationInfo explicitly asked to be used
   // for this NavigationRequest.
-  base::Optional<net::IsolationInfo> isolation_info_;
+  absl::optional<net::IsolationInfo> isolation_info_;
 
   // This is used to store the current_frame_host id at request creation time.
   const GlobalFrameRoutingId previous_render_frame_host_id_;
@@ -1624,7 +1624,7 @@ class CONTENT_EXPORT NavigationRequest
   // The frame with the corresponding frame token may have been deleted before
   // the navigation begins. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  const base::Optional<blink::LocalFrameToken> initiator_frame_token_;
+  const absl::optional<blink::LocalFrameToken> initiator_frame_token_;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
@@ -1656,7 +1656,7 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
-  base::Optional<PolicyContainerNavigationBundle>
+  absl::optional<PolicyContainerNavigationBundle>
       policy_container_navigation_bundle_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
@@ -1702,7 +1702,7 @@ class CONTENT_EXPORT NavigationRequest
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
   // The sandbox flags of the document to be loaded.
-  base::Optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
+  absl::optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
 
   OriginAgentClusterEndResult origin_agent_cluster_end_result_ =
       OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;

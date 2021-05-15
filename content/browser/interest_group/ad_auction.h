@@ -11,8 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -30,9 +30,9 @@ class AdAuction {
   // an auction had no winner, all URLs are null.
   using AuctionCompleteCallback =
       base::OnceCallback<void(AdAuction* auction,
-                              base::Optional<GURL> render_url,
-                              base::Optional<GURL> bidder_report_url,
-                              base::Optional<GURL> seller_report_url)>;
+                              absl::optional<GURL> render_url,
+                              absl::optional<GURL> bidder_report_url,
+                              absl::optional<GURL> seller_report_url)>;
 
   // `ad_auction_service` must remain valid for the lifetime of the AdAuction.
   AdAuction(AdAuctionServiceImpl* ad_auction_service,

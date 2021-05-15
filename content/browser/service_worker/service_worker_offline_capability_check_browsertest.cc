@@ -8,7 +8,6 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
@@ -26,6 +25,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "url/gurl.h"
 
@@ -64,7 +64,7 @@ class FetchEventTestHelper {
     for (const FetchEventDispatchParamAndExpectedResult&
              param_and_expected_result : test_inputs) {
       fetch_event_dispatches_.push_back(
-          FetchEventDispatch{param_and_expected_result, base::nullopt});
+          FetchEventDispatch{param_and_expected_result, absl::nullopt});
     }
   }
 
@@ -103,7 +103,7 @@ class FetchEventTestHelper {
  private:
   struct FetchEventDispatch {
     FetchEventDispatchParamAndExpectedResult param_and_expected_result;
-    base::Optional<FetchResult> fetch_result;
+    absl::optional<FetchResult> fetch_result;
     std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher;
   };
 
@@ -281,7 +281,7 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
 
   OfflineCapability CheckOfflineCapability(const std::string& path) {
     base::RunLoop fetch_run_loop;
-    base::Optional<OfflineCapability> out_offline_capability;
+    absl::optional<OfflineCapability> out_offline_capability;
     RunOrPostTaskOnThread(
         FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
         base::BindOnce(

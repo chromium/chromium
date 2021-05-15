@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
@@ -21,6 +20,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -78,7 +78,7 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
   // is given. |response| can contain nullptr to simulate the case ReadResponse
   // fails.
   mojo::Remote<network::mojom::URLLoader> CreateLoaderAndStart(
-      base::Optional<web_package::mojom::BundleResponsePtr> response,
+      absl::optional<web_package::mojom::BundleResponsePtr> response,
       bool clone = false) {
     mojo::Remote<network::mojom::URLLoader> loader;
 
@@ -247,14 +247,14 @@ TEST_F(WebBundleURLLoaderFactoryTest, CreateEntryLoaderAndFailToReadResponse) {
 TEST_F(WebBundleURLLoaderFactoryTest, CreateLoaderForPost) {
   // URL should match, but POST method should not be handled by the EntryLoader.
   resource_request_.method = "POST";
-  auto loader = CreateLoaderAndStart(/*response=*/base::nullopt);
+  auto loader = CreateLoaderAndStart(/*response=*/absl::nullopt);
 
   RunAndCheckFailure(net::ERR_FAILED);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, CreateLoaderForNotSupportedURL) {
   resource_request_.url = GURL("https://test.example.org/nowhere");
-  auto loader = CreateLoaderAndStart(/*response=*/base::nullopt);
+  auto loader = CreateLoaderAndStart(/*response=*/absl::nullopt);
 
   RunAndCheckFailure(net::ERR_FAILED);
 }
@@ -272,7 +272,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CreateFallbackLoader) {
   // the fallback factory set above.
   const std::string url_string = "https://test.example.org/somewhere";
   resource_request_.url = GURL(url_string);
-  auto loader = CreateLoaderAndStart(base::nullopt);
+  auto loader = CreateLoaderAndStart(absl::nullopt);
   ASSERT_EQ(1, test_factory->NumPending());
 
   // Reply with a mock response.

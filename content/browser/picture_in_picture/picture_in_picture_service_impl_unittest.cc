@@ -307,7 +307,7 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NoSurfaceId) {
   gfx::Size window_size;
 
   service().StartSession(
-      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), base::nullopt,
+      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), absl::nullopt,
       gfx::Size(42, 42), true /* show_play_pause_button */,
       std::move(observer_remote),
       base::BindLambdaForTesting(

@@ -1652,11 +1652,11 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 #if defined(OS_MAC)
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
       params->has_initial_button_delay
-          ? base::make_optional(params->initial_button_delay)
-          : base::nullopt,
+          ? absl::make_optional(params->initial_button_delay)
+          : absl::nullopt,
       params->has_autoscroll_button_delay
-          ? base::make_optional(params->autoscroll_button_delay)
-          : base::nullopt,
+          ? absl::make_optional(params->autoscroll_button_delay)
+          : absl::nullopt,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
 

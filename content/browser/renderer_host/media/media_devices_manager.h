@@ -245,7 +245,7 @@ class CONTENT_EXPORT MediaDevicesManager
   void GotAudioInputCapabilities(
       size_t state_index,
       size_t capabilities_index,
-      const base::Optional<media::AudioParameters>& parameters);
+      const absl::optional<media::AudioParameters>& parameters);
   void FinalizeDevicesEnumerated(EnumerationState enumeration_state);
 
   std::vector<VideoInputDeviceCapabilitiesPtr> ComputeVideoInputCapabilities(

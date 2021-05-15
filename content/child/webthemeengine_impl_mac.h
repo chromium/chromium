@@ -19,7 +19,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::mojom::ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) override;
+             const absl::optional<SkColor>& accent_color) override;
 
   static bool IsScrollbarPart(WebThemeEngine::Part part);
   static void PaintMacScrollBarParts(

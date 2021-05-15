@@ -245,7 +245,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
   void SetSCTAuditingRetryDelay(
-      base::Optional<base::TimeDelta> delay,
+      absl::optional<base::TimeDelta> delay,
       SetSCTAuditingRetryDelayCallback callback) override {
     network::NetworkService::GetNetworkServiceForTesting()
         ->sct_auditing_cache()

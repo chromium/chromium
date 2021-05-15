@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -83,7 +83,7 @@ class CONTENT_EXPORT ServiceProcessHost {
     sandbox::policy::SandboxType sandbox_type =
         sandbox::policy::SandboxType::kUtility;
     std::u16string display_name;
-    base::Optional<int> child_flags;
+    absl::optional<int> child_flags;
     std::vector<std::string> extra_switches;
   };
 

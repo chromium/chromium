@@ -661,7 +661,7 @@ void AppCacheHost::MaybePassSubresourceFactory() {
     GetContentClient()->browser()->WillCreateURLLoaderFactory(
         rfh->GetProcess()->GetBrowserContext(), rfh, process_id_,
         ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-        origin_for_url_loader_factory_, base::nullopt /* navigation_id */,
+        origin_for_url_loader_factory_, absl::nullopt /* navigation_id */,
         ukm::SourceIdObj::FromInt64(rfh->GetPageUkmSourceId()),
         &factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,

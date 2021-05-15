@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

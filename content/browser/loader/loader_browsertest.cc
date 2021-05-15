@@ -688,13 +688,13 @@ namespace {
 struct RequestData {
   const GURL url;
   const net::SiteForCookies site_for_cookies;
-  const base::Optional<url::Origin> initiator;
+  const absl::optional<url::Origin> initiator;
   const int load_flags;
   const std::string referrer;
 
   RequestData(const GURL& url,
               const net::SiteForCookies& site_for_cookies,
-              const base::Optional<url::Origin>& initiator,
+              const absl::optional<url::Origin>& initiator,
               int load_flags,
               const std::string& referrer)
       : url(url),
