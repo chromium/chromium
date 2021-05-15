@@ -10,11 +10,11 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 namespace url {
@@ -51,10 +51,10 @@ extern const char kAccessControlRequestMethod[];
 // Performs a CORS access check on the response parameters.
 // This implements https://fetch.spec.whatwg.org/#concept-cors-check
 COMPONENT_EXPORT(NETWORK_CPP)
-base::Optional<CorsErrorStatus> CheckAccess(
+absl::optional<CorsErrorStatus> CheckAccess(
     const GURL& response_url,
-    const base::Optional<std::string>& allow_origin_header,
-    const base::Optional<std::string>& allow_credentials_header,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin);
 
@@ -64,7 +64,7 @@ base::Optional<CorsErrorStatus> CheckAccess(
 // schemes that the spec officially supports.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ShouldCheckCors(const GURL& request_url,
-                     const base::Optional<url::Origin>& request_initiator,
+                     const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode);
 
 // Performs a CORS access check on the CORS-preflight response parameters.
@@ -72,11 +72,11 @@ bool ShouldCheckCors(const GURL& request_url,
 // step 6, even for a preflight check, |credentials_mode| should be checked on
 // the actual request rather than preflight one.
 COMPONENT_EXPORT(NETWORK_CPP)
-base::Optional<CorsErrorStatus> CheckPreflightAccess(
+absl::optional<CorsErrorStatus> CheckPreflightAccess(
     const GURL& response_url,
     const int response_status_code,
-    const base::Optional<std::string>& allow_origin_header,
-    const base::Optional<std::string>& allow_credentials_header,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin);
 
@@ -85,10 +85,10 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
 // - the URL has a CORS supported scheme and
 // - the URL does not contain the userinfo production.
 COMPONENT_EXPORT(NETWORK_CPP)
-base::Optional<CorsErrorStatus> CheckRedirectLocation(
+absl::optional<CorsErrorStatus> CheckRedirectLocation(
     const GURL& url,
     mojom::RequestMode request_mode,
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     bool cors_flag,
     bool tainted);
 
@@ -96,8 +96,8 @@ base::Optional<CorsErrorStatus> CheckRedirectLocation(
 // header. Shares error conditions with standard preflight checking.
 // See https://crbug.com/590714.
 COMPONENT_EXPORT(NETWORK_CPP)
-base::Optional<CorsErrorStatus> CheckExternalPreflight(
-    const base::Optional<std::string>& allow_external);
+absl::optional<CorsErrorStatus> CheckExternalPreflight(
+    const absl::optional<std::string>& allow_external);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsEnabledRequestMode(mojom::RequestMode mode);

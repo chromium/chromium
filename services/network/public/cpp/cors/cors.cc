@@ -122,10 +122,10 @@ bool IsNoCorsSafelistedHeaderNameLowerCase(const std::string& lower_name) {
   return true;
 }
 
-base::Optional<CorsErrorStatus> CheckAccessInternal(
+absl::optional<CorsErrorStatus> CheckAccessInternal(
     const GURL& response_url,
-    const base::Optional<std::string>& allow_origin_header,
-    const base::Optional<std::string>& allow_credentials_header,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin) {
   if (allow_origin_header == kAsterisk) {
@@ -133,7 +133,7 @@ base::Optional<CorsErrorStatus> CheckAccessInternal(
     // to be sent, even with Access-Control-Allow-Credentials set to true.
     // See https://fetch.spec.whatwg.org/#cors-protocol-and-credentials.
     if (credentials_mode != mojom::CredentialsMode::kInclude)
-      return base::nullopt;
+      return absl::nullopt;
 
     // Since the credential is a concept for network schemes, we perform the
     // wildcard check only for HTTP and HTTPS. This is a quick hack to allow
@@ -194,7 +194,7 @@ base::Optional<CorsErrorStatus> CheckAccessInternal(
                              allow_credentials_header.value_or(std::string()));
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // These values are used for logging to UMA. Entries should not be renumbered
@@ -238,10 +238,10 @@ const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
 }  // namespace header_names
 
 // See https://fetch.spec.whatwg.org/#cors-check.
-base::Optional<CorsErrorStatus> CheckAccess(
+absl::optional<CorsErrorStatus> CheckAccess(
     const GURL& response_url,
-    const base::Optional<std::string>& allow_origin_header,
-    const base::Optional<std::string>& allow_credentials_header,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode credentials_mode,
     const url::Origin& origin) {
   const auto error_status =
@@ -258,7 +258,7 @@ base::Optional<CorsErrorStatus> CheckAccess(
 }
 
 bool ShouldCheckCors(const GURL& request_url,
-                     const base::Optional<url::Origin>& request_initiator,
+                     const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode) {
   if (request_mode == network::mojom::RequestMode::kNavigate ||
       request_mode == network::mojom::RequestMode::kNoCors) {
@@ -278,11 +278,11 @@ bool ShouldCheckCors(const GURL& request_url,
   return true;
 }
 
-base::Optional<CorsErrorStatus> CheckPreflightAccess(
+absl::optional<CorsErrorStatus> CheckPreflightAccess(
     const GURL& response_url,
     const int response_status_code,
-    const base::Optional<std::string>& allow_origin_header,
-    const base::Optional<std::string>& allow_credentials_header,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
     mojom::CredentialsMode actual_credentials_mode,
     const url::Origin& origin) {
   // Step 7 of https://fetch.spec.whatwg.org/#cors-preflight-fetch
@@ -329,10 +329,10 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
         break;
     }
   } else if (!has_ok_status) {
-    error_status = base::make_optional<CorsErrorStatus>(
+    error_status = absl::make_optional<CorsErrorStatus>(
         mojom::CorsError::kPreflightInvalidStatus);
   } else {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   UMA_HISTOGRAM_ENUMERATION("Net.Cors.PreflightCheckError",
@@ -340,10 +340,10 @@ base::Optional<CorsErrorStatus> CheckPreflightAccess(
   return error_status;
 }
 
-base::Optional<CorsErrorStatus> CheckRedirectLocation(
+absl::optional<CorsErrorStatus> CheckRedirectLocation(
     const GURL& url,
     mojom::RequestMode request_mode,
-    const base::Optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& origin,
     bool cors_flag,
     bool tainted) {
   // If |actualResponse|’s location URL’s scheme is not an HTTP(S) scheme,
@@ -368,16 +368,16 @@ base::Optional<CorsErrorStatus> CheckRedirectLocation(
   if (cors_flag && url_has_credentials)
     return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // https://wicg.github.io/cors-rfc1918/#http-headerdef-access-control-allow-external
-base::Optional<CorsErrorStatus> CheckExternalPreflight(
-    const base::Optional<std::string>& allow_external) {
+absl::optional<CorsErrorStatus> CheckExternalPreflight(
+    const absl::optional<std::string>& allow_external) {
   if (!allow_external)
     return CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal);
   if (*allow_external == kLowerCaseTrue)
-    return base::nullopt;
+    return absl::nullopt;
   return CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
                          *allow_external);
 }

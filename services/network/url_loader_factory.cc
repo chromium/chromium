@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/url_request/url_request_context.h"
@@ -30,6 +29,7 @@
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
 #include "services/network/web_bundle_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -126,7 +126,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
   std::string origin_string;
   bool has_origin = url_request.headers.GetHeader("Origin", &origin_string) &&
                     origin_string != "null";
-  base::Optional<url::Origin> request_initiator = url_request.request_initiator;
+  absl::optional<url::Origin> request_initiator = url_request.request_initiator;
   if (has_origin && request_initiator.has_value()) {
     url::Origin origin = url::Origin::Create(GURL(origin_string));
     bool origin_head_same_as_request_origin =

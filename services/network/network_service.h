@@ -19,7 +19,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -46,6 +45,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class FileNetLogObserver;
@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureStubHostResolver(
       bool insecure_dns_client_enabled,
       net::SecureDnsMode secure_dns_mode,
-      base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
+      absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
           dns_over_https_servers,
       bool additional_dns_types_enabled) override;
   void DisableQuic() override;

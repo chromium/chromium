@@ -41,7 +41,7 @@ TEST(Ed25519TrustTokenRequestSigner, Roundtrip) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -56,7 +56,7 @@ TEST(Ed25519TrustTokenRequestSigner, EmptyMessage) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -71,7 +71,7 @@ TEST(Ed25519TrustTokenRequestSigner, ShortMessage) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -85,7 +85,7 @@ TEST(Ed25519TrustTokenRequestSigner, LongerMessage) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   ASSERT_TRUE(signature);
 
@@ -102,7 +102,7 @@ TEST(Ed25519TrustTokenRequestSigner, VerificationFromDifferentSigner) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
 
   Ed25519TrustTokenRequestSigner verifier;
@@ -117,7 +117,7 @@ TEST(Ed25519TrustTokenRequestSigner, SigningKeyTooShort) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(base::make_span(keys.signing).subspan(1), message);
   EXPECT_FALSE(signature);
 }
@@ -129,7 +129,7 @@ TEST(Ed25519TrustTokenRequestSigner, SigningKeyTooLong) {
 
   std::vector<uint8_t> overlong_signing_key(ED25519_PRIVATE_KEY_LEN + 1);
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(overlong_signing_key, message);
   EXPECT_FALSE(signature);
 }
@@ -142,7 +142,7 @@ TEST(Ed25519TrustTokenRequestSigner, VerificationKeyTooShort) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
 
   EXPECT_FALSE(signer.Verify(message, *signature,
@@ -157,7 +157,7 @@ TEST(Ed25519TrustTokenRequestSigner, VerificationKeyTooLong) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
 
   std::vector<uint8_t> overlong_verification_key(ED25519_PUBLIC_KEY_LEN + 1);
@@ -173,7 +173,7 @@ TEST(Ed25519TrustTokenRequestSigner, SignatureTooShort) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   signature->pop_back();
 
@@ -188,7 +188,7 @@ TEST(Ed25519TrustTokenRequestSigner, SignatureTooLong) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
   signature->push_back(0);
 
@@ -204,7 +204,7 @@ TEST(Ed25519TrustTokenRequestSigner, SignatureWrong) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(keys.signing, message);
 
   // Corrupt the signature.

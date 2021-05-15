@@ -14,7 +14,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -31,6 +30,7 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/public/mojom/service_control.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -127,7 +127,7 @@ class ServiceInstance : public mojom::Connector,
   // service to have access to *any* arbitrary interface on the target service.
   bool CanConnectToOtherInstance(
       const ServiceFilter& target_filter,
-      const base::Optional<std::string>& target_interface_name);
+      const absl::optional<std::string>& target_interface_name);
 
   // mojom::Connector:
   void BindInterface(const ServiceFilter& target_filter,

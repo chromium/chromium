@@ -10,7 +10,7 @@
 namespace network {
 namespace internal {
 
-base::Optional<base::Time> StringToTime(base::StringPiece my_string) {
+absl::optional<base::Time> StringToTime(base::StringPiece my_string) {
   return util::ValueToTime(base::Value(my_string));
 }
 

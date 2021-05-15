@@ -25,7 +25,7 @@ TEST(TrustTokenTypes, TimeToStringRoundtrip) {
 
 TEST(TrustTokenTypes, TimeFromBadStringFails) {
   EXPECT_EQ(StringToTime("I bet this isn't a valid representation of a time."),
-            base::nullopt);
+            absl::nullopt);
 }
 
 }  // namespace internal

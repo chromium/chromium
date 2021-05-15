@@ -22,7 +22,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -106,6 +105,7 @@
 #include "services/network/url_request_context_owner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -699,7 +699,7 @@ class URLLoaderTest : public testing::Test {
 
     if (expect_redirect_) {
       client_.RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, base::nullopt);
+      loader->FollowRedirect({}, {}, {}, absl::nullopt);
     }
 
     if (body) {
@@ -887,7 +887,7 @@ class URLLoaderTest : public testing::Test {
     return client_.response_head()->did_mime_sniff;
   }
 
-  const base::Optional<net::SSLInfo>& ssl_info() const {
+  const absl::optional<net::SSLInfo>& ssl_info() const {
     DCHECK(ran_);
     return client_.ssl_info();
   }
@@ -2696,7 +2696,7 @@ TEST_F(URLLoaderTest, RedirectModifiedHeaders) {
   net::HttpRequestHeaders redirect_headers;
   redirect_headers.SetHeader("Header2", "");
   redirect_headers.SetHeader("Header3", "Value3");
-  loader->FollowRedirect({}, redirect_headers, {}, base::nullopt);
+  loader->FollowRedirect({}, redirect_headers, {}, absl::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -2748,7 +2748,7 @@ TEST_F(URLLoaderTest, RedirectFailsOnModifyUnsafeHeader) {
 
     net::HttpRequestHeaders redirect_headers;
     redirect_headers.SetHeader(unsafe_header, "foo");
-    loader->FollowRedirect({}, redirect_headers, {}, base::nullopt);
+    loader->FollowRedirect({}, redirect_headers, {}, absl::nullopt);
 
     client.RunUntilComplete();
     delete_run_loop.Run();
@@ -2794,7 +2794,7 @@ TEST_F(URLLoaderTest, RedirectLogsModifiedConcerningHeader) {
   redirect_headers.SetHeader(net::HttpRequestHeaders::kReferer,
                              "https://somewhere.test/");
   redirect_headers.SetHeader("Via", "Albuquerque");
-  loader->FollowRedirect({}, redirect_headers, {}, base::nullopt);
+  loader->FollowRedirect({}, redirect_headers, {}, absl::nullopt);
 
   client.RunUntilComplete();
   delete_run_loop.Run();
@@ -2855,7 +2855,7 @@ TEST_F(URLLoaderTest, RedirectRemoveHeader) {
 
   // Remove Header1.
   std::vector<std::string> removed_headers = {"Header1"};
-  loader->FollowRedirect(removed_headers, {}, {}, base::nullopt);
+  loader->FollowRedirect(removed_headers, {}, {}, absl::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -2905,7 +2905,7 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
   std::vector<std::string> removed_headers = {"Header1"};
   net::HttpRequestHeaders modified_headers;
   modified_headers.SetHeader("Header1", "NewValue1");
-  loader->FollowRedirect(removed_headers, modified_headers, {}, base::nullopt);
+  loader->FollowRedirect(removed_headers, modified_headers, {}, absl::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -2955,7 +2955,7 @@ TEST_F(URLLoaderTest, UpgradeAddsSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Now follow the redirect to the final destination and validate again.
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -3015,7 +3015,7 @@ TEST_F(URLLoaderTest, DowngradeRemovesSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Now follow the redirect to the final destination and validate again.
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -3080,7 +3080,7 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
   EXPECT_EQ(request_headers1.end(), request_headers1.find("Sec-Fetch-User"));
 
   // Follow our redirect and then verify again.
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->ClearHasReceivedRedirect();
   client()->RunUntilRedirectReceived();
 
@@ -3096,7 +3096,7 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
 
   // Now follow the final redirect back to a trustworthy destination and
   // re-validate.
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
@@ -3392,7 +3392,7 @@ using CookieAccessType = mojom::CookieAccessDetails::Type;
 class MockCookieObserver : public network::mojom::CookieAccessObserver {
  public:
   explicit MockCookieObserver(
-      base::Optional<CookieAccessType> access_type = base::nullopt)
+      absl::optional<CookieAccessType> access_type = absl::nullopt)
       : access_type_(access_type) {}
   ~MockCookieObserver() override = default;
 
@@ -3454,7 +3454,7 @@ class MockCookieObserver : public network::mojom::CookieAccessObserver {
   }
 
  private:
-  base::Optional<CookieAccessType> access_type_;
+  absl::optional<CookieAccessType> access_type_;
   size_t wait_for_cookie_count_ = 0;
   base::OnceClosure wait_for_cookies_quit_closure_;
   std::vector<CookieDetails> observed_cookies_;
@@ -3494,7 +3494,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
     INCORRECT_CREDENTIALS_THEN_CORRECT_ONES,
   };
   void OnAuthRequired(
-      const base::Optional<base::UnguessableToken>& window_id,
+      const absl::optional<base::UnguessableToken>& window_id,
       uint32_t request_id,
       const GURL& url,
       bool first_auth_attempt,
@@ -3504,7 +3504,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
           auth_challenge_responder) override {
     switch (credentials_response_) {
       case CredentialsResponse::NO_CREDENTIALS:
-        auth_credentials_ = base::nullopt;
+        auth_credentials_ = absl::nullopt;
         break;
       case CredentialsResponse::CORRECT_CREDENTIALS:
         auth_credentials_ = net::AuthCredentials(u"USER", u"PASS");
@@ -3522,7 +3522,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
   }
 
   void OnCertificateRequested(
-      const base::Optional<base::UnguessableToken>& window_id,
+      const absl::optional<base::UnguessableToken>& window_id,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       mojo::PendingRemote<mojom::ClientCertificateResponder>
           client_cert_responder_remote) override {
@@ -3594,7 +3594,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
  private:
   CredentialsResponse credentials_response_ =
       CredentialsResponse::NO_CREDENTIALS;
-  base::Optional<net::AuthCredentials> auth_credentials_;
+  absl::optional<net::AuthCredentials> auth_credentials_;
   int on_auth_required_call_counter_ = 0;
   scoped_refptr<net::HttpResponseHeaders> last_seen_response_headers_;
   CertificateResponse certificate_response_ = CertificateResponse::INVALID;
@@ -3965,8 +3965,8 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
 
   client()->RunUntilRedirectReceived();
 
-  url_loader->FollowRedirect({}, {}, {}, base::nullopt);
-  EXPECT_DCHECK_DEATH(url_loader->FollowRedirect({}, {}, {}, base::nullopt));
+  url_loader->FollowRedirect({}, {}, {}, absl::nullopt);
+  EXPECT_DCHECK_DEATH(url_loader->FollowRedirect({}, {}, {}, absl::nullopt));
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -4073,7 +4073,7 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
   EXPECT_EQ(0, private_key->sign_count());
 
   client()->RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   // MockNetworkServiceClient gives away the private key when it invokes
   // ContinueWithCertificate, so we have to give it the key again.
   client_cert_observer.set_private_key(private_key);
@@ -4840,7 +4840,7 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
       /*accept_ch_frame_observer=*/mojo::NullRemote());
 
   loader_client.RunUntilRedirectReceived();
-  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  loader->FollowRedirect({}, {}, {}, absl::nullopt);
   loader_client.RunUntilComplete();
   delete_run_loop.Run();
   EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -4916,7 +4916,7 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
 
     GURL cookie_url = test_server()->GetURL("/");
     auto cookie = net::CanonicalCookie::Create(
-        cookie_url, "a=b", base::Time::Now(), base::nullopt /* server_time */);
+        cookie_url, "a=b", base::Time::Now(), absl::nullopt /* server_time */);
     context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());
@@ -4970,7 +4970,7 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
     GURL cookie_url = test_server()->GetURL("/");
     auto cookie = net::CanonicalCookie::Create(
         cookie_url, "a=b;Path=/something-else", base::Time::Now(),
-        base::nullopt /* server_time */);
+        absl::nullopt /* server_time */);
     context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
         base::DoNothing());
@@ -5151,7 +5151,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
                   "Set-Cookie: server-redirect=true"),
               std::string::npos);
 
-    loader->FollowRedirect({}, {}, {}, base::nullopt);
+    loader->FollowRedirect({}, {}, {}, absl::nullopt);
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -5203,7 +5203,7 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         /*accept_ch_frame_observer=*/mojo::NullRemote());
 
     loader_client.RunUntilRedirectReceived();
-    loader->FollowRedirect({}, {}, {}, base::nullopt);
+    loader->FollowRedirect({}, {}, {}, absl::nullopt);
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
@@ -5593,7 +5593,7 @@ class MockOriginPolicyManager : public mojom::OriginPolicyManager {
  public:
   void RetrieveOriginPolicy(const url::Origin& origin,
                             const net::IsolationInfo& isolation_info,
-                            const base::Optional<std::string>& header,
+                            const absl::optional<std::string>& header,
                             RetrieveOriginPolicyCallback callback) override {
     retrieve_origin_policy_called_ = true;
     isolation_info_ = isolation_info;
@@ -5608,14 +5608,14 @@ class MockOriginPolicyManager : public mojom::OriginPolicyManager {
   void AddExceptionFor(const url::Origin& origin) override {}
 
   const net::IsolationInfo& isolation_info() const { return isolation_info_; }
-  const base::Optional<std::string>& header() const { return header_; }
+  const absl::optional<std::string>& header() const { return header_; }
   bool retrieve_origin_policy_called() const {
     return retrieve_origin_policy_called_;
   }
 
  private:
   net::IsolationInfo isolation_info_;
-  base::Optional<std::string> header_ = base::nullopt;
+  absl::optional<std::string> header_ = absl::nullopt;
   bool retrieve_origin_policy_called_ = false;
 };
 
@@ -5859,8 +5859,8 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
   // |begin_done_flag|, if provided, will be set to true immediately before the
   // |Begin| operation returns.
   MockTrustTokenRequestHelper(
-      base::Optional<mojom::TrustTokenOperationStatus> on_begin,
-      base::Optional<mojom::TrustTokenOperationStatus> on_finalize,
+      absl::optional<mojom::TrustTokenOperationStatus> on_begin,
+      absl::optional<mojom::TrustTokenOperationStatus> on_finalize,
       SyncOrAsync operation_synchrony,
       bool* begin_done_flag = nullptr)
       : on_begin_(on_begin),
@@ -5947,8 +5947,8 @@ class MockTrustTokenRequestHelper : public TrustTokenRequestHelper {
 
   // Store mocked function results in Optionals to hit a CHECK failure if a mock
   // method is called without having had a return value specified.
-  base::Optional<mojom::TrustTokenOperationStatus> on_begin_;
-  base::Optional<mojom::TrustTokenOperationStatus> on_finalize_;
+  absl::optional<mojom::TrustTokenOperationStatus> on_begin_;
+  absl::optional<mojom::TrustTokenOperationStatus> on_finalize_;
 
   SyncOrAsync operation_synchrony_;
 
@@ -5985,8 +5985,8 @@ class MockTrustTokenRequestHelperFactory
         creation_failure_error_(creation_failure_error) {}
 
   MockTrustTokenRequestHelperFactory(
-      base::Optional<mojom::TrustTokenOperationStatus> on_begin,
-      base::Optional<mojom::TrustTokenOperationStatus> on_finalize,
+      absl::optional<mojom::TrustTokenOperationStatus> on_begin,
+      absl::optional<mojom::TrustTokenOperationStatus> on_finalize,
       SyncOrAsync sync_or_async,
       bool* begin_done_flag)
       : TrustTokenRequestHelperFactory(
@@ -6035,7 +6035,7 @@ class MockTrustTokenRequestHelperFactory
 
  private:
   SyncOrAsync sync_or_async_;
-  base::Optional<mojom::TrustTokenOperationStatus> creation_failure_error_;
+  absl::optional<mojom::TrustTokenOperationStatus> creation_failure_error_;
   std::unique_ptr<TrustTokenRequestHelper> helper_;
 };
 
@@ -6052,14 +6052,14 @@ class MockTrustTokenDevToolsObserver : public MockDevToolsObserver {
     trust_token_operation_status_ = result->status;
   }
 
-  const base::Optional<mojom::TrustTokenOperationStatus>
+  const absl::optional<mojom::TrustTokenOperationStatus>
   trust_token_operation_status() const {
     return trust_token_operation_status_;
   }
 
  private:
-  base::Optional<mojom::TrustTokenOperationStatus>
-      trust_token_operation_status_ = base::nullopt;
+  absl::optional<mojom::TrustTokenOperationStatus>
+      trust_token_operation_status_ = absl::nullopt;
 };
 
 }  // namespace
@@ -6181,7 +6181,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       nullptr /* origin_policy_manager */,
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kAlreadyExists /* on_begin */,
-          base::nullopt /* on_finalize */, GetParam(),
+          absl::nullopt /* on_finalize */, GetParam(),
           &outbound_trust_token_operation_was_successful_),
       kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
@@ -6228,7 +6228,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       nullptr /* origin_policy_manager */,
       std::make_unique<MockTrustTokenRequestHelperFactory>(
           mojom::TrustTokenOperationStatus::kFailedPrecondition /* on_begin */,
-          base::nullopt /* on_finalize */, GetParam(),
+          absl::nullopt /* on_finalize */, GetParam(),
           &outbound_trust_token_operation_was_successful_),
       kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,

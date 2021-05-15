@@ -35,7 +35,7 @@ using Cryptographer = TrustTokenRequestIssuanceHelper::Cryptographer;
 
 struct TrustTokenRequestIssuanceHelper::CryptographerAndBlindedTokens {
   std::unique_ptr<Cryptographer> cryptographer;
-  base::Optional<std::string> blinded_tokens;
+  absl::optional<std::string> blinded_tokens;
 };
 
 struct TrustTokenRequestIssuanceHelper::CryptographerAndUnblindedTokens {
@@ -48,7 +48,7 @@ namespace {
 TrustTokenRequestIssuanceHelper::CryptographerAndBlindedTokens
 BeginIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
                               int batch_size) {
-  base::Optional<std::string> blinded_tokens =
+  absl::optional<std::string> blinded_tokens =
       cryptographer->BeginIssuance(batch_size);
   return {std::move(cryptographer), std::move(blinded_tokens)};
 }
@@ -225,7 +225,7 @@ void TrustTokenRequestIssuanceHelper::OnDelegateBeginIssuanceCallComplete(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     CryptographerAndBlindedTokens cryptographer_and_blinded_tokens) {
   cryptographer_ = std::move(cryptographer_and_blinded_tokens.cryptographer);
-  base::Optional<std::string>& maybe_blinded_tokens =
+  absl::optional<std::string>& maybe_blinded_tokens =
       cryptographer_and_blinded_tokens.blinded_tokens;  // Convenience alias
 
   if (!maybe_blinded_tokens) {

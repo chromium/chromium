@@ -87,7 +87,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
           std::make_unique<sqlite_proto::KeyValueData<TrustTokenIssuerConfig>>(
               table_manager_,
               issuer_table_.get(),
-              /*max_num_entries=*/base::nullopt,
+              /*max_num_entries=*/absl::nullopt,
               flush_delay_for_writes)),
       toplevel_table_(std::make_unique<
                       sqlite_proto::KeyValueTable<TrustTokenToplevelConfig>>(
@@ -96,7 +96,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
                      sqlite_proto::KeyValueData<TrustTokenToplevelConfig>>(
           table_manager_,
           toplevel_table_.get(),
-          /*max_num_entries=*/base::nullopt,
+          /*max_num_entries=*/absl::nullopt,
           flush_delay_for_writes)),
       issuer_toplevel_pair_table_(
           std::make_unique<
@@ -107,7 +107,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
               sqlite_proto::KeyValueData<TrustTokenIssuerToplevelPairConfig>>(
               table_manager_,
               issuer_toplevel_pair_table_.get(),
-              /*max_num_entries=*/base::nullopt,
+              /*max_num_entries=*/absl::nullopt,
               flush_delay_for_writes)) {
   // These two lines are boilerplate copied from predictor_database.cc.
   backing_database_->set_histogram_tag("TrustTokens");

@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -25,6 +24,7 @@
 #include "services/preferences/tracked/interceptable_pref_filter.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 #include "services/preferences/tracked/tracked_preference.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -142,7 +142,7 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // A store and contents on which to perform extra validations without
   // triggering resets.
   // Will be null if the platform does not support external validation.
-  base::Optional<StoreContentsPair> external_validation_hash_store_pair_;
+  absl::optional<StoreContentsPair> external_validation_hash_store_pair_;
 
   // Notified if a reset occurs in a call to FilterOnLoad.
   mojo::Remote<prefs::mojom::ResetOnLoadObserver> reset_on_load_observer_;

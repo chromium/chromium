@@ -170,11 +170,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.update_first_party_url_on_redirect;
   }
-  static const base::Optional<url::Origin>& request_initiator(
+  static const absl::optional<url::Origin>& request_initiator(
       const network::ResourceRequest& request) {
     return request.request_initiator;
   }
-  static const base::Optional<url::Origin>& isolated_world_origin(
+  static const absl::optional<url::Origin>& isolated_world_origin(
       const network::ResourceRequest& request) {
     return request.isolated_world_origin;
   }
@@ -280,7 +280,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_revalidating(const network::ResourceRequest& request) {
     return request.is_revalidating;
   }
-  static const base::Optional<base::UnguessableToken>& throttling_profile_id(
+  static const absl::optional<base::UnguessableToken>& throttling_profile_id(
       const network::ResourceRequest& request) {
     return request.throttling_profile_id;
   }
@@ -292,15 +292,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.custom_proxy_post_cache_headers;
   }
-  static const base::Optional<base::UnguessableToken>& fetch_window_id(
+  static const absl::optional<base::UnguessableToken>& fetch_window_id(
       const network::ResourceRequest& request) {
     return request.fetch_window_id;
   }
-  static const base::Optional<std::string>& devtools_request_id(
+  static const absl::optional<std::string>& devtools_request_id(
       const network::ResourceRequest& request) {
     return request.devtools_request_id;
   }
-  static const base::Optional<std::string>& devtools_stack_id(
+  static const absl::optional<std::string>& devtools_stack_id(
       const network::ResourceRequest& request) {
     return request.devtools_stack_id;
   }
@@ -317,15 +317,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool obey_origin_policy(const network::ResourceRequest& request) {
     return request.obey_origin_policy;
   }
-  static const base::Optional<std::vector<net::SourceStream::SourceType>>&
+  static const absl::optional<std::vector<net::SourceStream::SourceType>>&
   devtools_accepted_stream_types(const network::ResourceRequest& request) {
     return request.devtools_accepted_stream_types;
   }
-  static const base::Optional<network::ResourceRequest::TrustedParams>&
+  static const absl::optional<network::ResourceRequest::TrustedParams>&
   trusted_params(const network::ResourceRequest& request) {
     return request.trusted_params;
   }
-  static const base::Optional<base::UnguessableToken>& recursive_prefetch_token(
+  static const absl::optional<base::UnguessableToken>& recursive_prefetch_token(
       const network::ResourceRequest& request) {
     return request.recursive_prefetch_token;
   }
@@ -333,7 +333,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.trust_token_params.as_ptr();
   }
-  static const base::Optional<network::ResourceRequest::WebBundleTokenParams>&
+  static const absl::optional<network::ResourceRequest::WebBundleTokenParams>&
   web_bundle_token_params(const network::ResourceRequest& request) {
     return request.web_bundle_token_params;
   }

@@ -75,9 +75,9 @@ MediaImageManager::MediaImageManager(int min_size, int ideal_size)
 
 MediaImageManager::~MediaImageManager() = default;
 
-base::Optional<MediaImage> MediaImageManager::SelectImage(
+absl::optional<MediaImage> MediaImageManager::SelectImage(
     const std::vector<MediaImage>& images) {
-  base::Optional<MediaImage> selected;
+  absl::optional<MediaImage> selected;
 
   double best_score = 0;
   for (auto& image : images) {
@@ -114,9 +114,9 @@ double MediaImageManager::GetImageScore(const MediaImage& image) const {
   }
 
   double type_score = kDefaultTypeScore;
-  if (base::Optional<double> ext_score = GetImageExtensionScore(image.src)) {
+  if (absl::optional<double> ext_score = GetImageExtensionScore(image.src)) {
     type_score = *ext_score;
-  } else if (base::Optional<double> mime_score =
+  } else if (absl::optional<double> mime_score =
                  GetImageTypeScore(image.type)) {
     type_score = *mime_score;
   }
@@ -125,10 +125,10 @@ double MediaImageManager::GetImageScore(const MediaImage& image) const {
 }
 
 // static
-base::Optional<double> MediaImageManager::GetImageExtensionScore(
+absl::optional<double> MediaImageManager::GetImageExtensionScore(
     const GURL& url) {
   if (!url.has_path())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string extension = GetExtension(url.path());
 
@@ -149,11 +149,11 @@ base::Optional<double> MediaImageManager::GetImageExtensionScore(
       return kGIFTypeScore;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
-base::Optional<double> MediaImageManager::GetImageTypeScore(
+absl::optional<double> MediaImageManager::GetImageTypeScore(
     const std::u16string& type) {
   // These hashes are calculated in
   // MediaImageManagerTest_CheckExpectedImageTypeHashes
@@ -170,7 +170,7 @@ base::Optional<double> MediaImageManager::GetImageTypeScore(
       return kXIconTypeScore;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace media_session

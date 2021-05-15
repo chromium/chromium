@@ -32,7 +32,7 @@ enum class CorpResult {
 };
 
 CorpResult ToCorpResult(
-    const base::Optional<mojom::BlockedByResponseReason>& value) {
+    const absl::optional<mojom::BlockedByResponseReason>& value) {
   if (!value) {
     return CorpResult::kSuccess;
   }
@@ -62,7 +62,7 @@ CorpResult ToCorpResult(
 // >      %s          =  case-sensitive
 // >      %i          =  case-insensitive
 CrossOriginResourcePolicy::ParsedHeader ParseHeaderByString(
-    base::Optional<std::string> header_value) {
+    absl::optional<std::string> header_value) {
   if (!header_value)
     return CrossOriginResourcePolicy::kNoHeader;
 
@@ -134,12 +134,12 @@ bool ShouldAllowSameSite(const url::Origin& initiator,
          target_origin.scheme() != url::kHttpsScheme;
 }
 
-base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
+absl::optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     CrossOriginResourcePolicy::ParsedHeader policy,
     const GURL& request_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
-    base::Optional<url::Origin> request_initiator_origin_lock,
+    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::CrossOriginEmbedderPolicyValue embedder_policy) {
   // Browser-initiated requests are not subject to Cross-Origin-Resource-Policy.
   if (!request_initiator.has_value()) {
@@ -150,7 +150,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     // InitiatorLockCompatibility::kNoInitiator and
     // InitiatorLockCompatibility::kNoLock cases.
     DCHECK(!request_initiator_origin_lock.has_value());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool require_corp =
@@ -177,7 +177,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     //
     // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
     // > 7.  Return allowed.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
@@ -187,7 +187,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   url::Origin initiator =
       GetTrustworthyInitiator(request_initiator_origin_lock, request_initiator);
   if (initiator == target_origin)
-    return base::nullopt;
+    return absl::nullopt;
 
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 4. If policy is `same-origin`, then return blocked.
@@ -206,7 +206,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   // >      "none"
   // >    then return allowed.
   if (ShouldAllowSameSite(initiator, target_origin))
-    return base::nullopt;
+    return absl::nullopt;
 
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 6.  If policy is `same-site`, then return blocked.
@@ -214,13 +214,13 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   return mojom::BlockedByResponseReason::kCorpNotSameSite;
 }
 
-base::Optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
+absl::optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
     CrossOriginResourcePolicy::ParsedHeader policy,
     const GURL& request_url,
     const GURL& original_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
-    base::Optional<url::Origin> request_initiator_origin_lock,
+    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
@@ -244,7 +244,7 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternalWithReporting(
 
   if (request_mode == mojom::RequestMode::kNavigate &&
       embedder_policy.value == mojom::CrossOriginEmbedderPolicyValue::kNone) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const auto result =
@@ -268,21 +268,21 @@ const char CrossOriginResourcePolicy::kHeaderName[] =
     "Cross-Origin-Resource-Policy";
 
 // static
-base::Optional<mojom::BlockedByResponseReason>
+absl::optional<mojom::BlockedByResponseReason>
 CrossOriginResourcePolicy::IsBlocked(
     const GURL& request_url,
     const GURL& original_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
     mojom::RequestMode request_mode,
-    base::Optional<url::Origin> request_initiator_origin_lock,
+    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 1. If request’s mode is not "no-cors", then return allowed.
   if (request_mode != mojom::RequestMode::kNoCors)
-    return base::nullopt;
+    return absl::nullopt;
 
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 3. Let policy be the result of getting `Cross-Origin-Resource-Policy`
@@ -301,21 +301,21 @@ CrossOriginResourcePolicy::IsBlocked(
 }
 
 // static
-base::Optional<mojom::BlockedByResponseReason>
+absl::optional<mojom::BlockedByResponseReason>
 CrossOriginResourcePolicy::IsBlockedByHeaderValue(
     const GURL& request_url,
     const GURL& original_url,
-    const base::Optional<url::Origin>& request_initiator,
-    base::Optional<std::string> corp_header_value,
+    const absl::optional<url::Origin>& request_initiator,
+    absl::optional<std::string> corp_header_value,
     mojom::RequestMode request_mode,
-    base::Optional<url::Origin> request_initiator_origin_lock,
+    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {
   // From https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header:
   // > 1. If request’s mode is not "no-cors", then return allowed.
   if (request_mode != mojom::RequestMode::kNoCors)
-    return base::nullopt;
+    return absl::nullopt;
 
   ParsedHeader policy = ParseHeaderByString(corp_header_value);
 
@@ -326,13 +326,13 @@ CrossOriginResourcePolicy::IsBlockedByHeaderValue(
 }
 
 // static
-base::Optional<mojom::BlockedByResponseReason>
+absl::optional<mojom::BlockedByResponseReason>
 CrossOriginResourcePolicy::IsNavigationBlocked(
     const GURL& request_url,
     const GURL& original_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    base::Optional<url::Origin> request_initiator_origin_lock,
+    absl::optional<url::Origin> request_initiator_origin_lock,
     mojom::RequestDestination request_destination,
     const CrossOriginEmbedderPolicy& embedder_policy,
     mojom::CrossOriginEmbedderPolicyReporter* reporter) {

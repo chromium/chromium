@@ -24,24 +24,24 @@ ServiceFilter& ServiceFilter::operator=(const ServiceFilter& other) = default;
 
 // static
 ServiceFilter ServiceFilter::ByName(const std::string& service_name) {
-  return ServiceFilter(service_name, base::nullopt /* instance_group */,
-                       base::nullopt /* instance_id */,
-                       base::nullopt /* globally_unique_id */);
+  return ServiceFilter(service_name, absl::nullopt /* instance_group */,
+                       absl::nullopt /* instance_id */,
+                       absl::nullopt /* globally_unique_id */);
 }
 
 // static
 ServiceFilter ServiceFilter::ByNameWithId(const std::string& service_name,
                                           const base::Token& instance_id) {
-  return ServiceFilter(service_name, base::nullopt /* instance_group */,
-                       instance_id, base::nullopt /* globally_unique_id */);
+  return ServiceFilter(service_name, absl::nullopt /* instance_group */,
+                       instance_id, absl::nullopt /* globally_unique_id */);
 }
 
 // static
 ServiceFilter ServiceFilter::ByNameInGroup(const std::string& service_name,
                                            const base::Token& instance_group) {
   return ServiceFilter(service_name, instance_group,
-                       base::nullopt /* instance_id */,
-                       base::nullopt /* globally_unique_id */);
+                       absl::nullopt /* instance_id */,
+                       absl::nullopt /* globally_unique_id */);
 }
 
 // static
@@ -50,7 +50,7 @@ ServiceFilter ServiceFilter::ByNameWithIdInGroup(
     const base::Token& instance_id,
     const base::Token& instance_group) {
   return ServiceFilter(service_name, instance_group, instance_id,
-                       base::nullopt /* globally_unique_id */);
+                       absl::nullopt /* globally_unique_id */);
 }
 
 // static
@@ -69,9 +69,9 @@ bool ServiceFilter::operator<(const ServiceFilter& other) const {
 
 ServiceFilter::ServiceFilter(
     const std::string& service_name,
-    const base::Optional<base::Token>& instance_group,
-    const base::Optional<base::Token>& instance_id,
-    const base::Optional<base::Token>& globally_unique_id)
+    const absl::optional<base::Token>& instance_group,
+    const absl::optional<base::Token>& instance_id,
+    const absl::optional<base::Token>& globally_unique_id)
     : service_name_(service_name),
       instance_group_(instance_group),
       instance_id_(instance_id),

@@ -15,7 +15,6 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,6 +46,7 @@
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/upload_progress_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -146,7 +146,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -179,7 +179,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
       const net::IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url);
+      absl::optional<GURL>* preserve_fragment_on_redirect_url);
 
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
       const;
@@ -188,7 +188,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // mojom::AuthChallengeResponder:
   void OnAuthCredentials(
-      const base::Optional<net::AuthCredentials>& credentials) override;
+      const absl::optional<net::AuthCredentials>& credentials) override;
 
   // mojom::ClientCertificateResponder:
   void ContinueWithCertificate(
@@ -218,11 +218,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return custom_proxy_post_cache_headers_;
   }
 
-  const base::Optional<GURL>& new_redirect_url() const {
+  const absl::optional<GURL>& new_redirect_url() const {
     return new_redirect_url_;
   }
 
-  const base::Optional<std::string>& devtools_request_id() const {
+  const absl::optional<std::string>& devtools_request_id() const {
     return devtools_request_id_;
   }
 
@@ -345,19 +345,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       net::CompletionOnceCallback callback,
       net::HttpRequestHeaders* out_headers,
       int result,
-      const base::Optional<net::HttpRequestHeaders>& headers);
+      const absl::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
       net::CompletionOnceCallback callback,
       scoped_refptr<net::HttpResponseHeaders>* out_headers,
-      base::Optional<GURL>* out_preserve_fragment_on_redirect_url,
+      absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
       int result,
-      const base::Optional<std::string>& headers,
-      const base::Optional<GURL>& preserve_fragment_on_redirect_url);
+      const absl::optional<std::string>& headers,
+      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
 
   void CompleteBlockedResponse(
       int error_code,
       bool should_report_corb_blocking,
-      base::Optional<mojom::BlockedByResponseReason> reason = base::nullopt);
+      absl::optional<mojom::BlockedByResponseReason> reason = absl::nullopt);
 
   enum BlockResponseForCorbResult {
     // Returned when caller of BlockResponseForCorb doesn't need to continue,
@@ -449,7 +449,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool read_in_progress_ = false;
 
   // Stores any CORS error encountered while processing |url_request_|.
-  base::Optional<CorsErrorStatus> cors_error_status_;
+  absl::optional<CorsErrorStatus> cors_error_status_;
 
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
@@ -479,12 +479,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // If |new_url| is given to FollowRedirect() it's saved here, so that it can
   // be later referred to from NetworkContext::OnBeforeURLRequestInternal, which
   // is called from NetworkDelegate::NotifyBeforeURLRequest.
-  base::Optional<GURL> new_redirect_url_;
+  absl::optional<GURL> new_redirect_url_;
 
   // The ID that DevTools uses to track network requests. It is generated in the
   // renderer process and is only present when DevTools is enabled in the
   // renderer.
-  const base::Optional<std::string> devtools_request_id_;
+  const absl::optional<std::string> devtools_request_id_;
 
   bool should_pause_reading_body_ = false;
   // The response body stream is open, but transferring data is paused.
@@ -525,7 +525,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Indicates the originating frame of the request, see
   // network::ResourceRequest::fetch_window_id for details.
-  base::Optional<base::UnguessableToken> fetch_window_id_;
+  absl::optional<base::UnguessableToken> fetch_window_id_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
@@ -551,7 +551,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // protocol step or an inbound (response header reading) step; some error
   // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
   // specific to one direction.
-  base::Optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+  absl::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
 
   // Outlives `this`.
   const cors::OriginAccessList& origin_access_list_;

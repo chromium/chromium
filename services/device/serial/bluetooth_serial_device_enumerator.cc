@@ -70,14 +70,14 @@ scoped_refptr<BluetoothAdapter> BluetoothSerialDeviceEnumerator::GetAdapter() {
   return adapter_;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 BluetoothSerialDeviceEnumerator::GetAddressFromToken(
     const base::UnguessableToken& token) {
   for (const auto& entry : bluetooth_ports_) {
     if (entry.second == token)
       return entry.first;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace device

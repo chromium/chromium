@@ -40,7 +40,7 @@ void MockDevToolsObserver::OnRawResponse(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& cookies_with_access_result,
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-    const base::Optional<std::string>& raw_response_headers,
+    const absl::optional<std::string>& raw_response_headers,
     network::mojom::IPAddressSpace resource_address_space) {
   raw_response_cookies_.insert(raw_response_cookies_.end(),
                                cookies_with_access_result.begin(),
@@ -58,7 +58,7 @@ void MockDevToolsObserver::OnRawResponse(
 }
 
 void MockDevToolsObserver::OnPrivateNetworkRequest(
-    const base::Optional<std::string>& devtools_request_id,
+    const absl::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
@@ -89,8 +89,8 @@ void MockDevToolsObserver::OnTrustTokenOperationDone(
     network::mojom::TrustTokenOperationResultPtr result) {}
 
 void MockDevToolsObserver::OnCorsError(
-    const base::Optional<std::string>& devtools_request_id,
-    const base::Optional<::url::Origin>& initiator_origin,
+    const absl::optional<std::string>& devtools_request_id,
+    const absl::optional<::url::Origin>& initiator_origin,
     const GURL& url,
     const network::CorsErrorStatus& status) {
   params_of_cors_error_.emplace(devtools_request_id, initiator_origin, url,
@@ -133,7 +133,7 @@ void MockDevToolsObserver::WaitUntilCorsError() {
 
 MockDevToolsObserver::OnPrivateNetworkRequestParams::
     OnPrivateNetworkRequestParams(
-        const base::Optional<std::string>& devtools_request_id,
+        const absl::optional<std::string>& devtools_request_id,
         const GURL& url,
         bool is_warning,
         network::mojom::IPAddressSpace resource_address_space,
@@ -149,8 +149,8 @@ MockDevToolsObserver::OnPrivateNetworkRequestParams::
     ~OnPrivateNetworkRequestParams() = default;
 
 MockDevToolsObserver::OnCorsErrorParams::OnCorsErrorParams(
-    const base::Optional<std::string>& devtools_request_id,
-    const base::Optional<::url::Origin>& initiator_origin,
+    const absl::optional<std::string>& devtools_request_id,
+    const absl::optional<::url::Origin>& initiator_origin,
     const GURL& url,
     const network::CorsErrorStatus& status)
     : devtools_request_id(devtools_request_id),

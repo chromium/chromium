@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void OnDatagramReceived(base::StringPiece datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
-  void OnDatagramProcessed(base::Optional<quic::MessageStatus> status) override;
+  void OnDatagramProcessed(absl::optional<quic::MessageStatus> status) override;
 
   bool torn_down() const { return torn_down_; }
 

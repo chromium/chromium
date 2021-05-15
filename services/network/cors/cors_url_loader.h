@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_CORS_CORS_URL_LOADER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,6 +16,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -96,8 +96,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   static network::mojom::FetchResponseType CalculateResponseTainting(
       const GURL& url,
       mojom::RequestMode request_mode,
-      const base::Optional<url::Origin>& origin,
-      const base::Optional<url::Origin>& isolated_world_origin,
+      const absl::optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& isolated_world_origin,
       bool cors_flag,
       bool tainted_origin,
       const OriginAccessList* origin_access_list);
@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
  private:
   void StartRequest();
   void StartNetworkRequest(int net_error,
-                           base::Optional<CorsErrorStatus> status,
+                           absl::optional<CorsErrorStatus> status,
                            bool has_authorization_covered_by_wildcard);
 
   // Called when there is a connection error on the upstream pipe used for the
@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   bool PassesTimingAllowOriginCheck(
       const mojom::URLResponseHead& response) const;
 
-  static base::Optional<std::string> GetHeaderString(
+  static absl::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
       const std::string& header_name);
 

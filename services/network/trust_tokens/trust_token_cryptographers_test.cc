@@ -7,7 +7,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/time/time_to_iso8601.h"
@@ -17,6 +16,7 @@
 #include "services/network/trust_tokens/test/signed_request_verification_util.h"
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -114,7 +114,7 @@ void RequestManyTokensAndRetainOneArbitrarily(
         token_keys.verification.size())));
   }
 
-  base::Optional<std::string> maybe_base64_encoded_issuance_request =
+  absl::optional<std::string> maybe_base64_encoded_issuance_request =
       issuance_cryptographer.BeginIssuance(kNumTokensToRequest);
   ASSERT_TRUE(maybe_base64_encoded_issuance_request);
 
@@ -161,7 +161,7 @@ void RedeemSingleToken(const ProtocolKeys& keys,
   ASSERT_TRUE(redemption_cryptographer.Initialize(kProtocolVersion,
                                                   kNumTokensToRequest));
 
-  base::Optional<std::string> maybe_base64_encoded_redemption_request =
+  absl::optional<std::string> maybe_base64_encoded_redemption_request =
       redemption_cryptographer.BeginRedemption(
           token_to_redeem,
           "client-generated public key bound to the redemption",
@@ -208,7 +208,7 @@ void RedeemSingleToken(const ProtocolKeys& keys,
 
   std::string base64_encoded_redemption_response =
       base::Base64Encode(raw_redemption_response.as_span());
-  base::Optional<std::string> maybe_redemption_record =
+  absl::optional<std::string> maybe_redemption_record =
       redemption_cryptographer.ConfirmRedemption(
           base64_encoded_redemption_response);
 

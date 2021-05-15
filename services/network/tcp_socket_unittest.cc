@@ -159,7 +159,7 @@ class TestServer {
         server_addr_, backlog, TRAFFIC_ANNOTATION_FOR_TESTS,
         server_socket_.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
-            [&](int result, const base::Optional<net::IPEndPoint>& local_addr) {
+            [&](int result, const absl::optional<net::IPEndPoint>& local_addr) {
               net_error = result;
               if (local_addr)
                 server_addr_ = local_addr.value();
@@ -210,7 +210,7 @@ class TestServer {
  private:
   void OnAccept(net::CompletionOnceCallback callback,
                 int result,
-                const base::Optional<net::IPEndPoint>& remote_addr,
+                const absl::optional<net::IPEndPoint>& remote_addr,
                 mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -318,7 +318,7 @@ class TCPSocketTest : public testing::Test {
   int CreateTCPConnectedSocketSync(
       mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
       mojo::PendingRemote<mojom::SocketObserver> observer,
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::IPEndPoint& remote_addr,
       mojo::ScopedDataPipeConsumerHandle* receive_pipe_handle_out,
       mojo::ScopedDataPipeProducerHandle* send_pipe_handle_out,
@@ -332,8 +332,8 @@ class TCPSocketTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(receiver), std::move(observer),
         base::BindLambdaForTesting(
             [&](int result,
-                const base::Optional<net::IPEndPoint>& actual_local_addr,
-                const base::Optional<net::IPEndPoint>& peer_addr,
+                const absl::optional<net::IPEndPoint>& actual_local_addr,
+                const absl::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -364,11 +364,11 @@ class TCPSocketTest : public testing::Test {
 
 TEST_F(TCPSocketTest, ReadAndWrite) {
   const struct TestData {
-    base::Optional<net::IPEndPoint> client_addr;
+    absl::optional<net::IPEndPoint> client_addr;
     net::IPEndPoint server_addr;
   } kTestCases[] = {
-      {base::nullopt, net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)},
-      {base::nullopt, net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0)},
+      {absl::nullopt, net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)},
+      {absl::nullopt, net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0)},
       {net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0),
        net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)},
       {net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0),
@@ -466,7 +466,7 @@ TEST_F(TCPSocketTest, ServerReceivesMultipleAccept) {
     EXPECT_EQ(net::OK,
               CreateTCPConnectedSocketSync(
                   client_socket.BindNewPipeAndPassReceiver(),
-                  mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                  mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                   server.server_addr(), &client_socket_receive_handle,
                   &client_socket_send_handle));
     client_sockets.push_back(std::move(client_socket));
@@ -491,7 +491,7 @@ TEST_F(TCPSocketTest, AcceptedSocketCantUpgradeToTLS) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server.server_addr(), &client_socket_receive_handle,
                 &client_socket_send_handle));
 
@@ -514,7 +514,7 @@ TEST_F(TCPSocketTest, AcceptedSocketCantUpgradeToTLS) {
           [&](int net_error,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-              const base::Optional<net::SSLInfo>& ssl_info) {
+              const absl::optional<net::SSLInfo>& ssl_info) {
             EXPECT_EQ(net::ERR_NOT_IMPLEMENTED, net_error);
             run_loop.Quit();
           }));
@@ -536,7 +536,7 @@ TEST_F(TCPSocketTest, SocketClosed) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                observer()->GetObserverRemote(), base::nullopt /*local_addr*/,
+                observer()->GetObserverRemote(), absl::nullopt /*local_addr*/,
                 server->server_addr(), &client_socket_receive_handle,
                 &client_socket_send_handle));
   ASSERT_EQ(net::OK, accept_callback.WaitForResult());
@@ -601,7 +601,7 @@ TEST_F(TCPSocketTest, ReadPipeClosed) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server.server_addr(), &client_socket_receive_handle,
                 &client_socket_send_handle));
   ASSERT_EQ(net::OK, accept_callback.WaitForResult());
@@ -630,7 +630,7 @@ TEST_F(TCPSocketTest, WritePipeClosed) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server.server_addr(), &client_socket_receive_handle,
                 &client_socket_send_handle));
   ASSERT_EQ(net::OK, accept_callback.WaitForResult());
@@ -659,7 +659,7 @@ TEST_F(TCPSocketTest, ServerSocketClosedAcceptedSocketAlive) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server.server_addr(), &client_socket_receive_handle,
                 &client_socket_send_handle));
   ASSERT_EQ(net::OK, accept_callback.WaitForResult());
@@ -732,7 +732,7 @@ TEST_P(TCPSocketWithMockSocketTest,
         mojo::NullRemote(),
         base::BindOnce(
             [](net::CompletionOnceCallback callback, int result,
-               const base::Optional<net::IPEndPoint>& remote_addr,
+               const absl::optional<net::IPEndPoint>& remote_addr,
                mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
                mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -760,7 +760,7 @@ TEST_P(TCPSocketWithMockSocketTest,
       mojo::NullRemote(),
       base::BindOnce(
           [](net::CompletionOnceCallback callback, int result,
-             const base::Optional<net::IPEndPoint>& remote_addr,
+             const absl::optional<net::IPEndPoint>& remote_addr,
              mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
              mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
              mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -796,7 +796,7 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverReadError) {
   server_socket->Accept(
       observer()->GetObserverRemote(),
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& remote_addr,
+          [&](int result, const absl::optional<net::IPEndPoint>& remote_addr,
               mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -844,7 +844,7 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverWriteError) {
   server_socket->Accept(
       observer()->GetObserverRemote(),
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& remote_addr,
+          [&](int result, const absl::optional<net::IPEndPoint>& remote_addr,
               mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -901,7 +901,7 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   CreateTCPConnectedSocketSync(
       client_socket.BindNewPipeAndPassReceiver(),
-      mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+      mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
       server_addr, &client_socket_receive_handle, &client_socket_send_handle);
 
   // Loop kNumIterations times to test that writes can follow reads, and reads
@@ -953,7 +953,7 @@ TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   CreateTCPConnectedSocketSync(
       client_socket.BindNewPipeAndPassReceiver(),
-      mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+      mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
       server_addr, &client_socket_receive_handle, &client_socket_send_handle);
 
   // Loop kNumIterations times to test that writes can follow reads, and reads
@@ -998,7 +998,7 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   CreateTCPConnectedSocketSync(
       client_socket.BindNewPipeAndPassReceiver(),
-      observer()->GetObserverRemote(), base::nullopt /*local_addr*/,
+      observer()->GetObserverRemote(), absl::nullopt /*local_addr*/,
       server_addr, &client_socket_receive_handle, &client_socket_send_handle);
 
   EXPECT_EQ("", Read(&client_socket_receive_handle, 1));
@@ -1034,7 +1034,7 @@ TEST_P(TCPSocketWithMockSocketTest, WriteError) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   CreateTCPConnectedSocketSync(
       client_socket.BindNewPipeAndPassReceiver(),
-      observer()->GetObserverRemote(), base::nullopt /*local_addr*/,
+      observer()->GetObserverRemote(), absl::nullopt /*local_addr*/,
       server_addr, &client_socket_receive_handle, &client_socket_send_handle);
   uint32_t num_bytes = strlen(kTestMsg);
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -1076,7 +1076,7 @@ TEST_P(TCPSocketWithMockSocketTest, InitialTCPConnectedSocketOptions) {
                   CreateTCPConnectedSocketSync(
                       client_socket.BindNewPipeAndPassReceiver(),
                       mojo::NullRemote() /*observer*/,
-                      base::nullopt /*local_addr*/, server_addr,
+                      absl::nullopt /*local_addr*/, server_addr,
                       &client_socket_receive_handle, &client_socket_send_handle,
                       std::move(tcp_connected_socket_options)));
 
@@ -1142,7 +1142,7 @@ TEST_P(TCPSocketWithMockSocketTest, InitialTCPConnectedSocketOptionsFails) {
     EXPECT_EQ(net::ERR_FAILED,
               CreateTCPConnectedSocketSync(
                   client_socket.BindNewPipeAndPassReceiver(),
-                  mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                  mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                   server_addr, &client_socket_receive_handle,
                   &client_socket_send_handle,
                   std::move(tcp_connected_socket_options)));
@@ -1176,7 +1176,7 @@ TEST_P(TCPSocketWithMockSocketTest, SetBufferSizes) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server_addr, &client_socket_receive_handle,
                 &client_socket_send_handle));
 
@@ -1220,7 +1220,7 @@ TEST_P(TCPSocketWithMockSocketTest, SetBufferSizesFails) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt /*local_addr*/,
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
                 server_addr, &client_socket_receive_handle,
                 &client_socket_send_handle));
 
@@ -1245,7 +1245,7 @@ TEST_F(TCPSocketWithMockSocketTest, SetNoDelayAndKeepAlive) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt, server_addr,
+                mojo::NullRemote() /*observer*/, absl::nullopt, server_addr,
                 &client_socket_receive_handle, &client_socket_send_handle));
 
   EXPECT_TRUE(data_provider.no_delay());
@@ -1322,7 +1322,7 @@ TEST_F(TCPSocketWithMockSocketTest, SetNoDelayFails) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt, server_addr,
+                mojo::NullRemote() /*observer*/, absl::nullopt, server_addr,
                 &client_socket_receive_handle, &client_socket_send_handle));
 
   {
@@ -1367,7 +1367,7 @@ TEST_F(TCPSocketWithMockSocketTest, SetOptionsAfterTLSUpgrade) {
   EXPECT_EQ(net::OK,
             CreateTCPConnectedSocketSync(
                 client_socket.BindNewPipeAndPassReceiver(),
-                mojo::NullRemote() /*observer*/, base::nullopt, server_addr,
+                mojo::NullRemote() /*observer*/, absl::nullopt, server_addr,
                 &client_socket_receive_handle, &client_socket_send_handle));
 
   // UpgradeToTLS will destroy network::TCPConnectedSocket::|socket_|. Calling
@@ -1387,7 +1387,7 @@ TEST_F(TCPSocketWithMockSocketTest, SetOptionsAfterTLSUpgrade) {
             [&](int result,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-                const base::Optional<net::SSLInfo>& ssl_info) {
+                const absl::optional<net::SSLInfo>& ssl_info) {
               EXPECT_EQ(net::ERR_FAILED, result);
               run_loop.Quit();
             }));
@@ -1439,13 +1439,13 @@ TEST_F(TCPSocketWithMockSocketTest, SocketDestroyedBeforeConnectCompletes) {
   int net_error = net::OK;
   base::RunLoop run_loop;
   factory()->CreateTCPConnectedSocket(
-      base::nullopt, remote_addr_list,
+      absl::nullopt, remote_addr_list,
       nullptr /* tcp_connected_socket_options */, TRAFFIC_ANNOTATION_FOR_TESTS,
       client_socket.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
       base::BindLambdaForTesting(
           [&](int result,
-              const base::Optional<net::IPEndPoint>& actual_local_addr,
-              const base::Optional<net::IPEndPoint>& peer_addr,
+              const absl::optional<net::IPEndPoint>& actual_local_addr,
+              const absl::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;

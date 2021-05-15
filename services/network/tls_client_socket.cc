@@ -71,13 +71,13 @@ void TLSClientSocket::OnTLSConnectCompleted(int result) {
     socket_ = nullptr;
     std::move(connect_callback_)
         .Run(result, mojo::ScopedDataPipeConsumerHandle(),
-             mojo::ScopedDataPipeProducerHandle(), base::nullopt);
+             mojo::ScopedDataPipeProducerHandle(), absl::nullopt);
     return;
   }
   socket_data_pump_ = std::make_unique<SocketDataPump>(
       socket_.get(), this /*delegate*/, std::move(receive_producer_handle),
       std::move(send_consumer_handle), traffic_annotation_);
-  base::Optional<net::SSLInfo> ssl_info;
+  absl::optional<net::SSLInfo> ssl_info;
   if (send_ssl_info_) {
     net::SSLInfo local;
     socket_->GetSSLInfo(&local);

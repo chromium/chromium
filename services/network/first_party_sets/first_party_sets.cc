@@ -9,35 +9,35 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
-base::Optional<
+absl::optional<
     std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
 CanonicalizeSet(const std::vector<std::string>& origins) {
   if (origins.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
-  const base::Optional<net::SchemefulSite> maybe_owner =
+  const absl::optional<net::SchemefulSite> maybe_owner =
       FirstPartySetParser::CanonicalizeRegisteredDomain(origins[0],
                                                         true /* emit_errors */);
   if (!maybe_owner.has_value()) {
     LOG(ERROR) << "First-Party Set owner is not valid; aborting.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const net::SchemefulSite& owner = *maybe_owner;
   base::flat_set<net::SchemefulSite> members;
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
-    const base::Optional<net::SchemefulSite> maybe_member =
+    const absl::optional<net::SchemefulSite> maybe_member =
         FirstPartySetParser::CanonicalizeRegisteredDomain(
             *it, true /* emit_errors */);
     if (maybe_member.has_value() && maybe_member != owner)
@@ -46,10 +46,10 @@ CanonicalizeSet(const std::vector<std::string>& origins) {
 
   if (members.empty()) {
     LOG(ERROR) << "No valid First-Party Set members were specified; aborting.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return base::make_optional(
+  return absl::make_optional(
       std::make_pair(std::move(owner), std::move(members)));
 }
 
@@ -83,7 +83,7 @@ FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
 
 bool FirstPartySets::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   const auto it = sets_.find(site);
   if (it == sets_.end())
@@ -104,7 +104,7 @@ bool FirstPartySets::IsContextSamePartyWithSite(
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
     const net::SchemefulSite& site,
-    const base::Optional<net::SchemefulSite>& top_frame_site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   const auto owner_or_site =
       [this](const net::SchemefulSite& site) -> const net::SchemefulSite& {

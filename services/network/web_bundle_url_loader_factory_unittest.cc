@@ -75,7 +75,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
       mojo::PendingReceiver<mojom::WebBundleHandle> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  const base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return last_bundle_error_;
   }
@@ -104,7 +104,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
 
  private:
   mojo::Receiver<mojom::WebBundleHandle> receiver_;
-  base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>
+  absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>
       last_bundle_error_;
   base::OnceClosure quit_closure_for_bundle_error_;
 };
@@ -159,7 +159,7 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
         handle.BindNewPipeAndPassReceiver());
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
         GURL(kBundleUrl), std::move(handle),
-        /*request_initiator_origin_lock=*/base::nullopt,
+        /*request_initiator_origin_lock=*/absl::nullopt,
         std::make_unique<MockMemoryQuotaConsumer>());
     factory_->SetBundleStream(std::move(consumer));
   }
@@ -203,7 +203,7 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
   void RunUntilBundleError() { handle_->RunUntilBundleError(); }
 
-  const base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  const absl::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return handle_->last_bundle_error();
   }

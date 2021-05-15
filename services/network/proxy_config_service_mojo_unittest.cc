@@ -70,7 +70,7 @@ class ProxyConfigServiceMojoTest : public testing::Test {
   ProxyConfigServiceMojoTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         proxy_config_service_(config_client_.BindNewPipeAndPassReceiver(),
-                              base::Optional<net::ProxyConfigWithAnnotation>(),
+                              absl::optional<net::ProxyConfigWithAnnotation>(),
                               mojo::NullRemote()),
         observer_(&proxy_config_service_) {
     proxy_config_service_.AddObserver(&observer_);

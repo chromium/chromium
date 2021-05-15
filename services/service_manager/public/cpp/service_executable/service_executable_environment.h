@@ -6,11 +6,11 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_EXECUTABLE_SERVICE_EXECUTABLE_ENVIRONMENT_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -37,7 +37,7 @@ class ServiceExecutableEnvironment {
 
  private:
   base::Thread ipc_thread_;
-  base::Optional<mojo::core::ScopedIPCSupport> ipc_support_;
+  absl::optional<mojo::core::ScopedIPCSupport> ipc_support_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceExecutableEnvironment);
 };

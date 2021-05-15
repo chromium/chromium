@@ -5,12 +5,12 @@
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace device {
@@ -32,7 +32,7 @@ TEST(BluetoothUtilsTest,
      GetBluetoothDeviceNameForDisplay_NoNameAndNoUnknownDeviceType) {
   BluetoothDeviceInfoPtr info = BluetoothDeviceInfo::New();
   info->address = kAddress;
-  info->name = base::nullopt;
+  info->name = absl::nullopt;
   info->device_type = BluetoothDeviceInfo::DeviceType::kUnknown;
   EXPECT_EQ(u"Unknown or Unsupported Device (00:00:00:00:00:00)",
             GetBluetoothDeviceNameForDisplay(info));
@@ -42,7 +42,7 @@ TEST(BluetoothUtilsTest,
      GetBluetoothDeviceNameForDisplay_NoNameAndPeripheralDeviceType) {
   BluetoothDeviceInfoPtr info = BluetoothDeviceInfo::New();
   info->address = kAddress;
-  info->name = base::nullopt;
+  info->name = absl::nullopt;
   info->device_type = BluetoothDeviceInfo::DeviceType::kPeripheral;
   EXPECT_EQ(u"Peripheral (00:00:00:00:00:00)",
             GetBluetoothDeviceNameForDisplay(info));
@@ -52,7 +52,7 @@ TEST(BluetoothUtilsTest,
      GetBluetoothDeviceNameForDisplay_NoNameAndComputerDeviceType) {
   BluetoothDeviceInfoPtr info = BluetoothDeviceInfo::New();
   info->address = kAddress;
-  info->name = base::nullopt;
+  info->name = absl::nullopt;
   info->device_type = BluetoothDeviceInfo::DeviceType::kComputer;
   EXPECT_EQ(u"Computer (00:00:00:00:00:00)",
             GetBluetoothDeviceNameForDisplay(info));

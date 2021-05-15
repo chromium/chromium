@@ -10,7 +10,7 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
                   net::NetworkIsolationKey>::
     Read(network::mojom::NetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
-  base::Optional<net::SchemefulSite> top_frame_site, frame_site;
+  absl::optional<net::SchemefulSite> top_frame_site, frame_site;
   if (!data.ReadTopFrameSite(&top_frame_site))
     return false;
   if (!data.ReadFrameSite(&frame_site))

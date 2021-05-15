@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,6 +16,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HostPortPair;
@@ -35,7 +35,7 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
       net::HostResolver* resolver,
       const net::HostPortPair& host,
       const net::NetworkIsolationKey& network_isolation_key,
-      const base::Optional<net::HostResolver::ResolveHostParameters>&
+      const absl::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,
       net::NetLog* net_log);
   ~ResolveHostRequest() override;
@@ -51,7 +51,7 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
  private:
   void OnComplete(int error);
   net::ResolveErrorInfo GetResolveErrorInfo() const;
-  const base::Optional<net::AddressList>& GetAddressResults() const;
+  const absl::optional<net::AddressList>& GetAddressResults() const;
   void SignalNonAddressResults();
 
   std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;

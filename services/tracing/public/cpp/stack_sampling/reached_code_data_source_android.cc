@@ -76,7 +76,7 @@ void ReachedCodeDataSource::WriteProfileData() {
     str->set_str(module_id);
   }
 
-  base::Optional<base::StringPiece> library_name =
+  absl::optional<base::StringPiece> library_name =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (library_name) {
     auto* str = interned_data->add_mapping_paths();

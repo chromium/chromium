@@ -18,8 +18,8 @@
 namespace network {
 
 InitiatorLockCompatibility VerifyRequestInitiatorLock(
-    const base::Optional<url::Origin>& request_initiator_origin_lock,
-    const base::Optional<url::Origin>& request_initiator) {
+    const absl::optional<url::Origin>& request_initiator_origin_lock,
+    const absl::optional<url::Origin>& request_initiator) {
   if (!request_initiator_origin_lock.has_value())
     return InitiatorLockCompatibility::kNoLock;
   const url::Origin& lock = request_initiator_origin_lock.value();
@@ -45,8 +45,8 @@ InitiatorLockCompatibility VerifyRequestInitiatorLock(
 }
 
 url::Origin GetTrustworthyInitiator(
-    const base::Optional<url::Origin>& request_initiator_origin_lock,
-    const base::Optional<url::Origin>& request_initiator) {
+    const absl::optional<url::Origin>& request_initiator_origin_lock,
+    const absl::optional<url::Origin>& request_initiator) {
   // Returning a unique origin as a fallback should be safe - such origin will
   // be considered cross-origin from all other origins.
   url::Origin unique_origin_fallback;

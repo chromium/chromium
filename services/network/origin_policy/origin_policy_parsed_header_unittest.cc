@@ -43,7 +43,7 @@ void AssertAllowedIsLatest(const OriginPolicyAllowedValue& value) {
 }
 
 void AssertPreferredIsString(
-    const base::Optional<OriginPolicyPreferredValue>& value,
+    const absl::optional<OriginPolicyPreferredValue>& value,
     const std::string& string) {
   ASSERT_TRUE(value.has_value());
   ASSERT_FALSE(value->is_latest_from_network());
@@ -52,7 +52,7 @@ void AssertPreferredIsString(
 }
 
 void AssertPreferredIsLatestFromNetwork(
-    const base::Optional<OriginPolicyPreferredValue>& value) {
+    const absl::optional<OriginPolicyPreferredValue>& value) {
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_latest_from_network());
   ASSERT_FALSE(value->is_string());

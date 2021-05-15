@@ -122,7 +122,7 @@ class P2PSocketManager::DnsRequest {
  private:
   void OnDone(int result) {
     net::IPAddressList list;
-    const base::Optional<net::AddressList>& addresses =
+    const absl::optional<net::AddressList>& addresses =
         request_->GetAddressResults();
     if (result != net::OK || !addresses) {
       LOG(ERROR) << "Failed to resolve address for " << host_name_

@@ -9,7 +9,7 @@ namespace network {
 
 OriginPolicyAllowedValue::OriginPolicyAllowedValue(
     OriginPolicyAllowedValue::State state,
-    const base::Optional<std::string>& string)
+    const absl::optional<std::string>& string)
     : state_(state), string_(string) {}
 
 OriginPolicyAllowedValue::~OriginPolicyAllowedValue() = default;
@@ -37,7 +37,7 @@ const OriginPolicyAllowedValue OriginPolicyAllowedValue::Null() {
 }
 
 OriginPolicyPreferredValue::OriginPolicyPreferredValue(
-    const base::Optional<std::string>& string)
+    const absl::optional<std::string>& string)
     : string_(string) {}
 
 OriginPolicyPreferredValue::~OriginPolicyPreferredValue() = default;
@@ -54,7 +54,7 @@ const OriginPolicyPreferredValue OriginPolicyPreferredValue::FromString(
 // static
 const OriginPolicyPreferredValue
 OriginPolicyPreferredValue::LatestFromNetwork() {
-  return OriginPolicyPreferredValue(base::nullopt);
+  return OriginPolicyPreferredValue(absl::nullopt);
 }
 
 }  // namespace network

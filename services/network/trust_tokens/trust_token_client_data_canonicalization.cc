@@ -30,7 +30,7 @@ const char kKeyHashKey[] = "key-hash";
 //    // “key-hash”’s value is of CBOR type “byte string.”
 //    “key-hash”: SHA256(client public key)
 // },
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 CanonicalizeTrustTokenClientDataForRedemption(
     base::Time redemption_timestamp,
     const url::Origin& top_frame_origin,
@@ -43,7 +43,7 @@ CanonicalizeTrustTokenClientDataForRedemption(
       redemption_timestamp - base::Time::UnixEpoch();
 
   if (redemption_timestamp_minus_unix_epoch < base::TimeDelta())
-    return base::nullopt;
+    return absl::nullopt;
 
   map[cbor::Value(kRedemptionTimestampKey, cbor::Value::Type::STRING)] =
       cbor::Value(redemption_timestamp_minus_unix_epoch.InSeconds());

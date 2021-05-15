@@ -6,8 +6,8 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_OPTIONAL_TRUST_TOKEN_PARAMS_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -32,9 +32,9 @@ namespace network {
 // serialization/deserialization code.
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) OptionalTrustTokenParams {
  public:
-  // The constructors Match base::Optional to the extent possible.
+  // The constructors Match absl::optional to the extent possible.
   OptionalTrustTokenParams();
-  OptionalTrustTokenParams(base::nullopt_t);  // NOLINT
+  OptionalTrustTokenParams(absl::nullopt_t);  // NOLINT
   explicit OptionalTrustTokenParams(mojom::TrustTokenParamsPtr);
 
   // Copy assignment uses mojo::Clone.

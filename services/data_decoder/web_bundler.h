@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom.h"
 #include "services/data_decoder/public/mojom/web_bundler.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
@@ -38,14 +38,14 @@ class WebBundler : public mojom::WebBundler {
   void OnGetResourceCount(uint64_t count);
   void GetNextResourceInfo();
   void OnGetResourceInfo(mojom::SerializedResourceInfoPtr info);
-  void OnGetResourceBody(base::Optional<mojo_base::BigBuffer> body);
+  void OnGetResourceBody(absl::optional<mojo_base::BigBuffer> body);
   void WriteWebBundleIndex();
 
   std::vector<mojo::Remote<mojom::ResourceSnapshotForWebBundle>> snapshots_;
   base::File file_;
   GenerateCallback callback_;
   std::vector<std::vector<mojom::SerializedResourceInfoPtr>> resources_;
-  std::vector<std::vector<base::Optional<mojo_base::BigBuffer>>> bodies_;
+  std::vector<std::vector<absl::optional<mojo_base::BigBuffer>>> bodies_;
   uint64_t pending_resource_count_;
 };
 

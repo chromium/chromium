@@ -31,8 +31,8 @@ class SuitableTrustTokenOrigin {
   // Returns nullopt if |origin| (or |url|) is unsuitable for keying Trust
   // Tokens persistent state. Otherwise, returns a new SuitableTrustTokenOrigin
   // wrapping |origin| (or |url|).
-  static base::Optional<SuitableTrustTokenOrigin> Create(url::Origin origin);
-  static base::Optional<SuitableTrustTokenOrigin> Create(const GURL& url);
+  static absl::optional<SuitableTrustTokenOrigin> Create(url::Origin origin);
+  static absl::optional<SuitableTrustTokenOrigin> Create(const GURL& url);
 
   std::string Serialize() const;
   const url::Origin& origin() const { return origin_; }

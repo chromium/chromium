@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -26,7 +26,7 @@ namespace network {
 // on serialization error.
 //
 // |top_frame_origin| must not be opaque.
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 CanonicalizeTrustTokenClientDataForRedemption(
     base::Time redemption_timestamp,
     const url::Origin& top_frame_origin,

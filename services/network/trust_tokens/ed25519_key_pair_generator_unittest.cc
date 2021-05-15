@@ -20,7 +20,7 @@ TEST(Ed25519KeyPairGenerator, Roundtrip) {
 
   Ed25519TrustTokenRequestSigner signer;
 
-  base::Optional<std::vector<uint8_t>> signature =
+  absl::optional<std::vector<uint8_t>> signature =
       signer.Sign(base::as_bytes(base::make_span(signing)), message);
   ASSERT_TRUE(signature);
 

@@ -24,8 +24,8 @@ std::unique_ptr<base::Value> ParseXml(const std::string& xml) {
 
   parser.Parse(xml,
                base::BindLambdaForTesting(
-                   [&root_node](base::Optional<base::Value> parsed_root_node,
-                                const base::Optional<std::string>& error) {
+                   [&root_node](absl::optional<base::Value> parsed_root_node,
+                                const absl::optional<std::string>& error) {
                      root_node = parsed_root_node
                                      ? base::Value::ToUniquePtrValue(
                                            std::move(parsed_root_node.value()))

@@ -107,7 +107,7 @@ class TestIoCallback {
 
   void SetReadResult(bool result,
                      uint8_t report_id,
-                     const base::Optional<std::vector<uint8_t>>& buffer) {
+                     const absl::optional<std::vector<uint8_t>>& buffer) {
     result_ = result;
     report_id_ = report_id;
     has_buffer_ = buffer.has_value();

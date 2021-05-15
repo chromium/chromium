@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/mru_cache.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/hash_value.h"
@@ -21,6 +20,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
     return &pending_reporters_;
   }
 
-  void SetRetryDelayForTesting(base::Optional<base::TimeDelta> delay);
+  void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
   void SetCompletionCallbackForTesting(base::OnceClosure callback);
 

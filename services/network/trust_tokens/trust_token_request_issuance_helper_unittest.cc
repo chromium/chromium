@@ -88,7 +88,7 @@ class MockCryptographer
                bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
                     int issuer_configured_batch_size));
   MOCK_METHOD1(AddKey, bool(base::StringPiece key));
-  MOCK_METHOD1(BeginIssuance, base::Optional<std::string>(size_t num_tokens));
+  MOCK_METHOD1(BeginIssuance, absl::optional<std::string>(size_t num_tokens));
   MOCK_METHOD1(
       ConfirmIssuance,
       std::unique_ptr<UnblindedTokens>(base::StringPiece response_header));
@@ -284,7 +284,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest,
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   // Return nullopt, denoting an error, when the issuance helper requests
   // blinded, unsigned tokens.
-  EXPECT_CALL(*cryptographer, BeginIssuance(_)).WillOnce(Return(base::nullopt));
+  EXPECT_CALL(*cryptographer, BeginIssuance(_)).WillOnce(Return(absl::nullopt));
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),

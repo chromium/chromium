@@ -75,7 +75,7 @@ void WebBundler::OnGetResourceInfo(mojom::SerializedResourceInfoPtr info) {
       base::BindOnce(&WebBundler::OnGetResourceBody, base::Unretained(this)));
 }
 
-void WebBundler::OnGetResourceBody(base::Optional<mojo_base::BigBuffer> body) {
+void WebBundler::OnGetResourceBody(absl::optional<mojo_base::BigBuffer> body) {
   if (body->size() > kMaxBodySize) {
     std::move(callback_).Run(0, mojom::WebBundlerError::kInvalidInput);
     return;
@@ -97,7 +97,7 @@ void WebBundler::WriteWebBundleIndex() {
   std::set<GURL> url_set;
   CHECK_EQ(resources_.size(), bodies_.size());
   std::vector<mojom::SerializedResourceInfoPtr> resources;
-  std::vector<base::Optional<mojo_base::BigBuffer>> bodies;
+  std::vector<absl::optional<mojo_base::BigBuffer>> bodies;
   for (size_t i = 0; i < resources_.size(); ++i) {
     auto& info_list = resources_[i];
     auto& body_list = bodies_[i];

@@ -14,9 +14,9 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -75,7 +75,7 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   const PlatformDeviceIdMap& platform_device_id_map() const {
     return platform_device_id_map_;
   }
-  const base::Optional<std::string>& interface_id() const {
+  const absl::optional<std::string>& interface_id() const {
     return interface_id_;
   }
   const std::string& physical_device_id() const {
@@ -123,9 +123,9 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
   // On platforms where the system enumerates top-level HID collections as
   // separate logical devices, |interface_id_| is an identifier for the HID
   // interface and is used to associate HidDeviceInfo objects generated from
-  // the same HID interface. May be base::nullopt if the system does not split
+  // the same HID interface. May be absl::nullopt if the system does not split
   // top-level collections during enumeration.
-  base::Optional<std::string> interface_id_;
+  absl::optional<std::string> interface_id_;
 
   mojom::HidDeviceInfoPtr device_;
 };

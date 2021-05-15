@@ -13,10 +13,10 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
@@ -105,8 +105,8 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
   GetSensorFactoryFunctor get_sensor_factory_callback_;
 
-  // base::nullopt if the sensor has not been started, non-empty otherwise.
-  base::Optional<EventRegistrationToken> reading_callback_token_;
+  // absl::nullopt if the sensor has not been started, non-empty otherwise.
+  absl::optional<EventRegistrationToken> reading_callback_token_;
 
   base::TimeDelta minimum_report_interval_;
   Microsoft::WRL::ComPtr<ISensorWinrtClass> sensor_;

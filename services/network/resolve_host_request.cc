@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -20,7 +20,7 @@ ResolveHostRequest::ResolveHostRequest(
     net::HostResolver* resolver,
     const net::HostPortPair& host,
     const net::NetworkIsolationKey& network_isolation_key,
-    const base::Optional<net::HostResolver::ResolveHostParameters>&
+    const absl::optional<net::HostResolver::ResolveHostParameters>&
         optional_parameters,
     net::NetLog* net_log) {
   DCHECK(resolver);
@@ -38,7 +38,7 @@ ResolveHostRequest::~ResolveHostRequest() {
   if (response_client_.is_bound()) {
     response_client_->OnComplete(net::ERR_NAME_NOT_RESOLVED,
                                  net::ResolveErrorInfo(net::ERR_FAILED),
-                                 base::nullopt);
+                                 absl::nullopt);
     response_client_.reset();
   }
 }
@@ -112,11 +112,11 @@ net::ResolveErrorInfo ResolveHostRequest::GetResolveErrorInfo() const {
   return internal_request_->GetResolveErrorInfo();
 }
 
-const base::Optional<net::AddressList>& ResolveHostRequest::GetAddressResults()
+const absl::optional<net::AddressList>& ResolveHostRequest::GetAddressResults()
     const {
   if (cancelled_) {
-    static base::NoDestructor<base::Optional<net::AddressList>>
-        cancelled_result(base::nullopt);
+    static base::NoDestructor<absl::optional<net::AddressList>>
+        cancelled_result(absl::nullopt);
     return *cancelled_result;
   }
 

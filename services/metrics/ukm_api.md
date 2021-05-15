@@ -209,7 +209,7 @@ auto* ukm_background_service = ukm::UkmBackgroundRecorderFactory::GetForProfile(
 ukm_background_service->GetBackgroundSourceIdIfAllowed(origin, base::BindOnce(&DidGetBackgroundSourceId));
 
 // A callback will run with an optional source ID.
-void DidGetBackgroundSourceId(base::Optional<ukm::SourceId> source_id) {
+void DidGetBackgroundSourceId(absl::optional<ukm::SourceId> source_id) {
   if (!source_id) return;  // Can't record as it wasn't found in the history.
 
   // Use the newly generated source ID.

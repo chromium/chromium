@@ -17,11 +17,11 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "services/device/usb/scoped_libusb_device_ref.h"
 #include "services/device/usb/usb_context.h"
 #include "services/device/usb/usb_device_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libusb/src/libusb/libusb.h"
 
 #if defined(OS_WIN)
@@ -63,7 +63,7 @@ class UsbServiceImpl final :
   // Enumerate USB devices from OS and update devices_ map.
   void RefreshDevices();
   void OnDeviceList(
-      base::Optional<std::vector<ScopedLibusbDeviceRef>> platform_devices);
+      absl::optional<std::vector<ScopedLibusbDeviceRef>> platform_devices);
   void RefreshDevicesComplete();
 
   // Creates a new UsbDevice based on the given libusb device.

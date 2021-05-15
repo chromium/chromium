@@ -332,7 +332,7 @@ void ServiceInstance::HandleServiceOrConnectorDisconnection() {
 
 bool ServiceInstance::CanConnectToOtherInstance(
     const ServiceFilter& target_filter,
-    const base::Optional<std::string>& target_interface_name) {
+    const absl::optional<std::string>& target_interface_name) {
   if (target_filter.service_name().empty()) {
     DLOG(ERROR) << "ServiceFilter has no service name.";
     return false;
@@ -389,7 +389,7 @@ void ServiceInstance::BindInterface(
     mojom::BindInterfacePriority priority,
     BindInterfaceCallback callback) {
   if (!CanConnectToOtherInstance(target_filter, interface_name)) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -401,7 +401,7 @@ void ServiceInstance::BindInterface(
       target_instance->MaybeAcceptConnectionRequest(
           *this, interface_name, std::move(receiving_pipe), priority);
   if (!allowed) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -423,8 +423,8 @@ void ServiceInstance::QueryService(const std::string& service_name,
 void ServiceInstance::WarmService(const ServiceFilter& target_filter,
                                   WarmServiceCallback callback) {
   if (!CanConnectToOtherInstance(target_filter,
-                                 base::nullopt /* interface_name */)) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+                                 absl::nullopt /* interface_name */)) {
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -432,7 +432,7 @@ void ServiceInstance::WarmService(const ServiceFilter& target_filter,
       service_manager_->FindOrCreateMatchingTargetInstance(*this,
                                                            target_filter);
   if (!target_instance) {
-    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, base::nullopt);
+    std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED, absl::nullopt);
     return;
   }
 
@@ -447,7 +447,7 @@ void ServiceInstance::RegisterServiceInstance(
     RegisterServiceInstanceCallback callback) {
   auto target_filter = ServiceFilter::ForExactIdentity(identity);
   if (!CanConnectToOtherInstance(target_filter,
-                                 base::nullopt /* interface_name */)) {
+                                 absl::nullopt /* interface_name */)) {
     std::move(callback).Run(mojom::ConnectResult::ACCESS_DENIED);
     return;
   }

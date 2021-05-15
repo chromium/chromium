@@ -14,7 +14,7 @@ namespace mojo {
 
 template <>
 struct StructTraits<viz::mojom::SurfaceRangeDataView, viz::SurfaceRange> {
-  static const base::Optional<viz::SurfaceId>& start(
+  static const absl::optional<viz::SurfaceId>& start(
       const viz::SurfaceRange& range) {
     DCHECK(range.IsValid());
     return range.start();

@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   void DoAcceptLoop();
   void OnAcceptCompleted(
       int rv,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);

@@ -9,12 +9,12 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
@@ -68,8 +68,8 @@ class DataDecoder {
       return result;
     }
 
-    base::Optional<T> value;
-    base::Optional<std::string> error;
+    absl::optional<T> value;
+    absl::optional<std::string> error;
   };
 
   using ValueOrError = ResultOrError<base::Value>;

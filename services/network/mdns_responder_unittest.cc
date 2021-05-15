@@ -124,7 +124,7 @@ std::string CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
   net::DnsResponse response_cache_flush(0 /* id */, true /* is_authoritative */,
                                         answers, {} /* authority_records */,
                                         {} /* additional_records */,
-                                        base::nullopt /* query */);
+                                        absl::nullopt /* query */);
   DCHECK(response_cache_flush.io_buffer() != nullptr);
   buf = base::MakeRefCounted<net::IOBufferWithSize>(
       response_cache_flush.io_buffer_size());

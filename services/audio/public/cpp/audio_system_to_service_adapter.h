@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -17,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 

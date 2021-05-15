@@ -16,12 +16,12 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioplugininterface.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,34 +34,34 @@ constexpr uint8_t kDeviceClassHub = 0x09;
 // These methods are similar to the ones used by HidServiceMac.
 // TODO(https://crbug.com/1104271): Move these methods into a shared utility
 // file.
-base::Optional<std::u16string> GetStringProperty(io_service_t service,
+absl::optional<std::u16string> GetStringProperty(io_service_t service,
                                                  CFStringRef key) {
   base::ScopedCFTypeRef<CFStringRef> ref(base::mac::CFCast<CFStringRef>(
       IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
 
   if (!ref)
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::SysCFStringRefToUTF16(ref);
 }
 
-base::Optional<uint16_t> GetUint16Property(io_service_t service,
+absl::optional<uint16_t> GetUint16Property(io_service_t service,
                                            CFStringRef property) {
   base::ScopedCFTypeRef<CFNumberRef> cf_number(
       base::mac::CFCast<CFNumberRef>(IORegistryEntryCreateCFProperty(
           service, property, kCFAllocatorDefault, 0)));
 
   if (!cf_number)
-    return base::nullopt;
+    return absl::nullopt;
   if (CFGetTypeID(cf_number) != CFNumberGetTypeID())
-    return base::nullopt;
+    return absl::nullopt;
   uint16_t value;
   if (!CFNumberGetValue((CFNumberRef)cf_number, kCFNumberSInt16Type, &value))
-    return base::nullopt;
+    return absl::nullopt;
   return value;
 }
 
-base::Optional<uint8_t> GetUint8Property(io_service_t service,
+absl::optional<uint8_t> GetUint8Property(io_service_t service,
                                          CFStringRef property) {
   base::ScopedCFTypeRef<CFNumberRef> cf_number(
       base::mac::CFCast<CFNumberRef>(IORegistryEntryCreateCFProperty(
@@ -79,7 +79,7 @@ base::Optional<uint8_t> GetUint8Property(io_service_t service,
   if (success)
     return value;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -221,20 +221,20 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   if (IORegistryEntryGetRegistryEntryID(device, &entry_id) != kIOReturnSuccess)
     return;
 
-  base::Optional<uint8_t> property_uint8 =
+  absl::optional<uint8_t> property_uint8 =
       GetUint8Property(device, CFSTR("PortNum"));
   if (!property_uint8.has_value())
     return;
   uint8_t port_number = property_uint8.value();
 
-  base::Optional<uint16_t> property_uint16 =
+  absl::optional<uint16_t> property_uint16 =
       GetUint16Property(device, CFSTR("bcdUSB"));
   uint16_t usb_version;
   if (!property_uint16.has_value())
     return;
   usb_version = property_uint16.value();
 
-  base::Optional<std::u16string> property_string16 =
+  absl::optional<std::u16string> property_string16 =
       GetStringProperty(device, CFSTR(kUSBVendorString));
   std::u16string manufacturer_string;
   if (property_string16.has_value())

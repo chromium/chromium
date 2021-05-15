@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +20,7 @@
 #include "services/service_manager/service_manager.h"
 #include "services/service_manager/tests/service_manager/test_manifests.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace {
@@ -68,7 +68,7 @@ class TestListener : public mojom::ServiceManagerListener {
   mojo::Receiver<mojom::ServiceManagerListener> receiver_;
   base::RunLoop wait_for_init_loop_;
 
-  base::Optional<base::RunLoop> wait_for_start_loop_;
+  absl::optional<base::RunLoop> wait_for_start_loop_;
   Identity* wait_for_start_identity_ = nullptr;
   uint32_t* wait_for_start_pid_ = nullptr;
 

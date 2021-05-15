@@ -662,7 +662,7 @@ QueuedRequestDispatcher::ClientInfo::ClientInfo(
     mojom::ClientProcess* client,
     base::ProcessId pid,
     mojom::ProcessType process_type,
-    base::Optional<std::string> service_name)
+    absl::optional<std::string> service_name)
     : client(client),
       pid(pid),
       process_type(process_type),

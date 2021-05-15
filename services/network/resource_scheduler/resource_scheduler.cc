@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
@@ -39,6 +38,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 #if defined(OS_ANDROID)
@@ -616,7 +616,7 @@ class ResourceScheduler::Client
 
     if (p2p_connections_count_ == 0 &&
         p2p_connections_count_active_timestamp_.has_value()) {
-      p2p_connections_count_active_timestamp_ = base::nullopt;
+      p2p_connections_count_active_timestamp_ = absl::nullopt;
     }
 
     LoadAnyStartablePendingRequests(
@@ -859,7 +859,7 @@ class ResourceScheduler::Client
 
       // Record time since last non-delayable request start or end, whichever
       // happened later.
-      base::Optional<base::TimeTicks> last_non_delayable_request_start_or_end;
+      absl::optional<base::TimeTicks> last_non_delayable_request_start_or_end;
       if (last_non_delayable_request_start_.has_value() &&
           !last_non_delayable_request_end_.has_value()) {
         last_non_delayable_request_start_or_end =
@@ -941,12 +941,12 @@ class ResourceScheduler::Client
     }
     if (base::android::RadioUtils::GetConnectionType() ==
         base::android::RadioConnectionType::kWifi) {
-      base::Optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
+      absl::optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
       return maybe_level.has_value() &&
              *maybe_level <=
                  static_cast<int>(base::android::RadioSignalLevel::kModerate);
     }
-    base::Optional<base::android::RadioSignalLevel> maybe_level =
+    absl::optional<base::android::RadioSignalLevel> maybe_level =
         base::android::RadioUtils::GetCellSignalLevel();
     return maybe_level.has_value() &&
            *maybe_level <= base::android::RadioSignalLevel::kModerate;
@@ -973,8 +973,8 @@ class ResourceScheduler::Client
     if (!GetSignalQualityAllowsForThrottling()) {
       RecordMetricsForWeakSignalThrottlingDuration();
       // Reset windows and stop throttling.
-      weak_signal_throttling_start_timestamp_ = base::nullopt;
-      weak_signal_throttling_end_timestamp_ = base::nullopt;
+      weak_signal_throttling_start_timestamp_ = absl::nullopt;
+      weak_signal_throttling_end_timestamp_ = absl::nullopt;
       return;
     }
 
@@ -991,7 +991,7 @@ class ResourceScheduler::Client
       if (time_since_unthrottled > weak_signal_unthrottle_duration) {
         // Restart throttling.
         weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
-        weak_signal_throttling_end_timestamp_ = base::nullopt;
+        weak_signal_throttling_end_timestamp_ = absl::nullopt;
       }
       return;
     }
@@ -1009,7 +1009,7 @@ class ResourceScheduler::Client
       if (time_since_throttling_start > max_weak_signal_throttling_duration) {
         RecordMetricsForWeakSignalThrottlingDuration();
         // Temporarily pause throttling.
-        weak_signal_throttling_start_timestamp_ = base::nullopt;
+        weak_signal_throttling_start_timestamp_ = absl::nullopt;
         weak_signal_throttling_end_timestamp_ = tick_clock_->NowTicks();
       }
       return;
@@ -1084,7 +1084,7 @@ class ResourceScheduler::Client
           tick_clock_->NowTicks() -
           p2p_connections_count_active_timestamp_.value();
 
-      base::Optional<base::TimeDelta> max_wait_time_p2p_connections =
+      absl::optional<base::TimeDelta> max_wait_time_p2p_connections =
           resource_scheduler_->resource_scheduler_params_manager_
               .max_wait_time_p2p_connections();
 
@@ -1271,7 +1271,7 @@ class ResourceScheduler::Client
 
   // Returns true if a non-delayable request is expected to arrive soon.
   bool IsNonDelayableRequestAnticipated() const {
-    base::Optional<double> http_rtt_multiplier =
+    absl::optional<double> http_rtt_multiplier =
         params_for_network_quality_
             .http_rtt_multiplier_for_proactive_throttling;
 
@@ -1287,7 +1287,7 @@ class ResourceScheduler::Client
     if (!last_non_delayable_request_start_.has_value())
       return false;
 
-    base::Optional<base::TimeDelta> http_rtt =
+    absl::optional<base::TimeDelta> http_rtt =
         network_quality_estimator_->GetHttpRTT();
     if (!http_rtt.has_value())
       return false;
@@ -1443,10 +1443,10 @@ class ResourceScheduler::Client
   const base::TickClock* tick_clock_;
 
   // Time when the last non-delayble request started in this client.
-  base::Optional<base::TimeTicks> last_non_delayable_request_start_;
+  absl::optional<base::TimeTicks> last_non_delayable_request_start_;
 
   // Time when the last non-delayble request ended in this client.
-  base::Optional<base::TimeTicks> last_non_delayable_request_end_;
+  absl::optional<base::TimeTicks> last_non_delayable_request_end_;
 
   // Current estimated value of the effective connection type.
   net::EffectiveConnectionType effective_connection_type_ =
@@ -1459,21 +1459,21 @@ class ResourceScheduler::Client
   // connection. Set to current timestamp when |p2p_connections_count_|
   // changes from 0 to a non-zero value. Reset to null when
   // |p2p_connections_count_| becomes 0.
-  base::Optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
+  absl::optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
 
   // Earliest timestamp since when the count of active peer to peer
   // connection counts dropped from a non-zero value to zero. Set to current
   // timestamp when |p2p_connections_count_| changes from a non-zero value to 0.
-  base::Optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
+  absl::optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
 
   base::OneShotTimer p2p_connections_count_ended_timer_;
 
   // Start of period when we delay requests due to bad signal quality.
-  base::Optional<base::TimeTicks> weak_signal_throttling_start_timestamp_;
+  absl::optional<base::TimeTicks> weak_signal_throttling_start_timestamp_;
 
   // Start of period when we don't delay requests even if the signal quality is
   // bad.
-  base::Optional<base::TimeTicks> weak_signal_throttling_end_timestamp_;
+  absl::optional<base::TimeTicks> weak_signal_throttling_end_timestamp_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

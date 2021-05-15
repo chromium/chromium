@@ -85,11 +85,11 @@ ParseKeyResult ParseSingleKeyExceptLabel(
   return ParseKeyResult::kSucceed;
 }
 
-base::Optional<mojom::TrustTokenKeyCommitmentResult::Os> ParseOs(
+absl::optional<mojom::TrustTokenKeyCommitmentResult::Os> ParseOs(
     base::StringPiece os_string) {
   if (os_string == kTrustTokenLocalOperationOsAndroid)
     return mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Attempts to parse a string representation of a member of the
@@ -137,7 +137,7 @@ bool ParseLocalOperationFieldsIfPresent(
        maybe_request_issuance_locally_on->GetList()) {
     if (!maybe_os_value.is_string())
       return false;
-    base::Optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =
+    absl::optional<mojom::TrustTokenKeyCommitmentResult::Os> maybe_os =
         ParseOs(maybe_os_value.GetString());
     if (!maybe_os)
       return false;
@@ -184,14 +184,14 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
   }
 
   // Confirm that the id field is present and type-safe.
-  base::Optional<int> maybe_id =
+  absl::optional<int> maybe_id =
       value.FindIntKey(kTrustTokenKeyCommitmentIDField);
   if (!maybe_id || *maybe_id <= 0)
     return nullptr;
   result->id = *maybe_id;
 
   // Confirm that the batchsize field is present and type-safe.
-  base::Optional<int> maybe_batch_size =
+  absl::optional<int> maybe_batch_size =
       value.FindIntKey(kTrustTokenKeyCommitmentBatchsizeField);
   if (!maybe_batch_size || *maybe_batch_size <= 0)
     return nullptr;
@@ -244,7 +244,7 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
     base::StringPiece response_body) {
-  base::Optional<base::Value> maybe_value =
+  absl::optional<base::Value> maybe_value =
       base::JSONReader::Read(response_body);
   if (!maybe_value)
     return nullptr;
@@ -256,7 +256,7 @@ std::unique_ptr<base::flat_map<SuitableTrustTokenOrigin,
                                mojom::TrustTokenKeyCommitmentResultPtr>>
 TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
     base::StringPiece response_body) {
-  base::Optional<base::Value> maybe_value =
+  absl::optional<base::Value> maybe_value =
       base::JSONReader::Read(response_body);
   if (!maybe_value)
     return nullptr;
@@ -275,7 +275,7 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
 
   for (const auto& kv : maybe_value->DictItems()) {
     const std::string& raw_key_from_json = kv.first;
-    base::Optional<SuitableTrustTokenOrigin> maybe_issuer =
+    absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(raw_key_from_json));
 
     if (!maybe_issuer)

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/link_header.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {

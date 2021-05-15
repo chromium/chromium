@@ -80,7 +80,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.color_space;
   }
 
-  static const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
+  static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;
   }

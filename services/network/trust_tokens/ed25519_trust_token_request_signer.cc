@@ -11,16 +11,16 @@ namespace network {
 Ed25519TrustTokenRequestSigner::Ed25519TrustTokenRequestSigner() = default;
 Ed25519TrustTokenRequestSigner::~Ed25519TrustTokenRequestSigner() = default;
 
-base::Optional<std::vector<uint8_t>> Ed25519TrustTokenRequestSigner::Sign(
+absl::optional<std::vector<uint8_t>> Ed25519TrustTokenRequestSigner::Sign(
     base::span<const uint8_t> key,
     base::span<const uint8_t> data) {
   if (key.size() != ED25519_PRIVATE_KEY_LEN)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<uint8_t> ret(ED25519_SIGNATURE_LEN);
 
   if (!ED25519_sign(ret.data(), data.data(), data.size(), key.data()))
-    return base::nullopt;
+    return absl::nullopt;
 
   return ret;
 }

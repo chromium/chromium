@@ -360,7 +360,7 @@ void PerfettoTracedProcess::ShouldAllowSystemConsumerSession(
 }
 
 void PerfettoTracedProcess::SetupSystemTracing(
-    base::Optional<const char*> system_socket) {
+    absl::optional<const char*> system_socket) {
   // Note: Not checking for a valid sequence here so that we don't inadvertently
   // bind this object on the wrong sequence during early initialization.
   DCHECK(!system_producer_);

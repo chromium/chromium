@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -33,6 +32,7 @@
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/loopback_group_member.h"
 #include "services/audio/snooper_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -182,7 +182,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // This is set once Start() is called, and lives until this FlowNetwork is
     // destroyed. It is used to schedule cancelable tasks run by the
     // |flow_task_runner_|.
-    base::Optional<base::OneShotTimer> timer_;
+    absl::optional<base::OneShotTimer> timer_;
 
     // These are used to compute when the |timer_| fires and calls
     // GenerateMoreAudio(). They ensure that each timer task is scheduled to

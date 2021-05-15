@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "components/version_info/version_info.h"
 #include "crypto/secure_hash.h"
@@ -34,6 +33,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -45,7 +45,7 @@ constexpr int kSendSCTReportTimeoutSeconds = 30;
 
 // Overrides the initial retry delay in SCTAuditingReporter::kBackoffPolicy if
 // not nullopt.
-base::Optional<base::TimeDelta> g_retry_delay_for_testing = base::nullopt;
+absl::optional<base::TimeDelta> g_retry_delay_for_testing = absl::nullopt;
 
 // Records the high-water mark of the cache size (in number of reports).
 void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t cache_hwm,
@@ -420,7 +420,7 @@ void SCTAuditingCache::set_enabled(bool enabled) {
 }
 
 void SCTAuditingCache::SetRetryDelayForTesting(
-    base::Optional<base::TimeDelta> delay) {
+    absl::optional<base::TimeDelta> delay) {
   g_retry_delay_for_testing = delay;
 }
 

@@ -10,11 +10,11 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -46,14 +46,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // passed parameters contain an invalid entry, and the pointer is valid.
   static std::unique_ptr<PreflightResult> Create(
       const mojom::CredentialsMode credentials_mode,
-      const base::Optional<std::string>& allow_methods_header,
-      const base::Optional<std::string>& allow_headers_header,
-      const base::Optional<std::string>& max_age_header,
-      base::Optional<mojom::CorsError>* detected_error);
+      const absl::optional<std::string>& allow_methods_header,
+      const absl::optional<std::string>& allow_headers_header,
+      const absl::optional<std::string>& max_age_header,
+      absl::optional<mojom::CorsError>* detected_error);
   ~PreflightResult();
 
   // Checks if the given |method| is allowed by the CORS-preflight response.
-  base::Optional<CorsErrorStatus> EnsureAllowedCrossOriginMethod(
+  absl::optional<CorsErrorStatus> EnsureAllowedCrossOriginMethod(
       const std::string& method) const;
 
   // Checks if the given all |headers| are allowed by the CORS-preflight
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // (https://fetch.spec.whatwg.org/#forbidden-header-name) because they may be
   // added by the user agent. They must be checked separately and rejected for
   // JavaScript-initiated requests.
-  base::Optional<CorsErrorStatus> EnsureAllowedCrossOriginHeaders(
+  absl::optional<CorsErrorStatus> EnsureAllowedCrossOriginHeaders(
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
       WithNonWildcardRequestHeadersSupport
@@ -96,18 +96,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
  protected:
   explicit PreflightResult(const mojom::CredentialsMode credentials_mode);
 
-  base::Optional<mojom::CorsError> Parse(
-      const base::Optional<std::string>& allow_methods_header,
-      const base::Optional<std::string>& allow_headers_header,
-      const base::Optional<std::string>& max_age_header);
+  absl::optional<mojom::CorsError> Parse(
+      const absl::optional<std::string>& allow_methods_header,
+      const absl::optional<std::string>& allow_headers_header,
+      const absl::optional<std::string>& max_age_header);
 
  private:
-  base::Optional<CorsErrorStatus>
+  absl::optional<CorsErrorStatus>
   EnsureAllowedCrossOriginHeadersWithAuthorizationCoveredByWildcard(
       const net::HttpRequestHeaders& headers,
       bool is_revalidating) const;
 
-  base::Optional<CorsErrorStatus>
+  absl::optional<CorsErrorStatus>
   EnsureAllowedCrossOriginHeadersWithAuthorizationNotCoveredByWildcard(
       const net::HttpRequestHeaders& headers,
       bool is_revalidating) const;

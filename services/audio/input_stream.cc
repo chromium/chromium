@@ -143,7 +143,7 @@ InputStream::~InputStream() {
   if (created_callback_) {
     // Didn't manage to create the stream. Call the callback anyways as mandated
     // by mojo.
-    std::move(created_callback_).Run(nullptr, false, base::nullopt);
+    std::move(created_callback_).Run(nullptr, false, absl::nullopt);
   }
 
   if (!controller_) {

@@ -24,13 +24,13 @@ constexpr char kSameOrigin[] = "same-origin";
 constexpr char kSameOriginAllowPopups[] = "same-origin-allow-popups";
 constexpr char kReportTo[] = "report-to";
 
-std::pair<mojom::CrossOriginOpenerPolicyValue, base::Optional<std::string>>
+std::pair<mojom::CrossOriginOpenerPolicyValue, absl::optional<std::string>>
 ParseHeader(base::StringPiece header_value) {
   using Item = net::structured_headers::Item;
   // Default to kUnsafeNone for all malformed values and "unsafe-none"
   mojom::CrossOriginOpenerPolicyValue coop_value =
       mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
-  base::Optional<std::string> endpoint;
+  absl::optional<std::string> endpoint;
   const auto item = net::structured_headers::ParseItem(header_value);
   if (item && item->item.is_token()) {
     const auto& policy_item = item->item.GetString();

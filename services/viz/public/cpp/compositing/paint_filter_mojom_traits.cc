@@ -9,7 +9,7 @@
 namespace mojo {
 
 // static
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
     const sk_sp<cc::PaintFilter>& filter) {
   std::vector<uint8_t> memory;
@@ -24,7 +24,7 @@ StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
   writer.Write(filter.get(), SkM44());
 
   if (writer.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   memory.resize(writer.size());
   return memory;
@@ -33,7 +33,7 @@ StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::data(
 // static
 bool StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>>::
     Read(viz::mojom::PaintFilterDataView data, sk_sp<cc::PaintFilter>* out) {
-  base::Optional<std::vector<uint8_t>> buffer;
+  absl::optional<std::vector<uint8_t>> buffer;
   if (!data.ReadData(&buffer))
     return false;
 

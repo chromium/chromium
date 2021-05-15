@@ -26,13 +26,13 @@ namespace network {
 namespace test {
 namespace {
 
-base::Optional<
+absl::optional<
     base::flat_map<std::string, net::structured_headers::ParameterizedMember>>
 DeserializeSecSignatureHeader(base::StringPiece header) {
-  base::Optional<net::structured_headers::Dictionary> maybe_dictionary =
+  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
       net::structured_headers::ParseDictionary(header);
   if (!maybe_dictionary)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::flat_map<std::string, net::structured_headers::ParameterizedMember> ret;
   for (const auto& kv : *maybe_dictionary) {
@@ -103,7 +103,7 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
   }
   base::StringPiece public_key = public_key_it->second.GetString();
 
-  base::Optional<std::vector<uint8_t>> written_reconstructed_cbor =
+  absl::optional<std::vector<uint8_t>> written_reconstructed_cbor =
       TrustTokenRequestCanonicalizer().Canonicalize(
           destination, headers, public_key, sign_request_data);
   if (!written_reconstructed_cbor) {
@@ -274,7 +274,7 @@ bool ReconstructSigningDataAndVerifySignatures(
     return false;
   }
 
-  base::Optional<
+  absl::optional<
       base::flat_map<std::string, net::structured_headers::ParameterizedMember>>
       signature_header_map = DeserializeSecSignatureHeader(signature_header);
   if (!signature_header_map) {
@@ -313,7 +313,7 @@ bool ExtractRedemptionRecordsFromHeader(
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {
-  base::Optional<net::structured_headers::List> maybe_list =
+  absl::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(sec_redemption_record_header);
 
   std::string dummy;
@@ -356,7 +356,7 @@ bool ExtractRedemptionRecordsFromHeader(
       return false;
     }
 
-    base::Optional<SuitableTrustTokenOrigin> maybe_issuer =
+    absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
     if (!maybe_issuer) {
       *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";

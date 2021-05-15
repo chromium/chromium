@@ -9,12 +9,12 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_util.h"
 #include "services/network/network_context.h"
 #include "services/network/origin_policy/origin_policy_fetcher.h"
 #include "services/network/origin_policy/origin_policy_parsed_header.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -33,7 +33,7 @@ void OriginPolicyManager::AddReceiver(
 void OriginPolicyManager::RetrieveOriginPolicy(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
-    const base::Optional<std::string>& header,
+    const absl::optional<std::string>& header,
     RetrieveOriginPolicyCallback callback) {
   DCHECK(origin.GetURL().is_valid());
   DCHECK(!origin.opaque());
@@ -46,7 +46,7 @@ void OriginPolicyManager::RetrieveOriginPolicy(
     return;
   }
 
-  base::Optional<OriginPolicyParsedHeader> parsed_header =
+  absl::optional<OriginPolicyParsedHeader> parsed_header =
       OriginPolicyParsedHeader::FromString(*header);
   if (!parsed_header.has_value()) {
     InvokeCallbackWithPolicyState(origin, OriginPolicyState::kCannotParseHeader,

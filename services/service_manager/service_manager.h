@@ -12,7 +12,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +29,7 @@
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "services/service_manager/service_instance_registry.h"
 #include "services/service_manager/service_process_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 

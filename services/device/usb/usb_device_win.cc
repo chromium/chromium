@@ -152,7 +152,7 @@ void UsbDeviceWin::OnReadStringDescriptors(
 void UsbDeviceWin::OnReadWebUsbCapabilityDescriptor(
     base::OnceCallback<void(bool)> callback,
     scoped_refptr<UsbDeviceHandle> device_handle,
-    const base::Optional<WebUsbPlatformCapabilityDescriptor>& descriptor) {
+    const absl::optional<WebUsbPlatformCapabilityDescriptor>& descriptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   device_handle->Close();
 

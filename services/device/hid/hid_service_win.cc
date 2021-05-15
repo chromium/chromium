@@ -71,9 +71,9 @@ void UnpackBitField(uint16_t bit_field, mojom::HidReportItem* item) {
 
 // Looks up the value of a string device property specified by |property_key|
 // for the device described by |device_info_data|. On success, returns the
-// property value as a wstring. Returns base::nullopt if the property is not
+// property value as a wstring. Returns absl::nullopt if the property is not
 // present or has a different type.
-base::Optional<std::wstring> GetDeviceStringProperty(
+absl::optional<std::wstring> GetDeviceStringProperty(
     HDEVINFO device_info_set,
     SP_DEVINFO_DATA& device_info_data,
     const DEVPROPKEY& property_key) {
@@ -85,20 +85,20 @@ base::Optional<std::wstring> GetDeviceStringProperty(
                                /*PropertyBufferSize=*/0, &required_size,
                                /*Flags=*/0)) {
     HID_LOG(DEBUG) << "SetupDiGetDeviceProperty unexpectedly succeeded.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DWORD last_error = GetLastError();
   if (last_error == ERROR_NOT_FOUND)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (last_error != ERROR_INSUFFICIENT_BUFFER) {
     HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (property_type != DEVPROP_TYPE_STRING)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::wstring property_buffer;
   if (!SetupDiGetDeviceProperty(
@@ -107,7 +107,7 @@ base::Optional<std::wstring> GetDeviceStringProperty(
               base::WriteInto(&property_buffer, required_size)),
           required_size, /*RequiredSize=*/nullptr, /*Flags=*/0)) {
     HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return property_buffer;
@@ -115,9 +115,9 @@ base::Optional<std::wstring> GetDeviceStringProperty(
 
 // Looks up the value of a GUID-type device property specified by |property| for
 // the device described by |device_info_data|. On success, returns the property
-// value as a string. Returns base::nullopt if the property is not present or
+// value as a string. Returns absl::nullopt if the property is not present or
 // has a different type.
-base::Optional<std::string> GetDeviceGuidProperty(
+absl::optional<std::string> GetDeviceGuidProperty(
     HDEVINFO device_info_set,
     SP_DEVINFO_DATA& device_info_data,
     const DEVPROPKEY& property_key) {
@@ -128,11 +128,11 @@ base::Optional<std::string> GetDeviceGuidProperty(
           reinterpret_cast<PBYTE>(&property_buffer), sizeof(property_buffer),
           /*RequiredSize=*/nullptr, /*Flags=*/0)) {
     HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (property_type != DEVPROP_TYPE_GUID)
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::SysWideToUTF8(base::win::WStringFromGUID(property_buffer));
 }
@@ -220,7 +220,7 @@ base::win::ScopedDevInfo GetDeviceInfoSetFromDevicePath(
 // Returns the instance ID of the parent of the device described by
 // |device_interface_data| in |device_info_set|. Returns nullopt if the parent
 // instance ID could not be retrieved.
-base::Optional<std::wstring> GetParentInstanceId(
+absl::optional<std::wstring> GetParentInstanceId(
     HDEVINFO device_info_set,
     SP_DEVICE_INTERFACE_DATA& device_interface_data) {
   // Get device info for |device_interface_data|.
@@ -228,14 +228,14 @@ base::Optional<std::wstring> GetParentInstanceId(
   std::wstring device_path;
   if (!GetDeviceInfoAndPathFromInterface(device_info_set, device_interface_data,
                                          &device_info_data, &device_path)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Get the parent instance ID.
   auto instance_id = GetDeviceStringProperty(device_info_set, device_info_data,
                                              DEVPKEY_Device_Parent);
   if (!instance_id)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Canonicalize the instance ID.
   DCHECK(base::IsStringASCII(*instance_id));

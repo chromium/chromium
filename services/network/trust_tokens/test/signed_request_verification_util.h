@@ -9,11 +9,11 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {

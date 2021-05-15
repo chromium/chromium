@@ -23,7 +23,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/metrics/field_trial.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
@@ -133,6 +132,7 @@
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -343,7 +343,7 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
   // mojom::ProxyLookupClient implementation:
   void OnProxyLookupComplete(
       int32_t net_error,
-      const base::Optional<net::ProxyInfo>& proxy_info) override {
+      const absl::optional<net::ProxyInfo>& proxy_info) override {
     EXPECT_FALSE(is_done_);
     EXPECT_FALSE(proxy_info_);
 
@@ -356,7 +356,7 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
     run_loop_.Quit();
   }
 
-  const base::Optional<net::ProxyInfo>& proxy_info() const {
+  const absl::optional<net::ProxyInfo>& proxy_info() const {
     return proxy_info_;
   }
 
@@ -367,7 +367,7 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
   mojo::Receiver<mojom::ProxyLookupClient> receiver_{this};
 
   bool is_done_ = false;
-  base::Optional<net::ProxyInfo> proxy_info_;
+  absl::optional<net::ProxyInfo> proxy_info_;
   int32_t net_error_ = net::ERR_UNEXPECTED;
 
   base::RunLoop run_loop_;
@@ -1933,16 +1933,16 @@ TEST_F(NetworkContextTest, ClearEmptyHttpAuthCache) {
   EXPECT_EQ(0u, cache->GetEntriesSizeForTesting());
 }
 
-base::Optional<net::AuthCredentials> GetAuthCredentials(
+absl::optional<net::AuthCredentials> GetAuthCredentials(
     NetworkContext* network_context,
     const GURL& origin,
     const net::NetworkIsolationKey& network_isolation_key) {
   base::RunLoop run_loop;
-  base::Optional<net::AuthCredentials> result;
+  absl::optional<net::AuthCredentials> result;
   network_context->LookupServerBasicAuthCredentials(
       origin, network_isolation_key,
       base::BindLambdaForTesting(
-          [&](const base::Optional<net::AuthCredentials>& credentials) {
+          [&](const absl::optional<net::AuthCredentials>& credentials) {
             result = credentials;
             run_loop.Quit();
           }));
@@ -1975,7 +1975,7 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
              net::HttpAuth::AUTH_SCHEME_BASIC, network_isolation_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
 
-  base::Optional<net::AuthCredentials> result =
+  absl::optional<net::AuthCredentials> result =
       GetAuthCredentials(network_context.get(), origin, network_isolation_key1);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(user, result->username());
@@ -1993,17 +1993,17 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-base::Optional<net::AuthCredentials> GetProxyAuthCredentials(
+absl::optional<net::AuthCredentials> GetProxyAuthCredentials(
     NetworkContext* network_context,
     const net::ProxyServer& proxy_server,
     const std::string& scheme,
     const std::string& realm) {
   base::RunLoop run_loop;
-  base::Optional<net::AuthCredentials> result;
+  absl::optional<net::AuthCredentials> result;
   network_context->LookupProxyAuthCredentials(
       proxy_server, scheme, realm,
       base::BindLambdaForTesting(
-          [&](const base::Optional<net::AuthCredentials>& credentials) {
+          [&](const absl::optional<net::AuthCredentials>& credentials) {
             result = credentials;
             run_loop.Quit();
           }));
@@ -2040,7 +2040,7 @@ TEST_F(NetworkContextTest, LookupProxyAuthCredentials) {
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm", net::AuthCredentials(user, password),
              /* path = */ "/");
-  base::Optional<net::AuthCredentials> result = GetProxyAuthCredentials(
+  absl::optional<net::AuthCredentials> result = GetProxyAuthCredentials(
       network_context.get(),
       net::ProxyServer(net::ProxyServer::Scheme::SCHEME_HTTP,
                        net::HostPortPair::FromURL(http_proxy)),
@@ -3205,7 +3205,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
 
   void OnComplete(int error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const base::Optional<net::AddressList>& addresses) override {
+                  const absl::optional<net::AddressList>& addresses) override {
     DCHECK(!complete_);
 
     complete_ = true;
@@ -3227,7 +3227,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
     return result_error_;
   }
 
-  const base::Optional<net::AddressList>& result_addresses() const {
+  const absl::optional<net::AddressList>& result_addresses() const {
     DCHECK(complete_);
     return result_addresses_;
   }
@@ -3238,7 +3238,7 @@ class TestResolveHostClient : public ResolveHostClientBase {
   bool complete_;
   int top_level_result_error_;
   int result_error_;
-  base::Optional<net::AddressList> result_addresses_;
+  absl::optional<net::AddressList> result_addresses_;
   base::RunLoop* const run_loop_;
 };
 
@@ -3643,7 +3643,7 @@ TEST_F(NetworkContextTest, CreateHostResolver) {
   factory->ForgetResolvers();
 
   mojo::Remote<mojom::HostResolver> resolver;
-  network_context->CreateHostResolver(base::nullopt,
+  network_context->CreateHostResolver(absl::nullopt,
                                       resolver.BindNewPipeAndPassReceiver());
 
   // Expected to reuse shared (within the NetworkContext) internal HostResolver.
@@ -3677,7 +3677,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
       internal_resolver.get());
 
   mojo::Remote<mojom::HostResolver> resolver;
-  network_context->CreateHostResolver(base::nullopt,
+  network_context->CreateHostResolver(absl::nullopt,
                                       resolver.BindNewPipeAndPassReceiver());
 
   ASSERT_EQ(0, internal_resolver->num_cancellations());
@@ -3720,7 +3720,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
       internal_resolver.get());
 
   mojo::Remote<mojom::HostResolver> resolver;
-  network_context->CreateHostResolver(base::nullopt,
+  network_context->CreateHostResolver(absl::nullopt,
                                       resolver.BindNewPipeAndPassReceiver());
 
   ASSERT_EQ(0, internal_resolver->num_cancellations());
@@ -6436,7 +6436,7 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
                            const net::IsolationInfo& isolation_info,
                            bool was_cached,
                            bool expect_redirect = false,
-                           base::Optional<GURL> new_url = base::nullopt,
+                           absl::optional<GURL> new_url = absl::nullopt,
                            bool automatically_assign_isolation_info = false) {
     ResourceRequest request = CreateResourceRequest("GET", url);
     request.load_flags |= net::LOAD_SKIP_CACHE_VALIDATION;
@@ -6484,7 +6484,7 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
 
     if (new_url) {
       client->RunUntilRedirectReceived();
-      loader->FollowRedirect({}, {}, {}, base::nullopt);
+      loader->FollowRedirect({}, {}, {}, absl::nullopt);
     }
 
     client->RunUntilComplete();
@@ -6597,7 +6597,7 @@ TEST_F(NetworkContextSplitCacheTest, AutomaticallyAssignIsolationInfo) {
   // Load with an automatically assigned IsolationInfo, which should populate
   // the cache using the IsolationInfo for |url|'s origin.
   LoadAndVerifyCached(url, net::IsolationInfo(), false /* was_cached */,
-                      false /* expect_redirect */, base::nullopt /* new_url */,
+                      false /* expect_redirect */, absl::nullopt /* new_url */,
                       true /* automatically_assign_isolation_info */);
 
   // Load again with a different isolation info. The cached entry should not be
@@ -6678,7 +6678,7 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
         CreateContextWithParams(std::move(params));
 
     base::RunLoop run_loop;
-    base::Optional<int> obtained_num_tokens;
+    absl::optional<int> obtained_num_tokens;
     network_context->trust_token_store()->ExecuteOrEnqueue(
         base::BindLambdaForTesting(
             [&obtained_num_tokens, &run_loop](TrustTokenStore* store) {
@@ -6881,7 +6881,7 @@ TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
 
   // Allow the store time to initialize asynchronously.
   base::RunLoop run_loop;
-  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+  absl::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
       trust_tokens;
   network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
       [&trust_tokens,
@@ -6905,7 +6905,7 @@ TEST_F(NetworkContextTest, GetStoredTrustTokens) {
   base::RunLoop run_loop;
 
   // Query Trust Tokens before adding the mock token.
-  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+  absl::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
       trust_tokens_before_adding;
   network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
       [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
@@ -6922,7 +6922,7 @@ TEST_F(NetworkContextTest, GetStoredTrustTokens) {
       }));
 
   // Query Trust Tokens after adding the mock token.
-  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+  absl::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
       trust_tokens_after_adding;
   network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
       [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
@@ -6960,9 +6960,9 @@ TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
             std::vector<std::string>{"token"}, "issuing key");
       }));
 
-  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+  absl::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
       trust_tokens;
-  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+  absl::optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
       reentrant_trust_tokens;
   network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
       [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
@@ -6997,7 +6997,7 @@ TEST_F(NetworkContextTest,
 
   // Allow the store time to initialize asynchronously.
   base::RunLoop run_loop;
-  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  absl::optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
   network_context->DeleteStoredTrustTokens(
       url::Origin::Create(GURL("https://example.com")),
       base::BindLambdaForTesting(
@@ -7022,7 +7022,7 @@ TEST_F(NetworkContextTest,
 
   // Allow the store time to initialize asynchronously.
   base::RunLoop run_loop;
-  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  absl::optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
   network_context->DeleteStoredTrustTokens(
       url::Origin::Create(GURL("ws://example.com")),
       base::BindLambdaForTesting(
@@ -7064,7 +7064,7 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
       }));
 
   // Delete all Trust Tokens for one of the issuers.
-  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status;
+  absl::optional<mojom::DeleteStoredTrustTokensStatus> delete_status;
   network_context->DeleteStoredTrustTokens(
       issuer_origin_to_delete.origin(),
       base::BindLambdaForTesting(
@@ -7073,7 +7073,7 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
           }));
 
   // Query Trust Tokens after deleting one of the mock token.
-  base::Optional<base::flat_map<SuitableTrustTokenOrigin, int>> trust_tokens;
+  absl::optional<base::flat_map<SuitableTrustTokenOrigin, int>> trust_tokens;
   network_context->trust_token_store()->ExecuteOrEnqueue(
       base::BindLambdaForTesting([&](TrustTokenStore* store) {
         trust_tokens = store->GetStoredTrustTokenCounts();
@@ -7119,8 +7119,8 @@ TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
       }));
 
   // Delete all Trust Tokens for both issuers simultaneously.
-  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_foo;
-  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_bar;
+  absl::optional<mojom::DeleteStoredTrustTokensStatus> delete_status_foo;
+  absl::optional<mojom::DeleteStoredTrustTokensStatus> delete_status_bar;
   network_context->DeleteStoredTrustTokens(
       issuer_origin_foo.origin(),
       base::BindLambdaForTesting(

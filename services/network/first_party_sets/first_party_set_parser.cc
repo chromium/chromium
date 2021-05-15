@@ -13,9 +13,9 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,7 +25,7 @@ namespace {
 
 // Ensures that the string represents an origin that is non-opaque and HTTPS.
 // Returns the registered domain.
-base::Optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
+absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
                                                 bool emit_errors) {
   const url::Origin origin(url::Origin::Create(GURL(origin_string)));
   if (origin.opaque()) {
@@ -33,23 +33,23 @@ base::Optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
       LOG(ERROR) << "First-Party Set origin " << origin_string
                  << " is not valid; ignoring.";
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (origin.scheme() != "https") {
     if (emit_errors) {
       LOG(ERROR) << "First-Party Set origin " << origin_string
                  << " is not HTTPS; ignoring.";
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<net::SchemefulSite> site =
+  absl::optional<net::SchemefulSite> site =
       net::SchemefulSite::CreateIfHasRegisterableDomain(origin);
   if (!site.has_value()) {
     if (emit_errors) {
       LOG(ERROR) << "First-Party Set origin" << origin_string
                  << " does not have a valid registered domain; ignoring.";
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return site;
@@ -83,7 +83,7 @@ bool ParsePreloadedSet(
   if (!maybe_owner)
     return false;
 
-  base::Optional<net::SchemefulSite> canonical_owner =
+  absl::optional<net::SchemefulSite> canonical_owner =
       Canonicalize(std::move(*maybe_owner), false /* emit_errors */);
   if (!canonical_owner.has_value())
     return false;
@@ -107,7 +107,7 @@ bool ParsePreloadedSet(
     // another set.
     if (!item.is_string())
       return false;
-    base::Optional<net::SchemefulSite> member =
+    absl::optional<net::SchemefulSite> member =
         Canonicalize(item.GetString(), false /* emit_errors */);
     if (!member.has_value() || elements.contains(*member))
       return false;
@@ -119,7 +119,7 @@ bool ParsePreloadedSet(
 
 }  // namespace
 
-base::Optional<net::SchemefulSite>
+absl::optional<net::SchemefulSite>
 FirstPartySetParser::CanonicalizeRegisteredDomain(
     const base::StringPiece origin_string,
     bool emit_errors) {
@@ -128,7 +128,7 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 
 std::unique_ptr<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
 FirstPartySetParser::ParsePreloadedSets(base::StringPiece raw_sets) {
-  base::Optional<base::Value> maybe_value = base::JSONReader::Read(
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(
       raw_sets, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!maybe_value.has_value())
     return nullptr;

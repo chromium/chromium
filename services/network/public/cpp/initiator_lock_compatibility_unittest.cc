@@ -4,10 +4,10 @@
 
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 
-#include "base/optional.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -35,7 +35,7 @@ TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorOriginLock) {
 
   // Cases without a lock.
   EXPECT_EQ(InitiatorLockCompatibility::kNoLock,
-            VerifyRequestInitiatorLock(base::nullopt, base::nullopt));
+            VerifyRequestInitiatorLock(absl::nullopt, absl::nullopt));
 
   // Opaque initiator is always safe (and so results in kCompatibleLock).
   // OTOH, opaque lock is only compatible with an opaque initiator.

@@ -103,7 +103,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.min_page_scale_factor;
   }
 
-  static base::Optional<base::TimeDelta> preferred_frame_interval(
+  static absl::optional<base::TimeDelta> preferred_frame_interval(
       const viz::CompositorFrameMetadata& metadata) {
     DCHECK(!metadata.preferred_frame_interval ||
            metadata.preferred_frame_interval.value() >= base::TimeDelta());

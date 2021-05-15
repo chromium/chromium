@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "net/http/http_request_headers.h"
@@ -18,6 +17,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/test/trust_token_request_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -69,7 +69,7 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
             !base::Contains(request.headers, "Sec-Trust-Token-Version"))
           return MakeTrustTokenFailureResponse();
 
-        base::Optional<std::string> operation_result =
+        absl::optional<std::string> operation_result =
             handler->Issue(request.headers.at("Sec-Trust-Token"));
 
         if (!operation_result)
@@ -88,7 +88,7 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
             !base::Contains(request.headers, "Sec-Trust-Token-Version"))
           return MakeTrustTokenFailureResponse();
 
-        base::Optional<std::string> operation_result =
+        absl::optional<std::string> operation_result =
             handler->Redeem(request.headers.at("Sec-Trust-Token"));
 
         if (!operation_result)

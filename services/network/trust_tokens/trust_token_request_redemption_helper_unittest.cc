@@ -73,12 +73,12 @@ class MockCryptographer
 
   MOCK_METHOD3(
       BeginRedemption,
-      base::Optional<std::string>(TrustToken token,
+      absl::optional<std::string>(TrustToken token,
                                   base::StringPiece verification_key,
                                   const url::Origin& top_level_origin));
 
   MOCK_METHOD1(ConfirmRedemption,
-               base::Optional<std::string>(base::StringPiece response_header));
+               absl::optional<std::string>(base::StringPiece response_header));
 };
 
 class FakeKeyPairGenerator
@@ -281,7 +281,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   auto cryptographer = std::make_unique<MockCryptographer>();
   EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
-      .WillOnce(Return(base::nullopt));
+      .WillOnce(Return(absl::nullopt));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -582,7 +582,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseIsUnusable) {
       .WillOnce(
           Return(std::string("this string contains a redemption request")));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
-      .WillOnce(Return(base::nullopt));
+      .WillOnce(Return(absl::nullopt));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),

@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
 
-  base::Optional<URLLoaderCompletionStatus> done_status_;
+  absl::optional<URLLoaderCompletionStatus> done_status_;
   base::OnceCallback<void(const URLLoaderCompletionStatus&)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(EmptyURLLoaderClient);

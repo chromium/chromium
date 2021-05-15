@@ -581,7 +581,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Abandoned) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -602,7 +602,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata;
+  absl::optional<MediaMetadata> test_metadata;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -626,7 +626,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -645,7 +645,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata;
+  absl::optional<MediaMetadata> test_metadata;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -670,7 +670,7 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaMetadata> test_metadata(metadata);
+  absl::optional<MediaMetadata> test_metadata(metadata);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -898,7 +898,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position;
+  absl::optional<MediaPosition> test_position;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -921,7 +921,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -940,7 +940,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_Empty) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position;
+  absl::optional<MediaPosition> test_position;
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -964,7 +964,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_AddObserver_WithInfo) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -988,7 +988,7 @@ TEST_F(MediaControllerTest, ActiveController_Position_Observer_Abandoned) {
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
 
-  base::Optional<MediaPosition> test_position(position);
+  absl::optional<MediaPosition> test_position(position);
 
   {
     test::MockMediaSessionMojoObserver observer(media_session);
@@ -1278,7 +1278,7 @@ TEST_F(MediaControllerTest, ActiveController_Observer_SessionChanged) {
 
   {
     test::TestMediaControllerObserver observer(controller());
-    observer.WaitForSession(base::nullopt);
+    observer.WaitForSession(absl::nullopt);
   }
 
   {
@@ -1312,7 +1312,7 @@ TEST_F(MediaControllerTest, ActiveController_Observer_SessionChanged) {
   {
     test::TestMediaControllerObserver observer(controller());
     media_session_1.SetIsControllable(false);
-    observer.WaitForSession(base::nullopt);
+    observer.WaitForSession(absl::nullopt);
   }
 }
 

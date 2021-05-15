@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -15,6 +14,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -41,11 +41,11 @@ class TestCustomProxyConnectionObserver
   TestCustomProxyConnectionObserver() = default;
   ~TestCustomProxyConnectionObserver() override = default;
 
-  const base::Optional<std::pair<net::ProxyServer, int>>& FallbackArgs() const {
+  const absl::optional<std::pair<net::ProxyServer, int>>& FallbackArgs() const {
     return fallback_;
   }
 
-  const base::Optional<
+  const absl::optional<
       std::pair<net::ProxyServer, scoped_refptr<net::HttpResponseHeaders>>>&
   HeadersReceivedArgs() const {
     return headers_received_;
@@ -62,8 +62,8 @@ class TestCustomProxyConnectionObserver
   }
 
  private:
-  base::Optional<std::pair<net::ProxyServer, int>> fallback_;
-  base::Optional<
+  absl::optional<std::pair<net::ProxyServer, int>> fallback_;
+  absl::optional<
       std::pair<net::ProxyServer, scoped_refptr<net::HttpResponseHeaders>>>
       headers_received_;
 };

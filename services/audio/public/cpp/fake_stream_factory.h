@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 
@@ -80,7 +80,7 @@ class FakeStreamFactory : public media::mojom::AudioStreamFactory {
   mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
 
  private:
-  base::Optional<base::RunLoop> disconnect_loop_;
+  absl::optional<base::RunLoop> disconnect_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeStreamFactory);
 };

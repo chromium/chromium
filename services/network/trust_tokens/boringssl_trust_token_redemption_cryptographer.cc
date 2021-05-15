@@ -47,24 +47,24 @@ bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
   return true;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
     TrustToken token,
     base::StringPiece verification_key_to_bind,
     const url::Origin& top_level_origin) {
   if (!ctx_)
-    return base::nullopt;
+    return absl::nullopt;
 
   // It's unclear if BoringSSL expects the exact same value in the client data
   // and as the |time| argument to TRUST_TOKEN_CLIENT_begin_redemption; play
   // it safe by using a single timestamp.
   base::Time redemption_timestamp = base::Time::Now();
 
-  base::Optional<std::vector<uint8_t>> maybe_client_data =
+  absl::optional<std::vector<uint8_t>> maybe_client_data =
       CanonicalizeTrustTokenClientDataForRedemption(
           redemption_timestamp, top_level_origin, verification_key_to_bind);
   if (!maybe_client_data)
-    return base::nullopt;
+    return absl::nullopt;
 
   ScopedBoringsslBytes raw_redemption_request;
 
@@ -72,28 +72,28 @@ BoringsslTrustTokenRedemptionCryptographer::BeginRedemption(
       TRUST_TOKEN_new(base::as_bytes(base::make_span(token.body())).data(),
                       token.body().size()));
   if (!boringssl_token)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!TRUST_TOKEN_CLIENT_begin_redemption(
           ctx_.get(), raw_redemption_request.mutable_ptr(),
           raw_redemption_request.mutable_len(), boringssl_token.get(),
           maybe_client_data->data(), maybe_client_data->size(),
           (redemption_timestamp - base::Time::UnixEpoch()).InSeconds())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return base::Base64Encode(raw_redemption_request.as_span());
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
     base::StringPiece response_header) {
   if (!ctx_)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string decoded_response;
   if (!base::Base64Decode(response_header, &decoded_response))
-    return base::nullopt;
+    return absl::nullopt;
 
   // In TrustTokenV3, the entire RR is stored in the body field, and the
   // signature field is unused in finish_redemption.
@@ -104,7 +104,7 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
           unused.mutable_len(),
           base::as_bytes(base::make_span(decoded_response)).data(),
           decoded_response.size())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::string(reinterpret_cast<const char*>(rr.as_span().data()),

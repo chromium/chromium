@@ -280,7 +280,7 @@ struct FrameDetails {
   // Sets Chrome's module info for the frame.
   void SetChromeModuleInfo() {
     module_base_address = executable_start_addr();
-    static const base::Optional<base::StringPiece> library_name =
+    static const absl::optional<base::StringPiece> library_name =
         base::debug::ReadElfLibraryName(
             reinterpret_cast<void*>(executable_start_addr()));
     static const base::NoDestructor<std::string> chrome_debug_id([] {

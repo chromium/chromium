@@ -119,7 +119,7 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
   // recent commitments.
   token_store_->PruneStaleIssuerState(*issuer_, commitment_result->keys);
 
-  base::Optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
+  absl::optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
   if (!maybe_token_to_redeem) {
     LogOutcome(net_log_, kBegin, "No tokens to redeem");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
@@ -143,7 +143,7 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     return;
   }
 
-  base::Optional<std::string> maybe_redemption_header =
+  absl::optional<std::string> maybe_redemption_header =
       cryptographer_->BeginRedemption(
           *maybe_token_to_redeem, bound_verification_key_, top_level_origin_);
 
@@ -211,7 +211,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   // base64-decoded, to BoringSSL.
   response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  base::Optional<std::string> maybe_redemption_record =
+  absl::optional<std::string> maybe_redemption_record =
       cryptographer_->ConfirmRedemption(header_value);
 
   // 3. If BoringSSL fails its structural validation / signature check, return
@@ -239,7 +239,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }
 
-base::Optional<TrustToken>
+absl::optional<TrustToken>
 TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
   // As a postcondition of UpdateTokenStoreFromKeyCommitmentResult, all of the
   // store's tokens for |issuer_| match the key commitment result obtained at
@@ -252,7 +252,7 @@ TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
       token_store_->RetrieveMatchingTokens(*issuer_, key_matcher);
 
   if (matching_tokens.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   return matching_tokens.front();
 }

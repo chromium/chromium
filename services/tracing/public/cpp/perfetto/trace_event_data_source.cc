@@ -24,7 +24,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -51,6 +50,7 @@
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory_arbiter.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
@@ -120,11 +120,11 @@ class SCOPED_LOCKABLE AutoLockWithDeferredTaskPosting {
   base::AutoLock autolock_;
 };
 
-base::Optional<uint64_t> GetTraceCrashId() {
+absl::optional<uint64_t> GetTraceCrashId() {
   static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(
       "chrome-trace-id", base::debug::CrashKeySize::Size32);
   if (!key) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   uint64_t id = base::RandUint64();
   base::debug::SetCrashKeyString(key, base::NumberToString(id));
@@ -1335,7 +1335,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // periodically to ensure it is present in the traces when the process
   // crashes. Metadata can go missing if process crashes. So, record this in
   // process descriptor.
-  static const base::Optional<uint64_t> crash_trace_id = GetTraceCrashId();
+  static const absl::optional<uint64_t> crash_trace_id = GetTraceCrashId();
   if (crash_trace_id) {
     chrome_process->set_crash_trace_id(*crash_trace_id);
   }

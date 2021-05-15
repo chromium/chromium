@@ -90,7 +90,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     int32_t process_id,
-    const base::Optional<url::Origin>& request_initiator_origin_lock) {
+    const absl::optional<url::Origin>& request_initiator_origin_lock) {
   DCHECK(factories_.find({process_id, web_bundle_token_params.token}) ==
          factories_.end());
 

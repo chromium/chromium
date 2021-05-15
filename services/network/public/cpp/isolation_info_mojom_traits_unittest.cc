@@ -6,12 +6,12 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/isolation_info.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,11 +21,11 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.test/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.test/"));
 
-  const base::Optional<std::set<net::SchemefulSite>> kPartyContext1 =
-      base::nullopt;
-  const base::Optional<std::set<net::SchemefulSite>> kPartyContext2 =
+  const absl::optional<std::set<net::SchemefulSite>> kPartyContext1 =
+      absl::nullopt;
+  const absl::optional<std::set<net::SchemefulSite>> kPartyContext2 =
       std::set<net::SchemefulSite>();
-  const base::Optional<std::set<net::SchemefulSite>> kPartyContext3 =
+  const absl::optional<std::set<net::SchemefulSite>> kPartyContext3 =
       std::set<net::SchemefulSite>{
           net::SchemefulSite(url::Origin::Create(GURL("https://c.test/")))};
 

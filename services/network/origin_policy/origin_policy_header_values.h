@@ -8,7 +8,7 @@
 #include <string>
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -52,10 +52,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyAllowedValue final {
  private:
   enum class State { kString, kLatestToken, kNullToken };
 
-  OriginPolicyAllowedValue(State, const base::Optional<std::string>&);
+  OriginPolicyAllowedValue(State, const absl::optional<std::string>&);
 
   State state_;
-  base::Optional<std::string> string_;
+  absl::optional<std::string> string_;
 };
 
 // Represents a value from the Origin-Policy header's preferred= entry.
@@ -87,12 +87,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyPreferredValue final {
   }
 
  private:
-  explicit OriginPolicyPreferredValue(const base::Optional<std::string>&);
+  explicit OriginPolicyPreferredValue(const absl::optional<std::string>&);
 
-  // If string_ is base::nullopt, then this is latest-from-network. This is a
+  // If string_ is absl::nullopt, then this is latest-from-network. This is a
   // small optimization compared to the State enum used for
   // OriginPolicyAllowedValue.
-  base::Optional<std::string> string_;
+  absl::optional<std::string> string_;
 };
 
 }  // namespace network

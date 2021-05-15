@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -63,6 +62,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_network_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_KERBEROS)
@@ -473,7 +473,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
@@ -481,7 +481,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
@@ -489,7 +489,7 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
@@ -523,13 +523,13 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/false);
   EXPECT_FALSE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 }
@@ -609,7 +609,7 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
       {{"DisabledProviders", "CleanBrowsingSecure, , Cloudflare,Unexpected"}});
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
-      /*dns_over_https_servers=*/base::nullopt,
+      /*dns_over_https_servers=*/absl::nullopt,
       /*additional_dns_types_enabled=*/true);
 
   // Set valid DnsConfig.
@@ -1048,7 +1048,7 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersAbsent) {
   client()->RunUntilRedirectReceived();
   EXPECT_TRUE(client()->has_received_redirect());
   EXPECT_TRUE(!client()->response_head()->raw_request_response_info);
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();
   EXPECT_TRUE(!client()->response_head()->raw_request_response_info);
 }
@@ -1078,7 +1078,7 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersPresent) {
                                  "HTTP/1.1 301 Moved Permanently\r",
                                  base::CompareCase::SENSITIVE));
   }
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();
   {
     auto& request_response_info =
@@ -1166,12 +1166,12 @@ TEST_F(NetworkServiceTestWithResolverMap, RawRequestAccessControlWithRedirect) {
   client()->RunUntilRedirectReceived();  // from a.test to b.test
   EXPECT_TRUE(client()->response_head()->raw_request_response_info);
 
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->ClearHasReceivedRedirect();
   client()->RunUntilRedirectReceived();  // from b.test to a.test
   EXPECT_FALSE(client()->response_head()->raw_request_response_info);
 
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();  // Done loading a.test
   EXPECT_TRUE(client()->response_head()->raw_request_response_info.get());
 
@@ -1181,12 +1181,12 @@ TEST_F(NetworkServiceTestWithResolverMap, RawRequestAccessControlWithRedirect) {
   client()->RunUntilRedirectReceived();  // from a.test to b.test
   EXPECT_FALSE(client()->response_head()->raw_request_response_info);
 
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->ClearHasReceivedRedirect();
   client()->RunUntilRedirectReceived();  // from b.test to a.test
   EXPECT_TRUE(client()->response_head()->raw_request_response_info);
 
-  loader()->FollowRedirect({}, {}, {}, base::nullopt);
+  loader()->FollowRedirect({}, {}, {}, absl::nullopt);
   client()->RunUntilComplete();  // Done loading a.test
   EXPECT_FALSE(client()->response_head()->raw_request_response_info.get());
 }
@@ -1285,8 +1285,8 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
   network_service_->GetNetworkList(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindLambdaForTesting(
-          [&](const base::Optional<std::vector<net::NetworkInterface>>& list) {
-            EXPECT_NE(base::nullopt, list);
+          [&](const absl::optional<std::vector<net::NetworkInterface>>& list) {
+            EXPECT_NE(absl::nullopt, list);
             for (auto it = list->begin(); it != list->end(); ++it) {
               // Verify that names are not empty.
               EXPECT_FALSE(it->name.empty());

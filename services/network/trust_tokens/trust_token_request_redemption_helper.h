@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -18,6 +17,7 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -89,7 +89,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     // |top_level_origin| is embedded in the redemption request so that a token
     // redemption can be bound to a particular top-level origin and client-owned
     // key pair; see the design doc for more details.
-    virtual base::Optional<std::string> BeginRedemption(
+    virtual absl::optional<std::string> BeginRedemption(
         TrustToken token,
         base::StringPiece verification_key_to_bind,
         const url::Origin& top_level_origin) = 0;
@@ -100,7 +100,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     //
     // The Trust Tokens design doc is currently the normative source for the
     // RR's format.
-    virtual base::Optional<std::string> ConfirmRedemption(
+    virtual absl::optional<std::string> ConfirmRedemption(
         base::StringPiece response_header) = 0;
   };
 
@@ -188,7 +188,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // it, returning nullopt if the store contains no tokens for |issuer_|.
   //
   // Warning: This does NOT remove the token from the store.
-  base::Optional<TrustToken> RetrieveSingleToken();
+  absl::optional<TrustToken> RetrieveSingleToken();
 
   // |issuer_|, |top_level_origin_|, and |refresh_policy_| are parameters
   // determining the scope and control flow of the redemption operation.
@@ -196,7 +196,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
   // operation's execution.
-  base::Optional<SuitableTrustTokenOrigin> issuer_;
+  absl::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
   const mojom::TrustTokenRefreshPolicy refresh_policy_;
 

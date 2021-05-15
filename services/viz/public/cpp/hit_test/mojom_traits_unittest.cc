@@ -38,7 +38,7 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
 }
 
 TEST(StructTraitsTest, HitTestRegionList) {
-  base::Optional<HitTestRegionList> input(absl::in_place);
+  absl::optional<HitTestRegionList> input(absl::in_place);
   input->flags = HitTestRegionFlags::kHitTestAsk;
   input->async_hit_test_reasons = AsyncHitTestReasons::kOverlappedRegion;
   input->bounds = gfx::Rect(1, 2, 3, 4);
@@ -52,7 +52,7 @@ TEST(StructTraitsTest, HitTestRegionList) {
   input_region1.transform.Scale(1.2f, 1.3f);
   input->regions.push_back(input_region1);
 
-  base::Optional<HitTestRegionList> output;
+  absl::optional<HitTestRegionList> output;
   mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
   EXPECT_TRUE(output);
   EXPECT_EQ(input->flags, output->flags);

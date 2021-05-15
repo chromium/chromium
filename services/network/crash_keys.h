@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_CRASH_KEYS_H_
 
 #include "base/debug/crash_logging.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {

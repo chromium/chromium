@@ -94,11 +94,11 @@ base::TimeDelta WebSocketThrottler::CalculateDelay(int process_id) const {
   return it->second->CalculateDelay();
 }
 
-base::Optional<WebSocketThrottler::PendingConnection>
+absl::optional<WebSocketThrottler::PendingConnection>
 WebSocketThrottler::IssuePendingConnectionTracker(int process_id) {
   if (process_id == mojom::kBrowserProcessId) {
     // The browser process is not throttled.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto it = per_process_throttlers_.find(process_id);

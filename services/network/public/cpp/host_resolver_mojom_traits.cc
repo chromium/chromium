@@ -26,7 +26,7 @@ using network::mojom::ResolveHostParameters;
 
 namespace {
 
-DnsConfigOverrides::Tristate ToTristate(base::Optional<bool> optional) {
+DnsConfigOverrides::Tristate ToTristate(absl::optional<bool> optional) {
   if (!optional)
     return DnsConfigOverrides::Tristate::NO_OVERRIDE;
   if (optional.value())
@@ -34,10 +34,10 @@ DnsConfigOverrides::Tristate ToTristate(base::Optional<bool> optional) {
   return DnsConfigOverrides::Tristate::TRISTATE_FALSE;
 }
 
-base::Optional<bool> FromTristate(DnsConfigOverrides::Tristate tristate) {
+absl::optional<bool> FromTristate(DnsConfigOverrides::Tristate tristate) {
   switch (tristate) {
     case DnsConfigOverrides::Tristate::NO_OVERRIDE:
-      return base::nullopt;
+      return absl::nullopt;
     case DnsConfigOverrides::Tristate::TRISTATE_TRUE:
       return true;
     case DnsConfigOverrides::Tristate::TRISTATE_FALSE:
@@ -47,7 +47,7 @@ base::Optional<bool> FromTristate(DnsConfigOverrides::Tristate tristate) {
 
 bool ReadDnsOverHttpsServerData(
     mojo::ArrayDataView<DnsOverHttpsServerDataView> data,
-    base::Optional<std::vector<net::DnsOverHttpsServerConfig>>* out) {
+    absl::optional<std::vector<net::DnsOverHttpsServerConfig>>* out) {
   if (data.is_null()) {
     out->reset();
     return true;
@@ -70,7 +70,7 @@ bool ReadDnsOverHttpsServerData(
 }
 
 OptionalSecureDnsMode ToOptionalSecureDnsMode(
-    base::Optional<net::SecureDnsMode> optional) {
+    absl::optional<net::SecureDnsMode> optional) {
   if (!optional)
     return OptionalSecureDnsMode::NO_OVERRIDE;
   switch (optional.value()) {
@@ -85,11 +85,11 @@ OptionalSecureDnsMode ToOptionalSecureDnsMode(
 
 }  // namespace
 
-base::Optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
+absl::optional<net::SecureDnsMode> FromOptionalSecureDnsMode(
     OptionalSecureDnsMode mode) {
   switch (mode) {
     case OptionalSecureDnsMode::NO_OVERRIDE:
-      return base::nullopt;
+      return absl::nullopt;
     case OptionalSecureDnsMode::OFF:
       return net::SecureDnsMode::kOff;
     case OptionalSecureDnsMode::AUTOMATIC:
@@ -121,11 +121,11 @@ StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
 }
 
 // static
-base::Optional<std::vector<DnsOverHttpsServerPtr>>
+absl::optional<std::vector<DnsOverHttpsServerPtr>>
 StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
     dns_over_https_servers(const net::DnsConfigOverrides& overrides) {
   if (!overrides.dns_over_https_servers)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<DnsOverHttpsServerPtr> out_servers;
   for (net::DnsOverHttpsServerConfig server :
@@ -134,7 +134,7 @@ StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::
         DnsOverHttpsServer::New(server.server_template, server.use_post));
   }
 
-  return base::make_optional(std::move(out_servers));
+  return absl::make_optional(std::move(out_servers));
 }
 
 // static

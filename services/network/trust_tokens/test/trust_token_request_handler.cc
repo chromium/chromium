@@ -137,7 +137,7 @@ struct TrustTokenRequestHandler::Rep {
 
   // This is a structured representation of the most recent input to
   // RecordSignedRequest.
-  base::Optional<TrustTokenSignedRequest> last_incoming_signed_request;
+  absl::optional<TrustTokenSignedRequest> last_incoming_signed_request;
 };
 
 bssl::UniquePtr<TRUST_TOKEN_ISSUER>
@@ -182,7 +182,7 @@ bool TrustTokenRequestHandler::Rep::ConfirmClientDataIntegrityAndStoreKeyHash(
   if (!error)
     error = &dummy_error;
 
-  base::Optional<cbor::Value> maybe_value = cbor::Reader::Read(client_data);
+  absl::optional<cbor::Value> maybe_value = cbor::Reader::Read(client_data);
   if (!maybe_value) {
     *error = "client data was invalid CBOR";
     return false;
@@ -285,12 +285,12 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   return ret;
 }
 
-base::Optional<std::string> TrustTokenRequestHandler::Issue(
+absl::optional<std::string> TrustTokenRequestHandler::Issue(
     base::StringPiece issuance_request) {
   base::AutoLock lock(mutex_);
 
   if (rep_->issuance_outcome == ServerOperationOutcome::kUnconditionalFailure) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> issuer_ctx =
@@ -298,7 +298,7 @@ base::Optional<std::string> TrustTokenRequestHandler::Issue(
 
   std::string decoded_issuance_request;
   if (!base::Base64Decode(issuance_request, &decoded_issuance_request))
-    return base::nullopt;
+    return absl::nullopt;
 
   // TODO(davidvc): Perhaps make this configurable? Not a high priority, though.
   constexpr uint8_t kPrivateMetadata = 0;
@@ -324,20 +324,20 @@ base::Optional<std::string> TrustTokenRequestHandler::Issue(
   }
 
   if (!ok)
-    return base::nullopt;
+    return absl::nullopt;
 
   return base::Base64Encode(decoded_issuance_response.as_span());
 }
 
 constexpr base::TimeDelta TrustTokenRequestHandler::kRrLifetime =
     base::TimeDelta::FromDays(100);
-base::Optional<std::string> TrustTokenRequestHandler::Redeem(
+absl::optional<std::string> TrustTokenRequestHandler::Redeem(
     base::StringPiece redemption_request) {
   base::AutoLock lock(mutex_);
 
   if (rep_->redemption_outcome ==
       ServerOperationOutcome::kUnconditionalFailure) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> issuer_ctx =
@@ -345,7 +345,7 @@ base::Optional<std::string> TrustTokenRequestHandler::Redeem(
 
   std::string decoded_redemption_request;
   if (!base::Base64Decode(redemption_request, &decoded_redemption_request))
-    return base::nullopt;
+    return absl::nullopt;
 
   ScopedBoringsslBytes decoded_redemption_response;
   TRUST_TOKEN* redeemed_token;
@@ -358,7 +358,7 @@ base::Optional<std::string> TrustTokenRequestHandler::Redeem(
           redeemed_client_data.mutable_len(), &received_redemption_timestamp,
           base::as_bytes(base::make_span(decoded_redemption_request)).data(),
           decoded_redemption_request.size(), kRrLifetime.InSeconds())) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   rep_->ConfirmClientDataIntegrityAndStoreKeyHash(
@@ -386,7 +386,7 @@ TrustTokenRequestHandler::hashes_of_redemption_bound_public_keys() const {
   return rep_->hashes_of_redemption_bound_public_keys;
 }
 
-base::Optional<TrustTokenSignedRequest>
+absl::optional<TrustTokenSignedRequest>
 TrustTokenRequestHandler::last_incoming_signed_request() const {
   base::AutoLock lock(mutex_);
   return rep_->last_incoming_signed_request;

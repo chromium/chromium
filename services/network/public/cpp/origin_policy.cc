@@ -24,7 +24,7 @@ OriginPolicyContents::OriginPolicyContents(const OriginPolicyContents& other) =
 
 OriginPolicyContents::OriginPolicyContents(
     const std::vector<std::string>& ids,
-    const base::Optional<std::string>& permissions_policy,
+    const absl::optional<std::string>& permissions_policy,
     const std::vector<std::string>& content_security_policies,
     const std::vector<std::string>& content_security_policies_report_only)
     : ids(ids),

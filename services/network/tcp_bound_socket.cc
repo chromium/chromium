@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
@@ -19,6 +18,7 @@
 #include "net/socket/tcp_socket.h"
 #include "services/network/socket_factory.h"
 #include "services/network/tcp_connected_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -131,8 +131,8 @@ void TCPBoundSocket::Connect(
 
 void TCPBoundSocket::OnConnectComplete(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(connecting_socket_);

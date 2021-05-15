@@ -26,7 +26,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
       : receiver_(this, std::move(receiver)) {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupClient::OnComplete, base::Unretained(this), net::ERR_FAILED,
-        net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+        net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
   ~DnsLookupClient() override = default;
 
@@ -43,7 +43,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
   void OnComplete(
       int32_t error,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+      const absl::optional<net::AddressList>& resolved_addresses) override {
     receiver_.reset();
     dns_lookup_result_.error = error;
     dns_lookup_result_.resolve_error_info = resolve_error_info;

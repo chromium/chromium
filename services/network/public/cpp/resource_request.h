@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -31,6 +30,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -115,9 +115,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
   // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please
   // consult the doc comment for |request_initiator| in url_request.mojom.
-  base::Optional<url::Origin> request_initiator;
+  absl::optional<url::Origin> request_initiator;
 
-  base::Optional<url::Origin> isolated_world_origin;
+  absl::optional<url::Origin> isolated_world_origin;
   GURL referrer;
   net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
   net::HttpRequestHeaders headers;
@@ -149,27 +149,27 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   int previews_state = 0;
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
-  base::Optional<base::UnguessableToken> throttling_profile_id;
+  absl::optional<base::UnguessableToken> throttling_profile_id;
   net::HttpRequestHeaders custom_proxy_pre_cache_headers;
   net::HttpRequestHeaders custom_proxy_post_cache_headers;
-  base::Optional<base::UnguessableToken> fetch_window_id;
-  base::Optional<std::string> devtools_request_id;
-  base::Optional<std::string> devtools_stack_id;
+  absl::optional<base::UnguessableToken> fetch_window_id;
+  absl::optional<std::string> devtools_request_id;
+  absl::optional<std::string> devtools_stack_id;
   bool is_signed_exchange_prefetch_cache_enabled = false;
   bool is_fetch_like_api = false;
   bool is_favicon = false;
   bool obey_origin_policy = false;
-  base::Optional<base::UnguessableToken> recursive_prefetch_token;
-  base::Optional<TrustedParams> trusted_params;
-  // |trust_token_params| uses a custom base::Optional-like type to make the
+  absl::optional<base::UnguessableToken> recursive_prefetch_token;
+  absl::optional<TrustedParams> trusted_params;
+  // |trust_token_params| uses a custom absl::optional-like type to make the
   // field trivially copyable; see OptionalTrustTokenParams's definition for
   // more context.
   OptionalTrustTokenParams trust_token_params;
-  base::Optional<WebBundleTokenParams> web_bundle_token_params;
+  absl::optional<WebBundleTokenParams> web_bundle_token_params;
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  base::Optional<std::vector<net::SourceStream::SourceType>>
+  absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
 };
 

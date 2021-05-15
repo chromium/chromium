@@ -19,7 +19,7 @@ using NamespaceMap = std::map<std::string, std::string>;
 namespace {
 
 void ReportError(XmlParser::ParseCallback callback, const std::string& error) {
-  std::move(callback).Run(/*result=*/base::nullopt, base::make_optional(error));
+  std::move(callback).Run(/*result=*/absl::nullopt, absl::make_optional(error));
 }
 
 enum class TextNodeType { kText, kCData };
@@ -174,8 +174,8 @@ void XmlParser::Parse(const std::string& xml, ParseCallback callback) {
     ReportError(std::move(callback), "Invalid XML: bad content");
     return;
   }
-  std::move(callback).Run(base::make_optional(std::move(root_element)),
-                          base::Optional<std::string>());
+  std::move(callback).Run(absl::make_optional(std::move(root_element)),
+                          absl::optional<std::string>());
 }
 
 }  // namespace data_decoder

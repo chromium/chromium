@@ -17,12 +17,12 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::NetworkIsolationKeyDataView,
                  net::NetworkIsolationKey> {
-  static const base::Optional<net::SchemefulSite>& top_frame_site(
+  static const absl::optional<net::SchemefulSite>& top_frame_site(
       const net::NetworkIsolationKey& input) {
     return input.GetTopFrameSite();
   }
 
-  static const base::Optional<net::SchemefulSite>& frame_site(
+  static const absl::optional<net::SchemefulSite>& frame_site(
       const net::NetworkIsolationKey& input) {
     return input.GetFrameSite();
   }

@@ -527,8 +527,8 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 InitiatorLockCompatibility
 CorsURLLoaderFactory::VerifyRequestInitiatorLockWithPluginCheck(
     uint32_t process_id,
-    const base::Optional<url::Origin>& request_initiator_origin_lock,
-    const base::Optional<url::Origin>& request_initiator) {
+    const absl::optional<url::Origin>& request_initiator_origin_lock,
+    const absl::optional<url::Origin>& request_initiator) {
   if (process_id == mojom::kBrowserProcessId)
     return InitiatorLockCompatibility::kBrowserProcess;
 

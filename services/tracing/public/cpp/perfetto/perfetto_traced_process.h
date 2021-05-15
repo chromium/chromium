@@ -170,8 +170,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Called to initialize system tracing, i.e., connecting to a system Perfetto
   // daemon as a producer. If |system_socket| isn't provided, Perfetto's default
   // socket name is used.
-  void SetupSystemTracing(base::Optional<const char*> system_socket =
-                              base::Optional<const char*>());
+  void SetupSystemTracing(absl::optional<const char*> system_socket =
+                              absl::optional<const char*>());
 
   // If the provided |producer| can begin tracing then |start_tracing| will be
   // invoked (unless cancelled by the Perfetto service) at some point later

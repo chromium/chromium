@@ -24,7 +24,7 @@ namespace {
 constexpr base::TimeDelta kReconnectDelay =
     base::TimeDelta::FromMilliseconds(1000);
 
-base::Optional<mojom::SensorType> ConvertSensorType(
+absl::optional<mojom::SensorType> ConvertSensorType(
     chromeos::sensors::mojom::DeviceType device_type) {
   switch (device_type) {
     case chromeos::sensors::mojom::DeviceType::ACCEL:
@@ -40,7 +40,7 @@ base::Optional<mojom::SensorType> ConvertSensorType(
       return mojom::SensorType::MAGNETOMETER;
 
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -160,12 +160,12 @@ bool PlatformSensorProviderChromeOS::IsSensorTypeAvailable(
 PlatformSensorProviderChromeOS::SensorData::SensorData() = default;
 PlatformSensorProviderChromeOS::SensorData::~SensorData() = default;
 
-base::Optional<PlatformSensorProviderChromeOS::SensorLocation>
+absl::optional<PlatformSensorProviderChromeOS::SensorLocation>
 PlatformSensorProviderChromeOS::ParseLocation(
-    const base::Optional<std::string>& raw_location) {
+    const absl::optional<std::string>& raw_location) {
   if (!raw_location.has_value()) {
     LOG(ERROR) << "No location attribute";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // These locations must be listed in the same order as the SensorLocation
@@ -176,18 +176,18 @@ PlatformSensorProviderChromeOS::ParseLocation(
       chromeos::sensors::mojom::kLocationCamera};
   const auto it = base::ranges::find(location_strings, raw_location.value());
   if (it == std::end(location_strings))
-    return base::nullopt;
+    return absl::nullopt;
 
   return static_cast<SensorLocation>(
       std::distance(std::begin(location_strings), it));
 }
 
-base::Optional<int32_t> PlatformSensorProviderChromeOS::GetDeviceId(
+absl::optional<int32_t> PlatformSensorProviderChromeOS::GetDeviceId(
     mojom::SensorType type) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const auto type_id = sensor_id_by_type_.find(type);
   if (type_id == sensor_id_by_type_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return type_id->second;
 }
 
@@ -318,7 +318,7 @@ void PlatformSensorProviderChromeOS::RegisterDevice(
 
 void PlatformSensorProviderChromeOS::GetAttributesCallback(
     int32_t id,
-    const std::vector<base::Optional<std::string>>& values) {
+    const std::vector<absl::optional<std::string>>& values) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = sensors_.find(id);
@@ -470,7 +470,7 @@ void PlatformSensorProviderChromeOS::DetermineMotionSensors() {
 // Prefer the light sensor on the lid, as it's more meaningful to web API users.
 void PlatformSensorProviderChromeOS::DetermineLightSensor() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::Optional<int32_t> id = base::nullopt;
+  absl::optional<int32_t> id = absl::nullopt;
 
   for (const auto& sensor : sensors_) {
     if (sensor.second.ignored ||

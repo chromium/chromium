@@ -11,13 +11,13 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -86,7 +86,7 @@ class PublicIpAddressLocationNotifier
   bool network_changed_since_last_request_;
 
   // The geoposition as of the latest network change, if it has been obtained.
-  base::Optional<mojom::Geoposition> latest_geoposition_;
+  absl::optional<mojom::Geoposition> latest_geoposition_;
 
   // Google API key for network geolocation requests.
   const std::string api_key_;

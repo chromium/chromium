@@ -75,7 +75,7 @@ WebBundleBuilder::~WebBundleBuilder() = default;
 
 void WebBundleBuilder::SetExchanges(
     std::vector<mojom::SerializedResourceInfoPtr> resources,
-    std::vector<base::Optional<mojo_base::BigBuffer>> bodies) {
+    std::vector<absl::optional<mojo_base::BigBuffer>> bodies) {
   CHECK_EQ(resources.size(), bodies.size());
   int64_t responses_offset = 1 + GetNumUintBytes(resources.size());
   for (size_t i = 0; i < resources.size(); ++i) {
@@ -123,7 +123,7 @@ void WebBundleBuilder::AddSection(base::StringPiece name, cbor::Value section) {
 
 std::vector<uint8_t> WebBundleBuilder::CreateBundle(
     std::vector<mojom::SerializedResourceInfoPtr> resources,
-    std::vector<base::Optional<mojo_base::BigBuffer>> bodies) {
+    std::vector<absl::optional<mojo_base::BigBuffer>> bodies) {
   SetExchanges(std::move(resources), std::move(bodies));
   AddSection("index", cbor::Value(index_));
   AddSection("responses", cbor::Value(responses_));

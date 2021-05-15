@@ -24,7 +24,7 @@ struct StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
   static uint64_t row_bytes(
       const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap);
 
-  static base::Optional<base::WritableSharedMemoryRegion> pixels(
+  static absl::optional<base::WritableSharedMemoryRegion> pixels(
       const viz::CopyOutputResult::ScopedSkBitmap& scoped_bitmap);
 
   static bool Read(viz::mojom::BitmapInSharedMemoryDataView data,

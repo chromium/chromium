@@ -198,7 +198,7 @@ struct StructTraits<network::mojom::CookieInclusionStatusDataView,
 template <>
 struct StructTraits<network::mojom::CookieAndLineWithAccessResultDataView,
                     net::CookieAndLineWithAccessResult> {
-  static const base::Optional<net::CanonicalCookie>& cookie(
+  static const absl::optional<net::CanonicalCookie>& cookie(
       const net::CookieAndLineWithAccessResult& c) {
     return c.cookie;
   }

@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory_instrumentation {
 
@@ -30,12 +30,12 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
     // Returns the metric for the given dump name and metric name. For example,
     // GetMetric("blink", "size") would return the aggregated sze of the
     // "blink/" dump.
-    base::Optional<uint64_t> GetMetric(const std::string& dump_name,
+    absl::optional<uint64_t> GetMetric(const std::string& dump_name,
                                        const std::string& metric_name) const;
 
     base::ProcessId pid() const { return raw_dump_->pid; }
     mojom::ProcessType process_type() const { return raw_dump_->process_type; }
-    const base::Optional<std::string>& service_name() const {
+    const absl::optional<std::string>& service_name() const {
       return raw_dump_->service_name;
     }
 

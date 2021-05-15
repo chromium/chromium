@@ -9,9 +9,9 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/token.h"
 #include "services/service_manager/public/cpp/identity.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -87,28 +87,28 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP_TYPES) ServiceFilter {
     service_name_ = service_name;
   }
 
-  const base::Optional<base::Token>& instance_group() const {
+  const absl::optional<base::Token>& instance_group() const {
     return instance_group_;
   }
 
-  void set_instance_group(const base::Optional<base::Token>& instance_group) {
+  void set_instance_group(const absl::optional<base::Token>& instance_group) {
     instance_group_ = instance_group;
   }
 
-  const base::Optional<base::Token>& instance_id() const {
+  const absl::optional<base::Token>& instance_id() const {
     return instance_id_;
   }
 
-  void set_instance_id(const base::Optional<base::Token>& instance_id) {
+  void set_instance_id(const absl::optional<base::Token>& instance_id) {
     instance_id_ = instance_id;
   }
 
-  const base::Optional<base::Token>& globally_unique_id() const {
+  const absl::optional<base::Token>& globally_unique_id() const {
     return globally_unique_id_;
   }
 
   void set_globally_unique_id(
-      const base::Optional<base::Token>& globally_unique_id) {
+      const absl::optional<base::Token>& globally_unique_id) {
     globally_unique_id_ = globally_unique_id;
   }
 
@@ -116,14 +116,14 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP_TYPES) ServiceFilter {
 
  private:
   ServiceFilter(const std::string& service_name,
-                const base::Optional<base::Token>& instance_group,
-                const base::Optional<base::Token>& instance_id,
-                const base::Optional<base::Token>& globally_unique_id);
+                const absl::optional<base::Token>& instance_group,
+                const absl::optional<base::Token>& instance_id,
+                const absl::optional<base::Token>& globally_unique_id);
 
   std::string service_name_;
-  base::Optional<base::Token> instance_group_;
-  base::Optional<base::Token> instance_id_;
-  base::Optional<base::Token> globally_unique_id_;
+  absl::optional<base::Token> instance_group_;
+  absl::optional<base::Token> instance_id_;
+  absl::optional<base::Token> globally_unique_id_;
 };
 
 }  // namespace service_manager

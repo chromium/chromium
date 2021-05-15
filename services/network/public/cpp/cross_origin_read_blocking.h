@@ -108,9 +108,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // whether |response| needs to be blocked.
     ResponseAnalyzer(
         const GURL& request_url,
-        const base::Optional<url::Origin>& request_initiator,
+        const absl::optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
-        const base::Optional<url::Origin>& request_initiator_origin_lock,
+        const absl::optional<url::Origin>& request_initiator_origin_lock,
         mojom::RequestMode request_mode);
 
     ~ResponseAnalyzer();
@@ -185,9 +185,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     static BlockingDecision ShouldBlockBasedOnHeaders(
         mojom::RequestMode request_mode,
         const GURL& request_url,
-        const base::Optional<url::Origin>& request_initiator,
+        const absl::optional<url::Origin>& request_initiator,
         const network::mojom::URLResponseHead& response,
-        const base::Optional<url::Origin>& request_initiator_origin_lock,
+        const absl::optional<url::Origin>& request_initiator_origin_lock,
         MimeType canonical_mime_type);
 
     // Checks if the response seems sensitive for CORB protection logging.

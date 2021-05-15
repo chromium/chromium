@@ -160,7 +160,7 @@ struct URLRequest {
   // process on behalf of a web origin (e.g. as is the case for PaymentRequest
   // API).
   //
-  // |request_initiator| should be omitted (i.e. set to base::nullopt) for
+  // |request_initiator| should be omitted (i.e. set to absl::nullopt) for
   // browser-initiated requests (e.g. navigations initiated via omnibox or
   // bookmarks, internal subresource requests like fetching the SafeBrowsing
   // data, etc.).  Various security features may treat browser-initiated
@@ -174,7 +174,7 @@ struct URLRequest {
   // provided.  Failure to provide a correct, verified |request_initiator| may
   // lead to bypasses of CORS, CORB, SameSite cookies and other HTTP security
   // features.  An untrustworthy process (e.g. a renderer or a utility process)
-  // should not be able to trigger or influence requests with a base::nullopt
+  // should not be able to trigger or influence requests with a absl::nullopt
   // |request_initiator|).
   //
   // See also:

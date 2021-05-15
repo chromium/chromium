@@ -109,7 +109,7 @@ void OnGetNetworkList(std::unique_ptr<net::NetworkInterfaceList> networks,
   if (success) {
     std::move(callback).Run(*networks);
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 
@@ -475,7 +475,7 @@ void NetworkService::CreateNetworkContext(
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
     net::SecureDnsMode secure_dns_mode,
-    base::Optional<std::vector<mojom::DnsOverHttpsServerPtr>>
+    absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
         dns_over_https_servers,
     bool additional_dns_types_enabled) {
   DCHECK(!dns_over_https_servers || !dns_over_https_servers->empty());

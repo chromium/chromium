@@ -50,7 +50,7 @@ class InputIPC : public media::AudioInputIPC,
 
   void StreamCreated(media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
                      bool is_muted,
-                     const base::Optional<base::UnguessableToken>& stream_id);
+                     const absl::optional<base::UnguessableToken>& stream_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -59,7 +59,7 @@ class InputIPC : public media::AudioInputIPC,
   media::AudioInputIPCDelegate* delegate_ = nullptr;
 
   std::string device_id_;
-  base::Optional<base::UnguessableToken> stream_id_;
+  absl::optional<base::UnguessableToken> stream_id_;
 
   // |pending_stream_factory_| is initialized in the constructor, and later
   // bound to |stream_factory_|. This is done because the constructor may be

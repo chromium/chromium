@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -18,6 +17,7 @@
 #include "services/device/generic_sensor/sensor_impl.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -66,8 +66,8 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
 
   void AddDevice(int32_t iio_device_id,
                  chromeos::sensors::mojom::DeviceType type,
-                 const base::Optional<std::string>& scale,
-                 const base::Optional<std::string>& location,
+                 const absl::optional<std::string>& scale,
+                 const absl::optional<std::string>& location,
                  std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>
                      channels_data = {}) {
     AddDevice(iio_device_id,
@@ -77,8 +77,8 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
 
   void AddDevice(int32_t iio_device_id,
                  std::set<chromeos::sensors::mojom::DeviceType> types,
-                 const base::Optional<std::string>& scale,
-                 const base::Optional<std::string>& location,
+                 const absl::optional<std::string>& scale,
+                 const absl::optional<std::string>& location,
                  std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>
                      channels_data = {}) {
     auto sensor_device = std::make_unique<chromeos::sensors::FakeSensorDevice>(
@@ -198,7 +198,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckUnsupportedTypes) {
 
 TEST_F(PlatformSensorProviderChromeOSTest, MissingScale) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            /*scale=*/base::nullopt, chromeos::sensors::mojom::kLocationBase);
+            /*scale=*/absl::nullopt, chromeos::sensors::mojom::kLocationBase);
 
   RegisterSensorHalServer();
 
@@ -208,7 +208,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, MissingScale) {
 TEST_F(PlatformSensorProviderChromeOSTest, MissingLocation) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kScaleValue),
-            /*location=*/base::nullopt);
+            /*location=*/absl::nullopt);
 
   RegisterSensorHalServer();
 

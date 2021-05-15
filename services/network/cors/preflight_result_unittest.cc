@@ -19,7 +19,7 @@ using PreflightResultTest = ::testing::Test;
 using WithNonWildcardRequestHeadersSupport =
     PreflightResult::WithNonWildcardRequestHeadersSupport;
 
-constexpr base::Optional<mojom::CorsError> kNoError;
+constexpr absl::optional<mojom::CorsError> kNoError;
 
 struct TestCase {
   const std::string allow_methods;
@@ -30,47 +30,47 @@ struct TestCase {
   const std::string request_headers;
   const mojom::CredentialsMode request_credentials_mode;
 
-  const base::Optional<CorsErrorStatus> expected_result;
+  const absl::optional<CorsErrorStatus> expected_result;
 };
 
 const TestCase kMethodCases[] = {
     // Found in the preflight response.
     {"OPTIONS", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"GET", "", mojom::CredentialsMode::kOmit, "GET", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"HEAD", "", mojom::CredentialsMode::kOmit, "HEAD", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"POST", "", mojom::CredentialsMode::kOmit, "POST", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"PUT", "", mojom::CredentialsMode::kOmit, "PUT", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"DELETE", "", mojom::CredentialsMode::kOmit, "DELETE", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     // Access-Control-Allow-Methods = #method, method = token.
     // So a non-standard method is accepted as well.
     {"FOOBAR", "", mojom::CredentialsMode::kOmit, "FOOBAR", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // Found in the safe list.
     {"", "", mojom::CredentialsMode::kOmit, "GET", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"", "", mojom::CredentialsMode::kOmit, "HEAD", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"", "", mojom::CredentialsMode::kOmit, "POST", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // By '*'.
     {"*", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // Cache allowing multiple methods.
     {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "GET", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "PUT", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "DELETE", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // Not found in the preflight response or the safe list.
     {"", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
@@ -106,7 +106,7 @@ const TestCase kMethodCases[] = {
     // A valid list can contain empty entries so the remaining non-empty
     // entries are accepted.
     {"GET, ,PUT", "", mojom::CredentialsMode::kOmit, "PUT", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // Request method is normalized to upper-case, but allowed methods is not.
     // Comparison is in case-sensitive, that means allowed methods should be in
@@ -120,30 +120,30 @@ const TestCase kMethodCases[] = {
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "put")},
     {"PUT", "", mojom::CredentialsMode::kOmit, "put", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     // ... But, GET is always allowed by the safe list.
     {"get", "", mojom::CredentialsMode::kOmit, "GET", "",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 };
 
 const TestCase kHeaderCases[] = {
     // Found in the preflight response.
     {"GET", "X-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
-     "X-MY-HEADER:t", mojom::CredentialsMode::kOmit, base::nullopt},
+     "X-MY-HEADER:t", mojom::CredentialsMode::kOmit, absl::nullopt},
     {"GET", "X-MY-HEADER, Y-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
      "X-MY-HEADER:t\r\nY-MY-HEADER:t", mojom::CredentialsMode::kOmit,
-     base::nullopt},
+     absl::nullopt},
     {"GET", "x-my-header, Y-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
      "X-MY-HEADER:t\r\ny-my-header:t", mojom::CredentialsMode::kOmit,
-     base::nullopt},
+     absl::nullopt},
 
     // Found in the safe list.
     {"GET", "", mojom::CredentialsMode::kOmit, "GET", "Accept:*/*",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // By '*'.
     {"GET", "*", mojom::CredentialsMode::kOmit, "GET", "xyzzy:t",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
     {"GET", "*", mojom::CredentialsMode::kInclude, "GET", "xyzzy:t",
      mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
@@ -151,7 +151,7 @@ const TestCase kHeaderCases[] = {
 
     // Forbidden headers can pass.
     {"GET", "", mojom::CredentialsMode::kOmit, "GET", "Host: www.google.com",
-     mojom::CredentialsMode::kOmit, base::nullopt},
+     mojom::CredentialsMode::kOmit, absl::nullopt},
 
     // Not found in the preflight response and the safe list.
     {"GET", "", mojom::CredentialsMode::kOmit, "GET", "X-MY-HEADER:t",
@@ -174,14 +174,14 @@ TEST_F(PreflightResultTest, MaxAge) {
   PreflightResult::SetTickClockForTesting(tick_clock.get());
 
   std::unique_ptr<PreflightResult> result1 =
-      PreflightResult::Create(mojom::CredentialsMode::kOmit, base::nullopt,
-                              base::nullopt, std::string("573"), nullptr);
+      PreflightResult::Create(mojom::CredentialsMode::kOmit, absl::nullopt,
+                              absl::nullopt, std::string("573"), nullptr);
   EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(573),
             result1->absolute_expiry_time());
 
   std::unique_ptr<PreflightResult> result2 =
-      PreflightResult::Create(mojom::CredentialsMode::kOmit, base::nullopt,
-                              base::nullopt, std::string("-765"), nullptr);
+      PreflightResult::Create(mojom::CredentialsMode::kOmit, absl::nullopt,
+                              absl::nullopt, std::string("-765"), nullptr);
   EXPECT_EQ(base::TimeTicks(), result2->absolute_expiry_time());
 
   PreflightResult::SetTickClockForTesting(nullptr);
@@ -191,7 +191,7 @@ TEST_F(PreflightResultTest, EnsureMethods) {
   for (const auto& test : kMethodCases) {
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(test.cache_credentials_mode, test.allow_methods,
-                                test.allow_headers, base::nullopt, nullptr);
+                                test.allow_headers, absl::nullopt, nullptr);
     ASSERT_TRUE(result);
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedCrossOriginMethod(test.request_method));
@@ -202,7 +202,7 @@ TEST_F(PreflightResultTest, EnsureHeaders) {
   for (const auto& test : kHeaderCases) {
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(test.cache_credentials_mode, test.allow_methods,
-                                test.allow_headers, base::nullopt, nullptr);
+                                test.allow_headers, absl::nullopt, nullptr);
     ASSERT_TRUE(result);
     net::HttpRequestHeaders headers;
     headers.AddHeadersFromString(test.request_headers);
@@ -216,12 +216,12 @@ TEST_F(PreflightResultTest, EnsureRequest) {
   for (const auto& test : kMethodCases) {
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(test.cache_credentials_mode, test.allow_methods,
-                                test.allow_headers, base::nullopt, nullptr);
+                                test.allow_headers, absl::nullopt, nullptr);
     ASSERT_TRUE(result);
     net::HttpRequestHeaders headers;
     if (!test.request_headers.empty())
       headers.AddHeadersFromString(test.request_headers);
-    EXPECT_EQ(test.expected_result == base::nullopt,
+    EXPECT_EQ(test.expected_result == absl::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
                   false, WithNonWildcardRequestHeadersSupport(false)));
@@ -230,12 +230,12 @@ TEST_F(PreflightResultTest, EnsureRequest) {
   for (const auto& test : kHeaderCases) {
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(test.cache_credentials_mode, test.allow_methods,
-                                test.allow_headers, base::nullopt, nullptr);
+                                test.allow_headers, absl::nullopt, nullptr);
     ASSERT_TRUE(result);
     net::HttpRequestHeaders headers;
     if (!test.request_headers.empty())
       headers.AddHeadersFromString(test.request_headers);
-    EXPECT_EQ(test.expected_result == base::nullopt,
+    EXPECT_EQ(test.expected_result == absl::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
                   false, WithNonWildcardRequestHeadersSupport(false)));
@@ -259,7 +259,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
   for (const auto& test : credentials_cases) {
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(test.cache_credentials_mode, std::string("GET"),
-                                base::nullopt, base::nullopt, nullptr);
+                                absl::nullopt, absl::nullopt, nullptr);
     ASSERT_TRUE(result);
     net::HttpRequestHeaders headers;
     EXPECT_EQ(test.expected_result,
@@ -272,7 +272,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
 struct ParseAccessListTestCase {
   const std::string input;
   const std::vector<std::string> values_to_be_accepted;
-  const base::Optional<mojom::CorsError> strict_check_result;
+  const absl::optional<mojom::CorsError> strict_check_result;
 };
 
 const ParseAccessListTestCase kParseHeadersCases[] = {
@@ -291,10 +291,10 @@ const ParseAccessListTestCase kParseMethodsCases[] = {
 
 TEST_F(PreflightResultTest, ParseAllowControlAllowHeaders) {
   for (const auto& test : kParseHeadersCases) {
-    base::Optional<mojom::CorsError> error;
+    absl::optional<mojom::CorsError> error;
     std::unique_ptr<PreflightResult> result = PreflightResult::Create(
-        mojom::CredentialsMode::kOmit, /*allow_methods_header=*/base::nullopt,
-        test.input, /*max_age_header=*/base::nullopt, &error);
+        mojom::CredentialsMode::kOmit, /*allow_methods_header=*/absl::nullopt,
+        test.input, /*max_age_header=*/absl::nullopt, &error);
     EXPECT_EQ(error, test.strict_check_result);
 
     if (test.strict_check_result == kNoError) {
@@ -302,7 +302,7 @@ TEST_F(PreflightResultTest, ParseAllowControlAllowHeaders) {
         net::HttpRequestHeaders headers;
         headers.AddHeadersFromString(request_header);
         EXPECT_EQ(
-            base::nullopt,
+            absl::nullopt,
             result->EnsureAllowedCrossOriginHeaders(
                 headers, false, WithNonWildcardRequestHeadersSupport(false)));
       }
@@ -312,16 +312,16 @@ TEST_F(PreflightResultTest, ParseAllowControlAllowHeaders) {
 
 TEST_F(PreflightResultTest, ParseAllowControlAllowMethods) {
   for (const auto& test : kParseMethodsCases) {
-    base::Optional<mojom::CorsError> error;
+    absl::optional<mojom::CorsError> error;
     std::unique_ptr<PreflightResult> result =
         PreflightResult::Create(mojom::CredentialsMode::kOmit, test.input,
-                                /*allow_headers_header=*/base::nullopt,
-                                /*max_age_header=*/base::nullopt, &error);
+                                /*allow_headers_header=*/absl::nullopt,
+                                /*max_age_header=*/absl::nullopt, &error);
     EXPECT_EQ(error, test.strict_check_result);
 
     if (test.strict_check_result == kNoError) {
       for (const auto& request_method : test.values_to_be_accepted) {
-        EXPECT_EQ(base::nullopt,
+        EXPECT_EQ(absl::nullopt,
                   result->EnsureAllowedCrossOriginMethod(request_method));
       }
     }
@@ -340,31 +340,31 @@ net::HttpRequestHeaders CreateHeaders(
 TEST_F(PreflightResultTest,
        ParseAuthorizationWithoutNonWildcardRequestHeadersSupport) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*", kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
       headers, false, WithNonWildcardRequestHeadersSupport(false));
-  EXPECT_EQ(status, base::nullopt);
+  EXPECT_EQ(status, absl::nullopt);
 }
 
 TEST_F(PreflightResultTest,
        ParseAuthorizationWithNonWildcardRequestHeadersSupport) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*", kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
       headers, false, WithNonWildcardRequestHeadersSupport(true));
-  ASSERT_NE(status, base::nullopt);
+  ASSERT_NE(status, absl::nullopt);
   EXPECT_EQ(status->cors_error,
             mojom::CorsError::kHeaderDisallowedByPreflightResponse);
   EXPECT_TRUE(status->has_authorization_covered_by_wildcard_on_preflight);
@@ -374,28 +374,28 @@ TEST_F(
     PreflightResultTest,
     ParseAuthorizationWithNonWildcardRequestHeadersSupportAndAuthorizationOnPreflightResponse) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*, AUTHORIZAtion",
                                         kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
       headers, false, WithNonWildcardRequestHeadersSupport(true));
-  EXPECT_EQ(status, base::nullopt);
+  EXPECT_EQ(status, absl::nullopt);
 }
 
 TEST_F(PreflightResultTest, AuthorizationIsCoveredByAuthorization) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*, AUTHORIZAtion",
                                         kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   EXPECT_FALSE(result->HasAuthorizationCoveredByWildcard(
       CreateHeaders({{"authoRization", "x"}, {"foo", "bar"}})));
@@ -403,24 +403,24 @@ TEST_F(PreflightResultTest, AuthorizationIsCoveredByAuthorization) {
 
 TEST_F(PreflightResultTest, AuthorizationIsCoveredByWildCard) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*", kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   EXPECT_TRUE(result->HasAuthorizationCoveredByWildcard(
       CreateHeaders({{"authoRization", "x"}, {"foo", "bar"}})));
 }
 
 TEST_F(PreflightResultTest, NoAuthorization) {
   constexpr auto kOmit = mojom::CredentialsMode::kOmit;
-  const base::Optional<std::string> kMethods = "GET";
-  const base::Optional<std::string> kMaxAge = base::nullopt;
+  const absl::optional<std::string> kMethods = "GET";
+  const absl::optional<std::string> kMaxAge = absl::nullopt;
 
-  base::Optional<mojom::CorsError> error;
+  absl::optional<mojom::CorsError> error;
   auto result = PreflightResult::Create(kOmit, kMethods, "*", kMaxAge, &error);
-  ASSERT_EQ(error, base::nullopt);
+  ASSERT_EQ(error, absl::nullopt);
   EXPECT_FALSE(result->HasAuthorizationCoveredByWildcard(
       CreateHeaders({{"foo", "bar"}})));
 }

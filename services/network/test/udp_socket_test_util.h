@@ -12,12 +12,12 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -53,14 +53,14 @@ class UDPSocketListenerImpl : public mojom::UDPSocketListener {
  public:
   struct ReceivedResult {
     ReceivedResult(int net_error_arg,
-                   const base::Optional<net::IPEndPoint>& src_addr_arg,
-                   base::Optional<std::vector<uint8_t>> data_arg);
+                   const absl::optional<net::IPEndPoint>& src_addr_arg,
+                   absl::optional<std::vector<uint8_t>> data_arg);
     ReceivedResult(const ReceivedResult& other);
     ~ReceivedResult();
 
     int net_error;
-    base::Optional<net::IPEndPoint> src_addr;
-    base::Optional<std::vector<uint8_t>> data;
+    absl::optional<net::IPEndPoint> src_addr;
+    absl::optional<std::vector<uint8_t>> data;
   };
 
   UDPSocketListenerImpl();
@@ -72,8 +72,8 @@ class UDPSocketListenerImpl : public mojom::UDPSocketListener {
 
  private:
   void OnReceived(int32_t result,
-                  const base::Optional<net::IPEndPoint>& src_addr,
-                  base::Optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<ReceivedResult> results_;
   size_t expected_receive_count_;

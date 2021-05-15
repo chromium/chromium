@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -21,6 +20,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/ssl_config_type_converter.h"
 #include "services/network/tls_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -81,7 +81,7 @@ void TLSSocketFactory::UpgradeToTLS(
   if (!socket || !socket->IsConnected()) {
     std::move(callback).Run(
         net::ERR_SOCKET_NOT_CONNECTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), base::nullopt);
+        mojo::ScopedDataPipeProducerHandle(), absl::nullopt);
     return;
   }
   CreateTLSClientSocket(

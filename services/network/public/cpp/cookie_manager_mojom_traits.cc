@@ -457,7 +457,7 @@ bool StructTraits<network::mojom::CookieAndLineWithAccessResultDataView,
                   net::CookieAndLineWithAccessResult>::
     Read(network::mojom::CookieAndLineWithAccessResultDataView c,
          net::CookieAndLineWithAccessResult* out) {
-  base::Optional<net::CanonicalCookie> cookie;
+  absl::optional<net::CanonicalCookie> cookie;
   std::string cookie_string;
   net::CookieAccessResult access_result;
   if (!c.ReadCookie(&cookie))

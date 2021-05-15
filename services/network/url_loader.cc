@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -82,6 +81,7 @@
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -454,7 +454,7 @@ void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
 std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
     const std::string& accept_ch_frame,
     const net::HttpRequestHeaders& headers) {
-  base::Optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
+  absl::optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
       ParseClientHintsHeader(accept_ch_frame);
 
   if (!maybe_hints)
@@ -985,7 +985,7 @@ void URLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   if (!deferred_redirect_url_) {
     NOTREACHED();
     return;
@@ -1205,7 +1205,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
           ? factory_params_->client_security_state->cross_origin_embedder_policy
           : kEmpty;
 
-  if (base::Optional<mojom::BlockedByResponseReason> blocked_reason =
+  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
@@ -1263,12 +1263,12 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
   }
   auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
   if (!url_loader_network_observer) {
-    OnAuthCredentials(base::nullopt);
+    OnAuthCredentials(absl::nullopt);
     return;
   }
 
   if (do_not_prompt_for_login_) {
-    OnAuthCredentials(base::nullopt);
+    OnAuthCredentials(absl::nullopt);
     return;
   }
 
@@ -1427,7 +1427,7 @@ void URLLoader::ContinueOnResponseStarted() {
       factory_params_->client_security_state
           ? factory_params_->client_security_state->cross_origin_embedder_policy
           : kEmpty;
-  if (base::Optional<mojom::BlockedByResponseReason> blocked_reason =
+  if (absl::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
@@ -1485,7 +1485,7 @@ void URLLoader::ContinueOnResponseStarted() {
     // empty.
     DCHECK(!url_request_->isolation_info().IsEmpty());
 
-    base::Optional<std::string> origin_policy_header;
+    absl::optional<std::string> origin_policy_header;
     std::string origin_policy_header_value;
     if (url_request_->response_headers()->GetNormalizedHeader(
             "origin-policy", &origin_policy_header_value)) {
@@ -1696,7 +1696,7 @@ int URLLoader::OnHeadersReceived(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     const net::IPEndPoint& endpoint,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   if (header_client_) {
     header_client_->OnHeadersReceived(
         original_response_headers->raw_headers(), endpoint,
@@ -1805,7 +1805,7 @@ void URLLoader::LogConcerningRequestHeaders(
 }
 
 void URLLoader::OnAuthCredentials(
-    const base::Optional<net::AuthCredentials>& credentials) {
+    const absl::optional<net::AuthCredentials>& credentials) {
   auth_challenge_responder_receiver_.reset();
 
   if (!credentials.has_value()) {
@@ -2056,7 +2056,7 @@ void URLLoader::OnBeforeSendHeadersComplete(
     net::CompletionOnceCallback callback,
     net::HttpRequestHeaders* out_headers,
     int result,
-    const base::Optional<net::HttpRequestHeaders>& headers) {
+    const absl::optional<net::HttpRequestHeaders>& headers) {
   if (headers)
     *out_headers = headers.value();
   std::move(callback).Run(result);
@@ -2065,10 +2065,10 @@ void URLLoader::OnBeforeSendHeadersComplete(
 void URLLoader::OnHeadersReceivedComplete(
     net::CompletionOnceCallback callback,
     scoped_refptr<net::HttpResponseHeaders>* out_headers,
-    base::Optional<GURL>* out_preserve_fragment_on_redirect_url,
+    absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
     int result,
-    const base::Optional<std::string>& headers,
-    const base::Optional<GURL>& preserve_fragment_on_redirect_url) {
+    const absl::optional<std::string>& headers,
+    const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
   if (headers) {
     *out_headers =
         base::MakeRefCounted<net::HttpResponseHeaders>(headers.value());
@@ -2080,7 +2080,7 @@ void URLLoader::OnHeadersReceivedComplete(
 void URLLoader::CompleteBlockedResponse(
     int error_code,
     bool should_report_corb_blocking,
-    base::Optional<mojom::BlockedByResponseReason> reason) {
+    absl::optional<mojom::BlockedByResponseReason> reason) {
   if (has_received_response_) {
     // The response headers and body shouldn't yet be sent to the
     // URLLoaderClient.
@@ -2189,13 +2189,13 @@ void URLLoader::ReportFlaggedResponseCookies() {
 
     // Only send the "raw" header text when the headers were actually send in
     // text form (i.e. not QUIC or SPDY)
-    base::Optional<std::string> raw_response_headers;
+    absl::optional<std::string> raw_response_headers;
 
     const net::HttpResponseInfo& response_info = url_request_->response_info();
 
     if (!response_info.DidUseQuic() && !response_info.was_fetched_via_spdy) {
       raw_response_headers =
-          base::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
+          absl::make_optional(net::HttpUtil::ConvertHeadersBackToHTTPResponse(
               url_request_->response_headers()->raw_headers()));
     }
 
@@ -2318,13 +2318,13 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
 
 bool URLLoader::ShouldForceIgnoreTopFramePartyForCookies() const {
   const net::IsolationInfo& isolation_info = url_request_->isolation_info();
-  const base::Optional<url::Origin>& top_frame_origin =
+  const absl::optional<url::Origin>& top_frame_origin =
       isolation_info.top_frame_origin();
 
   if (!top_frame_origin || top_frame_origin->opaque())
     return false;
 
-  const base::Optional<std::set<net::SchemefulSite>>& party_context =
+  const absl::optional<std::set<net::SchemefulSite>>& party_context =
       isolation_info.party_context();
   if (!party_context)
     return false;

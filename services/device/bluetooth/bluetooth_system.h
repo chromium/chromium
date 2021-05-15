@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 class BluetoothAdapterClient;
@@ -60,16 +60,16 @@ class BluetoothSystem : public mojom::BluetoothSystem,
 
   void OnStartDiscovery(
       StartScanCallback callback,
-      const base::Optional<bluez::BluetoothAdapterClient::Error>& error);
+      const absl::optional<bluez::BluetoothAdapterClient::Error>& error);
   void OnStopDiscovery(
       StopScanCallback callback,
-      const base::Optional<bluez::BluetoothAdapterClient::Error>& error);
+      const absl::optional<bluez::BluetoothAdapterClient::Error>& error);
 
   mojo::Remote<mojom::BluetoothSystemClient> client_;
 
   // The ObjectPath of the adapter being used. Updated as BT adapters are
   // added and removed. nullopt if there is no adapter.
-  base::Optional<dbus::ObjectPath> active_adapter_;
+  absl::optional<dbus::ObjectPath> active_adapter_;
 
   // State of |active_adapter_| or kUnavailable if there is no
   // |active_adapter_|.

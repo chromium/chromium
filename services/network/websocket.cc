@@ -147,7 +147,7 @@ class WebSocket::WebSocketEventHandler final
                      const std::string& reason) override;
   void OnFailChannel(const std::string& message,
                      int net_error,
-                     base::Optional<int> response_code) override;
+                     absl::optional<int> response_code) override;
   void OnStartOpeningHandshake(
       std::unique_ptr<net::WebSocketHandshakeRequestInfo> request) override;
   void OnSSLCertificateError(
@@ -162,7 +162,7 @@ class WebSocket::WebSocketEventHandler final
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const net::IPEndPoint& remote_endpoint,
       base::OnceCallback<void(const net::AuthCredentials*)> callback,
-      base::Optional<net::AuthCredentials>* credentials) override;
+      absl::optional<net::AuthCredentials>* credentials) override;
 
  private:
   WebSocket* const impl_;
@@ -294,7 +294,7 @@ void WebSocket::WebSocketEventHandler::OnDropChannel(
 void WebSocket::WebSocketEventHandler::OnFailChannel(
     const std::string& message,
     int net_error,
-    base::Optional<int> response_code) {
+    absl::optional<int> response_code) {
   DVLOG(3) << "WebSocketEventHandler::OnFailChannel @"
            << reinterpret_cast<void*>(this) << " message=\"" << message << "\""
            << " error=" << net_error
@@ -370,11 +370,11 @@ int WebSocket::WebSocketEventHandler::OnAuthRequired(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     const net::IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const net::AuthCredentials*)> callback,
-    base::Optional<net::AuthCredentials>* credentials) {
+    absl::optional<net::AuthCredentials>* credentials) {
   DVLOG(3) << "WebSocketEventHandler::OnAuthRequired"
            << reinterpret_cast<void*>(this);
   if (!impl_->auth_handler_) {
-    *credentials = base::nullopt;
+    *credentials = absl::nullopt;
     return net::OK;
   }
 
@@ -410,7 +410,7 @@ WebSocket::WebSocket(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-    base::Optional<WebSocketThrottler::PendingConnection>
+    absl::optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
     base::TimeDelta delay)
     : factory_(factory),
@@ -553,7 +553,7 @@ int WebSocket::OnHeadersReceived(
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
+    absl::optional<GURL>* preserve_fragment_on_redirect_url) {
   if (header_client_) {
     header_client_->OnHeadersReceived(
         original_response_headers->raw_headers(), net::IPEndPoint(),
@@ -829,7 +829,7 @@ void WebSocket::OnSSLCertificateErrorResponse(
 
 void WebSocket::OnAuthRequiredComplete(
     base::OnceCallback<void(const net::AuthCredentials*)> callback,
-    const base::Optional<net::AuthCredentials>& credentials) {
+    const absl::optional<net::AuthCredentials>& credentials) {
   DCHECK(!handshake_succeeded_);
   if (!channel_) {
     // Something happened before the authentication response arrives.
@@ -843,7 +843,7 @@ void WebSocket::OnBeforeSendHeadersComplete(
     net::CompletionOnceCallback callback,
     net::HttpRequestHeaders* out_headers,
     int result,
-    const base::Optional<net::HttpRequestHeaders>& headers) {
+    const absl::optional<net::HttpRequestHeaders>& headers) {
   if (!channel_) {
     // Something happened before the OnBeforeSendHeaders response arrives.
     return;
@@ -856,10 +856,10 @@ void WebSocket::OnBeforeSendHeadersComplete(
 void WebSocket::OnHeadersReceivedComplete(
     net::CompletionOnceCallback callback,
     scoped_refptr<net::HttpResponseHeaders>* out_headers,
-    base::Optional<GURL>* out_preserve_fragment_on_redirect_url,
+    absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
     int result,
-    const base::Optional<std::string>& headers,
-    const base::Optional<GURL>& preserve_fragment_on_redirect_url) {
+    const absl::optional<std::string>& headers,
+    const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
   if (!channel_) {
     // Something happened before the OnHeadersReceived response arrives.
     return;

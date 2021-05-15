@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
-      const base::Optional<url::Origin>& request_initiator_origin_lock,
+      const absl::optional<url::Origin>& request_initiator_origin_lock,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer);
   ~WebBundleURLLoaderFactory();
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   void OnBeforeSendHeadersComplete(
       base::WeakPtr<URLLoader> loader,
       int result,
-      const base::Optional<net::HttpRequestHeaders>& headers);
+      const absl::optional<net::HttpRequestHeaders>& headers);
   void QueueOrStartLoader(base::WeakPtr<URLLoader> loader);
 
   void StartLoad(base::WeakPtr<URLLoader> loader);
@@ -81,8 +81,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       uint64_t payload_offset,
       uint64_t payload_length,
       int result,
-      const base::Optional<std::string>& headers,
-      const base::Optional<GURL>& preserve_fragment_on_redirect_url);
+      const absl::optional<std::string>& headers,
+      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
   void SendResponseToLoader(base::WeakPtr<URLLoader> loader,
                             const std::string& headers,
                             uint64_t payload_offset,
@@ -94,13 +94,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
-  const base::Optional<::url::Origin> request_initiator_origin_lock_;
+  const absl::optional<::url::Origin> request_initiator_origin_lock_;
   std::unique_ptr<WebBundleMemoryQuotaConsumer>
       web_bundle_memory_quota_consumer_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
-  base::Optional<SubresourceWebBundleLoadResult> load_result_;
+  absl::optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};

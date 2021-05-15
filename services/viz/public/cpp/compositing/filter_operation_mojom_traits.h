@@ -6,12 +6,12 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_FILTER_OPERATION_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/paint_filter.h"
 #include "services/viz/public/cpp/compositing/paint_filter_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/filter_operation.mojom-shared.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -55,10 +55,10 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
     return operation.image_filter();
   }
 
-  static base::Optional<base::span<const float>> matrix(
+  static absl::optional<base::span<const float>> matrix(
       const cc::FilterOperation& operation) {
     if (operation.type() != cc::FilterOperation::COLOR_MATRIX)
-      return base::nullopt;
+      return absl::nullopt;
     return base::make_span(operation.matrix());
   }
 

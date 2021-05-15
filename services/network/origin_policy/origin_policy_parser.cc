@@ -9,8 +9,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -28,7 +28,7 @@ OriginPolicyParser::~OriginPolicyParser() = default;
 void OriginPolicyParser::DoParse(base::StringPiece policy_contents_text) {
   policy_contents_ = std::make_unique<OriginPolicyContents>();
 
-  base::Optional<base::Value> json =
+  absl::optional<base::Value> json =
       base::JSONReader::Read(policy_contents_text);
   if (!json || !json->is_dict())
     return;

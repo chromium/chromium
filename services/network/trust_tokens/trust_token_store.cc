@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
@@ -20,6 +19,7 @@
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/origin.h"
 
@@ -68,22 +68,22 @@ void TrustTokenStore::RecordIssuance(const SuitableTrustTokenOrigin& issuer) {
   persister_->SetIssuerConfig(issuer, std::move(config));
 }
 
-base::Optional<base::TimeDelta> TrustTokenStore::TimeSinceLastIssuance(
+absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastIssuance(
     const SuitableTrustTokenOrigin& issuer) {
   std::unique_ptr<TrustTokenIssuerConfig> config =
       persister_->GetIssuerConfig(issuer);
   if (!config)
-    return base::nullopt;
+    return absl::nullopt;
   if (!config->has_last_issuance())
-    return base::nullopt;
-  base::Optional<base::Time> maybe_last_issuance =
+    return absl::nullopt;
+  absl::optional<base::Time> maybe_last_issuance =
       internal::StringToTime(config->last_issuance());
   if (!maybe_last_issuance)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta ret = base::Time::Now() - *maybe_last_issuance;
   if (ret < base::TimeDelta())
-    return base::nullopt;
+    return absl::nullopt;
 
   return ret;
 }
@@ -99,24 +99,24 @@ void TrustTokenStore::RecordRedemption(
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
 }
 
-base::Optional<base::TimeDelta> TrustTokenStore::TimeSinceLastRedemption(
+absl::optional<base::TimeDelta> TrustTokenStore::TimeSinceLastRedemption(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& top_level) {
   auto config = persister_->GetIssuerToplevelPairConfig(issuer, top_level);
   if (!config)
-    return base::nullopt;
+    return absl::nullopt;
   if (!config->has_last_redemption())
-    return base::nullopt;
-  base::Optional<base::Time> maybe_last_redemption =
+    return absl::nullopt;
+  absl::optional<base::Time> maybe_last_redemption =
       internal::StringToTime(config->last_redemption());
   // internal::StringToTime can fail in the case of data corruption (or writer
   // error).
   if (!maybe_last_redemption)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta ret = base::Time::Now() - *maybe_last_redemption;
   if (ret < base::TimeDelta())
-    return base::nullopt;
+    return absl::nullopt;
   return ret;
 }
 
@@ -253,20 +253,20 @@ void TrustTokenStore::SetRedemptionRecord(
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
 }
 
-base::Optional<TrustTokenRedemptionRecord>
+absl::optional<TrustTokenRedemptionRecord>
 TrustTokenStore::RetrieveNonstaleRedemptionRecord(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& top_level) {
   auto config = persister_->GetIssuerToplevelPairConfig(issuer, top_level);
   if (!config)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!config->has_redemption_record())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (record_expiry_delegate_->IsRecordExpired(config->redemption_record(),
                                                issuer))
-    return base::nullopt;
+    return absl::nullopt;
 
   return config->redemption_record();
 }

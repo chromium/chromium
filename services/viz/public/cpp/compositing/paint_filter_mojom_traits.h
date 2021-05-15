@@ -19,7 +19,7 @@ namespace mojo {
 
 template <>
 struct StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>> {
-  static base::Optional<std::vector<uint8_t>> data(
+  static absl::optional<std::vector<uint8_t>> data(
       const sk_sp<cc::PaintFilter>& filter);
 
   static bool Read(viz::mojom::PaintFilterDataView data,

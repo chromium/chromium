@@ -126,7 +126,7 @@ void PublicIpAddressLocationNotifier::OnNetworkLocationResponse(
     network_changed_since_last_request_ = true;
     DCHECK(!latest_geoposition_.has_value());
   } else {
-    latest_geoposition_ = base::make_optional(position);
+    latest_geoposition_ = absl::make_optional(position);
   }
   // Notify all clients.
   for (QueryNextPositionCallback& callback : callbacks_)

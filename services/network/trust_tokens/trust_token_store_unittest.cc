@@ -50,7 +50,7 @@ TEST(TrustTokenStoreTest, RecordsIssuances) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 
   // Recording an issuance should result in the time
   // since last issuance being correctly returned.
@@ -73,7 +73,7 @@ TEST(TrustTokenStoreTest, DoesntReportMissingOrMalformedIssuanceTimestamps) {
   auto issuer_config_with_no_time = std::make_unique<TrustTokenIssuerConfig>();
   raw_persister->SetIssuerConfig(issuer, std::move(issuer_config_with_no_time));
 
-  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 
   auto issuer_config_with_malformed_time =
       std::make_unique<TrustTokenIssuerConfig>();
@@ -82,7 +82,7 @@ TEST(TrustTokenStoreTest, DoesntReportMissingOrMalformedIssuanceTimestamps) {
   raw_persister->SetIssuerConfig(issuer,
                                  std::move(issuer_config_with_malformed_time));
 
-  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 }
 
 TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastIssuance) {
@@ -106,7 +106,7 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastIssuance) {
 
   // TimeSinceLastIssuance shouldn't return negative values.
 
-  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastIssuance(issuer), absl::nullopt);
 }
 
 TEST(TrustTokenStore, RecordsRedemptions) {
@@ -122,7 +122,7 @@ TEST(TrustTokenStore, RecordsRedemptions) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
 
   // Recording a redemption should result in the time
   // since last redemption being correctly returned.
@@ -150,7 +150,7 @@ TEST(TrustTokenStoreTest, DoesntReportMissingOrMalformedRedemptionTimestamps) {
   raw_persister->SetIssuerToplevelPairConfig(issuer, toplevel,
                                              std::move(config_with_no_time));
 
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
 
   auto config_with_malformed_time =
       std::make_unique<TrustTokenIssuerToplevelPairConfig>();
@@ -159,7 +159,7 @@ TEST(TrustTokenStoreTest, DoesntReportMissingOrMalformedRedemptionTimestamps) {
   raw_persister->SetIssuerToplevelPairConfig(
       issuer, toplevel, std::move(config_with_malformed_time));
 
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
 }
 
 TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastRedemption) {
@@ -187,7 +187,7 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastRedemption) {
 
   // TimeSinceLastRedemption shouldn't return negative values.
 
-  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), base::nullopt);
+  EXPECT_EQ(my_store->TimeSinceLastRedemption(issuer, toplevel), absl::nullopt);
 }
 
 TEST(TrustTokenStore, AssociatesToplevelsWithIssuers) {
@@ -476,7 +476,7 @@ TEST(TrustTokenStore, SetsAndRetrievesRedemptionRecord) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   EXPECT_EQ(my_store->RetrieveNonstaleRedemptionRecord(issuer, toplevel),
-            base::nullopt);
+            absl::nullopt);
 
   // Providing a redemption record should mean that subsequent
   // queries (modulo the record's staleness) should return that
@@ -506,7 +506,7 @@ TEST(TrustTokenStore, RetrieveRedemptionRecordHandlesConfigWithNoRecord) {
       issuer, toplevel, std::make_unique<TrustTokenIssuerToplevelPairConfig>());
 
   EXPECT_EQ(my_store->RetrieveNonstaleRedemptionRecord(issuer, toplevel),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST(TrustTokenStore, SetRedemptionRecordOverwritesExisting) {
@@ -562,7 +562,7 @@ TEST(TrustTokenStore, DoesNotReturnStaleRedemptionRecord) {
   my_store->SetRedemptionRecord(issuer, toplevel, my_record);
 
   EXPECT_EQ(my_store->RetrieveNonstaleRedemptionRecord(issuer, toplevel),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST(TrustTokenStore, EmptyFilter) {

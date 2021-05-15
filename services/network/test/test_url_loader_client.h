@@ -60,7 +60,7 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   const mojom::URLResponseHeadPtr& response_head() const {
     return response_head_;
   }
-  const base::Optional<net::SSLInfo>& ssl_info() const {
+  const absl::optional<net::SSLInfo>& ssl_info() const {
     DCHECK(response_head_);
     return response_head_->ssl_info;
   }

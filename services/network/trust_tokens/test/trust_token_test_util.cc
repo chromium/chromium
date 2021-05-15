@@ -120,12 +120,12 @@ TrustTokenTestParameters& TrustTokenTestParameters::operator=(
 
 TrustTokenTestParameters::TrustTokenTestParameters(
     network::mojom::TrustTokenOperationType type,
-    base::Optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
-    base::Optional<network::mojom::TrustTokenSignRequestData> sign_request_data,
-    base::Optional<bool> include_timestamp_header,
-    base::Optional<std::vector<std::string>> issuer_specs,
-    base::Optional<std::vector<std::string>> additional_signed_headers,
-    base::Optional<std::string> possibly_unsafe_additional_signing_data)
+    absl::optional<network::mojom::TrustTokenRefreshPolicy> refresh_policy,
+    absl::optional<network::mojom::TrustTokenSignRequestData> sign_request_data,
+    absl::optional<bool> include_timestamp_header,
+    absl::optional<std::vector<std::string>> issuer_specs,
+    absl::optional<std::vector<std::string>> additional_signed_headers,
+    absl::optional<std::string> possibly_unsafe_additional_signing_data)
     : type(type),
       refresh_policy(refresh_policy),
       sign_request_data(sign_request_data),

@@ -6,9 +6,9 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_OPAQUE_RESPONSE_BLOCKING_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,7 +48,7 @@ enum class ResponseHeadersHeuristicForUma {
 COMPONENT_EXPORT(NETWORK_CPP)
 void LogUmaForOpaqueResponseBlocking(
     const GURL& request_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
     mojom::RequestDestination request_destination,
     const mojom::URLResponseHead& response);

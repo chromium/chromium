@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/url_request_mojom_traits.h"
 
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
@@ -17,6 +16,7 @@
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -104,7 +104,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
   original.web_bundle_token_params =
-      base::make_optional(ResourceRequest::WebBundleTokenParams(
+      absl::make_optional(ResourceRequest::WebBundleTokenParams(
           GURL("https://bundle.test/"), base::UnguessableToken::Create(),
           mojo::PendingRemote<network::mojom::WebBundleHandle>()));
   original.devtools_accepted_stream_types =

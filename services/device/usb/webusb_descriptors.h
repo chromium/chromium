@@ -11,7 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -41,7 +41,7 @@ void ReadWebUsbLandingPage(
 void ReadWebUsbCapabilityDescriptor(
     scoped_refptr<UsbDeviceHandle> device_handle,
     base::OnceCallback<void(
-        const base::Optional<WebUsbPlatformCapabilityDescriptor>& descriptor)>
+        const absl::optional<WebUsbPlatformCapabilityDescriptor>& descriptor)>
         callback);
 
 void ReadWebUsbDescriptors(

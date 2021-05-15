@@ -235,7 +235,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
   int NetError() const override;
   const mojom::URLResponseHead* ResponseInfo() const override;
-  const base::Optional<URLLoaderCompletionStatus>& CompletionStatus()
+  const absl::optional<URLLoaderCompletionStatus>& CompletionStatus()
       const override;
   const GURL& GetFinalURL() const override;
   bool LoadedFromCache() const override;
@@ -287,7 +287,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
     mojom::URLResponseHeadPtr response_info;
 
-    base::Optional<URLLoaderCompletionStatus> completion_status;
+    absl::optional<URLLoaderCompletionStatus> completion_status;
   };
 
   // Prepares internal state to start a request, and then calls StartRequest().
@@ -1423,7 +1423,7 @@ const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
   return request_state_->response_info.get();
 }
 
-const base::Optional<URLLoaderCompletionStatus>&
+const absl::optional<URLLoaderCompletionStatus>&
 SimpleURLLoaderImpl::CompletionStatus() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
@@ -1441,7 +1441,7 @@ void SimpleURLLoaderImpl::OnBodyHandlerDone(net::Error error,
     // Reset the completion status since the contained metrics like encoded body
     // length and net error are not reliable when the body itself was not
     // successfully completed.
-    request_state_->completion_status = base::nullopt;
+    request_state_->completion_status = absl::nullopt;
     // When |allow_partial_results_| is true, a valid body|file_path is
     // passed to the completion callback even in the case of failures.
     // For consistency, it makes sense to also hold the actual decompressed
@@ -1703,7 +1703,7 @@ void SimpleURLLoaderImpl::OnComplete(const URLLoaderCompletionStatus& status) {
   // URLLoader is violating the API contract.
   if (request_state_->net_error == net::OK && !request_state_->body_started) {
     request_state_->net_error = net::ERR_UNEXPECTED;
-    request_state_->completion_status = base::nullopt;
+    request_state_->completion_status = absl::nullopt;
   }
 
   MaybeComplete();
@@ -1722,7 +1722,7 @@ void SimpleURLLoaderImpl::OnMojoDisconnect() {
 
   request_state_->request_completed = true;
   request_state_->net_error = net::ERR_FAILED;
-  request_state_->completion_status = base::nullopt;
+  request_state_->completion_status = absl::nullopt;
 
   // Wait to receive any pending data on the data pipe before reporting the
   // failure.
@@ -1771,14 +1771,14 @@ void SimpleURLLoaderImpl::MaybeComplete() {
         request_state_->received_body_size) {
       // The body pipe was closed before it received the entire body.
       request_state_->net_error = net::ERR_FAILED;
-      request_state_->completion_status = base::nullopt;
+      request_state_->completion_status = absl::nullopt;
     } else {
       // The caller provided more data through the pipe than it reported in
       // URLLoaderCompletionStatus, so the URLLoader is violating the
       // API contract. Just fail the request and delete the retained completion
       // status.
       request_state_->net_error = net::ERR_UNEXPECTED;
-      request_state_->completion_status = base::nullopt;
+      request_state_->completion_status = absl::nullopt;
     }
   }
 

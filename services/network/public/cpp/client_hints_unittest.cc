@@ -14,7 +14,7 @@ using testing::UnorderedElementsAre;
 namespace network {
 
 TEST(ClientHintsTest, ParseAcceptCH) {
-  base::Optional<std::vector<network::mojom::WebClientHintsType>> result;
+  absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   // Empty is OK.
   result = ParseClientHintsHeader(" ");
@@ -56,7 +56,7 @@ TEST(ClientHintsTest, ParseAcceptCH) {
 }
 
 TEST(ClientHintsTest, ParseAcceptCHCaseInsensitive) {
-  base::Optional<std::vector<network::mojom::WebClientHintsType>> result;
+  absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   // Matching is case-insensitive.
   result = ParseClientHintsHeader("Device-meMory,  Rtt, lanG ");

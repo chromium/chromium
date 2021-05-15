@@ -13,13 +13,13 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class IsolationInfo;
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyManager
   // mojom::OriginPolicyManager
   void RetrieveOriginPolicy(const url::Origin& origin,
                             const net::IsolationInfo& isolation_info,
-                            const base::Optional<std::string>& header,
+                            const absl::optional<std::string>& header,
                             RetrieveOriginPolicyCallback callback) override;
   void AddExceptionFor(const url::Origin& origin) override;
 

@@ -35,7 +35,7 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     // Optional. Wait until the callback from MakeCallback() is called.
     void Wait() { loop_.Run(); }
 
-    const base::Optional<mojom::Geoposition>& position() const {
+    const absl::optional<mojom::Geoposition>& position() const {
       return position_;
     }
 
@@ -46,7 +46,7 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     }
 
     base::RunLoop loop_;
-    base::Optional<mojom::Geoposition> position_;
+    absl::optional<mojom::Geoposition> position_;
   };
 
   PublicIpAddressLocationNotifierTest()
@@ -108,14 +108,14 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
 
   // Expects a non-empty and valid Geoposition, including the specified
   // |latitude|.
-  void ExpectValidPosition(const base::Optional<mojom::Geoposition>& position,
+  void ExpectValidPosition(const absl::optional<mojom::Geoposition>& position,
                            const float latitude) {
     ASSERT_TRUE(position);
     EXPECT_TRUE(ValidateGeoposition(*position));
     EXPECT_FLOAT_EQ(position->latitude, latitude);
   }
 
-  void ExpectError(const base::Optional<mojom::Geoposition>& position) {
+  void ExpectError(const absl::optional<mojom::Geoposition>& position) {
     ASSERT_TRUE(position);
     EXPECT_THAT(position->error_code,
                 mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE);

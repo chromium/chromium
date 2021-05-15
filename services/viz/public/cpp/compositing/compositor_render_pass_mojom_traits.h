@@ -54,7 +54,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->backdrop_filters;
   }
 
-  static base::Optional<gfx::RRectF> backdrop_filter_bounds(
+  static absl::optional<gfx::RRectF> backdrop_filter_bounds(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->backdrop_filter_bounds;
   }

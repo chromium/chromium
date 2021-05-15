@@ -64,14 +64,14 @@ mojo::PendingRemote<mojom::AcceptCHFrameObserver> Clone(
 //  - neither is nullopt and they both contain equal values
 //
 bool OptionalTrustedParamsEqualsForTesting(
-    const base::Optional<ResourceRequest::TrustedParams>& lhs,
-    const base::Optional<ResourceRequest::TrustedParams>& rhs) {
+    const absl::optional<ResourceRequest::TrustedParams>& lhs,
+    const absl::optional<ResourceRequest::TrustedParams>& rhs) {
   return (!lhs && !rhs) || (lhs && rhs && lhs->EqualsForTesting(*rhs));
 }
 
 bool OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
-    const base::Optional<ResourceRequest::WebBundleTokenParams>& lhs,
-    const base::Optional<ResourceRequest::WebBundleTokenParams>& rhs) {
+    const absl::optional<ResourceRequest::WebBundleTokenParams>& lhs,
+    const absl::optional<ResourceRequest::WebBundleTokenParams>& rhs) {
   return (!lhs && !rhs) ||
          (lhs && rhs && lhs->EqualsForTesting(*rhs));  // IN-TEST
 }

@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -50,7 +50,7 @@ class TrustTokenRequestCanonicalizer {
   // if there is an internal error during serialization.
   //
   // REQUIRES: |sign_request_data| is kInclude or kHeadersOnly.
-  virtual base::Optional<std::vector<uint8_t>> Canonicalize(
+  virtual absl::optional<std::vector<uint8_t>> Canonicalize(
       const GURL& destination,
       const net::HttpRequestHeaders& headers,
       base::StringPiece public_key,

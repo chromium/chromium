@@ -87,7 +87,7 @@ class MockAudioOutputIPC : public media::AudioOutputIPC {
       CreateStream,
       void(media::AudioOutputIPCDelegate* delegate,
            const media::AudioParameters& params,
-           const base::Optional<base::UnguessableToken>& processing_id));
+           const absl::optional<base::UnguessableToken>& processing_id));
   MOCK_METHOD0(PlayStream, void());
   MOCK_METHOD0(PauseStream, void());
   MOCK_METHOD0(FlushStream, void());

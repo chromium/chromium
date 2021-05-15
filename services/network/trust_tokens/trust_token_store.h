@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -20,6 +19,7 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_persister.h"
 #include "services/network/trust_tokens/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -85,7 +85,7 @@ class TrustTokenStore {
   // of, for instance, corruption or clock skew).
   //
   // |issuer| must not be opaque.
-  WARN_UNUSED_RESULT virtual base::Optional<base::TimeDelta>
+  WARN_UNUSED_RESULT virtual absl::optional<base::TimeDelta>
   TimeSinceLastIssuance(const SuitableTrustTokenOrigin& issuer);
 
   // Updates the given (issuer, top-level) origin pair's last redemption time
@@ -100,7 +100,7 @@ class TrustTokenStore {
   // top-level origin) pair.
   // 2. the time since the last redepmption is negative (because
   // of, for instance, corruption or clock skew).
-  WARN_UNUSED_RESULT virtual base::Optional<base::TimeDelta>
+  WARN_UNUSED_RESULT virtual absl::optional<base::TimeDelta>
   TimeSinceLastRedemption(const SuitableTrustTokenOrigin& issuer,
                           const SuitableTrustTokenOrigin& top_level);
 
@@ -180,7 +180,7 @@ class TrustTokenStore {
   // top-level) origins.
   // - If the pair has a current (i.e., non-expired) RR, returns that RR.
   // - Otherwise, returns nullopt.
-  WARN_UNUSED_RESULT virtual base::Optional<TrustTokenRedemptionRecord>
+  WARN_UNUSED_RESULT virtual absl::optional<TrustTokenRedemptionRecord>
   RetrieveNonstaleRedemptionRecord(const SuitableTrustTokenOrigin& issuer,
                                    const SuitableTrustTokenOrigin& top_level);
 

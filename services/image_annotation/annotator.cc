@@ -700,8 +700,8 @@ void Annotator::OnServerResponseReceived(
 
 void Annotator::OnResponseJsonParsed(
     const std::set<RequestKey>& request_keys,
-    const base::Optional<base::Value> json_data,
-    const base::Optional<std::string>& error) {
+    const absl::optional<base::Value> json_data,
+    const absl::optional<std::string>& error) {
   const bool success = json_data.has_value() && !error.has_value();
   ReportJsonParseSuccess(success);
 
@@ -894,8 +894,8 @@ void Annotator::OnServerLangsResponseReceived(
 }
 
 void Annotator::OnServerLangsResponseJsonParsed(
-    base::Optional<base::Value> json_data,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json_data,
+    const absl::optional<std::string>& error) {
   if (!json_data.has_value() || error.has_value()) {
     DVLOG(1) << "Parsing server langs response JSON failed with error: "
              << error.value_or("No reason reported.");

@@ -109,7 +109,7 @@ net::CookieOptions MakeOptionsForGet(
     options.set_exclude_httponly();  // Default, but make it explicit here.
     options.set_same_site_cookie_context(
         net::cookie_util::ComputeSameSiteContextForScriptGet(
-            url, site_for_cookies, base::nullopt /*initiator*/,
+            url, site_for_cookies, absl::nullopt /*initiator*/,
             force_ignore_site_for_cookies));
   } else {
     // mojom::RestrictedCookieManagerRole::NETWORK
@@ -373,7 +373,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   if (cookie_observer_) {
     cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
-        std::move(on_cookies_accessed_result), base::nullopt));
+        std::move(on_cookies_accessed_result), absl::nullopt));
   }
 
   if (blocked) {
@@ -423,7 +423,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
               net::CookieAccessResult(status)));
       cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(result_with_access_result), base::nullopt));
+          std::move(result_with_access_result), absl::nullopt));
     }
     std::move(callback).Run(false);
     return;
@@ -477,7 +477,7 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
           mojom::CookieOrLine::NewCookie(cookie), access_result));
       cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(notify), base::nullopt));
+          std::move(notify), absl::nullopt));
     }
   }
   std::move(user_callback).Run(access_result.status.IsInclude());
@@ -526,7 +526,7 @@ void RestrictedCookieManager::SetCookieFromString(
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
       net::CanonicalCookie::Create(url, cookie, base::Time::Now(),
-                                   base::nullopt /* server_time */, &status);
+                                   absl::nullopt /* server_time */, &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -537,7 +537,7 @@ void RestrictedCookieManager::SetCookieFromString(
               net::CookieAccessResult(status)));
       cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
-          std::move(result_with_access_result), base::nullopt));
+          std::move(result_with_access_result), absl::nullopt));
     }
     std::move(callback).Run();
     return;

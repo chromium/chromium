@@ -84,7 +84,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
     // many blinded, unsigned trust tokens; on error, returns nullopt. The
     // format of this string will eventually be specified, but it is currently
     // considered an implementation detail of the underlying cryptographic code.
-    virtual base::Optional<std::string> BeginIssuance(size_t num_tokens) = 0;
+    virtual absl::optional<std::string> BeginIssuance(size_t num_tokens) = 0;
 
     struct UnblindedTokens {
       UnblindedTokens();
@@ -265,7 +265,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
   // operation's execution.
-  base::Optional<SuitableTrustTokenOrigin> issuer_;
+  absl::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
   TrustTokenStore* const token_store_;
   const TrustTokenKeyCommitmentGetter* const key_commitment_getter_;
@@ -296,7 +296,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   MetricsDelegate* const metrics_delegate_;
 
   net::NetLogWithSource net_log_;
-  base::Optional<size_t> num_obtained_tokens_;
+  absl::optional<size_t> num_obtained_tokens_;
   base::WeakPtrFactory<TrustTokenRequestIssuanceHelper> weak_ptr_factory_{this};
 };
 

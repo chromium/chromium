@@ -20,10 +20,10 @@ void JsonParserImpl::Parse(const std::string& json, ParseCallback callback) {
   base::JSONReader::ValueWithError ret =
       base::JSONReader::ReadAndReturnValueWithError(json);
   if (ret.value) {
-    std::move(callback).Run(std::move(ret.value), base::nullopt);
+    std::move(callback).Run(std::move(ret.value), absl::nullopt);
   } else {
-    std::move(callback).Run(base::nullopt,
-                            base::make_optional(std::move(ret.error_message)));
+    std::move(callback).Run(absl::nullopt,
+                            absl::make_optional(std::move(ret.error_message)));
   }
 }
 

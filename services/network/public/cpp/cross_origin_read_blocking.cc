@@ -671,9 +671,9 @@ class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
 
 CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     const GURL& request_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    const base::Optional<url::Origin>& request_initiator_origin_lock,
+    const absl::optional<url::Origin>& request_initiator_origin_lock,
     mojom::RequestMode request_mode)
     : seems_sensitive_from_cors_heuristic_(
           SeemsSensitiveFromCORSHeuristic(response)),
@@ -750,9 +750,9 @@ CrossOriginReadBlocking::ResponseAnalyzer::BlockingDecision
 CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
     mojom::RequestMode request_mode,
     const GURL& request_url,
-    const base::Optional<url::Origin>& request_initiator,
+    const absl::optional<url::Origin>& request_initiator,
     const network::mojom::URLResponseHead& response,
-    const base::Optional<url::Origin>& request_initiator_origin_lock,
+    const absl::optional<url::Origin>& request_initiator_origin_lock,
     MimeType canonical_mime_type) {
   // The checks in this method are ordered to rule out blocking in most cases as
   // quickly as possible.  Checks that are likely to lead to returning false or

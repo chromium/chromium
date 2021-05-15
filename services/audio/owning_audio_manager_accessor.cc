@@ -27,16 +27,16 @@ namespace audio {
 
 namespace {
 
-base::Optional<base::TimeDelta> GetAudioThreadHangDeadline() {
+absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
   if (!base::FeatureList::IsEnabled(
           features::kAudioServiceOutOfProcessKillAtHang)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const std::string timeout_string = base::GetFieldTrialParamValueByFeature(
       features::kAudioServiceOutOfProcessKillAtHang, "timeout_seconds");
   int timeout_int = 0;
   if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeDelta::FromSeconds(timeout_int);
 }
 

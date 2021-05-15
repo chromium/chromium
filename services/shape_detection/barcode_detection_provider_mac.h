@@ -42,7 +42,7 @@ class BarcodeDetectionProviderMac
  private:
   DISALLOW_COPY_AND_ASSIGN(BarcodeDetectionProviderMac);
 
-  base::Optional<std::vector<mojom::BarcodeFormat>> supported_formats_;
+  absl::optional<std::vector<mojom::BarcodeFormat>> supported_formats_;
   std::unique_ptr<VisionAPIInterface> vision_api_;
 };
 

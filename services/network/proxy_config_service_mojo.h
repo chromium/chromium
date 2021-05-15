@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,6 +17,7 @@
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class ProxyConfigWithAnnotation;
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyConfigServiceMojo
   explicit ProxyConfigServiceMojo(
       mojo::PendingReceiver<mojom::ProxyConfigClient>
           proxy_config_client_receiver,
-      base::Optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
+      absl::optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
       mojo::PendingRemote<mojom::ProxyConfigPollerClient> proxy_poller_client);
   ~ProxyConfigServiceMojo() override;
 

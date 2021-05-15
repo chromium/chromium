@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
       base::OnceCallback<void(int32_t net_error,
                               mojo::ScopedDataPipeConsumerHandle receive_stream,
                               mojo::ScopedDataPipeProducerHandle send_stream,
-                              const base::Optional<net::SSLInfo>& ssl_info)>;
+                              const absl::optional<net::SSLInfo>& ssl_info)>;
 
   // Constructs a TLSSocketFactory. If |net_log| is non-null, it is used to
   // log NetLog events when logging is enabled. |net_log| used to must outlive

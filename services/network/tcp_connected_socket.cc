@@ -10,12 +10,12 @@
 #include "base/check_op.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "services/network/tls_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -99,14 +99,14 @@ TCPConnectedSocket::~TCPConnectedSocket() {
     // If |this| is destroyed when connect hasn't completed, tell the consumer
     // that request has been aborted.
     std::move(connect_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt, base::nullopt,
+        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }
 }
 
 void TCPConnectedSocket::Connect(
-    const base::Optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
@@ -164,7 +164,7 @@ void TCPConnectedSocket::UpgradeToTLS(
   if (!tls_socket_factory_) {
     std::move(callback).Run(
         net::ERR_NOT_IMPLEMENTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), base::nullopt /* ssl_info*/);
+        mojo::ScopedDataPipeProducerHandle(), absl::nullopt /* ssl_info*/);
     return;
   }
   // Wait for data pipes to be closed by the client before doing the upgrade.
@@ -255,7 +255,7 @@ void TCPConnectedSocket::OnConnectCompleted(int result) {
 
   if (result != net::OK) {
     std::move(connect_callback_)
-        .Run(result, base::nullopt, base::nullopt,
+        .Run(result, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
     return;

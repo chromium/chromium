@@ -46,7 +46,7 @@ base::TimeTicks Now() {
 }
 
 base::TimeDelta ParseAccessControlMaxAge(
-    const base::Optional<std::string>& max_age) {
+    const absl::optional<std::string>& max_age) {
   if (!max_age) {
     return kDefaultTimeout;
   }
@@ -76,7 +76,7 @@ base::TimeDelta ParseAccessControlMaxAge(
 // Parses |string| as a Access-Control-Allow-* header value, storing the result
 // in |set|. This function returns false when |string| does not satisfy the
 // syntax here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
-bool ParseAccessControlAllowList(const base::Optional<std::string>& string,
+bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
                                  base::flat_set<std::string>* set,
                                  bool insert_in_lower_case) {
   DCHECK(set);
@@ -108,13 +108,13 @@ void PreflightResult::SetTickClockForTesting(
 // static
 std::unique_ptr<PreflightResult> PreflightResult::Create(
     const mojom::CredentialsMode credentials_mode,
-    const base::Optional<std::string>& allow_methods_header,
-    const base::Optional<std::string>& allow_headers_header,
-    const base::Optional<std::string>& max_age_header,
-    base::Optional<mojom::CorsError>* detected_error) {
+    const absl::optional<std::string>& allow_methods_header,
+    const absl::optional<std::string>& allow_headers_header,
+    const absl::optional<std::string>& max_age_header,
+    absl::optional<mojom::CorsError>* detected_error) {
   std::unique_ptr<PreflightResult> result =
       base::WrapUnique(new PreflightResult(credentials_mode));
-  base::Optional<mojom::CorsError> error =
+  absl::optional<mojom::CorsError> error =
       result->Parse(allow_methods_header, allow_headers_header, max_age_header);
   if (error) {
     if (detected_error)
@@ -129,7 +129,7 @@ PreflightResult::PreflightResult(const mojom::CredentialsMode credentials_mode)
 
 PreflightResult::~PreflightResult() = default;
 
-base::Optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
+absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
     const std::string& method) const {
   // Request method is normalized to upper case, and comparison is performed in
   // case-sensitive way, that means access control header should provide an
@@ -137,17 +137,17 @@ base::Optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
   const std::string normalized_method = base::ToUpperASCII(method);
   if (methods_.find(normalized_method) != methods_.end() ||
       IsCorsSafelistedMethod(normalized_method)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!credentials_ && methods_.find("*") != methods_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                          method);
 }
 
-base::Optional<CorsErrorStatus>
+absl::optional<CorsErrorStatus>
 PreflightResult::EnsureAllowedCrossOriginHeaders(
     const net::HttpRequestHeaders& headers,
     bool is_revalidating,
@@ -167,7 +167,7 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
         return error_status;
       }
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Forbidden headers are forbidden to be used by JavaScript, and checked
@@ -183,7 +183,7 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
           mojom::CorsError::kHeaderDisallowedByPreflightResponse, name);
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool PreflightResult::IsExpired() const {
@@ -214,10 +214,10 @@ bool PreflightResult::EnsureAllowedRequest(
   return true;
 }
 
-base::Optional<mojom::CorsError> PreflightResult::Parse(
-    const base::Optional<std::string>& allow_methods_header,
-    const base::Optional<std::string>& allow_headers_header,
-    const base::Optional<std::string>& max_age_header) {
+absl::optional<mojom::CorsError> PreflightResult::Parse(
+    const absl::optional<std::string>& allow_methods_header,
+    const absl::optional<std::string>& allow_headers_header,
+    const absl::optional<std::string>& max_age_header) {
   DCHECK(methods_.empty());
   DCHECK(headers_.empty());
 
@@ -232,7 +232,7 @@ base::Optional<mojom::CorsError> PreflightResult::Parse(
   const base::TimeDelta expiry_delta = ParseAccessControlMaxAge(max_age_header);
   absolute_expiry_time_ = Now() + expiry_delta;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool PreflightResult::HasAuthorizationCoveredByWildcard(

@@ -39,16 +39,16 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
   static const gfx::Rect& rect(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
+  static absl::optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gpu::Mailbox> mailbox(
+  static absl::optional<gpu::Mailbox> mailbox(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gpu::SyncToken> sync_token(
+  static absl::optional<gpu::SyncToken> sync_token(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<gfx::ColorSpace> color_space(
+  static absl::optional<gfx::ColorSpace> color_space(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::PendingRemote<viz::mojom::TextureReleaser> releaser(

@@ -16,7 +16,7 @@
 
 namespace network {
 
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 TrustTokenRequestCanonicalizer::Canonicalize(
     const GURL& destination,
     const net::HttpRequestHeaders& headers,
@@ -28,7 +28,7 @@ TrustTokenRequestCanonicalizer::Canonicalize(
   // It seems like there's no conceivable way in which keys could be empty
   // during normal use, so reject in this case as a common-sense safety measure.
   if (public_key.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   cbor::Value::MapValue canonicalized_request;
 
@@ -54,10 +54,10 @@ TrustTokenRequestCanonicalizer::Canonicalize(
   std::string signed_headers_header;
   if (headers.GetHeader(kTrustTokensRequestHeaderSignedHeaders,
                         &signed_headers_header)) {
-    base::Optional<std::vector<std::string>> maybe_headers_to_add =
+    absl::optional<std::vector<std::string>> maybe_headers_to_add =
         internal::ParseTrustTokenSignedHeadersHeader(signed_headers_header);
     if (!maybe_headers_to_add)
-      return base::nullopt;
+      return absl::nullopt;
     headers_to_add.swap(*maybe_headers_to_add);
   }
 

@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -115,7 +115,7 @@ class TrustTokenRequestHandler {
 
   // Given a base64-encoded issuance request, processes the
   // request and returns either nullopt (on error) or a base64-encoded response.
-  base::Optional<std::string> Issue(base::StringPiece issuance_request);
+  absl::optional<std::string> Issue(base::StringPiece issuance_request);
 
   // Given a base64-encoded redemption request, processes the
   // request and returns either nullopt (on error) or a base64-encoded response.
@@ -129,7 +129,7 @@ class TrustTokenRequestHandler {
   // exercising client-side RR expiry logic in end-to-end tests, because
   // there's no way to fast-forward a clock past an expiry time.)
   static const base::TimeDelta kRrLifetime;
-  base::Optional<std::string> Redeem(base::StringPiece redemption_request);
+  absl::optional<std::string> Redeem(base::StringPiece redemption_request);
 
   // Stores a representation of a signed request with the given destination and
   // headers in a manner that can be retrieved for inspection by calling
@@ -141,7 +141,7 @@ class TrustTokenRequestHandler {
   std::set<std::string> hashes_of_redemption_bound_public_keys() const;
 
   // Returns a structured representation of the last signed request received.
-  base::Optional<TrustTokenSignedRequest> last_incoming_signed_request() const;
+  absl::optional<TrustTokenSignedRequest> last_incoming_signed_request() const;
 
  private:
   struct Rep;  // Contains state internal to this class's implementation.

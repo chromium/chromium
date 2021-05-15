@@ -59,13 +59,13 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
     return receiver;
   }
 
-  void OnServiceValue(base::Optional<V> value) {
-    OnServiceValueOrError(std::move(value), base::nullopt);
+  void OnServiceValue(absl::optional<V> value) {
+    OnServiceValueOrError(std::move(value), absl::nullopt);
   }
 
   // Handles a successful parse from the service.
-  void OnServiceValueOrError(base::Optional<V> value,
-                             const base::Optional<std::string>& error) {
+  void OnServiceValueOrError(absl::optional<V> value,
+                             const absl::optional<std::string>& error) {
     if (!callback())
       return;
 

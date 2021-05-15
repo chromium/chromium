@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;

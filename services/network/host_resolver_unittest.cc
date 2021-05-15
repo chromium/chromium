@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -36,6 +35,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -72,7 +72,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
 
   void OnComplete(int error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const base::Optional<net::AddressList>& addresses) override {
+                  const absl::optional<net::AddressList>& addresses) override {
     DCHECK(!complete_);
 
     complete_ = true;
@@ -105,17 +105,17 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
     return result_error_;
   }
 
-  const base::Optional<net::AddressList>& result_addresses() const {
+  const absl::optional<net::AddressList>& result_addresses() const {
     DCHECK(complete_);
     return result_addresses_;
   }
 
-  const base::Optional<std::vector<std::string>>& result_text() const {
+  const absl::optional<std::vector<std::string>>& result_text() const {
     DCHECK(complete_);
     return result_text_;
   }
 
-  const base::Optional<std::vector<net::HostPortPair>>& result_hosts() const {
+  const absl::optional<std::vector<net::HostPortPair>>& result_hosts() const {
     DCHECK(complete_);
     return result_hosts_;
   }
@@ -126,9 +126,9 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   bool complete_;
   int top_level_result_error_;
   int result_error_;
-  base::Optional<net::AddressList> result_addresses_;
-  base::Optional<std::vector<std::string>> result_text_;
-  base::Optional<std::vector<net::HostPortPair>> result_hosts_;
+  absl::optional<net::AddressList> result_addresses_;
+  absl::optional<std::vector<std::string>> result_text_;
+  absl::optional<std::vector<net::HostPortPair>> result_hosts_;
   base::RunLoop* const run_loop_;
 };
 

@@ -25,7 +25,7 @@ const char kDefaultRequestUrl[] = "https://target.example.com/foo";
 
 struct TestInput {
   GURL request_url;
-  base::Optional<url::Origin> request_initiator;
+  absl::optional<url::Origin> request_initiator;
   mojom::RequestMode request_mode;
   mojom::RequestDestination request_destination;
   mojom::URLResponseHeadPtr response;
@@ -71,7 +71,7 @@ class TestInputBuilder {
   }
 
   TestInputBuilder& WithInitiator(
-      const base::Optional<url::Origin>& initiator) {
+      const absl::optional<url::Origin>& initiator) {
     request_initiator_ = initiator;
     return *this;
   }
@@ -90,7 +90,7 @@ class TestInputBuilder {
   std::string http_status_line_ = "HTTP/1.1 200 OK";
   std::string mime_type_ = "application/octet-stream";
   GURL request_url_ = GURL(kDefaultRequestUrl);
-  base::Optional<url::Origin> request_initiator_ =
+  absl::optional<url::Origin> request_initiator_ =
       url::Origin::Create(GURL("https://initiator.example.com"));
   mojom::RequestMode request_mode_ = mojom::RequestMode::kNoCors;
   bool no_sniff_ = false;
@@ -180,7 +180,7 @@ TEST(OpaqueResponseBlocking, ResourceTypeUma) {
   {
     base::HistogramTester histograms;
     LogUmaForOpaqueResponseBlocking(
-        TestInputBuilder().WithInitiator(base::nullopt));
+        TestInputBuilder().WithInitiator(absl::nullopt));
     histograms.ExpectTotalCount(
         "SiteIsolation.ORB.ResponseHeadersHeuristic.ProcessedBasedOnHeaders",
         0);
@@ -194,7 +194,7 @@ TEST(OpaqueResponseBlocking, ResourceTypeUma) {
 
 TEST(OpaqueResponseBlocking, NonOpaqueRequests) {
   // Browser-initiated request.
-  TestUma(TestInputBuilder().WithInitiator(base::nullopt),
+  TestUma(TestInputBuilder().WithInitiator(absl::nullopt),
           ResponseHeadersHeuristicForUma::kNonOpaqueResponse);
 
   // Mode != no-cors.

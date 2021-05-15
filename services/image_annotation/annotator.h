@@ -205,8 +205,8 @@ class Annotator : public mojom::Annotator {
   // Called when the data decoder service provides parsed JSON data for a server
   // response.
   void OnResponseJsonParsed(const std::set<RequestKey>& request_keys,
-                            base::Optional<base::Value> json_data,
-                            const base::Optional<std::string>& error);
+                            absl::optional<base::Value> json_data,
+                            const absl::optional<std::string>& error);
 
   // Adds the given results to the cache (if successful) and notifies clients.
   void ProcessResults(
@@ -224,8 +224,8 @@ class Annotator : public mojom::Annotator {
 
   // Parse the JSON from the reply with server languages.
   void OnServerLangsResponseJsonParsed(
-      base::Optional<base::Value> json_data,
-      const base::Optional<std::string>& error);
+      absl::optional<base::Value> json_data,
+      const absl::optional<std::string>& error);
 
   const std::unique_ptr<Client> client_;
 

@@ -46,7 +46,7 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
   mojom::SerializedResourceInfoPtr ptr = mojom::SerializedResourceInfo::New(
       GURL("https://test.example.org/index.html"), "text/html", 0);
   exchanges.emplace_back(std::move(ptr));
-  std::vector<base::Optional<mojo_base::BigBuffer>> bodies;
+  std::vector<absl::optional<mojo_base::BigBuffer>> bodies;
   bodies.emplace_back();
   std::vector<uint8_t> bundle =
       builder.CreateBundle(std::move(exchanges), std::move(bodies));
@@ -60,15 +60,15 @@ TEST_F(WebBundleBuilderTest, CorrectWebBundleSizeIsWritten) {
 TEST_F(WebBundleBuilderTest, ByteByByteComparison) {
   WebBundleBuilder builder(kFallbackUrl);
   std::vector<mojom::SerializedResourceInfoPtr> exchanges;
-  std::vector<base::Optional<mojo_base::BigBuffer>> bodies;
+  std::vector<absl::optional<mojo_base::BigBuffer>> bodies;
   exchanges.emplace_back(mojom::SerializedResourceInfo::New(
       GURL("https://test.example.org/"), "text/html; charset=UTF-8", 46));
-  bodies.emplace_back(base::Optional<mojo_base::BigBuffer>(
+  bodies.emplace_back(absl::optional<mojo_base::BigBuffer>(
       GetStringAsBytes("<a href='index.html'>click for web bundles</a>")));
   exchanges.emplace_back(mojom::SerializedResourceInfo::New(
       GURL("https://test.example.org/index.html"), "text/html; charset=UTF-8",
       25));
-  bodies.emplace_back(base::Optional<mojo_base::BigBuffer>(
+  bodies.emplace_back(absl::optional<mojo_base::BigBuffer>(
       GetStringAsBytes("<p>Hello Web Bundles!</p>")));
   std::vector<uint8_t> bundle =
       builder.CreateBundle(std::move(exchanges), std::move(bodies));

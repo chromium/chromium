@@ -36,7 +36,7 @@ struct CompositorFrameMetadata {
   BeginFrameAck begin_frame_ack;
   uint32 frame_token;
   bool send_frame_token_to_embedder;
-  // TODO(crbug.com/657632): This should be a base::Optional<float>.
+  // TODO(crbug.com/657632): This should be a absl::optional<float>.
   bool top_controls_visible_height_set;
   float top_controls_visible_height;
 

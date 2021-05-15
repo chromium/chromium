@@ -96,7 +96,7 @@ scoped_refptr<UsbContext> InitializeUsbContextBlocking() {
   return nullptr;
 }
 
-base::Optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
+absl::optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
     const std::wstring& new_device_path,
     scoped_refptr<UsbContext> usb_context) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -107,7 +107,7 @@ base::Optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
     if (!IsWinUsbInterface(new_device_path)) {
       // Wait to call libusb_get_device_list until libusb will be able to find
       // a WinUSB interface for the device.
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 #endif  // defined(OS_WIN)
@@ -118,7 +118,7 @@ base::Optional<std::vector<ScopedLibusbDeviceRef>> GetDeviceListBlocking(
   if (device_count < 0) {
     USB_LOG(ERROR) << "Failed to get device list: "
                    << ConvertPlatformUsbErrorToString(device_count);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<ScopedLibusbDeviceRef> scoped_devices;
@@ -340,7 +340,7 @@ void UsbServiceImpl::RefreshDevices() {
 }
 
 void UsbServiceImpl::OnDeviceList(
-    base::Optional<std::vector<ScopedLibusbDeviceRef>> devices) {
+    absl::optional<std::vector<ScopedLibusbDeviceRef>> devices) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!devices) {
     RefreshDevicesComplete();

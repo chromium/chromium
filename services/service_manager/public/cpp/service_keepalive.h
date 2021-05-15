@@ -10,8 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceKeepalive {
   // object will not do any automatic lifetime management and will instead only
   // maintain an internal ref-count which the consumer can query.
   ServiceKeepalive(ServiceReceiver* receiver,
-                   base::Optional<base::TimeDelta> idle_timeout);
+                   absl::optional<base::TimeDelta> idle_timeout);
   ~ServiceKeepalive();
 
   // Constructs a new ServiceKeepaliveRef associated with this ServiceKeepalive.
@@ -83,8 +83,8 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceKeepalive {
   void OnTimerExpired();
 
   ServiceReceiver* const receiver_;
-  const base::Optional<base::TimeDelta> idle_timeout_;
-  base::Optional<base::OneShotTimer> idle_timer_;
+  const absl::optional<base::TimeDelta> idle_timeout_;
+  absl::optional<base::OneShotTimer> idle_timer_;
   base::ObserverList<Observer> observers_;
   int ref_count_ = 0;
   base::WeakPtrFactory<ServiceKeepalive> weak_ptr_factory_{this};

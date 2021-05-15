@@ -41,7 +41,7 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, OptSharedQuadState> {
     return input.sqs->mask_filter_info;
   }
 
-  static const base::Optional<gfx::Rect>& clip_rect(
+  static const absl::optional<gfx::Rect>& clip_rect(
       const OptSharedQuadState& input) {
     return input.sqs->clip_rect;
   }
@@ -96,7 +96,7 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     return sqs.mask_filter_info;
   }
 
-  static const base::Optional<gfx::Rect>& clip_rect(
+  static const absl::optional<gfx::Rect>& clip_rect(
       const viz::SharedQuadState& sqs) {
     return sqs.clip_rect;
   }

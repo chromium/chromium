@@ -61,7 +61,7 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
 void InputIPC::StreamCreated(
     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
-    const base::Optional<base::UnguessableToken>& stream_id) {
+    const absl::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
 

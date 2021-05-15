@@ -101,7 +101,7 @@ class ServiceInstanceRegistry {
 
   ServiceInstance* FindMatchInEntries(
       const std::vector<Entry>& entries,
-      const base::Optional<base::Token>& guid) const;
+      const absl::optional<base::Token>& guid) const;
   bool EraseEntry(const base::Token& guid, std::vector<Entry>* entries);
 
   RegularInstanceMap regular_instances_;

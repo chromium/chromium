@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
@@ -33,11 +33,11 @@ class WebBundleBuilder {
 
   std::vector<uint8_t> CreateBundle(
       std::vector<mojom::SerializedResourceInfoPtr> resources,
-      std::vector<base::Optional<mojo_base::BigBuffer>> bodies);
+      std::vector<absl::optional<mojo_base::BigBuffer>> bodies);
 
  private:
   void SetExchanges(std::vector<mojom::SerializedResourceInfoPtr> resources,
-                    std::vector<base::Optional<mojo_base::BigBuffer>> bodies);
+                    std::vector<absl::optional<mojo_base::BigBuffer>> bodies);
   void AddIndexEntry(base::StringPiece url,
                      base::StringPiece variants_value,
                      std::vector<ResponseLocation> response_locations);

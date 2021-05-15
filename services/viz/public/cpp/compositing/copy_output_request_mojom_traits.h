@@ -32,17 +32,17 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
     return request->scale_to();
   }
 
-  static const base::Optional<base::UnguessableToken>& source(
+  static const absl::optional<base::UnguessableToken>& source(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->source_;
   }
 
-  static const base::Optional<gfx::Rect>& area(
+  static const absl::optional<gfx::Rect>& area(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->area_;
   }
 
-  static const base::Optional<gfx::Rect>& result_selection(
+  static const absl::optional<gfx::Rect>& result_selection(
       const std::unique_ptr<viz::CopyOutputRequest>& request) {
     return request->result_selection_;
   }

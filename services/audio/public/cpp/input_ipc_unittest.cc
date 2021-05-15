@@ -52,7 +52,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       CreateInputStreamCallback created_callback) {
     if (should_fail_) {
-      std::move(created_callback).Run(nullptr, initially_muted_, base::nullopt);
+      std::move(created_callback).Run(nullptr, initially_muted_, absl::nullopt);
       return;
     }
 

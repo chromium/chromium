@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_session {
 namespace test {

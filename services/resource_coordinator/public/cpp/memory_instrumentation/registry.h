@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace memory_instrumentation {
 
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(
       mojo::PendingRemote<mojom::ClientProcess> client_process,
       mojom::ProcessType process_type,
       base::ProcessId process_id,
-      const base::Optional<std::string>& service_name) = 0;
+      const absl::optional<std::string>& service_name) = 0;
 };
 
 }  // namespace memory_instrumentation

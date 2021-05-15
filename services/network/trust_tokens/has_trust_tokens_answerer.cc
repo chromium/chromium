@@ -25,7 +25,7 @@ HasTrustTokensAnswerer::~HasTrustTokensAnswerer() = default;
 
 void HasTrustTokensAnswerer::HasTrustTokens(const url::Origin& issuer,
                                             HasTrustTokensCallback callback) {
-  base::Optional<SuitableTrustTokenOrigin> maybe_suitable_issuer =
+  absl::optional<SuitableTrustTokenOrigin> maybe_suitable_issuer =
       SuitableTrustTokenOrigin::Create(issuer);
 
   if (!maybe_suitable_issuer) {

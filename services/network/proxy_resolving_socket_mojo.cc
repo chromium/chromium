@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "services/network/socket_data_pump.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -29,7 +29,7 @@ ProxyResolvingSocketMojo::~ProxyResolvingSocketMojo() {
     // If |this| is destroyed when connect hasn't completed, tell the consumer
     // that request has been aborted.
     std::move(connect_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt, base::nullopt,
+        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }
@@ -72,7 +72,7 @@ void ProxyResolvingSocketMojo::UpgradeToTLS(
              int32_t net_error,
              mojo::ScopedDataPipeConsumerHandle receive_stream,
              mojo::ScopedDataPipeProducerHandle send_stream,
-             const base::Optional<net::SSLInfo>& ssl_info) {
+             const absl::optional<net::SSLInfo>& ssl_info) {
             DCHECK(!ssl_info);
             std::move(callback).Run(net_error, std::move(receive_stream),
                                     std::move(send_stream));
@@ -114,7 +114,7 @@ void ProxyResolvingSocketMojo::OnConnectCompleted(int result) {
 
   if (result != net::OK) {
     std::move(connect_callback_)
-        .Run(result, base::nullopt, base::nullopt,
+        .Run(result, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
     return;
@@ -125,8 +125,8 @@ void ProxyResolvingSocketMojo::OnConnectCompleted(int result) {
   std::move(connect_callback_)
       .Run(net::OK, local_addr,
            get_peer_address_success
-               ? base::make_optional<net::IPEndPoint>(peer_addr)
-               : base::nullopt,
+               ? absl::make_optional<net::IPEndPoint>(peer_addr)
+               : absl::nullopt,
            std::move(receive_consumer_handle), std::move(send_producer_handle));
 }
 

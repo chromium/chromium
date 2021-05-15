@@ -702,7 +702,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(4.f));
   backdrop_filters.Append(cc::FilterOperation::CreateZoomFilter(2.0f, 1));
   backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(2.f));
-  base::Optional<gfx::RRectF> backdrop_filter_bounds(
+  absl::optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
   SubtreeCaptureId subtree_capture_id{22u};
   const bool has_transparent_background = true;
@@ -755,7 +755,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   surface_quad->SetNew(
       shared_state_2, surface_quad_rect, surface_quad_rect,
       SurfaceRange(
-          base::nullopt,
+          absl::nullopt,
           SurfaceId(FrameSinkId(1337, 1234),
                     LocalSurfaceId(1234, base::UnguessableToken::Create()))),
       SK_ColorYELLOW, false);
@@ -847,7 +847,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   const gfx::Rect damage_rect(56, 123, 19, 43);
   const gfx::Transform transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
-  const base::Optional<gfx::RRectF> backdrop_filter_bounds;
+  const absl::optional<gfx::RRectF> backdrop_filter_bounds;
   SubtreeCaptureId subtree_capture_id;
   const bool has_transparent_background = true;
   const bool cache_render_pass = false;

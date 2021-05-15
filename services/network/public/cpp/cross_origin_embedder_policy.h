@@ -26,10 +26,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CROSS_ORIGIN)
 
   mojom::CrossOriginEmbedderPolicyValue value =
       mojom::CrossOriginEmbedderPolicyValue::kNone;
-  base::Optional<std::string> reporting_endpoint;
+  absl::optional<std::string> reporting_endpoint;
   mojom::CrossOriginEmbedderPolicyValue report_only_value =
       mojom::CrossOriginEmbedderPolicyValue::kNone;
-  base::Optional<std::string> report_only_reporting_endpoint;
+  absl::optional<std::string> report_only_reporting_endpoint;
 };
 
 COMPONENT_EXPORT(NETWORK_CPP_CROSS_ORIGIN)

@@ -2026,7 +2026,7 @@ class ResponseAnalyzerTest : public testing::Test,
 
     // Create the site lock, which may differ from the initiator origin or be
     // empty.
-    base::Optional<url::Origin> request_initiator_origin_lock;
+    absl::optional<url::Origin> request_initiator_origin_lock;
     if (strlen(scenario.initiator_site_lock) > 0)
       request_initiator_origin_lock =
           url::Origin::Create(GURL(scenario.initiator_site_lock));

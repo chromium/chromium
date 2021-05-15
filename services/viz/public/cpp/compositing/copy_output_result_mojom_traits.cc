@@ -92,50 +92,50 @@ const gfx::Rect& StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
-base::Optional<viz::CopyOutputResult::ScopedSkBitmap>
+absl::optional<viz::CopyOutputResult::ScopedSkBitmap>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     bitmap(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->format() != viz::CopyOutputResult::Format::RGBA_BITMAP)
-    return base::nullopt;
+    return absl::nullopt;
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   if (!scoped_bitmap.bitmap().readyToDraw())
-    return base::nullopt;
+    return absl::nullopt;
   return scoped_bitmap;
 }
 
 // static
-base::Optional<gpu::Mailbox>
+absl::optional<gpu::Mailbox>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     mailbox(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
       result->IsEmpty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return result->GetTextureResult()->mailbox;
 }
 
 // static
-base::Optional<gpu::SyncToken>
+absl::optional<gpu::SyncToken>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     sync_token(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
       result->IsEmpty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return result->GetTextureResult()->sync_token;
 }
 
 // static
-base::Optional<gfx::ColorSpace>
+absl::optional<gfx::ColorSpace>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     color_space(const std::unique_ptr<viz::CopyOutputResult>& result) {
   if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
       result->IsEmpty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return result->GetTextureResult()->color_space;
 }
@@ -177,7 +177,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
 
   switch (format) {
     case viz::CopyOutputResult::Format::RGBA_BITMAP: {
-      base::Optional<SkBitmap> bitmap_opt;
+      absl::optional<SkBitmap> bitmap_opt;
       if (!data.ReadBitmap(&bitmap_opt))
         return false;
       if (!bitmap_opt)
@@ -191,13 +191,13 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
     }
 
     case viz::CopyOutputResult::Format::RGBA_TEXTURE: {
-      base::Optional<gpu::Mailbox> mailbox;
+      absl::optional<gpu::Mailbox> mailbox;
       if (!data.ReadMailbox(&mailbox) || !mailbox)
         return false;
-      base::Optional<gpu::SyncToken> sync_token;
+      absl::optional<gpu::SyncToken> sync_token;
       if (!data.ReadSyncToken(&sync_token) || !sync_token)
         return false;
-      base::Optional<gfx::ColorSpace> color_space;
+      absl::optional<gfx::ColorSpace> color_space;
       if (!data.ReadColorSpace(&color_space) || !color_space)
         return false;
 

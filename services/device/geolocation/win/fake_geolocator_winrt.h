@@ -11,7 +11,7 @@
 #include <wrl/implements.h>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -75,8 +75,8 @@ class FakeGeolocatorWinrt
 
   ABI::Windows::Devices::Geolocation::PositionAccuracy accuracy_;
   DOUBLE movement_threshold_ = 0;
-  base::Optional<EventRegistrationToken> position_changed_token_;
-  base::Optional<EventRegistrationToken> status_changed_token_;
+  absl::optional<EventRegistrationToken> position_changed_token_;
+  absl::optional<EventRegistrationToken> status_changed_token_;
   std::unique_ptr<FakeGeocoordinateData> position_data_;
   const ABI::Windows::Devices::Geolocation::PositionStatus position_status_;
 

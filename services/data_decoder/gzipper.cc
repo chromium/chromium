@@ -27,7 +27,7 @@ void Gzipper::Compress(mojo_base::BigBuffer data, CompressCallback callback) {
   // the result into a std::string and copy its contents into a BigBuffer.
   std::string output;
   if (!compression::GzipCompress(data, &output)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -39,7 +39,7 @@ void Gzipper::Uncompress(mojo_base::BigBuffer compressed_data,
   mojo_base::BigBuffer output(
       compression::GetUncompressedSize(compressed_data));
   if (!compression::GzipUncompress(compressed_data, output)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(std::move(output));

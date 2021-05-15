@@ -92,7 +92,7 @@ class HidService {
 
  private:
   void RunPendingEnumerations();
-  base::Optional<std::string> FindDeviceGuidInDeviceMap(
+  absl::optional<std::string> FindDeviceGuidInDeviceMap(
       const HidPlatformDeviceId& platform_device_id);
   scoped_refptr<HidDeviceInfo> FindSiblingDevice(
       const HidDeviceInfo& device_info) const;

@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,6 +27,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/websocket_throttler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
-      base::Optional<WebSocketThrottler::PendingConnection>
+      absl::optional<WebSocketThrottler::PendingConnection>
           pending_connection_tracker,
       base::TimeDelta delay);
   ~WebSocket() override;
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url);
+      absl::optional<GURL>* preserve_fragment_on_redirect_url);
 
   // Gets the WebSocket associated with this request.
   static WebSocket* ForRequest(const net::URLRequest& request);
@@ -146,19 +146,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       int net_error);
   void OnAuthRequiredComplete(
       base::OnceCallback<void(const net::AuthCredentials*)> callback,
-      const base::Optional<net::AuthCredentials>& credential);
+      const absl::optional<net::AuthCredentials>& credential);
   void OnBeforeSendHeadersComplete(
       net::CompletionOnceCallback callback,
       net::HttpRequestHeaders* out_headers,
       int result,
-      const base::Optional<net::HttpRequestHeaders>& headers);
+      const absl::optional<net::HttpRequestHeaders>& headers);
   void OnHeadersReceivedComplete(
       net::CompletionOnceCallback callback,
       scoped_refptr<net::HttpResponseHeaders>* out_headers,
-      base::Optional<GURL>* out_preserve_fragment_on_redirect_url,
+      absl::optional<GURL>* out_preserve_fragment_on_redirect_url,
       int result,
-      const base::Optional<std::string>& headers,
-      const base::Optional<GURL>& preserve_fragment_on_redirect_url);
+      const absl::optional<std::string>& headers,
+      const absl::optional<GURL>& preserve_fragment_on_redirect_url);
 
   void Reset();
 
@@ -185,7 +185,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   mojo::Remote<mojom::WebSocketAuthenticationHandler> auth_handler_;
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
-  base::Optional<WebSocketThrottler::PendingConnection>
+  absl::optional<WebSocketThrottler::PendingConnection>
       pending_connection_tracker_;
 
   // The channel we use to send events to the network.

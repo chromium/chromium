@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace {
@@ -84,7 +84,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
                           .AddExtension(kServiceExtension);
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  base::Optional<ServiceProcessLauncher> launcher(
+  absl::optional<ServiceProcessLauncher> launcher(
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(
@@ -113,7 +113,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   base::FilePath test_service_path(FILE_PATH_LITERAL("rockot@_rules.service"));
 
   ServiceProcessLauncherDelegateImpl service_process_launcher_delegate;
-  base::Optional<ServiceProcessLauncher> launcher(
+  absl::optional<ServiceProcessLauncher> launcher(
       absl::in_place, &service_process_launcher_delegate, test_service_path);
   base::RunLoop run_loop;
   launcher->Start(Identity(), sandbox::policy::SandboxType::kNoSandbox,

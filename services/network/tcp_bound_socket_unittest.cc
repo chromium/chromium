@@ -55,7 +55,7 @@ class TCPBoundSocketTest : public testing::Test {
         bound_socket->BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
             [&](int net_error,
-                const base::Optional<net::IPEndPoint>& local_addr) {
+                const absl::optional<net::IPEndPoint>& local_addr) {
               bind_result = net_error;
               if (net_error == net::OK) {
                 *ip_endpoint_out = *local_addr;
@@ -125,8 +125,8 @@ class TCPBoundSocketTest : public testing::Test {
         std::move(socket_observer),
         base::BindLambdaForTesting(
             [&](int net_error,
-                const base::Optional<net::IPEndPoint>& local_addr,
-                const base::Optional<net::IPEndPoint>& remote_addr,
+                const absl::optional<net::IPEndPoint>& local_addr,
+                const absl::optional<net::IPEndPoint>& remote_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_stream,
                 mojo::ScopedDataPipeProducerHandle send_stream) {
               connect_result = net_error;
@@ -319,7 +319,7 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
   server_socket->Accept(
       mojo::NullRemote() /* ovserver */,
       base::BindLambdaForTesting(
-          [&](int net_error, const base::Optional<net::IPEndPoint>& remote_addr,
+          [&](int net_error, const absl::optional<net::IPEndPoint>& remote_addr,
               mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
               mojo::ScopedDataPipeConsumerHandle receive_stream,
               mojo::ScopedDataPipeProducerHandle send_stream) {
@@ -404,7 +404,7 @@ TEST_F(TCPBoundSocketTest, ConnectWithOptions) {
   server_socket->Accept(
       mojo::NullRemote() /* ovserver */,
       base::BindLambdaForTesting(
-          [&](int net_error, const base::Optional<net::IPEndPoint>& remote_addr,
+          [&](int net_error, const absl::optional<net::IPEndPoint>& remote_addr,
               mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
               mojo::ScopedDataPipeConsumerHandle receive_stream,
               mojo::ScopedDataPipeProducerHandle send_stream) {
@@ -472,7 +472,7 @@ TEST_F(TCPBoundSocketTest, UpgradeToTLS) {
           [&](int net_error,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle,
-              const base::Optional<net::SSLInfo>& ssl_info) {
+              const absl::optional<net::SSLInfo>& ssl_info) {
             EXPECT_EQ(net::OK, net_error);
             client_socket_receive_handle = std::move(receive_pipe_handle);
             client_socket_send_handle = std::move(send_pipe_handle);

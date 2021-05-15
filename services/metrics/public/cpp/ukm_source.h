@@ -104,7 +104,7 @@ class METRICS_EXPORT UkmSource {
 
     // The navigation start time relative to session start. The navigation
     // time within session should be monotonically increasing.
-    base::Optional<base::TimeTicks> navigation_time;
+    absl::optional<base::TimeTicks> navigation_time;
   };
 
   UkmSource(SourceId id, const GURL& url);
