@@ -64,7 +64,7 @@ class CastGpuFactoryImpl : public CastGpuFactory,
       ::media::MediaLog* media_log,
       ::media::VideoDecoderImplementation implementation,
       ::media::RequestOverlayInfoCB request_overlay_info_cb) override;
-  base::Optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure) override;

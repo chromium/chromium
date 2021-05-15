@@ -161,7 +161,7 @@ class CastContentBrowserClient
   virtual void RunServiceInstance(
       const service_manager::Identity& identity,
       mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
-  virtual base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
+  virtual absl::optional<service_manager::Manifest> GetServiceManifestOverlay(
       base::StringPiece service_name);
   std::vector<service_manager::Manifest> GetExtraServiceManifests();
   std::vector<std::string> GetStartupServices();

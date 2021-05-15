@@ -56,13 +56,13 @@ TEST(DeserializeFromJson, PoorlyFormedJsonObject) {
 
 TEST(SerializeToJson, BadValue) {
   base::Value value(std::vector<char>(12));
-  base::Optional<std::string> str = SerializeToJson(value);
+  absl::optional<std::string> str = SerializeToJson(value);
   EXPECT_FALSE(str.has_value());
 }
 
 TEST(SerializeToJson, EmptyValue) {
   base::DictionaryValue value;
-  base::Optional<std::string> str = SerializeToJson(value);
+  absl::optional<std::string> str = SerializeToJson(value);
   ASSERT_TRUE(str.has_value());
   EXPECT_EQ(kEmptyJsonString, *str);
 }
@@ -70,7 +70,7 @@ TEST(SerializeToJson, EmptyValue) {
 TEST(SerializeToJson, PopulatedValue) {
   base::DictionaryValue orig_value;
   orig_value.SetString(kTestKey, kTestValue);
-  base::Optional<std::string> str = SerializeToJson(orig_value);
+  absl::optional<std::string> str = SerializeToJson(orig_value);
   ASSERT_TRUE(str.has_value());
 
   std::unique_ptr<base::Value> new_value = DeserializeFromJson(*str);

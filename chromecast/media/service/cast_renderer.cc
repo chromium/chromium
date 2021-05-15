@@ -345,7 +345,7 @@ void CastRenderer::SetCdm(::media::CdmContext* cdm_context,
 }
 
 void CastRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {}
+    absl::optional<base::TimeDelta> latency_hint) {}
 
 void CastRenderer::Flush(base::OnceClosure flush_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());

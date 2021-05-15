@@ -56,7 +56,7 @@ class MockMediaSession : public content::MediaSession {
   MOCK_METHOD1(ScrubTo, void(base::TimeDelta));
   MOCK_METHOD0(EnterPictureInPicture, void());
   MOCK_METHOD0(ExitPictureInPicture, void());
-  MOCK_METHOD1(SetAudioSinkId, void(const base::Optional<std::string>& id));
+  MOCK_METHOD1(SetAudioSinkId, void(const absl::optional<std::string>& id));
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());

@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
@@ -23,6 +22,7 @@
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -63,7 +63,7 @@ class CastRenderer : public ::media::Renderer,
                   ::media::PipelineStatusCallback init_cb) final;
   void SetCdm(::media::CdmContext* cdm_context,
               CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
@@ -142,7 +142,7 @@ class CastRenderer : public ::media::Renderer,
     return *g_overlay_composited_callback;
   }
 
-  base::Optional<float> pending_volume_;
+  absl::optional<float> pending_volume_;
 
   base::WeakPtrFactory<CastRenderer> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(CastRenderer);

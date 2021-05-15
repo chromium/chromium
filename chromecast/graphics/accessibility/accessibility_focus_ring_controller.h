@@ -13,10 +13,10 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring.h"
 #include "chromecast/graphics/accessibility/accessibility_layer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -118,7 +118,7 @@ class AccessibilityFocusRingController : public AccessibilityLayerDelegate {
   std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> focus_layers_;
   FocusRingBehavior focus_ring_behavior_ =
       FocusRingBehavior::FADE_OUT_FOCUS_RING;
-  base::Optional<SkColor> focus_ring_color_;
+  absl::optional<SkColor> focus_ring_color_;
 
   LayerAnimationInfo caret_animation_info_;
   gfx::Point caret_location_;

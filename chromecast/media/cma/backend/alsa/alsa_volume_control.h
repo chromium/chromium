@@ -11,10 +11,10 @@
 
 #include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 #include "media/audio/alsa/alsa_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -54,9 +54,9 @@ class AlsaVolumeControl : public SystemVolumeControl,
                                         unsigned int mask);
 
   bool SetElementMuted(ScopedAlsaMixer* mixer, bool muted);
-  // Returns true if all channels are muted, returns base::nullopt if element
+  // Returns true if all channels are muted, returns absl::nullopt if element
   // state is not accessible.
-  base::Optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
+  absl::optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
 
   void RefreshMixerFds(ScopedAlsaMixer* mixer);
 

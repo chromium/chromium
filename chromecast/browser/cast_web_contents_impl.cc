@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -38,6 +37,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
@@ -201,19 +201,19 @@ CastWebContents::PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
-base::Optional<pid_t> CastWebContentsImpl::GetMainFrameRenderProcessPid()
+absl::optional<pid_t> CastWebContentsImpl::GetMainFrameRenderProcessPid()
     const {
   // Returns empty value if |web_contents_| is (being) destroyed or the main
   // frame is not available yet.
   if (!web_contents_ || !web_contents_->GetMainFrame()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto* rph = web_contents_->GetMainFrame()->GetProcess();
   if (!rph || rph->GetProcess().Handle() == base::kNullProcessHandle) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::make_optional(rph->GetProcess().Handle());
+  return absl::make_optional(rph->GetProcess().Handle());
 }
 
 void CastWebContentsImpl::AddRendererFeatures(
@@ -345,7 +345,7 @@ void CastWebContentsImpl::PostMessageToMainFrame(
 
   // If origin is set as wildcard, no origin scoping would be applied.
   constexpr char kWildcardOrigin[] = "*";
-  base::Optional<std::u16string> target_origin_utf16;
+  absl::optional<std::u16string> target_origin_utf16;
   if (target_origin != kWildcardOrigin)
     target_origin_utf16 = base::UTF8ToUTF16(target_origin);
 

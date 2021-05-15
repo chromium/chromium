@@ -726,13 +726,13 @@ void CastContentBrowserClient::GetApplicationMediaInfo(
   }
 }
 
-base::Optional<service_manager::Manifest>
+absl::optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
     base::StringPiece service_name) {
   if (service_name == ServiceManagerContext::kBrowserServiceName)
     return GetCastContentBrowserOverlayManifest();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::vector<service_manager::Manifest>

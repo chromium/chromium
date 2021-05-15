@@ -286,7 +286,7 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    base::Optional<base::Value> dump_info = base::JSONReader::Read(line);
+    absl::optional<base::Value> dump_info = base::JSONReader::Read(line);
     RCHECK(dump_info.has_value(), false);
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);

@@ -12,8 +12,8 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -28,12 +28,12 @@ struct StreamPipelineDescriptor {
   //    ... ]
   const base::Value* pipeline;
   const base::Value* stream_types;
-  const base::Optional<int> num_input_channels;
+  const absl::optional<int> num_input_channels;
   const base::Value* volume_limits;
 
   StreamPipelineDescriptor(const base::Value* pipeline_in,
                            const base::Value* stream_types_in,
-                           const base::Optional<int> num_input_channels_in,
+                           const absl::optional<int> num_input_channels_in,
                            const base::Value* volume_limits_in);
   ~StreamPipelineDescriptor();
   StreamPipelineDescriptor(const StreamPipelineDescriptor& other);

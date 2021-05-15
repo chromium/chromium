@@ -332,7 +332,7 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   video_config.matrix = static_cast<MatrixID>(config.color_space_info().matrix);
   video_config.range = static_cast<RangeID>(config.color_space_info().range);
 
-  base::Optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
+  absl::optional<::gfx::HDRMetadata> hdr_metadata = config.hdr_metadata();
   if (hdr_metadata) {
     video_config.have_hdr_metadata = true;
     video_config.hdr_metadata.max_content_light_level =

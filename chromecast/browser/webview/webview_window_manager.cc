@@ -5,11 +5,11 @@
 #include "chromecast/browser/webview/webview_window_manager.h"
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 
 namespace chromecast {

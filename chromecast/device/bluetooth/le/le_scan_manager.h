@@ -80,7 +80,7 @@ class LeScanManager {
       base::OnceCallback<void(std::vector<LeScanResult>)>;
   virtual void GetScanResults(
       GetScanResultsCallback cb,
-      base::Optional<ScanFilter> scan_filter = base::nullopt) = 0;
+      absl::optional<ScanFilter> scan_filter = absl::nullopt) = 0;
 
   virtual void ClearScanResults() = 0;
 

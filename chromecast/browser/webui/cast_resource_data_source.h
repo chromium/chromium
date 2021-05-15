@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "content/public/browser/url_data_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 
@@ -46,7 +46,7 @@ class CastResourceDataSource : public content::URLDataSource {
   const bool for_webui_;
   mojo::Remote<mojom::Resources> remote_;
 
-  base::Optional<std::string> frame_src_;
+  absl::optional<std::string> frame_src_;
   bool deny_xframe_options_ = true;
 };
 

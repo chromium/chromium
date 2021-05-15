@@ -6,8 +6,8 @@
 #define CHROMECAST_GRAPHICS_CAST_SCREEN_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "chromecast/public/graphics_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
 
@@ -51,7 +51,7 @@ class CastScreen : public display::ScreenBase {
   bool RestorePrimaryDisplaySettings();
 
  private:
-  base::Optional<display::Display> stashed_display_settings_;
+  absl::optional<display::Display> stashed_display_settings_;
 
   DISALLOW_COPY_AND_ASSIGN(CastScreen);
 };

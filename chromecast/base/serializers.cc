@@ -23,12 +23,12 @@ std::unique_ptr<base::Value> DeserializeFromJson(const std::string& text) {
   return value;
 }
 
-base::Optional<std::string> SerializeToJson(const base::Value& value) {
+absl::optional<std::string> SerializeToJson(const base::Value& value) {
   std::string json_str;
   JSONStringValueSerializer serializer(&json_str);
   if (serializer.Serialize(value))
     return json_str;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<base::Value> DeserializeJsonFromFile(

@@ -31,7 +31,7 @@ const char kVolumeLimitsKey[] = "volume_limits";
 StreamPipelineDescriptor::StreamPipelineDescriptor(
     const base::Value* pipeline_in,
     const base::Value* stream_types_in,
-    const base::Optional<int> num_input_channels_in,
+    const absl::optional<int> num_input_channels_in,
     const base::Value* volume_limits_in)
     : pipeline(pipeline_in),
       stream_types(stream_types_in),
@@ -134,7 +134,7 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
   if (!postprocessor_config_ || !stream_dict) {
     LOG(WARNING) << "No post-processor description found for \"" << key
                  << "\" in " << file_path_ << ". Using passthrough.";
-    return StreamPipelineDescriptor(nullptr, nullptr, base::nullopt, nullptr);
+    return StreamPipelineDescriptor(nullptr, nullptr, absl::nullopt, nullptr);
   }
   const base::Value* processors_list =
       stream_dict->FindKeyOfType(kProcessorsKey, base::Value::Type::LIST);

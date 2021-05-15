@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/optional.h"
 #include "base/task/current_thread.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +40,7 @@
 #include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace external_mojo {
@@ -60,7 +60,7 @@ void OnInternalBindResult(
     const std::string& service_name,
     const std::string& interface_name,
     service_manager::mojom::ConnectResult result,
-    const base::Optional<service_manager::Identity>& identity) {
+    const absl::optional<service_manager::Identity>& identity) {
   if (result != service_manager::mojom::ConnectResult::SUCCEEDED) {
     LOG(ERROR) << "Failed to bind " << service_name << ":" << interface_name
                << ", result = " << result;
@@ -137,7 +137,7 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
       connector_->BindInterface(filter.service_name(), interface_name,
                                 std::move(interface_pipe));
       std::move(callback).Run(service_manager::mojom::ConnectResult::SUCCEEDED,
-                              base::nullopt);
+                              absl::nullopt);
     }
 
     void QueryService(const std::string& service_name,
@@ -149,7 +149,7 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
     void WarmService(const ::service_manager::ServiceFilter& filter,
                      WarmServiceCallback callback) override {
       std::move(callback).Run(service_manager::mojom::ConnectResult::SUCCEEDED,
-                              base::nullopt);
+                              absl::nullopt);
     }
 
     void RegisterServiceInstance(

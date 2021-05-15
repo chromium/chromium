@@ -121,7 +121,7 @@ class MockAutomationEventRouter
               (override));
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) override {}
+      const absl::optional<gfx::Rect>& rect) override {}
 
   std::map<ax::mojom::Event, int> event_count_;
 };

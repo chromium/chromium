@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -46,6 +45,7 @@
 #include "services/service_manager/service_manager.h"
 #include "services/service_manager/service_process_host.h"
 #include "services/service_manager/service_process_launcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
@@ -303,7 +303,7 @@ ServiceManagerContext::ServiceManagerContext(
   manifests.push_back(GetBrowserManifest());
   manifests.push_back(GetSystemManifest(cast_content_browser_client_));
   for (auto& manifest : manifests) {
-    base::Optional<service_manager::Manifest> overlay =
+    absl::optional<service_manager::Manifest> overlay =
         cast_content_browser_client_->GetServiceManifestOverlay(
             manifest.service_name);
     if (overlay)

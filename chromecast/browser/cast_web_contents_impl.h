@@ -17,7 +17,6 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_media_blocker.h"
@@ -29,6 +28,7 @@
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
 namespace content {
@@ -51,7 +51,7 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents() const override;
   PageState page_state() const override;
-  base::Optional<pid_t> GetMainFrameRenderProcessPid() const override;
+  absl::optional<pid_t> GetMainFrameRenderProcessPid() const override;
 
   // CastWebContents implementation:
   int tab_id() const override;
@@ -156,7 +156,7 @@ class CastWebContentsImpl : public CastWebContents,
   BackgroundColor view_background_color_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
-  base::Optional<std::vector<std::string>> activity_url_filter_;
+  absl::optional<std::vector<std::string>> activity_url_filter_;
 
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;

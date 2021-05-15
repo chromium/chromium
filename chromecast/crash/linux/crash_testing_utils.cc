@@ -46,7 +46,7 @@ std::unique_ptr<base::ListValue> ParseLockFile(const std::string& path) {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    base::Optional<base::Value> dump_info = base::JSONReader::Read(line);
+    absl::optional<base::Value> dump_info = base::JSONReader::Read(line);
     RCHECK(dump_info.has_value(), nullptr, "Invalid DumpInfo");
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), nullptr, "Invalid DumpInfo");
@@ -94,7 +94,7 @@ bool WriteMetadataFile(const std::string& path, const base::Value* metadata) {
 }  // namespace
 
 std::unique_ptr<DumpInfo> CreateDumpInfo(const std::string& json_string) {
-  base::Optional<base::Value> value = base::JSONReader::Read(json_string);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   return value.has_value() ? std::make_unique<DumpInfo>(&value.value())
                            : std::make_unique<DumpInfo>(nullptr);
 }

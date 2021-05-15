@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chromecast/browser/cast_content_window.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -76,10 +76,10 @@ class CastWindowEmbedder {
 
     // Unique window ID assigned by the embedder.
     int window_id = -1;
-    base::Optional<VisibilityChange> visibility_changed;
-    base::Optional<NavigationType> navigation;
-    base::Optional<BackGestureProgressEvent> back_gesture_progress_event;
-    base::Optional<bool> back_gesture_cancel_event;
+    absl::optional<VisibilityChange> visibility_changed;
+    absl::optional<NavigationType> navigation;
+    absl::optional<BackGestureProgressEvent> back_gesture_progress_event;
+    absl::optional<bool> back_gesture_cancel_event;
   };
 
   // Interface for the embedded Cast window to implement for
@@ -155,11 +155,11 @@ class CastWindowEmbedder {
     VisibilityPriority visibility_priority = VisibilityPriority::DEFAULT;
 
     // Application-related metadata associated with the Cast window.
-    base::Optional<std::string> app_context;
+    absl::optional<std::string> app_context;
 
     // Custom data for the Cast window. The embedder and whoever set the
     // value need to have agreement on the schema of |host_context|.
-    base::Optional<base::Value> host_context;
+    absl::optional<base::Value> host_context;
   };
 
   // The embedded Cast window will use this to communicate with the embedder

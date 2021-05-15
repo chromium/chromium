@@ -91,7 +91,7 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override {
+      const absl::optional<GURL>& new_url) override {
     NOTREACHED()
         << "The original client shouldn't have been notified of any redirects";
   }
@@ -124,7 +124,7 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
     // just follow the redirect.
     network_loader_->FollowRedirect(std::vector<std::string>(),
                                     net::HttpRequestHeaders(),
-                                    net::HttpRequestHeaders(), base::nullopt);
+                                    net::HttpRequestHeaders(), absl::nullopt);
   }
 
   void OnUploadProgress(int64_t current_position,

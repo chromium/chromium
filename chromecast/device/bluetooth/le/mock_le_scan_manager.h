@@ -48,9 +48,9 @@ class MockLeScanManager : public LeScanManager {
 
   MOCK_METHOD(std::vector<LeScanResult>,
               GetScanResults,
-              (base::Optional<ScanFilter> scan_filter));
+              (absl::optional<ScanFilter> scan_filter));
   void GetScanResults(GetScanResultsCallback cb,
-                      base::Optional<ScanFilter> scan_filter) override {
+                      absl::optional<ScanFilter> scan_filter) override {
     std::move(cb).Run(GetScanResults(std::move(scan_filter)));
   }
   MOCK_METHOD(void, ClearScanResults, (), (override));

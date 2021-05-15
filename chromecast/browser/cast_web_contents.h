@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -230,7 +230,7 @@ class CastWebContents {
     // Whether to provide a URL filter applied to network requests for the
     // activity hosted by this CastWebContents.
     // No filters implies no restrictions.
-    base::Optional<std::vector<std::string>> url_filters = base::nullopt;
+    absl::optional<std::vector<std::string>> url_filters = absl::nullopt;
     // Whether WebRTC peer connections are allowed to use legacy versions of the
     // TLS/DTLS protocols.
     bool webrtc_allow_legacy_tls_protocols = false;
@@ -273,7 +273,7 @@ class CastWebContents {
   virtual PageState page_state() const = 0;
 
   // Returns the PID of the main frame process if valid.
-  virtual base::Optional<pid_t> GetMainFrameRenderProcessPid() const = 0;
+  virtual absl::optional<pid_t> GetMainFrameRenderProcessPid() const = 0;
 
   // ===========================================================================
   // Initialization and Setup

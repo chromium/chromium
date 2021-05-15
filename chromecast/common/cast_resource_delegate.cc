@@ -66,9 +66,9 @@ base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
   return NULL;
 }
 
-base::Optional<std::string> CastResourceDelegate::LoadDataResourceString(
+absl::optional<std::string> CastResourceDelegate::LoadDataResourceString(
     int resource_id) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool CastResourceDelegate::GetRawDataResource(int resource_id,

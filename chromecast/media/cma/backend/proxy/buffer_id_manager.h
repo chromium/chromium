@@ -153,7 +153,7 @@ class BufferIdManager {
   int64_t pending_playback_time_in_microseconds_ = 0;
 
   // Information about the most recently played buffer.
-  mutable base::Optional<BufferPlayoutInfo> most_recently_played_buffer_;
+  mutable absl::optional<BufferPlayoutInfo> most_recently_played_buffer_;
 
   BufferIdQueue buffer_id_queue_;
   std::queue<BufferInfo> buffer_infos_;

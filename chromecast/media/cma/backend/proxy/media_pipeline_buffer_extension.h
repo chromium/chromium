@@ -10,11 +10,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"
 #include "chromecast/public/media/cast_key_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 
@@ -60,8 +60,8 @@ class MediaPipelineBufferExtension : public AudioDecoderPipelineNode {
     PendingCommand& operator=(const PendingCommand& other);
     PendingCommand& operator=(PendingCommand&& other);
 
-    base::Optional<scoped_refptr<DecoderBufferBase>> buffer;
-    base::Optional<AudioConfig> config;
+    absl::optional<scoped_refptr<DecoderBufferBase>> buffer;
+    absl::optional<AudioConfig> config;
   };
 
   // AudioDecoderPipelineNode overrides.

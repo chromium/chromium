@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
@@ -71,7 +71,7 @@ class CastRuntimeAudioChannelBroker {
 
     // Returns a PushBufferRequest to be sent across the |PushBuffer| RPC. May
     // only be called if |HasBufferedData()| is true.
-    virtual base::Optional<PushBufferRequest> GetBufferedData() = 0;
+    virtual absl::optional<PushBufferRequest> GetBufferedData() = 0;
     virtual bool HasBufferedData() = 0;
 
     // Handlers for the responses of the messages defined in
@@ -103,7 +103,7 @@ class CastRuntimeAudioChannelBroker {
 
     // Called when a |GetMediaTime| RPC call completes. If |status| is kOK, then
     // |time| is a valid non-empty MediaTime object. Else, |time| may be empty.
-    virtual void HandleGetMediaTimeResponse(base::Optional<MediaTime> time,
+    virtual void HandleGetMediaTimeResponse(absl::optional<MediaTime> time,
                                             StatusCode status) = 0;
   };
 
