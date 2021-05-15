@@ -9,6 +9,7 @@
 #include "ash/projector/model/projector_ui_model.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/projector/ui/projector_image_button.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 
 #include <vector>
@@ -25,6 +26,8 @@ class ProjectorControllerImpl;
 class ASH_EXPORT ProjectorBarView : public views::View {
  public:
   METADATA_HEADER(ProjectorBarView);
+
+  static const SkColor kProjectorMarkerDefaultColor;
 
   explicit ProjectorBarView(ProjectorControllerImpl* projector_controller);
   ProjectorBarView(const ProjectorBarView&) = delete;
@@ -80,7 +83,7 @@ class ASH_EXPORT ProjectorBarView : public views::View {
   void OnChangeBarLocationButtonPressed();
   void OnCaretButtonPressed(bool expand);
   void OnUndoButtonPressed();
-  void OnChangeMarkerColorPressed(const SkColor& new_color);
+  void OnChangeMarkerColorPressed(SkColor new_color);
   void OnInkPenButtonPressed();
   void OnMarkerPenButtonPressed();
 

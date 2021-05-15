@@ -13,7 +13,17 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+namespace {
+
+constexpr SkColor kDefaultPointColor = SkColorSetRGB(0x42, 0x85, 0xF4);
+constexpr int kDefaultOpacity = 0xCC;
+
+}  // namespace
+
 namespace fast_ink {
+
+const SkColor FastInkPoints::kDefaultColor =
+    SkColorSetA(kDefaultPointColor, kDefaultOpacity);
 
 FastInkPoints::FastInkPoints(base::TimeDelta life_duration)
     : life_duration_(life_duration) {}
@@ -25,6 +35,16 @@ void FastInkPoints::AddPoint(const gfx::PointF& point,
   FastInkPoint new_point;
   new_point.location = point;
   new_point.time = time;
+  points_.push_back(new_point);
+}
+
+void FastInkPoints::AddPoint(const gfx::PointF& point,
+                             const base::TimeTicks& time,
+                             SkColor color) {
+  FastInkPoint new_point;
+  new_point.location = point;
+  new_point.time = time;
+  new_point.color = color;
   points_.push_back(new_point);
 }
 
@@ -192,7 +212,8 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
     acceleration[0] += jerk;
     location += velocity[0];
 
-    AddPoint(gfx::ScalePoint(location, 1 / scale.x(), 1 / scale.y()), time);
+    AddPoint(gfx::ScalePoint(location, 1 / scale.x(), 1 / scale.y()), time,
+             newest_real_point.color);
 
     // Always stop at three predicted points as a four point history doesn't
     // provide accurate prediction of more points.

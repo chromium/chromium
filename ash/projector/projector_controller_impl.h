@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace base {
 class FilePath;
@@ -74,6 +75,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnSelfieCamPressed(bool enabled);
   // Invoked when magnifier button is pressed.
   void OnMagnifierButtonPressed(bool enabled);
+  // Invoked when the marker color has been requested to change.
+  void OnChangeMarkerColorPressed(SkColor new_color);
 
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);

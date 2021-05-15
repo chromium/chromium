@@ -16,6 +16,7 @@
 #include "ash/projector/model/projector_ui_model.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "base/scoped_observation.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -55,6 +56,8 @@ class ASH_EXPORT ProjectorUiController
   virtual void OnSelfieCamPressed(bool enabled);
   // Invoked when the recording started or stopped. Virtual for testing.
   virtual void OnRecordingStateChanged(bool started);
+  // Called when marker ink color changes.
+  virtual void OnChangeMarkerColorPressed(SkColor new_color);
   // Notifies the ProjectorControllerImpl and ProjectorBarView when the caption
   // bubble model's state changes.
   void OnCaptionBubbleModelStateChanged(bool visible);

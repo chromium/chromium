@@ -9,6 +9,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -19,10 +20,13 @@ namespace fast_ink {
 // contiguous trajectory segments.
 class ASH_EXPORT FastInkPoints {
  public:
+  static const SkColor kDefaultColor;
+
   // Struct to describe each point.
   struct FastInkPoint {
     gfx::PointF location;
     base::TimeTicks time;
+    SkColor color = kDefaultColor;
     bool gap_after = false;  // True when there is a gap after this point.
   };
 
@@ -33,6 +37,9 @@ class ASH_EXPORT FastInkPoints {
 
   // Adds a point.
   void AddPoint(const gfx::PointF& point, const base::TimeTicks& time);
+  void AddPoint(const gfx::PointF& point,
+                const base::TimeTicks& time,
+                SkColor color);
   // Adds a gap after the most recent point. This is useful for multi-stroke
   // gesture handling (e.g. strokes going over the bezel).
   void AddGap();

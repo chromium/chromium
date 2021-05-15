@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 namespace {
@@ -214,6 +215,11 @@ TEST_F(ProjectorControllerTest, SetCaptionBubbleState) {
 TEST_F(ProjectorControllerTest, MagnifierButtonPressed) {
   EXPECT_CALL(*mock_ui_controller_, OnMagnifierButtonPressed(true));
   controller_->OnMagnifierButtonPressed(true);
+}
+
+TEST_F(ProjectorControllerTest, OnChangeMarkerColorPressed) {
+  EXPECT_CALL(*mock_ui_controller_, OnChangeMarkerColorPressed(SK_ColorBLACK));
+  controller_->OnChangeMarkerColorPressed(SK_ColorBLACK);
 }
 
 }  // namespace ash

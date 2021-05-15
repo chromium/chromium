@@ -132,6 +132,10 @@ void ProjectorControllerImpl::OnMagnifierButtonPressed(bool enabled) {
   ui_controller_->OnMagnifierButtonPressed(enabled);
 }
 
+void ProjectorControllerImpl::OnChangeMarkerColorPressed(SkColor new_color) {
+  ui_controller_->OnChangeMarkerColorPressed(new_color);
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);

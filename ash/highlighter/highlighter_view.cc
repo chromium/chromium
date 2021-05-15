@@ -25,8 +25,6 @@ namespace ash {
 namespace {
 
 // Variables for rendering the highlighter. Sizes in DIP.
-const SkColor kHighlighterColor = SkColorSetRGB(0x42, 0x85, 0xF4);
-constexpr int kHighlighterOpacity = 0xCC;
 constexpr float kPenTipWidth = 4;
 constexpr float kPenTipHeight = 14;
 constexpr int kOutsetForAntialiasing = 1;
@@ -76,9 +74,6 @@ void DrawSegment(gfx::Canvas& canvas,
 
 }  // namespace
 
-const SkColor HighlighterView::kPenColor =
-    SkColorSetA(kHighlighterColor, kHighlighterOpacity);
-
 const gfx::SizeF HighlighterView::kPenTipSize(kPenTipWidth, kPenTipHeight);
 
 HighlighterView::HighlighterView(base::TimeDelta presentation_delay)
@@ -94,6 +89,12 @@ views::UniqueWidgetPtr HighlighterView::Create(
     aura::Window* container) {
   return fast_ink::FastInkView::CreateWidgetWithContents(
       base::WrapUnique(new HighlighterView(presentation_delay)), container);
+}
+
+void HighlighterView::ChangeColor(SkColor color) {
+  pen_color_ = color;
+  if (!points_.IsEmpty())
+    AddGap();
 }
 
 void HighlighterView::AddNewPoint(const gfx::PointF& point,
@@ -118,7 +119,7 @@ void HighlighterView::AddNewPoint(const gfx::PointF& point,
         InflateDamageRect(predicted_points_.GetBoundingBox()));
   }
 
-  points_.AddPoint(point, time);
+  points_.AddPoint(point, time, pen_color_);
 
   base::TimeTicks current_time = ui::EventTimeForNow();
   gfx::Rect screen_bounds = GetWidget()->GetNativeView()->GetBoundsInScreen();
@@ -226,7 +227,6 @@ void HighlighterView::Draw(gfx::Canvas& canvas) {
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
-  flags.setColor(kPenColor);
   flags.setBlendMode(SkBlendMode::kSrc);
 
   // Decrease the segment height by the outline stroke width,
@@ -250,6 +250,7 @@ void HighlighterView::Draw(gfx::Canvas& canvas) {
           gfx::BoundingRect(previous_point.location, current_point.location)));
       // Only draw the segment if it is touching the clip rect.
       if (clip_rect.Intersects(damage_rect)) {
+        flags.setColor(current_point.color);
         DrawSegment(canvas, previous_point.location, current_point.location,
                     height, flags, kPenTipWidth);
       }

@@ -203,7 +203,7 @@ void LaserPointerView::FadeOut(base::OnceClosure done) {
 
 void LaserPointerView::AddPoint(const gfx::PointF& point,
                                 const base::TimeTicks& time) {
-  laser_points_.AddPoint(point, time);
+  laser_points_.AddPoint(point, time, kPointColor);
 
   // Current time is needed to determine presentation time and the number of
   // predicted points to add.

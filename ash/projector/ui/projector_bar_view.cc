@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/work_area_insets.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -54,6 +53,10 @@ constexpr SkColor kProjectorColors[] = {SK_ColorBLACK, SK_ColorWHITE,
                                         SK_ColorBLUE};
 
 }  // namespace
+
+// static
+const SkColor ProjectorBarView::kProjectorMarkerDefaultColor =
+    kProjectorColors[0];
 
 ProjectorBarView::ProjectorBarView(
     ProjectorControllerImpl* projector_controller)
@@ -414,8 +417,8 @@ void ProjectorBarView::OnUndoButtonPressed() {
   // TODO(crbug/1203444) Implement undo for marker.
 }
 
-void ProjectorBarView::OnChangeMarkerColorPressed(const SkColor& new_color) {
-  // TODO(crbug/1203444) Implement change color for marker.
+void ProjectorBarView::OnChangeMarkerColorPressed(SkColor new_color) {
+  projector_controller_->OnChangeMarkerColorPressed(new_color);
 }
 
 void ProjectorBarView::OnInkPenButtonPressed() {

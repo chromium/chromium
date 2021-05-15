@@ -33,7 +33,6 @@ enum class HighlighterGestureType;
 // touch points.
 class HighlighterView : public fast_ink::FastInkView {
  public:
-  static const SkColor kPenColor;
   static const gfx::SizeF kPenTipSize;
 
   ~HighlighterView() override;
@@ -46,6 +45,7 @@ class HighlighterView : public fast_ink::FastInkView {
   const fast_ink::FastInkPoints& points() const { return points_; }
   bool animating() const { return animation_timer_.get(); }
 
+  void ChangeColor(SkColor color);
   void AddNewPoint(const gfx::PointF& new_point, const base::TimeTicks& time);
   void AddGap();
   void Animate(const gfx::PointF& pivot,
@@ -71,6 +71,8 @@ class HighlighterView : public fast_ink::FastInkView {
   std::unique_ptr<base::OneShotTimer> animation_timer_;
   gfx::Rect highlighter_damage_rect_;
   bool pending_update_buffer_ = false;
+  SkColor pen_color_ = fast_ink::FastInkPoints::kDefaultColor;
+
   base::WeakPtrFactory<HighlighterView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HighlighterView);

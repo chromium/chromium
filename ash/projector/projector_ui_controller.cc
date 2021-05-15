@@ -54,7 +54,12 @@ void EnableLaserPointer(bool enabled) {
 void EnableMarker(bool enabled) {
   auto* marker_controller = MarkerController::Get();
   DCHECK(marker_controller);
-  MarkerController::Get()->SetEnabled(enabled);
+  marker_controller->SetEnabled(enabled);
+
+  if (enabled) {
+    marker_controller->ChangeColor(
+        ProjectorBarView::kProjectorMarkerDefaultColor);
+  }
 }
 
 void EnableMagnifier(bool enabled) {
@@ -244,6 +249,12 @@ void ProjectorUiController::OnRecordingStateChanged(bool started) {
 
 void ProjectorUiController::OnMagnifierButtonPressed(bool enabled) {
   EnableMagnifier(enabled);
+}
+
+void ProjectorUiController::OnChangeMarkerColorPressed(SkColor new_color) {
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  marker_controller->ChangeColor(new_color);
 }
 
 bool ProjectorUiController::IsToolbarVisible() const {

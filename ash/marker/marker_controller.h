@@ -7,9 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
+#include "ash/fast_ink/fast_ink_points.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -41,6 +43,8 @@ class ASH_EXPORT MarkerController : public fast_ink::FastInkPointerController {
   // Clears marker pointer.
   void Clear();
 
+  void ChangeColor(SkColor new_color);
+
   // fast_ink::FastInkPointerController:
   void SetEnabled(bool enabled) override;
 
@@ -69,6 +73,7 @@ class ASH_EXPORT MarkerController : public fast_ink::FastInkPointerController {
   // and activated (pressed or dragged) and until cleared.
   views::UniqueWidgetPtr marker_view_widget_;
   HighlighterView* marker_view_ = nullptr;
+  SkColor marker_color_ = fast_ink::FastInkPoints::kDefaultColor;
 
   base::ObserverList<MarkerObserver> observers_;
 

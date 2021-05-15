@@ -34,6 +34,7 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
                void(const std::string& transcription, bool is_final));
   MOCK_METHOD1(OnSelfieCamPressed, void(bool enabled));
   MOCK_METHOD1(OnRecordingStateChanged, void(bool started));
+  MOCK_METHOD1(OnChangeMarkerColorPressed, void(SkColor new_color));
   MOCK_METHOD1(SetCaptionBubbleState, void(bool));
   MOCK_METHOD1(OnMagnifierButtonPressed, void(bool));
 };

@@ -47,6 +47,13 @@ void MarkerController::Clear() {
   DestroyMarkerView();
 }
 
+void MarkerController::ChangeColor(SkColor new_color) {
+  marker_color_ = new_color;
+
+  if (GetMarkerView())
+    GetMarkerView()->ChangeColor(new_color);
+}
+
 void MarkerController::SetEnabled(bool enabled) {
   if (enabled == is_enabled())
     return;
@@ -80,6 +87,7 @@ void MarkerController::CreatePointerView(base::TimeDelta presentation_delay,
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer));
   marker_view_ =
       static_cast<HighlighterView*>(marker_view_widget_->GetContentsView());
+  marker_view_->ChangeColor(marker_color_);
 }
 
 void MarkerController::UpdatePointerView(ui::TouchEvent* event) {

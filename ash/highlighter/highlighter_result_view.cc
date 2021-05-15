@@ -207,7 +207,7 @@ void HighlighterResultView::Animate(const gfx::RectF& bounds,
     result_layer_->SetBounds(gfx::ToEnclosingRect(bounds));
     result_layer_->SetFillsBoundsOpaquely(false);
     result_layer_->SetMasksToBounds(false);
-    result_layer_->SetColor(HighlighterView::kPenColor);
+    result_layer_->SetColor(fast_ink::FastInkPoints::kDefaultColor);
 
     layer->Add(result_layer_.get());
 
