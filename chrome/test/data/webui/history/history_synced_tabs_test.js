@@ -56,7 +56,8 @@ suite('<history-synced-device-manager>', function() {
     setForeignSessions(sessionList);
 
     return flushTasks().then(function() {
-      const card = element.$$('history-synced-device-card');
+      const card =
+          element.shadowRoot.querySelector('history-synced-device-card');
       assertEquals(
           'http://www.google.com',
           card.shadowRoot.querySelectorAll('.website-title')[0]
@@ -202,7 +203,7 @@ suite('<history-synced-device-manager>', function() {
           return flushTasks();
         })
         .then(function() {
-          element.$$('#menuDeleteButton').click();
+          element.shadowRoot.querySelector('#menuDeleteButton').click();
           return testService.whenCalled('deleteForeignSession');
         })
         .then(args => {

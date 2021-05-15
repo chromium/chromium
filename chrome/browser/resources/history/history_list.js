@@ -9,98 +9,114 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import './shared_style.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {searchResultsTitle} from './history_item.js';
 
-Polymer({
-  is: 'history-list',
+/**
+ * @typedef {!CustomEvent<{
+ *   index: number,
+ *   item: !HistoryEntry,
+ *   path: string,
+ *   target: !HTMLElement
+ * }>}
+ */
+let OpenMenuEvent;
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const HistoryListElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+/** @polymer */
+export class HistoryListElement extends HistoryListElementBase {
+  static get is() {
+    return 'history-list';
+  }
 
-  properties: {
-    // The search term for the current query. Set when the query returns.
-    searchedTerm: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    resultLoadingDisabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indexes into historyData_ of selected items.
-     * @type {!Set<number>}
-     */
-    selectedItems: {
-      type: Object,
-      value: /** @return {!Set<string>} */ function() {
-        return new Set();
+  static get properties() {
+    return {
+      // The search term for the current query. Set when the query returns.
+      searchedTerm: {
+        type: String,
+        value: '',
       },
-    },
 
-    canDeleteHistory_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('allowDeletingHistory'),
-    },
+      resultLoadingDisabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-    // An array of history entries in reverse chronological order.
-    historyData_: {
-      type: Array,
-      observer: 'onHistoryDataChanged_',
-    },
+      /**
+       * Indexes into historyData_ of selected items.
+       * @type {!Set<number>}
+       */
+      selectedItems: {
+        type: Object,
+        value: /** @return {!Set<string>} */ function() {
+          return new Set();
+        },
+      },
 
-    lastFocused_: Object,
+      canDeleteHistory_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('allowDeletingHistory'),
+      },
 
-    /** @private */
-    listBlurred_: Boolean,
+      // An array of history entries in reverse chronological order.
+      historyData_: {
+        type: Array,
+        observer: 'onHistoryDataChanged_',
+      },
 
-    lastSelectedIndex: Number,
+      lastFocused_: Object,
 
-    pendingDelete: {
-      notify: true,
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      listBlurred_: Boolean,
 
-    /** @type {!QueryState} */
-    queryState: Object,
+      lastSelectedIndex: Number,
 
-    /**
-     * @private {?{
-     *   index: number,
-     *   item: !HistoryEntry,
-     *   path: string,
-     *   target: !HTMLElement
-     * }}
-     */
-    actionMenuModel_: Object,
-  },
+      pendingDelete: {
+        notify: true,
+        type: Boolean,
+        value: false,
+      },
 
-  hostAttributes: {
-    role: 'application',
-  },
+      /** @type {!QueryState} */
+      queryState: Object,
 
-  listeners: {
-    'history-checkbox-select': 'onItemSelected_',
-    'open-menu': 'onOpenMenu_',
-    'remove-bookmark-stars': 'onRemoveBookmarkStars_',
-  },
+      /**
+       * @private {?{
+       *   index: number,
+       *   item: !HistoryEntry,
+       *   path: string,
+       *   target: !HTMLElement
+       * }}
+       */
+      actionMenuModel_: Object,
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // It is possible (eg, when middle clicking the reload button) for all other
     // resize events to fire before the list is attached and can be measured.
     // Adding another resize here ensures it will get sized correctly.
@@ -110,7 +126,31 @@ Polymer({
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
 
     this.addWebUIListener('history-deleted', () => this.onHistoryDeleted_());
-  },
+  }
+
+  ready() {
+    super.ready();
+
+    this.setAttribute('role', 'application');
+
+    this.addEventListener('history-checkbox-select', this.onItemSelected_);
+    this.addEventListener(
+        'open-menu', e => this.onOpenMenu_(/** @type {!OpenMenuEvent} */ (e)));
+    this.addEventListener(
+        'remove-bookmark-stars',
+        e => this.onRemoveBookmarkStars_(
+            /** @type {!CustomEvent<string>} */ (e)));
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Public methods:
@@ -126,13 +166,13 @@ Polymer({
 
     if (info.term && !this.queryState.incremental) {
       IronA11yAnnouncer.requestAvailability();
-      this.fire(
+      this.fire_(
           'iron-announce',
           {text: searchResultsTitle(results.length, info.term)});
     }
 
     this.addNewResults(results, this.queryState.incremental, info.finished);
-  },
+  }
 
   /**
    * Adds the newly updated history results into historyData_. Adds new fields
@@ -153,7 +193,7 @@ Polymer({
       if (this.historyData_) {
         this.splice('historyData_', 0, this.historyData_.length);
       }
-      this.fire('unselect-all');
+      this.fire_('unselect-all');
       this.scrollTop = 0;
     }
 
@@ -169,7 +209,7 @@ Polymer({
     }
 
     this.resultLoadingDisabled_ = finished;
-  },
+  }
 
   /** @private */
   onHistoryDeleted_() {
@@ -179,8 +219,8 @@ Polymer({
     }
 
     // Reload the list with current search state.
-    this.fire('query-history', false);
-  },
+    this.fire_('query-history', false);
+  }
 
   selectOrUnselectAll() {
     if (this.historyData_.length === this.getSelectedItemCount()) {
@@ -188,7 +228,7 @@ Polymer({
     } else {
       this.selectAllItems();
     }
-  },
+  }
 
   /**
    * Select each item in |historyData|.
@@ -201,7 +241,7 @@ Polymer({
     this.historyData_.forEach((item, index) => {
       this.changeSelection_(index, true);
     });
-  },
+  }
 
   /**
    * Deselect each item in |selectedItems|.
@@ -214,14 +254,14 @@ Polymer({
     assert(this.selectedItems.size === 0);
 
     IronA11yAnnouncer.requestAvailability();
-    this.fire(
+    this.fire_(
         'iron-announce', {text: loadTimeData.getString('itemsUnselected')});
-  },
+  }
 
   /** @return {number} */
   getSelectedItemCount() {
     return this.selectedItems.size;
-  },
+  }
 
   /**
    * Delete all the currently selected history items. Will prompt the user with
@@ -240,8 +280,8 @@ Polymer({
     this.$.dialog.get().showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
-    this.$$('.action-button').focus();
-  },
+    this.shadowRoot.querySelector('.action-button').focus();
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
@@ -259,7 +299,7 @@ Polymer({
     } else {
       this.selectedItems.delete(index);
     }
-  },
+  }
 
   /**
    * Performs a request to the backend to delete all selected items. If
@@ -277,13 +317,13 @@ Polymer({
     this.deleteItems_(toBeRemoved).then(() => {
       this.pendingDelete = false;
       this.removeItemsByIndex_(Array.from(this.selectedItems));
-      this.fire('unselect-all');
+      this.fire_('unselect-all');
       if (this.historyData_.length === 0) {
         // Try reloading if nothing is rendered.
-        this.fire('query-history', false);
+        this.fire_('query-history', false);
       }
     });
-  },
+  }
 
   /**
    * Remove all |indices| from the history list. Uses notifySplices to send a
@@ -309,7 +349,7 @@ Polymer({
       });
     });
     this.notifySplices('historyData_', splices);
-  },
+  }
 
   /**
    * Closes the overflow menu.
@@ -321,7 +361,7 @@ Polymer({
       this.actionMenuModel_ = null;
       menu.close();
     }
-  },
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Event listeners:
@@ -333,7 +373,7 @@ Polymer({
     this.deleteSelected_();
     const dialog = assert(this.$.dialog.getIfExists());
     dialog.close();
-  },
+  }
 
   /** @private */
   onDialogCancelTap_() {
@@ -341,7 +381,7 @@ Polymer({
 
     const dialog = assert(this.$.dialog.getIfExists());
     dialog.close();
-  },
+  }
 
   /**
    * Remove bookmark star for history items with matching URLs.
@@ -360,7 +400,7 @@ Polymer({
         this.set(`historyData_.${i}.starred`, false);
       }
     }
-  },
+  }
 
   /**
    * Called when the page is scrolled to near the bottom of the list.
@@ -371,17 +411,14 @@ Polymer({
       return;
     }
 
-    this.fire('query-history', true);
-  },
+    this.fire_('query-history', true);
+  }
 
   /**
    * Open the overflow menu and ensure that the item is visible in the scroll
    * pane when its menu is opened (it is possible to open off-screen items using
    * keyboard shortcuts).
-   * @param {!CustomEvent<{
-   *    index: number, item: !HistoryEntry,
-   *    path: string, target: !HTMLElement
-   * }>} e
+   * @param {!OpenMenuEvent} e
    * @private
    */
   onOpenMenu_(e) {
@@ -395,17 +432,17 @@ Polymer({
     this.actionMenuModel_ = e.detail;
     const menu = /** @type {CrActionMenuElement} */ (this.$.sharedMenu.get());
     menu.showAt(target);
-  },
+  }
 
   /** @private */
   onMoreFromSiteTap_() {
     BrowserService.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
     const menu = assert(this.$.sharedMenu.getIfExists());
-    this.fire('change-query', {search: this.actionMenuModel_.item.domain});
+    this.fire_('change-query', {search: this.actionMenuModel_.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
-  },
+  }
 
   /**
    * @param {!Array<!HistoryEntry>} items
@@ -420,7 +457,7 @@ Polymer({
 
     this.pendingDelete = true;
     return BrowserService.getInstance().removeVisits(removalList);
-  },
+  }
 
   /** @private */
   onRemoveFromHistoryTap_() {
@@ -438,7 +475,7 @@ Polymer({
       // TODO(tsergeant): Make this automatic based on observing list
       // modifications.
       this.pendingDelete = false;
-      this.fire('unselect-all');
+      this.fire_('unselect-all');
       this.removeItemsByIndex_([itemData.index]);
 
       const index = itemData.index;
@@ -468,7 +505,7 @@ Polymer({
       }
     });
     this.closeMenu_();
-  },
+  }
 
   /**
    * @param {Event} e
@@ -498,7 +535,7 @@ Polymer({
     });
 
     this.lastSelectedIndex = index;
-  },
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Template helpers:
@@ -526,7 +563,7 @@ Polymer({
 
     return currentItem.time - nextItem.time > BROWSING_GAP_TIME &&
         currentItem.dateRelativeDay === nextItem.dateRelativeDay;
-  },
+  }
 
   /**
    * True if the given item is the beginning of a new card.
@@ -543,7 +580,7 @@ Polymer({
     return i === 0 ||
         this.historyData_[i].dateRelativeDay !==
         this.historyData_[i - 1].dateRelativeDay;
-  },
+  }
 
   /**
    * True if the given item is the end of a card.
@@ -560,7 +597,7 @@ Polymer({
     return i === length - 1 ||
         this.historyData_[i].dateRelativeDay !==
         this.historyData_[i + 1].dateRelativeDay;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -568,7 +605,7 @@ Polymer({
    */
   hasResults_() {
     return this.historyData_.length > 0;
-  },
+  }
 
   /**
    * @param {string} searchedTerm
@@ -578,7 +615,7 @@ Polymer({
   noResultsMessage_(searchedTerm) {
     const messageId = searchedTerm !== '' ? 'noSearchResults' : 'noResults';
     return loadTimeData.getString(messageId);
-  },
+  }
 
   /**
    * @param {string} searchedTerm
@@ -588,7 +625,7 @@ Polymer({
    */
   canSearchMoreFromSite_(searchedTerm, domain) {
     return searchedTerm === '' || searchedTerm !== domain;
-  },
+  }
 
   /**
    * @param {HistoryQuery} info
@@ -612,7 +649,7 @@ Polymer({
         currentDate = results[i].dateRelativeDay;
       }
     }
-  },
+  }
 
   /**
    * Adding in order to address an issue with a flaky test. After the list is
@@ -622,5 +659,7 @@ Polymer({
    */
   onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
-  },
-});
+  }
+}
+
+customElements.define(HistoryListElement.is, HistoryListElement);

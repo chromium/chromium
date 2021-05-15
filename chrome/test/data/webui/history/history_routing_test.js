@@ -17,7 +17,7 @@ suite('routing-test', function() {
     window.history.replaceState({}, '', route);
     window.dispatchEvent(new CustomEvent('location-changed'));
     // Update from the URL synchronously.
-    app.$$('history-router').flushDebouncer('parseUrl');
+    app.$$('history-router').debouncer_.flush();
   }
 
   setup(function() {
@@ -51,7 +51,7 @@ suite('routing-test', function() {
     assertEquals('syncedTabs', app.selectedPage_);
     assertEquals('chrome://history/syncedTabs', window.location.href);
 
-    keyDownOn(menu.children[0], 32, '', 'Space');
+    keyDownOn(menu.children[0], 32, '', ' ');
     assertEquals('history', app.selectedPage_);
     assertEquals('chrome://history/', window.location.href);
   });

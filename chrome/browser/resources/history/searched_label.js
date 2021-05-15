@@ -3,20 +3,30 @@
 // found in the LICENSE file.
 
 import {quoteString} from 'chrome://resources/js/util.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'history-searched-label',
+export class HistorySearchedLabelElement extends PolymerElement {
+  static get is() {
+    return 'history-searched-label';
+  }
 
-  properties: {
-    // The text to show in this label.
-    title: String,
+  static get template() {
+    return null;
+  }
 
-    // The search term to bold within the title.
-    searchTerm: String,
-  },
+  static get properties() {
+    return {
+      // The text to show in this label.
+      title: String,
 
-  observers: ['setSearchedTextToBold_(title, searchTerm)'],
+      // The search term to bold within the title.
+      searchTerm: String,
+    };
+  }
+
+  static get observers() {
+    return ['setSearchedTextToBold_(title, searchTerm)'];
+  }
 
   /**
    * Updates the page title. If a search term is specified, highlights any
@@ -54,5 +64,8 @@ Polymer({
     if (i < titleText.length) {
       this.appendChild(document.createTextNode(titleText.slice(i)));
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    HistorySearchedLabelElement.is, HistorySearchedLabelElement);

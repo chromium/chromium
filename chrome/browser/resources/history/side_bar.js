@@ -15,8 +15,7 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {IronA11yKeysBehavior} from 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 
@@ -28,57 +27,67 @@ import {BrowserService} from './browser_service.js';
  */
 export let FooterInfo;
 
-Polymer({
-  is: 'history-side-bar',
+export class HistorySideBarElement extends PolymerElement {
+  static get is() {
+    return 'history-side-bar';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [IronA11yKeysBehavior],
+  static get properties() {
+    return {
+      selectedPage: {
+        type: String,
+        notify: true,
+      },
 
-  properties: {
-    selectedPage: {
-      type: String,
-      notify: true,
-    },
+      /** @private */
+      guestSession_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isGuestSession'),
+      },
 
-    /** @private */
-    guestSession_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isGuestSession'),
-    },
+      /** @type {FooterInfo} */
+      footerInfo: Object,
 
-    /** @type {FooterInfo} */
-    footerInfo: Object,
+      /**
+       * Used to display notices for profile sign-in status and managed status.
+       * @private
+       */
+      showFooter_: {
+        type: Boolean,
+        computed: 'computeShowFooter_(' +
+            'footerInfo.otherFormsOfHistory, footerInfo.managed)',
+      },
+    };
+  }
 
-    /**
-     * Used to display notices for profile sign-in status and managed status.
-     * @private
-     */
-    showFooter_: {
-      type: Boolean,
-      computed: 'computeShowFooter_(' +
-          'footerInfo.otherFormsOfHistory, footerInfo.managed)',
-    },
-  },
-
-  keyBindings: {
-    'space:keydown': 'onSpacePressed_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+  }
 
   /**
-   * @param {!CustomEvent<{keyboardEvent: !KeyboardEvent}>} e
+   * @param {!KeyboardEvent} e
    * @private
    */
-  onSpacePressed_(e) {
-    e.detail.keyboardEvent.path[0].click();
-  },
+  onKeydown_(e) {
+    if (e.key === ' ') {
+      e.composedPath()[0].click();
+    }
+  }
 
   /**
    * @private
    */
   onSelectorActivate_() {
-    this.fire('history-close-drawer');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'history-close-drawer', {bubbles: true, composed: true}));
+  }
 
   /**
    * Relocates the user to the clear browsing data section of the settings page.
@@ -91,7 +100,7 @@ Polymer({
     browserService.openClearBrowsingData();
     /** @type {PaperRippleElement} */ (this.$['cbd-ripple']).upAction();
     e.preventDefault();
-  },
+  }
 
   /**
    * @return {string}
@@ -99,7 +108,7 @@ Polymer({
    */
   computeClearBrowsingDataTabIndex_() {
     return this.guestSession_ ? '-1' : '';
-  },
+  }
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
@@ -108,7 +117,7 @@ Polymer({
    */
   onItemClick_(e) {
     e.preventDefault();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -116,5 +125,7 @@ Polymer({
    */
   computeShowFooter_(includeOtherFormsOfBrowsingHistory, managed) {
     return includeOtherFormsOfBrowsingHistory || managed;
-  },
-});
+  }
+}
+
+customElements.define(HistorySideBarElement.is, HistorySideBarElement);

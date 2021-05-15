@@ -14,115 +14,153 @@ import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
 
-Polymer({
-  is: 'history-item',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const HistoryItemElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement);
 
-  behaviors: [FocusRowBehavior],
+/** @polymer */
+export class HistoryItemElement extends HistoryItemElementBase {
+  static get is() {
+    return 'history-item';
+  }
 
-  properties: {
-    // Underlying HistoryEntry data for this item. Contains read-only fields
-    // from the history backend, as well as fields computed by history-list.
-    item: {
-      type: Object,
-      observer: 'itemChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    selected: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      // Underlying HistoryEntry data for this item. Contains read-only fields
+      // from the history backend, as well as fields computed by history-list.
+      item: {
+        type: Object,
+        observer: 'itemChanged_',
+      },
 
-    isCardStart: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      selected: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    isCardEnd: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      isCardStart: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /** @type {Element} */
-    lastFocused: {
-      type: Object,
-      notify: true,
-    },
+      isCardEnd: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    listBlurred: {
-      type: Boolean,
-      notify: true,
-    },
+      /** @type {Element} */
+      lastFocused: {
+        type: Object,
+        notify: true,
+      },
 
-    ironListTabIndex: {
-      type: Number,
-      observer: 'ironListTabIndexChanged_',
-    },
+      listBlurred: {
+        type: Boolean,
+        notify: true,
+      },
 
-    selectionNotAllowed_: {
-      type: Boolean,
-      value: !loadTimeData.getBoolean('allowDeletingHistory'),
-    },
+      ironListTabIndex: {
+        type: Number,
+        observer: 'ironListTabIndexChanged_',
+      },
 
-    hasTimeGap: Boolean,
+      selectionNotAllowed_: {
+        type: Boolean,
+        value: !loadTimeData.getBoolean('allowDeletingHistory'),
+      },
 
-    index: Number,
+      hasTimeGap: Boolean,
 
-    numberOfItems: Number,
+      index: Number,
 
-    // Search term used to obtain this history-item.
-    searchTerm: String,
+      numberOfItems: Number,
 
-    overrideCustomEquivalent: {
-      type: Boolean,
-      value: true,
-    },
+      // Search term used to obtain this history-item.
+      searchTerm: String,
 
-    /** @private */
-    ariaDescribedByForHeading_: {
-      type: String,
-      computed: 'getAriaDescribedByForHeading_(isCardStart, isCardEnd)',
-    },
-  },
+      overrideCustomEquivalent: {
+        type: Boolean,
+        value: true,
+      },
 
-  hostAttributes: {'role': 'row'},
+      /** @private */
+      ariaDescribedByForHeading_: {
+        type: String,
+        computed: 'getAriaDescribedByForHeading_(isCardStart, isCardEnd)',
+      },
+    };
+  }
 
-  /** @private {boolean} */
-  mouseDown_: false,
+  constructor() {
+    super();
 
-  /** @private {boolean} */
-  isShiftKeyDown_: false,
+    /** @private {boolean} */
+    this.mouseDown_ = false;
+
+    /** @private {boolean} */
+    this.isShiftKeyDown_ = false;
+
+    /** @private {?function(!Event)} */
+    this.boundOnKeyDown_ = null;
+
+    /** @private {?function()} */
+    this.boundOnMouseOver_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.setAttribute('role', 'row');
+
     afterNextRender(this, function() {
       // Adding listeners asynchronously to reduce blocking time, since these
       // history items are items in a potentially long list.
-      this.listen(this.$.checkbox, 'keydown', 'onCheckboxKeydown_');
+      this.boundOnKeyDown_ = e => this.onCheckboxKeydown_(e);
+      this.$.checkbox.addEventListener('keydown', this.boundOnKeyDown_);
     });
-  },
+  }
 
   /** @override */
-  detached() {
-    this.unlisten(this.$.checkbox, 'keydown', 'onCheckboxKeydown_');
-  },
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.$.checkbox.removeEventListener('keydown', this.boundOnKeyDown_);
+    this.boundOnKeyDown_ = null;
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   focusOnMenuButton() {
     focusWithoutInk(this.$['menu-button']);
-  },
+  }
 
   /** @param {!KeyboardEvent} e */
   onCheckboxKeydown_(e) {
     if (e.shiftKey && e.key === 'Tab') {
       this.focus();
     }
-  },
+  }
 
   /**
    * Toggle item selection whenever the checkbox or any non-interactive part
@@ -144,11 +182,11 @@ Polymer({
     }
 
     this.$.checkbox.focus();
-    this.fire('history-checkbox-select', {
+    this.fire_('history-checkbox-select', {
       index: this.index,
       shiftKey: e.shiftKey,
     });
-  },
+  }
 
   /**
    * This is bound to mouse/keydown instead of click/press because this
@@ -160,14 +198,14 @@ Polymer({
    */
   onCheckboxClick_(e) {
     this.isShiftKeyDown_ = e.shiftKey;
-  },
+  }
 
   /**
    * @param {!Event} e
    * @private
    */
   onCheckboxChange_(e) {
-    this.fire('history-checkbox-select', {
+    this.fire_('history-checkbox-select', {
       index: this.index,
       // If the user clicks or press enter/space key, oncheckboxClick_ will
       // trigger before this function, so a shift-key might be recorded.
@@ -175,7 +213,7 @@ Polymer({
     });
 
     this.isShiftKeyDown_ = false;
-  },
+  }
 
   /**
    * @param {MouseEvent} e
@@ -186,7 +224,7 @@ Polymer({
     if (e.shiftKey) {
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * @private
@@ -203,7 +241,7 @@ Polymer({
         item.dateTimeOfDay,
         item.starred ? loadTimeData.getString('bookmarked') : '', item.title,
         item.domain);
-  },
+  }
 
   /**
    * The first and last rows of a card have a described-by field pointing to
@@ -214,7 +252,7 @@ Polymer({
    */
   getAriaDescribedByForHeading_() {
     return this.isCardStart || this.isCardEnd ? 'date-accessed' : '';
-  },
+  }
 
   /**
    * @param {boolean} selected
@@ -223,7 +261,7 @@ Polymer({
    */
   getAriaChecked_(selected) {
     return selected ? 'true' : 'false';
-  },
+  }
 
   /**
    * Remove bookmark of current item when bookmark-star is clicked.
@@ -234,7 +272,8 @@ Polymer({
       return;
     }
 
-    if (this.$$('#bookmark-star') === this.root.activeElement) {
+    if (this.shadowRoot.querySelector('#bookmark-star') ===
+        this.root.activeElement) {
       focusWithoutInk(this.$['menu-button']);
     }
 
@@ -242,15 +281,15 @@ Polymer({
     browserService.removeBookmark(this.item.url);
     browserService.recordAction('BookmarkStarClicked');
 
-    this.fire('remove-bookmark-stars', this.item.url);
-  },
+    this.fire_('remove-bookmark-stars', this.item.url);
+  }
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details
    * of the history item and where the menu should appear.
    */
   onMenuButtonTap_(e) {
-    this.fire('open-menu', {
+    this.fire_('open-menu', {
       target: e.target,
       index: this.index,
       item: this.item,
@@ -258,7 +297,7 @@ Polymer({
 
     // Stops the 'click' event from closing the menu when it opens.
     e.stopPropagation();
-  },
+  }
 
   /**
    * Record metrics when a result is clicked.
@@ -299,11 +338,11 @@ Polymer({
           'HistoryPage.ClickAgeInDaysSubset', ageInDays,
           UMA_MAX_SUBSET_BUCKET_VALUE);
     }
-  },
+  }
 
   onLinkRightClick_() {
     BrowserService.getInstance().recordAction('EntryLinkRightClick');
-  },
+  }
 
   /**
    * Set the favicon image, based on the URL of the history item.
@@ -313,8 +352,11 @@ Polymer({
     this.$.icon.style.backgroundImage = getFaviconForPageURL(
         this.item.url, this.item.isUrlInRemoteUserData,
         this.item.remoteIconUrlForUma);
-    this.listen(this.$['time-accessed'], 'mouseover', 'addTimeTitle_');
-  },
+
+    this.boundOnMouseOver_ = () => this.addTimeTitle_();
+    this.$['time-accessed'].addEventListener(
+        'mouseover', this.boundOnMouseOver_);
+  }
 
   /**
    * @param {number} numberOfItems The number of items in the card.
@@ -332,14 +374,15 @@ Polymer({
       return this.item.dateRelativeDay;
     }
     return searchResultsTitle(numberOfItems, search);
-  },
+  }
 
   /** @private */
   addTimeTitle_() {
     const el = this.$['time-accessed'];
     el.setAttribute('title', new Date(this.item.time).toString());
-    this.unlisten(el, 'mouseover', 'addTimeTitle_');
-  },
+    el.removeEventListener('mouseover', this.boundOnMouseOver_);
+    this.boundOnMouseOver_ = null;
+  }
 
   /**
    * @param {!Element} sampleElement An element to find an equivalent for.
@@ -349,8 +392,10 @@ Polymer({
   getCustomEquivalent(sampleElement) {
     return sampleElement.getAttribute('focus-type') === 'star' ? this.$.link :
                                                                  null;
-  },
-});
+  }
+}
+
+customElements.define(HistoryItemElement.is, HistoryItemElement);
 
 /**
  * @param {number} numberOfResults

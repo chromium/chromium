@@ -8,75 +8,93 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'history-toolbar',
+/** @polymer */
+export class HistoryToolbarElement extends PolymerElement {
+  static get is() {
+    return 'history-toolbar';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    // Number of history items currently selected.
-    // TODO(calamity): bind this to
-    // listContainer.selectedItem.selectedPaths.length.
-    count: {
-      type: Number,
-      value: 0,
-      observer: 'changeToolbarView_',
-    },
+  static get properties() {
+    return {
+      // Number of history items currently selected.
+      // TODO(calamity): bind this to
+      // listContainer.selectedItem.selectedPaths.length.
+      count: {
+        type: Number,
+        value: 0,
+        observer: 'changeToolbarView_',
+      },
 
-    // True if 1 or more history items are selected. When this value changes
-    // the background colour changes.
-    itemsSelected_: {
-      type: Boolean,
-      value: false,
-    },
+      // True if 1 or more history items are selected. When this value changes
+      // the background colour changes.
+      itemsSelected_: {
+        type: Boolean,
+        value: false,
+      },
 
-    pendingDelete: Boolean,
+      pendingDelete: Boolean,
 
-    // The most recent term entered in the search field. Updated incrementally
-    // as the user types.
-    searchTerm: {
-      type: String,
-      observer: 'searchTermChanged_',
-    },
+      // The most recent term entered in the search field. Updated incrementally
+      // as the user types.
+      searchTerm: {
+        type: String,
+        observer: 'searchTermChanged_',
+      },
 
-    // True if the backend is processing and a spinner should be shown in the
-    // toolbar.
-    spinnerActive: {
-      type: Boolean,
-      value: false,
-    },
+      // True if the backend is processing and a spinner should be shown in the
+      // toolbar.
+      spinnerActive: {
+        type: Boolean,
+        value: false,
+      },
 
-    hasDrawer: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      hasDrawer: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    hasMoreResults: Boolean,
+      hasMoreResults: Boolean,
 
-    querying: Boolean,
+      querying: Boolean,
 
-    queryInfo: Object,
+      queryInfo: Object,
 
-    // Whether to show the menu promo (a tooltip that points at the menu button
-    // in narrow mode).
-    showMenuPromo: Boolean,
-  },
+      // Whether to show the menu promo (a tooltip that points at the menu
+      // button
+      // in narrow mode).
+      showMenuPromo: Boolean,
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @return {CrToolbarSearchFieldElement} */
   get searchField() {
     return /** @type {CrToolbarElement} */ (this.$['main-toolbar'])
         .getSearchField();
-  },
+  }
 
   deleteSelectedItems() {
-    this.fire('delete-selected');
-  },
+    this.fire_('delete-selected');
+  }
 
   clearSelectedItems() {
-    this.fire('unselect-all');
-  },
+    this.fire_('unselect-all');
+  }
 
   /**
    * Changes the toolbar background color depending on whether any history items
@@ -85,7 +103,7 @@ Polymer({
    */
   changeToolbarView_() {
     this.itemsSelected_ = this.count > 0;
-  },
+  }
 
   /**
    * When changing the search term externally, update the search field to
@@ -97,7 +115,7 @@ Polymer({
       this.searchField.showAndFocus();
       this.searchField.setValue(this.searchTerm);
     }
-  },
+  }
 
   /**
    * @param {boolean} showMenuPromo
@@ -106,18 +124,20 @@ Polymer({
    */
   canShowMenuPromo_(showMenuPromo) {
     return this.showMenuPromo && !loadTimeData.getBoolean('isGuestSession');
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} event
    * @private
    */
   onSearchChanged_(event) {
-    this.fire('change-query', {search: event.detail});
-  },
+    this.fire_('change-query', {search: event.detail});
+  }
 
   /** @private */
   numberOfItemsSelected_(count) {
     return count > 0 ? loadTimeData.getStringF('itemsSelected', count) : '';
-  },
-});
+  }
+}
+
+customElements.define(HistoryToolbarElement.is, HistoryToolbarElement);

@@ -6,24 +6,24 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import './history_list.js';
-import './history_toolbar.js';
-import './query_manager.js';
 import './router.js';
 import './shared_style.js';
 import './strings.m.js';
 
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
+import {HistoryListElement} from './history_list.js';
+import {HistoryToolbarElement} from './history_toolbar.js';
+import {HistoryQueryManagerElement} from './query_manager.js';
 import {FooterInfo} from './side_bar.js';
 
 let lazyLoadPromise = null;
@@ -98,95 +98,103 @@ export function listenForPrivilegedLinkClicks() {
   });
 }
 
-Polymer({
-  is: 'history-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FindShortcutBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const HistoryAppElementBase = mixinBehaviors(
+    [FindShortcutBehavior, IronScrollTargetBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class HistoryAppElement extends HistoryAppElementBase {
+  static get is() {
+    return 'history-app';
+  }
 
-  behaviors: [
-    FindShortcutBehavior,
-    IronScrollTargetBehavior,
-    WebUIListenerBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    // The id of the currently selected page.
-    selectedPage_: {
-      type: String,
-      observer: 'selectedPageChanged_',
-    },
-
-    /** @type {!QueryResult} */
-    queryResult_: {
-      type: Object,
-      value() {
-        return {
-          info: null,
-          results: null,
-          sessionList: null,
-        };
-      }
-    },
-
-    isUserSignedIn_: {
-      type: Boolean,
-      // Updated on synced-device-manager attach by chrome.sending
-      // 'otherDevicesInitialized'.
-      value: loadTimeData.getBoolean('isUserSignedIn'),
-    },
-
-    /** @private */
-    pendingDelete_: Boolean,
-
-    toolbarShadow_: {
-      type: Boolean,
-      reflectToAttribute: true,
-      notify: true,
-    },
-
-    /** @type {!QueryState} */
-    queryState_: Object,
-
-    // True if the window is narrow enough for the page to have a drawer.
-    hasDrawer_: {
-      type: Boolean,
-      observer: 'hasDrawerChanged_',
-    },
-
-    /** @type {FooterInfo} */
-    footerInfo: {
-      type: Object,
-      value() {
-        return {
-          managed: loadTimeData.getBoolean('isManaged'),
-          otherFormsOfHistory: false,
-        };
+  static get properties() {
+    return {
+      // The id of the currently selected page.
+      selectedPage_: {
+        type: String,
+        observer: 'selectedPageChanged_',
       },
-    },
-  },
 
-  listeners: {
-    'cr-toolbar-menu-tap': 'onCrToolbarMenuTap_',
-    'delete-selected': 'deleteSelected',
-    'history-checkbox-select': 'checkboxSelected',
-    'history-close-drawer': 'closeDrawer_',
-    'history-view-changed': 'historyViewChanged_',
-    'unselect-all': 'unselectAll',
-  },
+      /** @type {!QueryResult} */
+      queryResult_: {
+        type: Object,
+        value() {
+          return {
+            info: null,
+            results: null,
+            sessionList: null,
+          };
+        }
+      },
 
-  /** @private {?function(!Event)} */
-  boundOnKeyDown_: null,
+      isUserSignedIn_: {
+        type: Boolean,
+        // Updated on synced-device-manager attach by chrome.sending
+        // 'otherDevicesInitialized'.
+        value: loadTimeData.getBoolean('isUserSignedIn'),
+      },
 
-  /** @private {?BrowserService} */
-  browserService_: null,
+      /** @private */
+      pendingDelete_: Boolean,
 
-  /** @override */
-  created() {
+      toolbarShadow_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        notify: true,
+      },
+
+      /** @type {!QueryState} */
+      queryState_: Object,
+
+      // True if the window is narrow enough for the page to have a drawer.
+      hasDrawer_: {
+        type: Boolean,
+        observer: 'hasDrawerChanged_',
+      },
+
+      /** @type {FooterInfo} */
+      footerInfo: {
+        type: Object,
+        value() {
+          return {
+            managed: loadTimeData.getBoolean('isManaged'),
+            otherFormsOfHistory: false,
+          };
+        },
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?function(!Event)} */
+    this.boundOnKeyDown_ = null;
+
+    /** @private {?BrowserService} */
+    this.browserService_ = null;
+
+    /** @type {HTMLElement} */
+    this.scrollTarget;
+
     listenForPrivilegedLinkClicks();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.boundOnKeyDown_ = e => this.onKeyDown_(e);
     document.addEventListener('keydown', this.boundOnKeyDown_);
     this.addWebUIListener(
@@ -200,17 +208,29 @@ Polymer({
         sessionList => this.setForeignSessions_(sessionList));
     this.browserService_ = BrowserService.getInstance();
     /** @type {!HistoryQueryManagerElement} */ (
-        this.$$('history-query-manager'))
+        this.shadowRoot.querySelector('history-query-manager'))
         .initialize();
     this.browserService_.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
-  },
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('cr-toolbar-menu-tap', this.onCrToolbarMenuTap_);
+    this.addEventListener('delete-selected', this.deleteSelected);
+    this.addEventListener('history-checkbox-select', this.checkboxSelected);
+    this.addEventListener('history-close-drawer', this.closeDrawer_);
+    this.addEventListener('history-view-changed', this.historyViewChanged_);
+    this.addEventListener('unselect-all', this.unselectAll);
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     document.removeEventListener('keydown', this.boundOnKeyDown_);
     this.boundOnKeyDown_ = null;
-  },
+  }
 
   /** @private */
   onFirstRender_() {
@@ -233,20 +253,20 @@ Polymer({
         document.fonts.load('bold 12px Roboto');
       });
     });
-  },
+  }
 
   /** Overridden from IronScrollTargetBehavior */
   _scrollHandler() {
     if (this.scrollTarget) {
       this.toolbarShadow_ = this.scrollTarget.scrollTop !== 0;
     }
-  },
+  }
 
   /** @private */
   onCrToolbarMenuTap_() {
     const drawer = /** @type {!CrDrawerElement} */ (this.$.drawer.get());
     drawer.toggle();
-  },
+  }
 
   /**
    * Listens for history-item being selected or deselected (through checkbox)
@@ -256,14 +276,14 @@ Polymer({
     const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
     toolbar.count = /** @type {HistoryListElement} */ (this.$.history)
                         .getSelectedItemCount();
-  },
+  }
 
   selectOrUnselectAll() {
     const list = /** @type {HistoryListElement} */ (this.$.history);
     const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
     list.selectOrUnselectAll();
     toolbar.count = list.getSelectedItemCount();
-  },
+  }
 
   /**
    * Listens for call to cancel selection and loops through all items to set
@@ -275,11 +295,11 @@ Polymer({
     const toolbar = /** @type {HistoryToolbarElement} */ (this.$.toolbar);
     list.unselectAllItems();
     toolbar.count = 0;
-  },
+  }
 
   deleteSelected() {
     this.$.history.deleteSelectedWithPrompt();
-  },
+  }
 
   /** @private */
   onQueryFinished_() {
@@ -290,7 +310,7 @@ Polymer({
       document.body.classList.remove('loading');
       this.onFirstRender_();
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -316,7 +336,7 @@ Polymer({
       this.unselectAll();
       e.preventDefault();
     }
-  },
+  }
 
   /** @private */
   onDeleteCommand_() {
@@ -324,7 +344,7 @@ Polymer({
       return;
     }
     this.deleteSelected();
-  },
+  }
 
   /**
    * @return {boolean} Whether the command was actually triggered.
@@ -337,7 +357,7 @@ Polymer({
     }
     this.selectOrUnselectAll();
     return true;
-  },
+  }
 
   /**
    * @param {!Array<!ForeignSession>} sessionList Array of objects describing
@@ -346,7 +366,7 @@ Polymer({
    */
   setForeignSessions_(sessionList) {
     this.set('queryResult_.sessionList', sessionList);
-  },
+  }
 
   /**
    * Update sign in state of synced device manager after user logs in or out.
@@ -355,7 +375,7 @@ Polymer({
    */
   onSignInStateChanged_(isUserSignedIn) {
     this.isUserSignedIn_ = isUserSignedIn;
-  },
+  }
 
   /**
    * Update sign in state of synced device manager after user logs in or out.
@@ -364,7 +384,7 @@ Polymer({
    */
   onHasOtherFormsChanged_(hasOtherForms) {
     this.set('footerInfo.otherFormsOfHistory', hasOtherForms);
-  },
+  }
 
   /**
    * @param {string} selectedPage
@@ -373,7 +393,7 @@ Polymer({
    */
   syncedTabsSelected_(selectedPage) {
     return selectedPage === 'syncedTabs';
-  },
+  }
 
   /**
    * @param {boolean} querying
@@ -385,13 +405,13 @@ Polymer({
    */
   shouldShowSpinner_(querying, incremental, searchTerm) {
     return querying && !incremental && searchTerm !== '';
-  },
+  }
 
   /** @private */
   selectedPageChanged_() {
     this.unselectAll();
     this.historyViewChanged_();
-  },
+  }
 
   /** @private */
   historyViewChanged_() {
@@ -401,7 +421,7 @@ Polymer({
       this._scrollHandler();
     });
     this.recordHistoryPageView_();
-  },
+  }
 
   /** @private */
   hasDrawerChanged_() {
@@ -410,7 +430,7 @@ Polymer({
     if (!this.hasDrawer_ && drawer && drawer.open) {
       drawer.cancel();
     }
-  },
+  }
 
   /**
    * This computed binding is needed to make the iron-pages selector update
@@ -424,7 +444,7 @@ Polymer({
    */
   getSelectedPage_(selectedPage, items) {
     return selectedPage;
-  },
+  }
 
   /** @private */
   closeDrawer_() {
@@ -432,7 +452,7 @@ Polymer({
     if (drawer && drawer.open) {
       drawer.close();
     }
-  },
+  }
 
   /** @private */
   recordHistoryPageView_() {
@@ -451,7 +471,7 @@ Polymer({
     this.browserService_.recordHistogram(
         'History.HistoryPageView', histogramValue,
         HistoryPageViewHistogram.END);
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   handleFindShortcut(modalContextOpen) {
@@ -460,10 +480,12 @@ Polymer({
     }
     this.$.toolbar.searchField.showAndFocus();
     return true;
-  },
+  }
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
     return this.$.toolbar.searchField.isSearchFocused();
-  },
-});
+  }
+}
+
+customElements.define(HistoryAppElement.is, HistoryAppElement);

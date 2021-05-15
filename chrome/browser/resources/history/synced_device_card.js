@@ -14,56 +14,73 @@ import './strings.m.js';
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSessionTab} from './externs.js';
 
-Polymer({
-  is: 'history-synced-device-card',
+export class HistorySyncedDeviceCardElement extends PolymerElement {
+  static get is() {
+    return 'history-synced-device-card';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The list of tabs open for this device.
-     * @type {!Array<!ForeignSessionTab>}
-     */
-    tabs: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * The list of tabs open for this device.
+       * @type {!Array<!ForeignSessionTab>}
+       */
+      tabs: {
+        type: Array,
+        value() {
+          return [];
+        },
+        observer: 'updateIcons_'
       },
-      observer: 'updateIcons_'
-    },
 
-    // Name of the synced device.
-    device: String,
+      // Name of the synced device.
+      device: String,
 
-    // When the device information was last updated.
-    lastUpdateTime: String,
+      // When the device information was last updated.
+      lastUpdateTime: String,
 
-    // Whether the card is open.
-    opened: Boolean,
+      // Whether the card is open.
+      opened: Boolean,
 
-    searchTerm: String,
+      searchTerm: String,
 
-    /**
-     * The indexes where a window separator should be shown. The use of a
-     * separate array here is necessary for window separators to appear
-     * correctly in search. See http://crrev.com/2022003002 for more details.
-     * @type {!Array<number>}
-     */
-    separatorIndexes: Array,
+      /**
+       * The indexes where a window separator should be shown. The use of a
+       * separate array here is necessary for window separators to appear
+       * correctly in search. See http://crrev.com/2022003002 for more details.
+       * @type {!Array<number>}
+       */
+      separatorIndexes: Array,
 
-    // Internal identifier for the device.
-    sessionTag: String,
-  },
+      // Internal identifier for the device.
+      sessionTag: String,
+    };
+  }
 
-  listeners: {
-    'dom-change': 'notifyFocusUpdate_',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('dom-change', this.notifyFocusUpdate_);
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * Create FocusRows for this card. One is always made for the card heading and
@@ -83,7 +100,7 @@ Polymer({
       });
     }
     return rows;
-  },
+  }
 
   /**
    * Open a single synced tab.
@@ -100,7 +117,7 @@ Polymer({
     browserService.openForeignSessionTab(
         this.sessionTag, tab.windowId, tab.sessionId, e);
     e.preventDefault();
-  },
+  }
 
   /**
    * Toggles the dropdown display of synced tabs for each device card.
@@ -115,14 +132,14 @@ Polymer({
 
     this.$.collapse.toggle();
 
-    this.fire('update-focus-grid');
-  },
+    this.fire_('update-focus-grid');
+  }
 
   /** @private */
   notifyFocusUpdate_() {
     // Refresh focus after all rows are rendered.
-    this.fire('update-focus-grid');
-  },
+    this.fire_('update-focus-grid');
+  }
 
   /**
    * When the synced tab information is set, the icon associated with the tab
@@ -130,7 +147,7 @@ Polymer({
    * @private
    */
   updateIcons_() {
-    this.async(function() {
+    setTimeout(() => {
       const icons = this.shadowRoot.querySelectorAll('.website-icon');
 
       for (let i = 0; i < this.tabs.length; i++) {
@@ -139,13 +156,13 @@ Polymer({
         icons[i].style.backgroundImage = getFaviconForPageURL(
             this.tabs[i].url, true, this.tabs[i].remoteIconUrlForUma);
       }
-    });
-  },
+    }, 0);
+  }
 
   /** @private */
   isWindowSeparatorIndex_(index, separatorIndexes) {
     return this.separatorIndexes.indexOf(index) !== -1;
-  },
+  }
 
   /**
    * @param {boolean} opened
@@ -154,7 +171,7 @@ Polymer({
    */
   getCollapseIcon_(opened) {
     return opened ? 'cr:expand-less' : 'cr:expand-more';
-  },
+  }
 
   /**
    * @param {boolean} opened
@@ -164,23 +181,27 @@ Polymer({
   getCollapseTitle_(opened) {
     return opened ? loadTimeData.getString('collapseSessionButton') :
                     loadTimeData.getString('expandSessionButton');
-  },
+  }
 
   /**
    * @param {!Event} e
    * @private
    */
   onMenuButtonTap_(e) {
-    this.fire('open-menu', {
+    this.fire_('open-menu', {
       target: e.target,
       tag: this.sessionTag,
     });
     e.stopPropagation();  // Prevent iron-collapse.
-  },
+  }
 
+  /** @private */
   onLinkRightClick_() {
     BrowserService.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_RIGHT_CLICKED,
         SyncedTabsHistogram.LIMIT);
-  },
-});
+  }
+}
+
+customElements.define(
+    HistorySyncedDeviceCardElement.is, HistorySyncedDeviceCardElement);

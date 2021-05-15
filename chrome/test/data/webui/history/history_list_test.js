@@ -636,7 +636,9 @@ suite(history_list_test.suiteName, function() {
           // are disabled.
           assertTrue(element.$$('#menuRemoveButton').disabled);
           assertEquals(2, toolbar.count);
-          assertTrue(toolbar.$$('cr-toolbar-selection-overlay').deleteDisabled);
+          assertTrue(
+              toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+                  .deleteDisabled);
 
           // Key event should be ignored.
           assertEquals(1, testService.getCallCount('removeVisits'));
@@ -659,7 +661,8 @@ suite(history_list_test.suiteName, function() {
           // Check that delete option is re-enabled.
           assertEquals(2, toolbar.count);
           assertFalse(
-              toolbar.$$('cr-toolbar-selection-overlay').deleteDisabled);
+              toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
+                  .deleteDisabled);
 
           // Menu button should also be re-enabled.
           items[1].$['menu-button'].click();
@@ -727,7 +730,9 @@ suite(history_list_test.suiteName, function() {
         return finishSetup([])
             .then(function() {
               testService.resetResolver('queryHistory');
-              app.$$('history-router').$$('iron-location').dwellTime = 0;
+              app.$$('history-router')
+                  .shadowRoot.querySelector('iron-location')
+                  .dwellTime = 0;
 
               testService.setQueryResult({
                 info: createHistoryInfo('something else'),

@@ -15,7 +15,7 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
@@ -32,74 +32,89 @@ import {ForeignSession, ForeignSessionTab} from './externs.js';
  */
 let ForeignDeviceInternal;
 
-Polymer({
-  is: 'history-synced-device-manager',
+export class HistorySyncedDeviceManagerElement extends PolymerElement {
+  static get is() {
+    return 'history-synced-device-manager';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * @type {?Array<!ForeignSession>}
-     */
-    sessionList: {
-      type: Array,
-      observer: 'updateSyncedDevices',
-    },
-
-    searchTerm: {
-      type: String,
-      observer: 'searchTermChanged',
-    },
-
-    /**
-     * An array of synced devices with synced tab data.
-     * @type {!Array<!ForeignDeviceInternal>}
-     */
-    syncedDevices_: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * @type {?Array<!ForeignSession>}
+       */
+      sessionList: {
+        type: Array,
+        observer: 'updateSyncedDevices',
       },
-    },
 
-    /** @private */
-    signInState: {
-      type: Boolean,
-      observer: 'signInStateChanged_',
-    },
+      searchTerm: {
+        type: String,
+        observer: 'searchTermChanged',
+      },
 
-    /** @private */
-    guestSession_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isGuestSession'),
-    },
+      /**
+       * An array of synced devices with synced tab data.
+       * @type {!Array<!ForeignDeviceInternal>}
+       */
+      syncedDevices_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-    /** @private */
-    fetchingSyncedTabs_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      signInState: {
+        type: Boolean,
+        observer: 'signInStateChanged_',
+      },
 
-    /** @private */
-    hasSeenForeignData_: Boolean,
+      /** @private */
+      guestSession_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isGuestSession'),
+      },
 
-    /**
-     * The session ID referring to the currently active action menu.
-     * @private {?string}
-     */
-    actionMenuModel_: String,
-  },
+      /** @private */
+      fetchingSyncedTabs_: {
+        type: Boolean,
+        value: false,
+      },
 
-  listeners: {
-    'open-menu': 'onOpenMenu_',
-    'update-focus-grid': 'updateFocusGrid_',
-  },
+      /** @private */
+      hasSeenForeignData_: Boolean,
 
-  /** @type {?FocusGrid} */
-  focusGrid_: null,
+      /**
+       * The session ID referring to the currently active action menu.
+       * @private {?string}
+       */
+      actionMenuModel_: String,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @type {?FocusGrid} */
+    this.focusGrid_ = null;
+
+    /** @private {Debouncer} */
+    this.debouncer_;
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('open-menu', this.onOpenMenu_);
+    this.addEventListener('update-focus-grid', this.updateFocusGrid_);
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
 
     // Update the sign in state.
@@ -107,17 +122,18 @@ Polymer({
     BrowserService.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this.focusGrid_.destroy();
-  },
+  }
 
   /** @return {HTMLElement} */
   getContentScrollTarget() {
     return this;
-  },
+  }
 
   /**
    * @param {!ForeignSession} session
@@ -166,12 +182,12 @@ Polymer({
       tabs: tabs,
       tag: session.tag,
     };
-  },
+  }
 
   /** @private */
   onSignInTap_() {
     BrowserService.getInstance().startSignInFlow();
-  },
+  }
 
   /** @private */
   onOpenMenu_(e) {
@@ -181,7 +197,7 @@ Polymer({
     BrowserService.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
-  },
+  }
 
   /** @private */
   onOpenAllTap_() {
@@ -193,7 +209,7 @@ Polymer({
     browserService.openForeignSessionAllTabs(assert(this.actionMenuModel_));
     this.actionMenuModel_ = null;
     menu.close();
-  },
+  }
 
   /** @private */
   updateFocusGrid_() {
@@ -203,7 +219,7 @@ Polymer({
 
     this.focusGrid_.destroy();
 
-    this.debounce('updateFocusGrid', () => {
+    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
       Array.from(this.shadowRoot.querySelectorAll('history-synced-device-card'))
           .reduce((prev, cur) => prev.concat(cur.createFocusRows()), [])
           .forEach((row) => {
@@ -211,7 +227,7 @@ Polymer({
           });
       this.focusGrid_.ensureRowActive(1);
     });
-  },
+  }
 
   /** @private */
   onDeleteSessionTap_() {
@@ -223,12 +239,12 @@ Polymer({
     browserService.deleteForeignSession(assert(this.actionMenuModel_));
     this.actionMenuModel_ = null;
     menu.close();
-  },
+  }
 
   /** @private */
   clearDisplayedSyncedDevices_() {
     this.syncedDevices_ = [];
-  },
+  }
 
   /**
    * Decide whether or not should display no synced tabs message.
@@ -243,7 +259,7 @@ Polymer({
     }
 
     return signInState && syncedDevicesLength === 0;
-  },
+  }
 
   /**
    * Shows the signin guide when the user is not signed in and not in a guest
@@ -260,7 +276,7 @@ Polymer({
     }
 
     return show;
-  },
+  }
 
   /**
    * Decide what message should be displayed when user is logged in and there
@@ -273,7 +289,7 @@ Polymer({
       stringName = 'noSearchResults';
     }
     return loadTimeData.getString(stringName);
-  },
+  }
 
   /**
    * Replaces the currently displayed synced tabs with |sessionList|. It is
@@ -306,7 +322,7 @@ Polymer({
     });
 
     this.syncedDevices_ = devices;
-  },
+  }
 
   /**
    * Get called when user's sign in state changes, this will affect UI of synced
@@ -320,7 +336,8 @@ Polymer({
       return;
     }
 
-    this.fire('history-view-changed');
+    this.dispatchEvent(new CustomEvent(
+        'history-view-changed', {bubbles: true, composed: true}));
 
     // User signed out, clear synced device list and show the sign in promo.
     if (!this.signInState) {
@@ -330,10 +347,13 @@ Polymer({
     // User signed in, show the loading message when querying for synced
     // devices.
     this.fetchingSyncedTabs_ = true;
-  },
+  }
 
   searchTermChanged(searchTerm) {
     this.clearDisplayedSyncedDevices_();
     this.updateSyncedDevices(this.sessionList);
   }
-});
+}
+
+customElements.define(
+    HistorySyncedDeviceManagerElement.is, HistorySyncedDeviceManagerElement);

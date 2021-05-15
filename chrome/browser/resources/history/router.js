@@ -5,57 +5,73 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QueryState} from './externs.js';
 
-Polymer({
-  is: 'history-router',
+/** @polymer */
+export class HistoryRouterElement extends PolymerElement {
+  static get is() {
+    return 'history-router';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    selectedPage: {
-      type: String,
-      notify: true,
-      observer: 'selectedPageChanged_',
-    },
+  static get properties() {
+    return {
+      selectedPage: {
+        type: String,
+        notify: true,
+        observer: 'selectedPageChanged_',
+      },
 
-    /** @type {QueryState} */
-    queryState: Object,
+      /** @type {QueryState} */
+      queryState: Object,
 
-    path_: String,
+      path_: String,
 
-    queryParams_: Object,
+      queryParams_: Object,
 
-    /** @private {string} */
-    query_: {
-      type: String,
-      observer: 'onQueryChanged_',
-    },
+      /** @private {string} */
+      query_: {
+        type: String,
+        observer: 'onQueryChanged_',
+      },
 
-    /** @private {string} */
-    urlQuery_: {
-      type: String,
-      observer: 'onUrlQueryChanged_',
-    },
-  },
+      /** @private {string} */
+      urlQuery_: {
+        type: String,
+        observer: 'onUrlQueryChanged_',
+      },
+    };
+  }
 
-  /** @private {boolean} */
-  parsing_: false,
+  static get observers() {
+    return ['onUrlChanged_(path_, queryParams_)'];
+  }
 
-  observers: [
-    'onUrlChanged_(path_, queryParams_)',
-  ],
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.parsing_ = false;
+
+    /** @private {Debouncer} */
+    this.debouncer_;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // Redirect legacy search URLs to URLs compatible with History.
     if (window.location.hash) {
       window.location.href = window.location.href.split('#')[0] + '?' +
           window.location.hash.substr(1);
     }
-  },
+  }
 
   /**
    * @param {?string} current Current value of the query.
@@ -66,12 +82,12 @@ Polymer({
     if (previous !== undefined) {
       this.urlQuery_ = this.query_;
     }
-  },
+  }
 
   /** @private */
   onUrlQueryChanged_() {
     this.query_ = this.urlQuery_;
-  },
+  }
 
   /**
    * Write all relevant page state to the URL.
@@ -87,7 +103,7 @@ Polymer({
     // the outcome.
     this.path_ = '/' + path;
     this.set('queryParams_.q', this.queryState.searchTerm || null);
-  },
+  }
 
   /** @private */
   selectedPageChanged_() {
@@ -96,7 +112,7 @@ Polymer({
     if (!this.parsing_) {
       this.serializeUrl();
     }
-  },
+  }
 
   /** @private */
   parseUrl_() {
@@ -110,17 +126,21 @@ Polymer({
     // Must change selectedPage before `change-query`, otherwise the
     // query-manager will call serializeUrl() with the old page.
     this.selectedPage = page;
-    this.fire('change-query', changes);
+    this.dispatchEvent(new CustomEvent(
+        'change-query', {bubbles: true, composed: true, detail: changes}));
     this.serializeUrl();
 
     this.parsing_ = false;
-  },
+  }
 
   /** @private */
   onUrlChanged_() {
     // Changing the url and query parameters at the same time will cause two
     // calls to onUrlChanged_. Debounce the actual work so that these two
     // changes get processed together.
-    this.debounce('parseUrl', this.parseUrl_.bind(this));
-  },
-});
+    this.debouncer_ = Debouncer.debounce(
+        this.debouncer_, microTask, this.parseUrl_.bind(this));
+  }
+}
+
+customElements.define(HistoryRouterElement.is, HistoryRouterElement);
