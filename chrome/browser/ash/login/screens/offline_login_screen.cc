@@ -26,8 +26,7 @@
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserActionCancel[] = "cancel";
@@ -242,4 +241,4 @@ void OfflineLoginScreen::UpdateState(NetworkError::ErrorReason reason) {
        reason != NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

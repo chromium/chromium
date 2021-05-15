@@ -9,11 +9,10 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 
-namespace chromeos {
-
-class ParentalHandoffScreenView;
-class WizardContext;
+namespace ash {
 
 class ParentalHandoffScreen : public BaseScreen {
  public:
@@ -50,6 +49,12 @@ class ParentalHandoffScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ParentalHandoffScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PARENTAL_HANDOFF_SCREEN_H_

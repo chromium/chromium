@@ -8,10 +8,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 
-namespace chromeos {
-
-class SupervisionTransitionScreenView;
+namespace ash {
 
 class SupervisionTransitionScreen : public BaseScreen {
  public:
@@ -39,6 +39,12 @@ class SupervisionTransitionScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(SupervisionTransitionScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::SupervisionTransitionScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_SUPERVISION_TRANSITION_SCREEN_H_

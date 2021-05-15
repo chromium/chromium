@@ -10,14 +10,13 @@
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 
+namespace ash {
 namespace {
 
 constexpr const char kUserActionEnrollButtonClicked[] = "enroll";
 constexpr const char kUserActionDontEnrollButtonClicked[] = "dont-enroll";
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 std::string PackagedLicenseScreen::GetResultString(Result result) {
@@ -80,13 +79,12 @@ void PackagedLicenseScreen::OnUserAction(const std::string& action_id) {
     BaseScreen::OnUserAction(action_id);
 }
 
-bool PackagedLicenseScreen::HandleAccelerator(
-    ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+bool PackagedLicenseScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kStartEnrollment) {
     exit_callback_.Run(Result::ENROLL);
     return true;
   }
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

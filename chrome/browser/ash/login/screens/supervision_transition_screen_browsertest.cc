@@ -31,8 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kSupervisionTransitionId[] = "supervision-transition";
@@ -42,8 +41,6 @@ const test::UIPath kSupervisionDialog = {kSupervisionTransitionId,
 const test::UIPath kErrorDialog = {kSupervisionTransitionId,
                                    "supervisionTransitionErrorDialog"};
 const test::UIPath kAcceptButton = {kSupervisionTransitionId, "accept-button"};
-
-}  // namespace
 
 // Param returns the original user type.
 class SupervisionTransitionScreenTest
@@ -109,8 +106,8 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest, SuccessfulTransition) {
   test::OobeJS().ExpectVisiblePath(kSupervisionDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetInteger(
       arc::prefs::kArcSupervisionTransition,
@@ -136,8 +133,8 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
   test::OobeJS().ExpectVisiblePath(kSupervisionDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   base::OneShotTimer* timer =
       LoginDisplayHost::default_host()
@@ -153,8 +150,8 @@ IN_PROC_BROWSER_TEST_P(SupervisionTransitionScreenTest,
   test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
   test::OobeJS().ExpectHiddenPath(kSupervisionDialog);
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().TapOnPath(kAcceptButton);
 
@@ -176,4 +173,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(LoggedInUserMixin::LogInType::kRegular,
                                          LoggedInUserMixin::LogInType::kChild));
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

@@ -9,14 +9,13 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 
+namespace ash {
 namespace {
 
 constexpr char kUserActionScreenDismissed[] = "screen-dismissed";
 constexpr char kUserActionLearnMore[] = "learn-more";
 
 }  // namespace
-
-namespace chromeos {
 
 SignInFatalErrorScreen::SignInFatalErrorScreen(
     SignInFatalErrorView* view,
@@ -88,4 +87,4 @@ void SignInFatalErrorScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,9 +8,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class PinSetupScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between PinSetupScreen and its
 // WebUI representation.
@@ -21,7 +23,7 @@ class PinSetupScreenView {
   virtual ~PinSetupScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(PinSetupScreen* screen) = 0;
+  virtual void Bind(ash::PinSetupScreen* screen) = 0;
 
   // Shows the contents of the screen, using |token| to access QuickUnlock API.
   virtual void Show(const std::string& token) = 0;
@@ -48,18 +50,24 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // PinSetupScreenView:
-  void Bind(PinSetupScreen* screen) override;
+  void Bind(ash::PinSetupScreen* screen) override;
   void Hide() override;
   void Initialize() override;
   void Show(const std::string& token) override;
   void SetLoginSupportAvailable(bool available) override;
 
  private:
-  PinSetupScreen* screen_ = nullptr;
+  ash::PinSetupScreen* screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PinSetupScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::PinSetupScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_

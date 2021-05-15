@@ -914,8 +914,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
         chromeos::kDeviceShowNumericKeyboardForPassword,
         &user_info.show_pin_pad_for_password);
     user_manager::known_user::GetBooleanPref(
-        user->GetAccountId(),
-        chromeos::prefs::kLoginDisplayPasswordButtonEnabled,
+        user->GetAccountId(), prefs::kLoginDisplayPasswordButtonEnabled,
         &user_info.show_display_password_button);
 
     // Fill multi-profile data.

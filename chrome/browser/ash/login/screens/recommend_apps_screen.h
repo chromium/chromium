@@ -12,15 +12,15 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 
 namespace base {
 class Value;
 }
 
-namespace chromeos {
-
+namespace ash {
 class RecommendAppsFetcher;
-class RecommendAppsScreenView;
 
 // This is Recommend Apps screen that is displayed as a part of user first
 // sign-in flow.
@@ -81,6 +81,12 @@ class RecommendAppsScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(RecommendAppsScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash ::RecommendAppsScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_SCREEN_H_

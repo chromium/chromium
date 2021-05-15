@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 std::string RecommendAppsScreen::GetResultString(Result result) {
@@ -103,4 +103,4 @@ void RecommendAppsScreen::OnParseResponseError() {
     view_->OnParseResponseError();
 }
 
-}  // namespace chromeos
+}  // namespace ash

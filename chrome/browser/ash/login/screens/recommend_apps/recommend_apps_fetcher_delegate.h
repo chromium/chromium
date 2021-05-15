@@ -9,7 +9,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Delegate interface used by RecommendAppsFetcher to report its results.
 class RecommendAppsFetcherDelegate {
@@ -26,6 +26,12 @@ class RecommendAppsFetcherDelegate {
   virtual void OnParseResponseError() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::RecommendAppsFetcherDelegate;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_DELEGATE_H_

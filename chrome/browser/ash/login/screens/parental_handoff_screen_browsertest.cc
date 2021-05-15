@@ -37,8 +37,7 @@
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath kParentalHandoffDialog = {"parental-handoff",
@@ -49,8 +48,6 @@ SystemWebDialogDelegate* GetEduCoexistenceLoginDialog() {
   return chromeos::SystemWebDialogDelegate::FindInstance(
       SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
-
-}  // namespace
 
 class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
  public:
@@ -139,10 +136,9 @@ ParentalHandoffScreenBrowserTest::GetParentalHandoffScreen() {
 void ParentalHandoffScreenBrowserTest::ExitSyncConsentScreen() {
   test::OobeJS().CreateVisibilityWaiter(true, {"sync-consent"})->Wait();
 
-  const std::string button_name =
-      chromeos::features::IsSplitSettingsSyncEnabled()
-          ? "acceptButton"
-          : "settingsSaveAndContinueButton";
+  const std::string button_name = features::IsSplitSettingsSyncEnabled()
+                                      ? "acceptButton"
+                                      : "settingsSaveAndContinueButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
   test::OobeJS().TapOnPath({"sync-consent", button_name});
@@ -249,4 +245,5 @@ IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest, ChildUserLogin) {
       "OOBE.StepCompletionTimeByExitReason.Parental-handoff.Done", 1);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

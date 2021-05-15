@@ -27,10 +27,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::ElementsAre;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::testing::ElementsAre;
 
 const test::UIPath kBackButton = {"pin-setup", "backButton"};
 const test::UIPath kNextButton = {"pin-setup", "nextButton"};
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, Skipped) {
 }
 
 IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
 }
 
 IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
 }
 
 IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, FinishedFlow) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
 // Tests that PIN setup is shown to Family Link and regular users in tablet
 // mode.
 IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
 
   WaitForScreenShown();
@@ -326,4 +326,4 @@ IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
           1)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

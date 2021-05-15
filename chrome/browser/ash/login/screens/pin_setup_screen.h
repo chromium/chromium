@@ -13,11 +13,12 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/wizard_context.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 
-namespace chromeos {
-
-class PinSetupScreenView;
-class WizardContext;
+namespace ash {
 
 class PinSetupScreen : public BaseScreen {
  public:
@@ -81,6 +82,12 @@ class PinSetupScreen : public BaseScreen {
   DISALLOW_COPY_AND_ASSIGN(PinSetupScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::PinSetupScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PIN_SETUP_SCREEN_H_

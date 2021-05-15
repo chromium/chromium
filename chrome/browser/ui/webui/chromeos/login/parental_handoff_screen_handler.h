@@ -9,13 +9,15 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
+namespace ash {
+class ParentalHandoffScreen;
+}
+
 namespace login {
 class LocalizedValuesBuilder;
 }  // namespace login
 
 namespace chromeos {
-
-class ParentalHandoffScreen;
 class JSCallsContainer;
 
 // Interface for dependency injection between ParentalHandoffScreen and its
@@ -30,7 +32,7 @@ class ParentalHandoffScreenView {
   virtual void Show(const std::u16string& username) = 0;
 
   // Binds |screen| to the view.
-  virtual void Bind(ParentalHandoffScreen* screen) = 0;
+  virtual void Bind(ash::ParentalHandoffScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -55,12 +57,18 @@ class ParentalHandoffScreenHandler : public BaseScreenHandler,
 
   // Shows the contents of the screen.
   void Show(const std::u16string& username) override;
-  void Bind(ParentalHandoffScreen* screen) override;
+  void Bind(ash::ParentalHandoffScreen* screen) override;
   void Unbind() override;
 
-  ParentalHandoffScreen* screen_ = nullptr;
+  ash::ParentalHandoffScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ParentalHandoffScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PARENTAL_HANDOFF_SCREEN_HANDLER_H_

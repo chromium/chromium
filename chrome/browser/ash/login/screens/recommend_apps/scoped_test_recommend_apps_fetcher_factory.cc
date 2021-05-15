@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedTestRecommendAppsFetcherFactory::ScopedTestRecommendAppsFetcherFactory(
     const RecommendAppsFetcher::FactoryCallback& factory_callback)
@@ -17,4 +17,4 @@ ScopedTestRecommendAppsFetcherFactory::
   RecommendAppsFetcher::SetFactoryCallbackForTesting(nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

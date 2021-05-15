@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -20,7 +21,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
@@ -174,10 +175,12 @@ class SyncConsentScreen : public BaseScreen,
   DISALLOW_COPY_AND_ASSIGN(SyncConsentScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-using ::chromeos::SyncConsentScreen;
+namespace chromeos {
+using ::ash::SyncConsentScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_

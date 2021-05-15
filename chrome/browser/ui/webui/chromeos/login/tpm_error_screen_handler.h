@@ -7,9 +7,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class TpmErrorScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between TpmErrorScreen and its
 // WebUI representation.
@@ -23,7 +25,7 @@ class TpmErrorView {
   virtual void Show() = 0;
 
   // Binds `screen` to the view.
-  virtual void Bind(TpmErrorScreen* screen) = 0;
+  virtual void Bind(ash::TpmErrorScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
@@ -40,7 +42,7 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
 
  private:
   void Show() override;
-  void Bind(TpmErrorScreen* screen) override;
+  void Bind(ash::TpmErrorScreen* screen) override;
   void Unbind() override;
 
   // BaseScreenHandler:
@@ -50,9 +52,15 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
 
   bool show_on_init_ = false;
 
-  TpmErrorScreen* screen_ = nullptr;
+  ash::TpmErrorScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::TpmErrorView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TPM_ERROR_SCREEN_HANDLER_H_

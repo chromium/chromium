@@ -38,8 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath webview_ui_path = {"recommend-apps", "appView"};
@@ -106,8 +105,6 @@ class StubRecommendAppsFetcher : public RecommendAppsFetcher {
   bool started_ = false;
   int retries_ = 0;
 };
-
-}  // namespace
 
 class RecommendAppsScreenTest : public OobeBaseTest {
  public:
@@ -570,4 +567,5 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenManagedTest, SkipDueToManagedUser) {
             RecommendAppsScreen::Result::NOT_APPLICABLE);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

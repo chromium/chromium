@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 // Delegate interface used by RecommendAppsFetcher to report its results.
 class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
@@ -61,6 +61,6 @@ class FakeRecommendAppsFetcherDelegate : public RecommendAppsFetcherDelegate {
   base::OnceClosure result_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_DELEGATE_H_

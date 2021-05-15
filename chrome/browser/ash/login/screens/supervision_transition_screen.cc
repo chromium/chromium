@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 SupervisionTransitionScreen::SupervisionTransitionScreen(
     SupervisionTransitionScreenView* view,
@@ -44,4 +44,4 @@ void SupervisionTransitionScreen::OnSupervisionTransitionFinished() {
   exit_callback_.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

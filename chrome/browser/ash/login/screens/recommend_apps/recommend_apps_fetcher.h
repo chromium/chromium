@@ -9,8 +9,7 @@
 
 #include "base/callback_forward.h"
 
-namespace chromeos {
-
+namespace ash {
 class RecommendAppsFetcherDelegate;
 
 class RecommendAppsFetcher {
@@ -29,6 +28,12 @@ class RecommendAppsFetcher {
   virtual void Retry() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::RecommendAppsFetcher;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_H_

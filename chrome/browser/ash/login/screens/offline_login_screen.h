@@ -12,11 +12,10 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/idle_detector.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 
-namespace chromeos {
-
-class OfflineLoginView;
+namespace ash {
 
 // This class represents offline login screen: that handles login in offline
 // mode with provided username and password checked against cryptohome.
@@ -84,6 +83,12 @@ class OfflineLoginScreen
   base::WeakPtrFactory<OfflineLoginScreen> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OfflineLoginScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_OFFLINE_LOGIN_SCREEN_H_

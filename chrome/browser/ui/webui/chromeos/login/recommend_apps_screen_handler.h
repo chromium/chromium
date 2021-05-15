@@ -10,9 +10,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 class RecommendAppsScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between RecommendAppsScreen and its
 // WebUI representation.
@@ -23,7 +25,7 @@ class RecommendAppsScreenView {
   virtual ~RecommendAppsScreenView() = default;
 
   // Sets screen this view belongs to.
-  virtual void Bind(RecommendAppsScreen* screen) = 0;
+  virtual void Bind(ash::RecommendAppsScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -55,7 +57,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   void RegisterMessages() override;
 
   // RecommendAppsScreenView:
-  void Bind(RecommendAppsScreen* screen) override;
+  void Bind(ash::RecommendAppsScreen* screen) override;
   void Show() override;
   void Hide() override;
   void OnLoadSuccess(const base::Value& app_list) override;
@@ -74,7 +76,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   void HandleRetry();
   void HandleInstall(const base::ListValue* args);
 
-  RecommendAppsScreen* screen_ = nullptr;
+  ash::RecommendAppsScreen* screen_ = nullptr;
 
   PrefService* pref_service_;
 
@@ -87,5 +89,11 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::RecommendAppsScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RECOMMEND_APPS_SCREEN_HANDLER_H_

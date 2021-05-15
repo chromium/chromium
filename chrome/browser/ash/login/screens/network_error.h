@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
 
-namespace chromeos {
+namespace ash {
 
 // TODO(jdufault): Remove Network prefix from NetworkError associated classes.
 // See crbug.com/672142
@@ -60,11 +60,12 @@ class NetworkError {
   static const char* ErrorReasonString(ErrorReason reason);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkError;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::NetworkError;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_

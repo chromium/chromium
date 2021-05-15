@@ -34,22 +34,18 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace em = enterprise_management;
-
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-using testing::_;
-using testing::InvokeWithoutArgs;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
 
 const char kAccountId[] = "dla@example.com";
 const char kDisplayName[] = "display name";
-
-}  // namespace
 
 class TermsOfServiceScreenTest : public OobeBaseTest {
  public:
@@ -113,8 +109,8 @@ class TermsOfServiceScreenTest : public OobeBaseTest {
   }
 
   void StartLogin() {
-    ASSERT_TRUE(ash::LoginScreenTestApi::ExpandPublicSessionPod(account_id_));
-    ash::LoginScreenTestApi::ClickPublicExpandedSubmitButton();
+    ASSERT_TRUE(LoginScreenTestApi::ExpandPublicSessionPod(account_id_));
+    LoginScreenTestApi::ClickPublicExpandedSubmitButton();
   }
 
   void StartPublicSession() {
@@ -141,7 +137,7 @@ class TermsOfServiceScreenTest : public OobeBaseTest {
 
   void WaitFosScreenShown() {
     OobeScreenWaiter(TermsOfServiceScreenView::kScreenId).Wait();
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
   void WaitForScreenExit() {
@@ -265,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(TermsOfServiceScreenTest, Declined) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Tos", 1);
 
   EXPECT_TRUE(session_manager_client()->session_stopped());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsPublicSessionExpanded());
+  EXPECT_TRUE(LoginScreenTestApi::IsPublicSessionExpanded());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

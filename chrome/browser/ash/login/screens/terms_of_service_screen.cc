@@ -28,7 +28,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr const char kAccept[] = "accept";
@@ -235,4 +235,4 @@ void TermsOfServiceScreen::OnDownloaded(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

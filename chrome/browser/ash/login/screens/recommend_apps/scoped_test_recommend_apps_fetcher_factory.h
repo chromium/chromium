@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 
-namespace chromeos {
+namespace ash {
 
 // Test helper class for registering a recommend apps fetcher factory callback.
 class ScopedTestRecommendAppsFetcherFactory {
@@ -21,6 +21,12 @@ class ScopedTestRecommendAppsFetcherFactory {
   RecommendAppsFetcher::FactoryCallback factory_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ScopedTestRecommendAppsFetcherFactory;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_SCOPED_TEST_RECOMMEND_APPS_FETCHER_FACTORY_H_

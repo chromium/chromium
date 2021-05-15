@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kErrorReasonProxyAuthCancelled[] = "proxy auth cancelled";
@@ -49,4 +48,4 @@ const char* NetworkError::ErrorReasonString(ErrorReason reason) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

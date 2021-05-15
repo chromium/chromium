@@ -12,9 +12,11 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class TermsOfServiceScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between TermsOfServiceScreen and its
 // WebUI representation.
@@ -25,7 +27,7 @@ class TermsOfServiceScreenView {
   virtual ~TermsOfServiceScreenView() {}
 
   // Sets screen this view belongs to.
-  virtual void SetScreen(TermsOfServiceScreen* screen) = 0;
+  virtual void SetScreen(ash::TermsOfServiceScreen* screen) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
@@ -62,7 +64,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // TermsOfServiceScreenView:
-  void SetScreen(TermsOfServiceScreen* screen) override;
+  void SetScreen(ash::TermsOfServiceScreen* screen) override;
   void Show() override;
   void Hide() override;
   void SetManager(const std::string& manager) override;
@@ -87,7 +89,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   // nothing if the download is still in progress.
   void UpdateTermsOfServiceInUI();
 
-  TermsOfServiceScreen* screen_ = nullptr;
+  ash::TermsOfServiceScreen* screen_ = nullptr;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -105,5 +107,11 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::TermsOfServiceScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

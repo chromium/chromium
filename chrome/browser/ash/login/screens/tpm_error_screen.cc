@@ -7,11 +7,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
+namespace ash {
 namespace {
-constexpr char kUserActionReboot[] = "reboot-system";
-}  // namespace
 
-namespace chromeos {
+constexpr char kUserActionReboot[] = "reboot-system";
+
+}  // namespace
 
 TpmErrorScreen::TpmErrorScreen(TpmErrorView* view)
     : BaseScreen(TpmErrorView::kScreenId,
@@ -47,4 +48,4 @@ void TpmErrorScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

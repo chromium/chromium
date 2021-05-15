@@ -18,8 +18,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserActionNext[] = "next";
@@ -102,4 +101,4 @@ void ParentalHandoffScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

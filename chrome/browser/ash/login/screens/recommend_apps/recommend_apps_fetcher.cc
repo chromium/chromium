@@ -19,8 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // The factory callback that will be used to create RecommendAppsFetcher
@@ -37,11 +36,11 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
     return g_factory_callback->Run(delegate);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFakeArcRecommendedAppsForTesting)) {
+          switches::kFakeArcRecommendedAppsForTesting)) {
     LOG(WARNING) << "Using fake recommended apps fetcher";
     std::string num_apps_str =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kFakeArcRecommendedAppsForTesting);
+            switches::kFakeArcRecommendedAppsForTesting);
     int fake_apps_count = 0;
     if (!base::StringToInt(num_apps_str, &fake_apps_count)) {
       fake_apps_count = 3;
@@ -50,8 +49,8 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
                                                       fake_apps_count);
   }
 
-  mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
-  ash::BindCrosDisplayConfigController(
+  mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config;
+  BindCrosDisplayConfigController(
       display_config.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RecommendAppsFetcherImpl>(
       delegate, std::move(display_config),
@@ -69,4 +68,4 @@ void RecommendAppsFetcher::SetFactoryCallbackForTesting(
   g_factory_callback = callback;
 }
 
-}  // namespace chromeos
+}  // namespace ash

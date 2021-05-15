@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/run_loop.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeRecommendAppsFetcherDelegate::FakeRecommendAppsFetcherDelegate() = default;
 
@@ -47,4 +47,4 @@ void FakeRecommendAppsFetcherDelegate::SetResult(Result result) {
     std::move(result_callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

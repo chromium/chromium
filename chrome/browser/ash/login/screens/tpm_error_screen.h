@@ -8,10 +8,10 @@
 #include <string>
 
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 
-namespace chromeos {
-
-class TpmErrorView;
+namespace ash {
 
 // Controller for the tpm error screen.
 class TpmErrorScreen : public BaseScreen {
@@ -34,6 +34,12 @@ class TpmErrorScreen : public BaseScreen {
   TpmErrorView* view_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::TpmErrorScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_TPM_ERROR_SCREEN_H_

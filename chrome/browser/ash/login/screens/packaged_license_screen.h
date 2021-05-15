@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 
-namespace chromeos {
-
-class PackagedLicenseView;
+namespace ash {
 
 // Screen which is shown before login and enterprise screens.
 // It advertises the packaged license which allows user enroll device.
@@ -55,7 +55,7 @@ class PackagedLicenseScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
  private:
   PackagedLicenseView* view_ = nullptr;
@@ -63,6 +63,12 @@ class PackagedLicenseScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::PackagedLicenseScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PACKAGED_LICENSE_SCREEN_H_

@@ -33,8 +33,7 @@
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_version_info.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kGetAppListUrl[] =
@@ -261,7 +260,7 @@ void RecordUmaResponseParseResult(RecommendAppsResponseParseResult result) {
 
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config,
+    mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
     network::mojom::URLLoaderFactory* url_loader_factory)
     : delegate_(delegate),
       url_loader_factory_(url_loader_factory),
@@ -344,11 +343,11 @@ void RecommendAppsFetcherImpl::OnProtoMessageCompressedAndEncoded(
 }
 
 void RecommendAppsFetcherImpl::OnAshResponse(
-    std::vector<ash::mojom::DisplayUnitInfoPtr> all_displays_info) {
+    std::vector<mojom::DisplayUnitInfoPtr> all_displays_info) {
   ash_ready_ = true;
 
   int screen_density = 0;
-  for (const ash::mojom::DisplayUnitInfoPtr& display_info : all_displays_info) {
+  for (const mojom::DisplayUnitInfoPtr& display_info : all_displays_info) {
     if (base::NumberToString(display::Display::InternalDisplayId()) ==
         display_info->id) {
       screen_density = display_info->dpi_x + display_info->dpi_y;
@@ -619,4 +618,4 @@ base::Optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   return output;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -23,8 +23,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionDoneButtonClicked[] = "done-button";
@@ -132,7 +131,7 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
 
   // Skip the screen if the device is not in tablet mode, unless tablet mode
   // first user run is forced on the device.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
+  if (!TabletMode::Get()->InTabletMode() &&
       !switches::ShouldOobeUseTabletModeFirstRun() &&
       !show_for_family_link_user) {
     ClearAuthData(context);
@@ -209,4 +208,4 @@ void PinSetupScreen::OnTokenTimedOut() {
   exit_callback_.Run(Result::TIMED_OUT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

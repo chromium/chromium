@@ -33,8 +33,7 @@ class URLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace chromeos {
-
+namespace ash {
 class RecommendAppsFetcherDelegate;
 
 // This class handles the network request for the Recommend Apps screen. It is
@@ -61,8 +60,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
  public:
   RecommendAppsFetcherImpl(
       RecommendAppsFetcherDelegate* delegate,
-      mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
-          display_config,
+      mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
       network::mojom::URLLoaderFactory* url_loader_factory);
   ~RecommendAppsFetcherImpl() override;
 
@@ -91,8 +89,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // Callback function called when display unit info list is retrieved from ash.
   // It will populate the device config info related to the screen density.
-  void OnAshResponse(
-      std::vector<ash::mojom::DisplayUnitInfoPtr> all_displays_info);
+  void OnAshResponse(std::vector<mojom::DisplayUnitInfoPtr> all_displays_info);
 
   // Callback function called when ARC features are read by the parser.
   // It will populate the device config info related to ARC features.
@@ -155,12 +152,12 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   ArcFeaturesGetter arc_features_getter_;
 
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
+  mojo::Remote<mojom::CrosDisplayConfigController> cros_display_config_;
   base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RecommendAppsFetcherImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_

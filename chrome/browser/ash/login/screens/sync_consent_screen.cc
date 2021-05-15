@@ -33,7 +33,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Delay showing chrome sync settings by this amount of time to make them
@@ -111,7 +111,7 @@ void SyncConsentScreen::Init() {
 void SyncConsentScreen::Finish(Result result) {
   DCHECK(profile_);
   // Always set completed, even if the dialog was skipped (e.g. by policy).
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kSyncOobeCompleted, true);
   // Record whether the dialog was shown, skipped, etc.
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
   // Record the final state of the sync service.
@@ -192,7 +192,7 @@ void SyncConsentScreen::OnContinue(
     const std::vector<int>& consent_description,
     int consent_confirmation,
     SyncConsentScreenHandler::UserChoice choice) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(features::IsSplitSettingsSyncEnabled());
   if (is_hidden())
     return;
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.UserChoice", choice);
@@ -205,7 +205,7 @@ void SyncConsentScreen::OnContinue(
 }
 
 void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(features::IsSplitSettingsSyncEnabled());
   // For historical reasons, Chrome OS always has a "sync-consented" primary
   // account in IdentityManager and always has browser sync "enabled". If the
   // user disables the browser sync toggle we disable all browser data types,
@@ -247,7 +247,7 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
   // Prior to SplitSettingsSync, sync is autostarted during ProfileSyncService
   // creation, so sync is already in the right state.
-  if (!chromeos::features::IsSplitSettingsSyncEnabled())
+  if (!features::IsSplitSettingsSyncEnabled())
     return;
 
   switch (behavior_) {
@@ -386,4 +386,4 @@ void SyncConsentScreen::SetProfileSyncEngineInitializedForTesting(bool value) {
   test_sync_engine_initialized_ = value;
 }
 
-}  // namespace chromeos
+}  // namespace ash

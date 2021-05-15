@@ -15,14 +15,15 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 
+namespace ash {
 namespace {
+
 constexpr char kUserActionSignIn[] = "signin";
 constexpr char kUserActionChildSignIn[] = "child-signin";
 constexpr char kUserActionChildAccountCreate[] = "child-account-create";
 constexpr char kUserActionCancel[] = "cancel";
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 // static
 std::string UserCreationScreen::GetResultString(Result result) {
@@ -84,7 +85,7 @@ void UserCreationScreen::ShowImpl() {
 
   scoped_observation_.Observe(network_state_informer_.get());
 
-  ash::LoginScreen::Get()->SetIsFirstSigninStep(true);
+  LoginScreen::Get()->SetIsFirstSigninStep(true);
 
   // Back button is only available in login screen (add user flow) which is
   // indicated by if the device has users. Back button is hidden in the oobe
@@ -125,8 +126,8 @@ void UserCreationScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-bool UserCreationScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
-  if (action == ash::LoginAcceleratorAction::kStartEnrollment) {
+bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
+  if (action == LoginAcceleratorAction::kStartEnrollment) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
     return true;
   }
@@ -152,4 +153,4 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

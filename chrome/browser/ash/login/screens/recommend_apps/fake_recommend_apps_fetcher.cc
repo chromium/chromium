@@ -9,8 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kFakeLoadingTime = base::TimeDelta::FromSeconds(3);
@@ -51,4 +50,4 @@ void FakeRecommendAppsFetcher::Retry() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

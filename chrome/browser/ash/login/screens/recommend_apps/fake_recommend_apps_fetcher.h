@@ -9,8 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 
-namespace chromeos {
-
+namespace ash {
 class RecommendAppsFetcherDelegate;
 
 // This class fakes network request for the Recommend Apps screen.
@@ -38,6 +37,6 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
   base::WeakPtrFactory<FakeRecommendAppsFetcher> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_

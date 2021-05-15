@@ -21,9 +21,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using ::testing::ElementsAre;
+namespace ash {
 
-namespace chromeos {
+using ::testing::ElementsAre;
 
 class PackagedLicenseScreenTest : public OobeBaseTest {
  public:
@@ -148,4 +148,4 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
           static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

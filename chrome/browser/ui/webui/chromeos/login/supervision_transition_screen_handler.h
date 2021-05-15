@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
-
+namespace ash {
 class SupervisionTransitionScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between SupervisionTransitionScreen
 // and its WebUI representation.
@@ -24,7 +26,7 @@ class SupervisionTransitionScreenView {
 
   virtual ~SupervisionTransitionScreenView() {}
 
-  virtual void Bind(SupervisionTransitionScreen* screen) = 0;
+  virtual void Bind(ash::SupervisionTransitionScreen* screen) = 0;
   virtual void Unbind() = 0;
   virtual void Show() = 0;
   virtual void Hide() = 0;
@@ -52,7 +54,7 @@ class SupervisionTransitionScreenHandler
   void RegisterMessages() override;
 
   // SupervisionTransitionScreenView:
-  void Bind(SupervisionTransitionScreen* screen) override;
+  void Bind(ash::SupervisionTransitionScreen* screen) override;
   void Unbind() override;
   void Show() override;
   void Hide() override;
@@ -68,7 +70,7 @@ class SupervisionTransitionScreenHandler
 
   void OnSupervisionTransitionFinished();
 
-  SupervisionTransitionScreen* screen_ = nullptr;
+  ash::SupervisionTransitionScreen* screen_ = nullptr;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
@@ -91,5 +93,12 @@ class SupervisionTransitionScreenHandler
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SupervisionTransitionScreenHandler;
+using ::chromeos::SupervisionTransitionScreenView;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SUPERVISION_TRANSITION_SCREEN_HANDLER_H_

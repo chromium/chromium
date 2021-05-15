@@ -88,7 +88,9 @@ void AddFingerprintResources(content::WebUIDataSource* html_source);
 namespace ash {
 namespace quick_unlock {
 using ::chromeos::quick_unlock::EnabledForTesting;
-}
+using ::chromeos::quick_unlock::IsPinDisabledByPolicy;
+using ::chromeos::quick_unlock::IsPinEnabled;
+}  // namespace quick_unlock
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_UTILS_H_
