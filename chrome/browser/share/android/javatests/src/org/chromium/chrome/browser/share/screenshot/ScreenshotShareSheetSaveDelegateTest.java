@@ -52,6 +52,8 @@ public class ScreenshotShareSheetSaveDelegateTest {
 
     private TestAndroidPermissionDelegate mPermissionDelegate;
 
+    private boolean mScreenshotSaved;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -63,7 +65,12 @@ public class ScreenshotShareSheetSaveDelegateTest {
         Activity activity = mActivityTestRule.getActivity();
         mPermissionDelegate = new TestAndroidPermissionDelegate();
         mScreenshotShareSheetSaveDelegate = new ScreenshotShareSheetSaveDelegate(
-                activity, mModel, mCloseDialogRunnable, mPermissionDelegate);
+                activity, mModel, mCloseDialogRunnable, mPermissionDelegate) {
+            @Override
+            protected void finishDownloadWithPermission(boolean granted) {
+                mScreenshotSaved = true;
+            }
+        };
     }
 
     @Test
@@ -75,18 +82,7 @@ public class ScreenshotShareSheetSaveDelegateTest {
 
         Assert.assertTrue(mPermissionDelegate.calledHasPermission());
         Assert.assertFalse(mPermissionDelegate.calledCanRequestPermission());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSaveWithoutPermissionCanAsk() {
-        mPermissionDelegate.setHasPermission(false);
-        mPermissionDelegate.setCanRequestPermission(true);
-        mScreenshotShareSheetSaveDelegate.save();
-
-        Assert.assertTrue(mPermissionDelegate.calledHasPermission());
-        Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
+        Assert.assertTrue(mScreenshotSaved);
     }
 
     @Test
@@ -100,6 +96,7 @@ public class ScreenshotShareSheetSaveDelegateTest {
         Assert.assertTrue(mPermissionDelegate.calledHasPermission());
         Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
         Assert.assertTrue(mScreenshotShareSheetSaveDelegate.getDialog().isShowing());
+        Assert.assertFalse(mScreenshotSaved);
     }
 
     /**

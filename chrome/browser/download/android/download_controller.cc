@@ -270,7 +270,14 @@ void DownloadController::AcquireFileAccessPermission(
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new AcquirePermissionCallback(std::move(callback)));
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DownloadController_requestFileAccess(env, callback_id);
+
+  ui::ViewAndroid* view =
+      web_contents ? web_contents->GetNativeView() : nullptr;
+  ui::WindowAndroid* window_android = view ? view->GetWindowAndroid() : nullptr;
+  ScopedJavaLocalRef<jobject> jwindow_android =
+      window_android ? window_android->GetJavaObject()
+                     : ScopedJavaLocalRef<jobject>();
+  Java_DownloadController_requestFileAccess(env, callback_id, jwindow_android);
 }
 
 void DownloadController::CreateAndroidDownload(

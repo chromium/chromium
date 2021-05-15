@@ -105,7 +105,9 @@ class QrCodeShareMediator {
         logDownload();
         Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
         if (qrcodeBitmap != null && !mIsDownloadInProgress) {
-            DownloadController.requestFileAccessPermission(this::finishDownloadWithPermission);
+            // TODO(crbug/1209228): Pass the window android.
+            DownloadController.requestFileAccessPermission(
+                    null, this::finishDownloadWithPermission);
             return;
         }
     }

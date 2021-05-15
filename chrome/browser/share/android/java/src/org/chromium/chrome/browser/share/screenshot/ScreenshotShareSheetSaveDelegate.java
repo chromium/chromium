@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.Settings;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.R;
@@ -89,10 +90,12 @@ class ScreenshotShareSheetSaveDelegate {
             return;
         }
 
-        DownloadController.requestFileAccessPermission(this::finishDownloadWithPermission);
+        DownloadController.requestFileAccessPermission(
+                mPermissionDelegate, this::finishDownloadWithPermission);
     }
 
-    private void finishDownloadWithPermission(boolean granted) {
+    @VisibleForTesting
+    protected void finishDownloadWithPermission(boolean granted) {
         if (granted) {
             DateFormat dateFormat =
                     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG);

@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.permissions.AndroidPermissionRequester;
@@ -58,7 +57,16 @@ public class DownloadController {
         void onDownloadInterrupted(final DownloadInfo downloadInfo, boolean isAutoResumable);
     }
 
+    /**
+     * Supplies a {@link AndroidPermissionDelegate} for a given activity.
+     */
+    public interface AndroidPermissionDelegateSupplier {
+        /** @return The {@link AndroidPermissionDelegate} associated with the given activity. */
+        AndroidPermissionDelegate getDelegate(Activity activity);
+    }
+
     private static Observer sObserver;
+    private static AndroidPermissionDelegateSupplier sAndroidPermissionDelegateSupplier;
 
     public static void setDownloadNotificationService(Observer observer) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
@@ -66,6 +74,14 @@ public class DownloadController {
         }
 
         sObserver = observer;
+    }
+
+    /**
+     * Called to set the {@link AndroidPermissionDelegateSupplier}. Must be called at chrome
+     * startup.
+     */
+    public static void setPermissionDelegateSupplier(AndroidPermissionDelegateSupplier supplier) {
+        sAndroidPermissionDelegateSupplier = supplier;
     }
 
     /**
@@ -111,7 +127,6 @@ public class DownloadController {
         sObserver.onDownloadUpdated(downloadInfo);
     }
 
-
     /**
      * Returns whether file access is allowed.
      *
@@ -121,21 +136,19 @@ public class DownloadController {
     private static boolean hasFileAccess() {
         if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity)
-                    .getWindowAndroid()
-                    .hasPermission(permission.WRITE_EXTERNAL_STORAGE);
-        }
-        return false;
+        AndroidPermissionDelegate delegate =
+                sAndroidPermissionDelegateSupplier.getDelegate(activity);
+        return delegate == null ? false : delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
      * Requests the stoarge permission. This should be called from the native code.
      * @param callbackId ID of native callback to notify the result.
+     * @param windowAndroid The {@link WindowAndroid} associated with the tab.
      */
     @CalledByNative
-    private static void requestFileAccess(final long callbackId) {
-        requestFileAccessPermissionHelper(result -> {
+    private static void requestFileAccess(final long callbackId, WindowAndroid windowAndroid) {
+        requestFileAccessPermissionHelper(windowAndroid, result -> {
             DownloadControllerJni.get().onAcquirePermissionResult(
                     callbackId, result.first, result.second);
         });
@@ -143,10 +156,13 @@ public class DownloadController {
 
     /**
      * Requests the stoarge permission from Java.
+     * @param delegate The permission delegate to be used for file access request.
+     * TODO(crbug/1209228): Make the delegate non-null.
      * @param callback Callback to notify if the permission is granted or not.
      */
-    public static void requestFileAccessPermission(final Callback<Boolean> callback) {
-        requestFileAccessPermissionHelper(result -> {
+    public static void requestFileAccessPermission(
+            AndroidPermissionDelegate delegate, final Callback<Boolean> callback) {
+        requestFileAccessPermissionHelper(delegate, result -> {
             boolean granted = result.first;
             String permissions = result.second;
             if (granted || permissions == null) {
@@ -162,16 +178,11 @@ public class DownloadController {
     }
 
     private static void requestFileAccessPermissionHelper(
-            final Callback<Pair<Boolean, String>> callback) {
-        AndroidPermissionDelegate delegate = null;
+            AndroidPermissionDelegate delegate, final Callback<Pair<Boolean, String>> callback) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof ChromeActivity) {
-            WindowAndroid windowAndroid = ((ChromeActivity) activity).getWindowAndroid();
-            if (windowAndroid != null) {
-                delegate = windowAndroid;
-            }
-        } else if (activity instanceof DownloadActivity) {
-            delegate = ((DownloadActivity) activity).getAndroidPermissionDelegate();
+        if (delegate == null) {
+            // TODO(crbug/1209228): Remove this after we always pass a non-null delegate.
+            delegate = sAndroidPermissionDelegateSupplier.getDelegate(activity);
         }
 
         if (delegate == null) {
