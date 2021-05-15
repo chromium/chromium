@@ -220,13 +220,9 @@ cipd_archive("chromedriver") {
   sources = [ _stripped_chromedriver_file ]
 }
 
-cipd_archive("tests") {
-  _manifest_path = "${target_gen_dir}/test_manifest.json"
-  package_basename = "tests"
-  description = "Prebuilt Chromium tests for Fuchsia."
+group("test_packages_for_deps") {
   testonly = true
-
-  deps = [
+  public_deps = [
     "//base:base_unittests_pkg",
     "//fuchsia/runners:cast_runner_integration_tests_pkg",
     "//fuchsia/runners:web_runner_integration_tests_pkg",
@@ -236,6 +232,15 @@ cipd_archive("tests") {
     "//skia:skia_unittests_pkg",
     "//third_party/blink/common:blink_common_unittests_pkg",
   ]
+}
+
+cipd_archive("tests") {
+  _manifest_path = "${target_gen_dir}/test_manifest.json"
+  package_basename = "tests"
+  description = "Prebuilt Chromium tests for Fuchsia."
+  testonly = true
+
+  deps = [ ":test_packages_for_deps" ]
 
   far_sources = [
     "${root_gen_dir}/base/base_unittests/base_unittests.far",
@@ -273,6 +278,7 @@ _debug_symbols_outdir =
     "${target_gen_dir}/${_debug_symbols_archive_name}/${_build_ids_target}"
 
 build_id_dir(_build_ids_target) {
+  testonly = true
   build_id_dirs = [
     "${root_gen_dir}/fuchsia/engine/web_engine",
     "${root_gen_dir}/fuchsia/runners/cast_runner",
@@ -281,6 +287,7 @@ build_id_dir(_build_ids_target) {
 
   output_path = _debug_symbols_outdir
   deps = [
+    ":test_packages_for_deps",
     "//fuchsia/engine:web_engine",
     "//fuchsia/runners:cast_runner_pkg",
     "//fuchsia/runners:web_runner_pkg",
@@ -288,6 +295,7 @@ build_id_dir(_build_ids_target) {
 }
 
 fuchsia_cipd_package(_debug_symbols_archive_name) {
+  testonly = true
   package = "chromium/fuchsia/debug-symbols-${targetarch}"
   package_root = _debug_symbols_outdir
   package_definition_name = "${target_name}.yaml"
@@ -300,6 +308,7 @@ fuchsia_cipd_package(_debug_symbols_archive_name) {
 }
 
 fuchsia_cipd_package("${_debug_symbols_archive_name}_google") {
+  testonly = true
   package = "chrome_internal/fuchsia/debug-symbols-${targetarch}"
   package_root = _debug_symbols_outdir
   package_definition_name = "${target_name}.yaml"
@@ -323,6 +332,7 @@ cipd_archive("clear_key_cdm") {
 }
 
 group("cipd") {
+  # Must be testonly because debug symbols depends on test package symbols.
   testonly = true
   deps = [
     ":castrunner",
