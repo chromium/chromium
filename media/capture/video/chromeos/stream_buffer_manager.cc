@@ -63,7 +63,7 @@ gfx::GpuMemoryBuffer* StreamBufferManager::GetGpuMemoryBufferById(
   return it->second.gmb.get();
 }
 
-base::Optional<StreamBufferManager::Buffer>
+absl::optional<StreamBufferManager::Buffer>
 StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
                                                 uint64_t buffer_ipc_id,
                                                 VideoCaptureFormat* format) {
@@ -73,7 +73,7 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   if (it == stream_context->buffers.end()) {
     LOG(ERROR) << "Invalid buffer: " << buffer_ipc_id
                << " for stream: " << stream_type;
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto buffer_pair = std::move(it->second);
   stream_context->buffers.erase(it);
@@ -92,7 +92,7 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
         gfx::Size(format->frame_size.height(), format->frame_size.width());
   }
 
-  base::Optional<gfx::BufferFormat> gfx_format =
+  absl::optional<gfx::BufferFormat> gfx_format =
       PixFormatVideoToGfx(format->pixel_format);
   DCHECK(gfx_format);
   const auto& original_gmb = buffer_pair.gmb;
@@ -154,7 +154,7 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
       return std::move(buffer_pair.vcd_buffer);
     }
 
-    base::Optional<gfx::BufferFormat> gfx_format =
+    absl::optional<gfx::BufferFormat> gfx_format =
         PixFormatVideoToGfx(format->pixel_format);
     DCHECK(gfx_format);
     auto rotated_gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
@@ -320,9 +320,9 @@ cros::mojom::Camera3StreamPtr StreamBufferManager::GetStreamConfiguration(
   return stream_context_[stream_type]->stream.Clone();
 }
 
-base::Optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
+absl::optional<BufferInfo> StreamBufferManager::RequestBufferForCaptureRequest(
     StreamType stream_type,
-    base::Optional<uint64_t> buffer_ipc_id) {
+    absl::optional<uint64_t> buffer_ipc_id) {
   VideoPixelFormat buffer_format =
       stream_context_[stream_type]->capture_format.pixel_format;
   uint32_t drm_format = PixFormatVideoToDrm(buffer_format);
@@ -405,7 +405,7 @@ int StreamBufferManager::GetBufferKey(uint64_t buffer_ipc_id) {
 
 void StreamBufferManager::ReserveBufferFromFactory(StreamType stream_type) {
   auto& stream_context = stream_context_[stream_type];
-  base::Optional<gfx::BufferFormat> gfx_format =
+  absl::optional<gfx::BufferFormat> gfx_format =
       PixFormatVideoToGfx(stream_context->capture_format.pixel_format);
   if (!gfx_format) {
     device_context_->SetErrorState(
@@ -437,12 +437,12 @@ void StreamBufferManager::ReserveBufferFromFactory(StreamType stream_type) {
   int key = stream_context->buffers.size() + 1;
   stream_context->free_buffers.push(key);
   stream_context->buffers.insert(
-      std::make_pair(key, BufferPair(std::move(gmb), base::nullopt)));
+      std::make_pair(key, BufferPair(std::move(gmb), absl::nullopt)));
 }
 
 void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
   auto& stream_context = stream_context_[stream_type];
-  base::Optional<gfx::BufferFormat> gfx_format =
+  absl::optional<gfx::BufferFormat> gfx_format =
       PixFormatVideoToGfx(stream_context->capture_format.pixel_format);
   if (!gfx_format) {
     device_context_->SetErrorState(
@@ -489,7 +489,7 @@ void StreamBufferManager::DestroyCurrentStreamsAndBuffers() {
 
 StreamBufferManager::BufferPair::BufferPair(
     std::unique_ptr<gfx::GpuMemoryBuffer> input_gmb,
-    base::Optional<Buffer> input_vcd_buffer)
+    absl::optional<Buffer> input_vcd_buffer)
     : gmb(std::move(input_gmb)), vcd_buffer(std::move(input_vcd_buffer)) {}
 
 StreamBufferManager::BufferPair::BufferPair(

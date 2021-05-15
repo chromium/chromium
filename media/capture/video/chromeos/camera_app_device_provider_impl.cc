@@ -39,7 +39,7 @@ void CameraAppDeviceProviderImpl::GetCameraAppDevice(
 
 void CameraAppDeviceProviderImpl::GetCameraAppDeviceWithDeviceId(
     GetCameraAppDeviceCallback callback,
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(
         cros::mojom::GetCameraAppDeviceStatus::ERROR_INVALID_ID,
@@ -68,7 +68,7 @@ void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabled(
 void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId(
     bool enabled,
     SetMultipleStreamsEnabledCallback callback,
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(false);
     return;

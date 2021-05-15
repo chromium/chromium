@@ -228,7 +228,7 @@ CFMutableDictionaryRef CreateFormatExtensions(
     CMVideoCodecType codec_type,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
-    base::Optional<gfx::HDRMetadata> hdr_metadata) {
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
   auto* extensions = [[NSMutableDictionary alloc] init];
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FormatName,
                      CMVideoCodecTypeToString(codec_type));

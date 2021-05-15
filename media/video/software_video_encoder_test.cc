@@ -254,7 +254,7 @@ TEST_P(SoftwareVideoEncoderTest, InitializeAndFlush) {
   options.frame_size = gfx::Size(640, 480);
   bool output_called = false;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         output_called = true;
       });
 
@@ -275,7 +275,7 @@ TEST_P(SoftwareVideoEncoderTest, ForceAllKeyFrames) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_TRUE(output.key_frame);
         outputs_count++;
       });
@@ -303,7 +303,7 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         outputs_count++;
       });
 
@@ -338,7 +338,7 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_NE(output.data, nullptr);
         EXPECT_EQ(output.timestamp, frame_duration * outputs_count);
         outputs_count++;
@@ -382,7 +382,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
-                base::Optional<VideoEncoder::CodecDescription> desc) {
+                absl::optional<VideoEncoder::CodecDescription> desc) {
         auto buffer =
             DecoderBuffer::FromArray(std::move(output.data), output.size);
         buffer->set_timestamp(output.timestamp);
@@ -447,7 +447,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         chunks.push_back(std::move(output));
       });
 
@@ -514,7 +514,7 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         switch (outputs_count) {
           case 0:
             // First frame should have extra_data
@@ -559,7 +559,7 @@ TEST_P(H264VideoEncoderTest, AnnexB) {
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_FALSE(desc.has_value());
         EXPECT_NE(output.data, nullptr);
 
@@ -601,7 +601,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
   options.avc.produce_annexb = false;
   struct ChunkWithConfig {
     VideoEncoderOutput output;
-    base::Optional<VideoEncoder::CodecDescription> desc;
+    absl::optional<VideoEncoder::CodecDescription> desc;
   };
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
   std::vector<scoped_refptr<VideoFrame>> decoded_frames;
@@ -612,7 +612,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
 
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription> desc) {
+          absl::optional<VideoEncoder::CodecDescription> desc) {
         chunks.push_back({std::move(output), std::move(desc)});
       });
 

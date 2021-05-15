@@ -80,7 +80,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   void OnVideoFrameDecoded(
       const scoped_refptr<VideoFrame>& frame,
       bool can_read_without_stalling,
-      const base::Optional<base::UnguessableToken>& release_token) final;
+      const absl::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
   void RequestOverlayInfo(bool restart_for_transitions) final;
 

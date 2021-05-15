@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/test/video_test_environment.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class GpuMemoryBufferFactory;
@@ -42,7 +42,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const std::string& codec,
       size_t num_temporal_layers,
       bool output_bitstream,
-      base::Optional<uint32_t> output_bitrate,
+      absl::optional<uint32_t> output_bitrate,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
 
   ~VideoEncoderTestEnvironment() override;
@@ -63,7 +63,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   uint32_t Bitrate() const;
   // Whether the encoded bitstream is saved to disk.
   bool SaveOutputBitstream() const;
-  base::Optional<base::FilePath> OutputBitstreamFilePath() const;
+  absl::optional<base::FilePath> OutputBitstreamFilePath() const;
   // Gets the frame output configuration.
   const FrameOutputConfig& ImageOutputConfig() const;
 

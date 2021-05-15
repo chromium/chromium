@@ -23,9 +23,9 @@
 #if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
 #include "base/environment.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/scoped_native_library.h"
 #include "base/threading/thread_restrictions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace {
@@ -133,7 +133,7 @@ class CoreLibraryInitializer {
 
  private:
 #if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
-  base::Optional<base::ScopedNativeLibrary> library_;
+  absl::optional<base::ScopedNativeLibrary> library_;
 #endif
 };
 

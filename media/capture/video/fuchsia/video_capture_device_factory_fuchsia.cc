@@ -99,8 +99,8 @@ class VideoCaptureDeviceFactoryFuchsia::DeviceConfigFetcher {
 
   uint64_t device_id_;
   fuchsia::camera3::DevicePtr device_;
-  base::Optional<std::string> description_;
-  base::Optional<VideoCaptureFormats> formats_;
+  absl::optional<std::string> description_;
+  absl::optional<VideoCaptureFormats> formats_;
   base::OnceClosure on_fetched_callback_;
 };
 
@@ -178,7 +178,7 @@ void VideoCaptureDeviceFactoryFuchsia::OnDeviceWatcherDisconnected(
   // Clear the list of devices, so we don't report any camera devices while
   // DeviceWatcher is disconnected. We will try connecting DeviceWatcher again
   // when GetDevicesInfo() is called.
-  devices_ = base::nullopt;
+  devices_ = absl::nullopt;
   num_pending_device_info_requests_ = 0;
 
   MaybeResolvePendingDeviceInfoCallbacks();

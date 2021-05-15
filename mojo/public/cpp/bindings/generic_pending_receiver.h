@@ -9,10 +9,10 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
 
   void reset();
 
-  const base::Optional<std::string>& interface_name() const {
+  const absl::optional<std::string>& interface_name() const {
     return interface_name_;
   }
 
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
  private:
   mojo::ScopedMessagePipeHandle PassPipeIfNameIs(const char* interface_name);
 
-  base::Optional<std::string> interface_name_;
+  absl::optional<std::string> interface_name_;
   mojo::ScopedMessagePipeHandle pipe_;
 
   DISALLOW_COPY_AND_ASSIGN(GenericPendingReceiver);

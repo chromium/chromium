@@ -289,7 +289,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   // TODO(crbug.com/1131175): Use StreamProcessorHelper.
   fuchsia::media::StreamProcessorPtr decoder_;
 
-  base::Optional<fuchsia::media::StreamBufferConstraints>
+  absl::optional<fuchsia::media::StreamBufferConstraints>
       decoder_input_constraints_;
 
   BufferAllocator sysmem_allocator_;

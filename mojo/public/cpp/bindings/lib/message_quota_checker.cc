@@ -39,7 +39,7 @@ const base::FeatureParam<int> kMojoRecordUnreadMessageCountCrashThreshold = {
 
 NOINLINE void MaybeDumpWithoutCrashing(
     size_t total_quota_used,
-    base::Optional<size_t> message_pipe_quota_used,
+    absl::optional<size_t> message_pipe_quota_used,
     int64_t seconds_since_construction,
     double average_write_rate,
     uint64_t messages_enqueued,
@@ -160,7 +160,7 @@ void MessageQuotaChecker::SetMessagePipe(MessagePipeHandle message_pipe) {
 size_t MessageQuotaChecker::GetCurrentQuotaStatusForTesting() {
   base::AutoLock hold(lock_);
   size_t quota_used = consumed_quota_;
-  base::Optional<size_t> message_pipe_quota_used = GetCurrentMessagePipeQuota();
+  absl::optional<size_t> message_pipe_quota_used = GetCurrentMessagePipeQuota();
   if (message_pipe_quota_used.has_value())
     quota_used += message_pipe_quota_used.value();
 
@@ -213,11 +213,11 @@ scoped_refptr<MessageQuotaChecker> MessageQuotaChecker::MaybeCreateImpl(
   return new MessageQuotaChecker(&config);
 }
 
-base::Optional<size_t> MessageQuotaChecker::GetCurrentMessagePipeQuota() {
+absl::optional<size_t> MessageQuotaChecker::GetCurrentMessagePipeQuota() {
   lock_.AssertAcquired();
 
   if (!message_pipe_)
-    return base::nullopt;
+    return absl::nullopt;
 
   uint64_t limit = 0;
   uint64_t usage = 0;
@@ -239,7 +239,7 @@ void MessageQuotaChecker::QuotaCheckImpl(size_t num_enqueued) {
   size_t total_quota_used = 0u;
   base::TimeTicks now;
   double average_write_rate = 0.0;
-  base::Optional<size_t> message_pipe_quota_used;
+  absl::optional<size_t> message_pipe_quota_used;
   {
     base::AutoLock hold(lock_);
 

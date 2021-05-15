@@ -7,11 +7,11 @@
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define REJECT_PROMISE_AND_RETURN_IF_BAD_CDM(promise, cdm)         \
   if (!cdm) {                                                      \
@@ -128,7 +128,7 @@ CdmPromise::Exception ToCdmPromiseException(fuchsia::media::drm::Error error) {
 class FuchsiaCdm::CdmSession {
  public:
   using ResultCB =
-      base::OnceCallback<void(base::Optional<CdmPromise::Exception>)>;
+      base::OnceCallback<void(absl::optional<CdmPromise::Exception>)>;
   using SessionReadyCB = base::OnceCallback<void(bool success)>;
 
   CdmSession(const FuchsiaCdm::SessionCallbacks* callbacks,
@@ -258,8 +258,8 @@ class FuchsiaCdm::CdmSession {
     DCHECK(result_cb_);
     std::move(result_cb_)
         .Run(result.is_err()
-                 ? base::make_optional(ToCdmPromiseException(result.err()))
-                 : base::nullopt);
+                 ? absl::make_optional(ToCdmPromiseException(result.err()))
+                 : absl::nullopt);
   }
 
   const SessionCallbacks* const session_callbacks_;
@@ -434,7 +434,7 @@ void FuchsiaCdm::OnCreateSession(std::unique_ptr<CdmSession> session,
 void FuchsiaCdm::OnGenerateLicenseRequestStatus(
     CdmSession* session,
     uint32_t promise_id,
-    base::Optional<CdmPromise::Exception> exception) {
+    absl::optional<CdmPromise::Exception> exception) {
   DCHECK(session);
   std::string session_id = session->session_id();
 
@@ -522,7 +522,7 @@ void FuchsiaCdm::UpdateSession(const std::string& session_id,
 void FuchsiaCdm::OnProcessLicenseServerMessageStatus(
     const std::string& session_id,
     uint32_t promise_id,
-    base::Optional<CdmPromise::Exception> exception) {
+    absl::optional<CdmPromise::Exception> exception) {
   if (exception.has_value()) {
     promises_.RejectPromise(promise_id, exception.value(), 0,
                             "fail to process license.");
@@ -584,7 +584,7 @@ void FuchsiaCdm::RemoveSession(const std::string& session_id,
 void FuchsiaCdm::OnGenerateLicenseReleaseStatus(
     const std::string& session_id,
     uint32_t promise_id,
-    base::Optional<CdmPromise::Exception> exception) {
+    absl::optional<CdmPromise::Exception> exception) {
   if (exception.has_value()) {
     promises_.RejectPromise(promise_id, exception.value(), 0,
                             "Failed to release license.");

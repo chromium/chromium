@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,6 +30,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -195,7 +195,7 @@ void MojoVideoDecoderService::Construct(
 void MojoVideoDecoderService::Initialize(
     const VideoDecoderConfig& config,
     bool low_delay,
-    const base::Optional<base::UnguessableToken>& cdm_id,
+    const absl::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " config = " << config.AsHumanReadableString()
            << ", cdm_id = "
@@ -382,7 +382,7 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   // you can remove this DCHECK.
   DCHECK(frame->metadata().power_efficient);
 
-  base::Optional<base::UnguessableToken> release_token;
+  absl::optional<base::UnguessableToken> release_token;
   if (frame->HasReleaseMailboxCB() && video_frame_handle_releaser_) {
     // |video_frame_handle_releaser_| is explicitly constructed with a
     // VideoFrameHandleReleaserImpl in Construct().

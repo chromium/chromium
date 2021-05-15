@@ -11,8 +11,8 @@
 #ifndef MEDIA_AUDIO_WIN_VOLUME_RANGE_UTIL_H_
 #define MEDIA_AUDIO_WIN_VOLUME_RANGE_UTIL_H_
 
-#include "base/optional.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -38,7 +38,7 @@ struct VolumeRange {
 // (`range.max_volume_db` - `range.min_volume_db` / `volume_step_db`) and it is
 // clamped to 2000.
 MEDIA_EXPORT void LogVolumeRangeUmaHistograms(
-    base::Optional<VolumeRange> range);
+    absl::optional<VolumeRange> range);
 
 }  // namespace media
 

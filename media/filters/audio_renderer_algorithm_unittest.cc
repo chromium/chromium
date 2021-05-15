@@ -976,7 +976,7 @@ TEST_F(AudioRendererAlgorithmTest, LowLatencyHint) {
 
   // Clearing the hint should restore the higher default playback threshold,
   // such that we no longer have enough buffer to be "adequate for playback".
-  algorithm_.SetLatencyHint(base::nullopt);
+  algorithm_.SetLatencyHint(absl::nullopt);
   EXPECT_FALSE(algorithm_.IsQueueAdequateForPlayback());
 
   // Fill until "full". Verify that "adequate" now matches "full".
@@ -1027,7 +1027,7 @@ TEST_F(AudioRendererAlgorithmTest, HighLatencyHint) {
 
   // Clearing the hint should restore the lower default playback threshold and
   // capacity.
-  algorithm_.SetLatencyHint(base::nullopt);
+  algorithm_.SetLatencyHint(absl::nullopt);
   EXPECT_EQ(algorithm_.QueueCapacity(), default_capacity);
 
   // The queue is over-full from our last fill when the hint was set. Flush and

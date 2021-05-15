@@ -1754,7 +1754,7 @@ bool VaapiWrapper::CreateContextAndSurfaces(
 std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateContextAndScopedVASurface(
     unsigned int va_format,
     const gfx::Size& size,
-    const base::Optional<gfx::Size>& visible_size) {
+    const absl::optional<gfx::Size>& visible_size) {
   if (va_context_id_ != VA_INVALID_ID) {
     LOG(ERROR) << "The current context should be destroyed before creating a "
                   "new one";
@@ -2614,8 +2614,8 @@ bool VaapiWrapper::IsRotationSupported() {
 
 bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
-                               base::Optional<gfx::Rect> src_rect,
-                               base::Optional<gfx::Rect> dest_rect,
+                               absl::optional<gfx::Rect> src_rect,
+                               absl::optional<gfx::Rect> dest_rect,
                                VideoRotation rotation) {
   DCHECK_EQ(mode_, kVideoProcess);
   base::AutoLock auto_lock(*va_lock_);
@@ -2911,7 +2911,7 @@ bool VaapiWrapper::CreateSurfaces(unsigned int va_format,
 std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
     unsigned int va_rt_format,
     const gfx::Size& size,
-    const base::Optional<gfx::Size>& visible_size,
+    const absl::optional<gfx::Size>& visible_size,
     uint32_t va_fourcc) {
   if (kInvalidVaRtFormat == va_rt_format) {
     LOG(ERROR) << "Invalid VA RT format to CreateScopedVASurface";

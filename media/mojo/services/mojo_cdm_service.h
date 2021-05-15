@@ -112,7 +112,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   std::unique_ptr<mojo::Receiver<mojom::Decryptor>> decryptor_receiver_;
 
   // Set to a valid CDM ID if the |cdm_| is successfully created.
-  base::Optional<base::UnguessableToken> cdm_id_;
+  absl::optional<base::UnguessableToken> cdm_id_;
 
   mojo::AssociatedRemote<mojom::ContentDecryptionModuleClient> client_;
 

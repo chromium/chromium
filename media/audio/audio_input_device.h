@@ -51,7 +51,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "media/audio/alive_checker.h"
@@ -60,6 +59,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -160,7 +160,7 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
 
   // Cache the output device used for AEC in case it's called before the stream
   // is created.
-  base::Optional<std::string> output_device_id_for_aec_;
+  absl::optional<std::string> output_device_id_for_aec_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AudioInputDevice);
 };

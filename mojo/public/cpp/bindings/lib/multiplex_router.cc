@@ -70,11 +70,11 @@ class MultiplexRouter::InterfaceEndpoint
     handle_created_ = true;
   }
 
-  const base::Optional<DisconnectReason>& disconnect_reason() const {
+  const absl::optional<DisconnectReason>& disconnect_reason() const {
     return disconnect_reason_;
   }
   void set_disconnect_reason(
-      const base::Optional<DisconnectReason>& disconnect_reason) {
+      const absl::optional<DisconnectReason>& disconnect_reason) {
     router_->AssertLockAcquired();
     disconnect_reason_ = disconnect_reason;
   }
@@ -227,7 +227,7 @@ class MultiplexRouter::InterfaceEndpoint
   // endpoint.
   bool handle_created_;
 
-  base::Optional<DisconnectReason> disconnect_reason_;
+  absl::optional<DisconnectReason> disconnect_reason_;
 
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -489,7 +489,7 @@ ScopedInterfaceEndpointHandle MultiplexRouter::CreateLocalEndpointHandle(
 
 void MultiplexRouter::CloseEndpointHandle(
     InterfaceId id,
-    const base::Optional<DisconnectReason>& reason) {
+    const absl::optional<DisconnectReason>& reason) {
   if (!IsValidInterfaceId(id))
     return;
 
@@ -738,7 +738,7 @@ bool MultiplexRouter::Accept(Message* message) {
 
 bool MultiplexRouter::OnPeerAssociatedEndpointClosed(
     InterfaceId id,
-    const base::Optional<DisconnectReason>& reason) {
+    const absl::optional<DisconnectReason>& reason) {
   MayAutoLock locker(&lock_);
   InterfaceEndpoint* endpoint = FindOrInsertEndpoint(id, nullptr);
 
@@ -984,7 +984,7 @@ bool MultiplexRouter::ProcessNotifyErrorTask(
   DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence());
 
   InterfaceEndpointClient* client = endpoint->client();
-  base::Optional<DisconnectReason> disconnect_reason(
+  absl::optional<DisconnectReason> disconnect_reason(
       endpoint->disconnect_reason());
 
   {
@@ -1215,7 +1215,7 @@ void MultiplexRouter::CloseEndpointsForMessage(const Message& message) {
 
     UpdateEndpointStateMayRemove(endpoint, ENDPOINT_CLOSED);
     MayAutoUnlock unlocker(&lock_);
-    control_message_proxy_.NotifyPeerEndpointClosed(ids[i], base::nullopt);
+    control_message_proxy_.NotifyPeerEndpointClosed(ids[i], absl::nullopt);
   }
 
   ProcessTasks(NO_DIRECT_CLIENT_CALLS, nullptr);

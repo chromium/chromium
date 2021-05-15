@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +24,7 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
@@ -332,7 +332,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     const std::string& device_id) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(params.IsValid());
-  base::Optional<StreamFormat> uma_stream_format;
+  absl::optional<StreamFormat> uma_stream_format;
 
   // If the caller supplied an empty device id to select the default device,
   // we fetch the actual device id of the default device so that the lookup

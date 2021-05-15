@@ -122,7 +122,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // input stream is destroyed. Also affects the stream type of output streams.
   bool communication_mode_is_on_;
 
-  base::Optional<bool> is_aaudio_available_;
+  absl::optional<bool> is_aaudio_available_;
 
   // If set, overrides volume level on output streams
   bool output_volume_override_set_;

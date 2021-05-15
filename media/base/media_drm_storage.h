@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "media/base/media_drm_key_type.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -32,7 +32,7 @@ class MEDIA_EXPORT MediaDrmStorage
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
-  using MediaDrmOriginId = base::Optional<base::UnguessableToken>;
+  using MediaDrmOriginId = absl::optional<base::UnguessableToken>;
 
   struct MEDIA_EXPORT SessionData {
     SessionData(std::vector<uint8_t> key_set_id,

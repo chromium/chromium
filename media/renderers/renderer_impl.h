@@ -58,7 +58,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
   void SetPreservesPitch(bool preserves_pitch) final;
   void SetAutoplayInitiated(bool autoplay_initiated) final;
   void Flush(base::OnceClosure flush_cb) final;
@@ -199,7 +199,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   void OnAudioConfigChange(const AudioDecoderConfig& config);
   void OnVideoConfigChange(const VideoDecoderConfig& config);
   void OnVideoOpacityChange(bool opaque);
-  void OnVideoFrameRateChange(base::Optional<int> fps);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   void OnStreamRestartCompleted();
 

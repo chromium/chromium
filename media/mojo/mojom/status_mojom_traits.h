@@ -6,11 +6,11 @@
 #define MEDIA_MOJO_MOJOM_STATUS_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -20,9 +20,9 @@ struct StructTraits<media::mojom::StatusDataView, media::Status> {
     return input.code();
   }
 
-  static base::Optional<std::string> message(const media::Status& input) {
+  static absl::optional<std::string> message(const media::Status& input) {
     if (input.is_ok())
-      return base::nullopt;
+      return absl::nullopt;
     DCHECK(input.data_);
     return input.message();
   }
@@ -41,12 +41,12 @@ struct StructTraits<media::mojom::StatusDataView, media::Status> {
     return input.data_->causes;
   }
 
-  static base::Optional<base::Value> data(const media::Status& input) {
+  static absl::optional<base::Value> data(const media::Status& input) {
     if (!input.is_ok()) {
       DCHECK(input.data_);
       return input.data_->data.Clone();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   static bool Read(media::mojom::StatusDataView data, media::Status* output);

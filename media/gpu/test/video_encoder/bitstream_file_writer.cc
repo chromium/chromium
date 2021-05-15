@@ -40,7 +40,7 @@ class BitstreamFileWriter::FrameFileWriter {
 
 BitstreamFileWriter::BitstreamFileWriter(
     std::unique_ptr<FrameFileWriter> frame_file_writer,
-    base::Optional<size_t> num_vp9_temporal_layers_to_write)
+    absl::optional<size_t> num_vp9_temporal_layers_to_write)
     : frame_file_writer_(std::move(frame_file_writer)),
       num_vp9_temporal_layers_to_write_(num_vp9_temporal_layers_to_write),
       num_buffers_writing_(0),
@@ -62,7 +62,7 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
     const gfx::Size& resolution,
     uint32_t frame_rate,
     uint32_t num_frames,
-    base::Optional<size_t> num_vp9_temporal_layers_to_write) {
+    absl::optional<size_t> num_vp9_temporal_layers_to_write) {
   std::unique_ptr<FrameFileWriter> frame_file_writer;
   if (!base::DirectoryExists(output_filepath.DirName()))
     base::CreateDirectory(output_filepath.DirName());

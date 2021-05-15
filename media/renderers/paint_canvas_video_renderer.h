@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "cc/paint/paint_canvas.h"
@@ -22,6 +21,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/renderers/video_frame_yuv_converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class RectF;
@@ -257,7 +257,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
   bool CacheBackingWrapsTexture() const;
 
-  base::Optional<Cache> cache_;
+  absl::optional<Cache> cache_;
 
   // If |cache_| is not used for a while, it's deleted to save memory.
   base::DelayTimer cache_deleting_timer_;

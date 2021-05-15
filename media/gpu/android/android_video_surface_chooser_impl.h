@@ -31,7 +31,7 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   // AndroidVideoSurfaceChooser
   void SetClientCallbacks(UseOverlayCB use_overlay_cb,
                           UseTextureOwnerCB use_texture_owner_cb) override;
-  void UpdateState(base::Optional<AndroidOverlayFactoryCB> new_factory,
+  void UpdateState(absl::optional<AndroidOverlayFactoryCB> new_factory,
                    const State& new_state) override;
 
  private:

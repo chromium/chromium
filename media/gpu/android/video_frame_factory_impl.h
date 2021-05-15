@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/video_frame.h"
@@ -20,6 +19,7 @@
 #include "media/gpu/android/shared_image_video_provider.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {
@@ -94,7 +94,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       VideoPixelFormat pixel_format,
       OverlayMode overlay_mode,
-      const base::Optional<VideoFrameMetadata::CopyMode>& copy_mode,
+      const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info,
@@ -116,7 +116,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
   OverlayMode overlay_mode_ = OverlayMode::kDontRequestPromotionHints;
 
   // Indicates how video frame needs to be copied when required.
-  base::Optional<VideoFrameMetadata::CopyMode> copy_mode_;
+  absl::optional<VideoFrameMetadata::CopyMode> copy_mode_;
 
   // Current group that new CodecImages should belong to.  Do not use this on
   // our thread; everything must be posted to the gpu main thread, including

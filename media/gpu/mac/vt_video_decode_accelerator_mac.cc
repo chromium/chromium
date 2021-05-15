@@ -196,7 +196,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
     media::VideoColorSpace color_space,
     media::VideoCodecProfile profile,
-    base::Optional<gfx::HDRMetadata> hdr_metadata,
+    absl::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> format_config(
       CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
@@ -325,7 +325,7 @@ bool InitializeVideoToolboxInternal() {
     // Create a VP9 decoding session.
     if (!CreateVideoToolboxSession(
             CreateVideoFormatVP9(VideoColorSpace::REC709(), VP9PROFILE_PROFILE0,
-                                 base::nullopt, gfx::Size(720, 480)),
+                                 absl::nullopt, gfx::Size(720, 480)),
             /*require_hardware=*/true, /*is_hbd=*/false, &callback, &session,
             &configured_size)) {
       DVLOG(1) << "Hardware VP9 decoding with VideoToolbox is not supported";
@@ -933,7 +933,7 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
 
           // Compute and store frame properties. |image_size| gets filled in
           // later, since it comes from the decoder configuration.
-          base::Optional<int32_t> pic_order_cnt =
+          absl::optional<int32_t> pic_order_cnt =
               poc_.ComputePicOrderCnt(sps, slice_hdr);
           if (!pic_order_cnt.has_value()) {
             WriteToMediaLog(MediaLogMessageLevel::kERROR,

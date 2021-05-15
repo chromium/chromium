@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
@@ -22,6 +21,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -85,7 +85,7 @@ class MEDIA_EXPORT Pipeline {
     // Executed whenever the video frame rate changes.  |fps| will be unset if
     // the frame rate is unstable.  The duration used for the frame rate is
     // based on wall clock time, not media time.
-    virtual void OnVideoFrameRateChange(base::Optional<int> fps) = 0;
+    virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
   };
 
   virtual ~Pipeline() {}
@@ -148,7 +148,7 @@ class MEDIA_EXPORT Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   virtual void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
 
   // Stops the pipeline. This is a blocking function.
@@ -223,7 +223,7 @@ class MEDIA_EXPORT Pipeline {
   // post-decode buffering required to start playback or resume from
   // seek/underflow. A null option indicates the hint is unset and the pipeline
   // can choose its own default.
-  virtual void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
 
   // Sets whether pitch adjustment should be applied when the playback rate is
   // different than 1.0.

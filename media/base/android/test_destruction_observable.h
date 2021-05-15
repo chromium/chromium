@@ -7,7 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -55,7 +55,7 @@ class DestructionObserver {
   bool destructed_;
 
   // Whether to expect destruction. Unset if there is no expectation.
-  base::Optional<bool> expect_destruction_;
+  absl::optional<bool> expect_destruction_;
 
   base::WeakPtrFactory<DestructionObserver> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DestructionObserver);

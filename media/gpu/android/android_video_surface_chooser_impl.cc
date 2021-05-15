@@ -35,7 +35,7 @@ void AndroidVideoSurfaceChooserImpl::SetClientCallbacks(
 }
 
 void AndroidVideoSurfaceChooserImpl::UpdateState(
-    base::Optional<AndroidOverlayFactoryCB> new_factory,
+    absl::optional<AndroidOverlayFactoryCB> new_factory,
     const State& new_state) {
   DCHECK(use_overlay_cb_);
   bool entered_fullscreen =

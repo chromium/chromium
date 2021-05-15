@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -43,12 +43,12 @@ struct CloneTraits<T, false> {
 };
 
 template <typename T>
-struct CloneTraits<base::Optional<T>, false> {
-  static base::Optional<T> Clone(const base::Optional<T>& input) {
+struct CloneTraits<absl::optional<T>, false> {
+  static absl::optional<T> Clone(const absl::optional<T>& input) {
     if (!input)
-      return base::nullopt;
+      return absl::nullopt;
 
-    return base::Optional<T>(mojo::Clone(*input));
+    return absl::optional<T>(mojo::Clone(*input));
   }
 };
 

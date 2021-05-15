@@ -617,7 +617,7 @@ void CameraDeviceDelegate::ReconfigureStreams(
     // ReconfigureStreams is used for video recording. It does not require
     // photo.
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), false, base::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), false, absl::nullopt));
   }
 }
 
@@ -652,7 +652,7 @@ bool CameraDeviceDelegate::MaybeReconfigureForPhotoStream(
                        std::move(new_blob_resolution)));
   } else {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, base::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, absl::nullopt));
   }
   return true;
 }
@@ -673,7 +673,7 @@ void CameraDeviceDelegate::TakePhotoImpl() {
   // Trigger the reconfigure process if it not yet triggered.
   if (on_reconfigured_callbacks_.empty()) {
     request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, base::nullopt));
+        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, absl::nullopt));
   }
   auto on_reconfigured_callback = base::BindOnce(
       [](base::WeakPtr<Camera3AController> controller,
@@ -710,7 +710,7 @@ void CameraDeviceDelegate::OnMojoConnectionError() {
 
 void CameraDeviceDelegate::OnFlushed(
     bool require_photo,
-    base::Optional<gfx::Size> new_blob_resolution,
+    absl::optional<gfx::Size> new_blob_resolution,
     int32_t result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   if (result) {
@@ -845,12 +845,12 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
         return false;
     }
   }();
-  ConfigureStreams(require_photo, base::nullopt);
+  ConfigureStreams(require_photo, absl::nullopt);
 }
 
 void CameraDeviceDelegate::ConfigureStreams(
     bool require_photo,
-    base::Optional<gfx::Size> new_blob_resolution) {
+    absl::optional<gfx::Size> new_blob_resolution) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(device_context_->GetState(),
             CameraDeviceContext::State::kInitialized);
@@ -1148,7 +1148,7 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
       CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
           device_descriptor_.device_id);
   auto specified_fps_range =
-      camera_app_device ? camera_app_device->GetFpsRange() : base::nullopt;
+      camera_app_device ? camera_app_device->GetFpsRange() : absl::nullopt;
   if (specified_fps_range) {
     SetFpsRangeInMetadata(&settings, specified_fps_range->GetMin(),
                           specified_fps_range->GetMax());
@@ -1215,7 +1215,7 @@ void CameraDeviceDelegate::OnConstructedDefaultStillCaptureRequestSettings(
 }
 
 gfx::Size CameraDeviceDelegate::GetBlobResolution(
-    base::Optional<gfx::Size> new_blob_resolution) {
+    absl::optional<gfx::Size> new_blob_resolution) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
   std::vector<gfx::Size> blob_resolutions;
@@ -1326,7 +1326,7 @@ bool CameraDeviceDelegate::SetPointsOfInterest(
 
 mojom::RangePtr CameraDeviceDelegate::GetControlRangeByVendorTagName(
     const std::string& range_name,
-    const base::Optional<int32_t>& current) {
+    const absl::optional<int32_t>& current) {
   const VendorTagInfo* info =
       camera_hal_delegate_->GetVendorTagInfoByName(range_name);
   if (info == nullptr) {
@@ -1360,7 +1360,7 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   auto get_vendor_int =
       [&](const std::string& name,
           const cros::mojom::CameraMetadataPtr& result_metadata,
-          base::Optional<int32_t>* returned_value) {
+          absl::optional<int32_t>* returned_value) {
         returned_value->reset();
         const VendorTagInfo* info =
             camera_hal_delegate_->GetVendorTagInfoByName(name);

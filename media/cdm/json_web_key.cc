@@ -168,7 +168,7 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
     return false;
   }
 
-  base::Optional<base::Value> root = base::JSONReader::Read(jwk_set);
+  absl::optional<base::Value> root = base::JSONReader::Read(jwk_set);
   if (!root || root->type() != base::Value::Type::DICTIONARY) {
     DVLOG(1) << "Not valid JSON: " << jwk_set;
     return false;
@@ -235,7 +235,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
     return false;
   }
 
-  base::Optional<base::Value> root = base::JSONReader::Read(input);
+  absl::optional<base::Value> root = base::JSONReader::Read(input);
   if (!root || root->type() != base::Value::Type::DICTIONARY) {
     error_message->assign("Not valid JSON: ");
     error_message->append(ShortenTo64Characters(input));
@@ -386,7 +386,7 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
     return false;
   }
 
-  base::Optional<base::Value> root = base::JSONReader::Read(license_as_str);
+  absl::optional<base::Value> root = base::JSONReader::Read(license_as_str);
   if (!root || root->type() != base::Value::Type::DICTIONARY) {
     DVLOG(1) << "Not valid JSON: " << license_as_str;
     return false;

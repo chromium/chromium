@@ -57,7 +57,7 @@ TEST_F(OffloadingVideoEncoderTest, Initialize) {
   VideoEncoder::Options options;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
         called_output = true;
       });
@@ -111,7 +111,7 @@ TEST_F(OffloadingVideoEncoderTest, ChangeOptions) {
   });
 
   VideoEncoder::OutputCB output_cb = base::BindRepeating(
-      [](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
       });
 
   EXPECT_CALL(*mock_video_encoder_, ChangeOptions(_, _, _))

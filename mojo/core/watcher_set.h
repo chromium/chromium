@@ -8,9 +8,9 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -59,7 +59,7 @@ class WatcherSet {
 
   Dispatcher* const owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
-  base::Optional<HandleSignalsState> last_known_state_;
+  absl::optional<HandleSignalsState> last_known_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WatcherSet);
 };

@@ -633,7 +633,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
   gfx::Rect current_visible_rect_;
   VideoColorSpace current_color_space_;
 
-  base::Optional<gl::HDRMetadataHelperWin> hdr_metadata_helper_;
+  absl::optional<gl::HDRMetadataHelperWin> hdr_metadata_helper_;
   bool use_empty_video_hdr_metadata_ = false;
 
   // Have we delivered any decoded frames since the last call to Initialize()?

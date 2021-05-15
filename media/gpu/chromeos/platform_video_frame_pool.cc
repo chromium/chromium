@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -138,7 +138,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   return wrapped_frame;
 }
 
-base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
+absl::optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     const Fourcc& fourcc,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -152,13 +152,13 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   VideoPixelFormat format = fourcc.ToVideoPixelFormat();
   if (format == PIXEL_FORMAT_UNKNOWN) {
     VLOGF(1) << "Unsupported fourcc: " << fourcc.ToString();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
 #if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (use_protected) {
     VLOGF(1) << "Protected buffers unsupported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif
 
@@ -186,7 +186,7 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     if (!frame) {
       VLOGF(1) << "Failed to create video frame " << format << " (fourcc "
                << fourcc.ToString() << ")";
-      return base::nullopt;
+      return absl::nullopt;
     }
     frame_layout_ = GpuBufferLayout::Create(fourcc, frame->coded_size(),
                                             frame->layout().planes(),
@@ -243,7 +243,7 @@ void PlatformVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
 
 // static
 void PlatformVideoFramePool::OnFrameReleasedThunk(
-    base::Optional<base::WeakPtr<PlatformVideoFramePool>> pool,
+    absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   DCHECK(pool);

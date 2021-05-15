@@ -413,9 +413,9 @@ Decryptor* CdmAdapter::GetDecryptor() {
   return this;
 }
 
-base::Optional<base::UnguessableToken> CdmAdapter::GetCdmId() const {
+absl::optional<base::UnguessableToken> CdmAdapter::GetCdmId() const {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void CdmAdapter::Decrypt(StreamType stream_type,

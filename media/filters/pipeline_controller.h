@@ -8,11 +8,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -131,7 +131,7 @@ class MEDIA_EXPORT PipelineController {
   void SetPlaybackRate(double playback_rate);
   float GetVolume() const;
   void SetVolume(float volume);
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint);
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint);
   void SetPreservesPitch(bool preserves_pitch);
   void SetAutoplayInitiated(bool autoplay_initiated);
   base::TimeDelta GetMediaTime() const;
@@ -143,7 +143,7 @@ class MEDIA_EXPORT PipelineController {
   void OnEnabledAudioTracksChanged(
       const std::vector<MediaTrack::Id>& enabled_track_ids);
   void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id);
+      absl::optional<MediaTrack::Id> selected_track_id);
 
   // Used to fire the OnTrackChangeComplete function which is captured in a
   // OnceCallback, and doesn't play nicely with gmock.
@@ -226,7 +226,7 @@ class MEDIA_EXPORT PipelineController {
   //   |pending_video_track_change_|.
   base::TimeDelta pending_seek_time_;
   std::vector<MediaTrack::Id> pending_audio_track_change_ids_;
-  base::Optional<MediaTrack::Id> pending_video_track_change_id_;
+  absl::optional<MediaTrack::Id> pending_video_track_change_id_;
 
   // Set to true during Start(). Indicates that |seeked_cb_| must be fired once
   // we've completed startup.

@@ -28,8 +28,8 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
     void BeginObservation(
         base::UnguessableToken id,
         const FeatureVector& features,
-        const base::Optional<TargetValue>& default_target,
-        const base::Optional<ukm::SourceId>& source_id) override {
+        const absl::optional<TargetValue>& default_target,
+        const absl::optional<ukm::SourceId>& source_id) override {
       begin_args_.id_ = id;
       begin_args_.features_ = features;
       begin_args_.default_target_ = default_target;
@@ -48,7 +48,7 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
 
     void UpdateDefaultTarget(
         base::UnguessableToken id,
-        const base::Optional<TargetValue>& default_target) override {
+        const absl::optional<TargetValue>& default_target) override {
       update_default_args_.id_ = id;
       update_default_args_.default_target_ = default_target;
     }
@@ -66,8 +66,8 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
     struct {
       base::UnguessableToken id_;
       FeatureVector features_;
-      base::Optional<TargetValue> default_target_;
-      base::Optional<ukm::SourceId> source_id_;
+      absl::optional<TargetValue> default_target_;
+      absl::optional<ukm::SourceId> source_id_;
     } begin_args_;
 
     struct {
@@ -81,7 +81,7 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
 
     struct {
       base::UnguessableToken id_;
-      base::Optional<TargetValue> default_target_;
+      absl::optional<TargetValue> default_target_;
     } update_default_args_;
 
     struct {
@@ -122,7 +122,7 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
 TEST_F(MojoLearningTaskControllerServiceTest, BeginComplete) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
-  service_->BeginObservation(id, features, base::nullopt);
+  service_->BeginObservation(id, features, absl::nullopt);
   EXPECT_EQ(id, controller_raw_->begin_args_.id_);
   EXPECT_EQ(features, controller_raw_->begin_args_.features_);
   EXPECT_FALSE(controller_raw_->begin_args_.default_target_);
@@ -140,7 +140,7 @@ TEST_F(MojoLearningTaskControllerServiceTest, BeginComplete) {
 TEST_F(MojoLearningTaskControllerServiceTest, BeginCancel) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
-  service_->BeginObservation(id, features, base::nullopt);
+  service_->BeginObservation(id, features, absl::nullopt);
   EXPECT_EQ(id, controller_raw_->begin_args_.id_);
   EXPECT_EQ(features, controller_raw_->begin_args_.features_);
   EXPECT_FALSE(controller_raw_->begin_args_.default_target_);
@@ -166,7 +166,7 @@ TEST_F(MojoLearningTaskControllerServiceTest, TooFewFeaturesIsIgnored) {
   // A FeatureVector with too few elements should be ignored.
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector short_features = {FeatureValue(123)};
-  service_->BeginObservation(id, short_features, base::nullopt);
+  service_->BeginObservation(id, short_features, absl::nullopt);
   EXPECT_NE(id, controller_raw_->begin_args_.id_);
   EXPECT_EQ(controller_raw_->begin_args_.features_.size(), 0u);
 }
@@ -176,7 +176,7 @@ TEST_F(MojoLearningTaskControllerServiceTest, TooManyFeaturesIsIgnored) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector long_features = {FeatureValue(123), FeatureValue(456),
                                  FeatureValue(789)};
-  service_->BeginObservation(id, long_features, base::nullopt);
+  service_->BeginObservation(id, long_features, absl::nullopt);
   EXPECT_NE(id, controller_raw_->begin_args_.id_);
   EXPECT_EQ(controller_raw_->begin_args_.features_.size(), 0u);
 }
@@ -197,7 +197,7 @@ TEST_F(MojoLearningTaskControllerServiceTest, CancelWithoutBeginFails) {
 TEST_F(MojoLearningTaskControllerServiceTest, UpdateDefaultTargetToValue) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
-  service_->BeginObservation(id, features, base::nullopt);
+  service_->BeginObservation(id, features, absl::nullopt);
   TargetValue default_target(987);
   service_->UpdateDefaultTarget(id, default_target);
   EXPECT_EQ(id, controller_raw_->update_default_args_.id_);
@@ -210,9 +210,9 @@ TEST_F(MojoLearningTaskControllerServiceTest, UpdateDefaultTargetToNoValue) {
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
   TargetValue default_target(987);
   service_->BeginObservation(id, features, default_target);
-  service_->UpdateDefaultTarget(id, base::nullopt);
+  service_->UpdateDefaultTarget(id, absl::nullopt);
   EXPECT_EQ(id, controller_raw_->update_default_args_.id_);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             controller_raw_->update_default_args_.default_target_);
 }
 
@@ -222,7 +222,7 @@ TEST_F(MojoLearningTaskControllerServiceTest, PredictDistribution) {
   service_->PredictDistribution(
       features, base::BindOnce(
                     [](TargetHistogram* test_storage,
-                       const base::Optional<TargetHistogram>& predicted) {
+                       const absl::optional<TargetHistogram>& predicted) {
                       *test_storage = *predicted;
                     },
                     &observed_prediction));

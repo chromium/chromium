@@ -84,7 +84,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   std::unique_ptr<VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
-  base::Optional<VideoEncodeAccelerator::SupportedProfiles>
+  absl::optional<VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override {
     return VideoEncodeAccelerator::SupportedProfiles();
   }

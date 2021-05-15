@@ -97,7 +97,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     const std::string& codec,
     size_t num_temporal_layers,
     bool save_output_bitstream,
-    base::Optional<uint32_t> encode_bitrate,
+    absl::optional<uint32_t> encode_bitrate,
     const FrameOutputConfig& frame_output_config) {
   if (video_path.empty()) {
     LOG(ERROR) << "No video specified";

@@ -466,7 +466,7 @@ void VideoRendererImpl::OnTimeStopped() {
 }
 
 void VideoRendererImpl::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   base::AutoLock auto_lock(lock_);
 
   latency_hint_ = latency_hint;
@@ -829,7 +829,7 @@ void VideoRendererImpl::ReportFrameRateIfNeeded_Locked() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   lock_.AssertAcquired();
 
-  base::Optional<int> current_fps = fps_estimator_.ComputeFPS();
+  absl::optional<int> current_fps = fps_estimator_.ComputeFPS();
   if (last_reported_fps_ && current_fps &&
       *last_reported_fps_ == *current_fps) {
     // Reported an FPS before, and it hasn't changed.

@@ -7,9 +7,9 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_make_current.h"
 
@@ -99,7 +99,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     return false;
 
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
-  base::Optional<gpu::ScopedRestoreTextureBinding> scoped_restore_texture;
+  absl::optional<gpu::ScopedRestoreTextureBinding> scoped_restore_texture;
 
   if (codec_buffer_wait_coordinator_->texture_owner()
           ->binds_texture_on_update()) {

@@ -188,7 +188,7 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
 
     const VideoEncodeAccelerator::Config config(
         PIXEL_FORMAT_I420, kInputVisibleSize, kOutputProfile, kInitialBitrate,
-        base::nullopt, base::nullopt, base::nullopt, false, base::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt, false, absl::nullopt,
         kContentType);
     EXPECT_TRUE(mojo_vea()->Initialize(config, mock_vea_client));
     base::RunLoop().RunUntilIdle();

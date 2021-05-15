@@ -5,10 +5,10 @@
 #include "media/mojo/mojom/video_encode_accelerator_mojom_traits.h"
 
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -258,21 +258,21 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadOutputProfile(&output_profile))
     return false;
 
-  base::Optional<uint32_t> initial_framerate;
+  absl::optional<uint32_t> initial_framerate;
   if (input.has_initial_framerate())
     initial_framerate = input.initial_framerate();
 
-  base::Optional<uint32_t> gop_length;
+  absl::optional<uint32_t> gop_length;
   if (input.has_gop_length())
     gop_length = input.gop_length();
 
-  base::Optional<uint8_t> h264_output_level;
+  absl::optional<uint8_t> h264_output_level;
   if (input.has_h264_output_level())
     h264_output_level = input.h264_output_level();
 
   bool is_constrained_h264 = input.is_constrained_h264();
 
-  base::Optional<media::VideoEncodeAccelerator::Config::StorageType>
+  absl::optional<media::VideoEncodeAccelerator::Config::StorageType>
       storage_type;
   if (input.has_storage_type()) {
     if (!input.ReadStorageType(&storage_type))

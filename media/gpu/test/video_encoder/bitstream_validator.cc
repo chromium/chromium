@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
@@ -18,6 +17,7 @@
 #include "media/filters/vpx_video_decoder.h"
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 #include "media/gpu/test/video_frame_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace test {
@@ -50,7 +50,7 @@ std::unique_ptr<BitstreamValidator> BitstreamValidator::Create(
     const VideoDecoderConfig& decoder_config,
     size_t last_frame_index,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors,
-    base::Optional<size_t> num_vp9_temporal_layers_to_decode) {
+    absl::optional<size_t> num_vp9_temporal_layers_to_decode) {
   std::unique_ptr<VideoDecoder> decoder;
   decoder = CreateDecoder(decoder_config.codec());
   if (!decoder)
@@ -106,7 +106,7 @@ void BitstreamValidator::InitializeVideoDecoder(
 BitstreamValidator::BitstreamValidator(
     std::unique_ptr<VideoDecoder> decoder,
     size_t last_frame_index,
-    base::Optional<size_t> num_vp9_temporal_layers_to_decode,
+    absl::optional<size_t> num_vp9_temporal_layers_to_decode,
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors)
     : decoder_(std::move(decoder)),
       last_frame_index_(last_frame_index),

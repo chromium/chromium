@@ -20,13 +20,13 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/sink_input_pin_win.h"
 #include "media/capture/video_capture_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -156,7 +156,7 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   bool enable_get_photo_state_;
 
-  base::Optional<int> camera_rotation_;
+  absl::optional<int> camera_rotation_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceWin);
 };

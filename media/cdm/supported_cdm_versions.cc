@@ -5,9 +5,9 @@
 #include "media/cdm/supported_cdm_versions.h"
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -15,17 +15,17 @@ namespace {
 
 // Returns the overridden supported CDM interface version specified on command
 // line, which can be null if not specified.
-base::Optional<int> GetSupportedCdmInterfaceVersionOverrideFromCommandLine() {
+absl::optional<int> GetSupportedCdmInterfaceVersionOverrideFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto version_string = command_line->GetSwitchValueASCII(
       switches::kOverrideEnabledCdmInterfaceVersion);
 
   int version = 0;
   if (!base::StringToInt(version_string, &version))
-    return base::nullopt;
+    return absl::nullopt;
   else
     return version;
 }

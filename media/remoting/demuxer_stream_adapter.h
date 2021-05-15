@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -84,8 +84,8 @@ class DemuxerStreamAdapter {
   // signal when flush starts and when is done. During flush operation, all
   // fetching data actions will be discarded. The return value indicates frame
   // count in order to signal receiver what frames are in flight before flush,
-  // or base::nullopt if the flushing state was unchanged.
-  base::Optional<uint32_t> SignalFlush(bool flushing);
+  // or absl::nullopt if the flushing state was unchanged.
+  absl::optional<uint32_t> SignalFlush(bool flushing);
 
   bool is_processing_read_request() const {
     // |read_until_callback_handle_| is set when RPC_DS_READUNTIL message is

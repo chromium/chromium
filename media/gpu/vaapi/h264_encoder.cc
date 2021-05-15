@@ -110,7 +110,7 @@ bool H264Encoder::Initialize(
   // framerate and dimension.
   if (!CheckH264LevelLimits(profile_, level_, config.initial_bitrate,
                             initial_framerate, mb_width_ * mb_height_)) {
-    base::Optional<uint8_t> valid_level =
+    absl::optional<uint8_t> valid_level =
         FindValidH264Level(profile_, config.initial_bitrate, initial_framerate,
                            mb_width_ * mb_height_);
     if (!valid_level) {

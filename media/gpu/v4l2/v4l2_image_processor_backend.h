@@ -17,13 +17,13 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -148,7 +148,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // task to |device_task_runner_|.
   static void V4L2VFRecycleThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::Optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
+      absl::optional<base::WeakPtr<V4L2ImageProcessorBackend>> image_processor,
       V4L2ReadableBufferRef buf);
   void V4L2VFRecycleTask(V4L2ReadableBufferRef buf);
 

@@ -9,12 +9,12 @@
 #include <map>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class VP9TemporalLayersTest : public ::testing::TestWithParam<size_t> {

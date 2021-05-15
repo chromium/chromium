@@ -55,7 +55,7 @@ class CAPTURE_EXPORT SampleBufferTransformer {
   void Reconfigure(Transformer transformer,
                    OSType destination_pixel_format,
                    const gfx::Size& destination_size,
-                   base::Optional<size_t> buffer_pool_size = base::nullopt);
+                   absl::optional<size_t> buffer_pool_size = absl::nullopt);
 
   // Converts the input buffer to an IOSurface-backed pixel buffer according to
   // current configurations. If no transformation is needed (input format is the

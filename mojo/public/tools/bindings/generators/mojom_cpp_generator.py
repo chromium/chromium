@@ -630,7 +630,7 @@ class Generator(generator.Generator):
     def _AddOptional(type_name):
       if ignore_nullable:
         return type_name
-      return "base::Optional<%s>" % type_name
+      return "absl::optional<%s>" % type_name
 
     if self._IsTypemappedKind(kind):
       type_name = self._GetNativeTypeName(kind)

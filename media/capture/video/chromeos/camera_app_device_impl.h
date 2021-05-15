@@ -88,7 +88,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       base::OnceCallback<void(ReprocessTaskQueue)> consumption_callback);
 
   // Retrieves the fps range if it is specified by the app.
-  base::Optional<gfx::Range> GetFpsRange();
+  absl::optional<gfx::Range> GetFpsRange();
 
   // Retrieves the corresponding capture resolution which is specified by the
   // app.
@@ -169,7 +169,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   // It will be inserted and read from different threads.
   base::Lock fps_ranges_lock_;
-  base::Optional<gfx::Range> specified_fps_range_ GUARDED_BY(fps_ranges_lock_);
+  absl::optional<gfx::Range> specified_fps_range_ GUARDED_BY(fps_ranges_lock_);
 
   // It will be inserted and read from different threads.
   base::Lock still_capture_resolution_lock_;

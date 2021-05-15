@@ -13,8 +13,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -24,7 +24,7 @@ class MEDIA_EXPORT VmoBuffer {
   // collection is compatible with this class.
   static fuchsia::sysmem::BufferCollectionConstraints GetRecommendedConstraints(
       size_t min_buffer_count,
-      base::Optional<size_t> min_buffer_size,
+      absl::optional<size_t> min_buffer_size,
       bool writable);
 
   // Creates a set of buffers from a sysmem collection. An empty vector is

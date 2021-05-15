@@ -23,7 +23,7 @@ class LearningTaskControllerImplTest : public testing::Test {
         : DistributionReporter(task) {}
 
     // protected => public
-    const base::Optional<std::set<int>>& feature_indices() const {
+    const absl::optional<std::set<int>>& feature_indices() const {
       return DistributionReporter::feature_indices();
     }
 
@@ -133,21 +133,21 @@ class LearningTaskControllerImplTest : public testing::Test {
   }
 
   void AddExample(const LabelledExample& example,
-                  base::Optional<ukm::SourceId> source_id = base::nullopt) {
+                  absl::optional<ukm::SourceId> source_id = absl::nullopt) {
     base::UnguessableToken id = base::UnguessableToken::Create();
-    controller_->BeginObservation(id, example.features, base::nullopt,
+    controller_->BeginObservation(id, example.features, absl::nullopt,
                                   source_id);
     controller_->CompleteObservation(
         id, ObservationCompletion(example.target_value, example.weight));
   }
 
   void VerifyPrediction(const FeatureVector& features,
-                        base::Optional<TargetHistogram> expectation) {
-    base::Optional<TargetHistogram> observed_prediction;
+                        absl::optional<TargetHistogram> expectation) {
+    absl::optional<TargetHistogram> observed_prediction;
     controller_->PredictDistribution(
         features, base::BindOnce(
-                      [](base::Optional<TargetHistogram>* test_storage,
-                         const base::Optional<TargetHistogram>& predicted) {
+                      [](absl::optional<TargetHistogram>* test_storage,
+                         const absl::optional<TargetHistogram>& predicted) {
                         *test_storage = predicted;
                       },
                       &observed_prediction));
@@ -279,9 +279,9 @@ TEST_F(LearningTaskControllerImplTest, FeatureSubsetsWork) {
 TEST_F(LearningTaskControllerImplTest, PredictDistribution) {
   CreateController();
 
-  // Predictions should be base::nullopt until we have a model.
+  // Predictions should be absl::nullopt until we have a model.
   LabelledExample example;
-  VerifyPrediction(example.features, base::nullopt);
+  VerifyPrediction(example.features, absl::nullopt);
 
   AddExample(example);
   TargetHistogram expected_histogram;

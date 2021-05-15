@@ -160,7 +160,7 @@ class StructTraitsTest : public testing::Test,
   }
 
   void EchoNullableMoveOnlyStructWithTraits(
-      base::Optional<MoveOnlyStructWithTraitsImpl> s,
+      absl::optional<MoveOnlyStructWithTraitsImpl> s,
       EchoNullableMoveOnlyStructWithTraitsCallback callback) override {
     std::move(callback).Run(std::move(s));
   }
@@ -401,9 +401,9 @@ TEST_F(StructTraitsTest, EchoMoveOnlyStructWithTraits) {
 }
 
 void CaptureNullableMoveOnlyStructWithTraitsImpl(
-    base::Optional<MoveOnlyStructWithTraitsImpl>* storage,
+    absl::optional<MoveOnlyStructWithTraitsImpl>* storage,
     base::OnceClosure closure,
-    base::Optional<MoveOnlyStructWithTraitsImpl> passed) {
+    absl::optional<MoveOnlyStructWithTraitsImpl> passed) {
   *storage = std::move(passed);
   std::move(closure).Run();
 }
@@ -412,9 +412,9 @@ TEST_F(StructTraitsTest, EchoNullableMoveOnlyStructWithTraits) {
   base::RunLoop loop;
   Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
-  base::Optional<MoveOnlyStructWithTraitsImpl> received;
+  absl::optional<MoveOnlyStructWithTraitsImpl> received;
   proxy->EchoNullableMoveOnlyStructWithTraits(
-      base::nullopt,
+      absl::nullopt,
       base::BindOnce(&CaptureNullableMoveOnlyStructWithTraitsImpl, &received,
                      loop.QuitClosure()));
   loop.Run();

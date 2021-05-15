@@ -85,7 +85,7 @@ void Receiver::SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) {
 }
 
 // No-op. Controlled by sender via RPC calls instead.
-void Receiver::SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) {}
+void Receiver::SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) {}
 
 // No-op. Controlled by sender via RPC calls instead.
 void Receiver::Flush(base::OnceClosure flush_cb) {}
@@ -358,7 +358,7 @@ void Receiver::OnVideoOpacityChange(bool opaque) {
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
-void Receiver::OnVideoFrameRateChange(base::Optional<int>) {}
+void Receiver::OnVideoFrameRateChange(absl::optional<int>) {}
 
 }  // namespace remoting
 }  // namespace media

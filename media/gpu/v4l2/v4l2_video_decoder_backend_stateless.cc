@@ -146,7 +146,7 @@ bool V4L2StatelessVideoDecoderBackend::Initialize() {
 // static
 void V4L2StatelessVideoDecoderBackend::ReuseOutputBufferThunk(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Optional<base::WeakPtr<V4L2StatelessVideoDecoderBackend>> weak_this,
+    absl::optional<base::WeakPtr<V4L2StatelessVideoDecoderBackend>> weak_this,
     V4L2ReadableBufferRef buffer) {
   DVLOGF(3);
   DCHECK(weak_this);
@@ -265,7 +265,7 @@ V4L2StatelessVideoDecoderBackend::CreateSurface() {
 
   scoped_refptr<V4L2DecodeSurface> dec_surface;
   if (input_queue_->SupportsRequests()) {
-    base::Optional<V4L2RequestRef> request_ref =
+    absl::optional<V4L2RequestRef> request_ref =
         requests_queue_->GetFreeRequest();
     if (!request_ref) {
       DVLOGF(1) << "Could not get free request.";
@@ -417,7 +417,7 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
         if (current_decode_request_) {
           DCHECK(current_decode_request_->decode_cb);
           std::move(current_decode_request_->decode_cb).Run(DecodeStatus::OK);
-          current_decode_request_ = base::nullopt;
+          current_decode_request_ = absl::nullopt;
         }
 
         // Process next decode request.
@@ -440,7 +440,7 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
 
           output_request_queue_.push(OutputRequest::FlushFence());
           PumpOutputSurfaces();
-          current_decode_request_ = base::nullopt;
+          current_decode_request_ = absl::nullopt;
           return true;
         }
 
@@ -607,7 +607,7 @@ void V4L2StatelessVideoDecoderBackend::ClearPendingRequests(
   // Clear current_decode_request_ and decode_request_queue_.
   if (current_decode_request_) {
     std::move(current_decode_request_->decode_cb).Run(status);
-    current_decode_request_ = base::nullopt;
+    current_decode_request_ = absl::nullopt;
   }
 
   while (!decode_request_queue_.empty()) {

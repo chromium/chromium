@@ -507,7 +507,7 @@ bool Connector::DispatchMessage(Message message) {
   DCHECK(!paused_);
 
   base::WeakPtr<Connector> weak_self = weak_self_;
-  base::Optional<ActiveDispatchTracker> dispatch_tracker;
+  absl::optional<ActiveDispatchTracker> dispatch_tracker;
   if (!is_dispatching_ && nesting_observer_) {
     is_dispatching_ = true;
     dispatch_tracker.emplace(weak_self);

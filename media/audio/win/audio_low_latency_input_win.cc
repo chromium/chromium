@@ -516,7 +516,7 @@ void WASAPIAudioInputStream::Stop() {
     }
   }
 
-  base::Optional<VolumeRange> volume_range;
+  absl::optional<VolumeRange> volume_range;
   if (add_uma_histogram && system_audio_volume_ &&
       !AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
     VolumeRange range;

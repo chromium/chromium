@@ -14,13 +14,13 @@
 
 namespace mojo {
 
-// Deserializes has_field and field into a base::Optional.
+// Deserializes has_field and field into a absl::optional.
 #define DESERIALIZE_INTO_OPT(field) \
   if (input.has_##field())          \
     output->field = input.field()
 
 #define READ_AND_ASSIGN_OPT(type, field, FieldInCamelCase) \
-  base::Optional<type> field;                              \
+  absl::optional<type> field;                              \
   if (!input.Read##FieldInCamelCase(&field))               \
     return false;                                          \
                                                            \

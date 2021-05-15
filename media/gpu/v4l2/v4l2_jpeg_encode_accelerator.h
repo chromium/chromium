@@ -330,7 +330,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     V4L2JpegEncodeAccelerator* parent_;
 
     // Layout that represents the input data.
-    base::Optional<VideoFrameLayout> device_input_layout_;
+    absl::optional<VideoFrameLayout> device_input_layout_;
 
     // The V4L2Device this class is operating upon.
     scoped_refptr<V4L2Device> device_;

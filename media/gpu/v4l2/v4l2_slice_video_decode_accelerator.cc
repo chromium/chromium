@@ -513,7 +513,7 @@ bool V4L2SliceVideoDecodeAccelerator::SetupFormats() {
   // output format or not may depend on the input format.
   memset(&fmtdesc, 0, sizeof(fmtdesc));
   fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
-  output_format_fourcc_ = base::nullopt;
+  output_format_fourcc_ = absl::nullopt;
   output_planes_count_ = 0;
   while (device_->Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
     auto fourcc = Fourcc::FromV4L2PixFmt(fmtdesc.pixelformat);
@@ -2098,7 +2098,7 @@ V4L2SliceVideoDecodeAccelerator::CreateSurface() {
 
   if (supports_requests_) {
     // Get a free request from the queue for a new surface.
-    base::Optional<V4L2RequestRef> request_ref =
+    absl::optional<V4L2RequestRef> request_ref =
         requests_queue_->GetFreeRequest();
     if (!request_ref) {
       LOG(ERROR) << "Failed getting a request";

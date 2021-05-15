@@ -81,13 +81,13 @@ int64_t DemuxerStreamAdapter::GetBytesWrittenAndReset() {
   return current_count;
 }
 
-base::Optional<uint32_t> DemuxerStreamAdapter::SignalFlush(bool flushing) {
+absl::optional<uint32_t> DemuxerStreamAdapter::SignalFlush(bool flushing) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DEMUXER_VLOG(2) << "flushing=" << flushing;
 
   // Ignores if |pending_flush_| states is same.
   if (pending_flush_ == flushing)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Cleans up pending frame data.
   pending_frame_is_eos_ = false;

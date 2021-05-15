@@ -563,10 +563,10 @@ With the CodeCacheHost, looking at the coverage after a few hours we could see
 that there's definitely some room for improvement:
 
 ```c++
-/* 55       */ base::Optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
+/* 55       */ absl::optional<GURL> GetSecondaryKeyForCodeCache(const GURL& resource_url,
 /* 56 53.6k */ int render_process_id) {
 /* 57 53.6k */    if (!resource_url.is_valid() || !resource_url.SchemeIsHTTPOrHTTPS())
-/* 58 53.6k */      return base::nullopt;
+/* 58 53.6k */      return absl::nullopt;
 /* 59 0     */
 /* 60 0     */    GURL origin_lock =
 /* 61 0     */        ChildProcessSecurityPolicyImpl::GetInstance()->GetOriginLock(
@@ -665,7 +665,7 @@ We can see that we're now getting some more coverage:
 /* 131 2 */     if (!code_cache)
 /* 132 0 */       return;
 /* 133 2 */
-/* 134 2 */     base::Optional<GURL> origin_lock =
+/* 134 2 */     absl::optional<GURL> origin_lock =
 /* 135 2 */         GetSecondaryKeyForCodeCache(url, render_process_id_);
 /* 136 2 */     if (!origin_lock)
 /* 137 0 */       return;

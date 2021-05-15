@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <map>
 
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 
 namespace media {
@@ -42,7 +42,7 @@ class BufferAffinityTracker {
    * On subsequent calls with the same id, that same V4L2 buffer will be
    * returned.
    */
-  base::Optional<size_t> get_buffer_for_id(gfx::GenericSharedMemoryId id);
+  absl::optional<size_t> get_buffer_for_id(gfx::GenericSharedMemoryId id);
 
  private:
   base::Lock lock_;

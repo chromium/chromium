@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/codec_picture.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -33,7 +33,7 @@ class VP9Picture : public CodecPicture {
 
   std::unique_ptr<Vp9FrameHeader> frame_hdr;
 
-  base::Optional<Vp9Metadata> metadata_for_encoding;
+  absl::optional<Vp9Metadata> metadata_for_encoding;
 
  protected:
   ~VP9Picture() override;

@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -28,7 +28,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                           std::unique_ptr<Texture2DWrapper> output_wrapper,
                           scoped_refptr<VideoProcessorProxy> processor,
                           ComD3D11Texture2D output_texture,
-                          base::Optional<gfx::ColorSpace> output_color_space);
+                          absl::optional<gfx::ColorSpace> output_color_space);
   ~CopyingTexture2DWrapper() override;
 
   Status ProcessTexture(const gfx::ColorSpace& input_color_space,
@@ -50,10 +50,10 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   std::unique_ptr<Texture2DWrapper> output_texture_wrapper_;
   ComD3D11Texture2D output_texture_;
   // If set, then this is the desired output color space for the copy.
-  base::Optional<gfx::ColorSpace> output_color_space_;
+  absl::optional<gfx::ColorSpace> output_color_space_;
 
   // If set, this is the color space that we last saw in ProcessTexture.
-  base::Optional<gfx::ColorSpace> previous_input_color_space_;
+  absl::optional<gfx::ColorSpace> previous_input_color_space_;
 
   ComD3D11Texture2D texture_;
   size_t array_slice_ = 0;

@@ -384,12 +384,12 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   std::vector<base::span<const uint8_t>> encrypted_sei_nalus_;
   std::vector<SubsampleEntry> sei_subsamples_;
 
-  // These are base::nullopt unless get recovery point SEI message after Reset.
+  // These are absl::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.
-  base::Optional<int> recovery_frame_num_;
+  absl::optional<int> recovery_frame_num_;
   // A value in the recovery point SEI message to compute |recovery_frame_num_|
   // later.
-  base::Optional<int> recovery_frame_cnt_;
+  absl::optional<int> recovery_frame_cnt_;
 
   // Output picture size.
   gfx::Size pic_size_;

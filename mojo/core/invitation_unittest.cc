@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -310,9 +310,9 @@ base::Process InvitationTest::LaunchChildTestClient(
 #endif
 
 #if !defined(OS_FUCHSIA)
-  base::Optional<NamedPlatformChannel> named_channel;
+  absl::optional<NamedPlatformChannel> named_channel;
 #endif
-  base::Optional<PlatformChannel> channel;
+  absl::optional<PlatformChannel> channel;
   PlatformHandle local_endpoint_handle;
   if (transport_type == TransportType::kChannel) {
     channel.emplace();

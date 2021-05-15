@@ -5,7 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_FORWARD_H_
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -15,6 +14,7 @@
 #include "mojo/public/cpp/bindings/string_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file is included by serialization implementation files to avoid circular
 // includes.
@@ -77,7 +77,7 @@ template <typename MojomType,
               IsOptionalWrapper<InputUserType>::value>::type* = nullptr>
 bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
   if (!input) {
-    *output = base::nullopt;
+    *output = absl::nullopt;
     return true;
   }
   if (!*output)

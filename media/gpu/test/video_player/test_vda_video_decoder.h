@@ -83,7 +83,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 
   // Helper thunk to avoid dereferencing WeakPtrs on the wrong thread.
   static void ReusePictureBufferThunk(
-      base::Optional<base::WeakPtr<TestVDAVideoDecoder>> decoder_client,
+      absl::optional<base::WeakPtr<TestVDAVideoDecoder>> decoder_client,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       int32_t picture_buffer_id);
 

@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -33,12 +33,12 @@ class MEDIA_EXPORT AudioSystem {
   // std::string. If optional matched output device id is empty, it means there
   // is no associated output device.
   using OnAudioParamsCallback =
-      base::OnceCallback<void(const base::Optional<AudioParameters>&)>;
+      base::OnceCallback<void(const absl::optional<AudioParameters>&)>;
   using OnDeviceIdCallback =
-      base::OnceCallback<void(const base::Optional<std::string>&)>;
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
   using OnInputDeviceInfoCallback =
-      base::OnceCallback<void(const base::Optional<AudioParameters>&,
-                              const base::Optional<std::string>&)>;
+      base::OnceCallback<void(const absl::optional<AudioParameters>&,
+                              const absl::optional<std::string>&)>;
 
   using OnBoolCallback = base::OnceCallback<void(bool)>;
   using OnDeviceDescriptionsCallback =

@@ -50,7 +50,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     MediaLog* media_log) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
-  base::Optional<gfx::ColorSpace> output_color_space;
+  absl::optional<gfx::ColorSpace> output_color_space;
 
   // TODO(liberato): add other options here, like "copy to rgb" for NV12.
   switch (decoder_output_format) {
@@ -191,7 +191,7 @@ CopyTextureSelector::CopyTextureSelector(
     VideoPixelFormat pixfmt,
     DXGI_FORMAT input_dxgifmt,
     DXGI_FORMAT output_dxgifmt,
-    base::Optional<gfx::ColorSpace> output_color_space,
+    absl::optional<gfx::ColorSpace> output_color_space,
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context)
     : TextureSelector(pixfmt,

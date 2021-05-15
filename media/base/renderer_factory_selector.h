@@ -8,10 +8,10 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "media/base/media_status.h"
 #include "media/base/renderer_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -93,7 +93,7 @@ class MEDIA_EXPORT RendererFactorySelector {
 #endif
 
  private:
-  base::Optional<RendererType> base_renderer_type_;
+  absl::optional<RendererType> base_renderer_type_;
 
   // Use a map to avoid duplicate entries for the same RendererType.
   std::map<RendererType, ConditionalFactoryCB> conditional_factories_;

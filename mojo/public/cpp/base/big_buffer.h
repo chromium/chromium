@@ -11,9 +11,9 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo_base {
 
@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   StorageType storage_type_;
   std::unique_ptr<uint8_t[]> bytes_;
   size_t bytes_size_;
-  base::Optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
+  absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 
   DISALLOW_COPY_AND_ASSIGN(BigBuffer);
 };
@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
  private:
   BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
   base::span<const uint8_t> bytes_;
-  base::Optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
+  absl::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 
   DISALLOW_COPY_AND_ASSIGN(BigBufferView);
 };

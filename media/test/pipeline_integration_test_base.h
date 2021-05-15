@@ -138,7 +138,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   }
 
   std::unique_ptr<Renderer> CreateRenderer(
-      base::Optional<RendererType> renderer_type);
+      absl::optional<RendererType> renderer_type);
 
  protected:
   NiceMock<MockMediaLog> media_log_;
@@ -173,11 +173,11 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // if |create_renderer_cb_| is set, it'll be used to create the Renderer
   // instead.
   using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-      base::Optional<RendererType> renderer_type)>;
+      absl::optional<RendererType> renderer_type)>;
   CreateRendererCB create_renderer_cb_;
 
   std::unique_ptr<Renderer> CreateDefaultRenderer(
-      base::Optional<RendererType> renderer_type);
+      absl::optional<RendererType> renderer_type);
 
   // Sets |create_renderer_cb_| which will be used to wrap the Renderer created
   // by CreateDefaultRenderer().
@@ -245,7 +245,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));
   MOCK_METHOD1(OnAudioConfigChange, void(const AudioDecoderConfig&));
   MOCK_METHOD1(OnVideoOpacityChange, void(bool));
-  MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
+  MOCK_METHOD1(OnVideoFrameRateChange, void(absl::optional<int>));
   MOCK_METHOD0(OnVideoAverageKeyframeDistanceUpdate, void());
   MOCK_METHOD1(OnAudioDecoderChange, void(const AudioDecoderInfo&));
   MOCK_METHOD1(OnVideoDecoderChange, void(const VideoDecoderInfo&));

@@ -342,13 +342,13 @@ using PlaybackParamsTuple = std::tuple<bool,                    /* is_playing */
 class PowerStatusHelperBucketTest
     : public testing::TestWithParam<PlaybackParamsTuple> {
  public:
-  base::Optional<int> BucketFor(bool is_playing,
+  absl::optional<int> BucketFor(bool is_playing,
                                 bool has_video,
                                 media::VideoCodec codec,
                                 media::VideoCodecProfile profile,
                                 gfx::Size coded_size,
                                 bool is_fullscreen,
-                                base::Optional<int> average_fps) {
+                                absl::optional<int> average_fps) {
     return PowerStatusHelper::BucketFor(is_playing, has_video, codec, profile,
                                         coded_size, is_fullscreen, average_fps);
   }
@@ -399,7 +399,7 @@ TEST_P(PowerStatusHelperBucketTest, TestBucket) {
   }
 
   auto fps = std::get<4>(GetParam());
-  base::Optional<int> average_fps;
+  absl::optional<int> average_fps;
   if (fps == PowerStatusHelper::Bits::kFrameRate30) {
     average_fps = 30;
   } else if (fps == PowerStatusHelper::Bits::kFrameRate60) {

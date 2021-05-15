@@ -648,7 +648,7 @@ void VaapiVideoDecodeAccelerator::TryFinishSurfaceSetChange() {
            << " pictures of size: " << requested_pic_size_.ToString()
            << " and visible rectangle = " << requested_visible_rect_.ToString();
 
-  const base::Optional<VideoPixelFormat> format =
+  const absl::optional<VideoPixelFormat> format =
       GfxBufferFormatToVideoPixelFormat(
           vaapi_picture_factory_->GetBufferFormat());
   CHECK(format);

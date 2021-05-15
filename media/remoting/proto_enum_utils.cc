@@ -11,7 +11,7 @@ namespace remoting {
   case OriginType::x:        \
     return OtherType::x
 
-base::Optional<AudioCodec> ToMediaAudioCodec(
+absl::optional<AudioCodec> ToMediaAudioCodec(
     openscreen::cast::AudioDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = AudioCodec;
@@ -35,10 +35,10 @@ base::Optional<AudioCodec> ToMediaAudioCodec(
     CASE_RETURN_OTHER(kCodecAC3);
     CASE_RETURN_OTHER(kCodecMpegHAudio);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::AudioDecoderConfig::Codec>
+absl::optional<openscreen::cast::AudioDecoderConfig::Codec>
 ToProtoAudioDecoderConfigCodec(AudioCodec value) {
   using OriginType = AudioCodec;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -62,10 +62,10 @@ ToProtoAudioDecoderConfigCodec(AudioCodec value) {
     CASE_RETURN_OTHER(kCodecAC3);
     CASE_RETURN_OTHER(kCodecMpegHAudio);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<SampleFormat> ToMediaSampleFormat(
+absl::optional<SampleFormat> ToMediaSampleFormat(
     openscreen::cast::AudioDecoderConfig::SampleFormat value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = SampleFormat;
@@ -83,10 +83,10 @@ base::Optional<SampleFormat> ToMediaSampleFormat(
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
+absl::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
 ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
   using OriginType = SampleFormat;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -104,10 +104,10 @@ ToProtoAudioDecoderConfigSampleFormat(SampleFormat value) {
     CASE_RETURN_OTHER(kSampleFormatEac3);
     CASE_RETURN_OTHER(kSampleFormatMpegHAudio);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<ChannelLayout> ToMediaChannelLayout(
+absl::optional<ChannelLayout> ToMediaChannelLayout(
     openscreen::cast::AudioDecoderConfig::ChannelLayout value) {
   using OriginType = openscreen::cast::AudioDecoderConfig;
   using OtherType = ChannelLayout;
@@ -146,10 +146,10 @@ base::Optional<ChannelLayout> ToMediaChannelLayout(
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
+absl::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
 ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value) {
   using OriginType = ChannelLayout;
   using OtherType = openscreen::cast::AudioDecoderConfig;
@@ -188,10 +188,10 @@ ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value) {
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_4_1_QUAD_SIDE);
     CASE_RETURN_OTHER(CHANNEL_LAYOUT_BITSTREAM);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<VideoCodec> ToMediaVideoCodec(
+absl::optional<VideoCodec> ToMediaVideoCodec(
     openscreen::cast::VideoDecoderConfig::Codec value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = VideoCodec;
@@ -208,10 +208,10 @@ base::Optional<VideoCodec> ToMediaVideoCodec(
     CASE_RETURN_OTHER(kCodecDolbyVision);
     CASE_RETURN_OTHER(kCodecAV1);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::VideoDecoderConfig::Codec>
+absl::optional<openscreen::cast::VideoDecoderConfig::Codec>
 ToProtoVideoDecoderConfigCodec(VideoCodec value) {
   using OriginType = VideoCodec;
   using OtherType = openscreen::cast::VideoDecoderConfig;
@@ -228,10 +228,10 @@ ToProtoVideoDecoderConfigCodec(VideoCodec value) {
     CASE_RETURN_OTHER(kCodecDolbyVision);
     CASE_RETURN_OTHER(kCodecAV1);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<VideoCodecProfile> ToMediaVideoCodecProfile(
+absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
     openscreen::cast::VideoDecoderConfig::Profile value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = VideoCodecProfile;
@@ -267,10 +267,10 @@ base::Optional<VideoCodecProfile> ToMediaVideoCodecProfile(
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::VideoDecoderConfig::Profile>
+absl::optional<openscreen::cast::VideoDecoderConfig::Profile>
 ToProtoVideoDecoderConfigProfile(VideoCodecProfile value) {
   using OriginType = VideoCodecProfile;
   using OtherType = openscreen::cast::VideoDecoderConfig;
@@ -306,10 +306,10 @@ ToProtoVideoDecoderConfigProfile(VideoCodecProfile value) {
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_HIGH);
     CASE_RETURN_OTHER(AV1PROFILE_PROFILE_PRO);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<VideoPixelFormat> ToMediaVideoPixelFormat(
+absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
     openscreen::cast::VideoDecoderConfig::Format value) {
   using OriginType = openscreen::cast::VideoDecoderConfig;
   using OtherType = VideoPixelFormat;
@@ -344,12 +344,12 @@ base::Optional<VideoPixelFormat> ToMediaVideoPixelFormat(
     CASE_RETURN_OTHER(PIXEL_FORMAT_XB30);
     // PIXEL_FORMAT_UYVY, PIXEL_FORMAT_RGB32 and PIXEL_FORMAT_Y8 are deprecated.
     case openscreen::cast::VideoDecoderConfig_Format_PIXEL_FORMAT_RGB32:
-      return base::nullopt;
+      return absl::nullopt;
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<BufferingState> ToMediaBufferingState(
+absl::optional<BufferingState> ToMediaBufferingState(
     openscreen::cast::RendererClientOnBufferingStateChange::State value) {
   using OriginType = openscreen::cast::RendererClientOnBufferingStateChange;
   using OtherType = BufferingState;
@@ -357,10 +357,10 @@ base::Optional<BufferingState> ToMediaBufferingState(
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
+absl::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
 ToProtoMediaBufferingState(BufferingState value) {
   using OriginType = BufferingState;
   using OtherType = openscreen::cast::RendererClientOnBufferingStateChange;
@@ -368,10 +368,10 @@ ToProtoMediaBufferingState(BufferingState value) {
     CASE_RETURN_OTHER(BUFFERING_HAVE_NOTHING);
     CASE_RETURN_OTHER(BUFFERING_HAVE_ENOUGH);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<DemuxerStream::Status> ToDemuxerStreamStatus(
+absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
     openscreen::cast::DemuxerStreamReadUntilCallback::Status value) {
   using OriginType = openscreen::cast::DemuxerStreamReadUntilCallback;
   using OtherType = DemuxerStream;
@@ -381,10 +381,10 @@ base::Optional<DemuxerStream::Status> ToDemuxerStreamStatus(
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
-base::Optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
+absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(DemuxerStream::Status value) {
   using OriginType = DemuxerStream;
   using OtherType = openscreen::cast::DemuxerStreamReadUntilCallback;
@@ -394,7 +394,7 @@ ToProtoDemuxerStreamStatus(DemuxerStream::Status value) {
     CASE_RETURN_OTHER(kConfigChanged);
     CASE_RETURN_OTHER(kError);
   }
-  return base::nullopt;  // Not a 'default' to ensure compile-time checks.
+  return absl::nullopt;  // Not a 'default' to ensure compile-time checks.
 }
 
 }  // namespace remoting

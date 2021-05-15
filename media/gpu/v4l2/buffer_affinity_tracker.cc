@@ -23,7 +23,7 @@ void BufferAffinityTracker::resize(size_t nb_buffers) {
   DVLOGF(4) << this << " resize: " << nb_buffers;
 }
 
-base::Optional<size_t> BufferAffinityTracker::get_buffer_for_id(
+absl::optional<size_t> BufferAffinityTracker::get_buffer_for_id(
     gfx::GenericSharedMemoryId id) {
   base::AutoLock lock(lock_);
 
@@ -39,7 +39,7 @@ base::Optional<size_t> BufferAffinityTracker::get_buffer_for_id(
   // No buffer available? No luck then.
   if (id_to_buffer_map_.size() == nb_buffers()) {
     DVLOGF(4) << this << " tracker is full!";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const size_t v4l2_id = id_to_buffer_map_.size();

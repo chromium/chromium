@@ -36,7 +36,7 @@ namespace {
 // only dereferenced after rescheduling the task on the specified task runner.
 template <typename F, typename... Args>
 void CallbackThunk(
-    base::Optional<base::WeakPtr<VideoDecoderClient>> decoder_client,
+    absl::optional<base::WeakPtr<VideoDecoderClient>> decoder_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     F f,
     Args... args) {

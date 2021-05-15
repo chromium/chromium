@@ -11,11 +11,11 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -93,13 +93,13 @@ class Video {
 
  private:
   // Return the profile associated with the |profile| string.
-  static base::Optional<VideoCodecProfile> ConvertStringtoProfile(
+  static absl::optional<VideoCodecProfile> ConvertStringtoProfile(
       const std::string& profile);
   // Return the codec associated with the |profile|.
-  static base::Optional<VideoCodec> ConvertProfileToCodec(
+  static absl::optional<VideoCodec> ConvertProfileToCodec(
       VideoCodecProfile profile);
   // Return the pixel format associated with the |pixel_format| string.
-  static base::Optional<VideoPixelFormat> ConvertStringtoPixelFormat(
+  static absl::optional<VideoPixelFormat> ConvertStringtoPixelFormat(
       const std::string& pixel_format);
 
   // Load metadata from the JSON file associated with the video file.
@@ -110,7 +110,7 @@ class Video {
   // Resolve the specified |file_path|. The path can be absolute, relative to
   // the current directory, or relative to the test data path. Returns the
   // resolved path if resolving to an existing file was successful.
-  base::Optional<base::FilePath> ResolveFilePath(
+  absl::optional<base::FilePath> ResolveFilePath(
       const base::FilePath& file_path);
 
   // Decode the video on a separate thread. The |resolution| needs to be

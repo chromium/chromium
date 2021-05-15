@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
@@ -21,6 +20,7 @@
 #include "media/remoting/proto_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
@@ -78,7 +78,7 @@ class MockSender {
         break;
       }
       case openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE: {
-        base::Optional<BufferingState> state = ToMediaBufferingState(
+        absl::optional<BufferingState> state = ToMediaBufferingState(
             message->rendererclient_onbufferingstatechange_rpc().state());
         if (state.has_value())
           OnBufferingStateChange(state.value());

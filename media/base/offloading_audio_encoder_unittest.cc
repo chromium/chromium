@@ -55,7 +55,7 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
   bool called_output = false;
   AudioEncoder::Options options;
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](EncodedAudioBuffer, base::Optional<AudioEncoder::CodecDescription>) {
+      [&](EncodedAudioBuffer, absl::optional<AudioEncoder::CodecDescription>) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
         called_output = true;
       });

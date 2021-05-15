@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_push_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/opus/src/include/opus.h"
 
 namespace media {

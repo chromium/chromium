@@ -8,9 +8,9 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/system_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

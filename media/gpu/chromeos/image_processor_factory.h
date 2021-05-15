@@ -22,7 +22,7 @@ namespace media {
 class MEDIA_GPU_EXPORT ImageProcessorFactory {
  public:
   // Callback to pick a valid format from given |candidates| formats.
-  using PickFormatCB = base::RepeatingCallback<base::Optional<Fourcc>(
+  using PickFormatCB = base::RepeatingCallback<absl::optional<Fourcc>(
       const std::vector<Fourcc>& /* candidates */)>;
 
   // Factory method to create ImageProcessor.

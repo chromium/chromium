@@ -7,7 +7,7 @@
 
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
-// For libgav1::ObuSequenceHeader. base::Optional demands ObuSequenceHeader to
+// For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
 #include "third_party/libgav1/src/src/obu_parser.h"
@@ -70,7 +70,7 @@ class Av1Decoder : public VideoDecoder {
   std::unique_ptr<libgav1::ObuParser> obu_parser_;
   std::unique_ptr<libgav1::BufferPool> buffer_pool_;
   std::unique_ptr<libgav1::DecoderState> state_;
-  base::Optional<libgav1::ObuSequenceHeader> current_sequence_header_;
+  absl::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
   std::vector<scoped_refptr<SharedVASurface>> ref_frames_;
   // If film grain is applied, the film grain surface is stored in
   // |display_surfaces_|. Otherwise, matches |ref_frames_|.

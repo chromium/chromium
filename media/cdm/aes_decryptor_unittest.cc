@@ -60,7 +60,7 @@ MATCHER(NotEmpty, "") {
 }
 MATCHER(IsJSONDictionary, "") {
   std::string result(arg.begin(), arg.end());
-  base::Optional<base::Value> root = base::JSONReader::Read(result);
+  absl::optional<base::Value> root = base::JSONReader::Read(result);
   return (root && root->type() == base::Value::Type::DICTIONARY);
 }
 MATCHER(IsNullTime, "") {

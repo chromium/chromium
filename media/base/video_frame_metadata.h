@@ -52,8 +52,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // Video capture begin/end timestamps.  Consumers can use these values for
   // dynamic optimizations, logging stats, etc.
-  base::Optional<base::TimeTicks> capture_begin_time;
-  base::Optional<base::TimeTicks> capture_end_time;
+  absl::optional<base::TimeTicks> capture_begin_time;
+  absl::optional<base::TimeTicks> capture_end_time;
 
   // A counter that is increased by the producer of video frames each time
   // it pushes out a new frame. By looking for gaps in this counter, clients
@@ -61,7 +61,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // the producer between two consecutively received frames. Note that the
   // counter may start at arbitrary values, so the absolute value of it has no
   // meaning.
-  base::Optional<int> capture_counter;
+  absl::optional<int> capture_counter;
 
   // The rectangular region of the frame that has changed since the frame
   // with the directly preceding CAPTURE_COUNTER. If that frame was not
@@ -70,11 +70,11 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // The rectangle is relative to the full frame data, i.e. [0, 0,
   // coded_size().width(), coded_size().height()]. It does not have to be
   // fully contained within visible_rect().
-  base::Optional<gfx::Rect> capture_update_rect;
+  absl::optional<gfx::Rect> capture_update_rect;
 
   // If not null, it indicates how video frame mailbox should be copied to a
   // new mailbox.
-  base::Optional<CopyMode> copy_mode;
+  absl::optional<CopyMode> copy_mode;
 
   // Indicates if the current frame is the End of its current Stream.
   bool end_of_stream = false;
@@ -85,12 +85,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // vary unpredictably for every frame.  Consumers can use this to optimize
   // playback scheduling, make encoding quality decisions, and/or compute
   // frame-level resource utilization stats.
-  base::Optional<base::TimeDelta> frame_duration;
+  absl::optional<base::TimeDelta> frame_duration;
 
   // Represents either the fixed frame rate, or the maximum frame rate to
   // expect from a variable-rate source.  This value generally remains the
   // same for all frames in the same session.
-  base::Optional<double> frame_rate;
+  absl::optional<double> frame_rate;
 
   // This is a boolean that signals that the video capture engine detects
   // interactive content. One possible optimization that this signal can help
@@ -104,7 +104,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // a high-resolution timestamp, and so it should not be used as a
   // presentation time; but, instead, it should be used for buffering playback
   // and for A/V synchronization purposes.
-  base::Optional<base::TimeTicks> reference_time;
+  absl::optional<base::TimeTicks> reference_time;
 
   // Sources of VideoFrames use this marker to indicate that an instance of
   // VideoFrameExternalResources produced from the associated video frame
@@ -112,7 +112,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   bool read_lock_fences_enabled = false;
 
   // Indicates that the frame has a rotation and/or flip.
-  base::Optional<VideoTransformation> transformation;
+  absl::optional<VideoTransformation> transformation;
 
   // Android only: if set, then this frame is not suitable for overlay, even
   // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
@@ -137,7 +137,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // An UnguessableToken that identifies VideoOverlayFactory that created
   // this VideoFrame. It's used by Cast to help with video hole punch.
-  base::Optional<base::UnguessableToken> overlay_plane_id;
+  absl::optional<base::UnguessableToken> overlay_plane_id;
 
   // Whether this frame was decoded in a power efficient way.
   bool power_efficient = false;
@@ -146,46 +146,46 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // remote debugging.
   // TODO(crbug.com/832220): Use a customized dictionary value instead of
   // using these keys directly.
-  base::Optional<double> device_scale_factor;
-  base::Optional<double> page_scale_factor;
-  base::Optional<double> root_scroll_offset_x;
-  base::Optional<double> root_scroll_offset_y;
-  base::Optional<double> top_controls_visible_height;
+  absl::optional<double> device_scale_factor;
+  absl::optional<double> page_scale_factor;
+  absl::optional<double> root_scroll_offset_x;
+  absl::optional<double> root_scroll_offset_y;
+  absl::optional<double> top_controls_visible_height;
 
   // If present, this field represents the local time at which the VideoFrame
   // was decoded from whichever format it was encoded in. Sometimes only
   // DECODE_END_TIME will be present.
-  base::Optional<base::TimeTicks> decode_begin_time;
-  base::Optional<base::TimeTicks> decode_end_time;
+  absl::optional<base::TimeTicks> decode_begin_time;
+  absl::optional<base::TimeTicks> decode_end_time;
 
   // If present, this field represents the elapsed time from the submission of
   // the encoded packet with the same PTS as this frame to the decoder until
   // the decoded frame was ready for presentation.
-  base::Optional<base::TimeDelta> processing_time;
+  absl::optional<base::TimeDelta> processing_time;
 
   // The RTP timestamp associated with this video frame. Stored as a double
   // since base::DictionaryValue doesn't have a uint32_t type.
   //
   // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
-  base::Optional<double> rtp_timestamp;
+  absl::optional<double> rtp_timestamp;
 
   // For video frames coming from a remote source, this is the time the
   // encoded frame was received by the platform, i.e., the time at
   // which the last packet belonging to this frame was received over the
   // network.
-  base::Optional<base::TimeTicks> receive_time;
+  absl::optional<base::TimeTicks> receive_time;
 
   // If present, this field represents the duration this frame is ideally
   // expected to spend on the screen during playback. Unlike FRAME_DURATION
   // this field takes into account current playback rate.
-  base::Optional<base::TimeDelta> wallclock_frame_duration;
+  absl::optional<base::TimeDelta> wallclock_frame_duration;
 
   // WebRTC streams only: if present, this field represents the maximum
   // composition delay that is allowed for this frame. This is respected
   // in a best effort manner.
   // This is an experimental feature, see crbug.com/1138888 for more
   // information.
-  base::Optional<int> maximum_composition_delay_in_frames;
+  absl::optional<int> maximum_composition_delay_in_frames;
 };
 
 }  // namespace media

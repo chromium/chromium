@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -39,6 +38,7 @@
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/scoping.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -1239,7 +1239,7 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
 }
 
 TEST_P(RemoteTest, RemoteSet) {
-  std::vector<base::Optional<MathCalculatorImpl>> impls(3);
+  std::vector<absl::optional<MathCalculatorImpl>> impls(3);
 
   PendingRemote<math::Calculator> remote0;
   PendingRemote<math::Calculator> remote1;

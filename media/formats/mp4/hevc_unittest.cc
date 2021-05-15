@@ -39,16 +39,16 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
 TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
   struct {
     const char* case_string;
-    const base::Optional<bool> is_keyframe;
+    const absl::optional<bool> is_keyframe;
   } test_cases[] = {
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
-      // reports base::nullopt (which means undetermined analysis result).
-      {"AUD", base::nullopt},        // No VCL present.
-      {"AUD,SPS", base::nullopt},    // No VCL present.
-      {"SPS AUD I", base::nullopt},  // Parameter sets must come after AUD.
-      {"EOS", base::nullopt},        // EOS must come after a VCL.
-      {"EOB", base::nullopt},        // EOB must come after a VCL.
+      // reports absl::nullopt (which means undetermined analysis result).
+      {"AUD", absl::nullopt},        // No VCL present.
+      {"AUD,SPS", absl::nullopt},    // No VCL present.
+      {"SPS AUD I", absl::nullopt},  // Parameter sets must come after AUD.
+      {"EOS", absl::nullopt},        // EOS must come after a VCL.
+      {"EOB", absl::nullopt},        // EOB must come after a VCL.
 
       // For these cases, IDR slice is first VCL and is detected before
       // conformance failure, so the non-conformant frame is reported as a

@@ -121,7 +121,7 @@ class TestAudioCapturer
 
   zx::vmo buffer_vmo_;
   uint64_t buffer_size_ = 0;
-  base::Optional<fuchsia::media::AudioStreamType> stream_type_;
+  absl::optional<fuchsia::media::AudioStreamType> stream_type_;
   bool is_active_ = false;
   size_t frames_per_packet_ = 0;
   std::vector<bool> packets_usage_;

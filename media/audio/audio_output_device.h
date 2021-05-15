@@ -208,7 +208,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // received in OnDeviceAuthorized().
   std::string matched_device_id_;
 
-  base::Optional<base::UnguessableToken> processing_id_;
+  absl::optional<base::UnguessableToken> processing_id_;
 
   // In order to avoid a race between OnStreamCreated and Stop(), we use this
   // guard to control stopping and starting the audio thread.

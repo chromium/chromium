@@ -73,7 +73,7 @@ scoped_refptr<VideoFrame> CloneVideoFrame(
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
-    base::Optional<gfx::BufferUsage> dst_buffer_usage = base::nullopt);
+    absl::optional<gfx::BufferUsage> dst_buffer_usage = absl::nullopt);
 
 // Create Dmabuf-backed VideoFrame from |src_frame|. The created VideoFrame
 // doesn't depend on |src_frame|'s lifetime. |src_frame| should be a
@@ -100,7 +100,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image);
 // and |alignment|. |plane_rows| is optional. If it is not nullptr, this fills
 // the number of rows of each plane into it. The created VideoFrameLayout
 // represents all the planes stored in a single physical buffer.
-base::Optional<VideoFrameLayout> CreateVideoFrameLayout(
+absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& dimension,
     const uint32_t alignment = VideoFrame::kFrameAddressAlignment,

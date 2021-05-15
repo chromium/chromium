@@ -1077,7 +1077,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
   scoped_refptr<VideoFrame> cropped_frame() { return cropped_frame_; }
 
  protected:
-  base::Optional<gl::DisableNullDrawGLBindings> enable_pixels_;
+  absl::optional<gl::DisableNullDrawGLBindings> enable_pixels_;
   scoped_refptr<viz::TestInProcessContextProvider> media_context_;
   scoped_refptr<viz::TestInProcessContextProvider> gles2_context_;
   scoped_refptr<viz::TestInProcessContextProvider> destination_context_;

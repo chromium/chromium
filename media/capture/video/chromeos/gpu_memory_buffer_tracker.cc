@@ -19,7 +19,7 @@ GpuMemoryBufferTracker::~GpuMemoryBufferTracker() = default;
 bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
                                   VideoPixelFormat format,
                                   const mojom::PlaneStridesPtr& strides) {
-  base::Optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  absl::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
@@ -46,7 +46,7 @@ bool GpuMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  base::Optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  absl::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
     return false;
   }

@@ -64,7 +64,7 @@ struct StructTraits<media::mojom::VideoDecoderConfigDataView,
     return input.video_transformation();
   }
 
-  static const base::Optional<gfx::HDRMetadata>& hdr_metadata(
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
       const media::VideoDecoderConfig& input) {
     return input.hdr_metadata();
   }

@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "media/gpu/android/codec_image.h"  // For CodecImage::BlockingMode
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class CodecImageHolder;
@@ -61,7 +61,7 @@ void MEDIA_GPU_EXPORT MaybeRenderEarly(std::vector<Image*>* image_vector_ptr) {
     return;
 
   // Find the latest image rendered to the front buffer (if any).
-  base::Optional<size_t> front_buffer_index;
+  absl::optional<size_t> front_buffer_index;
   for (int i = images.size() - 1; i >= 0; --i) {
     if (images[i]->was_rendered_to_front_buffer()) {
       front_buffer_index = i;

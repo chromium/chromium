@@ -5,10 +5,10 @@
 #include "media/blink/smoothness_helper.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/learning_task_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 static constexpr base::TimeDelta kSegmentSize =
@@ -191,7 +191,7 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
 
    private:
     // If an observation is in progress, then this is the id.
-    base::Optional<base::UnguessableToken> id_;
+    absl::optional<base::UnguessableToken> id_;
     std::unique_ptr<LearningTaskController> controller_;
     TargetValue target_value_;
 
@@ -207,7 +207,7 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
   struct Task consecutive_nnr_;
 
   // Time of the most recent nnr.
-  base::Optional<base::TimeTicks> most_recent_nnr_;
+  absl::optional<base::TimeTicks> most_recent_nnr_;
 
   // Number of NNRs that have occurred within |kMaxNNRDistance|.
   int num_consecutive_nnrs_ = 0;

@@ -7,10 +7,10 @@
 
 #include <d3d11_1.h>
 
-#include "base/optional.h"
 #include "media/base/media_log.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

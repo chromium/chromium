@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -30,7 +30,7 @@ MojoMediaDrmStorage::~MojoMediaDrmStorage() {}
 void MojoMediaDrmStorage::Initialize(InitCB init_cb) {
   DVLOG(1) << __func__;
   media_drm_storage_->Initialize(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(init_cb), false, base::nullopt));
+      std::move(init_cb), false, absl::nullopt));
 }
 
 void MojoMediaDrmStorage::OnProvisioned(ResultCB result_cb) {

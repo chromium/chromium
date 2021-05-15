@@ -160,7 +160,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;
   base::TimeDelta time_to_play_ready_ = kNoTimestamp;
 
-  base::Optional<container_names::MediaContainerName> container_name_;
+  absl::optional<container_names::MediaContainerName> container_name_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaMetricsProvider);
 };

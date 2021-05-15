@@ -22,7 +22,7 @@ namespace {
 
 // nullopt is returned in case the codec is not supported. nullptr is returned
 // for uncompressed PCM streams.
-base::Optional<std::unique_ptr<fuchsia::media::Compression>>
+absl::optional<std::unique_ptr<fuchsia::media::Compression>>
 GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
   switch (config.codec()) {
@@ -46,7 +46,7 @@ GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
       break;
 
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   if (!config.extra_data().empty()) {
@@ -56,7 +56,7 @@ GetFuchsiaCompressionFromDecoderConfig(AudioDecoderConfig config) {
   return std::move(compression);
 }
 
-base::Optional<fuchsia::media::AudioSampleFormat>
+absl::optional<fuchsia::media::AudioSampleFormat>
 GetFuchsiaSampleFormatFromSampleFormat(SampleFormat sample_format) {
   switch (sample_format) {
     case kSampleFormatU8:
@@ -69,7 +69,7 @@ GetFuchsiaSampleFormatFromSampleFormat(SampleFormat sample_format) {
       return fuchsia::media::AudioSampleFormat::FLOAT;
 
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -215,7 +215,7 @@ void FuchsiaAudioRenderer::InitializeStreamSink(
 
   // Set sample_format for uncompressed streams.
   if (!compression) {
-    base::Optional<fuchsia::media::AudioSampleFormat> sample_format =
+    absl::optional<fuchsia::media::AudioSampleFormat> sample_format =
         GetFuchsiaSampleFormatFromSampleFormat(config.sample_format());
     if (!sample_format) {
       LOG(ERROR) << "Unsupported sample format: "
@@ -260,7 +260,7 @@ void FuchsiaAudioRenderer::SetVolume(float volume) {
 }
 
 void FuchsiaAudioRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   // TODO(crbug.com/1131116): Implement at some later date after we've vetted
   // the API shape and usefulness outside of fuchsia.
 }

@@ -191,7 +191,7 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
 
   bool started_ = false;
   std::vector<ReceivedFrame> received_frames_;
-  base::Optional<base::RunLoop> wait_frame_run_loop_;
+  absl::optional<base::RunLoop> wait_frame_run_loop_;
 };
 
 }  // namespace

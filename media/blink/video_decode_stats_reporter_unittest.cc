@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 using ::testing::Invoke;
@@ -186,7 +186,7 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
       VideoCodecProfile profile = kDefaultProfile,
       const gfx::Size& natural_size = gfx::Size(kDefaultWidth, kDefaultHeight),
       const std::string key_system = kDefaultKeySystem,
-      const base::Optional<CdmConfig> cdm_config = kDefaultCdmConfig) {
+      const absl::optional<CdmConfig> cdm_config = kDefaultCdmConfig) {
     reporter_ = std::make_unique<VideoDecodeStatsReporter>(
         SetupRecordInterceptor(&interceptor_),
         base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
@@ -875,7 +875,7 @@ TEST_F(VideoDecodeStatsReporterTest, VaryEmeProperties) {
   const char kFooKeySystem[] = "fookeysytem";
 
   // Make reporter with no EME properties.
-  MakeReporter(kDefaultProfile, kDefaultSize, kEmptyKeySystem, base::nullopt);
+  MakeReporter(kDefaultProfile, kDefaultSize, kEmptyKeySystem, absl::nullopt);
   // Verify the empty key system and non-default hw_secure_codecs.
   StartPlayingAndStabilizeFramerate(kDefaultProfile, kDefaultSize, kDefaultFps,
                                     kEmptyKeySystem, kNonDefaultHwSecureCodecs);

@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -124,28 +124,28 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
   fuchsia::camera3::Orientation orientation_ =
       fuchsia::camera3::Orientation::UP;
 
-  base::Optional<fuchsia::math::Size> resolution_update_ = fuchsia::math::Size{
+  absl::optional<fuchsia::math::Size> resolution_update_ = fuchsia::math::Size{
       kDefaultFrameSize.width(), kDefaultFrameSize.height()};
   WatchResolutionCallback watch_resolution_callback_;
 
-  base::Optional<fuchsia::camera3::Orientation> orientation_update_ =
+  absl::optional<fuchsia::camera3::Orientation> orientation_update_ =
       fuchsia::camera3::Orientation::UP;
   WatchOrientationCallback watch_orientation_callback_;
 
   fuchsia::sysmem::BufferCollectionTokenPtr new_buffer_collection_token_;
 
-  base::Optional<fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>>
+  absl::optional<fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>>
       new_buffer_collection_token_for_client_;
   WatchBufferCollectionCallback watch_buffer_collection_callback_;
 
-  base::Optional<fuchsia::camera3::FrameInfo> next_frame_;
+  absl::optional<fuchsia::camera3::FrameInfo> next_frame_;
   GetNextFrameCallback get_next_frame_callback_;
 
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionPtr buffer_collection_;
 
-  base::Optional<base::RunLoop> wait_buffers_allocated_run_loop_;
-  base::Optional<base::RunLoop> wait_free_buffer_run_loop_;
+  absl::optional<base::RunLoop> wait_buffers_allocated_run_loop_;
+  absl::optional<base::RunLoop> wait_free_buffer_run_loop_;
 
   std::vector<std::unique_ptr<Buffer>> buffers_;
   size_t num_used_buffers_ = 0;

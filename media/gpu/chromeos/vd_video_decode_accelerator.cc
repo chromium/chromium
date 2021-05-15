@@ -103,7 +103,7 @@ void VdVideoDecodeAccelerator::Destroy() {
   // Because VdaVideoFramePool is blocked for this callback, we must call the
   // callback before destroying.
   if (notify_layout_changed_cb_)
-    std::move(notify_layout_changed_cb_).Run(base::nullopt);
+    std::move(notify_layout_changed_cb_).Run(absl::nullopt);
   client_ = nullptr;
   vd_.reset();
 
@@ -209,7 +209,7 @@ void VdVideoDecodeAccelerator::OnFrameReady(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
   DCHECK(client_);
 
-  base::Optional<Picture> picture = GetPicture(*frame);
+  absl::optional<Picture> picture = GetPicture(*frame);
   if (!picture) {
     VLOGF(1) << "Failed to get picture.";
     OnError(FROM_HERE, PLATFORM_FAILURE);
@@ -331,7 +331,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
       VLOGF(1) << "Failed to convert to Fourcc.";
-      std::move(notify_layout_changed_cb_).Run(base::nullopt);
+      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
       return;
     }
 
@@ -349,7 +349,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      std::move(notify_layout_changed_cb_).Run(base::nullopt);
+      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
       return;
     }
 
@@ -395,7 +395,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 
-base::Optional<Picture> VdVideoDecodeAccelerator::GetPicture(
+absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
     const VideoFrame& frame) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -404,18 +404,18 @@ base::Optional<Picture> VdVideoDecodeAccelerator::GetPicture(
       frame_id_to_picture_id_.find(DmabufVideoFramePool::GetDmabufId(frame));
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   int32_t picture_buffer_id = it->second;
   int32_t bitstream_id = FakeTimestampToBitstreamId(frame.timestamp());
-  return base::make_optional(Picture(picture_buffer_id, bitstream_id,
+  return absl::make_optional(Picture(picture_buffer_id, bitstream_id,
                                      frame.visible_rect(), frame.ColorSpace(),
                                      frame.metadata().allow_overlay));
 }
 
 // static
 void VdVideoDecodeAccelerator::OnFrameReleasedThunk(
-    base::Optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
+    absl::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<VideoFrame> origin_frame) {
   DVLOGF(4);

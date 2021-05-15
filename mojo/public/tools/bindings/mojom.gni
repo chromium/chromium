@@ -418,8 +418,8 @@ if (enable_scrambled_message_ids) {
 #             traits for the type must define IsNull and SetToNull methods.
 #
 #             When false, nullable fields are represented by wrapping the C++
-#             type with base::Optional, and null values are simply
-#             base::nullopt.
+#             type with absl::optional, and null values are simply
+#             absl::nullopt.
 #
 #         hashable (optional)
 #             A boolean value (default false) indicating whether the C++ type is

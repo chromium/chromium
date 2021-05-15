@@ -8,10 +8,10 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "media/base/android/android_overlay.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -83,7 +83,7 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
   // Updates the current state and makes a new surface choice with the new
   // state. If |new_factory| is empty, the factory is left as-is. Otherwise,
   // the factory is updated to |*new_factory|.
-  virtual void UpdateState(base::Optional<AndroidOverlayFactoryCB> new_factory,
+  virtual void UpdateState(absl::optional<AndroidOverlayFactoryCB> new_factory,
                            const State& new_state) = 0;
 
  private:

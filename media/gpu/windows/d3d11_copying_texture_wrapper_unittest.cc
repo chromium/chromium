@@ -76,10 +76,10 @@ class MockVideoProcessorProxy : public VideoProcessorProxy {
   MOCK_METHOD0(MockVideoProcessorBlt, HRESULT());
 
   // Most recent arguments to SetStream/OutputColorSpace()/etc.
-  base::Optional<gfx::ColorSpace> last_stream_color_space_;
-  base::Optional<gfx::ColorSpace> last_output_color_space_;
-  base::Optional<DXGI_HDR_METADATA_HDR10> last_stream_metadata_;
-  base::Optional<DXGI_HDR_METADATA_HDR10> last_display_metadata_;
+  absl::optional<gfx::ColorSpace> last_stream_color_space_;
+  absl::optional<gfx::ColorSpace> last_output_color_space_;
+  absl::optional<DXGI_HDR_METADATA_HDR10> last_stream_metadata_;
+  absl::optional<DXGI_HDR_METADATA_HDR10> last_display_metadata_;
 
  private:
   ~MockVideoProcessorProxy() override = default;
@@ -212,7 +212,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   MockVideoProcessorProxy* processor_raw = processor.get();
   // Provide an unlikely color space, to see if it gets to the video processor,
   // if we're not just doing a pass-through of the input.
-  base::Optional<gfx::ColorSpace> copy_color_space;
+  absl::optional<gfx::ColorSpace> copy_color_space;
   if (!GetPassthroughColorSpace())
     copy_color_space = gfx::ColorSpace::CreateDisplayP3D65();
   auto texture_wrapper = ExpectTextureWrapper();

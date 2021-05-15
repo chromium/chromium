@@ -42,7 +42,7 @@ PipeControlMessageProxy::PipeControlMessageProxy(MessageReceiver* receiver)
 
 void PipeControlMessageProxy::NotifyPeerEndpointClosed(
     InterfaceId id,
-    const base::Optional<DisconnectReason>& reason) {
+    const absl::optional<DisconnectReason>& reason) {
   Message message(ConstructPeerEndpointClosedMessage(id, reason));
   message.set_heap_profiler_tag(kMessageTag);
   ignore_result(receiver_->Accept(&message));
@@ -66,7 +66,7 @@ void PipeControlMessageProxy::FlushAsync(AsyncFlusher flusher) {
 // static
 Message PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
     InterfaceId id,
-    const base::Optional<DisconnectReason>& reason) {
+    const absl::optional<DisconnectReason>& reason) {
   auto event = pipe_control::PeerAssociatedEndpointClosedEvent::New();
   event->id = id;
   if (reason) {

@@ -291,22 +291,22 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
                                  data.size(), side_data, side_data_size);
 }
 
-base::Optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader()
+absl::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader()
     const {
   const size_t pos = next_pos_to_decode_;
   // Read VP8/9 frame size from IVF header.
   if (pos + kIvfFrameHeaderSize > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
-    return base::nullopt;
+    return absl::nullopt;
   }
   return GetIvfFrameHeader(base::span<const uint8_t>(
       reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize));
 }
 
-base::Optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
+absl::optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
   auto frame_header = GetNextIvfFrameHeader();
   if (!frame_header)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Skip IVF frame header.
   const size_t pos = next_pos_to_decode_ + kIvfFrameHeaderSize;
@@ -315,7 +315,7 @@ base::Optional<IvfFrame> EncodedDataHelper::ReadNextIvfFrame() {
   if (pos + frame_header->frame_size > data_.size()) {
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
     next_pos_to_decode_ = data_.size();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Update next_pos_to_decode_.
@@ -459,7 +459,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
       return nullptr;
     }
 
-    base::Optional<gfx::BufferFormat> buffer_format =
+    absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(layout_->format());
     if (!buffer_format) {
       LOG(ERROR) << "Unexpected format: " << layout_->format();

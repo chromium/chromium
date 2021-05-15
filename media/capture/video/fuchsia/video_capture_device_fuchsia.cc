@@ -262,7 +262,7 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
   // need to be specified explicitly.
   fuchsia::sysmem::BufferCollectionConstraints constraints =
       VmoBuffer::GetRecommendedConstraints(kMaxUsedOutputFrames,
-                                           /*min_buffer_size=*/base::nullopt,
+                                           /*min_buffer_size=*/absl::nullopt,
                                            /*writable=*/false);
   // This is not an actual device driver, so the priority should be > 1. It's
   // also not a high-level system, so the name should be < 100.

@@ -78,7 +78,7 @@ class TestBufferCollection {
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
 
-  base::Optional<fuchsia::sysmem::BufferCollectionInfo_2>
+  absl::optional<fuchsia::sysmem::BufferCollectionInfo_2>
       buffer_collection_info_;
 
   DISALLOW_COPY_AND_ASSIGN(TestBufferCollection);

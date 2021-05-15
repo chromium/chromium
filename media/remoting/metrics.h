@@ -6,10 +6,10 @@
 #define MEDIA_REMOTING_METRICS_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/pipeline_metadata.h"
 #include "media/remoting/triggers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -96,7 +96,7 @@ class SessionMetricsRecorder {
   void RecordTrackConfiguration();
 
   // |start_trigger_| is set while a remoting session is active.
-  base::Optional<StartTrigger> start_trigger_;
+  absl::optional<StartTrigger> start_trigger_;
 
   // When the current (or last) remoting session started.
   base::TimeTicks start_time_;

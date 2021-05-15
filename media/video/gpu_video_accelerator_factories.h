@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -24,6 +23,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -137,7 +137,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   //
   // TODO(sandersd): Remove Optional if/when all clients check
   // IsEncoderSupportKnown().
-  virtual base::Optional<VideoEncodeAccelerator::SupportedProfiles>
+  virtual absl::optional<VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() = 0;
 
   // Returns true if GetVideoEncodeAcceleratorSupportedProfiles() is populated.

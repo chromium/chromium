@@ -15,12 +15,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -68,7 +68,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // zero, a default value is used.
   static Ptr Create(
       HangAction hang_action,
-      base::Optional<base::TimeDelta> hang_deadline,
+      absl::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
@@ -95,7 +95,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
 
   AudioThreadHangMonitor(
       HangAction hang_action,
-      base::Optional<base::TimeDelta> hang_deadline,
+      absl::optional<base::TimeDelta> hang_deadline,
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner);
 

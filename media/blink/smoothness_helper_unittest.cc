@@ -30,11 +30,11 @@ using testing::Return;
 
 // Helper for EXPECT_CALL argument matching on Optional<TargetValue>.  Applies
 // matcher |m| to the TargetValue as a double.  For example:
-// void Foo(base::Optional<TargetValue>);
+// void Foo(absl::optional<TargetValue>);
 // EXPECT_CALL(..., Foo(OPT_TARGET(Gt(0.9)))) will expect that the value of the
 // Optional<TargetValue> passed to Foo() to be greather than 0.9 .
 #define OPT_TARGET(m) \
-  ResultOf([](const base::Optional<TargetValue>& v) { return (*v).value(); }, m)
+  ResultOf([](const absl::optional<TargetValue>& v) { return (*v).value(); }, m)
 
 // Same as above, but expects an ObservationCompletion.
 #define COMPLETION_TARGET(m)                                                 \
@@ -48,8 +48,8 @@ class SmoothnessHelperTest : public testing::Test {
     MOCK_METHOD4(BeginObservation,
                  void(base::UnguessableToken id,
                       const FeatureVector& features,
-                      const base::Optional<TargetValue>& default_target,
-                      const base::Optional<ukm::SourceId>& source_id));
+                      const absl::optional<TargetValue>& default_target,
+                      const absl::optional<ukm::SourceId>& source_id));
 
     MOCK_METHOD2(CompleteObservation,
                  void(base::UnguessableToken id,
@@ -59,7 +59,7 @@ class SmoothnessHelperTest : public testing::Test {
 
     MOCK_METHOD2(UpdateDefaultTarget,
                  void(base::UnguessableToken id,
-                      const base::Optional<TargetValue>& default_target));
+                      const absl::optional<TargetValue>& default_target));
 
     MOCK_METHOD0(GetLearningTask, const LearningTask&());
     MOCK_METHOD2(PredictDistribution,
@@ -87,8 +87,8 @@ class SmoothnessHelperTest : public testing::Test {
   }
 
   // Helper for EXPECT_CALL.
-  base::Optional<TargetValue> Opt(double x) {
-    return base::Optional<TargetValue>(TargetValue(x));
+  absl::optional<TargetValue> Opt(double x) {
+    return absl::optional<TargetValue>(TargetValue(x));
   }
 
   void FastForwardBy(base::TimeDelta amount) {

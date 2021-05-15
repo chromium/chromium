@@ -34,7 +34,7 @@ class ScopedInterfaceEndpointHandle::State
     peer_state_ = std::move(peer);
   }
 
-  void Close(const base::Optional<DisconnectReason>& reason) {
+  void Close(const absl::optional<DisconnectReason>& reason) {
     scoped_refptr<AssociatedGroupController> cached_group_controller;
     InterfaceId cached_id = kInvalidInterfaceId;
     scoped_refptr<State> cached_peer_state;
@@ -159,7 +159,7 @@ class ScopedInterfaceEndpointHandle::State
     return group_controller_.get();
   }
 
-  const base::Optional<DisconnectReason>& disconnect_reason() const {
+  const absl::optional<DisconnectReason>& disconnect_reason() const {
     internal::MayAutoLock locker(&lock_);
     return disconnect_reason_;
   }
@@ -210,7 +210,7 @@ class ScopedInterfaceEndpointHandle::State
 
   // Called by the peer, maybe from a different sequence.
   void OnPeerClosedBeforeAssociation(
-      const base::Optional<DisconnectReason>& reason) {
+      const absl::optional<DisconnectReason>& reason) {
     AssociationEventCallback handler;
     {
       internal::MayAutoLock locker(&lock_);
@@ -264,10 +264,10 @@ class ScopedInterfaceEndpointHandle::State
 
   // Protects the following members if the handle is initially set to pending
   // association.
-  mutable base::Optional<base::Lock> lock_;
+  mutable absl::optional<base::Lock> lock_;
 
   bool pending_association_ = false;
-  base::Optional<DisconnectReason> disconnect_reason_;
+  absl::optional<DisconnectReason> disconnect_reason_;
 
   scoped_refptr<State> peer_state_;
 
@@ -305,7 +305,7 @@ ScopedInterfaceEndpointHandle::ScopedInterfaceEndpointHandle(
 }
 
 ScopedInterfaceEndpointHandle::~ScopedInterfaceEndpointHandle() {
-  state_->Close(base::nullopt);
+  state_->Close(absl::nullopt);
 }
 
 ScopedInterfaceEndpointHandle& ScopedInterfaceEndpointHandle::operator=(
@@ -332,7 +332,7 @@ AssociatedGroupController* ScopedInterfaceEndpointHandle::group_controller()
   return state_->group_controller();
 }
 
-const base::Optional<DisconnectReason>&
+const absl::optional<DisconnectReason>&
 ScopedInterfaceEndpointHandle::disconnect_reason() const {
   return state_->disconnect_reason();
 }
@@ -343,7 +343,7 @@ void ScopedInterfaceEndpointHandle::SetAssociationEventHandler(
 }
 
 void ScopedInterfaceEndpointHandle::reset() {
-  ResetInternal(base::nullopt);
+  ResetInternal(absl::nullopt);
 }
 
 void ScopedInterfaceEndpointHandle::ResetWithReason(
@@ -366,7 +366,7 @@ bool ScopedInterfaceEndpointHandle::NotifyAssociation(
 }
 
 void ScopedInterfaceEndpointHandle::ResetInternal(
-    const base::Optional<DisconnectReason>& reason) {
+    const absl::optional<DisconnectReason>& reason) {
   scoped_refptr<State> new_state(new State);
   state_->Close(reason);
   state_.swap(new_state);

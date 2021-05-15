@@ -62,7 +62,7 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
   DeleterCallback deleter_callback_;
   std::unique_ptr<mojom::AudioOutputStreamObserver> observer_;
   mojo::Receiver<mojom::AudioOutputStreamObserver> observer_receiver_;
-  base::Optional<MojoAudioOutputStream> audio_output_;
+  absl::optional<MojoAudioOutputStream> audio_output_;
   mojo::Remote<mojom::AudioOutputStreamProviderClient> provider_client_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputStreamProvider);

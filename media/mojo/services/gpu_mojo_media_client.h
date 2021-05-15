@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -20,6 +19,7 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class GpuMemoryBufferFactory;
@@ -67,10 +67,10 @@ class GpuMojoMediaClient final : public MojoMediaClient {
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Indirectly owned by GpuChildThread.
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
-  base::Optional<SupportedVideoDecoderConfigs> cros_supported_configs_;
+  absl::optional<SupportedVideoDecoderConfigs> cros_supported_configs_;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #if defined(OS_WIN)
-  base::Optional<SupportedVideoDecoderConfigs> d3d11_supported_configs_;
+  absl::optional<SupportedVideoDecoderConfigs> d3d11_supported_configs_;
 #endif  // defined(OS_WIN)
 
   DISALLOW_COPY_AND_ASSIGN(GpuMojoMediaClient);

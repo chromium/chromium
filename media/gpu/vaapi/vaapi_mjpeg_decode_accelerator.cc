@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -38,6 +37,7 @@
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -220,7 +220,7 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
   if (video_frame->HasDmaBufs()) {
     // Dmabuf-backed frame needs to be mapped for SW access.
     DCHECK(gpu_memory_buffer_support_);
-    base::Optional<gfx::BufferFormat> gfx_format =
+    absl::optional<gfx::BufferFormat> gfx_format =
         VideoPixelFormatToGfxBufferFormat(video_frame->format());
     if (!gfx_format) {
       VLOGF(1) << "Unsupported format: " << video_frame->format();

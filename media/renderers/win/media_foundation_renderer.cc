@@ -320,7 +320,7 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> /*latency_hint*/) {
+    absl::optional<base::TimeDelta> /*latency_hint*/) {
   // TODO(frankli): Ensure MFMediaEngine rendering pipeine is in real time mode.
   NOTIMPLEMENTED() << "We do not use the latency hint today";
 }

@@ -44,7 +44,7 @@ AudioThreadHangMonitor::SharedAtomicFlag::~SharedAtomicFlag() {}
 // static
 AudioThreadHangMonitor::Ptr AudioThreadHangMonitor::Create(
     HangAction hang_action,
-    base::Optional<base::TimeDelta> hang_deadline,
+    absl::optional<base::TimeDelta> hang_deadline,
     const base::TickClock* clock,
     scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
     scoped_refptr<base::SequencedTaskRunner> monitor_task_runner) {
@@ -73,7 +73,7 @@ bool AudioThreadHangMonitor::IsAudioThreadHung() const {
 
 AudioThreadHangMonitor::AudioThreadHangMonitor(
     HangAction hang_action,
-    base::Optional<base::TimeDelta> hang_deadline,
+    absl::optional<base::TimeDelta> hang_deadline,
     const base::TickClock* clock,
     scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner)
     : clock_(clock),

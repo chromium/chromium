@@ -102,7 +102,7 @@ bool TemporalLayerValidator::ValidateAndUpdate(bool keyframe,
 
 H264Validator::H264Validator(VideoCodecProfile profile,
                              const gfx::Rect& visible_rect,
-                             base::Optional<uint8_t> level)
+                             absl::optional<uint8_t> level)
     : DecoderBufferValidator(visible_rect),
       cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),

@@ -141,7 +141,7 @@ class AndroidVideoSurfaceChooserImplTest
         base::BindRepeating(&MockClient::UseTextureOwner,
                             base::Unretained(&client_)));
     chooser_->UpdateState(
-        factory ? base::make_optional(std::move(factory)) : base::nullopt,
+        factory ? absl::make_optional(std::move(factory)) : absl::nullopt,
         chooser_state_);
   }
 
@@ -359,7 +359,7 @@ TEST_F(AndroidVideoSurfaceChooserImplTest,
   // Note that if it enforces a delay here before retrying, that might be okay
   // too.  For now, we assume that it doesn't.
   EXPECT_CALL(*this, MockOnOverlayCreated());
-  chooser_->UpdateState(base::Optional<AndroidOverlayFactoryCB>(),
+  chooser_->UpdateState(absl::optional<AndroidOverlayFactoryCB>(),
                         chooser_state_);
 }
 
@@ -391,7 +391,7 @@ TEST_F(AndroidVideoSurfaceChooserImplTest, AlwaysUseTextureOwner) {
   // instead.
   chooser_state_.always_use_texture_owner = true;
   EXPECT_CALL(client_, UseTextureOwner());
-  chooser_->UpdateState(base::nullopt, chooser_state_);
+  chooser_->UpdateState(absl::nullopt, chooser_state_);
 }
 
 TEST_P(AndroidVideoSurfaceChooserImplTest, OverlayIsUsedOrNotBasedOnState) {

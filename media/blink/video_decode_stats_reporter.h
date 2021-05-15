@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -23,6 +22,7 @@
 #include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -41,7 +41,7 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
       VideoCodecProfile codec_profile,
       const gfx::Size& natural_size,
       std::string key_system,
-      base::Optional<CdmConfig> cdm_config,
+      absl::optional<CdmConfig> cdm_config,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =
           base::DefaultTickClock::GetInstance());

@@ -289,7 +289,7 @@ void RequestManager::PrepareCaptureRequest() {
   std::set<StreamType> stream_types;
   cros::mojom::CameraMetadataPtr settings;
   TakePhotoCallback callback = base::NullCallback();
-  base::Optional<uint64_t> input_buffer_id;
+  absl::optional<uint64_t> input_buffer_id;
   cros::mojom::Effect reprocess_effect = cros::mojom::Effect::NO_EFFECT;
 
   bool is_reprocess_request = false;
@@ -384,7 +384,7 @@ bool RequestManager::TryPrepareReprocessRequest(
     std::set<StreamType>* stream_types,
     cros::mojom::CameraMetadataPtr* settings,
     TakePhotoCallback* callback,
-    base::Optional<uint64_t>* input_buffer_id,
+    absl::optional<uint64_t>* input_buffer_id,
     cros::mojom::Effect* reprocess_effect) {
   if (buffer_id_reprocess_job_info_map_.empty() ||
       !stream_buffer_manager_->HasFreeBuffers(kYUVReprocessStreams)) {
@@ -888,7 +888,7 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
   auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
   if (video_capture_use_gmb_) {
     VideoCaptureFormat format;
-    base::Optional<VideoCaptureDevice::Client::Buffer> buffer =
+    absl::optional<VideoCaptureDevice::Client::Buffer> buffer =
         stream_buffer_manager_->AcquireBufferForClientById(
             stream_type, buffer_ipc_id, &format);
     CHECK(buffer);

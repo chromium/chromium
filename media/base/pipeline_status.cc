@@ -8,7 +8,7 @@
 
 namespace media {
 
-base::Optional<PipelineStatus> StatusCodeToPipelineStatus(StatusCode status) {
+absl::optional<PipelineStatus> StatusCodeToPipelineStatus(StatusCode status) {
   switch (status) {
     case StatusCode::kOk:
       return PIPELINE_OK;
@@ -48,7 +48,7 @@ base::Optional<PipelineStatus> StatusCodeToPipelineStatus(StatusCode status) {
       return DEMUXER_ERROR_DETECTED_HLS;
     default:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

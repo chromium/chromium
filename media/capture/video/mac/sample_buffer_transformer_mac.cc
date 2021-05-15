@@ -476,7 +476,7 @@ void SampleBufferTransformer::Reconfigure(
     Transformer transformer,
     OSType destination_pixel_format,
     const gfx::Size& destination_size,
-    base::Optional<size_t> buffer_pool_size) {
+    absl::optional<size_t> buffer_pool_size) {
   DCHECK(transformer != Transformer::kLibyuv ||
          destination_pixel_format == kPixelFormatI420 ||
          destination_pixel_format == kPixelFormatNv12)

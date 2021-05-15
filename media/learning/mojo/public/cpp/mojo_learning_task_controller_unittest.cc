@@ -26,7 +26,7 @@ class MojoLearningTaskControllerTest : public ::testing::Test {
     void BeginObservation(
         const base::UnguessableToken& id,
         const FeatureVector& features,
-        const base::Optional<TargetValue>& default_target) override {
+        const absl::optional<TargetValue>& default_target) override {
       begin_args_.id_ = id;
       begin_args_.features_ = features;
       begin_args_.default_target_ = default_target;
@@ -44,7 +44,7 @@ class MojoLearningTaskControllerTest : public ::testing::Test {
 
     void UpdateDefaultTarget(
         const base::UnguessableToken& id,
-        const base::Optional<TargetValue>& default_target) override {
+        const absl::optional<TargetValue>& default_target) override {
       update_default_args_.id_ = id;
       update_default_args_.default_target_ = default_target;
     }
@@ -58,7 +58,7 @@ class MojoLearningTaskControllerTest : public ::testing::Test {
     struct {
       base::UnguessableToken id_;
       FeatureVector features_;
-      base::Optional<TargetValue> default_target_;
+      absl::optional<TargetValue> default_target_;
     } begin_args_;
 
     struct {
@@ -72,7 +72,7 @@ class MojoLearningTaskControllerTest : public ::testing::Test {
 
     struct {
       base::UnguessableToken id_;
-      base::Optional<TargetValue> default_target_;
+      absl::optional<TargetValue> default_target_;
     } update_default_args_;
 
     struct {
@@ -115,8 +115,8 @@ TEST_F(MojoLearningTaskControllerTest, GetLearningTask) {
 TEST_F(MojoLearningTaskControllerTest, BeginWithoutDefaultTarget) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
-  learning_controller_->BeginObservation(id, features, base::nullopt,
-                                         base::nullopt);
+  learning_controller_->BeginObservation(id, features, absl::nullopt,
+                                         absl::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(id, fake_learning_controller_.begin_args_.id_);
   EXPECT_EQ(features, fake_learning_controller_.begin_args_.features_);
@@ -128,7 +128,7 @@ TEST_F(MojoLearningTaskControllerTest, BeginWithDefaultTarget) {
   TargetValue default_target(987);
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
   learning_controller_->BeginObservation(id, features, default_target,
-                                         base::nullopt);
+                                         absl::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(id, fake_learning_controller_.begin_args_.id_);
   EXPECT_EQ(features, fake_learning_controller_.begin_args_.features_);
@@ -140,8 +140,8 @@ TEST_F(MojoLearningTaskControllerTest, UpdateDefaultTargetToValue) {
   // Test if we can update the default target to a non-nullopt.
   base::UnguessableToken id = base::UnguessableToken::Create();
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
-  learning_controller_->BeginObservation(id, features, base::nullopt,
-                                         base::nullopt);
+  learning_controller_->BeginObservation(id, features, absl::nullopt,
+                                         absl::nullopt);
   TargetValue default_target(987);
   learning_controller_->UpdateDefaultTarget(id, default_target);
   task_environment_.RunUntilIdle();
@@ -157,12 +157,12 @@ TEST_F(MojoLearningTaskControllerTest, UpdateDefaultTargetToNoValue) {
   FeatureVector features = {FeatureValue(123), FeatureValue(456)};
   TargetValue default_target(987);
   learning_controller_->BeginObservation(id, features, default_target,
-                                         base::nullopt);
-  learning_controller_->UpdateDefaultTarget(id, base::nullopt);
+                                         absl::nullopt);
+  learning_controller_->UpdateDefaultTarget(id, absl::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(id, fake_learning_controller_.update_default_args_.id_);
   EXPECT_EQ(features, fake_learning_controller_.begin_args_.features_);
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             fake_learning_controller_.update_default_args_.default_target_);
 }
 
@@ -190,7 +190,7 @@ TEST_F(MojoLearningTaskControllerTest, PredictDistribution) {
   learning_controller_->PredictDistribution(
       features, base::BindOnce(
                     [](TargetHistogram* test_storage,
-                       const base::Optional<TargetHistogram>& predicted) {
+                       const absl::optional<TargetHistogram>& predicted) {
                       *test_storage = *predicted;
                     },
                     &observed_prediction));

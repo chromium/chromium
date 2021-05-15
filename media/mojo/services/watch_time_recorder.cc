@@ -328,7 +328,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     return;
 
   // Round duration to the most significant digit in milliseconds for privacy.
-  base::Optional<uint64_t> clamped_duration_ms;
+  absl::optional<uint64_t> clamped_duration_ms;
   if (duration_ != kNoTimestamp && duration_ != kInfiniteDuration) {
     clamped_duration_ms = duration_.InMilliseconds();
     if (duration_ > base::TimeDelta::FromSeconds(1)) {

@@ -6,9 +6,9 @@
 #define MEDIA_FORMATS_WEBM_WEBM_COLOUR_PARSER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/video_color_space.h"
 #include "media/formats/webm/webm_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
@@ -26,7 +26,7 @@ struct MEDIA_EXPORT WebMColorMetadata {
 
   VideoColorSpace color_space;
 
-  base::Optional<gfx::HDRMetadata> hdr_metadata;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   WebMColorMetadata();
   WebMColorMetadata(const WebMColorMetadata& rhs);

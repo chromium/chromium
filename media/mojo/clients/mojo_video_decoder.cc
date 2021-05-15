@@ -169,8 +169,8 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  base::Optional<base::UnguessableToken> cdm_id =
-      cdm_context ? cdm_context->GetCdmId() : base::nullopt;
+  absl::optional<base::UnguessableToken> cdm_id =
+      cdm_context ? cdm_context->GetCdmId() : absl::nullopt;
 
   // Fail immediately if the stream is encrypted but |cdm_id| is invalid.
   // This check is needed to avoid unnecessary IPC to the remote process.
@@ -255,7 +255,7 @@ void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void MojoVideoDecoder::OnVideoFrameDecoded(
     const scoped_refptr<VideoFrame>& frame,
     bool can_read_without_stalling,
-    const base::Optional<base::UnguessableToken>& release_token) {
+    const absl::optional<base::UnguessableToken>& release_token) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

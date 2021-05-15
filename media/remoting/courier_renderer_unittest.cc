@@ -96,7 +96,7 @@ class RendererClientImpl final : public RendererClient {
   void OnWaiting(WaitingReason reason) override {}
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size& size));
   MOCK_METHOD1(OnVideoOpacityChange, void(bool opaque));
-  MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
+  MOCK_METHOD1(OnVideoFrameRateChange, void(absl::optional<int>));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
 
   void DelegateOnStatisticsUpdate(const PipelineStatistics& stats) {
@@ -439,7 +439,7 @@ class CourierRendererTest : public testing::Test {
 
   // Issue RPC_RC_ONBUFFERINGSTATECHANGE RPC message.
   void IssuesBufferingStateRpc(BufferingState state) {
-    base::Optional<
+    absl::optional<
         openscreen::cast::RendererClientOnBufferingStateChange::State>
         pb_state = ToProtoMediaBufferingState(state);
     if (!pb_state.has_value())

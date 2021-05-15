@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -47,20 +47,20 @@ class MEDIA_EXPORT DecryptConfig {
       const std::string& key_id,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
-      base::Optional<EncryptionPattern> encryption_pattern);
+      absl::optional<EncryptionPattern> encryption_pattern);
 
   DecryptConfig(EncryptionScheme encryption_scheme,
                 const std::string& key_id,
                 const std::string& iv,
                 const std::vector<SubsampleEntry>& subsamples,
-                base::Optional<EncryptionPattern> encryption_pattern);
+                absl::optional<EncryptionPattern> encryption_pattern);
   ~DecryptConfig();
 
   const std::string& key_id() const { return key_id_; }
   const std::string& iv() const { return iv_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
   EncryptionScheme encryption_scheme() const { return encryption_scheme_; }
-  const base::Optional<EncryptionPattern>& encryption_pattern() const {
+  const absl::optional<EncryptionPattern>& encryption_pattern() const {
     return encryption_pattern_;
   }
 
@@ -95,7 +95,7 @@ class MEDIA_EXPORT DecryptConfig {
   const std::vector<SubsampleEntry> subsamples_;
 
   // Only specified if |encryption_mode_| requires a pattern.
-  base::Optional<EncryptionPattern> encryption_pattern_;
+  absl::optional<EncryptionPattern> encryption_pattern_;
 
   DISALLOW_ASSIGN(DecryptConfig);
 };

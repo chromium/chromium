@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
@@ -23,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/video/h264_parser.h"
 #include "media/video/video_encoder_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -86,8 +86,8 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
 
   // Either |vp8| or |vp9| may be set, but not both of them. Presumably, it's
   // also possible for none of them to be set.
-  base::Optional<Vp8Metadata> vp8;
-  base::Optional<Vp9Metadata> vp9;
+  absl::optional<Vp8Metadata> vp8;
+  absl::optional<Vp9Metadata> vp9;
 };
 
 // Video encoder interface.
@@ -162,11 +162,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
            const gfx::Size& input_visible_size,
            VideoCodecProfile output_profile,
            uint32_t initial_bitrate,
-           base::Optional<uint32_t> initial_framerate = base::nullopt,
-           base::Optional<uint32_t> gop_length = base::nullopt,
-           base::Optional<uint8_t> h264_output_level = base::nullopt,
+           absl::optional<uint32_t> initial_framerate = absl::nullopt,
+           absl::optional<uint32_t> gop_length = absl::nullopt,
+           absl::optional<uint8_t> h264_output_level = absl::nullopt,
            bool is_constrained_h264 = false,
-           base::Optional<StorageType> storage_type = base::nullopt,
+           absl::optional<StorageType> storage_type = absl::nullopt,
            ContentType content_type = ContentType::kCamera,
            const std::vector<SpatialLayer>& spatial_layers = {});
 
@@ -193,17 +193,17 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
 
     // Initial encoding framerate in frames per second. This is optional and
     // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.
-    base::Optional<uint32_t> initial_framerate;
+    absl::optional<uint32_t> initial_framerate;
 
     // Group of picture length for encoded output stream, indicates the
     // distance between two key frames, i.e. IPPPIPPP would be represent as 4.
-    base::Optional<uint32_t> gop_length;
+    absl::optional<uint32_t> gop_length;
 
     // Codec level of encoded output stream for H264 only. This value should
     // be aligned to the H264 standard definition of SPS.level_idc.
     // If this is not given, VideoEncodeAccelerator selects one of proper H.264
     // levels for |input_visible_size| and |initial_framerate|.
-    base::Optional<uint8_t> h264_output_level;
+    absl::optional<uint8_t> h264_output_level;
 
     // Indicates baseline profile or constrained baseline profile for H264 only.
     bool is_constrained_h264;
@@ -213,7 +213,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Encode().
     // This is kShmem iff a video frame is mapped in user space.
     // This is kDmabuf iff a video frame has dmabuf.
-    base::Optional<StorageType> storage_type;
+    absl::optional<StorageType> storage_type;
 
     // Indicates captured video (from a camera) or generated (screen grabber).
     // Screen content has a number of special properties such as lack of noise,

@@ -50,7 +50,7 @@ class MEDIA_MOJO_EXPORT PlaybackEventsRecorder final
     size_t audio_bytes_ = 0;
     size_t video_bytes_ = 0;
 
-    base::Optional<PipelineStatistics> last_stats_;
+    absl::optional<PipelineStatistics> last_stats_;
     base::TimeTicks last_stats_time_;
   };
 

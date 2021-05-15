@@ -32,7 +32,7 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     const gfx::Size& natural_size,
     bool use_protected,
     base::TimeDelta timestamp) {
-  base::Optional<gfx::BufferFormat> gfx_format =
+  absl::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
   DCHECK(gfx_format);
   const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
@@ -96,7 +96,7 @@ class PlatformVideoFramePoolTest
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PlatformVideoFramePool> pool_;
 
-  base::Optional<GpuBufferLayout> layout_;
+  absl::optional<GpuBufferLayout> layout_;
   gfx::Rect visible_rect_;
   gfx::Size natural_size_;
 };

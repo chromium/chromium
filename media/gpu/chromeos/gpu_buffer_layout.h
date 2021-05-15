@@ -9,17 +9,17 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/base/color_plane_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 class MEDIA_GPU_EXPORT GpuBufferLayout {
  public:
-  static base::Optional<GpuBufferLayout> Create(
+  static absl::optional<GpuBufferLayout> Create(
       const Fourcc& fourcc,
       const gfx::Size& size,
       const std::vector<ColorPlaneLayout>& planes,

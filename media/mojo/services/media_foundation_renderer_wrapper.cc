@@ -43,7 +43,7 @@ void MediaFoundationRendererWrapper::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererWrapper::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   renderer_->SetLatencyHint(latency_hint);
 }
 

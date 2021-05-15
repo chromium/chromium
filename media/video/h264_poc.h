@@ -20,7 +20,7 @@ class MEDIA_EXPORT H264POC {
   ~H264POC();
 
   // Returns the picture order count for a slice.
-  base::Optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
+  absl::optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
                                              const H264SliceHeader& slice_hdr);
 
   // As specified, the POC of a frame with MMCO5 changes (to zero) after

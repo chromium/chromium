@@ -85,7 +85,7 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   void SetIsPersistentVideo(bool is_persistent_video);
 
   // Update the chooser state using the given factory.
-  void UpdateChooserState(base::Optional<AndroidOverlayFactoryCB> new_factory);
+  void UpdateChooserState(absl::optional<AndroidOverlayFactoryCB> new_factory);
 
   // Notify us about a promotion hint.  This will update the chooser state
   // if needed.

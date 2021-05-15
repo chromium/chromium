@@ -116,7 +116,7 @@ void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
 
   // Reset |start_trigger_| since metrics recording of the current remoting
   // session has now completed.
-  start_trigger_ = base::nullopt;
+  start_trigger_ = absl::nullopt;
 }
 
 void SessionMetricsRecorder::OnPipelineMetadataChanged(

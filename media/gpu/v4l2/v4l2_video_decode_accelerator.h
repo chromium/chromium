@@ -24,7 +24,6 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -37,6 +36,7 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -539,7 +539,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // thread manipulates them.
   //
 
-  base::Optional<V4L2WritableBufferRef> current_input_buffer_;
+  absl::optional<V4L2WritableBufferRef> current_input_buffer_;
 
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
@@ -601,7 +601,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // Chosen input format for the video profile we are decoding from.
   uint32_t input_format_fourcc_;
   // Chosen output format.
-  base::Optional<Fourcc> output_format_fourcc_;
+  absl::optional<Fourcc> output_format_fourcc_;
 
   // Image processor device, if one is in use.
   scoped_refptr<V4L2Device> image_processor_device_;
@@ -609,7 +609,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   std::unique_ptr<ImageProcessor> image_processor_;
 
   // The format of EGLImage.
-  base::Optional<Fourcc> egl_image_format_fourcc_;
+  absl::optional<Fourcc> egl_image_format_fourcc_;
   // The logical dimensions of EGLImage buffer in pixels.
   gfx::Size egl_image_size_;
 

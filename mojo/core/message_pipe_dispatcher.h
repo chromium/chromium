@@ -11,11 +11,11 @@
 #include <queue>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/core/watcher_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -105,9 +105,9 @@ class MessagePipeDispatcher : public Dispatcher {
   bool port_transferred_ = false;
   AtomicFlag port_closed_;
   WatcherSet watchers_;
-  base::Optional<uint64_t> receive_queue_length_limit_;
-  base::Optional<uint64_t> receive_queue_memory_size_limit_;
-  base::Optional<uint64_t> unread_message_count_limit_;
+  absl::optional<uint64_t> receive_queue_length_limit_;
+  absl::optional<uint64_t> receive_queue_memory_size_limit_;
+  absl::optional<uint64_t> unread_message_count_limit_;
 
   DISALLOW_COPY_AND_ASSIGN(MessagePipeDispatcher);
 };

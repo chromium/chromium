@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -17,6 +16,7 @@
 #include "media/gpu/chromeos/image_processor_with_pool.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -62,8 +62,8 @@ class MEDIA_GPU_EXPORT DecoderInterface {
     // Return a valid format and size for |decoder_| output from given
     // |candidates| and the visible rect. The size might be modified from the
     // ones provided originally to accommodate the needs of the pipeline.
-    // Return base::nullopt if no valid format is found.
-    virtual base::Optional<std::pair<Fourcc, gfx::Size>>
+    // Return absl::nullopt if no valid format is found.
+    virtual absl::optional<std::pair<Fourcc, gfx::Size>>
     PickDecoderOutputFormat(
         const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
         const gfx::Rect& visible_rect) = 0;
@@ -166,7 +166,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // After picking a format, it instantiates an |image_processor_| if none of
   // format in |candidates| is renderable and an ImageProcessor can convert a
   // candidate to renderable format.
-  base::Optional<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
+  absl::optional<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
       const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
       const gfx::Rect& visible_rect) override;
 

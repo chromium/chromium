@@ -10,12 +10,12 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -88,7 +88,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   static void ReuseOutputBufferThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::Optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
+      absl::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
       V4L2ReadableBufferRef buffer);
   void ReuseOutputBuffer(V4L2ReadableBufferRef buffer);
 
@@ -130,14 +130,14 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   base::queue<DecodeRequest> decode_request_queue_;
 
   // The decode request which is currently processed.
-  base::Optional<DecodeRequest> current_decode_request_;
+  absl::optional<DecodeRequest> current_decode_request_;
   // V4L2 input buffer currently being prepared.
-  base::Optional<V4L2WritableBufferRef> current_input_buffer_;
+  absl::optional<V4L2WritableBufferRef> current_input_buffer_;
 
   std::unique_ptr<v4l2_vda_helpers::InputBufferFragmentSplitter>
       frame_splitter_;
 
-  base::Optional<gfx::Rect> visible_rect_;
+  absl::optional<gfx::Rect> visible_rect_;
 
   // Callback of the buffer that triggered a flush, to be called when the
   // flush completes.

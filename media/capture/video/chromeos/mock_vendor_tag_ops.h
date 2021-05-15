@@ -31,10 +31,10 @@ class MockVendorTagOps : public cros::mojom::VendorTagOps {
   MOCK_METHOD0(DoGetAllTags, std::vector<uint32_t>());
   void GetAllTags(GetAllTagsCallback callback);
 
-  MOCK_METHOD1(DoGetSectionName, base::Optional<std::string>(uint32_t tag));
+  MOCK_METHOD1(DoGetSectionName, absl::optional<std::string>(uint32_t tag));
   void GetSectionName(uint32_t tag, GetSectionNameCallback callback);
 
-  MOCK_METHOD1(DoGetTagName, base::Optional<std::string>(uint32_t tag));
+  MOCK_METHOD1(DoGetTagName, absl::optional<std::string>(uint32_t tag));
   void GetTagName(uint32_t tag, GetTagNameCallback callback);
 
   MOCK_METHOD1(DoGetTagType, int32_t(uint32_t tag));

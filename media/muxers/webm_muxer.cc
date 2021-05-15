@@ -110,7 +110,7 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   }
 }
 
-base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
+absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
     const gfx::ColorSpace& color) {
   using mkvmuxer::Colour;
   using MatrixID = gfx::ColorSpace::MatrixID;
@@ -127,7 +127,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       matrix_coefficients = Colour::kBt2020NonConstantLuminance;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_matrix_coefficients(matrix_coefficients);
   int range;
@@ -139,7 +139,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       range = Colour::kFullRange;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_range(range);
   int transfer_characteristics;
@@ -154,7 +154,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       transfer_characteristics = Colour::kSmpteSt2084;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_transfer_characteristics(transfer_characteristics);
   int primaries;
@@ -166,7 +166,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       primaries = Colour::kIturBt2020;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_primaries(primaries);
   return colour;
@@ -185,7 +185,7 @@ WebmMuxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    base::Optional<gfx::ColorSpace> color_space)
+    absl::optional<gfx::ColorSpace> color_space)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
@@ -349,7 +349,7 @@ bool WebmMuxer::Flush() {
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
-    const base::Optional<gfx::ColorSpace>& color_space) {
+    const absl::optional<gfx::ColorSpace>& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";

@@ -16,7 +16,7 @@ namespace media {
 // static
 fuchsia::sysmem::BufferCollectionConstraints
 VmoBuffer::GetRecommendedConstraints(size_t min_buffer_count,
-                                     base::Optional<size_t> min_buffer_size,
+                                     absl::optional<size_t> min_buffer_size,
                                      bool writable) {
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
 

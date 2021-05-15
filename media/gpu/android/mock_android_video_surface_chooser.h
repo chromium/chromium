@@ -28,7 +28,7 @@ class MockAndroidVideoSurfaceChooser : public AndroidVideoSurfaceChooser {
 
   void SetClientCallbacks(UseOverlayCB use_overlay_cb,
                           UseTextureOwnerCB use_texture_owner_cb) override;
-  void UpdateState(base::Optional<AndroidOverlayFactoryCB> factory,
+  void UpdateState(absl::optional<AndroidOverlayFactoryCB> factory,
                    const State& new_state) override;
 
   // Calls the corresponding callback to choose the surface.

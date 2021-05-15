@@ -16,7 +16,6 @@
 #include "base/containers/small_map.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
       InterfaceId id) override;
   void CloseEndpointHandle(
       InterfaceId id,
-      const base::Optional<DisconnectReason>& reason) override;
+      const absl::optional<DisconnectReason>& reason) override;
   InterfaceEndpointController* AttachEndpointClient(
       const ScopedInterfaceEndpointHandle& handle,
       InterfaceEndpointClient* endpoint_client,
@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // PipeControlMessageHandlerDelegate implementation:
   bool OnPeerAssociatedEndpointClosed(
       InterfaceId id,
-      const base::Optional<DisconnectReason>& reason) override;
+      const absl::optional<DisconnectReason>& reason) override;
   bool WaitForFlushToComplete(ScopedMessagePipeHandle flush_pipe) override;
 
   void OnPipeConnectionError(bool force_async_dispatch);
@@ -293,7 +293,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
 
   // Active whenever dispatch is blocked by a pending remote flush.
   ScopedMessagePipeHandle active_flush_pipe_;
-  base::Optional<mojo::SimpleWatcher> flush_pipe_watcher_;
+  absl::optional<mojo::SimpleWatcher> flush_pipe_watcher_;
 
   // Tracks information about the current exclusive sync wait, if any, on the
   // MultiplexRouter's primary thread. Note that exclusive off-thread sync waits
@@ -303,13 +303,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
     uint64_t request_id = 0;
     bool finished = false;
   };
-  base::Optional<ExclusiveSyncWaitInfo> exclusive_sync_wait_;
+  absl::optional<ExclusiveSyncWaitInfo> exclusive_sync_wait_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Protects the following members.
   // Not set in Config::SINGLE_INTERFACE* mode.
-  mutable base::Optional<base::Lock> lock_;
+  mutable absl::optional<base::Lock> lock_;
   PipeControlMessageHandler control_message_handler_;
 
   // NOTE: It is unsafe to call into this object while holding |lock_|.

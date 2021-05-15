@@ -17,7 +17,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -44,6 +43,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -264,7 +264,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void OnBecameVisible() override;
   bool IsOpaque() const override;
   int GetDelegateId() override;
-  base::Optional<viz::SurfaceId> GetSurfaceId() override;
+  absl::optional<viz::SurfaceId> GetSurfaceId() override;
   GURL GetSrcAfterRedirects() override;
   void RequestVideoFrameCallback() override;
   std::unique_ptr<blink::WebMediaPlayer::VideoFramePresentationMetadata>
@@ -335,7 +335,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void OnVideoConfigChange(const VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;
   void OnVideoOpacityChange(bool opaque) override;
-  void OnVideoFrameRateChange(base::Optional<int> fps) override;
+  void OnVideoFrameRateChange(absl::optional<int> fps) override;
   void OnVideoAverageKeyframeDistanceUpdate() override;
   void OnAudioDecoderChange(const AudioDecoderInfo& info) override;
   void OnVideoDecoderChange(const VideoDecoderInfo& info) override;
@@ -372,10 +372,10 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
                               ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Creates a Renderer via the |renderer_factory_selector_|. If the
-  // |renderer_type| is base::nullopt, create the base Renderer. Otherwise, set
+  // |renderer_type| is absl::nullopt, create the base Renderer. Otherwise, set
   // the base type to be |renderer_type| and create a Renderer of that type.
   std::unique_ptr<Renderer> CreateRenderer(
-      base::Optional<RendererType> renderer_type);
+      absl::optional<RendererType> renderer_type);
 
   // Finishes starting the pipeline due to a call to load().
   void StartPipeline();
@@ -792,7 +792,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // Captured once the cdm is provided to SetCdmInternal(). Used in creation of
   // |video_decode_stats_reporter_|.
-  base::Optional<CdmConfig> cdm_config_;
+  absl::optional<CdmConfig> cdm_config_;
 
   // String identifying the KeySystem described by |cdm_config_|. Empty until a
   // CDM has been attached. Used in creation |video_decode_stats_reporter_|.
@@ -926,10 +926,10 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   bool disable_pipeline_auto_suspend_ = false;
 
   // Pipeline statistics overridden by tests.
-  base::Optional<PipelineStatistics> pipeline_statistics_for_test_;
+  absl::optional<PipelineStatistics> pipeline_statistics_for_test_;
 
   // Pipeline media duration overridden by tests.
-  base::Optional<base::TimeDelta> pipeline_media_duration_for_test_;
+  absl::optional<base::TimeDelta> pipeline_media_duration_for_test_;
 
   // Whether the video requires a user gesture to resume after it was paused in
   // the background. Affects the value of ShouldPausePlaybackWhenHidden().
@@ -983,7 +983,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   mojo::Remote<mojom::MediaMetricsProvider> media_metrics_provider_;
   mojo::Remote<mojom::PlaybackEventsRecorder> playback_events_recorder_;
 
-  base::Optional<ReadyState> stale_state_override_for_testing_;
+  absl::optional<ReadyState> stale_state_override_for_testing_;
 
   // True if we attempt to start the media pipeline in a suspended state for
   // preload=metadata. Cleared upon pipeline startup.
@@ -1027,7 +1027,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // Created while playing, deleted otherwise.
   std::unique_ptr<SmoothnessHelper> smoothness_helper_;
-  base::Optional<int> last_reported_fps_;
+  absl::optional<int> last_reported_fps_;
 
   base::WeakPtr<WebMediaPlayerImpl> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};

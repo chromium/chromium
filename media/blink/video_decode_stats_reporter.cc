@@ -21,7 +21,7 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
     VideoCodecProfile codec_profile,
     const gfx::Size& natural_size,
     std::string key_system,
-    base::Optional<CdmConfig> cdm_config,
+    absl::optional<CdmConfig> cdm_config,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : kRecordingInterval(

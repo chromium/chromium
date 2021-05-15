@@ -282,7 +282,7 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererClient::SetLatencyHint(
-    base::Optional<base::TimeDelta> /*latency_hint*/) {
+    absl::optional<base::TimeDelta> /*latency_hint*/) {
   // We do not use the latency hint today
 }
 
@@ -377,7 +377,7 @@ void MediaFoundationRendererClient::OnVideoOpacityChange(bool opaque) {
 }
 
 void MediaFoundationRendererClient::OnVideoFrameRateChange(
-    base::Optional<int> fps) {
+    absl::optional<int> fps) {
   DVLOG_FUNC(1) << "fps=" << (fps ? *fps : -1);
   DCHECK(has_video_);
   client_->OnVideoFrameRateChange(fps);

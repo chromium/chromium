@@ -24,7 +24,7 @@ bool StructTraits<media::mojom::StatusDataView, media::Status>::Read(
   if (media::StatusCode::kOk == code)
     return true;
 
-  base::Optional<std::string> optional_message;
+  absl::optional<std::string> optional_message;
   if (!data.ReadMessage(&optional_message))
     return false;
   message = std::move(optional_message).value_or(std::string());
@@ -38,7 +38,7 @@ bool StructTraits<media::mojom::StatusDataView, media::Status>::Read(
   if (!data.ReadCauses(&output->data_->causes))
     return false;
 
-  base::Optional<base::Value> optional_data;
+  absl::optional<base::Value> optional_data;
   if (!data.ReadData(&optional_data))
     return false;
   output->data_->data = std::move(optional_data).value_or(base::Value());

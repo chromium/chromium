@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/optional.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_renderer_sink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

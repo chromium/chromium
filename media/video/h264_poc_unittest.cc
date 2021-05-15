@@ -43,7 +43,7 @@ class H264POCTest : public testing::Test {
     slice_hdr_.ref_pic_marking[2].memory_mgmnt_control_operation = 0;
   }
 
-  base::Optional<int32_t> poc_;
+  absl::optional<int32_t> poc_;
 
   H264SPS sps_;
   H264SliceHeader slice_hdr_;

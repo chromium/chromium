@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/status.h"
@@ -22,6 +21,7 @@
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -99,15 +99,15 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   void OnResetDone();
 
   // Get Picture instance that represents the same buffer as |frame|. Return
-  // base::nullopt if the buffer is already dismissed.
-  base::Optional<Picture> GetPicture(const VideoFrame& frame);
+  // absl::nullopt if the buffer is already dismissed.
+  absl::optional<Picture> GetPicture(const VideoFrame& frame);
 
   // Thunk to post OnFrameReleased() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to
-  // dereference WeakPtr. Therefore we wrap the WeakPtr by base::Optional to
+  // dereference WeakPtr. Therefore we wrap the WeakPtr by absl::optional to
   // avoid the task runner defererencing the WeakPtr.
   static void OnFrameReleasedThunk(
-      base::Optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
+      absl::optional<base::WeakPtr<VdVideoDecodeAccelerator>> weak_this,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<VideoFrame> origin_frame);
   // Called when a frame gets destroyed.
@@ -132,7 +132,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   gfx::Size pending_coded_size_;
   // The formats of the current buffers.
   gfx::Size coded_size_;
-  base::Optional<VideoFrameLayout> layout_;
+  absl::optional<VideoFrameLayout> layout_;
 
   // Mapping from VideoFrame's DmabufId to picture buffer id.
   std::map<DmabufId, int32_t /* picture_buffer_id */> frame_id_to_picture_id_;

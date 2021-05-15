@@ -29,14 +29,14 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
   void BeginObservation(
       base::UnguessableToken id,
       const FeatureVector& features,
-      const base::Optional<TargetValue>& default_target,
-      const base::Optional<ukm::SourceId>& source_id) override;
+      const absl::optional<TargetValue>& default_target,
+      const absl::optional<ukm::SourceId>& source_id) override;
   void CompleteObservation(base::UnguessableToken id,
                            const ObservationCompletion& completion) override;
   void CancelObservation(base::UnguessableToken id) override;
   void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const base::Optional<TargetValue>& default_target) override;
+      const absl::optional<TargetValue>& default_target) override;
   const LearningTask& GetLearningTask() override;
   void PredictDistribution(const FeatureVector& features,
                            PredictionCB callback) override;

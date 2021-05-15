@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -179,7 +179,7 @@ class MEDIA_EXPORT VideoCadenceEstimator {
     // In an ideal world, each video frame would be shown for this many display
     // intervals. It equals (display frequency) divided by (video frame rate).
     // Absent when a video has variable frame rate.
-    base::Optional<double> perfect_cadence_;
+    absl::optional<double> perfect_cadence_;
   } bm_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoCadenceEstimator);

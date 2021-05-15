@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +26,7 @@
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -153,7 +153,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   }
 
   // Most recently provided video decoder desc.
-  base::Optional<D3D11_VIDEO_DECODER_DESC> last_video_decoder_desc_;
+  absl::optional<D3D11_VIDEO_DECODER_DESC> last_video_decoder_desc_;
   D3D11_VIDEO_DECODER_CONFIG video_decoder_config_;
 
   void TearDown() override {
@@ -177,8 +177,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   // use it.  Otherwise, we'll use the list that's autodetected by the
   // decoder based on the current device mock.
   void CreateDecoder(
-      base::Optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
-          base::Optional<D3D11VideoDecoder::SupportedConfigs>()) {
+      absl::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
+          absl::optional<D3D11VideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
         [](Microsoft::WRL::ComPtr<ID3D11Device> device) { return device; },
         mock_d3d11_device_);
@@ -249,7 +249,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 
-  base::Optional<base::test::ScopedFeatureList> scoped_feature_list_;
+  absl::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   base::win::ScopedCOMInitializer com_initializer_;
 };
 
@@ -323,7 +323,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   // config check kinda works.
   // For whatever reason, Optional<SupportedConfigs>({}) results in one that
   // doesn't have a value, rather than one that has an empty vector.
-  base::Optional<D3D11VideoDecoder::SupportedConfigs> empty_configs;
+  absl::optional<D3D11VideoDecoder::SupportedConfigs> empty_configs;
   empty_configs.emplace(std::vector<SupportedVideoDecoderConfig>());
   CreateDecoder(empty_configs);
 

@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/optional.h"
 #include "media/capture/capture_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -26,7 +26,7 @@ class CAPTURE_EXPORT PixelBufferPool {
       OSType format,
       int width,
       int height,
-      base::Optional<size_t> max_buffers);
+      absl::optional<size_t> max_buffers);
   ~PixelBufferPool();
 
   // Creates a new buffer from the pool, if possible. The underlying buffers are
@@ -55,13 +55,13 @@ class CAPTURE_EXPORT PixelBufferPool {
  private:
   friend std::unique_ptr<PixelBufferPool> std::make_unique<PixelBufferPool>(
       base::ScopedCFTypeRef<CVPixelBufferPoolRef>&& buffer_pool,
-      base::Optional<size_t>&& max_buffers);
+      absl::optional<size_t>&& max_buffers);
 
   PixelBufferPool(base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
-                  base::Optional<size_t> max_buffers);
+                  absl::optional<size_t> max_buffers);
 
   base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool_;
-  const base::Optional<size_t> max_buffers_;
+  const absl::optional<size_t> max_buffers_;
   size_t num_consecutive_errors_;
 };
 

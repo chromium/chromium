@@ -96,7 +96,7 @@ void VendorTagOpsDelegate::OnGotAllTags(size_t tag_count,
 
 void VendorTagOpsDelegate::OnGotSectionName(
     uint32_t tag,
-    const base::Optional<std::string>& section_name) {
+    const absl::optional<std::string>& section_name) {
   DCHECK(ipc_task_runner_->RunsTasksInCurrentSequence());
   if (!section_name.has_value()) {
     LOG(ERROR) << "Failed to get section name of tag " << std::hex
@@ -113,7 +113,7 @@ void VendorTagOpsDelegate::OnGotSectionName(
 
 void VendorTagOpsDelegate::OnGotTagName(
     uint32_t tag,
-    const base::Optional<std::string>& tag_name) {
+    const absl::optional<std::string>& tag_name) {
   DCHECK(ipc_task_runner_->RunsTasksInCurrentSequence());
   if (!tag_name.has_value()) {
     LOG(ERROR) << "Failed to get tag name of tag " << std::hex << std::showbase

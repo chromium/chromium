@@ -275,7 +275,7 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
   // If |result| in {0,1}, do nothing; the documentation says that a return
   // value of zero or one means the packet does not need to be transmitted.
   if (encoded_data_size > 1) {
-    base::Optional<CodecDescription> desc;
+    absl::optional<CodecDescription> desc;
     if (need_to_emit_extra_data_) {
       desc = PrepareExtraData();
       need_to_emit_extra_data_ = false;

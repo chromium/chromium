@@ -20,7 +20,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
@@ -32,6 +31,7 @@
 #include "media/gpu/v4l2/v4l2_device_poller.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -304,7 +304,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // format is returned. It is guaranteed to feature the specified |fourcc|,
   // but any other parameter (including |size| and |buffer_size| may have been
   // adjusted by the driver, so the caller must check their values.
-  base::Optional<struct v4l2_format> SetFormat(uint32_t fourcc,
+  absl::optional<struct v4l2_format> SetFormat(uint32_t fourcc,
                                                const gfx::Size& size,
                                                size_t buffer_size)
       WARN_UNUSED_RESULT;
@@ -313,16 +313,16 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // be called anytime.
   // Returns an adjusted V4L2 format if |fourcc| is supported by the queue, or
   // |nullopt| if |fourcc| is not supported or an ioctl error happened.
-  base::Optional<struct v4l2_format> TryFormat(uint32_t fourcc,
+  absl::optional<struct v4l2_format> TryFormat(uint32_t fourcc,
                                                const gfx::Size& size,
                                                size_t buffer_size)
       WARN_UNUSED_RESULT;
 
   // Returns the currently set format on the queue. The result is returned as
-  // a std::pair where the first member is the format, or base::nullopt if the
+  // a std::pair where the first member is the format, or absl::nullopt if the
   // format could not be obtained due to an ioctl error. The second member is
   // only used in case of an error and contains the |errno| set by the failing
-  // ioctl. If the first member is not base::nullopt, the second member will
+  // ioctl. If the first member is not absl::nullopt, the second member will
   // always be zero.
   //
   // If the second member is 0, then the first member is guaranteed to have
@@ -332,11 +332,11 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // This pair is used because not all failures to get the format are
   // necessarily errors, so we need to way to let the use decide whether it
   // is one or not.
-  std::pair<base::Optional<struct v4l2_format>, int> GetFormat();
+  std::pair<absl::optional<struct v4l2_format>, int> GetFormat();
 
   // Codec-specific method to get the visible rectangle of the queue, using the
   // VIDIOC_G_SELECTION ioctl if available, or VIDIOC_G_CROP as a fallback.
-  base::Optional<gfx::Rect> GetVisibleRect();
+  absl::optional<gfx::Rect> GetVisibleRect();
 
   // Allocate |count| buffers for the current format of this queue, with a
   // specific |memory| allocation, and returns the number of buffers allocated
@@ -367,13 +367,13 @@ class MEDIA_GPU_EXPORT V4L2Queue
   //
   // If the caller discards the returned reference, the underlying buffer is
   // made available to clients again.
-  base::Optional<V4L2WritableBufferRef> GetFreeBuffer();
+  absl::optional<V4L2WritableBufferRef> GetFreeBuffer();
   // Return the buffer at index |requested_buffer_id|, if it is available at
   // this time.
   //
   // If the buffer is currently in use or the provided index is invalid,
-  // return |base::nullopt|.
-  base::Optional<V4L2WritableBufferRef> GetFreeBuffer(
+  // return |absl::nullopt|.
+  absl::optional<V4L2WritableBufferRef> GetFreeBuffer(
       size_t requested_buffer_id);
   // Return a V4L2 buffer suitable for the passed VideoFrame.
   //
@@ -390,7 +390,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // since it will maximize performance in that case provided the number of
   // different VideoFrames passed to this method does not exceed the number of
   // V4L2 buffers allocated on the queue.
-  base::Optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
+  absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
       const VideoFrame& frame);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
@@ -433,7 +433,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
 
   // TODO (b/166275274) : Remove this once V4L2 properly supports modifiers.
   // Out of band method to configure V4L2 for modifier use.
-  base::Optional<struct v4l2_format> SetModifierFormat(uint64_t modifier,
+  absl::optional<struct v4l2_format> SetModifierFormat(uint64_t modifier,
                                                        const gfx::Size& size);
 
  private:
@@ -450,7 +450,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   bool supports_requests_ = false;
   size_t planes_count_ = 0;
   // Current format as set by SetFormat.
-  base::Optional<struct v4l2_format> current_format_;
+  absl::optional<struct v4l2_format> current_format_;
 
   std::vector<std::unique_ptr<V4L2Buffer>> buffers_;
 
@@ -520,7 +520,7 @@ class MEDIA_GPU_EXPORT V4L2RequestRef : public V4L2RequestRefBase {
   // Apply buffer to the request.
   bool ApplyQueueBuffer(struct v4l2_buffer* buffer) const;
   // Submits the request to the driver.
-  base::Optional<V4L2SubmittedRequestRef> Submit() &&;
+  absl::optional<V4L2SubmittedRequestRef> Submit() &&;
 
  private:
   friend class V4L2RequestsQueue;
@@ -565,7 +565,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
  public:
   // Gets a free request. If no request is available, a non-valid request
   // reference will be returned.
-  base::Optional<V4L2RequestRef> GetFreeRequest();
+  absl::optional<V4L2RequestRef> GetFreeRequest();
 
  private:
   // File descriptor of the media device (/dev/mediaX) from which requests
@@ -577,7 +577,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
   std::queue<V4L2Request*> free_requests_;
 
   // Returns a new request file descriptor.
-  base::Optional<base::ScopedFD> CreateRequestFD();
+  absl::optional<base::ScopedFD> CreateRequestFD();
 
   friend class V4L2Request;
   // Returns a request to the queue after being used.
@@ -610,8 +610,8 @@ class MEDIA_GPU_EXPORT V4L2Device
   static int32_t H264LevelIdcToV4L2H264Level(uint8_t level_idc);
 
   // Composes VideoFrameLayout based on v4l2_format.
-  // If error occurs, it returns base::nullopt.
-  static base::Optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
+  // If error occurs, it returns absl::nullopt.
+  static absl::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
       const struct v4l2_format& format);
 
   // Returns number of planes of |pix_fmt|.
@@ -758,7 +758,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   void SchedulePoll();
 
   // Attempt to dequeue a V4L2 event and return it.
-  base::Optional<struct v4l2_event> DequeueEvent();
+  absl::optional<struct v4l2_event> DequeueEvent();
 
   // Returns requests queue to get free requests. A null pointer is returned if
   // the queue creation failed or if requests are not supported.
@@ -773,9 +773,9 @@ class MEDIA_GPU_EXPORT V4L2Device
                    std::vector<V4L2ExtCtrl> ctrls,
                    V4L2RequestRef* request_ref = nullptr);
 
-  // Get the value of a single control, or base::nullopt of the control is not
+  // Get the value of a single control, or absl::nullopt of the control is not
   // exposed by the device.
-  base::Optional<struct v4l2_ext_control> GetCtrl(uint32_t ctrl_id);
+  absl::optional<struct v4l2_ext_control> GetCtrl(uint32_t ctrl_id);
 
   // Set periodic keyframe placement (group of pictures length)
   bool SetGOPLength(uint32_t gop_length);

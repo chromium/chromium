@@ -29,15 +29,15 @@ class MockLearningTaskController : public LearningTaskController {
   MOCK_METHOD4(BeginObservation,
                void(base::UnguessableToken id,
                     const FeatureVector& features,
-                    const base::Optional<TargetValue>& default_value,
-                    const base::Optional<ukm::SourceId>& source_id));
+                    const absl::optional<TargetValue>& default_value,
+                    const absl::optional<ukm::SourceId>& source_id));
   MOCK_METHOD2(CompleteObservation,
                void(base::UnguessableToken id,
                     const ObservationCompletion& completion));
   MOCK_METHOD1(CancelObservation, void(base::UnguessableToken id));
   MOCK_METHOD2(UpdateDefaultTarget,
                void(base::UnguessableToken id,
-                    const base::Optional<TargetValue>& default_target));
+                    const absl::optional<TargetValue>& default_target));
   MOCK_METHOD2(PredictDistribution,
                void(const FeatureVector& features, PredictionCB callback));
 

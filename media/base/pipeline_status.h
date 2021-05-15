@@ -10,12 +10,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/decoder.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -62,7 +62,7 @@ enum PipelineStatus {
   PIPELINE_STATUS_MAX = DEMUXER_ERROR_DETECTED_HLS,
 };
 
-MEDIA_EXPORT base::Optional<PipelineStatus> StatusCodeToPipelineStatus(
+MEDIA_EXPORT absl::optional<PipelineStatus> StatusCodeToPipelineStatus(
     StatusCode status);
 MEDIA_EXPORT StatusCode PipelineStatusToStatusCode(PipelineStatus status);
 

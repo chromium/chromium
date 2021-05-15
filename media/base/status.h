@@ -257,10 +257,10 @@ class StatusOr {
 
  private:
   // Optional error.
-  base::Optional<Status> error_;
+  absl::optional<Status> error_;
   // We wrap |T| in a container so that windows COM wrappers work.  They
-  // override operator& and similar, and won't compile in a base::Optional.
-  base::Optional<std::tuple<T>> value_;
+  // override operator& and similar, and won't compile in a absl::optional.
+  absl::optional<std::tuple<T>> value_;
 };
 
 }  // namespace media

@@ -22,8 +22,8 @@ Decryptor* CdmContext::GetDecryptor() {
   return nullptr;
 }
 
-base::Optional<base::UnguessableToken> CdmContext::GetCdmId() const {
-  return base::nullopt;
+absl::optional<base::UnguessableToken> CdmContext::GetCdmId() const {
+  return absl::nullopt;
 }
 
 std::string CdmContext::CdmIdToString(const base::UnguessableToken* cdm_id) {

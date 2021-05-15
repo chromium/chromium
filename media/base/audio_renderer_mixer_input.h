@@ -83,7 +83,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
   double volume_ GUARDED_BY(volume_lock_) = 1.0;
 
   scoped_refptr<AudioRendererSink> sink_;
-  base::Optional<OutputDeviceInfo> device_info_;
+  absl::optional<OutputDeviceInfo> device_info_;
 
   // AudioConverter::InputCallback implementation.
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;

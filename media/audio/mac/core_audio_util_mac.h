@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace core_audio_mac {
@@ -26,12 +26,12 @@ std::vector<AudioObjectID> GetRelatedDeviceIDs(AudioObjectID device_id);
 
 // Returns a string with a unique device ID for the given |device_id|, or no
 // value if there is an error.
-base::Optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
+absl::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
 
 // Returns a string with a descriptive label for the given |device_id|, or no
 // value if there is an error. The returned label is based on several
 // characteristics of the device.
-base::Optional<std::string> GetDeviceLabel(AudioObjectID device_id,
+absl::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
                                            bool is_input);
 
 // Returns the number of input or output streams associated with the given
@@ -40,12 +40,12 @@ uint32_t GetNumStreams(AudioObjectID device_id, bool is_input);
 
 // Returns the source associated with the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-base::Optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
+absl::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
                                          bool is_input);
 
 // Returns the transport type of the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-base::Optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id);
+absl::optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id);
 
 // Returns whether or not the |device_id| corresponds to a private, aggregate
 // device. Such a device gets created by instantiating a VoiceProcessingIO

@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +21,7 @@
 #include "media/gpu/vaapi/test/video_decoder.h"
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 #include "media/gpu/vaapi/va_stubs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 using media::vaapi_test::Av1Decoder;
@@ -139,7 +139,7 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   return nullptr;
 }
 
-base::Optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
+absl::optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
     const std::string& fetch_policy) {
   if (fetch_policy.empty())
     return SharedVASurface::FetchPolicy::kAny;
@@ -149,7 +149,7 @@ base::Optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
     return SharedVASurface::FetchPolicy::kGetImage;
 
   LOG(ERROR) << "Unrecognized fetch policy " << fetch_policy;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

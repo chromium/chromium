@@ -69,7 +69,7 @@ class MockPipelineClient : public Pipeline::Client {
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size&));
   MOCK_METHOD1(OnVideoOpacityChange, void(bool));
-  MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
+  MOCK_METHOD1(OnVideoFrameRateChange, void(absl::optional<int>));
   MOCK_METHOD0(OnVideoAverageKeyframeDistanceUpdate, void());
   MOCK_METHOD1(OnAudioDecoderChange, void(const AudioDecoderInfo&));
   MOCK_METHOD1(OnVideoDecoderChange, void(const VideoDecoderInfo&));
@@ -103,7 +103,7 @@ class MockPipeline : public Pipeline {
   MOCK_METHOD2(OnEnabledAudioTracksChanged,
                void(const std::vector<MediaTrack::Id>&, base::OnceClosure));
   MOCK_METHOD2(OnSelectedVideoTrackChanged,
-               void(base::Optional<MediaTrack::Id>, base::OnceClosure));
+               void(absl::optional<MediaTrack::Id>, base::OnceClosure));
 
   // TODO(sandersd): This should automatically return true between Start() and
   // Stop(). (Or better, remove it from the interface entirely.)
@@ -116,7 +116,7 @@ class MockPipeline : public Pipeline {
   MOCK_METHOD1(SetPlaybackRate, void(double));
   MOCK_CONST_METHOD0(GetVolume, float());
   MOCK_METHOD1(SetVolume, void(float));
-  MOCK_METHOD1(SetLatencyHint, void(base::Optional<base::TimeDelta>));
+  MOCK_METHOD1(SetLatencyHint, void(absl::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
 
@@ -175,7 +175,7 @@ class MockDemuxer : public Demuxer {
   MOCK_CONST_METHOD0(GetTimelineOffset, base::Time());
   MOCK_CONST_METHOD0(GetMemoryUsage, int64_t());
   MOCK_CONST_METHOD0(GetContainerForMetrics,
-                     base::Optional<container_names::MediaContainerName>());
+                     absl::optional<container_names::MediaContainerName>());
   MOCK_METHOD3(OnEnabledAudioTracksChanged,
                void(const std::vector<MediaTrack::Id>&,
                     base::TimeDelta,
@@ -401,7 +401,7 @@ class MockRendererClient : public RendererClient {
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig&));
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size&));
   MOCK_METHOD1(OnVideoOpacityChange, void(bool));
-  MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
+  MOCK_METHOD1(OnVideoFrameRateChange, void(absl::optional<int>));
   MOCK_METHOD1(OnDurationChange, void(base::TimeDelta));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
   MOCK_METHOD0(IsVideoStreamAvailable, bool());
@@ -431,7 +431,7 @@ class MockVideoRenderer : public VideoRenderer {
   MOCK_METHOD0(OnTimeProgressing, void());
   MOCK_METHOD0(OnTimeStopped, void());
   MOCK_METHOD1(SetLatencyHint,
-               void(base::Optional<base::TimeDelta> latency_hint));
+               void(absl::optional<base::TimeDelta> latency_hint));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockVideoRenderer);
@@ -459,7 +459,7 @@ class MockAudioRenderer : public AudioRenderer {
   MOCK_METHOD0(StartPlaying, void());
   MOCK_METHOD1(SetVolume, void(float volume));
   MOCK_METHOD1(SetLatencyHint,
-               void(base::Optional<base::TimeDelta> latency_hint));
+               void(absl::optional<base::TimeDelta> latency_hint));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
 
@@ -482,7 +482,7 @@ class MockRenderer : public Renderer {
                void(MediaResource* media_resource,
                     RendererClient* client,
                     PipelineStatusCallback& init_cb));
-  MOCK_METHOD1(SetLatencyHint, void(base::Optional<base::TimeDelta>));
+  MOCK_METHOD1(SetLatencyHint, void(absl::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   void Flush(base::OnceClosure flush_cb) override { OnFlush(flush_cb); }
@@ -638,12 +638,12 @@ class MockCdmContext : public CdmContext {
                bool(GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb));
 #endif
 
-  base::Optional<base::UnguessableToken> GetCdmId() const override;
+  absl::optional<base::UnguessableToken> GetCdmId() const override;
 
   void set_cdm_id(const base::UnguessableToken& cdm_id);
 
  private:
-  base::Optional<base::UnguessableToken> cdm_id_;
+  absl::optional<base::UnguessableToken> cdm_id_;
 
   DISALLOW_COPY_AND_ASSIGN(MockCdmContext);
 };
@@ -830,7 +830,7 @@ class MockMediaClient : public media::MediaClient {
   MOCK_METHOD1(IsSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsSupportedBitstreamAudioCodec, bool(media::AudioCodec codec));
   MOCK_METHOD1(GetAudioRendererAlgorithmParameters,
-               base::Optional<::media::AudioRendererAlgorithmParameters>(
+               absl::optional<::media::AudioRendererAlgorithmParameters>(
                    media::AudioParameters audio_parameters));
 
  private:

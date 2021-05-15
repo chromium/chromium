@@ -6,12 +6,12 @@
 #define MEDIA_GPU_CHROMEOS_DMABUF_VIDEO_FRAME_POOL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -42,7 +42,7 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // Sets the parameters of allocating frames and the maximum number of frames
   // which can be allocated. Returns a valid GpuBufferLayout if VideoFrame
   // will be created by GetFrame().
-  virtual base::Optional<GpuBufferLayout> Initialize(
+  virtual absl::optional<GpuBufferLayout> Initialize(
       const Fourcc& fourcc,
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,

@@ -10,12 +10,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_factory_selector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -28,10 +28,10 @@ class MediaLog;
 // Callbacks used for Renderer creation. When the RendererType is nullopt, the
 // current base one will be created.
 using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-    base::Optional<RendererType>)>;
+    absl::optional<RendererType>)>;
 using RendererCreatedCB = base::OnceCallback<void(std::unique_ptr<Renderer>)>;
 using AsyncCreateRendererCB =
-    base::RepeatingCallback<void(base::Optional<RendererType>,
+    base::RepeatingCallback<void(absl::optional<RendererType>,
                                  RendererCreatedCB)>;
 
 // Pipeline runs the media pipeline.  Filters are created and called on the
@@ -103,7 +103,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void SetPlaybackRate(double playback_rate) override;
   float GetVolume() const override;
   void SetVolume(float volume) override;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
   void SetAutoplayInitiated(bool autoplay_initiated) override;
   base::TimeDelta GetMediaTime() const override;
@@ -121,7 +121,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) override;
 
  private:
@@ -146,7 +146,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.
-  void AsyncCreateRenderer(base::Optional<RendererType> renderer_type,
+  void AsyncCreateRenderer(absl::optional<RendererType> renderer_type,
                            RendererCreatedCB renderer_created_cb);
 
   // Notifications from RendererWrapper.
@@ -165,7 +165,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnAudioDecoderChange(const AudioDecoderInfo& info);
   void OnVideoDecoderChange(const VideoDecoderInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
-  void OnVideoFrameRateChange(base::Optional<int> fps);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   // Task completion callbacks from RendererWrapper.
   void OnSeekDone(bool is_suspended);

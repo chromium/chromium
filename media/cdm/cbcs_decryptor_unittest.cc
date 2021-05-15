@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
@@ -17,6 +16,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -108,7 +108,7 @@ class CbcsDecryptorTest : public testing::Test {
       const std::vector<uint8_t>& data,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsample_entries,
-      base::Optional<EncryptionPattern> encryption_pattern) {
+      absl::optional<EncryptionPattern> encryption_pattern) {
     EXPECT_FALSE(data.empty());
     EXPECT_FALSE(iv.empty());
 

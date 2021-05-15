@@ -254,7 +254,7 @@ scoped_refptr<VideoFrame> CreatePlatformVideoFrame(
   return frame;
 }
 
-base::Optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
+absl::optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
@@ -264,8 +264,8 @@ base::Optional<VideoFrameLayout> GetPlatformVideoFrameLayout(
   auto frame = CreatePlatformVideoFrame(
       gpu_memory_buffer_factory, pixel_format, coded_size,
       gfx::Rect(coded_size), coded_size, base::TimeDelta(), buffer_usage);
-  return frame ? base::make_optional<VideoFrameLayout>(frame->layout())
-               : base::nullopt;
+  return frame ? absl::make_optional<VideoFrameLayout>(frame->layout())
+               : absl::nullopt;
 }
 
 gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(

@@ -27,7 +27,7 @@ LearningTaskControllerHelper::~LearningTaskControllerHelper() = default;
 void LearningTaskControllerHelper::BeginObservation(
     base::UnguessableToken id,
     FeatureVector features,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   auto& pending_example = pending_examples_[id];
 
   if (source_id)

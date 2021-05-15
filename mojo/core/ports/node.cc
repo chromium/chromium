@@ -17,13 +17,13 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/ports/port_locker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_NACL)
 #include "crypto/random.h"
@@ -1056,7 +1056,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
-    base::Optional<PortLocker> locker(absl::in_place, port_refs, 2);
+    absl::optional<PortLocker> locker(absl::in_place, port_refs, 2);
     auto* port0 = locker->GetPort(port0_ref);
     auto* port1 = locker->GetPort(port1_ref);
 

@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -26,9 +26,9 @@ class H264Parser;
 namespace v4l2_vda_helpers {
 
 // Returns a usable input format of image processor, or nullopt if not found.
-base::Optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device);
+absl::optional<Fourcc> FindImageProcessorInputFormat(V4L2Device* vda_device);
 // Return a usable output format of image processor, or nullopt if not found.
-base::Optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device);
+absl::optional<Fourcc> FindImageProcessorOutputFormat(V4L2Device* ip_device);
 
 // Create and return an image processor for the given parameters, or nullptr
 // if it cannot be created.

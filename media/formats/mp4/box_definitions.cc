@@ -31,8 +31,8 @@
 #include "media/video/h264_parser.h"  // nogncheck
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-#include "base/optional.h"
 #include "media/formats/mp4/dolby_vision.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -50,7 +50,7 @@ const size_t kFlacMetadataBlockStreaminfoSize = 34;
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 // Parse dvcC or dvvC box.
-base::Optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
+absl::optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
     BoxReader* reader) {
   {
     DolbyVisionConfiguration dvcc;
@@ -68,7 +68,7 @@ base::Optional<DOVIDecoderConfigurationRecord> ParseDOVIConfig(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 

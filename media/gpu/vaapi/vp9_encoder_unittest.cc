@@ -12,13 +12,13 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vp9_rate_control.h"
 #include "media/gpu/vaapi/vp9_temporal_layers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libvpx/source/libvpx/vp9/common/vp9_blockd.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
@@ -42,8 +42,8 @@ VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     VP9PROFILE_PROFILE0,
     14000000 /* = maximum bitrate in bits per second for level 3.1 */,
     VideoEncodeAccelerator::kDefaultFramerate,
-    base::nullopt /* gop_length */,
-    base::nullopt /* h264 output level*/,
+    absl::nullopt /* gop_length */,
+    absl::nullopt /* h264 output level*/,
     false /* is_constrained_h264 */,
     VideoEncodeAccelerator::Config::StorageType::kShmem);
 
@@ -56,7 +56,7 @@ void GetTemporalLayer(bool keyframe,
                       int index,
                       size_t num_temporal_layers,
                       std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used,
-                      base::Optional<uint8_t>* temporal_layer_id) {
+                      absl::optional<uint8_t>* temporal_layer_id) {
   switch (num_temporal_layers) {
     case 1:
       *ref_frames_used =
@@ -211,9 +211,9 @@ class VP9EncoderTest : public ::testing::TestWithParam<VP9EncoderTestParam> {
   void EncodeSequence(bool is_keyframe);
   void EncodeConstantQuantizationParameterSequence(
       bool is_keyframe,
-      base::Optional<std::array<bool, kVp9NumRefsPerFrame>>
+      absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
           expected_ref_frames_used,
-      base::Optional<uint8_t> expected_temporal_layer_id = base::nullopt);
+      absl::optional<uint8_t> expected_temporal_layer_id = absl::nullopt);
   void UpdateRatesTest(BitrateControl bitrate_control,
                        size_t num_temporal_layers);
 
@@ -312,9 +312,9 @@ void VP9EncoderTest::EncodeSequence(bool is_keyframe) {
 
 void VP9EncoderTest::EncodeConstantQuantizationParameterSequence(
     bool is_keyframe,
-    base::Optional<std::array<bool, kVp9NumRefsPerFrame>>
+    absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
         expected_ref_frames_used,
-    base::Optional<uint8_t> expected_temporal_layer_id) {
+    absl::optional<uint8_t> expected_temporal_layer_id) {
   InSequence seq;
   auto encode_job = CreateEncodeJob(is_keyframe);
   scoped_refptr<VP9Picture> picture(new VP9Picture);
@@ -390,7 +390,7 @@ void VP9EncoderTest::UpdateRatesTest(BitrateControl bitrate_control,
                             num_temporal_layers);
         if (bitrate_control == BitrateControl::kConstantQuantizationParameter) {
           EncodeConstantQuantizationParameterSequence(is_keyframe, {},
-                                                      base::nullopt);
+                                                      absl::nullopt);
         } else {
           EncodeSequence(is_keyframe);
         }
@@ -460,7 +460,7 @@ TEST_P(VP9EncoderTest, EncodeWithSoftwareBitrateControl) {
   for (size_t i = 0; i < kEncodeFrames; i++) {
     const bool is_keyframe = i == 0;
     std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
-    base::Optional<uint8_t> temporal_layer_id;
+    absl::optional<uint8_t> temporal_layer_id;
     GetTemporalLayer(is_keyframe, i, num_temporal_layers, &ref_frames_used,
                      &temporal_layer_id);
     EncodeConstantQuantizationParameterSequence(is_keyframe, ref_frames_used,
@@ -495,7 +495,7 @@ TEST_P(VP9EncoderTest, ForceKeyFrameWithSoftwareBitrateControl) {
     for (size_t i = 0; i < kKeyFrameInterval; i++) {
       const bool is_keyframe = i == 0;
       std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
-      base::Optional<uint8_t> temporal_layer_id;
+      absl::optional<uint8_t> temporal_layer_id;
       GetTemporalLayer(is_keyframe, i, num_temporal_layers, &ref_frames_used,
                        &temporal_layer_id);
       EncodeConstantQuantizationParameterSequence(is_keyframe, ref_frames_used,

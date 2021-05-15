@@ -8,7 +8,6 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,6 +19,7 @@
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace mp4 {
@@ -337,19 +337,19 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
 TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   struct {
     const char* case_string;
-    const base::Optional<bool> is_keyframe;
+    const absl::optional<bool> is_keyframe;
   } test_cases[] = {
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
-      // reports base::nullopt (which means undetermined analysis result).
-      {"AUD", base::nullopt},            // No VCL present.
-      {"AUD,SEI", base::nullopt},        // No VCL present.
-      {"SPS PPS", base::nullopt},        // No VCL present.
-      {"SPS PPS AUD I", base::nullopt},  // Parameter sets must come after AUD.
-      {"SPSExt SPS P", base::nullopt},   // SPS must come before SPSExt.
-      {"SPS PPS SPSExt P", base::nullopt},  // SPSExt must follow an SPS.
-      {"EOSeq", base::nullopt},             // EOSeq must come after a VCL.
-      {"EOStr", base::nullopt},             // EOStr must come after a VCL.
+      // reports absl::nullopt (which means undetermined analysis result).
+      {"AUD", absl::nullopt},            // No VCL present.
+      {"AUD,SEI", absl::nullopt},        // No VCL present.
+      {"SPS PPS", absl::nullopt},        // No VCL present.
+      {"SPS PPS AUD I", absl::nullopt},  // Parameter sets must come after AUD.
+      {"SPSExt SPS P", absl::nullopt},   // SPS must come before SPSExt.
+      {"SPS PPS SPSExt P", absl::nullopt},  // SPSExt must follow an SPS.
+      {"EOSeq", absl::nullopt},             // EOSeq must come after a VCL.
+      {"EOStr", absl::nullopt},             // EOStr must come after a VCL.
 
       // For these cases, IDR slice is first VCL and is detected before
       // conformance failure, so the non-conformant frame is reported as a

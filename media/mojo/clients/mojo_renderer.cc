@@ -120,7 +120,7 @@ void MojoRenderer::InitializeRendererFromUrl(media::RendererClient* client) {
       url_params.top_frame_origin, url_params.allow_credentials,
       url_params.is_hls);
   remote_renderer_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
-                               base::nullopt, std::move(media_url_params),
+                               absl::nullopt, std::move(media_url_params),
                                base::BindOnce(&MojoRenderer::OnInitialized,
                                               base::Unretained(this), client));
 }
@@ -139,7 +139,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
     return;
   }
 
-  base::Optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
+  absl::optional<base::UnguessableToken> cdm_id = cdm_context->GetCdmId();
   if (!cdm_id) {
     DVLOG(2) << "MojoRenderer only works with remote CDMs but the CDM ID "
                 "is invalid.";
@@ -156,7 +156,7 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MojoRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   // TODO(chcunningham): Proxy to remote renderer if needed.
 }
 
@@ -254,7 +254,7 @@ void MojoRenderer::OnError(const Status& status) {
   DCHECK(!init_cb_);
 
   encountered_error_ = true;
-  base::Optional<PipelineStatus> pipeline_status =
+  absl::optional<PipelineStatus> pipeline_status =
       StatusCodeToPipelineStatus(status.code());
 
   // If an unexpected status code is encountered default

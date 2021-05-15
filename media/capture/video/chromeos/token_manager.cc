@@ -122,7 +122,7 @@ bool TokenManager::AuthenticateServer(const base::UnguessableToken& token) {
   return server_token_ == token;
 }
 
-base::Optional<cros::mojom::CameraClientType> TokenManager::AuthenticateClient(
+absl::optional<cros::mojom::CameraClientType> TokenManager::AuthenticateClient(
     cros::mojom::CameraClientType type,
     const base::UnguessableToken& token) {
   base::AutoLock l(client_token_map_lock_);
@@ -133,11 +133,11 @@ base::Optional<cros::mojom::CameraClientType> TokenManager::AuthenticateClient(
         return client_token_map_pair.first;
       }
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto& token_set = client_token_map_[type];
   if (token_set.find(token) == token_set.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return type;
 }

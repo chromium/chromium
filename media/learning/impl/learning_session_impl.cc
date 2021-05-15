@@ -35,7 +35,7 @@ class WeakLearningTaskController : public LearningTaskController {
     // Cancel any outstanding observation, unless they have a default value.  In
     // that case, complete them.
     for (auto& id : outstanding_observations_) {
-      const base::Optional<TargetValue>& default_value = id.second;
+      const absl::optional<TargetValue>& default_value = id.second;
       if (default_value) {
         controller_->AsyncCall(&LearningTaskController::CompleteObservation)
             .WithArgs(id.first, *default_value);
@@ -49,8 +49,8 @@ class WeakLearningTaskController : public LearningTaskController {
   void BeginObservation(
       base::UnguessableToken id,
       const FeatureVector& features,
-      const base::Optional<TargetValue>& default_target,
-      const base::Optional<ukm::SourceId>& source_id) override {
+      const absl::optional<TargetValue>& default_target,
+      const absl::optional<ukm::SourceId>& source_id) override {
     if (!weak_session_)
       return;
 
@@ -59,7 +59,7 @@ class WeakLearningTaskController : public LearningTaskController {
     // doesn't support it.  Since all client calls eventually come through us
     // anyway, it seems okay to handle it here.
     controller_->AsyncCall(&LearningTaskController::BeginObservation)
-        .WithArgs(id, features, base::nullopt, source_id);
+        .WithArgs(id, features, absl::nullopt, source_id);
   }
 
   void CompleteObservation(base::UnguessableToken id,
@@ -81,7 +81,7 @@ class WeakLearningTaskController : public LearningTaskController {
 
   void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const base::Optional<TargetValue>& default_target) override {
+      const absl::optional<TargetValue>& default_target) override {
     if (!weak_session_)
       return;
 
@@ -104,7 +104,7 @@ class WeakLearningTaskController : public LearningTaskController {
 
   // Set of ids that have been started but not completed / cancelled yet, and
   // any default target value.
-  std::map<base::UnguessableToken, base::Optional<TargetValue>>
+  std::map<base::UnguessableToken, absl::optional<TargetValue>>
       outstanding_observations_;
 };
 

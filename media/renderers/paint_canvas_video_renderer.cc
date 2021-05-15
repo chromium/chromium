@@ -812,7 +812,7 @@ void PaintCanvasVideoRenderer::Paint(
   cc::PaintImage image = cache_->paint_image;
   DCHECK(image);
 
-  base::Optional<ScopedSharedImageAccess> source_access;
+  absl::optional<ScopedSharedImageAccess> source_access;
   if (video_frame->HasTextures() && cache_->source_texture) {
     DCHECK(cache_->texture_backing);
     source_access.emplace(raster_context_provider->RasterInterface(),

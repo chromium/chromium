@@ -13,11 +13,11 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -142,7 +142,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 
   State state_ = State::kNotInitialized;
-  base::Optional<bool> flush_support_;
+  absl::optional<bool> flush_support_;
 
   // True if underlying instance of VEA can handle GPU backed frames with a
   // size different from what VEA was configured for.

@@ -202,7 +202,7 @@ StatusCode V4L2VideoDecoder::InitializeBackend() {
 
   constexpr bool kStateful = false;
   constexpr bool kStateless = true;
-  base::Optional<std::pair<bool, uint32_t>> api_and_format;
+  absl::optional<std::pair<bool, uint32_t>> api_and_format;
   // Try both kStateful and kStateless APIs via |fourcc| and select the first
   // combination where Open()ing the |device_| works.
   for (const auto api : {kStateful, kStateless}) {
@@ -333,7 +333,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       continue;
     }
 
-    base::Optional<struct v4l2_format> format =
+    absl::optional<struct v4l2_format> format =
         output_queue_->TryFormat(pixfmt, size, 0);
     if (!format)
       continue;
@@ -344,7 +344,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   }
 
   // Ask the pipeline to pick the output format.
-  const base::Optional<std::pair<Fourcc, gfx::Size>> output_format =
+  const absl::optional<std::pair<Fourcc, gfx::Size>> output_format =
       client_->PickDecoderOutputFormat(candidates, visible_rect);
   if (!output_format) {
     VLOGF(1) << "Failed to pick an output format.";
@@ -354,7 +354,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   gfx::Size picked_size = std::move(output_format->second);
 
   // We successfully picked the output format. Now setup output format again.
-  base::Optional<struct v4l2_format> format =
+  absl::optional<struct v4l2_format> format =
       output_queue_->SetFormat(fourcc.ToV4L2PixFmt(), picked_size, 0);
   DCHECK(format);
   gfx::Size adjusted_size(format->fmt.pix_mp.width, format->fmt.pix_mp.height);
@@ -374,7 +374,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   // created by VideoFramePool.
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   if (pool) {
-    base::Optional<GpuBufferLayout> layout = pool->Initialize(
+    absl::optional<GpuBufferLayout> layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
         GetNaturalSize(visible_rect, pixel_aspect_ratio_), num_output_frames_,
         /*use_protected=*/false);
@@ -393,7 +393,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     VLOGF(1) << "buffer modifier: " << std::hex << layout->modifier();
     if (layout->modifier() &&
         layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
-      base::Optional<struct v4l2_format> modifier_format =
+      absl::optional<struct v4l2_format> modifier_format =
           output_queue_->SetModifierFormat(layout->modifier(), picked_size);
       if (!modifier_format)
         return false;

@@ -6,7 +6,6 @@
 #define MEDIA_BLINK_POWER_STATUS_HELPER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
@@ -14,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -74,7 +74,7 @@ class MEDIA_BLINK_EXPORT PowerStatusHelper {
   void SetIsPlaying(bool is_playing);
   void SetMetadata(const media::PipelineMetadata& metadata);
   void SetIsFullscreen(bool is_fullscreen);
-  void SetAverageFrameRate(base::Optional<int> average_fps);
+  void SetAverageFrameRate(absl::optional<int> average_fps);
 
   // Handle notifications about the experiment state from the power experiment.
   // manager.  |state| indicates whether our player is eligible to record power
@@ -87,13 +87,13 @@ class MEDIA_BLINK_EXPORT PowerStatusHelper {
 
   // Return the UMA bucket for the given video configuration, or nullopt if we
   // don't want to record it.
-  static base::Optional<int> BucketFor(bool is_playing,
+  static absl::optional<int> BucketFor(bool is_playing,
                                        bool has_video,
                                        media::VideoCodec codec,
                                        media::VideoCodecProfile profile,
                                        gfx::Size natural_size,
                                        bool is_fullscreen,
-                                       base::Optional<int> average_fps);
+                                       absl::optional<int> average_fps);
 
   // Return the histogram names.  Here so that tests can find them too.
   static const char* BatteryDeltaHistogram();
@@ -124,13 +124,13 @@ class MEDIA_BLINK_EXPORT PowerStatusHelper {
   gfx::Size natural_size_;
   bool is_fullscreen_ = false;
   // For estimating fps.  Can be unset if we don't know.
-  base::Optional<int> average_fps_;
+  absl::optional<int> average_fps_;
 
   // Current UMA bucket, if any.
-  base::Optional<int> current_bucket_;
+  absl::optional<int> current_bucket_;
 
   // If set, our previous battery level, from 0-100.
-  base::Optional<float> battery_level_baseline_;
+  absl::optional<float> battery_level_baseline_;
   // The time at which we last got an update from |battery_monitor_|.
   base::TimeTicks last_update_;
 

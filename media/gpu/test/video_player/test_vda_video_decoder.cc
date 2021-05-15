@@ -375,7 +375,7 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
 
 // static
 void TestVDAVideoDecoder::ReusePictureBufferThunk(
-    base::Optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
+    absl::optional<base::WeakPtr<TestVDAVideoDecoder>> vda_video_decoder,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     int32_t picture_buffer_id) {
   DCHECK(vda_video_decoder);

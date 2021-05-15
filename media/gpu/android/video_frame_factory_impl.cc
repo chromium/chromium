@@ -38,10 +38,10 @@ namespace {
 // (http://crbug.com/582170). This texture copy can be avoided if
 // AImageReader/AHardwareBuffer is supported and AImageReader
 // max size is not limited to 1 (crbug.com/1091945).
-base::Optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
+absl::optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
     bool enable_threaded_texture_mailboxes) {
   if (!enable_threaded_texture_mailboxes)
-    return base::nullopt;
+    return absl::nullopt;
 
   return features::IsWebViewZeroCopyVideoEnabled()
              ? VideoFrameMetadata::CopyMode::kCopyMailboxesOnly
@@ -50,7 +50,7 @@ base::Optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
 
 gpu::TextureOwner::Mode GetTextureOwnerMode(
     VideoFrameFactory::OverlayMode overlay_mode,
-    const base::Optional<VideoFrameMetadata::CopyMode>& copy_mode) {
+    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode) {
   if (copy_mode == VideoFrameMetadata::kCopyMailboxesOnly) {
     DCHECK(features::IsWebViewZeroCopyVideoEnabled());
     return gpu::TextureOwner::Mode::kAImageReaderInsecureMultithreaded;
@@ -79,7 +79,7 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
 static void AllocateTextureOwnerOnGpuThread(
     VideoFrameFactory::InitCB init_cb,
     VideoFrameFactory::OverlayMode overlay_mode,
-    const base::Optional<VideoFrameMetadata::CopyMode>& copy_mode,
+    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
     scoped_refptr<gpu::SharedContextState> shared_context_state) {
   if (!shared_context_state) {
     std::move(init_cb).Run(nullptr);
@@ -248,7 +248,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
     PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
     VideoPixelFormat pixel_format,
     OverlayMode overlay_mode,
-    const base::Optional<VideoFrameMetadata::CopyMode>& copy_mode,
+    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
     std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
     FrameInfoHelper::FrameInfo frame_info,

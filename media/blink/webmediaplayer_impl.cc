@@ -1045,7 +1045,7 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 void WebMediaPlayerImpl::SetLatencyHint(double seconds) {
   DVLOG(1) << __func__ << "(" << seconds << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::Optional<base::TimeDelta> latency_hint;
+  absl::optional<base::TimeDelta> latency_hint;
   if (std::isfinite(seconds)) {
     DCHECK_GE(seconds, 0);
     latency_hint = base::TimeDelta::FromSecondsD(seconds);
@@ -1132,7 +1132,7 @@ void WebMediaPlayerImpl::SelectedVideoTrackChanged(
     blink::WebMediaPlayer::TrackId* selectedTrackId) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  base::Optional<MediaTrack::Id> selected_video_track_id;
+  absl::optional<MediaTrack::Id> selected_video_track_id;
   if (selectedTrackId && !video_track_disabled_)
     selected_video_track_id = MediaTrack::Id(selectedTrackId->Utf8().data());
   MEDIA_LOG(INFO, media_log_.get())
@@ -2349,7 +2349,7 @@ void WebMediaPlayerImpl::OnVideoOpacityChange(bool opaque) {
     bridge_->SetContentsOpaque(opaque_);
 }
 
-void WebMediaPlayerImpl::OnVideoFrameRateChange(base::Optional<int> fps) {
+void WebMediaPlayerImpl::OnVideoFrameRateChange(absl::optional<int> fps) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (power_status_helper_)
     power_status_helper_->SetAverageFrameRate(fps);
@@ -2724,7 +2724,7 @@ void WebMediaPlayerImpl::MaybeSendOverlayInfoToDecoder() {
 }
 
 std::unique_ptr<Renderer> WebMediaPlayerImpl::CreateRenderer(
-    base::Optional<RendererType> renderer_type) {
+    absl::optional<RendererType> renderer_type) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   // Make sure that overlays are enabled if they're always allowed.
@@ -3431,9 +3431,9 @@ int WebMediaPlayerImpl::GetDelegateId() {
   return delegate_id_;
 }
 
-base::Optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
+absl::optional<viz::SurfaceId> WebMediaPlayerImpl::GetSurfaceId() {
   if (!surface_layer_for_video_enabled_)
-    return base::nullopt;
+    return absl::nullopt;
   return bridge_->GetSurfaceId();
 }
 
@@ -3623,7 +3623,7 @@ void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
 
 void WebMediaPlayerImpl::SetPipelineStatisticsForTest(
     const PipelineStatistics& stats) {
-  pipeline_statistics_for_test_ = base::make_optional(stats);
+  pipeline_statistics_for_test_ = absl::make_optional(stats);
 }
 
 PipelineStatistics WebMediaPlayerImpl::GetPipelineStatistics() const {
@@ -3635,7 +3635,7 @@ PipelineStatistics WebMediaPlayerImpl::GetPipelineStatistics() const {
 
 void WebMediaPlayerImpl::SetPipelineMediaDurationForTest(
     base::TimeDelta duration) {
-  pipeline_media_duration_for_test_ = base::make_optional(duration);
+  pipeline_media_duration_for_test_ = absl::make_optional(duration);
 }
 
 base::TimeDelta WebMediaPlayerImpl::GetPipelineMediaDuration() const {

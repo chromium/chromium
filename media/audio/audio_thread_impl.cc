@@ -5,11 +5,11 @@
 #include "media/audio/audio_thread_impl.h"
 
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "media/audio/audio_thread_hang_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -39,7 +39,7 @@ AudioThreadImpl::AudioThreadImpl()
   // https://crbug.com/946968: The hang monitor possibly causes crashes on
   // Android
   hang_monitor_ = AudioThreadHangMonitor::Create(
-      AudioThreadHangMonitor::HangAction::kDoNothing, base::nullopt,
+      AudioThreadHangMonitor::HangAction::kDoNothing, absl::nullopt,
       base::DefaultTickClock::GetInstance(), task_runner_);
 #endif
 }

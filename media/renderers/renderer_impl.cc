@@ -65,7 +65,7 @@ class RendererImpl::RendererClientInternal final : public RendererClient {
     DCHECK(type_ == DemuxerStream::VIDEO);
     renderer_->OnVideoOpacityChange(opaque);
   }
-  void OnVideoFrameRateChange(base::Optional<int> fps) override {
+  void OnVideoFrameRateChange(absl::optional<int> fps) override {
     DCHECK(type_ == DemuxerStream::VIDEO);
     renderer_->OnVideoFrameRateChange(fps);
   }
@@ -178,7 +178,7 @@ void RendererImpl::SetCdm(CdmContext* cdm_context,
 }
 
 void RendererImpl::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   DVLOG(1) << __func__;
   DCHECK(!latency_hint || (*latency_hint >= base::TimeDelta()));
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -950,7 +950,7 @@ void RendererImpl::OnVideoOpacityChange(bool opaque) {
   client_->OnVideoOpacityChange(opaque);
 }
 
-void RendererImpl::OnVideoFrameRateChange(base::Optional<int> fps) {
+void RendererImpl::OnVideoFrameRateChange(absl::optional<int> fps) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_->OnVideoFrameRateChange(fps);
 }

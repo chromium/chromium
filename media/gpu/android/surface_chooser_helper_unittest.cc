@@ -52,7 +52,7 @@ class SurfaceChooserHelperTest : public testing::Test {
   // Convenience function.
   void UpdateChooserState() {
     EXPECT_CALL(*chooser_, MockUpdateState());
-    helper_->UpdateChooserState(base::Optional<AndroidOverlayFactoryCB>());
+    helper_->UpdateChooserState(absl::optional<AndroidOverlayFactoryCB>());
   }
 
   base::SimpleTestTickClock tick_clock_;

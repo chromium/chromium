@@ -18,7 +18,7 @@ constexpr int CountVolumeRangeIntervals(VolumeRange range) {
 
 }  // namespace
 
-void LogVolumeRangeUmaHistograms(base::Optional<VolumeRange> range) {
+void LogVolumeRangeUmaHistograms(absl::optional<VolumeRange> range) {
   base::UmaHistogramBoolean("Media.Audio.Capture.Win.VolumeRangeAvailable",
                             range.has_value());
   if (!range.has_value()) {

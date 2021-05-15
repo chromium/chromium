@@ -13,7 +13,6 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -21,6 +20,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
@@ -48,7 +48,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   static gfx::GpuMemoryBufferId GetGpuMemoryBufferId(const VideoFrame& frame);
 
   // DmabufVideoFramePool implementation.
-  base::Optional<GpuBufferLayout> Initialize(const Fourcc& fourcc,
+  absl::optional<GpuBufferLayout> Initialize(const Fourcc& fourcc,
                                              const gfx::Size& coded_size,
                                              const gfx::Rect& visible_rect,
                                              const gfx::Size& natural_size,
@@ -71,10 +71,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // Thunk to post OnFrameReleased() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to
-  // dereference WeakPtr. Therefore we wrap the WeakPtr by base::Optional to
+  // dereference WeakPtr. Therefore we wrap the WeakPtr by absl::optional to
   // avoid the task runner defererencing the WeakPtr.
   static void OnFrameReleasedThunk(
-      base::Optional<base::WeakPtr<PlatformVideoFramePool>> pool,
+      absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<VideoFrame> origin_frame);
   // Called when a wrapped frame gets destroyed.
@@ -116,7 +116,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // The arguments of current frame. We allocate new frames only if a pixel
   // format or size in |frame_layout_| is changed. When GetFrame() is
   // called, we update |visible_rect_| and |natural_size_| of wrapped frames.
-  base::Optional<GpuBufferLayout> frame_layout_ GUARDED_BY(lock_);
+  absl::optional<GpuBufferLayout> frame_layout_ GUARDED_BY(lock_);
   gfx::Rect visible_rect_ GUARDED_BY(lock_);
   gfx::Size natural_size_ GUARDED_BY(lock_);
 

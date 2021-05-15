@@ -57,7 +57,7 @@ class MEDIA_EXPORT RendererClient {
   // Called when the bucketed frames per second has changed.  |fps| will be
   // unset if the frame rate is unstable.  The duration used for the frame rate
   // is based on the wall clock time, not the media time.
-  virtual void OnVideoFrameRateChange(base::Optional<int> fps) = 0;
+  virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
 };
 
 }  // namespace media

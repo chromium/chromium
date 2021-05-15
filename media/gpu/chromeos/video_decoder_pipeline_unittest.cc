@@ -36,7 +36,7 @@ class MockVideoFramePool : public DmabufVideoFramePool {
 
   // DmabufVideoFramePool implementation.
   MOCK_METHOD6(Initialize,
-               base::Optional<GpuBufferLayout>(const Fourcc&,
+               absl::optional<GpuBufferLayout>(const Fourcc&,
                                                const gfx::Size&,
                                                const gfx::Rect&,
                                                const gfx::Size&,

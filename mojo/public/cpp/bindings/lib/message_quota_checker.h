@@ -10,11 +10,11 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace internal {
@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageQuotaChecker
 
   // Returns the amount of unread message quota currently used if there is
   // an associated message pipe.
-  base::Optional<size_t> GetCurrentMessagePipeQuota();
+  absl::optional<size_t> GetCurrentMessagePipeQuota();
   void QuotaCheckImpl(size_t num_enqueued);
 
   const Configuration* config_;
@@ -150,7 +150,7 @@ struct MessageQuotaChecker::Configuration {
   size_t unread_message_count_quota = 0u;
   size_t crash_threshold = 0u;
   void (*maybe_crash_function)(size_t quota_used,
-                               base::Optional<size_t> message_pipe_quota_used,
+                               absl::optional<size_t> message_pipe_quota_used,
                                int64_t seconds_since_construction,
                                double average_write_rate,
                                uint64_t messages_enqueued,

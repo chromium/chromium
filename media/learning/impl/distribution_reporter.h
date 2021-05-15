@@ -11,11 +11,11 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/common/target_histogram.h"
 #include "media/learning/impl/model.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) DistributionReporter {
   virtual void OnPrediction(const PredictionInfo& prediction_info,
                             TargetHistogram predicted) = 0;
 
-  const base::Optional<std::set<int>>& feature_indices() const {
+  const absl::optional<std::set<int>>& feature_indices() const {
     return feature_indices_;
   }
 
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) DistributionReporter {
 
   // If provided, then these are the features that are used to train the model.
   // Otherwise, we assume that all features are used.
-  base::Optional<std::set<int>> feature_indices_;
+  absl::optional<std::set<int>> feature_indices_;
 
   base::WeakPtrFactory<DistributionReporter> weak_factory_{this};
 

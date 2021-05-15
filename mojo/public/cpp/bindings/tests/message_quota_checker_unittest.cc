@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -12,6 +11,7 @@
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -40,7 +40,7 @@ class MessageQuotaCheckerTest : public testing::Test {
   }
 
   static void RecordDumpAttempt(size_t total_quota_used,
-                                base::Optional<size_t> message_pipe_quota_used,
+                                absl::optional<size_t> message_pipe_quota_used,
                                 int64_t seconds_since_construction,
                                 double average_write_rate,
                                 uint64_t messages_enqueued,
@@ -62,7 +62,7 @@ class MessageQuotaCheckerTest : public testing::Test {
 
   size_t num_dumps_ = false;
   size_t last_dump_total_quota_used_ = 0u;
-  base::Optional<size_t> last_dump_message_pipe_quota_used_;
+  absl::optional<size_t> last_dump_message_pipe_quota_used_;
   int64_t last_seconds_since_construction_ = 0;
   double last_average_write_rate_ = 0.0;
   uint64_t last_messages_enqueued_ = 0u;

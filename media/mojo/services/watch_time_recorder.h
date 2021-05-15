@@ -126,7 +126,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   PipelineStatus pipeline_status_ = PIPELINE_OK;
   base::TimeDelta duration_ = kNoTimestamp;
   base::TimeDelta last_timestamp_ = kNoTimestamp;
-  base::Optional<bool> autoplay_initiated_;
+  absl::optional<bool> autoplay_initiated_;
   RecordAggregateWatchTimeCallback record_playback_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorder);

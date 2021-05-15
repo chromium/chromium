@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -22,6 +21,7 @@
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/fourccs.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace mp4 {
@@ -330,8 +330,8 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   VideoCodecLevel video_codec_level;
   VideoColorSpace video_color_space;
 
-  base::Optional<MasteringDisplayColorVolume> mastering_display_color_volume;
-  base::Optional<ContentLightLevelInformation> content_light_level_information;
+  absl::optional<MasteringDisplayColorVolume> mastering_display_color_volume;
+  absl::optional<ContentLightLevelInformation> content_light_level_information;
 
   bool IsFormatValid() const;
 

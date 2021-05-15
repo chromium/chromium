@@ -267,7 +267,7 @@ Decryptor* MojoCdm::GetDecryptor() {
   return decryptor_.get();
 }
 
-base::Optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
+absl::optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
   // Can be called on a different thread.
   base::AutoLock auto_lock(lock_);
   DVLOG(2) << __func__ << ": cdm_id="

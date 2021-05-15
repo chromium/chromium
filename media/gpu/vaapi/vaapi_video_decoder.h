@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +31,7 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -187,7 +187,7 @@ class VaapiVideoDecoder : public DecoderInterface,
   // Queue containing all requested decode tasks.
   base::queue<DecodeTask> decode_task_queue_;
   // The decode task we're currently trying to execute.
-  base::Optional<DecodeTask> current_decode_task_;
+  absl::optional<DecodeTask> current_decode_task_;
   // The next input buffer id.
   int32_t next_buffer_id_ = 0;
 
@@ -235,7 +235,7 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // When we are doing scaled decoding, this is the scale factor we are using,
   // and applies the same in both dimensions.
-  base::Optional<float> decode_to_output_scale_factor_;
+  absl::optional<float> decode_to_output_scale_factor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

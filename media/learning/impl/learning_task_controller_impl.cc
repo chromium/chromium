@@ -52,8 +52,8 @@ LearningTaskControllerImpl::~LearningTaskControllerImpl() = default;
 void LearningTaskControllerImpl::BeginObservation(
     base::UnguessableToken id,
     const FeatureVector& features,
-    const base::Optional<TargetValue>& default_target,
-    const base::Optional<ukm::SourceId>& source_id) {
+    const absl::optional<TargetValue>& default_target,
+    const absl::optional<ukm::SourceId>& source_id) {
   // TODO(liberato): Should we enforce that the right number of features are
   // present here?  Right now, we allow it to be shorter, so that features from
   // a FeatureProvider may be omitted.  Of course, they have to be at the end in
@@ -87,7 +87,7 @@ void LearningTaskControllerImpl::CancelObservation(base::UnguessableToken id) {
 
 void LearningTaskControllerImpl::UpdateDefaultTarget(
     base::UnguessableToken id,
-    const base::Optional<TargetValue>& default_target) {
+    const absl::optional<TargetValue>& default_target) {
   NOTREACHED();
 }
 
@@ -101,7 +101,7 @@ void LearningTaskControllerImpl::PredictDistribution(
   if (model_)
     std::move(callback).Run(model_->PredictDistribution(features));
   else
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
 }
 
 void LearningTaskControllerImpl::AddFinishedExample(LabelledExample example,

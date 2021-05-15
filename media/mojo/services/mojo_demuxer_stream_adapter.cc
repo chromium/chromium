@@ -70,8 +70,8 @@ bool MojoDemuxerStreamAdapter::SupportsConfigChanges() {
 void MojoDemuxerStreamAdapter::OnStreamReady(
     Type type,
     mojo::ScopedDataPipeConsumerHandle consumer_handle,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(1) << __func__;
   DCHECK_EQ(UNKNOWN, type_);
   DCHECK(consumer_handle.is_valid());
@@ -89,8 +89,8 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
 void MojoDemuxerStreamAdapter::OnBufferReady(
     Status status,
     mojom::DecoderBufferPtr buffer,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(3) << __func__;
   DCHECK(read_cb_);
   DCHECK_NE(type_, UNKNOWN);
@@ -123,8 +123,8 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
 }
 
 void MojoDemuxerStreamAdapter::UpdateConfig(
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DCHECK_NE(type_, UNKNOWN);
 
   switch(type_) {

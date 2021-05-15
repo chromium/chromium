@@ -39,7 +39,7 @@ struct VmoBufferWriterQueue::PendingBuffer {
 
   // Index of the last buffer in the sysmem buffer collection that was used to
   // send this input buffer. Should be set only when |bytes_left()==0|.
-  base::Optional<size_t> tail_sysmem_buffer_index;
+  absl::optional<size_t> tail_sysmem_buffer_index;
 };
 
 VmoBufferWriterQueue::VmoBufferWriterQueue() {
@@ -152,7 +152,7 @@ void VmoBufferWriterQueue::ResetPositionAndPause() {
     // All packets that were pending will need to be resent. Reset
     // |tail_sysmem_buffer_index| to ensure that these packets are not removed
     // from the queue in ReleaseBuffer().
-    buffer.tail_sysmem_buffer_index = base::nullopt;
+    buffer.tail_sysmem_buffer_index = absl::nullopt;
   }
   input_queue_position_ = 0;
   is_paused_ = true;

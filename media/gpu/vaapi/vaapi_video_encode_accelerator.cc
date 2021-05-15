@@ -92,7 +92,7 @@ gfx::Size GetInputFrameSize(VideoPixelFormat format,
                             const gfx::Size& visible_size) {
   // Get a VideoFrameLayout of a graphic buffer with the same gfx::BufferUsage
   // as camera stack.
-  base::Optional<VideoFrameLayout> layout = GetPlatformVideoFrameLayout(
+  absl::optional<VideoFrameLayout> layout = GetPlatformVideoFrameLayout(
       /*gpu_memory_buffer_factory=*/nullptr, format, visible_size,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!layout || layout->planes().empty()) {
@@ -1092,7 +1092,7 @@ bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitFrameParameters(
   seq_param.bits_per_second = encode_params.bitrate_bps;
 
   SPS_TO_SP(max_num_ref_frames);
-  base::Optional<gfx::Size> coded_size = sps.GetCodedSize();
+  absl::optional<gfx::Size> coded_size = sps.GetCodedSize();
   if (!coded_size) {
     DVLOGF(1) << "Invalid coded size";
     return false;

@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -23,6 +22,7 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -128,8 +128,8 @@ class EncodedDataHelper {
   scoped_refptr<DecoderBuffer> GetNextFragment();
   // For VP8/9.
   scoped_refptr<DecoderBuffer> GetNextFrame();
-  base::Optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
-  base::Optional<IvfFrame> ReadNextIvfFrame();
+  absl::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
+  absl::optional<IvfFrame> ReadNextIvfFrame();
 
   // Helpers for GetBytesForNextFragment above.
   size_t GetBytesForNextNALU(size_t pos);
@@ -218,7 +218,7 @@ class AlignedDataHelper {
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
 
   // The layout of VideoFrames returned by GetNextFrame().
-  base::Optional<VideoFrameLayout> layout_;
+  absl::optional<VideoFrameLayout> layout_;
   const gfx::Rect visible_rect_;
   const gfx::Size natural_size_;
 
@@ -253,7 +253,7 @@ class RawDataHelper {
   // The size of one video frame.
   const size_t frame_size_;
   // The layout of VideoFrames returned by GetFrame().
-  const base::Optional<VideoFrameLayout> layout_;
+  const absl::optional<VideoFrameLayout> layout_;
 };
 }  // namespace test
 }  // namespace media

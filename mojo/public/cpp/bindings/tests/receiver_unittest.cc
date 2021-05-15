@@ -688,7 +688,7 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
 
   Receiver<mojom::TestGenericBinder> receiver_;
   bool connected_ = true;
-  base::Optional<base::RunLoop> wait_loop_;
+  absl::optional<base::RunLoop> wait_loop_;
   GenericPendingReceiver* next_receiver_storage_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestGenericBinderImpl);

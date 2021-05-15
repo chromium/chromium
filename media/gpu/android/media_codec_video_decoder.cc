@@ -564,8 +564,8 @@ void MediaCodecVideoDecoder::OnOverlayInfoChanged(
   surface_chooser_helper_.SetIsPersistentVideo(
       overlay_info_.is_persistent_video);
   surface_chooser_helper_.UpdateChooserState(
-      overlay_changed ? base::make_optional(CreateOverlayFactoryCb())
-                      : base::nullopt);
+      overlay_changed ? absl::make_optional(CreateOverlayFactoryCb())
+                      : absl::nullopt);
 }
 
 void MediaCodecVideoDecoder::OnSurfaceChosen(

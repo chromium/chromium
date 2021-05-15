@@ -65,7 +65,7 @@ class H264Validator : public DecoderBufferValidator {
  public:
   H264Validator(VideoCodecProfile profile,
                 const gfx::Rect& visible_rect,
-                base::Optional<uint8_t> level = base::nullopt);
+                absl::optional<uint8_t> level = absl::nullopt);
   ~H264Validator() override;
 
  private:
@@ -95,8 +95,8 @@ class H264Validator : public DecoderBufferValidator {
   // The expected h264 profile of |decoder_buffer|.
   const int profile_;
   // The expected h264 level of |decoder_buffer|. Check if it is not
-  // base::nullopt.
-  base::Optional<uint8_t> level_;
+  // absl::nullopt.
+  absl::optional<uint8_t> level_;
 };
 
 class VP8Validator : public DecoderBufferValidator {

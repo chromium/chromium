@@ -78,7 +78,7 @@ class MojoCdm final : public ContentDecryptionModule,
   // All GetDecryptor() calls must be made on the same thread.
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
-  base::Optional<base::UnguessableToken> GetCdmId() const final;
+  absl::optional<base::UnguessableToken> GetCdmId() const final;
 #if defined(OS_WIN)
   bool RequiresMediaFoundationRenderer() final;
 #endif  // defined(OS_WIN)
@@ -124,7 +124,7 @@ class MojoCdm final : public ContentDecryptionModule,
 
   // CDM ID of the remote CDM. Set after initialization is completed. Must not
   // be invalid if initialization succeeded.
-  base::Optional<base::UnguessableToken> cdm_id_ GUARDED_BY(lock_);
+  absl::optional<base::UnguessableToken> cdm_id_ GUARDED_BY(lock_);
 
   // The mojo::PendingRemote<mojom::Decryptor> exposed by the remote CDM. Set
   // after initialization is completed and cleared after |decryptor_| is

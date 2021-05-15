@@ -55,7 +55,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  const base::Optional<base::UnguessableToken>& cdm_id,
+                  const absl::optional<base::UnguessableToken>& cdm_id,
                   InitializeCallback callback) final;
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
@@ -87,7 +87,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Implementation value provided at the time of Construct().
-  base::Optional<VideoDecoderImplementation> implementation_;
+  absl::optional<VideoDecoderImplementation> implementation_;
 
   // Whether this instance is active (Decode() was called at least once).
   bool is_active_instance_ = false;
@@ -114,7 +114,7 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
 
   // The CDM ID and the corresponding CdmContextRef, which must be held to keep
   // the CdmContext alive for the lifetime of the |decoder_|.
-  base::Optional<base::UnguessableToken> cdm_id_;
+  absl::optional<base::UnguessableToken> cdm_id_;
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;

@@ -212,10 +212,10 @@ TEST_F(Vp9ParserTest, AlignedFrameSubsampleParsing) {
 
   std::vector<std::unique_ptr<DecryptConfig>> expected;
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kInitialIV, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kInitialIV, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   CheckSubsampleValues(
       kSuperframe, sizeof(kSuperframe),
@@ -253,10 +253,10 @@ TEST_F(Vp9ParserTest, UnalignedFrameSubsampleParsing) {
 
   std::vector<std::unique_ptr<DecryptConfig>> expected;
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kInitialIV, {SubsampleEntry(32, 0)}, base::nullopt));
+      kKeyID, kInitialIV, {SubsampleEntry(32, 0)}, absl::nullopt));
 
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kInitialIV, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kInitialIV, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   CheckSubsampleValues(kSuperframe, sizeof(kSuperframe),
                        DecryptConfig::CreateCencConfig(
@@ -295,10 +295,10 @@ TEST_F(Vp9ParserTest, ClearSectionRollsOverSubsampleParsing) {
   std::vector<std::unique_ptr<DecryptConfig>> expected;
   expected.push_back(DecryptConfig::CreateCbcsConfig(
       kKeyID, kInitialIV, {SubsampleEntry(16, 16), SubsampleEntry(16, 0)},
-      base::nullopt));
+      absl::nullopt));
 
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kIVIncrementOne, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   CheckSubsampleValues(
       kSuperframe, sizeof(kSuperframe),
@@ -340,10 +340,10 @@ TEST_F(Vp9ParserTest, FirstFrame2xSubsampleParsing) {
   std::vector<std::unique_ptr<DecryptConfig>> expected;
   expected.push_back(DecryptConfig::CreateCbcsConfig(
       kKeyID, kInitialIV, {SubsampleEntry(16, 16), SubsampleEntry(16, 16)},
-      base::nullopt));
+      absl::nullopt));
 
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   CheckSubsampleValues(kSuperframe, sizeof(kSuperframe),
                        DecryptConfig::CreateCencConfig(
@@ -387,10 +387,10 @@ TEST_F(Vp9ParserTest, UnalignedBigFrameSubsampleParsing) {
   expected.push_back(DecryptConfig::CreateCbcsConfig(
       kKeyID, kInitialIV,
       {SubsampleEntry(16, 16), SubsampleEntry(16, 16), SubsampleEntry(8, 0)},
-      base::nullopt));
+      absl::nullopt));
 
   expected.push_back(DecryptConfig::CreateCbcsConfig(
-      kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, base::nullopt));
+      kKeyID, kIVIncrementTwo, {SubsampleEntry(16, 16)}, absl::nullopt));
 
   CheckSubsampleValues(
       kSuperframe, sizeof(kSuperframe),

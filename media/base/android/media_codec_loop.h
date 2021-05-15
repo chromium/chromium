@@ -124,7 +124,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
     bool is_eos = false;
     EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
-    base::Optional<EncryptionPattern> encryption_pattern;
+    absl::optional<EncryptionPattern> encryption_pattern;
   };
 
   // Handy enum for "no buffer".

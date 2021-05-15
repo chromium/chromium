@@ -7,10 +7,10 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -44,12 +44,12 @@ class MEDIA_EXPORT VideoEncoder {
     Options();
     Options(const Options&);
     ~Options();
-    base::Optional<uint64_t> bitrate;
-    base::Optional<double> framerate;
+    absl::optional<uint64_t> bitrate;
+    absl::optional<double> framerate;
 
     gfx::Size frame_size;
 
-    base::Optional<int> keyframe_interval = 10000;
+    absl::optional<int> keyframe_interval = 10000;
 
     // Requested number of SVC temporal layers.
     int temporal_layers = 1;
@@ -67,7 +67,7 @@ class MEDIA_EXPORT VideoEncoder {
   // becomes available.
   using OutputCB =
       base::RepeatingCallback<void(VideoEncoderOutput output,
-                                   base::Optional<CodecDescription>)>;
+                                   absl::optional<CodecDescription>)>;
 
   // Callback to report success and errors in encoder calls.
   using StatusCB = base::OnceCallback<void(Status error)>;

@@ -4,10 +4,10 @@
 
 #include "media/audio/win/volume_range_util.h"
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace {
@@ -29,7 +29,7 @@ constexpr int ComputeNumSteps(VolumeRange range) {
 
 TEST(VolumeRangeUtilWin, LogUnavailableVolumeRange) {
   base::HistogramTester tester;
-  LogVolumeRangeUmaHistograms(/*range=*/base::nullopt);
+  LogVolumeRangeUmaHistograms(/*range=*/absl::nullopt);
   EXPECT_THAT(
       tester.GetAllSamples("Media.Audio.Capture.Win.VolumeRangeAvailable"),
       ElementsAre(Bucket(false, 1)));

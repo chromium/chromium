@@ -8,12 +8,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
@@ -88,9 +88,9 @@ class MEDIA_EXPORT CdmContext {
   virtual Decryptor* GetDecryptor();
 
   // Returns an ID that can be used to find a remote CDM, in which case this CDM
-  // serves as a proxy to the remote one. Returns base::nullopt when remote CDM
+  // serves as a proxy to the remote one. Returns absl::nullopt when remote CDM
   // is not supported (e.g. this CDM is a local CDM).
-  virtual base::Optional<base::UnguessableToken> GetCdmId() const;
+  virtual absl::optional<base::UnguessableToken> GetCdmId() const;
 
   static std::string CdmIdToString(const base::UnguessableToken* cdm_id);
 

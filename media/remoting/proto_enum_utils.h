@@ -5,7 +5,6 @@
 #ifndef MEDIA_REMOTING_PROTO_ENUM_UTILS_H_
 #define MEDIA_REMOTING_PROTO_ENUM_UTILS_H_
 
-#include "base/optional.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/buffering_state.h"
 #include "media/base/channel_layout.h"
@@ -13,6 +12,7 @@
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace media {
@@ -24,45 +24,45 @@ namespace remoting {
 // modules while maintaining compile-time checks to ensure that there are always
 // valid, backwards-compatible mappings between the two.
 //
-// Each returns a base::Optional value. If it is not set, that indicates the
+// Each returns a absl::optional value. If it is not set, that indicates the
 // conversion failed.
 
-base::Optional<AudioCodec> ToMediaAudioCodec(
+absl::optional<AudioCodec> ToMediaAudioCodec(
     openscreen::cast::AudioDecoderConfig::Codec value);
-base::Optional<openscreen::cast::AudioDecoderConfig::Codec>
+absl::optional<openscreen::cast::AudioDecoderConfig::Codec>
 ToProtoAudioDecoderConfigCodec(AudioCodec value);
 
-base::Optional<SampleFormat> ToMediaSampleFormat(
+absl::optional<SampleFormat> ToMediaSampleFormat(
     openscreen::cast::AudioDecoderConfig::SampleFormat value);
-base::Optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
+absl::optional<openscreen::cast::AudioDecoderConfig::SampleFormat>
 ToProtoAudioDecoderConfigSampleFormat(SampleFormat value);
 
-base::Optional<ChannelLayout> ToMediaChannelLayout(
+absl::optional<ChannelLayout> ToMediaChannelLayout(
     openscreen::cast::AudioDecoderConfig::ChannelLayout value);
-base::Optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
+absl::optional<openscreen::cast::AudioDecoderConfig::ChannelLayout>
 ToProtoAudioDecoderConfigChannelLayout(ChannelLayout value);
 
-base::Optional<VideoCodec> ToMediaVideoCodec(
+absl::optional<VideoCodec> ToMediaVideoCodec(
     openscreen::cast::VideoDecoderConfig::Codec value);
-base::Optional<openscreen::cast::VideoDecoderConfig::Codec>
+absl::optional<openscreen::cast::VideoDecoderConfig::Codec>
 ToProtoVideoDecoderConfigCodec(VideoCodec value);
 
-base::Optional<VideoCodecProfile> ToMediaVideoCodecProfile(
+absl::optional<VideoCodecProfile> ToMediaVideoCodecProfile(
     openscreen::cast::VideoDecoderConfig::Profile value);
-base::Optional<openscreen::cast::VideoDecoderConfig::Profile>
+absl::optional<openscreen::cast::VideoDecoderConfig::Profile>
 ToProtoVideoDecoderConfigProfile(VideoCodecProfile value);
 
-base::Optional<VideoPixelFormat> ToMediaVideoPixelFormat(
+absl::optional<VideoPixelFormat> ToMediaVideoPixelFormat(
     openscreen::cast::VideoDecoderConfig::Format value);
 
-base::Optional<BufferingState> ToMediaBufferingState(
+absl::optional<BufferingState> ToMediaBufferingState(
     openscreen::cast::RendererClientOnBufferingStateChange::State value);
-base::Optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
+absl::optional<openscreen::cast::RendererClientOnBufferingStateChange::State>
 ToProtoMediaBufferingState(BufferingState value);
 
-base::Optional<DemuxerStream::Status> ToDemuxerStreamStatus(
+absl::optional<DemuxerStream::Status> ToDemuxerStreamStatus(
     openscreen::cast::DemuxerStreamReadUntilCallback::Status value);
-base::Optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
+absl::optional<openscreen::cast::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(DemuxerStream::Status value);
 
 }  // namespace remoting

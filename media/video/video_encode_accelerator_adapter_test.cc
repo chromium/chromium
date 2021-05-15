@@ -179,7 +179,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, PreInitialize) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
       });
 
   adapter()->Initialize(profile_, options, std::move(output_cb),
@@ -193,7 +193,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -222,7 +222,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
-          base::Optional<VideoEncoder::CodecDescription>) {
+          absl::optional<VideoEncoder::CodecDescription>) {
         if (output.timestamp == base::TimeDelta::FromMilliseconds(1))
           EXPECT_EQ(output.temporal_id, 1);
         else
@@ -262,7 +262,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -292,7 +292,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -322,7 +322,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   gfx::Size large_size(800, 600);
   auto pixel_format = GetParam();
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -358,7 +358,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
   gfx::Size small_size(480, 320);
   auto pixel_format = PIXEL_FORMAT_NV12;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 
@@ -397,7 +397,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
   adapter()->SetInputBufferPreferenceForTesting(input_kind);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, base::Optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
       });
 

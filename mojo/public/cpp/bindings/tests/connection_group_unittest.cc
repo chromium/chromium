@@ -168,7 +168,7 @@ TEST_F(ConnectionGroupTest, NotifyOnDecrementToZero) {
 }
 
 TEST_F(ConnectionGroupTest, NotifyOnDecrementToZeroMultipleTimes) {
-  base::Optional<base::RunLoop> loop;
+  absl::optional<base::RunLoop> loop;
   ConnectionGroup::Ref ref =
       ConnectionGroup::Create(base::BindLambdaForTesting([&] {
                                 ASSERT_TRUE(loop.has_value());

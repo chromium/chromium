@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -23,6 +22,7 @@
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace {
@@ -33,7 +33,7 @@ constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 
 // Pick a compositor renderable format from |candidates|.
 // Return zero if not found.
-base::Optional<Fourcc> PickRenderableFourcc(
+absl::optional<Fourcc> PickRenderableFourcc(
     const std::vector<Fourcc>& candidates) {
   // Hardcode compositor renderable format now.
   // TODO: figure out a way to pick the best one dynamically.
@@ -54,7 +54,7 @@ base::Optional<Fourcc> PickRenderableFourcc(
       return Fourcc(value);
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  //  namespace
@@ -455,7 +455,7 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   return main_frame_pool_.get();
 }
 
-base::Optional<std::pair<Fourcc, gfx::Size>>
+absl::optional<std::pair<Fourcc, gfx::Size>>
 VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
     const gfx::Rect& visible_rect) {
@@ -463,7 +463,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   if (candidates.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   image_processor_.reset();
 
@@ -478,7 +478,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
       if (candidate.first == renderable_fourcc)
         return candidate;
     DVLOGF(2) << "Renderable Fourcc not in candidates list. This is a bug.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::unique_ptr<ImageProcessor> image_processor =
@@ -489,7 +489,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
                               decoder_weak_this_));
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Note that fourcc is specified in ImageProcessor's factory method.
@@ -502,7 +502,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
       kNumFramesForImageProcessor, decoder_task_runner_);
   if (!image_processor_) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::make_pair(fourcc, size);

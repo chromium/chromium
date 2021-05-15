@@ -177,7 +177,7 @@ bool Video::Load(const size_t max_frames) {
   DCHECK(!file_path_.empty());
   DCHECK(data_.empty());
 
-  base::Optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
+  absl::optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
   if (!resolved_path) {
     LOG(ERROR) << "Video file not found: " << file_path_;
     return false;
@@ -355,7 +355,7 @@ bool Video::LoadMetadata() {
   if (metadata_file_path_.empty())
     metadata_file_path_ = file_path_.AddExtension(kMetadataSuffix);
 
-  base::Optional<base::FilePath> resolved_path =
+  absl::optional<base::FilePath> resolved_path =
       ResolveFilePath(metadata_file_path_);
   if (!resolved_path) {
     LOG(ERROR) << "Video metadata file not found: " << metadata_file_path_;
@@ -376,7 +376,7 @@ bool Video::LoadMetadata() {
                << ": " << metadata_result.error_message;
     return false;
   }
-  base::Optional<base::Value> metadata = std::move(metadata_result.value);
+  absl::optional<base::Value> metadata = std::move(metadata_result.value);
 
   // Find the video's profile, only required for encoded video streams.
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -518,7 +518,7 @@ bool Video::IsMetadataLoaded() const {
   return profile_ != VIDEO_CODEC_PROFILE_UNKNOWN || num_frames_ != 0;
 }
 
-base::Optional<base::FilePath> Video::ResolveFilePath(
+absl::optional<base::FilePath> Video::ResolveFilePath(
     const base::FilePath& file_path) {
   base::FilePath resolved_path = file_path;
 
@@ -531,8 +531,8 @@ base::Optional<base::FilePath> Video::ResolveFilePath(
   }
 
   return PathExists(resolved_path)
-             ? base::Optional<base::FilePath>(resolved_path)
-             : base::Optional<base::FilePath>();
+             ? absl::optional<base::FilePath>(resolved_path)
+             : absl::optional<base::FilePath>();
 }
 
 // static
@@ -637,7 +637,7 @@ void Video::OnFrameDecoded(const gfx::Size& resolution,
 }
 
 // static
-base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
+absl::optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     const std::string& profile) {
   if (profile == "H264PROFILE_BASELINE") {
     return H264PROFILE_BASELINE;
@@ -659,12 +659,12 @@ base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     return HEVCPROFILE_MAIN10;
   } else {
     VLOG(2) << profile << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 
 // static
-base::Optional<VideoCodec> Video::ConvertProfileToCodec(
+absl::optional<VideoCodec> Video::ConvertProfileToCodec(
     VideoCodecProfile profile) {
   if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
     return kCodecH264;
@@ -678,12 +678,12 @@ base::Optional<VideoCodec> Video::ConvertProfileToCodec(
     return kCodecHEVC;
   } else {
     VLOG(2) << GetProfileName(profile) << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 
 // static
-base::Optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
+absl::optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
     const std::string& pixel_format) {
   if (pixel_format == "I420") {
     return VideoPixelFormat::PIXEL_FORMAT_I420;
@@ -691,7 +691,7 @@ base::Optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
     return VideoPixelFormat::PIXEL_FORMAT_NV12;
   } else {
     VLOG(2) << pixel_format << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 }  // namespace test

@@ -213,7 +213,7 @@ class VideoResourceUpdaterTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestStreamTextureHardwareVideoFrame(
-      base::Optional<VideoFrameMetadata::CopyMode> copy_mode) {
+      absl::optional<VideoFrameMetadata::CopyMode> copy_mode) {
     scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
         PIXEL_FORMAT_ARGB, GL_TEXTURE_EXTERNAL_OES);
     video_frame->metadata().copy_mode = std::move(copy_mode);
@@ -577,7 +577,7 @@ TEST_F(VideoResourceUpdaterTest,
       CreateUpdaterForHardware(true);
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
-      CreateTestStreamTextureHardwareVideoFrame(base::nullopt);
+      CreateTestStreamTextureHardwareVideoFrame(absl::nullopt);
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
@@ -608,7 +608,7 @@ TEST_F(VideoResourceUpdaterTest,
       CreateUpdaterForHardware(true);
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
-      CreateTestStreamTextureHardwareVideoFrame(base::nullopt);
+      CreateTestStreamTextureHardwareVideoFrame(absl::nullopt);
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resources.type);
@@ -637,7 +637,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
-      CreateTestStreamTextureHardwareVideoFrame(base::nullopt);
+      CreateTestStreamTextureHardwareVideoFrame(absl::nullopt);
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
