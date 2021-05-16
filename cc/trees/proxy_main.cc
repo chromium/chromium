@@ -316,12 +316,14 @@ void ProxyMain::BeginMainFrame(
   // list in advance, and "painting" amounts to copying the Blink display list
   // to corresponding  cc display list. An exception is for painted scrollbars,
   // which paint eagerly during layer update.
+  recordreplay::Assert("ProxyMain::BeginMainFrame #4 %d", should_update_layers);
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
 
   // If updating the layers resulted in a content update, we need a commit.
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
+  recordreplay::Assert("ProxyMain::BeginMainFrame #5");
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId());
