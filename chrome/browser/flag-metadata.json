@@ -2736,7 +2736,27 @@
     "owners": [ "robsc", "napper", "jennyz", "thanhdng" ],
     "expiry_milestone": 98
   },
+   {
+    "name": "enforce-system-aec",
+    "owners": [ "peah" ],
+    "expiry_milestone": 100
+  },
   {
+    "name": "enforce-system-aec-agc",
+    "owners": [ "peah" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "enforce-system-aec-ns",
+    "owners": [ "peah" ],
+    "expiry_milestone": 100
+  },
+  {
+    "name": "enforce-system-aec-ns-agc",
+    "owners": [ "peah" ],
+    "expiry_milestone": 100
+  },
+ {
     "name": "enhanced_clipboard",
     "owners": ["newcomer@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 90

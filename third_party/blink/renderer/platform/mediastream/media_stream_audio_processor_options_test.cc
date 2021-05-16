@@ -9,13 +9,31 @@
 
 namespace blink {
 
+TEST(ConfigAutomaticGainControlTest, SystemAgcDeactivatesBrowserAgcs) {
+  webrtc::AudioProcessing::Config apm_config;
+  AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+  properties.system_gain_control_activated = true;
+
+  const double compression_gain_db = 10.0;
+  blink::AdaptiveGainController2Properties agc2_properties;
+
+  ConfigAutomaticGainControl(properties, agc2_properties, compression_gain_db,
+                             apm_config);
+  EXPECT_FALSE(apm_config.gain_controller1.enabled);
+  EXPECT_FALSE(apm_config.gain_controller2.enabled);
+}
+
 TEST(ConfigAutomaticGainControlTest, EnableDefaultAGC1) {
   webrtc::AudioProcessing::Config apm_config;
-  ConfigAutomaticGainControl(
-      /*agc_enabled=*/true,
-      /*experimental_agc_enabled=*/false,
-      /*agc2_properties=*/absl::nullopt,
-      /*compression_gain_db=*/absl::nullopt, apm_config);
+  AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = false;
+
+  ConfigAutomaticGainControl(properties,
+                             /*agc2_properties=*/absl::nullopt,
+                             /*compression_gain_db=*/absl::nullopt, apm_config);
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_EQ(
       apm_config.gain_controller1.mode,
@@ -29,10 +47,13 @@ TEST(ConfigAutomaticGainControlTest, EnableDefaultAGC1) {
 TEST(ConfigAutomaticGainControlTest, EnableFixedDigitalAGC2) {
   webrtc::AudioProcessing::Config apm_config;
   const double compression_gain_db = 10.0;
-  ConfigAutomaticGainControl(
-      /*agc_enabled=*/true,
-      /*experimental_agc_enabled=*/false,
-      /*agc2_properties=*/absl::nullopt, compression_gain_db, apm_config);
+  AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = false;
+
+  ConfigAutomaticGainControl(properties,
+                             /*agc2_properties=*/absl::nullopt,
+                             compression_gain_db, apm_config);
   EXPECT_FALSE(apm_config.gain_controller1.enabled);
   EXPECT_TRUE(apm_config.gain_controller2.enabled);
   EXPECT_FALSE(apm_config.gain_controller2.adaptive_digital.enabled);
@@ -43,6 +64,10 @@ TEST(ConfigAutomaticGainControlTest, EnableFixedDigitalAGC2) {
 TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
   webrtc::AudioProcessing::Config apm_config;
   blink::AdaptiveGainController2Properties agc2_properties;
+  AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+
   agc2_properties.vad_probability_attack = 0.2f;
   agc2_properties.use_peaks_not_rms = true;
   agc2_properties.level_estimator_speech_frames_threshold = 3;
@@ -56,10 +81,8 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
   agc2_properties.neon_allowed = true;
   const double compression_gain_db = 10.0;
 
-  ConfigAutomaticGainControl(
-      /*agc_enabled=*/true,
-      /*experimental_agc_enabled=*/true, agc2_properties, compression_gain_db,
-      apm_config);
+  ConfigAutomaticGainControl(properties, agc2_properties, compression_gain_db,
+                             apm_config);
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_EQ(
       apm_config.gain_controller1.mode,
@@ -98,7 +121,7 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
 
 TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
-  AudioProcessingProperties properties;
+  const AudioProcessingProperties properties;
   absl::optional<double> gain_control_compression_gain_db;
 
   PopulateApmConfig(&apm_config, properties,
@@ -121,7 +144,7 @@ TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
 
 TEST(PopulateApmConfigTest, SetGainsInConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
-  AudioProcessingProperties properties;
+  const AudioProcessingProperties properties;
   absl::optional<std::string> audio_processing_platform_config_json =
       "{\"gain_control_compression_gain_db\": 10, "
       "\"pre_amplifier_fixed_gain_factor\": 2.0}";
@@ -149,7 +172,7 @@ TEST(PopulateApmConfigTest, SetGainsInConfigJson) {
 
 TEST(PopulateApmConfigTest, SetNoiseSuppressionLevelInConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
-  AudioProcessingProperties properties;
+  const AudioProcessingProperties properties;
   absl::optional<std::string> audio_processing_platform_config_json =
       "{\"noise_suppression_level\": 3}";
   absl::optional<double> gain_control_compression_gain_db;
@@ -170,6 +193,30 @@ TEST(PopulateApmConfigTest, SetNoiseSuppressionLevelInConfigJson) {
   EXPECT_FALSE(
 #endif
       apm_config.echo_canceller.mobile_mode);
+}
+
+TEST(PopulateApmConfigTest, SystemNsDeactivatesBrowserNs) {
+  absl::optional<double> gain_control_compression_gain_db;
+
+  // Verify that the default value of `noise_suppression.enabled`
+  // is true, since otherwise this test does not work.
+  AudioProcessingProperties properties_without_system_ns;
+  properties_without_system_ns.system_noise_suppression_activated = false;
+  webrtc::AudioProcessing::Config apm_config_without_system_ns;
+  PopulateApmConfig(&apm_config_without_system_ns, properties_without_system_ns,
+                    /*audio_processing_platform_config_json=*/base::nullopt,
+                    &gain_control_compression_gain_db);
+  EXPECT_TRUE(apm_config_without_system_ns.noise_suppression.enabled);
+
+  // Verify that the presence of a system noise suppressor deactivates the
+  // browser counterpart.
+  AudioProcessingProperties properties_with_system_ns;
+  properties_with_system_ns.system_noise_suppression_activated = true;
+  webrtc::AudioProcessing::Config apm_config_with_system_ns;
+  PopulateApmConfig(&apm_config_with_system_ns, properties_with_system_ns,
+                    /*audio_processing_platform_config_json=*/base::nullopt,
+                    &gain_control_compression_gain_db);
+  EXPECT_FALSE(apm_config_with_system_ns.noise_suppression.enabled);
 }
 
 }  // namespace blink

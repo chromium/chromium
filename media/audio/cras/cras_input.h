@@ -76,6 +76,12 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   // Return true to use AEC in CRAS for this input stream.
   inline bool UseCrasAec() const;
 
+  // Return true to use NS in CRAS for this input stream.
+  inline bool UseCrasNs() const;
+
+  // Return true to use AGC in CRAS for this input stream.
+  inline bool UseCrasAgc() const;
+
   // Non-refcounted pointer back to the audio manager.
   // The AudioManager indirectly holds on to stream objects, so we don't
   // want circular references.  Additionally, stream objects live on the audio

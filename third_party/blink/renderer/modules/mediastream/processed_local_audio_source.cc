@@ -101,6 +101,19 @@ std::string GetAudioProcesingPropertiesLogString(
           base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)));
   return str;
 }
+
+// Returns whether system noise suppression is allowed to be used regardless of
+// whether the noise suppression constraint is set, or whether a browser-based
+// AEC is active. This is currently the default on at least MacOS but is not
+// allowed for ChromeOS setups.
+constexpr bool IsIndependentSystemNsAllowed() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#else
+  return true;
+#endif
+}
+
 }  // namespace
 
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
@@ -183,12 +196,22 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   bool device_is_modified = false;
 
   // Disable system echo cancellation if specified by
-  // |audio_processing_properties_|.
+  // |audio_processing_properties_|. Also disable any system noise suppression
+  // and automatic gain control to avoid those causing issues for the echo
+  // cancellation.
   if (audio_processing_properties_.echo_cancellation_type !=
           EchoCancellationType::kEchoCancellationSystem &&
       device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
     modified_device.input.set_effects(modified_device.input.effects() &
                                       ~media::AudioParameters::ECHO_CANCELLER);
+    if (!IsIndependentSystemNsAllowed()) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::NOISE_SUPPRESSION);
+    }
+    modified_device.input.set_effects(
+        modified_device.input.effects() &
+        ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
     device_is_modified = true;
   } else if (audio_processing_properties_.echo_cancellation_type ==
                  EchoCancellationType::kEchoCancellationSystem &&
@@ -203,14 +226,60 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     device_is_modified = true;
   }
 
-  // Disable noise suppression on the device if the properties explicitly
-  // specify to do so.
-  if (audio_processing_properties_.disable_hw_noise_suppression &&
-      (device().input.effects() & media::AudioParameters::NOISE_SUPPRESSION)) {
-    modified_device.input.set_effects(
-        modified_device.input.effects() &
-        ~media::AudioParameters::NOISE_SUPPRESSION);
-    device_is_modified = true;
+  // Optionally disable system noise suppression.
+  if (device().input.effects() & media::AudioParameters::NOISE_SUPPRESSION) {
+    // Disable noise suppression on the device if the properties explicitly
+    // specify to do so.
+    bool disable_system_noise_suppression =
+        audio_processing_properties_.disable_hw_noise_suppression;
+
+    if (!IsIndependentSystemNsAllowed()) {
+      // Disable noise suppression on the device if browser-based echo
+      // cancellation is active, since that otherwise breaks the AEC.
+      const bool browser_based_aec_active =
+          audio_processing_properties_.echo_cancellation_type ==
+          AudioProcessingProperties::EchoCancellationType::
+              kEchoCancellationAec3;
+      disable_system_noise_suppression =
+          disable_system_noise_suppression || browser_based_aec_active;
+
+      // Disable noise suppression on the device if the constraints
+      // dictate that.
+      disable_system_noise_suppression =
+          disable_system_noise_suppression ||
+          !audio_processing_properties_.goog_noise_suppression;
+    }
+
+    if (disable_system_noise_suppression) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::NOISE_SUPPRESSION);
+      device_is_modified = true;
+    }
+  }
+
+  // Optionally disable system automatic gain control.
+  if (device().input.effects() &
+      media::AudioParameters::AUTOMATIC_GAIN_CONTROL) {
+    // Disable automatic gain control on the device if browser-based echo
+    // cancellation is, since that otherwise breaks the AEC.
+    const bool browser_based_aec_active =
+        audio_processing_properties_.echo_cancellation_type ==
+        AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
+    bool disable_system_automatic_gain_control = browser_based_aec_active;
+
+    // Disable automatic gain control on the device if the constraints dictates
+    // that.
+    disable_system_automatic_gain_control =
+        disable_system_automatic_gain_control ||
+        !audio_processing_properties_.goog_auto_gain_control;
+
+    if (disable_system_automatic_gain_control) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
+      device_is_modified = true;
+    }
   }
 
   if (device_is_modified)
@@ -282,6 +351,26 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   }
   DVLOG(1) << params.AsHumanReadableString();
   DCHECK(params.IsValid());
+
+  // If system level echo cancellation is active, flag any other active system
+  // level effects to the media stream audio processor.
+  if (audio_processing_properties_.echo_cancellation_type ==
+      AudioProcessingProperties::EchoCancellationType::
+          kEchoCancellationSystem) {
+    if (!IsIndependentSystemNsAllowed()) {
+      if (audio_processing_properties_.goog_noise_suppression) {
+        audio_processing_properties_.system_noise_suppression_activated =
+            device().input.effects() &
+            media::AudioParameters::NOISE_SUPPRESSION;
+      }
+    }
+
+    if (audio_processing_properties_.goog_auto_gain_control) {
+      audio_processing_properties_.system_gain_control_activated =
+          device().input.effects() &
+          media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
+    }
+  }
 
   media::AudioSourceParameters source_params(device().session_id());
   blink::WebRtcLogMessage("Using APM in renderer process.");

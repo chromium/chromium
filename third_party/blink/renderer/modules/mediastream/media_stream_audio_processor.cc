@@ -638,10 +638,9 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
       agc2_properties->neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
           ::features::kWebRtcHybridAgc, "neon_allowed", true);
     }
-    blink::ConfigAutomaticGainControl(
-        properties.goog_auto_gain_control,
-        properties.goog_experimental_auto_gain_control, agc2_properties,
-        gain_control_compression_gain_db, apm_config);
+    blink::ConfigAutomaticGainControl(properties, agc2_properties,
+                                      gain_control_compression_gain_db,
+                                      apm_config);
   }
 
   if (goog_typing_detection) {

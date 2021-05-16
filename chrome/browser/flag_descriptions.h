@@ -2394,6 +2394,18 @@ extern const char kEnableAppDataSearchDescription[];
 extern const char kEnableAppGridGhostName[];
 extern const char kEnableAppGridGhostDescription[];
 
+extern const char kCrOSEnforceSystemAecName[];
+extern const char kCrOSEnforceSystemAecDescription[];
+
+extern const char kCrOSEnforceSystemAecAgcName[];
+extern const char kCrOSEnforceSystemAecAgcDescription[];
+
+extern const char kCrOSEnforceSystemAecNsName[];
+extern const char kCrOSEnforceSystemAecNsDescription[];
+
+extern const char kCrOSEnforceSystemAecNsAgcName[];
+extern const char kCrOSEnforceSystemAecNsAgcDescription[];
+
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 

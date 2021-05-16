@@ -22,6 +22,10 @@ MEDIA_EXPORT extern const base::Feature kUseAAudioDriver;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAEC;
 MEDIA_EXPORT extern const base::Feature kCrOSSystemAECDeactivatedGroups;
+MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNsAgc;
+MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecNs;
+MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecAgc;
+MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAec;
 #endif
 
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)

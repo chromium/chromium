@@ -185,17 +185,26 @@ void StopEchoCancellationDump(AudioProcessing* audio_processing) {
 }
 
 void ConfigAutomaticGainControl(
-    bool agc_enabled,
-    bool experimental_agc_enabled,
+    const AudioProcessingProperties& properties,
     absl::optional<AdaptiveGainController2Properties> agc2_properties,
     absl::optional<double> compression_gain_db,
     AudioProcessing::Config& apm_config) {
-  const bool use_fixed_digital_agc2 = agc_enabled &&
-                                      !experimental_agc_enabled &&
-                                      compression_gain_db.has_value();
+  // If system level gain control is activated, turn off all gain control
+  // functionality in WebRTC.
+  if (properties.system_gain_control_activated) {
+    apm_config.gain_controller1.enabled = false;
+    apm_config.gain_controller2.enabled = false;
+    apm_config.gain_controller2.adaptive_digital.enabled = false;
+    return;
+  }
+
+  const bool use_fixed_digital_agc2 =
+      properties.goog_auto_gain_control &&
+      !properties.goog_experimental_auto_gain_control &&
+      compression_gain_db.has_value();
   const bool use_hybrid_agc = agc2_properties.has_value();
-  const bool agc1_enabled =
-      agc_enabled && (use_hybrid_agc || !use_fixed_digital_agc2);
+  const bool agc1_enabled = properties.goog_auto_gain_control &&
+                            (use_hybrid_agc || !use_fixed_digital_agc2);
 
   // Configure AGC1.
   if (agc1_enabled) {
@@ -209,7 +218,7 @@ void ConfigAutomaticGainControl(
   }
 
   // Configure AGC2.
-  if (experimental_agc_enabled) {
+  if (properties.goog_experimental_auto_gain_control) {
     // Experimental AGC is enabled. Hybrid AGC may or may not be enabled. Config
     // AGC2 with adaptive mode and the given options, while ignoring
     // |use_fixed_digital_agc2|.
@@ -285,7 +294,10 @@ void PopulateApmConfig(
         pre_amplifier_fixed_gain_factor.value();
   }
 
-  if (properties.goog_noise_suppression) {
+  DCHECK(!(!properties.goog_noise_suppression &&
+           properties.system_noise_suppression_activated));
+  if (properties.goog_noise_suppression &&
+      !properties.system_noise_suppression_activated) {
     apm_config->noise_suppression.enabled = true;
     apm_config->noise_suppression.level =
         noise_suppression_level.value_or(NoiseSuppression::kHigh);

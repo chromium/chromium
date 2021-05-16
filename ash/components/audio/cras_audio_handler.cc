@@ -1046,6 +1046,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetDefaultOutputBufferSizeInternal();
   GetSystemAecSupported();
   GetSystemAecGroupId();
+  GetSystemNsSupported();
+  GetSystemAgcSupported();
   GetNodes();
   GetNumberOfOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
@@ -1889,7 +1891,7 @@ bool CrasAudioHandler::system_aec_supported() const {
 }
 
 // GetSystemAecSupported() is only called in the same thread
-// as the CrasAudioHanler constructor. We are safe here without
+// as the CrasAudioHandler constructor. We are safe here without
 // thread check, because unittest may not have the task runner
 // for the current thread.
 void CrasAudioHandler::GetSystemAecSupported() {
@@ -1913,7 +1915,7 @@ int32_t CrasAudioHandler::system_aec_group_id() const {
 }
 
 // GetSystemAecGroupId() is only called in the same thread
-// as the CrasAudioHanler constructor. We are safe here without
+// as the CrasAudioHandler constructor. We are safe here without
 // thread check, because unittest may not have the task runner
 // for the current thread.
 void CrasAudioHandler::GetSystemAecGroupId() {
@@ -1930,6 +1932,54 @@ void CrasAudioHandler::HandleGetSystemAecGroupId(
     return;
   }
   system_aec_group_id_ = system_aec_group_id.value();
+}
+
+bool CrasAudioHandler::system_ns_supported() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return system_ns_supported_;
+}
+
+// GetSystemNsSupported() is only called in the same thread
+// as the CrasAudioHandler constructor. We are safe here without
+// thread check, because unittest may not have the task runner
+// for the current thread.
+void CrasAudioHandler::GetSystemNsSupported() {
+  CrasAudioClient::Get()->GetSystemNsSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetSystemNsSupported,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetSystemNsSupported(
+    base::Optional<bool> system_ns_supported) {
+  if (!system_ns_supported.has_value()) {
+    LOG(ERROR) << "Failed to retrieve system ns supported";
+    return;
+  }
+  system_ns_supported_ = system_ns_supported.value();
+}
+
+bool CrasAudioHandler::system_agc_supported() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return system_agc_supported_;
+}
+
+// GetSystemAgcSupported() is only called in the same thread
+// as the CrasAudioHandler constructor. We are safe here without
+// thread check, because unittest may not have the task runner
+// for the current thread.
+void CrasAudioHandler::GetSystemAgcSupported() {
+  CrasAudioClient::Get()->GetSystemAgcSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetSystemAgcSupported,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetSystemAgcSupported(
+    base::Optional<bool> system_agc_supported) {
+  if (!system_agc_supported.has_value()) {
+    LOG(ERROR) << "Failed to retrieve system agc supported";
+    return;
+  }
+  system_agc_supported_ = system_agc_supported.value();
 }
 
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {

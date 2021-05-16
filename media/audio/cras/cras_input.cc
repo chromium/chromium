@@ -126,6 +126,14 @@ inline bool CrasInputStream::UseCrasAec() const {
   return params_.effects() & AudioParameters::ECHO_CANCELLER;
 }
 
+inline bool CrasInputStream::UseCrasNs() const {
+  return params_.effects() & AudioParameters::NOISE_SUPPRESSION;
+}
+
+inline bool CrasInputStream::UseCrasAgc() const {
+  return params_.effects() & AudioParameters::AUTOMATIC_GAIN_CONTROL;
+}
+
 void CrasInputStream::Start(AudioInputCallback* callback) {
   DCHECK(client_);
   DCHECK(callback);
@@ -211,6 +219,12 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   if (UseCrasAec())
     libcras_stream_params_enable_aec(stream_params);
+
+  if (UseCrasNs())
+    libcras_stream_params_enable_ns(stream_params);
+
+  if (UseCrasAgc())
+    libcras_stream_params_enable_agc(stream_params);
 
   // Adding the stream will start the audio callbacks.
   if (libcras_client_add_pinned_stream(client_, pin_device_, &stream_id_,

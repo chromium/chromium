@@ -140,6 +140,16 @@ void FakeCrasAudioClient::GetSystemAecGroupId(
   std::move(callback).Run(1);
 }
 
+void FakeCrasAudioClient::GetSystemNsSupported(
+    DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(false);
+}
+
+void FakeCrasAudioClient::GetSystemAgcSupported(
+    DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(false);
+}
+
 void FakeCrasAudioClient::GetNodes(DBusMethodCallback<AudioNodeList> callback) {
   std::move(callback).Run(node_list_);
 }

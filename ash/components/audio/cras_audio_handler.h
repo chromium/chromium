@@ -349,12 +349,18 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
     return input_muted_by_microphone_mute_switch_;
   }
 
-  // Returns if system AEC is supported in CRAS.
+  // Returns if system AEC is supported in CRAS or not.
   bool system_aec_supported() const;
 
   // Returns the system AEC group ID. If no group ID is specified, -1 is
   // returned.
   int32_t system_aec_group_id() const;
+
+  // Returns if system NS is supported in CRAS or not.
+  bool system_ns_supported() const;
+
+  // Returns if system AGC is supported in CRAS or not.
+  bool system_agc_supported() const;
 
   // Asks  CRAS to resend BluetoothBatteryChanged signal, used in cases when
   // Chrome cleans up the stored battery information but still has the device
@@ -609,6 +615,24 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handle dbus callback for GetSystemAecGroupId.
   void HandleGetSystemAecGroupId(absl::optional<int32_t> system_aec_group_id);
 
+  // Calling dbus to get system NS supported flag.
+  void GetSystemNsSupported();
+
+  // Calling dbus to get system NS supported flag on main thread.
+  void GetSystemNsSupportedOnMainThread();
+
+  // Handle dbus callback for GetSystemNsSupported.
+  void HandleGetSystemNsSupported(base::Optional<bool> system_ns_supported);
+
+  // Calling dbus to get system AGC supported flag.
+  void GetSystemAgcSupported();
+
+  // Calling dbus to get system AGC supported flag on main thread.
+  void GetSystemAgcSupportedOnMainThread();
+
+  // Handle dbus callback for GetSystemAgcSupported.
+  void HandleGetSystemAgcSupported(base::Optional<bool> system_agc_supported);
+
   void OnVideoCaptureStartedOnMainThread(media::VideoFacingMode facing);
   void OnVideoCaptureStoppedOnMainThread(media::VideoFacingMode facing);
 
@@ -672,6 +696,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   bool system_aec_supported_ = false;
   int32_t system_aec_group_id_ = kSystemAecGroupIdNotAvailable;
+  bool system_ns_supported_ = false;
+  bool system_agc_supported_ = false;
 
   int num_active_output_streams_ = 0;
 

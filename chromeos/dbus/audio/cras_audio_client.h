@@ -103,6 +103,12 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets any available group ID for the system AEC
   virtual void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) = 0;
 
+  // Gets if system NS is supported.
+  virtual void GetSystemNsSupported(DBusMethodCallback<bool> callback) = 0;
+
+  // Gets if system AGC is supported.
+  virtual void GetSystemAgcSupported(DBusMethodCallback<bool> callback) = 0;
+
   // Gets an array of audio input and output nodes.
   virtual void GetNodes(DBusMethodCallback<AudioNodeList> callback) = 0;
 

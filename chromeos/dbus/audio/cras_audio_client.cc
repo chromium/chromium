@@ -181,6 +181,24 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetSystemNsSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSystemNsSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetSystemAgcSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetSystemAgcSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetNodes(DBusMethodCallback<AudioNodeList> callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface, cras::kGetNodes);
     cras_proxy_->CallMethod(
@@ -699,6 +717,44 @@ class CrasAudioClientImpl : public CrasAudioClient {
     }
 
     std::move(callback).Run(system_aec_group_id);
+  }
+
+  void OnGetSystemNsSupported(DBusMethodCallback<bool> callback,
+                              dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetSystemNsSupported;
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+    bool system_ns_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&system_ns_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(system_ns_supported);
+  }
+
+  void OnGetSystemAgcSupported(DBusMethodCallback<bool> callback,
+                               dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetSystemAgcSupported;
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+    bool system_agc_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&system_agc_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(system_agc_supported);
   }
 
   void OnGetNodes(DBusMethodCallback<AudioNodeList> callback,

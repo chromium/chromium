@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetDefaultOutputBufferSize(DBusMethodCallback<int> callback) override;
   void GetSystemAecSupported(DBusMethodCallback<bool> callback) override;
   void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) override;
+  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override;
+  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override;
   void GetNodes(DBusMethodCallback<AudioNodeList> callback) override;
   void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) override;

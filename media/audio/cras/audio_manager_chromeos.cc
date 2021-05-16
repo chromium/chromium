@@ -100,6 +100,42 @@ void ProcessVirtualDeviceName(AudioDeviceNames* device_names,
   }
 }
 
+// Collects flags values for whether, and in what way, the AEC, NS or AGC
+// effects should be enforced in spite of them not being flagged as supported by
+// the board.
+void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
+                                  bool& enforce_system_ns,
+                                  bool& enforce_system_agc,
+                                  bool& tuned_system_aec_allowed) {
+  const bool enforce_system_aec_ns_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNsAgc);
+  const bool enforce_system_aec_ns_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNs);
+  const bool enforce_system_aec_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecAgc);
+  const bool enforce_system_aec_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAec);
+
+  enforce_system_aec =
+      enforce_system_aec_feature || enforce_system_aec_ns_agc_feature ||
+      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature;
+  enforce_system_ns =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_ns_feature;
+  enforce_system_agc =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_agc_feature;
+
+  tuned_system_aec_allowed =
+      base::FeatureList::IsEnabled(features::kCrOSSystemAEC);
+}
+
+// Checks if a system AEC with a specific group ID is flagged to be deactivated
+// by the field trial.
+bool IsSystemAecDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kCrOSSystemAECDeactivatedGroups, std::to_string(aec_group_id),
+      false);
+}
+
 }  // namespace
 
 bool AudioManagerChromeOS::HasAudioOutputDevices() {
@@ -175,44 +211,24 @@ AudioParameters AudioManagerChromeOS::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
+  // Check if the device has keyboard.
+  AudioDeviceList devices;
+  GetAudioDevices(&devices);
+  const bool has_keyboard = HasKeyboardMic(devices);
+
+  // Retrieve buffer size.
   int user_buffer_size = GetUserBufferSize();
-  int buffer_size =
-      user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
+  user_buffer_size =
+      user_buffer_size != 0 ? user_buffer_size : kDefaultInputBufferSize;
+
+  // Retrieve the board support in terms of APM effects and properties.
+  const SystemAudioProcessingInfo system_apm_info =
+      GetSystemApmEffectsSupportedPerBoard();
 
   // TODO(hshi): Fine-tune audio parameters based on |device_id|. The optimal
   // parameters for the loopback stream may differ from the default.
-  AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
-      kDefaultSampleRate, buffer_size,
-      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
-                                            limits::kMaxAudioBufferSize));
-  AudioDeviceList devices;
-  GetAudioDevices(&devices);
-  if (HasKeyboardMic(devices))
-    params.set_effects(AudioParameters::KEYBOARD_MIC);
-
-  // Allow experimentation with system echo cancellation with all devices,
-  // but enable it by default on devices that actually support it.
-  params.set_effects(params.effects() |
-                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-  if (base::FeatureList::IsEnabled(features::kCrOSSystemAEC)) {
-    if (GetSystemAecSupportedPerBoard()) {
-      const int32_t aec_group_id = GetSystemAecGroupIdPerBoard();
-
-      // Check if the system AEC has a group ID which is flagged to be
-      // deactivated by the field trial.
-      const bool system_aec_deactivated =
-          base::GetFieldTrialParamByFeatureAsBool(
-              features::kCrOSSystemAECDeactivatedGroups,
-              std::to_string(aec_group_id), false);
-
-      if (!system_aec_deactivated) {
-        params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
-      }
-    }
-  }
-
-  return params;
+  return GetStreamParametersForSystem(user_buffer_size, has_keyboard,
+                                      system_apm_info);
 }
 
 std::string AudioManagerChromeOS::GetAssociatedOutputDeviceID(
@@ -295,46 +311,28 @@ int AudioManagerChromeOS::GetDefaultOutputBufferSizePerBoard() {
   return static_cast<int>(buffer_size);
 }
 
-bool AudioManagerChromeOS::GetSystemAecSupportedPerBoard() {
+AudioManagerChromeOS::SystemAudioProcessingInfo
+AudioManagerChromeOS::GetSystemApmEffectsSupportedPerBoard() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  bool system_aec_supported = false;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  if (main_task_runner_->BelongsToCurrentThread()) {
-    // Unittest may use the same thread for audio thread.
-    GetSystemAecSupportedOnMainThread(&system_aec_supported, &event);
-  } else {
-    // Using base::Unretained is safe here because we wait for callback be
-    // executed in main thread before local variables are destructed.
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioManagerChromeOS::GetSystemAecSupportedOnMainThread,
-                       weak_this_, base::Unretained(&system_aec_supported),
-                       base::Unretained(&event)));
-  }
-  WaitEventOrShutdown(&event);
-  return system_aec_supported;
-}
 
-int32_t AudioManagerChromeOS::GetSystemAecGroupIdPerBoard() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  int32_t group_id = CrasAudioHandler::kSystemAecGroupIdNotAvailable;
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+  SystemAudioProcessingInfo system_apm_info;
   if (main_task_runner_->BelongsToCurrentThread()) {
     // Unittest may use the same thread for audio thread.
-    GetSystemAecGroupIdOnMainThread(&group_id, &event);
+    GetSystemApmEffectsSupportedOnMainThread(&system_apm_info, &event);
   } else {
     // Using base::Unretained is safe here because we wait for callback be
     // executed in main thread before local variables are destructed.
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&AudioManagerChromeOS::GetSystemAecGroupIdOnMainThread,
-                       weak_this_, base::Unretained(&group_id),
-                       base::Unretained(&event)));
+        base::BindOnce(
+            &AudioManagerChromeOS::GetSystemApmEffectsSupportedOnMainThread,
+            weak_this_, base::Unretained(&system_apm_info),
+            base::Unretained(&event)));
   }
   WaitEventOrShutdown(&event);
-  return group_id;
+  return system_apm_info;
 }
 
 AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
@@ -516,22 +514,20 @@ void AudioManagerChromeOS::GetDefaultOutputBufferSizeOnMainThread(
   event->Signal();
 }
 
-void AudioManagerChromeOS::GetSystemAecSupportedOnMainThread(
-    bool* system_aec_supported,
+void AudioManagerChromeOS::GetSystemApmEffectsSupportedOnMainThread(
+    SystemAudioProcessingInfo* system_apm_info,
     base::WaitableEvent* event) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (CrasAudioHandler::Get()) {
-    *system_aec_supported = CrasAudioHandler::Get()->system_aec_supported();
+    system_apm_info->aec_supported =
+        CrasAudioHandler::Get()->system_aec_supported();
+    system_apm_info->aec_group_id =
+        CrasAudioHandler::Get()->system_aec_group_id();
+    system_apm_info->ns_supported =
+        CrasAudioHandler::Get()->system_ns_supported();
+    system_apm_info->agc_supported =
+        CrasAudioHandler::Get()->system_agc_supported();
   }
-  event->Signal();
-}
-
-void AudioManagerChromeOS::GetSystemAecGroupIdOnMainThread(
-    int32_t* group_id,
-    base::WaitableEvent* event) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  if (CrasAudioHandler::Get())
-    *group_id = CrasAudioHandler::Get()->system_aec_group_id();
   event->Signal();
 }
 
@@ -542,6 +538,68 @@ void AudioManagerChromeOS::WaitEventOrShutdown(base::WaitableEvent* event) {
 
 enum CRAS_CLIENT_TYPE AudioManagerChromeOS::GetClientType() {
   return CRAS_CLIENT_TYPE_CHROME;
+}
+
+AudioParameters AudioManagerChromeOS::GetStreamParametersForSystem(
+    int user_buffer_size,
+    bool has_keyboard,
+    const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info) {
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
+      kDefaultSampleRate, user_buffer_size,
+      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
+                                            limits::kMaxAudioBufferSize));
+  if (has_keyboard)
+    params.set_effects(AudioParameters::KEYBOARD_MIC);
+
+  bool enforce_system_aec;
+  bool enforce_system_ns;
+  bool enforce_system_agc;
+  bool tuned_system_aec_allowed;
+  RetrieveSystemEffectFeatures(enforce_system_aec, enforce_system_ns,
+                               enforce_system_agc, tuned_system_aec_allowed);
+
+  // Activation of the system AEC. Allow experimentation with system AEC with
+  // all devices, but enable it by default on devices that actually support it.
+  params.set_effects(params.effects() |
+                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+
+  // Rephrase the field aec_supported to properly reflect its meaning in this
+  // context (since it currently signals whether an CrAS APM with tuned settings
+  // is available).
+  const bool tuned_system_apm_available = system_apm_info.aec_supported;
+
+  // Don't use the system AEC if it is deactivated for this group ID. Also never
+  // activate NS nor AGC for this board if the AEC is not activated, since this
+  // will cause issues for the Browser AEC.
+  bool use_system_aec =
+      (tuned_system_apm_available && tuned_system_aec_allowed) ||
+      enforce_system_aec;
+
+  if (!use_system_aec || IsSystemAecDeactivated(system_apm_info.aec_group_id)) {
+    return params;
+  }
+
+  // Activation of the system AEC.
+  params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
+
+  // Don't use system NS or AGC if the AEC has board-specific tunings.
+  if (tuned_system_apm_available) {
+    return params;
+  }
+
+  // Activation of the system NS.
+  if (system_apm_info.ns_supported || enforce_system_ns) {
+    params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
+  }
+
+  // Activation of the system AGC.
+  if (system_apm_info.agc_supported || enforce_system_agc) {
+    params.set_effects(params.effects() |
+                       AudioParameters::AUTOMATIC_GAIN_CONTROL);
+  }
+
+  return params;
 }
 
 }  // namespace media
