@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
-  DeprecationReportBody body("test_id", base::nullopt, "test_message");
+  DeprecationReportBody body("test_id", absl::nullopt, "test_message");
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);

@@ -1621,12 +1621,12 @@ InspectorOverlayAgent::ToFlexItemHighlightConfig(
 }
 
 // static
-base::Optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
+absl::optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
     protocol::Overlay::LineStyle* config) {
   if (!config) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<LineStyle> line_style = LineStyle();
+  absl::optional<LineStyle> line_style = LineStyle();
   line_style->color = InspectorDOMAgent::ParseColor(config->getColor(nullptr));
   line_style->pattern = config->getPattern("solid");
 
@@ -1634,12 +1634,12 @@ base::Optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
 }
 
 // static
-base::Optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
+absl::optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
     protocol::Overlay::BoxStyle* config) {
   if (!config) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<BoxStyle> box_style = BoxStyle();
+  absl::optional<BoxStyle> box_style = BoxStyle();
   box_style->fill_color =
       InspectorDOMAgent::ParseColor(config->getFillColor(nullptr));
   box_style->hatch_color =

@@ -850,8 +850,8 @@ PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
   // However for grid items the containing block is the grid area, so offsets
   // should be resolved against that:
   // https://drafts.csswg.org/css-grid/#grid-item-sizing
-  base::Optional<LayoutUnit> left;
-  base::Optional<LayoutUnit> right;
+  absl::optional<LayoutUnit> left;
+  absl::optional<LayoutUnit> right;
   if (!StyleRef().Left().IsAuto() || !StyleRef().Right().IsAuto()) {
     LayoutUnit available_width = HasOverrideContainingBlockContentWidth()
                                      ? OverrideContainingBlockContentWidth()
@@ -898,8 +898,8 @@ PhysicalOffset LayoutBoxModelObject::RelativePositionOffset() const {
   // Another exception is a grid item, as the containing block is the grid area:
   // https://drafts.csswg.org/css-grid/#grid-item-sizing
 
-  base::Optional<LayoutUnit> top;
-  base::Optional<LayoutUnit> bottom;
+  absl::optional<LayoutUnit> top;
+  absl::optional<LayoutUnit> bottom;
   bool has_override_containing_block_content_height =
       HasOverrideContainingBlockContentHeight();
   if (!StyleRef().Top().IsAuto() &&

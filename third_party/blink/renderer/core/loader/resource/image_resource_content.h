@@ -115,7 +115,7 @@ class CORE_EXPORT ImageResourceContent final
   base::TimeTicks LoadResponseEnd() const;
   bool IsAccessAllowed() const;
   const ResourceResponse& GetResponse() const;
-  base::Optional<ResourceError> GetResourceError() const;
+  absl::optional<ResourceError> GetResourceError() const;
   // DEPRECATED: ImageResourceContents consumers shouldn't need to worry about
   // whether the underlying Resource is being revalidated.
   bool IsCacheValidator() const;

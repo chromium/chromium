@@ -21,7 +21,7 @@ namespace blink {
 // static
 BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
     MessageEvent* message_event,
-    base::Optional<base::UnguessableToken> cluster_id) {
+    absl::optional<base::UnguessableToken> cluster_id) {
   BlinkTransferableMessage result;
   SerializedScriptValue* serialized_script_value =
       message_event->DataAsSerializedScriptValue();
@@ -97,7 +97,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
             source_image_bitmap_contents_array.size()));
 
     for (auto& contents : image_bitmap_contents_array) {
-      base::Optional<SkBitmap> sk_bitmap = ToSkBitmap(contents);
+      absl::optional<SkBitmap> sk_bitmap = ToSkBitmap(contents);
       if (!sk_bitmap)
         continue;
 
@@ -219,7 +219,7 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
   return UnacceleratedStaticBitmapImage::Create(std::move(image));
 }
 
-base::Optional<SkBitmap> ToSkBitmap(
+absl::optional<SkBitmap> ToSkBitmap(
     const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image) {
   const sk_sp<SkImage> image =
       static_bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
@@ -228,7 +228,7 @@ base::Optional<SkBitmap> ToSkBitmap(
                    &result, SkImage::LegacyBitmapMode::kRO_LegacyBitmapMode)) {
     return result;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace blink

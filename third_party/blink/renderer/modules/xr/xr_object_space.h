@@ -16,11 +16,11 @@ class XRSession;
 
 // Helper class that returns an XRSpace that tracks the position of object of
 // type T (for example XRPlane, XRAnchor). The type T has to have a
-// MojoFromObject() method, returning a base::Optional<TransformationMatrix>,
+// MojoFromObject() method, returning a absl::optional<TransformationMatrix>,
 // and IsStationary() method returning true if the object is supposed to be
 // treated as stationary for the purposes of anchor creation.
 //
-// If the object's MojoFromObject() method returns a base::nullopt, it means
+// If the object's MojoFromObject() method returns a absl::nullopt, it means
 // that the object is not localizable in the current frame (i.e. its pose is
 // unknown) - the `frame.getPose(objectSpace, otherSpace)` will return null.
 // That does not necessarily mean that object tracking is lost - it may be that
@@ -33,11 +33,11 @@ class XRObjectSpace final : public XRSpace {
         object_(object),
         is_stationary_(object->IsStationary()) {}
 
-  base::Optional<TransformationMatrix> MojoFromNative() override {
+  absl::optional<TransformationMatrix> MojoFromNative() override {
     return object_->MojoFromObject();
   }
 
-  base::Optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
+  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
       const override {
     return XRNativeOriginInformation::Create(object_);
   }

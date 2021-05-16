@@ -315,7 +315,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool cursor_overridden_;
   Member<ExternalDateTimeChooser> external_date_time_chooser_;
   bool did_request_non_empty_tool_tip_;
-  base::Optional<bool> before_unload_confirm_panel_result_for_testing_;
+  absl::optional<bool> before_unload_confirm_panel_result_for_testing_;
 
   FRIEND_TEST_ALL_PREFIXES(FileChooserQueueTest, DerefQueuedChooser);
 };

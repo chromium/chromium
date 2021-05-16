@@ -76,7 +76,7 @@ class HeapSizeCache {
   }
 
   void SetTickClockForTesting(const base::TickClock* clock) { clock_ = clock; }
-  void ResetLastUpdateTimeForTesting() { last_update_time_ = base::nullopt; }
+  void ResetLastUpdateTimeForTesting() { last_update_time_ = absl::nullopt; }
 
  private:
   void MaybeUpdate(MemoryInfo::Precision precision) {
@@ -105,7 +105,7 @@ class HeapSizeCache {
     info_.js_heap_size_limit = QuantizeMemorySize(info_.js_heap_size_limit);
   }
 
-  base::Optional<base::TimeTicks> last_update_time_;
+  absl::optional<base::TimeTicks> last_update_time_;
   const base::TickClock* clock_;
 
   HeapInfo info_;

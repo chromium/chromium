@@ -65,7 +65,7 @@ void MojoAudioOutputIPC::RequestDeviceAuthorization(
 void MojoAudioOutputIPC::CreateStream(
     media::AudioOutputIPCDelegate* delegate,
     const media::AudioParameters& params,
-    const base::Optional<base::UnguessableToken>& processing_id) {
+    const absl::optional<base::UnguessableToken>& processing_id) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(delegate);
   DCHECK(!StreamCreationRequested());
@@ -121,7 +121,7 @@ void MojoAudioOutputIPC::CloseStream() {
   receiver_.reset();
   delegate_ = nullptr;
   expected_state_ = kPaused;
-  volume_ = base::nullopt;
+  volume_ = absl::nullopt;
 
   // Cancel any pending callbacks for this stream.
   weak_factory_.InvalidateWeakPtrs();
@@ -201,7 +201,7 @@ void MojoAudioOutputIPC::DoRequestDeviceAuthorization(
                 "sizeof(int) == sizeof(int32_t)");
   factory->RequestDeviceAuthorization(
       MakeProviderReceiver(),
-      session_id.is_empty() ? base::Optional<base::UnguessableToken>()
+      session_id.is_empty() ? absl::optional<base::UnguessableToken>()
                             : session_id,
       String::FromUTF8(device_id), std::move(callback));
 }

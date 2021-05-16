@@ -133,7 +133,7 @@ class ScrollAnchorTest : public testing::WithParamInterface<bool>,
     scrollbar_drag_point_.reset();
   }
 
-  base::Optional<gfx::PointF> scrollbar_drag_point_;
+  absl::optional<gfx::PointF> scrollbar_drag_point_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ScrollAnchorTest, testing::Bool());

@@ -96,19 +96,19 @@ Document* V8MetricsRecorder::GetDocument(
       ->document();
 }
 
-base::Optional<V8MetricsRecorder::UkmRecorderAndSourceId>
+absl::optional<V8MetricsRecorder::UkmRecorderAndSourceId>
 V8MetricsRecorder::GetUkmRecorderAndSourceId(
     v8::metrics::Recorder::ContextId context_id) {
   DCHECK(IsMainThread());
   if (!isolate_)
-    return base::Optional<UkmRecorderAndSourceId>();
+    return absl::optional<UkmRecorderAndSourceId>();
   Document* document = GetDocument(context_id);
   if (!document)
-    return base::Optional<UkmRecorderAndSourceId>();
+    return absl::optional<UkmRecorderAndSourceId>();
   ukm::UkmRecorder* ukm_recorder = document->UkmRecorder();
   if (!ukm_recorder)
-    return base::Optional<UkmRecorderAndSourceId>();
-  return base::Optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
+    return absl::optional<UkmRecorderAndSourceId>();
+  return absl::optional<UkmRecorderAndSourceId>(absl::in_place, ukm_recorder,
                                                 document->UkmSourceID());
 }
 

@@ -342,7 +342,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to
   // |virtual_time_pauser|.
-  base::Optional<ResourceRequestBlockedReason> PrepareRequest(
+  absl::optional<ResourceRequestBlockedReason> PrepareRequest(
       FetchParameters&,
       const ResourceFactory&,
       WebScopedVirtualTimePauser& virtual_time_pauser);

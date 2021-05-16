@@ -223,7 +223,7 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
       frame_, kWebNavigationTypeOther, std::move(navigation_params),
       std::move(policy_container), nullptr /* extra_data */);
 
-  CommitDocumentLoader(new_document_loader, base::nullopt, nullptr,
+  CommitDocumentLoader(new_document_loader, absl::nullopt, nullptr,
                        CommitReason::kInitialization);
 
   frame_->GetDocument()->CancelParsing();
@@ -306,7 +306,7 @@ void FrameLoader::SaveScrollState() {
 
 void FrameLoader::DispatchUnloadEvent(
     SecurityOrigin* committing_origin,
-    base::Optional<Document::UnloadEventTiming>* timing) {
+    absl::optional<Document::UnloadEventTiming>* timing) {
   FrameNavigationDisabler navigation_disabler(*frame_);
   SaveScrollState();
 
@@ -429,7 +429,7 @@ void FrameLoader::DidFinishSameDocumentNavigation(
   DCHECK(!state_object || frame_load_type == WebFrameLoadType::kBackForward);
 
   // onpopstate might change view state, so stash for later restore.
-  base::Optional<HistoryItem::ViewState> view_state;
+  absl::optional<HistoryItem::ViewState> view_state;
   if (history_item) {
     view_state = history_item->GetViewState();
   }
@@ -998,7 +998,7 @@ void FrameLoader::CommitNavigation(
     }
   }
 
-  base::Optional<Document::UnloadEventTiming> unload_timing;
+  absl::optional<Document::UnloadEventTiming> unload_timing;
   FrameSwapScope frame_swap_scope(frame_owner);
   {
     base::AutoReset<bool> scoped_committing(&committing_navigation_, true);
@@ -1129,7 +1129,7 @@ void FrameLoader::DidAccessInitialDocument() {
 
 bool FrameLoader::DetachDocument(
     SecurityOrigin* committing_origin,
-    base::Optional<Document::UnloadEventTiming>* timing) {
+    absl::optional<Document::UnloadEventTiming>* timing) {
   DCHECK(frame_->GetDocument());
   DCHECK(document_loader_);
 
@@ -1185,7 +1185,7 @@ bool FrameLoader::DetachDocument(
 
 void FrameLoader::CommitDocumentLoader(
     DocumentLoader* document_loader,
-    const base::Optional<Document::UnloadEventTiming>& unload_timing,
+    const absl::optional<Document::UnloadEventTiming>& unload_timing,
     HistoryItem* previous_history_item,
     CommitReason commit_reason) {
   document_loader_ = document_loader;
@@ -1269,7 +1269,7 @@ String FrameLoader::UserAgent() const {
   return user_agent;
 }
 
-base::Optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
+absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
     const {
   return Client()->UserAgentMetadata();
 }

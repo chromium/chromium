@@ -725,7 +725,7 @@ WebString WebLocalFrameImpl::AssignedName() const {
 }
 
 ui::AXTreeID WebLocalFrameImpl::GetAXTreeID() const {
-  const base::Optional<base::UnguessableToken>& embedding_token =
+  const absl::optional<base::UnguessableToken>& embedding_token =
       GetEmbeddingToken();
   if (embedding_token && !embedding_token->is_empty())
     return ui::AXTreeID::FromToken(embedding_token.value());
@@ -860,7 +860,7 @@ void WebLocalFrameImpl::SetAdEvidence(
   GetFrame()->SetIsAdSubframe(ad_frame_type);
 }
 
-const base::Optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
+const absl::optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
   DCHECK(GetFrame());
   return GetFrame()->AdEvidence();
 }
@@ -2319,7 +2319,7 @@ void WebLocalFrameImpl::SetEmbeddingToken(
   frame_->SetEmbeddingToken(embedding_token);
 }
 
-const base::Optional<base::UnguessableToken>&
+const absl::optional<base::UnguessableToken>&
 WebLocalFrameImpl::GetEmbeddingToken() const {
   return frame_->GetEmbeddingToken();
 }
@@ -2550,7 +2550,7 @@ void WebLocalFrameImpl::ShowContextMenuFromExternal(
 void WebLocalFrameImpl::ShowContextMenu(
     mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
     const blink::ContextMenuData& data,
-    const base::Optional<gfx::Point>& host_context_menu_location) {
+    const absl::optional<gfx::Point>& host_context_menu_location) {
   UntrustworthyContextMenuParams params =
       blink::ContextMenuParamsBuilder::Build(data);
   if (host_context_menu_location.has_value()) {

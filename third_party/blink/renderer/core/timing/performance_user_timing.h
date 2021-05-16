@@ -49,7 +49,7 @@ class UserTiming final : public GarbageCollected<UserTiming> {
   PerformanceMeasure* Measure(ScriptState*,
                               const AtomicString& measure_name,
                               const V8UnionDoubleOrString* start,
-                              const base::Optional<double>& duration,
+                              const absl::optional<double>& duration,
                               const V8UnionDoubleOrString* end,
                               const ScriptValue& detail,
                               ExceptionState&);

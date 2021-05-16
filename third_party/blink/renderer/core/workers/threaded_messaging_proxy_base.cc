@@ -59,8 +59,8 @@ void ThreadedMessagingProxyBase::Trace(Visitor* visitor) const {
 
 void ThreadedMessagingProxyBase::InitializeWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data,
-    const base::Optional<const blink::DedicatedWorkerToken>& token) {
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const absl::optional<const blink::DedicatedWorkerToken>& token) {
   DCHECK(IsParentContextThread());
 
   KURL script_url = global_scope_creation_params->script_url.Copy();

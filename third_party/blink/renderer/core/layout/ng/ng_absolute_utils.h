@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -45,7 +45,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const NGConstraintSpace&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const base::Optional<LogicalSize>& replaced_size,
+    const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions);
 
@@ -56,7 +56,7 @@ CORE_EXPORT scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
     const NGConstraintSpace&,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition&,
-    const base::Optional<LogicalSize>& replaced_size,
+    const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions);
 

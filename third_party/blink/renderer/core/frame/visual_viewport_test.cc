@@ -1126,7 +1126,7 @@ class VisualViewportMockWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
   MOCK_METHOD2(UpdateContextMenuDataForTesting,
-               void(const ContextMenuData&, const base::Optional<gfx::Point>&));
+               void(const ContextMenuData&, const absl::optional<gfx::Point>&));
   MOCK_METHOD0(DidChangeScrollOffset, void());
 };
 

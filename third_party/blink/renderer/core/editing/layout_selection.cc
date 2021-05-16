@@ -70,9 +70,9 @@ class SelectionPaintRange : public GarbageCollected<SelectionPaintRange> {
  public:
   SelectionPaintRange() = default;
   SelectionPaintRange(const Node& passed_start_node,
-                      base::Optional<unsigned> passed_start_offset,
+                      absl::optional<unsigned> passed_start_offset,
                       const Node& passed_end_node,
-                      base::Optional<unsigned> passed_end_offset)
+                      absl::optional<unsigned> passed_end_offset)
       : start_node(passed_start_node),
         start_offset(passed_start_offset),
         end_node(passed_end_node),
@@ -104,9 +104,9 @@ class SelectionPaintRange : public GarbageCollected<SelectionPaintRange> {
   }
 
   Member<const Node> start_node;
-  base::Optional<unsigned> start_offset;
+  absl::optional<unsigned> start_offset;
   Member<const Node> end_node;
-  base::Optional<unsigned> end_offset;
+  absl::optional<unsigned> end_offset;
 };
 
 LayoutSelection::LayoutSelection(FrameSelection& frame_selection)
@@ -375,14 +375,14 @@ static void VisitSelectedInclusiveDescendantsOf(const Node& node,
 
 static OldSelectedNodes ResetOldSelectedNodes(
     const Node& root,
-    base::Optional<unsigned> old_start_offset,
-    base::Optional<unsigned> old_end_offset) {
+    absl::optional<unsigned> old_start_offset,
+    absl::optional<unsigned> old_end_offset) {
   class OldSelectedVisitor {
     STACK_ALLOCATED();
 
    public:
-    OldSelectedVisitor(base::Optional<unsigned> passed_old_start_offset,
-                       base::Optional<unsigned> passed_old_end_offset)
+    OldSelectedVisitor(absl::optional<unsigned> passed_old_start_offset,
+                       absl::optional<unsigned> passed_old_end_offset)
         : old_start_offset(passed_old_start_offset),
           old_end_offset(passed_old_end_offset) {}
 
@@ -426,30 +426,30 @@ static OldSelectedNodes ResetOldSelectedNodes(
     }
 
     OldSelectedNodes old_selected_objects;
-    const base::Optional<unsigned> old_start_offset;
-    const base::Optional<unsigned> old_end_offset;
+    const absl::optional<unsigned> old_start_offset;
+    const absl::optional<unsigned> old_end_offset;
   } visitor(old_start_offset, old_end_offset);
   VisitSelectedInclusiveDescendantsOf(root, &visitor);
   return std::move(visitor.old_selected_objects);
 }
 
-static base::Optional<unsigned> ComputeStartOffset(
+static absl::optional<unsigned> ComputeStartOffset(
     const Node& node,
     const PositionInFlatTree& selection_start) {
   if (!node.IsTextNode())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (&node == selection_start.AnchorNode())
     return selection_start.OffsetInContainerNode();
   return 0;
 }
 
-static base::Optional<unsigned> ComputeEndOffset(
+static absl::optional<unsigned> ComputeEndOffset(
     const Node& node,
     const PositionInFlatTree& selection_end) {
   auto* text_node = DynamicTo<Text>(node);
   if (!text_node)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (&node == selection_end.AnchorNode())
     return selection_end.OffsetInContainerNode();
@@ -469,9 +469,9 @@ static bool IsPositionValidText(const Position& position) {
 }
 #endif
 
-static base::Optional<unsigned> GetTextContentOffset(const Position& position) {
+static absl::optional<unsigned> GetTextContentOffset(const Position& position) {
   if (position.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 #if DCHECK_IS_ON()
   DCHECK(IsPositionValidText(position));
 #endif
@@ -479,18 +479,18 @@ static base::Optional<unsigned> GetTextContentOffset(const Position& position) {
   const NGOffsetMapping* const offset_mapping =
       NGOffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
-  const base::Optional<unsigned>& ng_offset =
+  const absl::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);
   return ng_offset;
 }
 
 // Computes text content offset of selection start if |layout_object| is
 // LayoutText.
-static base::Optional<unsigned> GetTextContentOffsetStart(
+static absl::optional<unsigned> GetTextContentOffsetStart(
     const Node& node,
-    base::Optional<unsigned> node_offset) {
+    absl::optional<unsigned> node_offset) {
   if (!node.GetLayoutObject()->IsText())
-    return base::nullopt;
+    return absl::nullopt;
   if (node.IsTextNode()) {
     DCHECK(node_offset.has_value()) << node;
     return GetTextContentOffset(Position(node, node_offset.value()));
@@ -503,9 +503,9 @@ static base::Optional<unsigned> GetTextContentOffsetStart(
 
 // Computes text content offset of selection end if |layout_object| is
 // LayoutText.
-static base::Optional<unsigned> GetTextContentOffsetEnd(
+static absl::optional<unsigned> GetTextContentOffsetEnd(
     const Node& node,
-    base::Optional<unsigned> node_offset) {
+    absl::optional<unsigned> node_offset) {
   if (!node.GetLayoutObject()->IsText())
     return {};
   if (node.IsTextNode()) {
@@ -524,13 +524,13 @@ static SelectionPaintRange* ComputeNewPaintRange(
 
   const Node& start_node = *paint_range.start_node;
   // If LayoutObject is not in NG, use legacy offset.
-  const base::Optional<unsigned> start_offset =
+  const absl::optional<unsigned> start_offset =
       ShouldUseLayoutNGTextContent(start_node)
           ? GetTextContentOffsetStart(start_node, paint_range.start_offset)
           : paint_range.start_offset;
 
   const Node& end_node = *paint_range.end_node;
-  const base::Optional<unsigned> end_offset =
+  const absl::optional<unsigned> end_offset =
       ShouldUseLayoutNGTextContent(end_node)
           ? GetTextContentOffsetEnd(end_node, paint_range.end_offset)
           : paint_range.end_offset;
@@ -586,8 +586,8 @@ static inline unsigned ClampOffset(unsigned node_offset,
 static LayoutTextSelectionStatus ComputeSelectionStatusForNode(
     const Text& text,
     SelectionState selection_state,
-    base::Optional<unsigned> start_offset,
-    base::Optional<unsigned> end_offset) {
+    absl::optional<unsigned> start_offset,
+    absl::optional<unsigned> end_offset) {
   switch (selection_state) {
     case SelectionState::kInside:
       return {0, text.length(), SelectionIncludeEnd::kInclude};
@@ -844,9 +844,9 @@ static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(
   }
 
   // Compute offset. It has value iff start/end is text.
-  const base::Optional<unsigned> start_offset = ComputeStartOffset(
+  const absl::optional<unsigned> start_offset = ComputeStartOffset(
       *start_node, selection.StartPosition().ToOffsetInAnchor());
-  const base::Optional<unsigned> end_offset =
+  const absl::optional<unsigned> end_offset =
       ComputeEndOffset(*end_node, selection.EndPosition().ToOffsetInAnchor());
   if (start_node == end_node) {
     SetSelectionStateIfNeeded(*start_node, SelectionState::kStartAndEnd);
@@ -895,9 +895,9 @@ void LayoutSelection::Commit() {
 void LayoutSelection::ContextDestroyed() {
   has_pending_selection_ = false;
   paint_range_->start_node = nullptr;
-  paint_range_->start_offset = base::nullopt;
+  paint_range_->start_offset = absl::nullopt;
   paint_range_->end_node = nullptr;
-  paint_range_->end_offset = base::nullopt;
+  paint_range_->end_offset = absl::nullopt;
 }
 
 static PhysicalRect SelectionRectForLayoutObject(const LayoutObject* object) {
@@ -981,7 +981,7 @@ void PrintSelectionStatus(std::ostream& ostream, const Node& node) {
 
 #if DCHECK_IS_ON()
 std::ostream& operator<<(std::ostream& ostream,
-                         const base::Optional<unsigned>& offset) {
+                         const absl::optional<unsigned>& offset) {
   if (offset.has_value())
     ostream << offset.value();
   else

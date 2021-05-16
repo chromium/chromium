@@ -48,7 +48,7 @@ class CORE_EXPORT ScrollTimelineOffset final
   // orientation.
   //
   // Returns nullopt if the offset cannot be resolved.
-  base::Optional<double> ResolveOffset(Node* scroll_source,
+  absl::optional<double> ResolveOffset(Node* scroll_source,
                                        ScrollOrientation,
                                        double max_offset,
                                        double default_offset);

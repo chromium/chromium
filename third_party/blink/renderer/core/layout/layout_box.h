@@ -1218,7 +1218,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const NGConstraintSpace&,
       const NGBreakToken*,
       const NGEarlyBreak*,
-      base::Optional<NGFragmentGeometry>* initial_fragment_geometry,
+      absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);
 
   using NGLayoutResultList = Vector<scoped_refptr<const NGLayoutResult>, 1>;

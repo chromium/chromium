@@ -75,8 +75,8 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
 
-  base::Optional<float> intrinsic_width = svg->IntrinsicWidth();
-  base::Optional<float> intrinsic_height = svg->IntrinsicHeight();
+  absl::optional<float> intrinsic_width = svg->IntrinsicWidth();
+  absl::optional<float> intrinsic_height = svg->IntrinsicHeight();
   intrinsic_sizing_info.size =
       FloatSize(intrinsic_width.value_or(0), intrinsic_height.value_or(0));
   intrinsic_sizing_info.has_width = intrinsic_width.has_value();

@@ -35,7 +35,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
@@ -164,9 +164,9 @@ class PLATFORM_EXPORT MediaStreamSource final
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   MediaConstraints constraints_;
   Capabilities capabilities_;
-  base::Optional<EchoCancellationMode> echo_cancellation_mode_;
-  base::Optional<bool> auto_gain_control_;
-  base::Optional<bool> noise_supression_;
+  absl::optional<EchoCancellationMode> echo_cancellation_mode_;
+  absl::optional<bool> auto_gain_control_;
+  absl::optional<bool> noise_supression_;
 };
 
 typedef HeapVector<Member<MediaStreamSource>> MediaStreamSourceVector;

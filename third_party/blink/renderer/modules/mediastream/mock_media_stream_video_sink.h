@@ -59,7 +59,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
 
   bool enabled() const { return enabled_; }
   WebMediaStreamSource::ReadyState state() const { return state_; }
-  base::Optional<WebMediaStreamTrack::ContentHintType> content_hint() const {
+  absl::optional<WebMediaStreamTrack::ContentHintType> content_hint() const {
     return content_hint_;
   }
 
@@ -83,7 +83,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   WebMediaStreamSource::ReadyState state_;
   gfx::Size frame_size_;
   scoped_refptr<media::VideoFrame> last_frame_;
-  base::Optional<WebMediaStreamTrack::ContentHintType> content_hint_;
+  absl::optional<WebMediaStreamTrack::ContentHintType> content_hint_;
   base::WeakPtrFactory<MockMediaStreamVideoSink> weak_factory_{this};
 };
 

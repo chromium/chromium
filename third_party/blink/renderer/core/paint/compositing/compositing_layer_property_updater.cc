@@ -64,7 +64,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
   }
 #endif
 
-  base::Optional<PropertyTreeStateOrAlias> container_layer_state;
+  absl::optional<PropertyTreeStateOrAlias> container_layer_state;
   auto SetContainerLayerState =
       [&fragment_data, &snapped_paint_offset,
        &container_layer_state](GraphicsLayer* graphics_layer) {

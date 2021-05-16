@@ -43,7 +43,7 @@ ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
 scoped_refptr<const NGLayoutResult>
 NGLayoutResult::CloneWithPostLayoutFragments(
     const NGLayoutResult& other,
-    const base::Optional<PhysicalRect> updated_layout_overflow) {
+    const absl::optional<PhysicalRect> updated_layout_overflow) {
   return base::AdoptRef(new NGLayoutResult(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
                  To<NGPhysicalBoxFragment>(other.PhysicalFragment()),
@@ -130,7 +130,7 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
                                const NGConstraintSpace& new_space,
                                const NGMarginStrut& new_end_margin_strut,
                                LayoutUnit bfc_line_offset,
-                               base::Optional<LayoutUnit> bfc_block_offset,
+                               absl::optional<LayoutUnit> bfc_block_offset,
                                LayoutUnit block_offset_delta)
     : space_(new_space),
       physical_fragment_(other.physical_fragment_),
@@ -285,7 +285,7 @@ NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
 
 NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
   if (!HasRareData()) {
-    base::Optional<LayoutUnit> bfc_block_offset;
+    absl::optional<LayoutUnit> bfc_block_offset;
     if (!bitfields_.is_bfc_block_offset_nullopt)
       bfc_block_offset = bfc_offset_.block_offset;
     rare_data_ = new RareData(bfc_offset_.line_offset, bfc_block_offset);

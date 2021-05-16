@@ -104,8 +104,8 @@ bool NGLayoutInputNode::IsTextControlPlaceholder() const {
 }
 
 void NGLayoutInputNode::IntrinsicSize(
-    base::Optional<LayoutUnit>* computed_inline_size,
-    base::Optional<LayoutUnit>* computed_block_size) const {
+    absl::optional<LayoutUnit>* computed_inline_size,
+    absl::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
 
   GetOverrideIntrinsicSize(computed_inline_size, computed_block_size);
@@ -159,8 +159,8 @@ void NGLayoutInputNode::ShowNodeTree() const {
 #endif
 
 void NGLayoutInputNode::GetOverrideIntrinsicSize(
-    base::Optional<LayoutUnit>* computed_inline_size,
-    base::Optional<LayoutUnit>* computed_block_size) const {
+    absl::optional<LayoutUnit>* computed_inline_size,
+    absl::optional<LayoutUnit>* computed_block_size) const {
   DCHECK(IsReplaced());
 
   LayoutUnit override_inline_size = OverrideIntrinsicContentInlineSize();

@@ -61,12 +61,12 @@ bool AmbientLightSensor::hasReading() const {
   return latest_reading_.has_value() && Sensor::hasReading();
 }
 
-base::Optional<double> AmbientLightSensor::illuminance() const {
+absl::optional<double> AmbientLightSensor::illuminance() const {
   if (hasReading()) {
     DCHECK(latest_reading_.has_value());
     return RoundIlluminance(latest_reading_.value());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // When the reading we get does not differ significantly from our current

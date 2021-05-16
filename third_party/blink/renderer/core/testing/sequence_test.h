@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SEQUENCE_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SEQUENCE_TEST_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/double_or_double_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_food_enum.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -31,8 +31,8 @@ class SequenceTest final : public ScriptWrappable {
   Vector<V8FoodEnum> identityFoodEnumSequence(
       const Vector<V8FoodEnum>& arg) const;
   Vector<int32_t> identityLongSequence(const Vector<int32_t>& arg) const;
-  base::Optional<Vector<uint8_t>> identityOctetSequenceOrNull(
-      const base::Optional<Vector<uint8_t>>& arg) const;
+  absl::optional<Vector<uint8_t>> identityOctetSequenceOrNull(
+      const absl::optional<Vector<uint8_t>>& arg) const;
 
   HeapVector<Member<Element>> getElementSequence() const;
   void setElementSequence(const HeapVector<Member<Element>>& arg);

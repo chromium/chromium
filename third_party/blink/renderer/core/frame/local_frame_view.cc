@@ -852,7 +852,7 @@ void LocalFrameView::UpdateLayout() {
 
   Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
 
-  base::Optional<RuntimeCallTimerScope> rcs_scope;
+  absl::optional<RuntimeCallTimerScope> rcs_scope;
   probe::UpdateLayout probe(GetFrame().GetDocument());
   Vector<LayoutObjectWithDepth> layout_roots;
 
@@ -3924,7 +3924,7 @@ LocalFrameView::DisallowThrottlingScope::DisallowThrottlingScope(
 
 bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
                                          const IntSize& paint_offset) const {
-  base::Optional<base::UnguessableToken> maybe_embedding_token =
+  absl::optional<base::UnguessableToken> maybe_embedding_token =
       GetFrame().GetEmbeddingToken();
 
   // Avoid crashing if a local frame doesn't have an embedding token.
@@ -3958,7 +3958,7 @@ void LocalFrameView::Paint(GraphicsContext& context,
                            const CullRect& cull_rect,
                            const IntSize& paint_offset) const {
   const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
-  base::Optional<Document::PaintPreviewScope> paint_preview;
+  absl::optional<Document::PaintPreviewScope> paint_preview;
   if (owner_layout_object &&
       owner_layout_object->GetDocument().GetPaintPreviewState() !=
           Document::kNotPaintingPreview) {

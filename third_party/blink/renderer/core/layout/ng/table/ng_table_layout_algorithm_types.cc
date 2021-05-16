@@ -24,10 +24,10 @@ inline void InlineSizesFromStyle(
     const ComputedStyle& style,
     LayoutUnit inline_border_padding,
     bool is_parallel,
-    base::Optional<LayoutUnit>* inline_size,
-    base::Optional<LayoutUnit>* min_inline_size,
-    base::Optional<LayoutUnit>* max_inline_size,
-    base::Optional<float>* percentage_inline_size) {
+    absl::optional<LayoutUnit>* inline_size,
+    absl::optional<LayoutUnit>* min_inline_size,
+    absl::optional<LayoutUnit>* max_inline_size,
+    absl::optional<float>* percentage_inline_size) {
   const Length& length =
       is_parallel ? style.LogicalWidth() : style.LogicalHeight();
   const Length& min_length =
@@ -78,12 +78,12 @@ constexpr LayoutUnit NGTableTypes::kTableMaxInlineSize;
 // "outer min-content and outer max-content widths for colgroups"
 NGTableTypes::Column NGTableTypes::CreateColumn(
     const ComputedStyle& style,
-    base::Optional<LayoutUnit> default_inline_size,
+    absl::optional<LayoutUnit> default_inline_size,
     bool is_table_fixed) {
-  base::Optional<LayoutUnit> inline_size;
-  base::Optional<LayoutUnit> min_inline_size;
-  base::Optional<LayoutUnit> max_inline_size;
-  base::Optional<float> percentage_inline_size;
+  absl::optional<LayoutUnit> inline_size;
+  absl::optional<LayoutUnit> min_inline_size;
+  absl::optional<LayoutUnit> max_inline_size;
+  absl::optional<float> percentage_inline_size;
   InlineSizesFromStyle(style, /* inline_border_padding */ LayoutUnit(),
                        /* is_parallel */ true, &inline_size, &min_inline_size,
                        &max_inline_size, &percentage_inline_size);
@@ -117,17 +117,17 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     bool is_fixed_layout,
     const NGBoxStrut& cell_border,
     const NGBoxStrut& cell_padding) {
-  base::Optional<LayoutUnit> css_inline_size;
-  base::Optional<LayoutUnit> css_min_inline_size;
-  base::Optional<LayoutUnit> css_max_inline_size;
-  base::Optional<float> css_percentage_inline_size;
+  absl::optional<LayoutUnit> css_inline_size;
+  absl::optional<LayoutUnit> css_min_inline_size;
+  absl::optional<LayoutUnit> css_max_inline_size;
+  absl::optional<float> css_percentage_inline_size;
   const auto& style = node.Style();
   const bool is_parallel =
       IsParallelWritingMode(table_writing_mode, style.GetWritingMode());
 
   // Be lazy when determining the min/max sizes, as in some circumstances we
   // don't need to call this (relatively) expensive function.
-  base::Optional<MinMaxSizes> cached_min_max_sizes;
+  absl::optional<MinMaxSizes> cached_min_max_sizes;
   auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
     if (!cached_min_max_sizes) {
       NGConstraintSpaceBuilder builder(table_writing_mode,
@@ -215,7 +215,7 @@ NGTableTypes::Section NGTableTypes::CreateSection(
   // TODO(crbug.com/1105272): Decide what to do with |Length::IsCalculated()|.
   bool is_constrained =
       section_css_block_size.IsFixed() || section_css_block_size.IsPercent();
-  base::Optional<float> percent;
+  absl::optional<float> percent;
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
   return Section{start_row,
@@ -250,7 +250,7 @@ NGTableTypes::RowspanCell NGTableTypes::CreateRowspanCell(
     wtf_size_t row_index,
     wtf_size_t rowspan,
     CellBlockConstraint* cell_block_constraint,
-    base::Optional<LayoutUnit> css_cell_block_size) {
+    absl::optional<LayoutUnit> css_cell_block_size) {
   if (css_cell_block_size) {
     cell_block_constraint->min_block_size =
         std::max(cell_block_constraint->min_block_size, *css_cell_block_size);
@@ -283,7 +283,7 @@ void NGTableTypes::CellInlineConstraint::Encompass(
 }
 
 void NGTableTypes::Column::Encompass(
-    const base::Optional<NGTableTypes::CellInlineConstraint>& cell) {
+    const absl::optional<NGTableTypes::CellInlineConstraint>& cell) {
   if (!cell)
     return;
 

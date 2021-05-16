@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -75,7 +75,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                             ExceptionState&);
 
   String format() const;
-  base::Optional<HeapVector<Member<Plane>>> planes();
+  absl::optional<HeapVector<Member<Plane>>> planes();
 
   uint32_t codedWidth() const;
   uint32_t codedHeight() const;
@@ -91,8 +91,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
-  base::Optional<int64_t> timestamp() const;
-  base::Optional<uint64_t> duration() const;
+  absl::optional<int64_t> timestamp() const;
+  absl::optional<uint64_t> duration() const;
 
   uint32_t allocationSize(VideoFrameReadIntoOptions* options, ExceptionState&);
 
@@ -139,7 +139,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   IntSize BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  base::Optional<IntRect> crop_rect,
+                                  absl::optional<IntRect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

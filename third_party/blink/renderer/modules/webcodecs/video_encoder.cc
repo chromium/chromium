@@ -643,7 +643,7 @@ void VideoEncoder::CallOutputCallback(
     ParsedConfig* active_config,
     uint32_t reset_count,
     media::VideoEncoderOutput output,
-    base::Optional<media::VideoEncoder::CodecDescription> codec_desc) {
+    absl::optional<media::VideoEncoder::CodecDescription> codec_desc) {
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
@@ -731,7 +731,7 @@ static void isConfigSupportedWithSoftwareOnly(
 
   auto output_callback = base::DoNothing::Repeatedly<
       media::VideoEncoderOutput,
-      base::Optional<media::VideoEncoder::CodecDescription>>();
+      absl::optional<media::VideoEncoder::CodecDescription>>();
 
   auto* software_encoder_raw = software_encoder.get();
   software_encoder_raw->Initialize(

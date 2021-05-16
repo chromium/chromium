@@ -17,10 +17,10 @@ V8CSSNumberish* CSSMathNegate::value() {
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-base::Optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
   auto maybe_sum = value_->SumValue();
   if (!maybe_sum)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::for_each(maybe_sum->terms.begin(), maybe_sum->terms.end(),
                 [](auto& term) { term.value *= -1; });

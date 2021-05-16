@@ -283,7 +283,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   bool did_receive_response() const { return did_receive_response_; }
   bool did_receive_response_body() const { return !!response_body_; }
   bool did_finish() const { return did_finish_; }
-  const base::Optional<WebURLError>& error() const { return error_; }
+  const absl::optional<WebURLError>& error() const { return error_; }
   const WebURLResponse& response() const { return response_; }
 
  private:
@@ -300,7 +300,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   bool did_receive_response_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   bool did_finish_;
-  base::Optional<WebURLError> error_;
+  absl::optional<WebURLError> error_;
   WebURLResponse response_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebURLLoaderClient);
@@ -598,7 +598,7 @@ TEST_F(WebURLLoaderTest, ResponseCert) {
   WebURLResponse web_url_response;
   WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  base::Optional<WebURLResponse::WebSecurityDetails> security_details =
+  absl::optional<WebURLResponse::WebSecurityDetails> security_details =
       web_url_response.SecurityDetailsForTesting();
   ASSERT_TRUE(security_details.has_value());
   EXPECT_EQ("TLS 1.2", security_details->protocol);
@@ -636,7 +636,7 @@ TEST_F(WebURLLoaderTest, ResponseCertWithNoSANs) {
   WebURLResponse web_url_response;
   WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  base::Optional<WebURLResponse::WebSecurityDetails> security_details =
+  absl::optional<WebURLResponse::WebSecurityDetails> security_details =
       web_url_response.SecurityDetailsForTesting();
   ASSERT_TRUE(security_details.has_value());
   EXPECT_EQ("TLS 1.2", security_details->protocol);
@@ -674,7 +674,7 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   sender()->set_sync_load_response(std::move(sync_load_response));
 
   WebURLResponse response;
-  base::Optional<WebURLError> error;
+  absl::optional<WebURLError> error;
   WebData data;
   int64_t encoded_data_length = 0;
   int64_t encoded_body_length = 0;

@@ -43,7 +43,7 @@ const char kRequiredExtension[] = "";
 void FillVideoColorSpace(VideoColorSpace* video_color_space,
                          gfx::ColorSpace& gfx_color_space) {
   gfx::ColorSpace::PrimaryID primaries = gfx_color_space.GetPrimaryID();
-  base::Optional<V8ColorSpacePrimaryID> primary_id;
+  absl::optional<V8ColorSpacePrimaryID> primary_id;
   switch (primaries) {
     case gfx::ColorSpace::PrimaryID::BT709:
       primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT709);
@@ -88,7 +88,7 @@ void FillVideoColorSpace(VideoColorSpace* video_color_space,
   }
 
   gfx::ColorSpace::TransferID transfer = gfx_color_space.GetTransferID();
-  base::Optional<V8ColorSpaceTransferID> transfer_id;
+  absl::optional<V8ColorSpaceTransferID> transfer_id;
   switch (transfer) {
     case gfx::ColorSpace::TransferID::BT709:
 #if defined(OS_MAC)
@@ -161,7 +161,7 @@ void FillVideoColorSpace(VideoColorSpace* video_color_space,
   }
 
   gfx::ColorSpace::MatrixID matrix = gfx_color_space.GetMatrixID();
-  base::Optional<V8ColorSpaceMatrixID> matrix_id;
+  absl::optional<V8ColorSpaceMatrixID> matrix_id;
   switch (matrix) {
     case gfx::ColorSpace::MatrixID::RGB:
       matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kRGB);
@@ -200,7 +200,7 @@ void FillVideoColorSpace(VideoColorSpace* video_color_space,
   }
 
   gfx::ColorSpace::RangeID range = gfx_color_space.GetRangeID();
-  base::Optional<V8ColorSpaceRangeID> range_id;
+  absl::optional<V8ColorSpaceRangeID> range_id;
   switch (range) {
     case gfx::ColorSpace::RangeID::LIMITED:
       range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kLIMITED);

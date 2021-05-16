@@ -249,7 +249,7 @@ cssvalue::CSSBasicShapeCircleValue* ConsumeBasicShapeCircle(
     CSSValue* center_x = nullptr;
     CSSValue* center_y = nullptr;
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         base::Optional<WebFeature>(), center_x, center_y))
+                         absl::optional<WebFeature>(), center_x, center_y))
       return nullptr;
     shape->SetCenterX(center_x);
     shape->SetCenterY(center_y);
@@ -276,7 +276,7 @@ cssvalue::CSSBasicShapeEllipseValue* ConsumeBasicShapeEllipse(
     CSSValue* center_x = nullptr;
     CSSValue* center_y = nullptr;
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         base::Optional<WebFeature>(), center_x, center_y))
+                         absl::optional<WebFeature>(), center_x, center_y))
       return nullptr;
     shape->SetCenterX(center_x);
     shape->SetCenterY(center_y);
@@ -938,7 +938,7 @@ CSSPrimitiveValue* ConsumeGradientLengthOrPercent(
 CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    base::Optional<WebFeature> unitless_zero_feature,
+    absl::optional<WebFeature> unitless_zero_feature,
     double minimum_value,
     double maximum_value) {
   const CSSParserToken& token = range.Peek();
@@ -986,7 +986,7 @@ CSSPrimitiveValue* ConsumeAngle(
 CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    base::Optional<WebFeature> unitless_zero_feature) {
+    absl::optional<WebFeature> unitless_zero_feature) {
   return ConsumeAngle(range, context, std::move(unitless_zero_feature),
                       std::numeric_limits<double>::lowest(),
                       std::numeric_limits<double>::max());
@@ -1214,7 +1214,7 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHsl ||
          range.Peek().FunctionId() == CSSValueID::kHsla);
   CSSParserTokenRange args = ConsumeFunction(range);
-  CSSPrimitiveValue* hsl_value = ConsumeAngle(args, context, base::nullopt);
+  CSSPrimitiveValue* hsl_value = ConsumeAngle(args, context, absl::nullopt);
   double angle_value;
   if (!hsl_value) {
     hsl_value = ConsumeNumber(args, context, kValueRangeAll);
@@ -1458,7 +1458,7 @@ static void PositionFromThreeOrFourValues(CSSValue** values,
 bool ConsumePosition(CSSParserTokenRange& range,
                      const CSSParserContext& context,
                      UnitlessQuirk unitless,
-                     base::Optional<WebFeature> three_value_position,
+                     absl::optional<WebFeature> three_value_position,
                      CSSValue*& result_x,
                      CSSValue*& result_y) {
   bool horizontal_edge = false;
@@ -1541,7 +1541,7 @@ bool ConsumePosition(CSSParserTokenRange& range,
 CSSValuePair* ConsumePosition(CSSParserTokenRange& range,
                               const CSSParserContext& context,
                               UnitlessQuirk unitless,
-                              base::Optional<WebFeature> three_value_position) {
+                              absl::optional<WebFeature> three_value_position) {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
   if (ConsumePosition(range, context, unitless, three_value_position, result_x,
@@ -1938,7 +1938,7 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
   if (args.Peek().Id() == CSSValueID::kAt) {
     args.ConsumeIncludingWhitespace();
     ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                    base::Optional<WebFeature>(), center_x, center_y);
+                    absl::optional<WebFeature>(), center_x, center_y);
     if (!(center_x && center_y))
       return nullptr;
     // Right now, CSS radial gradients have the same start and end centers.
@@ -2013,7 +2013,7 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
   CSSValue* center_y = nullptr;
   if (ConsumeIdent<CSSValueID::kAt>(args)) {
     if (!ConsumePosition(args, context, UnitlessQuirk::kForbid,
-                         base::Optional<WebFeature>(), center_x, center_y))
+                         absl::optional<WebFeature>(), center_x, center_y))
       return nullptr;
   }
 
@@ -2888,7 +2888,7 @@ CSSValue* ConsumeBackgroundComposite(CSSParserTokenRange& range) {
 CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
-    base::Optional<WebFeature> negative_size) {
+    absl::optional<WebFeature> negative_size) {
   CSSPrimitiveValue* result = ConsumeLengthOrPercent(
       range, context, kValueRangeNonNegative, UnitlessQuirk::kForbid);
   if (!result && negative_size)
@@ -2898,7 +2898,7 @@ CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
 
 CSSValue* ConsumeBackgroundSize(CSSParserTokenRange& range,
                                 const CSSParserContext& context,
-                                base::Optional<WebFeature> negative_size,
+                                absl::optional<WebFeature> negative_size,
                                 ParsingStyle parsing_style) {
   if (IdentMatches<CSSValueID::kContain, CSSValueID::kCover>(
           range.Peek().Id())) {
@@ -2988,7 +2988,7 @@ CSSValue* ParseBackgroundBox(CSSParserTokenRange& range,
 CSSValue* ParseBackgroundOrMaskSize(CSSParserTokenRange& range,
                                     const CSSParserContext& context,
                                     const CSSParserLocalContext& local_context,
-                                    base::Optional<WebFeature> negative_size) {
+                                    absl::optional<WebFeature> negative_size) {
   return ConsumeCommaSeparatedList(
       ConsumeBackgroundSize, range, context, negative_size,
       local_context.UseAliasParsing() ? ParsingStyle::kLegacy
@@ -3654,7 +3654,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
       ConsumeIdent<CSSValueID::kOblique>(range);
 
   CSSPrimitiveValue* start_angle = ConsumeAngle(
-      range, context, base::nullopt, MinObliqueValue(), MaxObliqueValue());
+      range, context, absl::nullopt, MinObliqueValue(), MaxObliqueValue());
   if (!start_angle)
     return oblique_identifier;
   if (!IsAngleWithinLimits(start_angle))
@@ -3668,7 +3668,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
   }
 
   CSSPrimitiveValue* end_angle = ConsumeAngle(
-      range, context, base::nullopt, MinObliqueValue(), MaxObliqueValue());
+      range, context, absl::nullopt, MinObliqueValue(), MaxObliqueValue());
   if (!end_angle || !IsAngleWithinLimits(end_angle))
     return nullptr;
 
@@ -4473,7 +4473,7 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
   while (!function_args.AtEnd()) {
     if (!angle) {
       angle =
-          ConsumeAngle(function_args, context, base::Optional<WebFeature>());
+          ConsumeAngle(function_args, context, absl::optional<WebFeature>());
       if (angle)
         continue;
     }
@@ -4560,14 +4560,14 @@ CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
 
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
                               const CSSParserContext& context) {
-  CSSValue* angle = ConsumeAngle(range, context, base::Optional<WebFeature>());
+  CSSValue* angle = ConsumeAngle(range, context, absl::optional<WebFeature>());
   CSSValue* keyword =
       ConsumeIdent<CSSValueID::kAuto, CSSValueID::kReverse>(range);
   if (!angle && !keyword)
     return nullptr;
 
   if (!angle) {
-    angle = ConsumeAngle(range, context, base::Optional<WebFeature>());
+    angle = ConsumeAngle(range, context, absl::optional<WebFeature>());
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

@@ -172,7 +172,7 @@ void WebSocketChannelImpl::BlobLoader::Cancel() {
 }
 
 void WebSocketChannelImpl::BlobLoader::DidStartLoading() {
-  const base::Optional<uint64_t> size = loader_->TotalBytes();
+  const absl::optional<uint64_t> size = loader_->TotalBytes();
   DCHECK(size);
   if (size.value() > std::numeric_limits<size_t>::max()) {
     loader_->Cancel();
@@ -891,7 +891,7 @@ void WebSocketChannelImpl::HandleDidClose(bool was_clean,
 }
 
 void WebSocketChannelImpl::OnCompletion(
-    const base::Optional<WebString>& console_message) {
+    const absl::optional<WebString>& console_message) {
   DCHECK(!throttle_passed_);
   DCHECK(handshake_throttle_);
   handshake_throttle_ = nullptr;

@@ -528,7 +528,7 @@ void HIDDevice::FinishSendFeatureReport(ScriptPromiseResolver* resolver,
 void HIDDevice::FinishReceiveFeatureReport(
     ScriptPromiseResolver* resolver,
     bool success,
-    const base::Optional<Vector<uint8_t>>& data) {
+    const absl::optional<Vector<uint8_t>>& data) {
   MarkRequestComplete(resolver);
   if (success && data) {
     DOMArrayBuffer* dom_buffer =

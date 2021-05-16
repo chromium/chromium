@@ -643,24 +643,24 @@ FloatSize SVGSVGElement::CurrentViewportSize() const {
   return viewport_rect.Size();
 }
 
-base::Optional<float> SVGSVGElement::IntrinsicWidth() const {
+absl::optional<float> SVGSVGElement::IntrinsicWidth() const {
   const SVGLength& width_attr = *width()->CurrentValue();
   // TODO(crbug.com/979895): This is the result of a refactoring, which might
   // have revealed an existing bug that we are not handling math functions
   // involving percentages correctly. Fix it if necessary.
   if (width_attr.IsPercentage())
-    return base::nullopt;
+    return absl::nullopt;
   SVGLengthContext length_context(this);
   return std::max(0.0f, width_attr.Value(length_context));
 }
 
-base::Optional<float> SVGSVGElement::IntrinsicHeight() const {
+absl::optional<float> SVGSVGElement::IntrinsicHeight() const {
   const SVGLength& height_attr = *height()->CurrentValue();
   // TODO(crbug.com/979895): This is the result of a refactoring, which might
   // have revealed an existing bug that we are not handling math functions
   // involving percentages correctly. Fix it if necessary.
   if (height_attr.IsPercentage())
-    return base::nullopt;
+    return absl::nullopt;
   SVGLengthContext length_context(this);
   return std::max(0.0f, height_attr.Value(length_context));
 }

@@ -472,7 +472,7 @@ void EventHandler::UpdateCursor() {
   layout_view->HitTest(location, result);
 
   if (LocalFrame* frame = result.InnerNodeFrame()) {
-    base::Optional<ui::Cursor> optional_cursor =
+    absl::optional<ui::Cursor> optional_cursor =
         frame->GetEventHandler().SelectCursor(location, result);
     if (optional_cursor.has_value()) {
       view->SetCursor(optional_cursor.value());
@@ -519,17 +519,17 @@ bool EventHandler::ShouldShowIBeamForNode(const Node* node,
   return HasEditableStyle(*node);
 }
 
-base::Optional<ui::Cursor> EventHandler::SelectCursor(
+absl::optional<ui::Cursor> EventHandler::SelectCursor(
     const HitTestLocation& location,
     const HitTestResult& result) {
   if (scroll_manager_->InResizeMode())
-    return base::nullopt;
+    return absl::nullopt;
 
   Page* page = frame_->GetPage();
   if (!page)
-    return base::nullopt;
+    return absl::nullopt;
   if (scroll_manager_->MiddleClickAutoscrollInProgress())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (result.GetScrollbar() && !result.GetScrollbar()->IsCustomScrollbar())
     return PointerCursor();
@@ -569,7 +569,7 @@ base::Optional<ui::Cursor> EventHandler::SelectCursor(
       case kSetCursor:
         return override_cursor;
       case kDoNotSetCursor:
-        return base::nullopt;
+        return absl::nullopt;
     }
   }
 
@@ -747,7 +747,7 @@ base::Optional<ui::Cursor> EventHandler::SelectCursor(
   return PointerCursor();
 }
 
-base::Optional<ui::Cursor> EventHandler::SelectAutoCursor(
+absl::optional<ui::Cursor> EventHandler::SelectAutoCursor(
     const HitTestResult& result,
     Node* node,
     const ui::Cursor& i_beam) {
@@ -1116,7 +1116,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     }
     LocalFrameView* view = frame_->View();
     if ((!is_remote_frame || is_portal) && view) {
-      base::Optional<ui::Cursor> optional_cursor =
+      absl::optional<ui::Cursor> optional_cursor =
           SelectCursor(mev.GetHitTestLocation(), mev.GetHitTestResult());
       if (optional_cursor.has_value()) {
         view->SetCursor(optional_cursor.value());

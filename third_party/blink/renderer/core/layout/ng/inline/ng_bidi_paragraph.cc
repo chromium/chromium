@@ -16,13 +16,13 @@ NGBidiParagraph::~NGBidiParagraph() {
 bool NGBidiParagraph::SetParagraph(const String& text,
                                    const ComputedStyle& block_style) {
   if (UNLIKELY(block_style.GetUnicodeBidi() == UnicodeBidi::kPlaintext))
-    return SetParagraph(text, base::nullopt);
+    return SetParagraph(text, absl::nullopt);
   return SetParagraph(text, block_style.Direction());
 }
 
 bool NGBidiParagraph::SetParagraph(
     const String& text,
-    base::Optional<TextDirection> base_direction) {
+    absl::optional<TextDirection> base_direction) {
   DCHECK(!ubidi_);
   ubidi_ = ubidi_open();
 

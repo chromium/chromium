@@ -27,11 +27,11 @@
 #include <memory>
 #include "base/auto_reset.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -502,7 +502,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   ResourceType type_;
   ResourceStatus status_;
 
-  base::Optional<ResourceError> error_;
+  absl::optional<ResourceError> error_;
 
   base::TimeTicks load_response_end_;
 

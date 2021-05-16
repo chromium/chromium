@@ -1347,7 +1347,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, ThrottleSucceedsFirst) {
   checkpoint.Call(1);
   test::RunPendingTasks();
 
-  Channel()->OnCompletion(base::nullopt);
+  Channel()->OnCompletion(absl::nullopt);
   checkpoint.Call(2);
 
   auto websocket =
@@ -1376,7 +1376,7 @@ TEST_F(WebSocketChannelImplHandshakeThrottleTest, HandshakeSucceedsFirst) {
   ASSERT_TRUE(websocket);
 
   checkpoint.Call(2);
-  Channel()->OnCompletion(base::nullopt);
+  Channel()->OnCompletion(absl::nullopt);
 }
 
 // This happens if JS code calls close() during the handshake.

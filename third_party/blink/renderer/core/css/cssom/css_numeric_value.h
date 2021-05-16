@@ -88,7 +88,7 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   // Converts between compatible types.
   CSSUnitValue* to(CSSPrimitiveValue::UnitType) const;
   virtual bool IsUnitValue() const = 0;
-  virtual base::Optional<CSSNumericSumValue> SumValue() const = 0;
+  virtual absl::optional<CSSNumericSumValue> SumValue() const = 0;
 
   virtual bool Equals(const CSSNumericValue&) const = 0;
   const CSSNumericValueType& Type() const { return type_; }

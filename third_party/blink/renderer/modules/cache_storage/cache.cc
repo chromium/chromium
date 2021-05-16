@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"

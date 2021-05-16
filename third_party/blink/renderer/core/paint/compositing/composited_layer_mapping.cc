@@ -474,9 +474,9 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   // transformed by a non-translation transform.
   owning_layer_.SetSubpixelAccumulation(subpixel_accumulation);
 
-  base::Optional<IntRect> mask_bounding_box =
+  absl::optional<IntRect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(GetLayoutObject(), subpixel_accumulation);
-  base::Optional<FloatRect> clip_path_bounding_box =
+  absl::optional<FloatRect> clip_path_bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(GetLayoutObject());
   if (clip_path_bounding_box)
     clip_path_bounding_box->MoveBy(FloatPoint(subpixel_accumulation));
@@ -1525,7 +1525,7 @@ void CompositedLayerMapping::DoPaintTask(
   // Largest Contentful Paint. For the latter we special-case the nodes where
   // the opacity:0 depth is 1, so we need to only compute up to the first two
   // opacity:0 effects in here and can ignore the rest.
-  base::Optional<IgnorePaintTimingScope> ignore_paint_timing_scope;
+  absl::optional<IgnorePaintTimingScope> ignore_paint_timing_scope;
   int num_ignores = 0;
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   for (const auto* effect_node = &paint_info.paint_layer->GetLayoutObject()

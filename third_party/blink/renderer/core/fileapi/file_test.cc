@@ -100,7 +100,7 @@ TEST(FileTest, NativeFileWithApocalypseTimestamp) {
 }
 
 TEST(FileTest, BlobBackingFileWithoutTimestamp) {
-  auto* const file = MakeGarbageCollected<File>("name", base::nullopt,
+  auto* const file = MakeGarbageCollected<File>("name", absl::nullopt,
                                                 BlobDataHandle::Create());
   EXPECT_FALSE(file->HasBackingFile());
   EXPECT_TRUE(file->GetPath().IsEmpty());

@@ -22,13 +22,13 @@
 
 namespace blink {
 
-static base::Optional<AffineTransform> SetupNonScalingStrokeContext(
+static absl::optional<AffineTransform> SetupNonScalingStrokeContext(
     const LayoutSVGShape& layout_svg_shape,
     GraphicsContextStateSaver& state_saver) {
   const AffineTransform& non_scaling_stroke_transform =
       layout_svg_shape.NonScalingStrokeTransform();
   if (!non_scaling_stroke_transform.IsInvertible())
-    return base::nullopt;
+    return absl::nullopt;
   state_saver.Save();
   state_saver.Context().ConcatCTM(non_scaling_stroke_transform.Inverse());
   return non_scaling_stroke_transform;
@@ -85,7 +85,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
           case PT_STROKE:
             if (style.HasVisibleStroke()) {
               GraphicsContextStateSaver state_saver(paint_info.context, false);
-              base::Optional<AffineTransform> non_scaling_transform;
+              absl::optional<AffineTransform> non_scaling_transform;
 
               if (layout_svg_shape_.HasNonScalingStroke()) {
                 // Non-scaling stroke needs to reset the transform back to the

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENT_CHILD_ITERATOR_H_
 
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -105,7 +105,7 @@ class CORE_EXPORT NGFragmentChildIterator {
 
    private:
     NGLink link_;
-    base::Optional<NGInlineCursor> cursor_;
+    absl::optional<NGInlineCursor> cursor_;
     const NGBlockBreakToken* block_break_token_ = nullptr;
     bool break_token_for_fragmentainer_only_ = false;
   };

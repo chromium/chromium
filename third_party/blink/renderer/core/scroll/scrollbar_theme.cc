@@ -25,9 +25,9 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/input/scrollbar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"

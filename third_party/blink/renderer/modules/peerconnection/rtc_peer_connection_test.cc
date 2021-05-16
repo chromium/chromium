@@ -391,7 +391,7 @@ class RTCPeerConnectionTest : public testing::Test {
  public:
   RTCPeerConnection* CreatePC(
       V8TestingScope& scope,
-      const base::Optional<String>& sdp_semantics = base::nullopt,
+      const absl::optional<String>& sdp_semantics = absl::nullopt,
       bool force_encoded_audio_insertable_streams = false,
       bool force_encoded_video_insertable_streams = false) {
     RTCConfiguration* config = RTCConfiguration::Create();
@@ -681,7 +681,7 @@ TEST_F(RTCPeerConnectionTest, CheckInsertableStreamsConfig) {
     for (bool force_encoded_video_insertable_streams : {true, false}) {
       V8TestingScope scope;
       Persistent<RTCPeerConnection> pc =
-          CreatePC(scope, base::nullopt, force_encoded_audio_insertable_streams,
+          CreatePC(scope, absl::nullopt, force_encoded_audio_insertable_streams,
                    force_encoded_video_insertable_streams);
       EXPECT_EQ(pc->force_encoded_audio_insertable_streams(),
                 force_encoded_audio_insertable_streams);
@@ -1200,7 +1200,7 @@ TEST_F(RTCPeerConnectionTest, SdpSemanticsUseCounters) {
   // Constructor with default sdpSemantics (= Unified Plan).
   {
     V8TestingScope scope;
-    RTCPeerConnection* pc = CreatePC(scope, /*sdp_semantics=*/base::nullopt);
+    RTCPeerConnection* pc = CreatePC(scope, /*sdp_semantics=*/absl::nullopt);
     // Use counters reflect the constructor's sdpSemantics.
     EXPECT_FALSE(scope.GetDocument().IsUseCounted(
         WebFeature::kRTCPeerConnectionConstructedWithPlanB));

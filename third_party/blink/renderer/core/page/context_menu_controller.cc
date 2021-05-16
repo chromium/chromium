@@ -739,13 +739,13 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.link_text = anchor->innerText().Utf8();
 
     if (anchor->HasImpression()) {
-      base::Optional<WebImpression> web_impression =
+      absl::optional<WebImpression> web_impression =
           GetImpressionForAnchor(anchor);
       data.impression =
           web_impression.has_value()
-              ? base::Optional<Impression>(
+              ? absl::optional<Impression>(
                     ConvertWebImpressionToImpression(web_impression.value()))
-              : base::nullopt;
+              : absl::nullopt;
     }
   }
 
@@ -759,7 +759,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 
-  base::Optional<gfx::Point> host_context_menu_location;
+  absl::optional<gfx::Point> host_context_menu_location;
   auto* main_frame =
       WebLocalFrameImpl::FromFrame(DynamicTo<LocalFrame>(page_->MainFrame()));
   if (main_frame) {

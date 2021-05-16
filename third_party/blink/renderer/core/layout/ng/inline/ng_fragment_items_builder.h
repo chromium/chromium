@@ -124,7 +124,7 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   using ItemWithOffsetList = Vector<ItemWithOffset, 128>;
 
   // Find |LogicalOffset| of the first |NGFragmentItem| for |LayoutObject|.
-  base::Optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
+  absl::optional<LogicalOffset> LogicalOffsetFor(const LayoutObject&) const;
 
   // Moves all the |NGFragmentItem|s by |offset| in the block-direction.
   void MoveChildrenInBlockDirection(LayoutUnit offset);

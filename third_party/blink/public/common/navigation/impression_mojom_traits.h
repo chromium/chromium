@@ -22,7 +22,7 @@ struct BLINK_COMMON_EXPORT
     return r.conversion_destination;
   }
 
-  static const base::Optional<url::Origin>& reporting_origin(
+  static const absl::optional<url::Origin>& reporting_origin(
       const blink::Impression& r) {
     return r.reporting_origin;
   }
@@ -31,7 +31,7 @@ struct BLINK_COMMON_EXPORT
     return r.impression_data;
   }
 
-  static const base::Optional<base::TimeDelta>& expiry(
+  static const absl::optional<base::TimeDelta>& expiry(
       const blink::Impression& r) {
     return r.expiry;
   }

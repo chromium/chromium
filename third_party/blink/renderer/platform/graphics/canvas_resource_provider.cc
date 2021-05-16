@@ -104,8 +104,8 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   cc::PlaybackImageProvider::RasterMode raster_mode_;
   bool cleanup_task_pending_ = false;
   Vector<ScopedResult> locked_images_;
-  base::Optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
-  base::Optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
+  absl::optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
+  absl::optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
   base::WeakPtrFactory<CanvasImageProvider> weak_factory_{this};
 
@@ -1090,7 +1090,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     SkColorType canvas_color_type,
     cc::PlaybackImageProvider::RasterMode raster_mode)
     : raster_mode_(raster_mode) {
-  base::Optional<cc::PlaybackImageProvider::Settings> settings =
+  absl::optional<cc::PlaybackImageProvider::Settings> settings =
       cc::PlaybackImageProvider::Settings();
   settings->raster_mode = raster_mode_;
 

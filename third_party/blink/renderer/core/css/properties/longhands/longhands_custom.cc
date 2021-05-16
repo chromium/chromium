@@ -4734,7 +4734,7 @@ const CSSValue* ObjectPosition::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         base::Optional<WebFeature>());
+                         absl::optional<WebFeature>());
 }
 
 const CSSValue* ObjectPosition::CSSValueFromComputedStyleInternal(
@@ -4758,7 +4758,7 @@ const CSSValue* OffsetAnchor::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(range);
   return css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      base::Optional<WebFeature>());
+      absl::optional<WebFeature>());
 }
 
 const CSSValue* OffsetAnchor::CSSValueFromComputedStyleInternal(
@@ -4809,7 +4809,7 @@ const CSSValue* OffsetPosition::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(range);
   CSSValue* value = css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      base::Optional<WebFeature>());
+      absl::optional<WebFeature>());
 
   // Count when we receive a valid position other than 'auto'.
   if (value && value->IsValuePair())
@@ -5375,7 +5375,7 @@ const CSSValue* PerspectiveOrigin::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return ConsumePosition(range, context,
                          css_parsing_utils::UnitlessQuirk::kForbid,
-                         base::Optional<WebFeature>());
+                         absl::optional<WebFeature>());
 }
 
 bool PerspectiveOrigin::IsLayoutDependent(const ComputedStyle* style,
@@ -5540,7 +5540,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
   CSSValue* rotation = css_parsing_utils::ConsumeAngle(
-      range, context, base::Optional<WebFeature>());
+      range, context, absl::optional<WebFeature>());
 
   CSSValue* axis = css_parsing_utils::ConsumeAxis(range, context);
   if (axis)
@@ -5550,7 +5550,7 @@ const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
 
   if (!rotation) {
     rotation = css_parsing_utils::ConsumeAngle(range, context,
-                                               base::Optional<WebFeature>());
+                                               absl::optional<WebFeature>());
     if (!rotation)
       return nullptr;
   }

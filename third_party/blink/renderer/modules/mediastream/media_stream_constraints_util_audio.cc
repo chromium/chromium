@@ -123,9 +123,9 @@ class SourceInfo {
  public:
   SourceInfo(SourceType type,
              const AudioProcessingProperties& properties,
-             base::Optional<int> channels,
-             base::Optional<int> sample_rate,
-             base::Optional<double> latency)
+             absl::optional<int> channels,
+             absl::optional<int> sample_rate,
+             absl::optional<double> latency)
       : type_(type),
         properties_(properties),
         channels_(std::move(channels)),
@@ -136,16 +136,16 @@ class SourceInfo {
 
   SourceType type() { return type_; }
   const AudioProcessingProperties& properties() { return properties_; }
-  const base::Optional<int>& channels() { return channels_; }
-  const base::Optional<int>& sample_rate() { return sample_rate_; }
-  const base::Optional<double>& latency() { return latency_; }
+  const absl::optional<int>& channels() { return channels_; }
+  const absl::optional<int>& sample_rate() { return sample_rate_; }
+  const absl::optional<double>& latency() { return latency_; }
 
  private:
   const SourceType type_;
   const AudioProcessingProperties properties_;
-  const base::Optional<int> channels_;
-  const base::Optional<int> sample_rate_;
-  const base::Optional<double> latency_;
+  const absl::optional<int> channels_;
+  const absl::optional<int> sample_rate_;
+  const absl::optional<double> latency_;
 };
 
 // Container for each independent boolean constrainable property.
@@ -243,11 +243,11 @@ class NumericRangeSetContainer {
   // When no ideal is available and |default_setting| is provided, the setting
   // will be |default_setting| or the closest value to it.
   // When |default_setting| is **not** provided, the setting will be a value iff
-  // |allowed_values_| contains only a single value, otherwise base::nullopt is
+  // |allowed_values_| contains only a single value, otherwise absl::nullopt is
   // returned to signal that it was not possible to make a decision.
-  std::tuple<double, base::Optional<T>> SelectSettingsAndScore(
+  std::tuple<double, absl::optional<T>> SelectSettingsAndScore(
       const C& constraint,
-      const base::Optional<T>& default_setting = base::nullopt) const {
+      const absl::optional<T>& default_setting = absl::nullopt) const {
     DCHECK(!IsEmpty());
 
     if (constraint.HasIdeal()) {
@@ -274,7 +274,7 @@ class NumericRangeSetContainer {
       return std::make_tuple(0.0, *allowed_values_.Min());
     }
 
-    return std::make_tuple(0.0, base::nullopt);
+    return std::make_tuple(0.0, absl::nullopt);
   }
 
   bool IsEmpty() const { return allowed_values_.IsEmpty(); }
@@ -325,11 +325,11 @@ class NumericDiscreteSetContainer {
   // will be |default_setting| or the closest value to it (using fitness
   // distance).
   // When |default_setting| is **not** provided, the setting will be a value iff
-  // |allowed_values_| contains only a single value, otherwise base::nullopt is
+  // |allowed_values_| contains only a single value, otherwise absl::nullopt is
   // returned to signal that it was not possible to make a decision.
-  std::tuple<double, base::Optional<T>> SelectSettingsAndScore(
+  std::tuple<double, absl::optional<T>> SelectSettingsAndScore(
       const C& constraint,
-      const base::Optional<T>& default_setting = base::nullopt) const {
+      const absl::optional<T>& default_setting = absl::nullopt) const {
     DCHECK(!IsEmpty());
 
     if (constraint.HasIdeal()) {
@@ -355,7 +355,7 @@ class NumericDiscreteSetContainer {
       return std::make_tuple(0.0, *allowed_values_.begin());
     }
 
-    return std::make_tuple(0.0, base::nullopt);
+    return std::make_tuple(0.0, absl::nullopt);
   }
 
   bool IsEmpty() const { return allowed_values_.IsEmpty(); }
@@ -847,7 +847,7 @@ class ProcessingBasedContainer {
 
   std::tuple<Score,
              AudioProcessingProperties,
-             base::Optional<int> /* requested_buffer_size */,
+             absl::optional<int> /* requested_buffer_size */,
              int /* num_channels */>
   SelectSettingsAndScore(const ConstraintSet& constraint_set,
                          bool should_disable_hardware_noise_suppression,
@@ -862,28 +862,28 @@ class ProcessingBasedContainer {
             constraint_set.sample_size, GetSampleSize());
     score += sub_score;
 
-    base::Optional<int> num_channels;
+    absl::optional<int> num_channels;
     std::tie(sub_score, num_channels) =
         channels_container_.SelectSettingsAndScore(constraint_set.channel_count,
                                                    /*default_setting=*/1);
     DCHECK(num_channels);
     score += sub_score;
 
-    base::Optional<int> sample_size;
+    absl::optional<int> sample_size;
     std::tie(sub_score, sample_size) =
         sample_rate_container_.SelectSettingsAndScore(
             constraint_set.sample_rate);
-    DCHECK(sample_size != base::nullopt);
+    DCHECK(sample_size != absl::nullopt);
     score += sub_score;
 
-    base::Optional<double> latency;
+    absl::optional<double> latency;
     std::tie(sub_score, latency) =
         latency_container_.SelectSettingsAndScore(constraint_set.latency);
     score += sub_score;
 
     // Only request an explicit change to the buffer size for the unprocessed
     // container, and only if it's based on a specific user constraint.
-    base::Optional<int> requested_buffer_size;
+    absl::optional<int> requested_buffer_size;
     if (processing_type_ == ProcessingType::kUnprocessed && latency &&
         !constraint_set.latency.IsUnconstrained()) {
       int min_buffer_size, max_buffer_size;
@@ -1064,10 +1064,10 @@ class ProcessingBasedContainer {
 
     DCHECK(source_info.channels());
     channels_container_ = IntegerDiscreteContainer({*source_info.channels()});
-    DCHECK(source_info.sample_rate() != base::nullopt);
+    DCHECK(source_info.sample_rate() != absl::nullopt);
     sample_rate_container_ = IntegerRangeContainer(
         IntRangeSet::FromValue(*source_info.sample_rate()));
-    DCHECK(source_info.latency() != base::nullopt);
+    DCHECK(source_info.latency() != absl::nullopt);
     latency_container_ =
         DoubleRangeContainer(DoubleRangeSet::FromValue(*source_info.latency()));
   }
@@ -1266,7 +1266,7 @@ class DeviceContainer {
     Score best_score(-1.0);
     AudioProcessingProperties best_properties;
     const ProcessingBasedContainer* best_container = nullptr;
-    base::Optional<int> best_requested_buffer_size;
+    absl::optional<int> best_requested_buffer_size;
     int best_num_channels = 1;
     for (const auto& container : processing_based_containers_) {
       if (container.IsEmpty())
@@ -1274,7 +1274,7 @@ class DeviceContainer {
 
       Score container_score(0.0);
       AudioProcessingProperties container_properties;
-      base::Optional<int> requested_buffer_size;
+      absl::optional<int> requested_buffer_size;
       int num_channels;
       std::tie(container_score, container_properties, requested_buffer_size,
                num_channels) =
@@ -1349,9 +1349,9 @@ class DeviceContainer {
     SourceType source_type;
     AudioProcessingProperties properties;
     auto* processed_source = ProcessedLocalAudioSource::From(source);
-    base::Optional<int> channels;
-    base::Optional<int> sample_rate;
-    base::Optional<double> latency;
+    absl::optional<int> channels;
+    absl::optional<int> sample_rate;
+    absl::optional<double> latency;
 
     if (!source) {
       source_type = SourceType::kNone;
@@ -1612,7 +1612,7 @@ std::tuple<int, int> GetMinMaxBufferSizesForAudioParameters(
   const int default_buffer_size = parameters.frames_per_buffer();
   DCHECK_GT(default_buffer_size, 0);
 
-  const base::Optional<media::AudioParameters::HardwareCapabilities>
+  const absl::optional<media::AudioParameters::HardwareCapabilities>
       hardware_capabilities = parameters.hardware_capabilities();
 
   // Only support platforms where we have both fixed min and max buffer size

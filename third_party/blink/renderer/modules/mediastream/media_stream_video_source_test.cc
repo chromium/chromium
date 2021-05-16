@@ -81,14 +81,14 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebMediaStreamTrack CreateTrack(
       const std::string& id,
       const VideoTrackAdapterSettings& adapter_settings,
-      const base::Optional<bool>& noise_reduction,
+      const absl::optional<bool>& noise_reduction,
       bool is_screencast,
       double min_frame_rate) {
     bool enabled = true;
     return MediaStreamVideoTrack::CreateVideoTrack(
         mock_stream_video_source_, adapter_settings, noise_reduction,
-        is_screencast, min_frame_rate, base::nullopt, base::nullopt,
-        base::nullopt, false,
+        is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
+        absl::nullopt, false,
         WTF::Bind(&MediaStreamVideoSourceTest::OnConstraintsApplied,
                   base::Unretained(this)),
         enabled);
@@ -97,7 +97,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebMediaStreamTrack CreateTrack() {
     return CreateTrack("123",
                        VideoTrackAdapterSettings(gfx::Size(100, 100), 30.0),
-                       base::Optional<bool>(), false, 0.0);
+                       absl::optional<bool>(), false, 0.0);
   }
 
   WebMediaStreamTrack CreateTrackAndStartSource(int width,
@@ -106,7 +106,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
                                                 bool detect_rotation = false) {
     WebMediaStreamTrack track = CreateTrack(
         "123", VideoTrackAdapterSettings(gfx::Size(width, height), frame_rate),
-        base::Optional<bool>(), false, 0.0);
+        absl::optional<bool>(), false, 0.0);
 
     EXPECT_EQ(0, NumberOfSuccessConstraintsCallbacks());
     mock_stream_video_source_->StartMockedSource();
@@ -206,7 +206,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
         "dummy",
         VideoTrackAdapterSettings(gfx::Size(expected_width2, expected_height2),
                                   MediaStreamVideoSource::kDefaultFrameRate),
-        base::Optional<bool>(), false, 0.0);
+        absl::optional<bool>(), false, 0.0);
 
     MockMediaStreamVideoSink sink1;
     sink1.ConnectToTrack(track1);

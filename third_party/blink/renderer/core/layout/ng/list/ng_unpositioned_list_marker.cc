@@ -54,7 +54,7 @@ scoped_refptr<const NGLayoutResult> NGUnpositionedListMarker::Layout(
   return marker_layout_result;
 }
 
-base::Optional<LayoutUnit> NGUnpositionedListMarker::ContentAlignmentBaseline(
+absl::optional<LayoutUnit> NGUnpositionedListMarker::ContentAlignmentBaseline(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content) const {
@@ -66,7 +66,7 @@ base::Optional<LayoutUnit> NGUnpositionedListMarker::ContentAlignmentBaseline(
     // with the next non-empty line box produced. (This can occur with floats
     // producing empty line-boxes).
     if (line_box.IsEmptyLineBox() && line_box.BreakToken())
-      return base::nullopt;
+      return absl::nullopt;
 
     return line_box.Metrics().ascent;
   }

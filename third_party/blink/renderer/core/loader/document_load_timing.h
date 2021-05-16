@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -88,13 +88,13 @@ class CORE_EXPORT DocumentLoadTiming final {
   }
 
   base::TimeTicks InputStart() const { return input_start_; }
-  base::Optional<base::TimeDelta> UserTimingMarkFullyLoaded() const {
+  absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const {
     return user_timing_mark_fully_loaded_;
   }
-  base::Optional<base::TimeDelta> UserTimingMarkFullyVisible() const {
+  absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const {
     return user_timing_mark_fully_visible_;
   }
-  base::Optional<base::TimeDelta> UserTimingMarkInteractive() const {
+  absl::optional<base::TimeDelta> UserTimingMarkInteractive() const {
     return user_timing_mark_interactive_;
   }
   base::TimeTicks NavigationStart() const { return navigation_start_; }
@@ -137,9 +137,9 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks reference_monotonic_time_;
   base::TimeDelta reference_wall_time_;
   base::TimeTicks input_start_;
-  base::Optional<base::TimeDelta> user_timing_mark_fully_loaded_;
-  base::Optional<base::TimeDelta> user_timing_mark_fully_visible_;
-  base::Optional<base::TimeDelta> user_timing_mark_interactive_;
+  absl::optional<base::TimeDelta> user_timing_mark_fully_loaded_;
+  absl::optional<base::TimeDelta> user_timing_mark_fully_visible_;
+  absl::optional<base::TimeDelta> user_timing_mark_interactive_;
   base::TimeTicks navigation_start_;
   base::TimeTicks commit_navigation_end_;
   WTF::Vector<base::TimeTicks> bfcache_restore_navigation_starts_;

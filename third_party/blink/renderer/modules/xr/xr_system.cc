@@ -212,7 +212,7 @@ Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
 // Converts the given string to an XRSessionFeature. If the string is
 // unrecognized, returns nullopt. Based on the spec:
 // https://immersive-web.github.io/webxr/#feature-name
-base::Optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
+absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     const ExecutionContext* context,
     const String& feature_string) {
   if (feature_string == "viewer") {
@@ -253,7 +253,7 @@ base::Optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::HAND_INPUT;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,

@@ -1055,8 +1055,8 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
          ++track_index) {
       const GridTrackSize& track_size =
           track_list.RepeatTrackSize(repeater_index, track_index);
-      base::Optional<LayoutUnit> fixed_min_track_breadth;
-      base::Optional<LayoutUnit> fixed_max_track_breadth;
+      absl::optional<LayoutUnit> fixed_min_track_breadth;
+      absl::optional<LayoutUnit> fixed_max_track_breadth;
       if (track_size.HasFixedMaxTrackBreadth()) {
         fixed_max_track_breadth = MinimumValueForLength(
             track_size.MaxTrackBreadth().length(), available_size);
@@ -2701,7 +2701,7 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeSetGeometry(
 
 LayoutUnit NGGridLayoutAlgorithm::GridGap(
     GridTrackSizingDirection track_direction) const {
-  const base::Optional<Length>& gap =
+  const absl::optional<Length>& gap =
       (track_direction == kForColumns) ? Style().ColumnGap() : Style().RowGap();
 
   if (!gap)
@@ -2822,7 +2822,7 @@ void AlignmentOffsetForOutOfFlow(
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
     const GridItemData& grid_item,
     const LogicalSize& containing_grid_area_size,
-    base::Optional<LayoutUnit> opt_fixed_block_size,
+    absl::optional<LayoutUnit> opt_fixed_block_size,
     NGCacheSlot cache_slot) const {
   NGConstraintSpaceBuilder builder(
       ConstraintSpace(), grid_item.node.Style().GetWritingDirection(),
@@ -2859,7 +2859,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
                                &containing_grid_area->offset.block_offset,
                                &containing_grid_area->size.block_size);
   return CreateConstraintSpace(grid_item, containing_grid_area->size,
-                               /* opt_fixed_block_size */ base::nullopt,
+                               /* opt_fixed_block_size */ absl::nullopt,
                                NGCacheSlot::kLayout);
 }
 
@@ -2867,7 +2867,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridGeometry& grid_geometry,
     const GridItemData& grid_item,
     GridTrackSizingDirection track_direction,
-    base::Optional<LayoutUnit> opt_fixed_block_size) const {
+    absl::optional<LayoutUnit> opt_fixed_block_size) const {
   LogicalOffset unused_offset;
   LogicalSize containing_grid_area_size(kIndefiniteSize, kIndefiniteSize);
 
@@ -2898,8 +2898,8 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     GridArea resolved_position;
     LayoutUnit baseline;
   };
-  base::Optional<PositionAndBaseline> alignment_baseline;
-  base::Optional<PositionAndBaseline> fallback_baseline;
+  absl::optional<PositionAndBaseline> alignment_baseline;
+  absl::optional<PositionAndBaseline> fallback_baseline;
 
   for (const auto& grid_item : grid_items.item_data) {
     LogicalRect containing_grid_area;
@@ -2956,7 +2956,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     // Determine the relative offset here (instead of in the builder). This is
     // safe as grid *also* has special inflow-bounds logic (otherwise this
     // wouldn't work).
-    base::Optional<LogicalOffset> relative_offset = LogicalOffset();
+    absl::optional<LogicalOffset> relative_offset = LogicalOffset();
     if (item_style.GetPosition() == EPosition::kRelative) {
       *relative_offset += ComputeRelativeOffsetForBoxFragment(
           physical_fragment, ConstraintSpace().GetWritingDirection(),
@@ -3013,7 +3013,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   const LogicalSize default_containing_block_size =
       ShrinkLogicalSize(fragment_size, BorderScrollbarPadding());
   for (const GridItemData& out_of_flow_item : out_of_flow_items) {
-    base::Optional<LogicalRect> containing_block_rect;
+    absl::optional<LogicalRect> containing_block_rect;
     if (out_of_flow_item.is_grid_containing_block) {
       containing_block_rect = ComputeContainingGridAreaRect(
           column_track_collection, row_track_collection, grid_geometry,

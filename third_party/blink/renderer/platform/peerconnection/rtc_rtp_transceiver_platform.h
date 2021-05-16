@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,15 +53,15 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
   // can exist for the same webrtc-layer transceiver.
   virtual uintptr_t Id() const = 0;
   virtual String Mid() const = 0;
-  virtual void SetMid(base::Optional<String>) {}
+  virtual void SetMid(absl::optional<String>) {}
   virtual std::unique_ptr<RTCRtpSenderPlatform> Sender() const = 0;
   virtual std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const = 0;
   virtual bool Stopped() const = 0;
   virtual webrtc::RtpTransceiverDirection Direction() const = 0;
   virtual webrtc::RTCError SetDirection(webrtc::RtpTransceiverDirection) = 0;
-  virtual base::Optional<webrtc::RtpTransceiverDirection> CurrentDirection()
+  virtual absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
       const = 0;
-  virtual base::Optional<webrtc::RtpTransceiverDirection> FiredDirection()
+  virtual absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const = 0;
   virtual webrtc::RTCError Stop() {
     NOTREACHED();

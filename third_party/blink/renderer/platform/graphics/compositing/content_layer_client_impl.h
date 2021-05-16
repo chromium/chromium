@@ -64,7 +64,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   // Callback from raster_invalidator_.
   void InvalidateRect(const IntRect&);
 
-  base::Optional<PaintChunk::Id> id_;
+  absl::optional<PaintChunk::Id> id_;
   scoped_refptr<cc::PictureLayer> cc_picture_layer_;
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
   RasterInvalidator raster_invalidator_;

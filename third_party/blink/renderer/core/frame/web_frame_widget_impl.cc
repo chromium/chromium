@@ -1731,7 +1731,7 @@ void WebFrameWidgetImpl::ShowContextMenu(
 
 void WebFrameWidgetImpl::SetViewportIntersection(
     mojom::blink::ViewportIntersectionStatePtr intersection_state,
-    const base::Optional<VisualProperties>& visual_properties) {
+    const absl::optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
   // TODO(https://crbug.com/1148960): Should this deal with portals?
   DCHECK(ForSubframe());
@@ -1783,7 +1783,7 @@ void WebFrameWidgetImpl::SetIsInertForSubFrame(bool inert) {
   LocalRootImpl()->GetFrame()->SetIsInert(inert);
 }
 
-base::Optional<gfx::Point>
+absl::optional<gfx::Point>
 WebFrameWidgetImpl::GetAndResetContextMenuLocation() {
   return std::move(host_context_menu_location_);
 }
@@ -1994,7 +1994,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
     }
   }
 
-  base::Optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
+  absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
   if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
     ukm_timer.emplace(LocalRootImpl()
                           ->GetFrame()
@@ -2982,8 +2982,8 @@ bool WebFrameWidgetImpl::ShouldSuppressKeyboardForFocusedElement() {
 }
 
 void WebFrameWidgetImpl::GetEditContextBoundsInWindow(
-    base::Optional<gfx::Rect>* edit_context_control_bounds,
-    base::Optional<gfx::Rect>* edit_context_selection_bounds) {
+    absl::optional<gfx::Rect>* edit_context_control_bounds,
+    absl::optional<gfx::Rect>* edit_context_selection_bounds) {
   WebInputMethodController* controller = GetActiveWebInputMethodController();
   if (!controller)
     return;
@@ -3854,7 +3854,7 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   }
 }
 
-base::Optional<blink::mojom::ScreenOrientation>
+absl::optional<blink::mojom::ScreenOrientation>
 WebFrameWidgetImpl::ScreenOrientationOverride() {
   return View()->ScreenOrientationOverride();
 }

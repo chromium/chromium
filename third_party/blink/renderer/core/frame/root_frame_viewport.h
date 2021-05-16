@@ -124,13 +124,13 @@ class CORE_EXPORT RootFrameViewport final
   // RootFrameViewport delegates these scroll-snap methods to its layout
   // viewport.
   const cc::SnapContainerData* GetSnapContainerData() const override;
-  void SetSnapContainerData(base::Optional<cc::SnapContainerData>) override;
+  void SetSnapContainerData(absl::optional<cc::SnapContainerData>) override;
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
   bool SnapContainerDataNeedsUpdate() const override;
   void SetSnapContainerDataNeedsUpdate(bool) override;
   bool NeedsResnap() const override;
   void SetNeedsResnap(bool) override;
-  base::Optional<FloatPoint> GetSnapPositionAndSetTarget(
+  absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
 
   void SetPendingHistoryRestoreScrollOffset(
@@ -174,7 +174,7 @@ class CORE_EXPORT RootFrameViewport final
 
   Member<ScrollableArea> visual_viewport_;
   Member<ScrollableArea> layout_viewport_;
-  base::Optional<HistoryItem::ViewState> pending_view_state_;
+  absl::optional<HistoryItem::ViewState> pending_view_state_;
   bool should_restore_scroll_;
 };
 

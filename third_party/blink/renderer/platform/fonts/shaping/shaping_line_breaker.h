@@ -54,7 +54,7 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
 
    public:
     // Indicates the limits of the space run.
-    base::Optional<unsigned> non_hangable_run_end;
+    absl::optional<unsigned> non_hangable_run_end;
 
     // Indicates the resulting break offset.
     unsigned break_offset;
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
           is_hyphenated(hyphenated) {}
 
     unsigned offset;
-    base::Optional<unsigned> non_hangable_run_end;
+    absl::optional<unsigned> non_hangable_run_end;
     bool is_hyphenated;
   };
   BreakOpportunity PreviousBreakOpportunity(unsigned offset,

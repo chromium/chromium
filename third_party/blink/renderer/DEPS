@@ -34,7 +34,6 @@ include_rules = [
     "+base/numerics/clamped_math.h",
     "+base/numerics/ranges.h",
     "+base/numerics/safe_conversions.h",
-    "+base/optional.h",
     "+base/rand_util.h",
     "+base/ranges",
     "+base/sequence_checker.h",
@@ -70,6 +69,7 @@ include_rules = [
     "+services/network/public/mojom",
     "+testing/gmock/include/gmock",
     "+testing/gtest/include/gtest",
+    "+third_party/abseil-cpp/absl/types/optional.h",
     "+third_party/blink/public/platform",
     "+third_party/blink/renderer/platform",
 

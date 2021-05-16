@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
@@ -36,11 +36,11 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primaryKey,
-      base::Optional<std::unique_ptr<IDBValue>>) override;
+      absl::optional<std::unique_ptr<IDBValue>>) override;
   MOCK_METHOD3(DoSuccessCursorContinue,
                void(const std::unique_ptr<IDBKey>& key,
                     const std::unique_ptr<IDBKey>& primaryKey,
-                    const base::Optional<std::unique_ptr<IDBValue>>& value));
+                    const absl::optional<std::unique_ptr<IDBValue>>& value));
 
   MOCK_METHOD1(SuccessNamesAndVersionsList,
                void(Vector<mojom::blink::IDBNameAndVersionPtr>));
@@ -49,14 +49,14 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
   MOCK_METHOD4(
       DoSuccessCursor,
       void(const mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>&
                cursor_info,
            const std::unique_ptr<IDBKey>& key,
            const std::unique_ptr<IDBKey>& primary_key,
-           const base::Optional<std::unique_ptr<IDBValue>>& optional_value));
+           const absl::optional<std::unique_ptr<IDBValue>>& optional_value));
 
   MOCK_METHOD3(SuccessCursorPrefetch,
                void(Vector<std::unique_ptr<IDBKey>> keys,

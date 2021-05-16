@@ -336,7 +336,7 @@ HitTestResult HitTestResultForRootFramePos(
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
-    const base::Optional<RemoteFrameToken>& source_frame_token) {
+    const absl::optional<RemoteFrameToken>& source_frame_token) {
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
@@ -392,12 +392,12 @@ class ResourceSnapshotForWebBundleImpl
   void GetResourceBody(uint64_t index,
                        GetResourceBodyCallback callback) override {
     if (index >= resources_.size()) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     const auto& resource = resources_.at(SafeCast<WTF::wtf_size_t>(index));
     if (!resource.data) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
     std::move(callback).Run(
@@ -1245,8 +1245,8 @@ void LocalFrame::DidChangeThemeColor() {
   if (Tree().Parent())
     return;
 
-  base::Optional<Color> color = GetDocument()->ThemeColor();
-  base::Optional<SkColor> sk_color;
+  absl::optional<Color> color = GetDocument()->ThemeColor();
+  absl::optional<SkColor> sk_color;
   if (color)
     sk_color = color->Rgb();
 
@@ -2322,9 +2322,9 @@ void LocalFrame::SetOpener(Frame* opener_frame) {
   if (web_frame && Opener() != opener_frame) {
     GetLocalFrameHostRemote().DidChangeOpener(
         opener_frame
-            ? base::Optional<blink::LocalFrameToken>(
+            ? absl::optional<blink::LocalFrameToken>(
                   opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
-            : base::nullopt);
+            : absl::nullopt);
   }
   SetOpenerDoNotNotify(opener_frame);
 }
@@ -3530,7 +3530,7 @@ void LocalFrame::MediaPlayerActionAt(
 
 void LocalFrame::AdvanceFocusInFrame(
     mojom::blink::FocusType focus_type,
-    const base::Optional<RemoteFrameToken>& source_frame_token) {
+    const absl::optional<RemoteFrameToken>& source_frame_token) {
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
   if (!source_frame) {
     SetInitialFocus(focus_type == mojom::blink::FocusType::kBackward);
@@ -3607,7 +3607,7 @@ void LocalFrame::OnScreensChange() {
 }
 
 void LocalFrame::PostMessageEvent(
-    const base::Optional<RemoteFrameToken>& source_frame_token,
+    const absl::optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {
@@ -3797,7 +3797,7 @@ void LocalFrame::BindReportingObserver(
 }
 
 void LocalFrame::UpdateOpener(
-    const base::Optional<blink::FrameToken>& opener_frame_token) {
+    const absl::optional<blink::FrameToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
@@ -3905,8 +3905,8 @@ void LocalFrame::GetCanonicalUrlForSharing(
   if (link_element)
     canonical_url = link_element->Href();
   std::move(callback).Run(canonical_url.IsNull()
-                              ? base::nullopt
-                              : base::make_optional(canonical_url));
+                              ? absl::nullopt
+                              : absl::make_optional(canonical_url));
 }
 
 bool LocalFrame::ShouldThrottleDownload() {

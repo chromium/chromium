@@ -288,7 +288,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     }
 
     QueueCreationParams SetWebSchedulingPriority(
-        base::Optional<WebSchedulingPriority> priority) {
+        absl::optional<WebSchedulingPriority> priority) {
       web_scheduling_priority = priority;
       return *this;
     }
@@ -379,7 +379,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
     bool freeze_when_keep_active;
-    base::Optional<WebSchedulingPriority> web_scheduling_priority;
+    absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
     void ApplyQueueTraitsToSpec() {
@@ -453,10 +453,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   }
 
   void SetNetRequestPriority(net::RequestPriority net_request_priority);
-  base::Optional<net::RequestPriority> net_request_priority() const;
+  absl::optional<net::RequestPriority> net_request_priority() const;
 
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
-  base::Optional<WebSchedulingPriority> web_scheduling_priority() const;
+  absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
 
   // TODO(kdillon): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
@@ -537,12 +537,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // to the queue, if one exists.
   //
   // Used to track UMA metrics for resource loading tasks split by net priority.
-  base::Optional<net::RequestPriority> net_request_priority_;
+  absl::optional<net::RequestPriority> net_request_priority_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used in conjunction with the frame
   // scheduling policy to determine the task queue priority.
-  base::Optional<WebSchedulingPriority> web_scheduling_priority_;
+  absl::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED

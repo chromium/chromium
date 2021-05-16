@@ -60,7 +60,7 @@ class StorageBucket final : public ScriptWrappable,
                         bool success);
   void DidSetExpires(ScriptPromiseResolver* resolver, bool success);
   void DidGetExpires(ScriptPromiseResolver* resolver,
-                     const base::Optional<base::Time> expires,
+                     const absl::optional<base::Time> expires,
                      bool success);
 
   // ExecutionContextLifecycleObserver

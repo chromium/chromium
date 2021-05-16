@@ -113,7 +113,7 @@ class ParsingContext {
   // max length to parse = 2^16 = 64 kB
   static constexpr wtf_size_t MAX_LENGTH_PARSE = 1 << 16;
 
-  base::Optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
+  absl::optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
       const FeaturePolicyDeclarationNode&);
 
   struct ParsedAllowlist {
@@ -124,7 +124,7 @@ class ParsingContext {
     ParsedAllowlist() : allowed_origins({}) {}
   };
 
-  base::Optional<mojom::blink::PermissionsPolicyFeature> ParseFeatureName(
+  absl::optional<mojom::blink::PermissionsPolicyFeature> ParseFeatureName(
       const String& feature_name);
 
   // Parse allowlist for feature.
@@ -232,17 +232,17 @@ void ParsingContext::ReportAllowlistTypeUsage() {
   }
 }
 
-base::Optional<mojom::blink::PermissionsPolicyFeature>
+absl::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
   DCHECK(!feature_name.IsEmpty());
   if (!feature_names_.Contains(feature_name)) {
     logger_.Warn("Unrecognized feature: '" + feature_name + "'.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (DisabledByOriginTrial(feature_name, execution_context_)) {
     logger_.Warn("Origin trial controlled feature not enabled: '" +
                  feature_name + "'.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   mojom::blink::PermissionsPolicyFeature feature =
       feature_names_.at(feature_name);
@@ -351,18 +351,18 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
   return allowlist;
 }
 
-base::Optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
+absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     const FeaturePolicyDeclarationNode& declaration_node) {
-  base::Optional<mojom::blink::PermissionsPolicyFeature> feature =
+  absl::optional<mojom::blink::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature)
-    return base::nullopt;
+    return absl::nullopt;
 
   ParsedAllowlist parsed_allowlist = ParseAllowlist(declaration_node.allowlist);
 
   // If same feature appeared more than once, only the first one counts.
   if (feature_observer_.FeatureObserved(*feature))
-    return base::nullopt;
+    return absl::nullopt;
 
   ParsedPermissionsPolicyDeclaration parsed_feature(*feature);
   parsed_feature.allowed_origins = std::move(parsed_allowlist.allowed_origins);
@@ -387,7 +387,7 @@ ParsedPermissionsPolicy ParsingContext::ParseIR(
   ParsedPermissionsPolicy parsed_policy;
   for (const ParsingContext::FeaturePolicyDeclarationNode& declaration_node :
        root) {
-    base::Optional<ParsedPermissionsPolicyDeclaration> parsed_feature =
+    absl::optional<ParsedPermissionsPolicyDeclaration> parsed_feature =
         ParseFeature(declaration_node);
     if (parsed_feature) {
       ReportFeatureUsage(parsed_feature->feature);

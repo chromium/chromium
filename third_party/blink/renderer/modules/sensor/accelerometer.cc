@@ -39,22 +39,22 @@ Accelerometer::Accelerometer(
              sensor_type,
              features) {}
 
-base::Optional<double> Accelerometer::x() const {
+absl::optional<double> Accelerometer::x() const {
   if (hasReading())
     return GetReading().accel.x;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> Accelerometer::y() const {
+absl::optional<double> Accelerometer::y() const {
   if (hasReading())
     return GetReading().accel.y;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> Accelerometer::z() const {
+absl::optional<double> Accelerometer::z() const {
   if (hasReading())
     return GetReading().accel.z;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void Accelerometer::Trace(Visitor* visitor) const {

@@ -365,7 +365,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 
 void KeyframeEffect::StartAnimationOnCompositor(
     int group,
-    base::Optional<double> start_time,
+    absl::optional<double> start_time,
     base::TimeDelta time_offset,
     double animation_playback_rate,
     CompositorAnimation* compositor_animation) {
@@ -578,7 +578,7 @@ void KeyframeEffect::ApplyEffects() {
     GetAnimation()->CancelAnimationOnCompositor();
   }
 
-  base::Optional<double> iteration = CurrentIteration();
+  absl::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   bool changed = false;
@@ -670,7 +670,7 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
 
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
-    base::Optional<AnimationTimeDelta> local_time,
+    absl::optional<AnimationTimeDelta> local_time,
     AnimationTimeDelta time_to_next_iteration) const {
   const AnimationTimeDelta start_time = SpecifiedTiming().start_delay;
   const AnimationTimeDelta end_time_minus_end_delay =

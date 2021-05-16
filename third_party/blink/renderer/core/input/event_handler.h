@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
@@ -301,9 +301,9 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   bool IsSelectingLink(const HitTestResult&);
   bool ShouldShowIBeamForNode(const Node*, const HitTestResult&);
   bool ShouldShowResizeForNode(const Node*, const HitTestLocation&);
-  base::Optional<ui::Cursor> SelectCursor(const HitTestLocation& location,
+  absl::optional<ui::Cursor> SelectCursor(const HitTestLocation& location,
                                           const HitTestResult&);
-  base::Optional<ui::Cursor> SelectAutoCursor(const HitTestResult&,
+  absl::optional<ui::Cursor> SelectAutoCursor(const HitTestResult&,
                                               Node*,
                                               const ui::Cursor& i_beam);
 
@@ -422,7 +422,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // following events too soon (less than 0.15s). It is ok we only record
   // last_show_press_timestamp_ in root frame since root frame will have
   // subframe as active element if subframe has active element.
-  base::Optional<base::TimeTicks> last_show_press_timestamp_;
+  absl::optional<base::TimeTicks> last_show_press_timestamp_;
   Member<Element> last_deferred_tap_element_;
 
   // Set on GestureTapDown if unique_touch_event_id_ matches cached adjusted

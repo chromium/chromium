@@ -150,7 +150,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
   // atomic inline box.
   DCHECK(node.GetLayoutObject()->IsAtomicInlineLevel());
   const Position before_node = Position::BeforeNode(node);
-  base::Optional<unsigned> maybe_offset_before =
+  absl::optional<unsigned> maybe_offset_before =
       NGOffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
   // We should have offset mapping for atomic inline boxes.
   DCHECK(maybe_offset_before.has_value());
@@ -180,7 +180,7 @@ CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
   const NGCaretPositionType position_type =
       offset == offset_before ? NGCaretPositionType::kBeforeBox
                               : NGCaretPositionType::kAfterBox;
-  NGCaretPosition candidate{cursor, position_type, base::nullopt};
+  NGCaretPosition candidate{cursor, position_type, absl::nullopt};
 
   if (offset == offset_before &&
       CanResolveCaretPositionBeforeFragment(cursor, affinity)) {
@@ -321,7 +321,7 @@ NGCaretPosition ComputeNGCaretPosition(
     NOTREACHED() << context;
     return NGCaretPosition();
   }
-  const base::Optional<unsigned> maybe_offset =
+  const absl::optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
     // We can reach here with empty text nodes.

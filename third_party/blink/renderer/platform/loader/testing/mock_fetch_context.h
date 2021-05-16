@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_MOCK_FETCH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_MOCK_FETCH_CONTEXT_H_
 
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -48,32 +48,32 @@ class MockFetchContext : public FetchContext {
   bool AllowImage(bool images_enabled, const KURL&) const override {
     return true;
   }
-  base::Optional<ResourceRequestBlockedReason> CanRequest(
+  absl::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<ResourceRequestBlockedReason>
+  absl::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType type,
       const ResourceRequest& resource_request,
       const KURL& url,
       const ResourceLoaderOptions& options,
       ReportingDisposition reporting_disposition,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
       const override {
     if (blocked_urls_.Contains(url.GetString())) {
       return ResourceRequestBlockedReason::kSubresourceFilter;
     }
 
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+  absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL& url,
@@ -81,7 +81,7 @@ class MockFetchContext : public FetchContext {
       ReportingDisposition reporting_disposition,
       const KURL& url_before_redirects,
       ResourceRequest::RedirectStatus redirect_status) const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
   void AddResourceTiming(
       const ResourceTimingInfo& resource_timing_info) override {
@@ -103,7 +103,7 @@ class MockFetchContext : public FetchContext {
 
   bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const base::Optional<KURL>& alias_url,
+      const absl::optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override {
     const KURL url = alias_url ? alias_url.value() : resource_request.Url();

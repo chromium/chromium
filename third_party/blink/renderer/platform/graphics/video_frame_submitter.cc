@@ -511,7 +511,7 @@ bool VideoFrameSubmitter::SubmitFrame(
   // contain any SurfaceDrawQuads.
   compositor_frame_sink_->SubmitCompositorFrame(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(compositor_frame), base::nullopt, 0);
+      std::move(compositor_frame), absl::nullopt, 0);
   frame_trackers_.NotifySubmitFrame(frame_token, false, begin_frame_ack,
                                     last_begin_frame_args_);
   resource_provider_->ReleaseFrameResources();
@@ -539,7 +539,7 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
 
   compositor_frame_sink_->SubmitCompositorFrame(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(compositor_frame), base::nullopt, 0);
+      std::move(compositor_frame), absl::nullopt, 0);
   frame_trackers_.NotifySubmitFrame(frame_token, false, begin_frame_ack,
                                     last_begin_frame_args_);
 

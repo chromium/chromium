@@ -25,7 +25,7 @@ class XRRenderState : public ScriptWrappable {
   // Session's views.
   double depthNear() const { return depth_near_; }
   double depthFar() const { return depth_far_; }
-  base::Optional<double> inlineVerticalFieldOfView() const;
+  absl::optional<double> inlineVerticalFieldOfView() const;
   XRWebGLLayer* baseLayer() const { return base_layer_; }
 
   HTMLCanvasElement* output_canvas() const;
@@ -43,7 +43,7 @@ class XRRenderState : public ScriptWrappable {
   double depth_near_ = 0.1;
   double depth_far_ = 1000.0;
   Member<XRWebGLLayer> base_layer_;
-  base::Optional<double> inline_vertical_fov_;
+  absl::optional<double> inline_vertical_fov_;
 };
 
 }  // namespace blink

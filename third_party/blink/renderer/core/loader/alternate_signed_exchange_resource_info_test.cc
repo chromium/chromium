@@ -66,10 +66,10 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, Simple) {
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
   EXPECT_EQ(nullptr,
             info->FindMatchingEntry(KURL("https://publisher.example/image"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
 }
 
 TEST_F(AlternateSignedExchangeResourceInfoTest, MultipleResources) {
@@ -114,7 +114,7 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, MultipleResources) {
     EXPECT_TRUE(resource->variant_key().IsEmpty());
     EXPECT_EQ(resource.get(), info->FindMatchingEntry(
                                   KURL("https://publisher.example/script.js"),
-                                  base::nullopt, {"en"}));
+                                  absl::nullopt, {"en"}));
   }
   {
     const auto& it = entries.find(KURL("https://publisher.example/image"));
@@ -130,7 +130,7 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, MultipleResources) {
     EXPECT_TRUE(resource->variant_key().IsEmpty());
     EXPECT_EQ(resource.get(),
               info->FindMatchingEntry(KURL("https://publisher.example/image"),
-                                      base::nullopt, {"en"}));
+                                      absl::nullopt, {"en"}));
   }
 }
 
@@ -162,7 +162,7 @@ TEST_F(AlternateSignedExchangeResourceInfoTest,
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
 }
 
 TEST_F(AlternateSignedExchangeResourceInfoTest, NoType) {
@@ -196,10 +196,10 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, NoType) {
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
   EXPECT_EQ(nullptr,
             info->FindMatchingEntry(KURL("https://publisher.example/image"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
 }
 
 TEST_F(AlternateSignedExchangeResourceInfoTest, InvalidOuterURL) {
@@ -232,7 +232,7 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, InvalidOuterURL) {
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
-                                    base::nullopt, {"en"}));
+                                    absl::nullopt, {"en"}));
 }
 
 TEST_F(AlternateSignedExchangeResourceInfoTest, InvalidInnerURL) {

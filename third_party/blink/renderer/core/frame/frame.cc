@@ -165,7 +165,7 @@ bool Frame::Detach(FrameDetachType type) {
   // the frame tree. https://crbug.com/578349.
   DisconnectOwnerElement();
   page_ = nullptr;
-  embedding_token_ = base::nullopt;
+  embedding_token_ = absl::nullopt;
 
   return true;
 }

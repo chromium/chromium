@@ -94,7 +94,7 @@ class SVGInlineTextBoxPainter {
       SelectionState selection_state,
       const ComputedStyle& style,
       PaintController& paint_controller,
-      base::Optional<SelectionBoundsRecorder>& bounds_recorder);
+      absl::optional<SelectionBoundsRecorder>& bounds_recorder);
 
   const SVGInlineTextBox& svg_inline_text_box_;
 };

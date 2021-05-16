@@ -39,8 +39,8 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -562,11 +562,11 @@ enum class SdpFormat {
   kComplexUnifiedPlan,
 };
 
-base::Optional<SdpFormat> DeduceSdpFormat(
+absl::optional<SdpFormat> DeduceSdpFormat(
     const ParsedSessionDescription& parsed_sdp) {
   auto* session_description = parsed_sdp.description();
   if (!session_description)
-    return base::nullopt;
+    return absl::nullopt;
   size_t num_audio_mlines = 0u;
   size_t num_video_mlines = 0u;
   size_t num_audio_tracks = 0u;
@@ -1132,9 +1132,9 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
   return nullptr;
 }
 
-base::Optional<ComplexSdpCategory> RTCPeerConnection::CheckForComplexSdp(
+absl::optional<ComplexSdpCategory> RTCPeerConnection::CheckForComplexSdp(
     const ParsedSessionDescription& parsed_sdp) const {
-  base::Optional<SdpFormat> sdp_format = DeduceSdpFormat(parsed_sdp);
+  absl::optional<SdpFormat> sdp_format = DeduceSdpFormat(parsed_sdp);
   if (!sdp_format) {
     return sdp_semantics_specified_
                ? ComplexSdpCategory::kErrorExplicitSemantics
@@ -1151,12 +1151,12 @@ base::Optional<ComplexSdpCategory> RTCPeerConnection::CheckForComplexSdp(
                : ComplexSdpCategory::kUnifiedPlanImplicitSemantics;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void RTCPeerConnection::RecordSdpCategoryAndMaybeEmitWarnings(
     const ParsedSessionDescription& parsed_sdp) const {
-  base::Optional<ComplexSdpCategory> complex_sdp_category =
+  absl::optional<ComplexSdpCategory> complex_sdp_category =
       CheckForComplexSdp(parsed_sdp);
   if (!complex_sdp_category || !GetExecutionContext())
     return;
@@ -1172,7 +1172,7 @@ void RTCPeerConnection::RecordSdpCategoryAndMaybeEmitWarnings(
   }
 
   // kComplexPlanB/kComplexUnifiedPlan or null.
-  base::Optional<SdpFormat> complex_sdp_format;
+  absl::optional<SdpFormat> complex_sdp_format;
   switch (*complex_sdp_category) {
     case ComplexSdpCategory::kPlanBExplicitSemantics:
     case ComplexSdpCategory::kPlanBImplicitSemantics:
@@ -1184,7 +1184,7 @@ void RTCPeerConnection::RecordSdpCategoryAndMaybeEmitWarnings(
       break;
     case ComplexSdpCategory::kErrorImplicitSemantics:
     case ComplexSdpCategory::kErrorExplicitSemantics:
-      complex_sdp_format = base::nullopt;
+      complex_sdp_format = absl::nullopt;
       break;
   }
   // Complex SDP use counters go up when complex SDP is used on an
@@ -1388,7 +1388,7 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      base::nullopt, this, resolver, "RTCPeerConnection",
+      absl::nullopt, this, resolver, "RTCPeerConnection",
       "setLocalDescription");
   peer_handler_->SetLocalDescription(request);
   return promise;
@@ -1814,7 +1814,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
 
   // Check if |keygenAlgorithm| contains the optional DOMTimeStamp |expires|
   // attribute.
-  base::Optional<DOMTimeStamp> expires;
+  absl::optional<DOMTimeStamp> expires;
   if (keygen_algorithm->IsObject()) {
     Dictionary keygen_algorithm_dict(script_state->GetIsolate(),
                                      keygen_algorithm->GetAsObject().V8Value(),
@@ -1848,7 +1848,7 @@ ScriptPromise RTCPeerConnection::generateCertificate(
   const char* unsupported_params_string =
       "The 1st argument provided is an AlgorithmIdentifier with a supported "
       "algorithm name, but the parameters are not supported.";
-  base::Optional<rtc::KeyParams> key_params;
+  absl::optional<rtc::KeyParams> key_params;
   switch (crypto_algorithm.Id()) {
     case kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
       // name: "RSASSA-PKCS1-v1_5"
@@ -1960,7 +1960,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
-      base::nullopt, this, resolver, "RTCPeerConnection", "addIceCandidate");
+      absl::nullopt, this, resolver, "RTCPeerConnection", "addIceCandidate");
   peer_handler_->AddICECandidate(request, std::move(platform_candidate));
   return promise;
 }
@@ -1998,7 +1998,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   DisableBackForwardCache(GetExecutionContext());
 
   auto* request = MakeGarbageCollected<RTCVoidRequestImpl>(
-      GetExecutionContext(), base::nullopt, this, success_callback,
+      GetExecutionContext(), absl::nullopt, this, success_callback,
       error_callback);
   peer_handler_->AddICECandidate(request, std::move(platform_candidate));
   return ScriptPromise::CastUndefined(script_state);
@@ -2087,19 +2087,19 @@ String RTCPeerConnection::connectionState() const {
   return String();
 }
 
-base::Optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
+absl::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
   if (closed_ || !remoteDescription()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   webrtc::PeerConnectionInterface* native_connection =
       peer_handler_->NativePeerConnection();
   if (!native_connection) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   absl::optional<bool> can_trickle =
       native_connection->can_trickle_ice_candidates();
   if (!can_trickle) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return *can_trickle;
 }
@@ -2965,7 +2965,7 @@ void RTCPeerConnection::DidGenerateICECandidate(
 }
 
 void RTCPeerConnection::DidFailICECandidate(const String& address,
-                                            base::Optional<uint16_t> port,
+                                            absl::optional<uint16_t> port,
                                             const String& host_candidate,
                                             const String& url,
                                             int error_code,
@@ -3223,7 +3223,7 @@ void RTCPeerConnection::DidModifyTransceivers(
           }
         }
         (*it)->receiver()->set_streams(MediaStreamVector());
-        (*it)->platform_transceiver()->SetMid(base::nullopt);
+        (*it)->platform_transceiver()->SetMid(absl::nullopt);
         transceivers_.erase(it);
         break;
       }

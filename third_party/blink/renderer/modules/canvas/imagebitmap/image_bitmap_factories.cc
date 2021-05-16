@@ -187,7 +187,7 @@ static inline ImageBitmapSource* ToImageBitmapSourceInternal(
 ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<IntRect> crop_rect,
     const ImageBitmapOptions* options) {
   DCHECK(script_state->ContextIsValid());
   ImageBitmapFactories& factory = From(*ExecutionContext::From(script_state));
@@ -214,7 +214,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
   if (!bitmap_source_internal)
     return ScriptPromise();
   return CreateImageBitmap(script_state, bitmap_source_internal,
-                           base::Optional<IntRect>(), options, exception_state);
+                           absl::optional<IntRect>(), options, exception_state);
 }
 
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
@@ -236,7 +236,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
       ToImageBitmapSourceInternal(bitmap_source, options, true);
   if (!bitmap_source_internal)
     return ScriptPromise();
-  base::Optional<IntRect> crop_rect = IntRect(sx, sy, sw, sh);
+  absl::optional<IntRect> crop_rect = IntRect(sx, sy, sw, sh);
   return CreateImageBitmap(script_state, bitmap_source_internal, crop_rect,
                            options, exception_state);
 }
@@ -244,7 +244,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<IntRect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (crop_rect && (crop_rect->Width() == 0 || crop_rect->Height() == 0)) {
@@ -302,7 +302,7 @@ void ImageBitmapFactories::Trace(Visitor* visitor) const {
 
 ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
     ImageBitmapFactories& factory,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<IntRect> crop_rect,
     ScriptState* script_state,
     const ImageBitmapOptions* options)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),

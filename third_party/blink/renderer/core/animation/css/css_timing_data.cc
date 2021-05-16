@@ -23,8 +23,8 @@ Timing CSSTimingData::ConvertToTiming(size_t index) const {
   double duration = GetRepeated(duration_list_, index);
   timing.iteration_duration =
       std::isnan(duration)
-          ? base::nullopt
-          : base::make_optional(AnimationTimeDelta::FromSecondsD(duration));
+          ? absl::nullopt
+          : absl::make_optional(AnimationTimeDelta::FromSecondsD(duration));
   timing.timing_function = GetRepeated(timing_function_list_, index);
   timing.AssertValid();
   return timing;

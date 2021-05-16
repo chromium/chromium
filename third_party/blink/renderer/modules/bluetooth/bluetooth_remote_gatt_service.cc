@@ -42,7 +42,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     ScriptPromiseResolver* resolver,
     mojom::blink::WebBluetoothResult result,
-    base::Optional<
+    absl::optional<
         Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
         characteristics) {
   if (!resolver->GetExecutionContext() ||

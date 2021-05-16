@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
@@ -92,12 +92,12 @@ std::string SerializeLangClientHint(const std::string& raw_language_list) {
   return result;
 }
 
-base::Optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
-    base::Optional<std::vector<network::mojom::WebClientHintsType>> in,
+absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
+    absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
     bool permit_lang_hints,
     bool permit_ua_hints) {
   if (!in.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<network::mojom::WebClientHintsType> result;
   for (network::mojom::WebClientHintsType hint : in.value()) {
@@ -121,7 +121,7 @@ base::Optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
         result.push_back(hint);
     }
   }
-  return base::make_optional(std::move(result));
+  return absl::make_optional(std::move(result));
 }
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {

@@ -222,7 +222,7 @@ void PreloadHelper::PreconnectIfNeeded(
 // served from the cache correctly. Until
 // https://github.com/w3c/preload/issues/97 is resolved and implemented we need
 // to disable these preloads.
-base::Optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
+absl::optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
     const String& as) {
   DCHECK_EQ(as.DeprecatedLower(), as);
   if (as == "image")
@@ -237,7 +237,7 @@ base::Optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
     return ResourceType::kFont;
   if (as == "fetch")
     return ResourceType::kRaw;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // |base_url| is used in Link HTTP Header based preloads to resolve relative
@@ -254,7 +254,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
   if (!document.Loader() || !params.rel.IsLinkPreload())
     return nullptr;
 
-  base::Optional<ResourceType> resource_type =
+  absl::optional<ResourceType> resource_type =
       PreloadHelper::GetResourceTypeFromAsAttribute(params.as);
 
   MediaValues* media_values = nullptr;
@@ -288,7 +288,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
 
   if (caller == kLinkCalledFromHeader)
     UseCounter::Count(document, WebFeature::kLinkHeaderPreload);
-  if (resource_type == base::nullopt) {
+  if (resource_type == absl::nullopt) {
     String message;
     if (IsValidButUnsupportedAsAttribute(params.as)) {
       message = String("<link rel=preload> uses an unsupported `as` value");
@@ -613,7 +613,7 @@ void PreloadHelper::LoadLinksFromHeader(
       DCHECK(RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
           document->GetExecutionContext()));
       KURL url = params.href;
-      base::Optional<ResourceType> resource_type =
+      absl::optional<ResourceType> resource_type =
           PreloadHelper::GetResourceTypeFromAsAttribute(params.as);
       if (resource_type == ResourceType::kImage &&
           !params.image_srcset.IsEmpty()) {

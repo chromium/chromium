@@ -27,8 +27,8 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
@@ -159,7 +159,7 @@ class DraggedNodeImageBuilder {
 #endif
 };
 
-base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
+absl::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
     const AtomicString& op) {
   // Values specified in
   // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-effectallowed
@@ -187,7 +187,7 @@ base::Optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   }
   if (op == "all")
     return kDragOperationEvery;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
@@ -563,7 +563,7 @@ bool DataTransfer::CanSetDragImage() const {
 }
 
 DragOperationsMask DataTransfer::SourceOperation() const {
-  base::Optional<DragOperationsMask> op =
+  absl::optional<DragOperationsMask> op =
       ConvertEffectAllowedToDragOperationsMask(effect_allowed_);
   DCHECK(op);
   return *op;
@@ -571,7 +571,7 @@ DragOperationsMask DataTransfer::SourceOperation() const {
 
 ui::mojom::blink::DragOperation DataTransfer::DestinationOperation() const {
   DCHECK(DropEffectIsInitialized());
-  base::Optional<DragOperationsMask> op =
+  absl::optional<DragOperationsMask> op =
       ConvertEffectAllowedToDragOperationsMask(drop_effect_);
   return static_cast<ui::mojom::blink::DragOperation>(*op);
 }

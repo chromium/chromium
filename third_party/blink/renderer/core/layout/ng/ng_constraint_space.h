@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_CONSTRAINT_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_CONSTRAINT_SPACE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -300,9 +300,9 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Return the baseline offset which the table-cell children should align
   // their baseline to.
-  base::Optional<LayoutUnit> TableCellAlignmentBaseline() const {
+  absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
     return HasRareData() ? rare_data_->TableCellAlignmentBaseline()
-                         : base::nullopt;
+                         : absl::nullopt;
   }
 
   bool IsTableCellHiddenForPaint() const {
@@ -553,16 +553,16 @@ class CORE_EXPORT NGConstraintSpace final {
   //
   // This value should be propagated to child layouts if the current layout
   // hasn't resolved its BFC offset yet.
-  base::Optional<LayoutUnit> ForcedBfcBlockOffset() const {
-    return HasRareData() ? rare_data_->ForcedBfcBlockOffset() : base::nullopt;
+  absl::optional<LayoutUnit> ForcedBfcBlockOffset() const {
+    return HasRareData() ? rare_data_->ForcedBfcBlockOffset() : absl::nullopt;
   }
 
   // If present, this is a hint as to where place any adjoining objects. This
   // isn't necessarily the final position, just where they ended up in a
   // previous layout pass.
-  base::Optional<LayoutUnit> OptimisticBfcBlockOffset() const {
+  absl::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
     return HasRareData() ? rare_data_->OptimisticBfcBlockOffset()
-                         : base::nullopt;
+                         : absl::nullopt;
   }
 
   // The "expected" BFC block-offset is:
@@ -617,8 +617,8 @@ class CORE_EXPORT NGConstraintSpace final {
   // Return true if this is participating within a -webkit-line-clamp context.
   bool IsLineClampContext() const { return bitfields_.is_line_clamp_context; }
 
-  base::Optional<int> LinesUntilClamp() const {
-    return HasRareData() ? rare_data_->LinesUntilClamp() : base::nullopt;
+  absl::optional<int> LinesUntilClamp() const {
+    return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
   }
 
   // Return true if the two constraint spaces are similar enough that it *may*
@@ -893,10 +893,10 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureBlockData()->margin_strut = margin_strut;
     }
 
-    base::Optional<LayoutUnit> OptimisticBfcBlockOffset() const {
+    absl::optional<LayoutUnit> OptimisticBfcBlockOffset() const {
       return data_union_type == kBlockData
                  ? block_data_.optimistic_bfc_block_offset
-                 : base::nullopt;
+                 : absl::nullopt;
     }
 
     void SetOptimisticBfcBlockOffset(LayoutUnit optimistic_bfc_block_offset) {
@@ -904,9 +904,9 @@ class CORE_EXPORT NGConstraintSpace final {
           optimistic_bfc_block_offset;
     }
 
-    base::Optional<LayoutUnit> ForcedBfcBlockOffset() const {
+    absl::optional<LayoutUnit> ForcedBfcBlockOffset() const {
       return data_union_type == kBlockData ? block_data_.forced_bfc_block_offset
-                                           : base::nullopt;
+                                           : absl::nullopt;
     }
 
     void SetForcedBfcBlockOffset(LayoutUnit forced_bfc_block_offset) {
@@ -922,9 +922,9 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureBlockData()->clearance_offset = clearance_offset;
     }
 
-    base::Optional<int> LinesUntilClamp() const {
+    absl::optional<int> LinesUntilClamp() const {
       return data_union_type == kBlockData ? block_data_.lines_until_clamp
-                                           : base::nullopt;
+                                           : absl::nullopt;
     }
 
     void SetLinesUntilClamp(int value) {
@@ -969,10 +969,10 @@ class CORE_EXPORT NGConstraintSpace final {
       EnsureTableCellData()->table_cell_column_index = table_cell_column_index;
     }
 
-    base::Optional<LayoutUnit> TableCellAlignmentBaseline() const {
+    absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
       return data_union_type == kTableCellData
                  ? table_cell_data_.table_cell_alignment_baseline
-                 : base::nullopt;
+                 : absl::nullopt;
     }
 
     void SetTableCellAlignmentBaseline(
@@ -1112,10 +1112,10 @@ class CORE_EXPORT NGConstraintSpace final {
       }
 
       NGMarginStrut margin_strut;
-      base::Optional<LayoutUnit> optimistic_bfc_block_offset;
-      base::Optional<LayoutUnit> forced_bfc_block_offset;
+      absl::optional<LayoutUnit> optimistic_bfc_block_offset;
+      absl::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
-      base::Optional<int> lines_until_clamp;
+      absl::optional<int> lines_until_clamp;
     };
 
     struct TableCellData {
@@ -1144,7 +1144,7 @@ class CORE_EXPORT NGConstraintSpace final {
       LayoutUnit table_cell_intrinsic_padding_block_start;
       LayoutUnit table_cell_intrinsic_padding_block_end;
       wtf_size_t table_cell_column_index = kNotFound;
-      base::Optional<LayoutUnit> table_cell_alignment_baseline;
+      absl::optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;
       bool has_collapsed_borders = false;
     };

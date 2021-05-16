@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <string>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -115,7 +115,7 @@ static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,
 BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
 
-BLINK_COMMON_EXPORT base::Optional<WebSchedulerTrackedFeature> StringToFeature(
+BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);
 
 // Converts a WebSchedulerTrackedFeature to a bit for use in a bitmask.

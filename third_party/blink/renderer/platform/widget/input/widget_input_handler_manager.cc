@@ -67,7 +67,7 @@ void CallCallback(
     mojom::blink::InputEventResultState result_state,
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
-    base::Optional<cc::TouchAction> touch_action) {
+    absl::optional<cc::TouchAction> touch_action) {
   ui::LatencyInfo::TraceIntermediateFlowEvents(
       {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_IMPL);
   std::move(callback).Run(
@@ -276,7 +276,7 @@ bool WidgetInputHandlerManager::HandleInputEvent(
          const ui::LatencyInfo& latency_info,
          std::unique_ptr<InputHandlerProxy::DidOverscrollParams>
              overscroll_params,
-         base::Optional<cc::TouchAction> touch_action) {
+         absl::optional<cc::TouchAction> touch_action) {
         if (!callback)
           return;
         std::move(callback).Run(ack_state, latency_info,
@@ -348,7 +348,7 @@ void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
       ScrollBeginFromScrollUpdate(update_event), ui::LatencyInfo());
   std::unique_ptr<cc::EventMetrics> metrics =
       cc::EventMetrics::CreateFromExisting(
-          event->Event().GetTypeAsUiEventType(), base::nullopt,
+          event->Event().GetTypeAsUiEventType(), absl::nullopt,
           event->Event().GetScrollInputType(),
           cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
           update_metrics);
@@ -484,7 +484,7 @@ void WidgetInputHandlerManager::DispatchEvent(
     event->EventPointer()->SetTimeStamp(base::TimeTicks::Now());
   }
 
-  base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+  absl::optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
   if (event->Event().GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     has_seen_first_gesture_scroll_update_after_begin_ = false;
   } else if (event->Event().GetType() ==
@@ -845,7 +845,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMainFromWidgetBase(
     const ui::LatencyInfo& latency_info,
     std::unique_ptr<blink::InputHandlerProxy::DidOverscrollParams>
         overscroll_params,
-    base::Optional<cc::TouchAction> touch_action) {
+    absl::optional<cc::TouchAction> touch_action) {
   DidHandleInputEventSentToMain(std::move(callback), ack_state, latency_info,
                                 ToDidOverscrollParams(overscroll_params.get()),
                                 touch_action);
@@ -856,7 +856,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
     mojom::blink::InputEventResultState ack_state,
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
-    base::Optional<cc::TouchAction> touch_action) {
+    absl::optional<cc::TouchAction> touch_action) {
   if (!callback)
     return;
 

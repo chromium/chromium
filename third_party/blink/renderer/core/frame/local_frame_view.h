@@ -998,7 +998,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
-  base::Optional<IntSize> frame_size_;
+  absl::optional<IntSize> frame_size_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;

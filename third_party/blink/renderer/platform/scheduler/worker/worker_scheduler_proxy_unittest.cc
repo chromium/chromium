@@ -128,7 +128,7 @@ class WorkerSchedulerProxyTest : public testing::Test {
                 nullptr,
                 task_environment_.GetMainThreadTaskRunner(),
                 task_environment_.GetMockTickClock()),
-            base::nullopt)),
+            absl::nullopt)),
         agent_group_scheduler_(
             main_thread_scheduler_->CreateAgentGroupScheduler()),
         page_scheduler_(

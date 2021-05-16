@@ -20,7 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics_override.h"
@@ -159,14 +159,14 @@ class FontMetrics {
     has_zero_width_ = has_zero_width;
   }
 
-  base::Optional<float> UnderlineThickness() const {
+  absl::optional<float> UnderlineThickness() const {
     return underline_thickness_;
   }
   void SetUnderlineThickness(float underline_thickness) {
     underline_thickness_ = underline_thickness;
   }
 
-  base::Optional<float> UnderlinePosition() const {
+  absl::optional<float> UnderlinePosition() const {
     return underline_position_;
   }
   void SetUnderlinePosition(float underline_position) {
@@ -185,8 +185,8 @@ class FontMetrics {
       const FontPlatformData&,
       const SkFont&,
       bool subpixel_ascent_descent = false,
-      base::Optional<float> ascent_override = base::nullopt,
-      base::Optional<float> descent_override = base::nullopt);
+      absl::optional<float> ascent_override = absl::nullopt,
+      absl::optional<float> descent_override = absl::nullopt);
 
  private:
   friend class SimpleFontData;
@@ -212,8 +212,8 @@ class FontMetrics {
   float line_spacing_;
   float x_height_;
   float zero_width_;
-  base::Optional<float> underline_thickness_ = base::nullopt;
-  base::Optional<float> underline_position_ = base::nullopt;
+  absl::optional<float> underline_thickness_ = absl::nullopt;
+  absl::optional<float> underline_position_ = absl::nullopt;
   int ascent_int_;
   int descent_int_;
   bool has_x_height_;

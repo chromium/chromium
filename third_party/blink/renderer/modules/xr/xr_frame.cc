@@ -43,13 +43,13 @@ const char kSpacesSequenceTooLarge[] =
 
 const char kMismatchedBufferSizes[] = "Buffer sizes must be equal";
 
-base::Optional<uint64_t> GetPlaneId(
+absl::optional<uint64_t> GetPlaneId(
     const device::mojom::blink::XRNativeOriginInformation& native_origin) {
   if (native_origin.is_plane_id()) {
     return native_origin.get_plane_id();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -95,7 +95,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
   session_->LogGetPose();
 
   device::mojom::blink::XRReferenceSpaceType type = reference_space->GetType();
-  base::Optional<TransformationMatrix> offset_space_from_viewer =
+  absl::optional<TransformationMatrix> offset_space_from_viewer =
       reference_space->OffsetFromViewer();
 
   // Can only update an XRViewerPose's views with an invertible matrix.
@@ -340,7 +340,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
     return {};
   }
 
-  base::Optional<device::mojom::blink::XRNativeOriginInformation>
+  absl::optional<device::mojom::blink::XRNativeOriginInformation>
       maybe_native_origin = space->NativeOrigin();
   if (!maybe_native_origin) {
     DVLOG(2) << __func__ << ": native origin not set, failing anchor creation";
@@ -382,13 +382,13 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const blink::TransformationMatrix& native_origin_from_anchor,
     XRSpace* space,
-    base::Optional<uint64_t> maybe_plane_id,
+    absl::optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
   // Space is not considered stationary - need to adjust the app-provided pose.
   // Let's ask the session about the appropriate stationary reference space:
-  base::Optional<XRSession::ReferenceSpaceInformation>
+  absl::optional<XRSession::ReferenceSpaceInformation>
       reference_space_information = session_->GetStationaryReferenceSpace();
 
   if (!reference_space_information) {

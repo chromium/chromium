@@ -60,7 +60,7 @@ NGLayoutOpportunity FindLayoutOpportunityForFloat(
 // should only be set when we want to fragmentation to occur.
 NGConstraintSpace CreateConstraintSpaceForFloat(
     const NGUnpositionedFloat& unpositioned_float,
-    base::Optional<LayoutUnit> origin_block_offset = base::nullopt) {
+    absl::optional<LayoutUnit> origin_block_offset = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
   NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),

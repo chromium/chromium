@@ -17,7 +17,7 @@ class OrientationSensor : public Sensor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  base::Optional<Vector<double>> quaternion();
+  absl::optional<Vector<double>> quaternion();
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void populateMatrix(const V8RotationMatrixType* target_buffer,
                       ExceptionState& exception_state);

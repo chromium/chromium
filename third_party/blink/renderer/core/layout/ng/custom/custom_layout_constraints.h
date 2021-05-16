@@ -31,7 +31,7 @@ class CustomLayoutConstraints : public ScriptWrappable {
 
   // LayoutConstraints.idl
   double fixedInlineSize() const { return fixed_inline_size_; }
-  base::Optional<double> fixedBlockSize() const;
+  absl::optional<double> fixedBlockSize() const;
   ScriptValue data(ScriptState*) const;
 
   void Trace(Visitor*) const override;

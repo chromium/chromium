@@ -10,7 +10,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_IMAGE_PAINT_TIMING_DETECTOR_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
@@ -343,7 +343,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // We cache the viewport size computation to avoid performing it on every
   // image. This value is reset when paint is finished and is computed if unset
   // when needed. 0 means that the size has not been computed.
-  base::Optional<uint64_t> viewport_size_;
+  absl::optional<uint64_t> viewport_size_;
 
   ImageRecordsManager records_manager_;
   Member<LocalFrameView> frame_view_;

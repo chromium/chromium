@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/painted_selection_bound.h"
 
 namespace blink {
@@ -20,8 +20,8 @@ namespace blink {
 // In the common case of no selection (or if the selection completely surrounds
 // a paint chunk), neither would be set.
 struct PLATFORM_EXPORT LayerSelectionData {
-  base::Optional<PaintedSelectionBound> start;
-  base::Optional<PaintedSelectionBound> end;
+  absl::optional<PaintedSelectionBound> start;
+  absl::optional<PaintedSelectionBound> end;
 };
 
 }  // namespace blink

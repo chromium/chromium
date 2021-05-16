@@ -47,7 +47,7 @@ struct ExpectedElement {
   static ExpectedElement LargeBytes(Vector<uint8_t> data) {
     uint64_t size = data.size();
     return ExpectedElement{DataElement::NewBytes(DataElementBytes::New(
-                               size, base::nullopt, mojo::NullRemote())),
+                               size, absl::nullopt, mojo::NullRemote())),
                            String(), std::move(data)};
   }
 

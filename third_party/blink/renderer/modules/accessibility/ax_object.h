@@ -35,7 +35,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -722,7 +722,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // of this attribute. As an optimization, goes up until the deepest line
   // breaking object which, in most cases, is the paragraph containing this
   // object.
-  base::Optional<const DocumentMarker::MarkerType>
+  absl::optional<const DocumentMarker::MarkerType>
   GetAriaSpellingOrGrammarMarker() const;
 
   // For all inline text objects: Returns the horizontal pixel offset of each

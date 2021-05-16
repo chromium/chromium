@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
@@ -161,7 +161,7 @@ String SerializeDirection(webrtc::RtpTransceiverDirection direction) {
 }
 
 String SerializeOptionalDirection(
-    const base::Optional<webrtc::RtpTransceiverDirection>& direction) {
+    const absl::optional<webrtc::RtpTransceiverDirection>& direction) {
   return direction ? SerializeDirection(*direction) : "null";
 }
 
@@ -461,9 +461,9 @@ const char* GetTransceiverUpdatedReasonString(
 // Note:
 // The format must be consistent with what webrtc_internals.js expects.
 // If you change it here, you must change webrtc_internals.js as well.
-base::Optional<base::Value> GetDictValueStats(const StatsReport& report) {
+absl::optional<base::Value> GetDictValueStats(const StatsReport& report) {
   if (report.values().empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   base::Value values(base::Value::Type::LIST);
 
@@ -503,10 +503,10 @@ base::Optional<base::Value> GetDictValueStats(const StatsReport& report) {
 }
 
 // Builds a dictionary Value from the StatsReport.
-base::Optional<base::Value> GetDictValue(const StatsReport& report) {
-  base::Optional<base::Value> stats = GetDictValueStats(report);
+absl::optional<base::Value> GetDictValue(const StatsReport& report) {
+  absl::optional<base::Value> stats = GetDictValueStats(report);
   if (!stats)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Note:
   // The format must be consistent with what webrtc_internals.js expects.
@@ -544,7 +544,7 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
   void OnComplete(const StatsReports& reports) override {
     auto list = std::make_unique<base::ListValue>();
     for (const auto* r : reports) {
-      base::Optional<base::Value> report = GetDictValue(*r);
+      absl::optional<base::Value> report = GetDictValue(*r);
       if (report)
         list->Append(std::move(report).value());
     }
@@ -995,7 +995,7 @@ void PeerConnectionTracker::TrackAddIceCandidate(
 void PeerConnectionTracker::TrackIceCandidateError(
     RTCPeerConnectionHandler* pc_handler,
     const String& address,
-    base::Optional<uint16_t> port,
+    absl::optional<uint16_t> port,
     const String& host_candidate,
     const String& url,
     int error_code,

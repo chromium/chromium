@@ -57,7 +57,7 @@ void ServiceWorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   // the algorithm's asynchronous completion, with script being the asynchronous
   // completion value."
   worker_global_scope->WorkerScriptFetchFinished(
-      *module_script, base::nullopt /* v8_inspector::V8StackTraceId */);
+      *module_script, absl::nullopt /* v8_inspector::V8StackTraceId */);
 }
 
 void ServiceWorkerModuleTreeClient::Trace(Visitor* visitor) const {

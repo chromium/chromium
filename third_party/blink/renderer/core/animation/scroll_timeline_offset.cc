@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/css_numeric_value_or_string_or_css_keyword_value_or_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
@@ -108,7 +108,7 @@ ScrollTimelineOffset* ScrollTimelineOffset::Create(
   return nullptr;
 }
 
-base::Optional<double> ScrollTimelineOffset::ResolveOffset(
+absl::optional<double> ScrollTimelineOffset::ResolveOffset(
     Node* scroll_source,
     ScrollOrientation orientation,
     double max_offset,
@@ -134,7 +134,7 @@ base::Optional<double> ScrollTimelineOffset::ResolveOffset(
     return resolved;
   } else if (element_based_offset_) {
     if (!element_based_offset_->hasTarget())
-      return base::nullopt;
+      return absl::nullopt;
     Element* target = element_based_offset_->target();
     const LayoutBox* target_box = target->GetLayoutBox();
 
@@ -144,10 +144,10 @@ base::Optional<double> ScrollTimelineOffset::ResolveOffset(
     // See the spec discussion here:
     // https://github.com/w3c/csswg-drafts/issues/4337#issuecomment-610997231
     if (!target_box)
-      return base::nullopt;
+      return absl::nullopt;
 
     if (!IsContainingBlockChainDescendant(target_box, root_box))
-      return base::nullopt;
+      return absl::nullopt;
 
     PhysicalRect target_rect = target_box->PhysicalBorderBoxRect();
     target_rect = target_box->LocalToAncestorRect(

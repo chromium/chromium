@@ -14,11 +14,11 @@ namespace blink {
 XRGripSpace::XRGripSpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-base::Optional<TransformationMatrix> XRGripSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRGripSpace::MojoFromNative() {
   // Grip is only available when using tracked pointer for input.
   if (input_source_->TargetRayMode() !=
       device::mojom::XRTargetRayMode::POINTING) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return input_source_->MojoFromInput();
@@ -28,13 +28,13 @@ bool XRGripSpace::EmulatedPosition() const {
   return input_source_->emulatedPosition();
 }
 
-base::Optional<device::mojom::blink::XRNativeOriginInformation>
+absl::optional<device::mojom::blink::XRNativeOriginInformation>
 XRGripSpace::NativeOrigin() const {
   // Grip space's native origin is equal to input source's native origin, but
   // only when using tracked pointer for input.
   if (input_source_->TargetRayMode() !=
       device::mojom::XRTargetRayMode::POINTING) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return input_source_->nativeOrigin();

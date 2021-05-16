@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
 namespace blink {
@@ -26,18 +26,18 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
 
   ~CPUTimeBudgetPool() override;
 
-  // Set max budget level, base::nullopt represent absence of max level.
+  // Set max budget level, absl::nullopt represent absence of max level.
   // Max budget level prevents accumulating arbitrary large budgets when
   // page is inactive for a very long time.
   void SetMaxBudgetLevel(base::TimeTicks now,
-                         base::Optional<base::TimeDelta> max_budget_level);
+                         absl::optional<base::TimeDelta> max_budget_level);
 
-  // Set max throttling duration, base::nullopt represents absense of it.
+  // Set max throttling duration, absl::nullopt represents absense of it.
   // Max throttling duration prevents page from being throttled for
   // a very long period after a single long task.
   void SetMaxThrottlingDelay(
       base::TimeTicks now,
-      base::Optional<base::TimeDelta> max_throttling_delay);
+      absl::optional<base::TimeDelta> max_throttling_delay);
 
   // Set minimal budget level required to run a task. If budget pool was
   // exhausted, it needs to accumulate at least |min_budget_to_run| time units
@@ -104,13 +104,13 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
   // Max budget level which we can accrue.
   // Tasks will be allowed to run for this time before being throttled
   // after a very long period of inactivity.
-  base::Optional<base::TimeDelta> max_budget_level_;
+  absl::optional<base::TimeDelta> max_budget_level_;
   // Max throttling delay places a lower limit on time budget level,
   // ensuring that one long task does not cause extremely long throttling.
   // Note that this is not a guarantee that every task will run
   // after desired run time + max throttling duration, but a guarantee
   // that at least one task will be run every max_throttling_delay.
-  base::Optional<base::TimeDelta> max_throttling_delay_;
+  absl::optional<base::TimeDelta> max_throttling_delay_;
   // See CPUTimeBudgetPool::SetMinBudgetLevelToRun.
   base::TimeDelta min_budget_level_to_run_;
 

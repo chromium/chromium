@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_CUE_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_CUE_TIMELINE_H_
 
-#include "base/optional.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -99,7 +99,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   double last_update_time_;
 
   // Timer data for cue events (start, end)
-  base::Optional<double> next_cue_event_;
+  absl::optional<double> next_cue_event_;
   HeapTaskRunnerTimer<CueTimeline> cue_event_timer_;
 
   // Timer data for cue timestamps

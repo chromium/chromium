@@ -31,11 +31,11 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
@@ -256,9 +256,9 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
    public:
     explicit Generator(int max_count) : max_count_(max_count) {}
 
-    base::Optional<int> Generate() {
+    absl::optional<int> Generate() {
       if (count_ >= max_count_) {
-        return base::nullopt;
+        return absl::nullopt;
       }
       ++count_;
       return current_++;
@@ -603,7 +603,7 @@ TestWritableStreamSink::Optimizer::PerformInProcessOptimization(
 
 }  // namespace
 
-static base::Optional<DocumentMarker::MarkerType> MarkerTypeFrom(
+static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     const String& marker_type) {
   if (EqualIgnoringASCIICase(marker_type, "Spelling"))
     return DocumentMarker::kSpelling;
@@ -617,16 +617,16 @@ static base::Optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     return DocumentMarker::kActiveSuggestion;
   if (EqualIgnoringASCIICase(marker_type, "Suggestion"))
     return DocumentMarker::kSuggestion;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-static base::Optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
+static absl::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
     const String& marker_type) {
   if (marker_type.IsEmpty() || EqualIgnoringASCIICase(marker_type, "all"))
     return DocumentMarker::MarkerTypes::All();
-  base::Optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type)
-    return base::nullopt;
+    return absl::nullopt;
   return DocumentMarker::MarkerTypes(type.value());
 }
 
@@ -1272,7 +1272,7 @@ void Internals::setMarker(Document* document,
     return;
   }
 
-  base::Optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -1300,7 +1300,7 @@ unsigned Internals::markerCountForNode(Text* text,
                                        const String& marker_type,
                                        ExceptionState& exception_state) {
   DCHECK(text);
-  base::Optional<DocumentMarker::MarkerTypes> marker_types =
+  absl::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1336,7 +1336,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
                                     unsigned index,
                                     ExceptionState& exception_state) {
   DCHECK(text);
-  base::Optional<DocumentMarker::MarkerTypes> marker_types =
+  absl::optional<DocumentMarker::MarkerTypes> marker_types =
       MarkerTypesFrom(marker_type);
   if (!marker_types) {
     exception_state.ThrowDOMException(
@@ -1399,13 +1399,13 @@ unsigned Internals::markerUnderlineColorForNode(
   return style_marker->UnderlineColor().Rgb();
 }
 
-static base::Optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
+static absl::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
     const String& match_status) {
   if (EqualIgnoringASCIICase(match_status, "kActive"))
     return TextMatchMarker::MatchStatus::kActive;
   if (EqualIgnoringASCIICase(match_status, "kInactive"))
     return TextMatchMarker::MatchStatus::kInactive;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void Internals::addTextMatchMarker(const Range* range,
@@ -1415,7 +1415,7 @@ void Internals::addTextMatchMarker(const Range* range,
   if (!range->OwnerDocument().View())
     return;
 
-  base::Optional<TextMatchMarker::MatchStatus> match_status_enum =
+  absl::optional<TextMatchMarker::MatchStatus> match_status_enum =
       MatchStatusFrom(match_status);
   if (!match_status_enum) {
     exception_state.ThrowDOMException(
@@ -1445,7 +1445,7 @@ static bool ParseColor(const String& value,
   return true;
 }
 
-static base::Optional<ImeTextSpanThickness> ThicknessFrom(
+static absl::optional<ImeTextSpanThickness> ThicknessFrom(
     const String& thickness) {
   if (EqualIgnoringASCIICase(thickness, "none"))
     return ImeTextSpanThickness::kNone;
@@ -1453,10 +1453,10 @@ static base::Optional<ImeTextSpanThickness> ThicknessFrom(
     return ImeTextSpanThickness::kThin;
   if (EqualIgnoringASCIICase(thickness, "thick"))
     return ImeTextSpanThickness::kThick;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-static base::Optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
+static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     const String& underline_style) {
   if (EqualIgnoringASCIICase(underline_style, "none"))
     return ImeTextSpanUnderlineStyle::kNone;
@@ -1468,7 +1468,7 @@ static base::Optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     return ImeTextSpanUnderlineStyle::kDash;
   if (EqualIgnoringASCIICase(underline_style, "squiggle"))
     return ImeTextSpanUnderlineStyle::kSquiggle;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 namespace {
@@ -1489,7 +1489,7 @@ void addStyleableMarkerHelper(const Range* range,
   DCHECK(range);
   range->OwnerDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  base::Optional<ImeTextSpanThickness> thickness =
+  absl::optional<ImeTextSpanThickness> thickness =
       ThicknessFrom(thickness_value);
   if (!thickness) {
     exception_state.ThrowDOMException(
@@ -1498,7 +1498,7 @@ void addStyleableMarkerHelper(const Range* range,
     return;
   }
 
-  base::Optional<ImeTextSpanUnderlineStyle> underline_style =
+  absl::optional<ImeTextSpanUnderlineStyle> underline_style =
       UnderlineStyleFrom(underline_style_value);
   if (!underline_style_value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,

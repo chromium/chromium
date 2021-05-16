@@ -25,35 +25,35 @@ namespace blink {
 
 namespace {
 
-base::Optional<uint64_t> ParseExpiry(const String& expiry) {
+absl::optional<uint64_t> ParseExpiry(const String& expiry) {
   bool expiry_is_valid = false;
   uint64_t parsed_expiry = expiry.ToUInt64Strict(&expiry_is_valid);
-  return expiry_is_valid ? base::make_optional(parsed_expiry) : base::nullopt;
+  return expiry_is_valid ? absl::make_optional(parsed_expiry) : absl::nullopt;
 }
 
-base::Optional<int64_t> ParsePriority(const String& priority) {
+absl::optional<int64_t> ParsePriority(const String& priority) {
   bool priority_is_valid = false;
   int64_t parsed_priority = priority.ToInt64Strict(&priority_is_valid);
-  return priority_is_valid ? base::make_optional(parsed_priority)
-                           : base::nullopt;
+  return priority_is_valid ? absl::make_optional(parsed_priority)
+                           : absl::nullopt;
 }
 
-base::Optional<WebImpression> GetImpression(
+absl::optional<WebImpression> GetImpression(
     ExecutionContext* execution_context,
     const String& impression_data_string,
     const String& conversion_destination_string,
-    const base::Optional<String>& reporting_origin_string,
-    base::Optional<uint64_t> impression_expiry_milliseconds,
-    base::Optional<int64_t> attribution_source_priority,
+    const absl::optional<String>& reporting_origin_string,
+    absl::optional<uint64_t> impression_expiry_milliseconds,
+    absl::optional<int64_t> attribution_source_priority,
     HTMLAnchorElement* element) {
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(execution_context))
-    return base::nullopt;
+    return absl::nullopt;
 
   LocalFrame* frame = nullptr;
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     frame = window->GetFrame();
   } else {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!execution_context->IsFeatureEnabled(
@@ -71,7 +71,7 @@ base::Optional<WebImpression> GetImpression(
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, message));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Conversion measurement is only allowed when both the frame and the main
@@ -84,9 +84,9 @@ base::Optional<WebImpression> GetImpression(
         frame,
         mojom::blink::AttributionReportingIssueType::
             kAttributionSourceUntrustworthyOrigin,
-        main_frame.GetDevToolsFrameToken(), element, base::nullopt,
+        main_frame.GetDevToolsFrameToken(), element, absl::nullopt,
         main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!frame->IsMainFrame() && !frame->GetSecurityContext()
@@ -96,9 +96,9 @@ base::Optional<WebImpression> GetImpression(
         frame,
         mojom::blink::AttributionReportingIssueType::
             kAttributionSourceUntrustworthyOrigin,
-        frame->GetDevToolsFrameToken(), element, base::nullopt,
+        frame->GetDevToolsFrameToken(), element, absl::nullopt,
         frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   scoped_refptr<const SecurityOrigin> conversion_destination =
@@ -107,9 +107,9 @@ base::Optional<WebImpression> GetImpression(
     ReportAttributionIssue(frame,
                            mojom::blink::AttributionReportingIssueType::
                                kAttributionSourceUntrustworthyOrigin,
-                           base::nullopt, element, base::nullopt,
+                           absl::nullopt, element, absl::nullopt,
                            conversion_destination_string);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool impression_data_is_valid = false;
@@ -121,7 +121,7 @@ base::Optional<WebImpression> GetImpression(
                            mojom::blink::AttributionReportingIssueType::
                                kInvalidAttributionSourceEventId,
                            frame->GetDevToolsFrameToken(), element,
-                           base::nullopt, impression_data_string);
+                           absl::nullopt, impression_data_string);
   }
 
   // Provide a default of 0 if the impression data was not valid.
@@ -129,7 +129,7 @@ base::Optional<WebImpression> GetImpression(
 
   // Reporting origin is an optional attribute. Reporting origins must be
   // secure.
-  base::Optional<WebSecurityOrigin> reporting_origin;
+  absl::optional<WebSecurityOrigin> reporting_origin;
   if (reporting_origin_string) {
     reporting_origin =
         SecurityOrigin::CreateFromString(*reporting_origin_string);
@@ -138,13 +138,13 @@ base::Optional<WebImpression> GetImpression(
       ReportAttributionIssue(frame,
                              mojom::blink::AttributionReportingIssueType::
                                  kAttributionSourceUntrustworthyOrigin,
-                             base::nullopt, element, base::nullopt,
+                             absl::nullopt, element, absl::nullopt,
                              *reporting_origin_string);
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
-  base::Optional<base::TimeDelta> expiry;
+  absl::optional<base::TimeDelta> expiry;
   if (impression_expiry_milliseconds)
     expiry = base::TimeDelta::FromMilliseconds(*impression_expiry_milliseconds);
 
@@ -162,16 +162,16 @@ base::Optional<WebImpression> GetImpression(
 
 }  // namespace
 
-base::Optional<WebImpression> GetImpressionForAnchor(
+absl::optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element) {
-  base::Optional<uint64_t> expiry;
+  absl::optional<uint64_t> expiry;
   if (element->hasAttribute(html_names::kAttributionexpiryAttr)) {
     expiry = ParseExpiry(
         element->FastGetAttribute(html_names::kAttributionexpiryAttr)
             .GetString());
   }
 
-  base::Optional<int64_t> priority;
+  absl::optional<int64_t> priority;
   if (element->hasAttribute(html_names::kAttributionsourcepriorityAttr)) {
     priority = ParsePriority(
         element->FastGetAttribute(html_names::kAttributionsourcepriorityAttr)
@@ -188,47 +188,47 @@ base::Optional<WebImpression> GetImpressionForAnchor(
       element->FastGetAttribute(html_names::kAttributiondestinationAttr)
           .GetString(),
       element->hasAttribute(html_names::kAttributionreporttoAttr)
-          ? base::make_optional(
+          ? absl::make_optional(
                 element->FastGetAttribute(html_names::kAttributionreporttoAttr)
                     .GetString())
-          : base::nullopt,
+          : absl::nullopt,
       expiry, priority, element);
 }
 
-base::Optional<WebImpression> GetImpressionFromWindowFeatures(
+absl::optional<WebImpression> GetImpressionFromWindowFeatures(
     ExecutionContext* execution_context,
     const ImpressionFeatures& features) {
   if (features.impression_data.IsNull() ||
       features.conversion_destination.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   return GetImpression(
       execution_context, features.impression_data,
       features.conversion_destination,
       !features.reporting_origin.IsNull()
-          ? base::make_optional(features.reporting_origin)
-          : base::nullopt,
-      !features.expiry.IsNull() ? ParseExpiry(features.expiry) : base::nullopt,
+          ? absl::make_optional(features.reporting_origin)
+          : absl::nullopt,
+      !features.expiry.IsNull() ? ParseExpiry(features.expiry) : absl::nullopt,
       !features.priority.IsNull() ? ParsePriority(features.priority)
-                                  : base::nullopt,
+                                  : absl::nullopt,
       nullptr);
 }
 
-base::Optional<WebImpression> GetImpressionForParams(
+absl::optional<WebImpression> GetImpressionForParams(
     ExecutionContext* execution_context,
     const AttributionSourceParams* params) {
   return GetImpression(
       execution_context, params->attributionSourceEventId(),
       params->attributionDestination(),
       params->hasAttributionReportTo()
-          ? base::make_optional(params->attributionReportTo())
-          : base::nullopt,
+          ? absl::make_optional(params->attributionReportTo())
+          : absl::nullopt,
       params->hasAttributionExpiry()
-          ? base::make_optional(params->attributionExpiry())
-          : base::nullopt,
+          ? absl::make_optional(params->attributionExpiry())
+          : absl::nullopt,
       params->hasAttributionSourcePriority()
-          ? base::make_optional(params->attributionSourcePriority())
-          : base::nullopt,
+          ? absl::make_optional(params->attributionSourcePriority())
+          : absl::nullopt,
       nullptr);
 }
 

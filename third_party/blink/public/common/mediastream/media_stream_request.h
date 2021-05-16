@@ -57,7 +57,7 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
       const std::string& name,
       const media::VideoCaptureControlSupport& control_support,
       media::VideoFacingMode facing,
-      const base::Optional<std::string>& group_id = base::nullopt);
+      const absl::optional<std::string>& group_id = absl::nullopt);
   MediaStreamDevice(mojom::MediaStreamType type,
                     const std::string& id,
                     const std::string& name,
@@ -75,14 +75,14 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
     return session_id_ ? *session_id_ : base::UnguessableToken();
   }
 
-  const base::Optional<base::UnguessableToken>& serializable_session_id()
+  const absl::optional<base::UnguessableToken>& serializable_session_id()
       const {
     return session_id_;
   }
 
   void set_session_id(const base::UnguessableToken& session_id) {
     session_id_ = session_id.is_empty()
-                      ? base::Optional<base::UnguessableToken>()
+                      ? absl::optional<base::UnguessableToken>()
                       : session_id;
   }
 
@@ -99,11 +99,11 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
   media::VideoFacingMode video_facing;
 
   // The device's group ID.
-  base::Optional<std::string> group_id;
+  absl::optional<std::string> group_id;
 
   // The device id of a matched output device if any (otherwise empty).
   // Only applicable to audio devices.
-  base::Optional<std::string> matched_output_device_id;
+  absl::optional<std::string> matched_output_device_id;
 
   // The device's "friendly" name. Not guaranteed to be unique.
   std::string name;
@@ -114,11 +114,11 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
       media::AudioParameters::UnavailableDeviceParams();
 
   // This field is optional and available only for display media devices.
-  base::Optional<media::mojom::DisplayMediaInformationPtr> display_media_info;
+  absl::optional<media::mojom::DisplayMediaInformationPtr> display_media_info;
 
  private:
   // Id for this capture session. Unique for all sessions of the same type.
-  base::Optional<base::UnguessableToken> session_id_;  // = kNoId;
+  absl::optional<base::UnguessableToken> session_id_;  // = kNoId;
 };
 
 using MediaStreamDevices = std::vector<MediaStreamDevice>;

@@ -82,7 +82,7 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       return css_parsing_utils::ConsumeIntegerOrNumberCalc(range, context);
     case CSSSyntaxType::kAngle:
       return css_parsing_utils::ConsumeAngle(range, context,
-                                             base::Optional<WebFeature>());
+                                             absl::optional<WebFeature>());
     case CSSSyntaxType::kTime:
       return css_parsing_utils::ConsumeTime(range, context,
                                             ValueRange::kValueRangeAll);

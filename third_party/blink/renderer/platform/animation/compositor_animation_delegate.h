@@ -28,7 +28,7 @@ class PLATFORM_EXPORT CompositorAnimationDelegate {
       double animation_start_time,
       std::unique_ptr<gfx::AnimationCurve> curve) {}
   virtual void NotifyLocalTimeUpdated(
-      base::Optional<base::TimeDelta> local_time) {}
+      absl::optional<base::TimeDelta> local_time) {}
 };
 
 }  // namespace blink

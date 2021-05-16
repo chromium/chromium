@@ -57,7 +57,7 @@ class NGTextFragmentPainter {
 
   const NGInlineCursor& cursor_;
   PhysicalOffset parent_offset_;
-  base::Optional<NGInlineCursor> inline_cursor_for_block_flow_;
+  absl::optional<NGInlineCursor> inline_cursor_for_block_flow_;
 };
 
 }  // namespace blink

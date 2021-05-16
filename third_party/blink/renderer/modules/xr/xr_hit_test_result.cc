@@ -20,8 +20,8 @@ XRHitTestResult::XRHitTestResult(
     : session_(session),
       mojo_from_this_(hit_result.mojo_from_result),
       plane_id_(hit_result.plane_id != 0
-                    ? base::Optional<uint64_t>(hit_result.plane_id)
-                    : base::nullopt) {}
+                    ? absl::optional<uint64_t>(hit_result.plane_id)
+                    : absl::nullopt) {}
 
 XRPose* XRHitTestResult::getPose(XRSpace* other) {
   auto maybe_other_space_native_from_mojo = other->NativeFromMojo();
@@ -60,7 +60,7 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
   // (their poses may change dramatically on a frame-by-frame basis). Grab an
   // information about reference space that is well-suited for anchor creation
   // from session:
-  base::Optional<XRSession::ReferenceSpaceInformation>
+  absl::optional<XRSession::ReferenceSpaceInformation>
       reference_space_information = session_->GetStationaryReferenceSpace();
 
   if (!reference_space_information) {

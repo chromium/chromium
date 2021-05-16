@@ -114,91 +114,91 @@ ComputedAccessibleNode::ComputedAccessibleNode(AXID ax_id,
       document_(document),
       ax_context_(std::make_unique<AXContext>(*document)) {}
 
-base::Optional<bool> ComputedAccessibleNode::atomic() const {
+absl::optional<bool> ComputedAccessibleNode::atomic() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_ATOMIC);
 }
 
-base::Optional<bool> ComputedAccessibleNode::busy() const {
+absl::optional<bool> ComputedAccessibleNode::busy() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_BUSY);
 }
 
-base::Optional<bool> ComputedAccessibleNode::disabled() const {
+absl::optional<bool> ComputedAccessibleNode::disabled() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_DISABLED);
 }
 
-base::Optional<bool> ComputedAccessibleNode::readOnly() const {
+absl::optional<bool> ComputedAccessibleNode::readOnly() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_READONLY);
 }
 
-base::Optional<bool> ComputedAccessibleNode::expanded() const {
+absl::optional<bool> ComputedAccessibleNode::expanded() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_EXPANDED);
 }
 
-base::Optional<bool> ComputedAccessibleNode::modal() const {
+absl::optional<bool> ComputedAccessibleNode::modal() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_MODAL);
 }
 
-base::Optional<bool> ComputedAccessibleNode::multiline() const {
+absl::optional<bool> ComputedAccessibleNode::multiline() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_MULTILINE);
 }
 
-base::Optional<bool> ComputedAccessibleNode::multiselectable() const {
+absl::optional<bool> ComputedAccessibleNode::multiselectable() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_MULTISELECTABLE);
 }
 
-base::Optional<bool> ComputedAccessibleNode::required() const {
+absl::optional<bool> ComputedAccessibleNode::required() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_REQUIRED);
 }
 
-base::Optional<bool> ComputedAccessibleNode::selected() const {
+absl::optional<bool> ComputedAccessibleNode::selected() const {
   return GetBoolAttribute(WebAOMBoolAttribute::AOM_ATTR_SELECTED);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::colCount() const {
+absl::optional<int32_t> ComputedAccessibleNode::colCount() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_COLUMN_COUNT);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::colIndex() const {
+absl::optional<int32_t> ComputedAccessibleNode::colIndex() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_COLUMN_INDEX);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::colSpan() const {
+absl::optional<int32_t> ComputedAccessibleNode::colSpan() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_COLUMN_SPAN);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::level() const {
+absl::optional<int32_t> ComputedAccessibleNode::level() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_HIERARCHICAL_LEVEL);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::posInSet() const {
+absl::optional<int32_t> ComputedAccessibleNode::posInSet() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_POS_IN_SET);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::rowCount() const {
+absl::optional<int32_t> ComputedAccessibleNode::rowCount() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_ROW_COUNT);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::rowIndex() const {
+absl::optional<int32_t> ComputedAccessibleNode::rowIndex() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_ROW_INDEX);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::rowSpan() const {
+absl::optional<int32_t> ComputedAccessibleNode::rowSpan() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_ROW_SPAN);
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::setSize() const {
+absl::optional<int32_t> ComputedAccessibleNode::setSize() const {
   return GetIntAttribute(WebAOMIntAttribute::AOM_ATTR_SET_SIZE);
 }
 
-base::Optional<float> ComputedAccessibleNode::valueMax() const {
+absl::optional<float> ComputedAccessibleNode::valueMax() const {
   return GetFloatAttribute(WebAOMFloatAttribute::AOM_ATTR_VALUE_MAX);
 }
 
-base::Optional<float> ComputedAccessibleNode::valueMin() const {
+absl::optional<float> ComputedAccessibleNode::valueMin() const {
   return GetFloatAttribute(WebAOMFloatAttribute::AOM_ATTR_VALUE_MIN);
 }
 
-base::Optional<float> ComputedAccessibleNode::valueNow() const {
+absl::optional<float> ComputedAccessibleNode::valueNow() const {
   return GetFloatAttribute(WebAOMFloatAttribute::AOM_ATTR_VALUE_NOW);
 }
 
@@ -292,28 +292,28 @@ ComputedAccessibleNode* ComputedAccessibleNode::nextSibling() const {
   return document_->GetOrCreateComputedAccessibleNode(sibling_ax_id, tree_);
 }
 
-base::Optional<bool> ComputedAccessibleNode::GetBoolAttribute(
+absl::optional<bool> ComputedAccessibleNode::GetBoolAttribute(
     WebAOMBoolAttribute attr) const {
   bool value;
   if (tree_->GetBoolAttributeForAXNode(ax_id_, attr, &value))
     return value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<int32_t> ComputedAccessibleNode::GetIntAttribute(
+absl::optional<int32_t> ComputedAccessibleNode::GetIntAttribute(
     WebAOMIntAttribute attr) const {
   int32_t value;
   if (tree_->GetIntAttributeForAXNode(ax_id_, attr, &value))
     return value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<float> ComputedAccessibleNode::GetFloatAttribute(
+absl::optional<float> ComputedAccessibleNode::GetFloatAttribute(
     WebAOMFloatAttribute attr) const {
   float value;
   if (tree_->GetFloatAttributeForAXNode(ax_id_, attr, &value))
     return value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const String ComputedAccessibleNode::GetStringAttribute(

@@ -1396,7 +1396,7 @@ IntSize HTMLCanvasElement::BitmapSourceSize() const {
 
 ScriptPromise HTMLCanvasElement::CreateImageBitmap(
     ScriptState* script_state,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<IntRect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(

@@ -46,8 +46,8 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // unconditionally.
   bool isFirstPersonObserver() const { return false; }
 
-  base::Optional<double> recommendedViewportScale() const;
-  void requestViewportScale(base::Optional<double> scale);
+  absl::optional<double> recommendedViewportScale() const;
+  void requestViewportScale(absl::optional<double> scale);
 
   void Trace(Visitor*) const override;
 
@@ -92,12 +92,12 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
     return projection_matrix_;
   }
 
-  base::Optional<double> recommendedViewportScale() const;
-  void SetRecommendedViewportScale(base::Optional<double> scale) {
+  absl::optional<double> recommendedViewportScale() const;
+  void SetRecommendedViewportScale(absl::optional<double> scale) {
     recommended_viewport_scale_ = scale;
   }
 
-  void requestViewportScale(base::Optional<double> scale);
+  void requestViewportScale(absl::optional<double> scale);
 
   bool ViewportModifiable() const { return viewport_modifiable_; }
   void SetViewportModifiable(bool modifiable) {
@@ -118,7 +118,7 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   TransformationMatrix inv_projection_;
   TransformationMatrix head_from_eye_;
   bool inv_projection_dirty_ = true;
-  base::Optional<double> recommended_viewport_scale_ = base::nullopt;
+  absl::optional<double> recommended_viewport_scale_ = absl::nullopt;
   double requested_viewport_scale_ = 1.0;
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;

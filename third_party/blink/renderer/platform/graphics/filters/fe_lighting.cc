@@ -55,7 +55,7 @@ FELighting::FELighting(Filter* filter,
 sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   if (!light_source_)
     return CreateTransparentBlack();
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   const PaintFilter::CropRect* rect = base::OptionalOrNullptr(crop_rect);
   Color light_color = AdaptColorToOperatingInterpolationSpace(lighting_color_);
   sk_sp<PaintFilter> input(paint_filter_builder::Build(

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
@@ -58,8 +58,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const ComputedStyle& container_style,
       const NGConstraintSpace& container_space,
       NGBoxFragmentBuilder* container_builder,
-      base::Optional<LogicalSize> initial_containing_block_fixed_size =
-          base::nullopt);
+      absl::optional<LogicalSize> initial_containing_block_fixed_size =
+          absl::nullopt);
 
   // Normally this function lays out and positions all out-of-flow objects from
   // the container_builder and additional ones it discovers through laying out
@@ -153,7 +153,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // replaced in the final layout pass.
     scoped_refptr<const NGLayoutResult> initial_layout_result;
     // The |block_estimate| is wrt. the candidate's writing mode.
-    base::Optional<LayoutUnit> block_estimate;
+    absl::optional<LayoutUnit> block_estimate;
     NGLogicalOutOfFlowDimensions node_dimensions;
 
     bool inline_size_depends_on_min_max_sizes = false;
@@ -229,7 +229,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   scoped_refptr<const NGLayoutResult> GenerateFragment(
       NGBlockNode node,
       const LogicalSize& container_content_size_in_child_writing_mode,
-      const base::Optional<LayoutUnit>& block_estimate,
+      const absl::optional<LayoutUnit>& block_estimate,
       const NGLogicalOutOfFlowDimensions& node_dimensions,
       const LayoutUnit block_offset,
       const NGBlockBreakToken* break_token,

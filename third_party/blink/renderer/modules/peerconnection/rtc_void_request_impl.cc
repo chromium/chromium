@@ -38,7 +38,7 @@ namespace blink {
 
 RTCVoidRequestImpl::RTCVoidRequestImpl(
     ExecutionContext* context,
-    base::Optional<RTCSetSessionDescriptionOperation> operation,
+    absl::optional<RTCSetSessionDescriptionOperation> operation,
     RTCPeerConnection* requester,
     V8VoidFunction* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback)

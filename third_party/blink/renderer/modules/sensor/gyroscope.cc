@@ -33,22 +33,22 @@ Gyroscope::Gyroscope(ExecutionContext* execution_context,
              SensorType::GYROSCOPE,
              {mojom::blink::PermissionsPolicyFeature::kGyroscope}) {}
 
-base::Optional<double> Gyroscope::x() const {
+absl::optional<double> Gyroscope::x() const {
   if (hasReading())
     return GetReading().gyro.x;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> Gyroscope::y() const {
+absl::optional<double> Gyroscope::y() const {
   if (hasReading())
     return GetReading().gyro.y;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> Gyroscope::z() const {
+absl::optional<double> Gyroscope::z() const {
   if (hasReading())
     return GetReading().gyro.z;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void Gyroscope::Trace(Visitor* visitor) const {

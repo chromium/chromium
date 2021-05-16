@@ -32,7 +32,7 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
     WebURLLoaderTestDelegate* delegate,
     const WebURLResponse& response,
     const WebData& data,
-    const base::Optional<WebURLError>& error) {
+    const absl::optional<WebURLError>& error) {
   if (!client_)
     return;
 
@@ -104,7 +104,7 @@ void WebURLLoaderMock::LoadSynchronously(
     base::TimeDelta timeout_interval,
     WebURLLoaderClient* client,
     WebURLResponse& response,
-    base::Optional<WebURLError>& error,
+    absl::optional<WebURLError>& error,
     WebData& data,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,

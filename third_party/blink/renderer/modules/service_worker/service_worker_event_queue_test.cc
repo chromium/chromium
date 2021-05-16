@@ -7,9 +7,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -26,7 +26,7 @@ class MockEvent {
     return *event_id_;
   }
 
-  const base::Optional<mojom::blink::ServiceWorkerEventStatus>& status() const {
+  const absl::optional<mojom::blink::ServiceWorkerEventStatus>& status() const {
     return status_;
   }
 
@@ -37,7 +37,7 @@ class MockEvent {
     event_queue->EnqueueNormal(
         *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
         WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
-        base::nullopt);
+        absl::nullopt);
   }
 
   void EnqueuePendingTo(ServiceWorkerEventQueue* event_queue) {
@@ -45,7 +45,7 @@ class MockEvent {
     event_queue->EnqueuePending(
         *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
         WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
-        base::nullopt);
+        absl::nullopt);
   }
 
   void EnqueueWithCustomTimeoutTo(ServiceWorkerEventQueue* event_queue,
@@ -62,7 +62,7 @@ class MockEvent {
     event_queue->EnqueueOffline(
         *event_id_, WTF::Bind(&MockEvent::Start, weak_factory_.GetWeakPtr()),
         WTF::Bind(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
-        base::nullopt);
+        absl::nullopt);
   }
 
   void EnqueueOfflineWithCustomTimeoutTo(ServiceWorkerEventQueue* event_queue,
@@ -93,7 +93,7 @@ class MockEvent {
             },
             WTF::Unretained(event_queue), WTF::Unretained(this), std::move(tag),
             WTF::Unretained(out_tags)),
-        base::DoNothing(), base::nullopt);
+        base::DoNothing(), absl::nullopt);
   }
 
  private:
@@ -109,8 +109,8 @@ class MockEvent {
     status_ = status;
   }
 
-  base::Optional<int> event_id_;
-  base::Optional<mojom::blink::ServiceWorkerEventStatus> status_;
+  absl::optional<int> event_id_;
+  absl::optional<mojom::blink::ServiceWorkerEventStatus> status_;
   bool started_ = false;
   base::WeakPtrFactory<MockEvent> weak_factory_{this};
 };

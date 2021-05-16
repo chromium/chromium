@@ -12,7 +12,7 @@
 namespace blink {
 
 RTCVoidRequestPromiseImpl::RTCVoidRequestPromiseImpl(
-    base::Optional<RTCSetSessionDescriptionOperation> operation,
+    absl::optional<RTCSetSessionDescriptionOperation> operation,
     RTCPeerConnection* requester,
     ScriptPromiseResolver* resolver,
     const char* interface_name,

@@ -471,7 +471,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // A pending window rect that is inflight and hasn't been acknowledged by the
   // browser yet. This should only be set if |pending_window_rect_count_| is
   // non-zero.
-  base::Optional<gfx::Rect> pending_window_rect_;
+  absl::optional<gfx::Rect> pending_window_rect_;
 
   // The size of the visible viewport (in DIPs).
   // TODO(dtapuska): Figure out if we can change this to Blink Space.

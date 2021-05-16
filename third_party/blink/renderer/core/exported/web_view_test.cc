@@ -35,7 +35,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -50,6 +49,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -3765,7 +3765,7 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const base::Optional<WebImpression>&) override {
+                      const absl::optional<WebImpression>&) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
   void DidFocus() override { did_focus_called_ = true; }
@@ -3848,7 +3848,7 @@ class ViewReusingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const base::Optional<WebImpression>&) override {
+                      const absl::optional<WebImpression>&) override {
     return web_view_;
   }
 

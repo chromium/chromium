@@ -36,7 +36,7 @@ class MainThreadPerfTest : public testing::Test {
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .Build()),
-        base::nullopt);
+        absl::nullopt);
     scheduler_overrider_ =
         std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
   }

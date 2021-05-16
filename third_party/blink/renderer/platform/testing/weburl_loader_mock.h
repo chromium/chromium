@@ -8,7 +8,7 @@
 #include <memory>
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 
@@ -37,7 +37,7 @@ class WebURLLoaderMock : public WebURLLoader {
   void ServeAsynchronousRequest(WebURLLoaderTestDelegate* delegate,
                                 const WebURLResponse& response,
                                 const WebData& data,
-                                const base::Optional<WebURLError>& error);
+                                const absl::optional<WebURLError>& error);
 
   // Simulates the redirect being served.
   WebURL ServeRedirect(const WebString& method,
@@ -53,7 +53,7 @@ class WebURLLoaderMock : public WebURLLoader {
       base::TimeDelta timeout_interval,
       WebURLLoaderClient* client,
       WebURLResponse&,
-      base::Optional<WebURLError>&,
+      absl::optional<WebURLError>&,
       WebData&,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,

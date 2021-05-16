@@ -41,7 +41,7 @@ ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
     WorkletModuleResponsesMap* module_responses_map,
-    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data) {
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data) {
   DCHECK(IsMainThread());
   if (AskedToTerminate())
     return;
@@ -83,7 +83,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.
   InitializeWorkerThread(std::move(global_scope_creation_params),
-                         thread_startup_data, base::nullopt);
+                         thread_startup_data, absl::nullopt);
 }
 
 void ThreadedWorkletMessagingProxy::Trace(Visitor* visitor) const {

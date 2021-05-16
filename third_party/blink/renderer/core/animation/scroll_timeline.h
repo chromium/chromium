@@ -47,14 +47,14 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
                  Element*,
                  ScrollDirection,
                  HeapVector<Member<ScrollTimelineOffset>>,
-                 base::Optional<double>);
+                 absl::optional<double>);
 
   bool IsScrollTimeline() const override { return true; }
   // ScrollTimeline is not active if scrollSource is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
-  base::Optional<base::TimeDelta> InitialStartTimeForAnimations() override;
+  absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
   AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;
@@ -154,7 +154,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   struct TimelineState {
     TimelinePhase phase;
-    base::Optional<base::TimeDelta> current_time;
+    absl::optional<base::TimeDelta> current_time;
     // The resolved version of scroll offset. The vector is empty
     // when timeline is inactive (e.g., when source does not overflow).
     WTF::Vector<double> scroll_offsets;
@@ -180,7 +180,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   ScrollDirection orientation_;
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
 
-  base::Optional<double> time_range_;
+  absl::optional<double> time_range_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

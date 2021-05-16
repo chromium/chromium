@@ -52,7 +52,7 @@ XRReferenceSpace::~XRReferenceSpace() = default;
 
 XRPose* XRReferenceSpace::getPose(XRSpace* other_space) {
   if (type_ == ReferenceSpaceType::kViewer) {
-    base::Optional<TransformationMatrix> other_offset_from_viewer =
+    absl::optional<TransformationMatrix> other_offset_from_viewer =
         other_space->OffsetFromViewer();
     if (!other_offset_from_viewer) {
       return nullptr;
@@ -85,7 +85,7 @@ void XRReferenceSpace::SetMojoFromFloor() {
   stage_parameters_id_ = session()->StageParametersId();
 }
 
-base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
   DVLOG(3) << __func__ << ": type_=" << type_;
 
   switch (type_) {
@@ -100,9 +100,9 @@ base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
         // it's not tracked; but for any other type if it's not locatable, we
         // return nullopt.
         return type_ == ReferenceSpaceType::kViewer
-                   ? base::Optional<TransformationMatrix>(
+                   ? absl::optional<TransformationMatrix>(
                          TransformationMatrix{})
-                   : base::nullopt;
+                   : absl::nullopt;
       }
 
       return *mojo_from_native;
@@ -121,7 +121,7 @@ base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
       // transform based off of local space:
       auto mojo_from_local = session()->GetMojoFrom(ReferenceSpaceType::kLocal);
       if (!mojo_from_local) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       // local_from_floor-local transform corresponding to the default height.
@@ -132,13 +132,13 @@ base::Optional<TransformationMatrix> XRReferenceSpace::MojoFromNative() {
     }
     case ReferenceSpaceType::kBoundedFloor: {
       NOTREACHED() << "kBoundedFloor should be handled by subclass";
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 }
 
-base::Optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
-    const base::Optional<TransformationMatrix>& mojo_from_viewer) {
+absl::optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
+    const absl::optional<TransformationMatrix>& mojo_from_viewer) {
   if (type_ == ReferenceSpaceType::kViewer) {
     // Special case for viewer space, always return an identity matrix
     // explicitly. In theory the default behavior of multiplying NativeFromMojo
@@ -148,12 +148,12 @@ base::Optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
   }
 
   if (!mojo_from_viewer)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Return native_from_viewer = native_from_mojo * mojo_from_viewer
   auto native_from_viewer = NativeFromMojo();
   if (!native_from_viewer)
-    return base::nullopt;
+    return absl::nullopt;
   native_from_viewer->Multiply(*mojo_from_viewer);
   return native_from_viewer;
 }
@@ -197,7 +197,7 @@ XRReferenceSpace* XRReferenceSpace::cloneWithOriginOffset(
                                                 type_);
 }
 
-base::Optional<device::mojom::blink::XRNativeOriginInformation>
+absl::optional<device::mojom::blink::XRNativeOriginInformation>
 XRReferenceSpace::NativeOrigin() const {
   return XRNativeOriginInformation::Create(this);
 }

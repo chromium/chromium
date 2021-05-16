@@ -125,7 +125,7 @@ class BackgroundFetchRegistration final
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   ScriptPromise MatchImpl(
       ScriptState* script_state,
-      base::Optional<RequestOrUSVString> request,
+      absl::optional<RequestOrUSVString> request,
       mojom::blink::CacheQueryOptionsPtr cache_query_options,
       ExceptionState& exception_state,
       bool match_all);

@@ -69,7 +69,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
   void ScheduleNextService() override;
 
   bool IsActive() const override;
-  base::Optional<base::TimeDelta> InitialStartTimeForAnimations() override;
+  absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
   bool HasPendingUpdates() const {
     return !animations_needing_update_.IsEmpty();
   }

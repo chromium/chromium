@@ -165,43 +165,43 @@ TextDirection SelectionModifier::DirectionOfEnclosingBlock() const {
 
 namespace {
 
-base::Optional<TextDirection> DirectionAt(
+absl::optional<TextDirection> DirectionAt(
     const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
   const PositionInFlatTreeWithAffinity adjusted =
       ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     const NGInlineCursor& cursor = ComputeNGCaretPosition(adjusted).cursor;
     if (cursor)
       return cursor.Current().ResolvedDirection();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (const InlineBox* box =
           ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted)
               .inline_box)
     return box->Direction();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // TODO(xiaochengh): Deduplicate code with |DirectionAt()|.
-base::Optional<TextDirection> LineDirectionAt(
+absl::optional<TextDirection> LineDirectionAt(
     const PositionInFlatTreeWithAffinity& position) {
   if (position.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
   const PositionInFlatTreeWithAffinity adjusted =
       ComputeInlineAdjustedPosition(position);
   if (adjusted.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
     NGInlineCursor line = ComputeNGCaretPosition(adjusted).cursor;
     if (!line)
-      return base::nullopt;
+      return absl::nullopt;
     line.MoveToContainingLine();
     return line.Current().BaseDirection();
   }
@@ -211,13 +211,13 @@ base::Optional<TextDirection> LineDirectionAt(
               .inline_box) {
     return ParagraphDirectionOf(*box);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 TextDirection DirectionOf(const VisibleSelectionInFlatTree& visible_selection) {
-  base::Optional<TextDirection> maybe_start_direction =
+  absl::optional<TextDirection> maybe_start_direction =
       DirectionAt(visible_selection.VisibleStart().ToPositionWithAffinity());
-  base::Optional<TextDirection> maybe_end_direction =
+  absl::optional<TextDirection> maybe_end_direction =
       DirectionAt(visible_selection.VisibleEnd().ToPositionWithAffinity());
   if (maybe_start_direction.has_value() && maybe_end_direction.has_value() &&
       maybe_start_direction.value() == maybe_end_direction.value())

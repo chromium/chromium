@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -38,7 +38,7 @@ class ReadableStreamTest : public testing::Test {
  public:
   ReadableStreamTest() {}
 
-  base::Optional<String> ReadAll(V8TestingScope& scope,
+  absl::optional<String> ReadAll(V8TestingScope& scope,
                                  ReadableStream* stream) {
     ScriptState* script_state = scope.GetScriptState();
     v8::Isolate* isolate = script_state->GetIsolate();
@@ -49,7 +49,7 @@ class ReadableStreamTest : public testing::Test {
     if (!global->Set(context, V8String(isolate, "stream"), v8_stream)
              .To(&set_result)) {
       ADD_FAILURE();
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     const char script[] =
@@ -72,14 +72,14 @@ readAll(stream);
 
     if (EvalWithPrintingError(&scope, script).IsEmpty()) {
       ADD_FAILURE();
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     while (true) {
       v8::Local<v8::Value> result;
       if (!global->Get(context, V8String(isolate, "result")).ToLocal(&result)) {
         ADD_FAILURE();
-        return base::nullopt;
+        return absl::nullopt;
       }
       if (!result->IsUndefined()) {
         DCHECK(result->IsString());
@@ -94,7 +94,7 @@ readAll(stream);
       v8::MicrotasksScope::PerformCheckpoint(isolate);
     }
     NOTREACHED();
-    return base::nullopt;
+    return absl::nullopt;
   }
 };
 
@@ -465,7 +465,7 @@ TEST_F(ReadableStreamTest, Serialize) {
   underlying_source->Close();
 
   EXPECT_EQ(ReadAll(scope, transferred),
-            base::make_optional<String>("hello, bye"));
+            absl::make_optional<String>("hello, bye"));
 }
 
 TEST_F(ReadableStreamTest, DeserializeWithNullOptimizer) {
@@ -496,7 +496,7 @@ TEST_F(ReadableStreamTest, DeserializeWithNullOptimizer) {
   underlying_source->Close();
 
   EXPECT_EQ(ReadAll(scope, transferred),
-            base::make_optional<String>("hello, bye"));
+            absl::make_optional<String>("hello, bye"));
 }
 
 TEST_F(ReadableStreamTest, DeserializeWithTestOptimizer) {
@@ -527,7 +527,7 @@ TEST_F(ReadableStreamTest, DeserializeWithTestOptimizer) {
   underlying_source->Close();
 
   EXPECT_EQ(ReadAll(scope, transferred),
-            base::make_optional<String>("hello, byefoo, bar"));
+            absl::make_optional<String>("hello, byefoo, bar"));
 }
 
 TEST_F(ReadableStreamTest, GarbageCollectJavaScriptUnderlyingSource) {

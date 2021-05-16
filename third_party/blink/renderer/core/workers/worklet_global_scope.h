@@ -134,7 +134,7 @@ class CORE_EXPORT WorkletGlobalScope
   // Returns the ExecutionContextToken that uniquely identifies the parent
   // context that created this worklet. Note that this will always be a
   // LocalFrameToken.
-  base::Optional<ExecutionContextToken> GetParentExecutionContextToken()
+  absl::optional<ExecutionContextToken> GetParentExecutionContextToken()
       const final {
     return frame_token_;
   }

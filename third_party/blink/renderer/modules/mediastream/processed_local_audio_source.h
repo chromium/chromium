@@ -69,7 +69,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
     return audio_processing_properties_;
   }
 
-  base::Optional<blink::AudioProcessingProperties>
+  absl::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const final;
 
   // The following accessors are valid after the source is started (when the

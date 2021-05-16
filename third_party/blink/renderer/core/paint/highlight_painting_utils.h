@@ -24,7 +24,7 @@ class CORE_EXPORT HighlightPaintingUtils {
   STATIC_ONLY(HighlightPaintingUtils);
 
  public:
-  static base::Optional<AppliedTextDecoration> HighlightTextDecoration(
+  static absl::optional<AppliedTextDecoration> HighlightTextDecoration(
       const ComputedStyle& style,
       const ComputedStyle& pseudo_style);
   static Color HighlightBackgroundColor(const Document&,

@@ -75,7 +75,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   KURL response_script_url = creation_params->script_url;
   network::mojom::ReferrerPolicy response_referrer_policy =
       creation_params->referrer_policy;
-  base::Optional<network::mojom::IPAddressSpace> response_address_space =
+  absl::optional<network::mojom::IPAddressSpace> response_address_space =
       creation_params->response_address_space;
   const bool parent_cross_origin_isolated_capability =
       creation_params->parent_cross_origin_isolated_capability;

@@ -149,11 +149,11 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   return PixelSnappedIntRect(part_rect);
 }
 
-base::Optional<SkColor> GetAccentColor(const ComputedStyle& style) {
+absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
   if (!RuntimeEnabledFeatures::CSSAccentColorEnabled())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<Color> css_accent_color = style.AccentColorResolved();
+  absl::optional<Color> css_accent_color = style.AccentColorResolved();
   if (css_accent_color)
     return css_accent_color->Rgb();
 
@@ -163,7 +163,7 @@ base::Optional<SkColor> GetAccentColor(const ComputedStyle& style) {
     return layout_theme.GetAccentColor(color_scheme).Rgb();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -462,7 +462,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
       DynamicTo<SliderThumbElement>(&element);
   DCHECK(slider_element);  // PaintSliderThumb should always be passed a
                            // SliderThumbElement
-  base::Optional<SkColor> accent_color =
+  absl::optional<SkColor> accent_color =
       GetAccentColor(*slider_element->HostInput()->EnsureComputedStyle());
 
   Platform::Current()->ThemeEngine()->Paint(

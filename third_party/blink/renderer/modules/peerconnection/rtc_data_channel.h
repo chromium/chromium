@@ -66,11 +66,11 @@ class MODULES_EXPORT RTCDataChannel final
   bool reliable() const;
 
   bool ordered() const;
-  base::Optional<uint16_t> maxPacketLifeTime() const;
-  base::Optional<uint16_t> maxRetransmits() const;
+  absl::optional<uint16_t> maxPacketLifeTime() const;
+  absl::optional<uint16_t> maxRetransmits() const;
   String protocol() const;
   bool negotiated() const;
-  base::Optional<uint16_t> id() const;
+  absl::optional<uint16_t> id() const;
   String readyState() const;
   unsigned bufferedAmount() const;
 

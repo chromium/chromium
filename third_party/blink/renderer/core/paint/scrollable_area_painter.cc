@@ -179,7 +179,7 @@ void ScrollableAreaPainter::PaintOverflowControls(
     }
   }
 
-  base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+  absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
   if (clip || transform) {
     PaintController& paint_controller = context.GetPaintController();
     PropertyTreeStateOrAlias modified_properties(

@@ -26,7 +26,7 @@ class MessageEvent;
 struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
   static BlinkTransferableMessage FromMessageEvent(
       MessageEvent*,
-      base::Optional<base::UnguessableToken> cluster_id = base::nullopt);
+      absl::optional<base::UnguessableToken> cluster_id = absl::nullopt);
   static BlinkTransferableMessage FromTransferableMessage(TransferableMessage);
 
   BlinkTransferableMessage();
@@ -48,7 +48,7 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(
     const SkBitmap& sk_bitmap);
 
-CORE_EXPORT base::Optional<SkBitmap> ToSkBitmap(
+CORE_EXPORT absl::optional<SkBitmap> ToSkBitmap(
     const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image);
 
 }  // namespace blink

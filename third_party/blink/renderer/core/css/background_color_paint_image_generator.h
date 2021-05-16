@@ -36,7 +36,7 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       const Node*,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
-      const base::Optional<double>& progress) = 0;
+      const absl::optional<double>& progress) = 0;
 
   // Get the artifacts from the animation keyframes.
   // Returning false meaning that we cannot paint background color with
@@ -45,7 +45,7 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       Node* node,
       Vector<Color>* animated_colors,
       Vector<double>* offsets,
-      base::Optional<double>* progress) = 0;
+      absl::optional<double>* progress) = 0;
 
   virtual Animation* GetAnimationIfCompositable(const Element* element) = 0;
 };

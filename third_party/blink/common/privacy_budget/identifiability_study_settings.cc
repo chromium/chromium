@@ -9,10 +9,10 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 
 namespace blink {
@@ -79,7 +79,7 @@ class ThreadsafeSettingsWrapper {
   }
 
  private:
-  base::Optional<IdentifiabilityStudySettings> initialized_settings_;
+  absl::optional<IdentifiabilityStudySettings> initialized_settings_;
   const IdentifiabilityStudySettings default_settings_;
   base::AtomicFlag initialized_;
 };

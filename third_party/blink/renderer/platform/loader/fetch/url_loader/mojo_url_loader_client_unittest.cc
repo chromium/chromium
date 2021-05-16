@@ -219,7 +219,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
         std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(), request_id_,
         /*loader_options=0*/ 0, request.get(), client_.get(),
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(loading_task_runner),
-        base::make_optional(std::vector<std::string>()));
+        absl::make_optional(std::vector<std::string>()));
 
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(url_loader_client_);

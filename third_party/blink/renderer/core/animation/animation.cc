@@ -327,7 +327,7 @@ AnimationTimeDelta Animation::EffectEnd() const {
                   : AnimationTimeDelta();
 }
 
-bool Animation::Limited(base::Optional<AnimationTimeDelta> current_time) const {
+bool Animation::Limited(absl::optional<AnimationTimeDelta> current_time) const {
   if (!current_time)
     return false;
 
@@ -342,8 +342,8 @@ Document* Animation::GetDocument() const {
   return document_;
 }
 
-base::Optional<double> Animation::TimelineTime() const {
-  return timeline_ ? timeline_->CurrentTimeMilliseconds() : base::nullopt;
+absl::optional<double> Animation::TimelineTime() const {
+  return timeline_ ? timeline_->CurrentTimeMilliseconds() : absl::nullopt;
 }
 
 // https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation.
@@ -368,7 +368,7 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
 
   DCHECK(current_time->IsDouble());
   // Convert from double to AnimationTimeDelta for internal use.
-  base::Optional<AnimationTimeDelta> new_current_time =
+  absl::optional<AnimationTimeDelta> new_current_time =
       AnimationTimeDelta::FromMillisecondsD(current_time->GetAsDouble());
 
   DCHECK(new_current_time);
@@ -378,7 +378,7 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
   if (pending_pause_) {
     SetHoldTimeAndPhase(new_current_time, TimelinePhase::kActive);
     ApplyPendingPlaybackRate();
-    start_time_ = base::nullopt;
+    start_time_ = absl::nullopt;
     pending_pause_ = false;
     if (ready_promise_)
       ResolvePromiseMaybeAsync(ready_promise_.Get());
@@ -413,9 +413,9 @@ void Animation::setCurrentTime(CSSNumberish current_time) {
 // See steps for silently setting the current time. The preliminary step of
 // handling an unresolved time are to be handled by the caller.
 void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
-  base::Optional<AnimationTimeDelta> previous_start_time = start_time_;
-  base::Optional<AnimationTimeDelta> previous_hold_time = hold_time_;
-  base::Optional<TimelinePhase> previous_hold_phase = hold_phase_;
+  absl::optional<AnimationTimeDelta> previous_start_time = start_time_;
+  absl::optional<AnimationTimeDelta> previous_hold_time = hold_time_;
+  absl::optional<TimelinePhase> previous_hold_phase = hold_phase_;
 
   // Update either the hold time or the start time.
   if (hold_time_ || !start_time_ || !timeline_ || !timeline_->IsActive() ||
@@ -429,10 +429,10 @@ void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
   // Preserve invariant that we can only set a start time or a hold time in the
   // absence of an active timeline.
   if (!timeline_ || !timeline_->IsActive())
-    start_time_ = base::nullopt;
+    start_time_ = absl::nullopt;
 
   // Reset the previous current time.
-  previous_current_time_ = base::nullopt;
+  previous_current_time_ = absl::nullopt;
 
   if (previous_start_time != start_time_ || previous_hold_time != hold_time_ ||
       previous_hold_phase != hold_phase_)
@@ -440,15 +440,15 @@ void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
 }
 
 void Animation::SetHoldTimeAndPhase(
-    base::Optional<AnimationTimeDelta> new_hold_time,
+    absl::optional<AnimationTimeDelta> new_hold_time,
     TimelinePhase new_hold_phase) {
   hold_time_ = new_hold_time;
   hold_phase_ = new_hold_phase;
 }
 
 void Animation::ResetHoldTimeAndPhase() {
-  hold_time_ = base::nullopt;
-  hold_phase_ = base::nullopt;
+  hold_time_ = absl::nullopt;
+  hold_phase_ = absl::nullopt;
 }
 
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -488,7 +488,7 @@ V8CSSNumberish* Animation::currentTime() const {
 
   // 3. Otherwise,
   // current time = (timeline time - start time) × playback rate
-  base::Optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
+  absl::optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
 
   // An active timeline should always have a value, and since inactive timeline
   // is handled in step 2 above, make sure that timeline_time has a value.
@@ -521,7 +521,7 @@ void Animation::currentTime(CSSNumberish& currentTime) const {
 
   // 3. Otherwise,
   // current time = (timeline time - start time) × playback rate
-  base::Optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
+  absl::optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
 
   // An active timeline should always have a value, and since inactive timeline
   // is handled in step 2 above, make sure that timeline_time has a value.
@@ -541,7 +541,7 @@ bool Animation::ValidateHoldTimeAndPhase() const {
           !hold_time_);
 }
 
-base::Optional<AnimationTimeDelta> Animation::CurrentTimeInternal() const {
+absl::optional<AnimationTimeDelta> Animation::CurrentTimeInternal() const {
   DCHECK(ValidateHoldTimeAndPhase());
   return hold_time_ ? hold_time_ : CalculateCurrentTime();
 }
@@ -551,7 +551,7 @@ TimelinePhase Animation::CurrentPhaseInternal() const {
   return hold_phase_ ? hold_phase_.value() : CalculateCurrentPhase();
 }
 
-base::Optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
+absl::optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
   return CalculateAnimationPlayState() == kPaused || !start_time_
              ? CurrentTimeInternal()
              : CalculateCurrentTime();
@@ -742,8 +742,8 @@ void Animation::NotifyReady(AnimationTimeDelta ready_time) {
     DCHECK(!compositor_state_->start_time);
     compositor_state_->pending_action = kNone;
     compositor_state_->start_time =
-        start_time_ ? base::make_optional(start_time_.value().InSecondsF())
-                    : base::nullopt;
+        start_time_ ? absl::make_optional(start_time_.value().InSecondsF())
+                    : absl::nullopt;
   }
 
   // Notify of change to play state.
@@ -832,7 +832,7 @@ void Animation::CommitPendingPause(AnimationTimeDelta ready_time) {
   // 3. Apply any pending playback rate on animation.
   // 4. Make animation’s start time unresolved.
   ApplyPendingPlaybackRate();
-  start_time_ = base::nullopt;
+  start_time_ = absl::nullopt;
 
   // 5. Resolve animation’s current ready promise with animation.
   if (ready_promise_ &&
@@ -878,7 +878,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   UpdateIfNecessary();
   AnimationPlayState old_play_state = CalculateAnimationPlayState();
-  base::Optional<AnimationTimeDelta> old_current_time = CurrentTimeInternal();
+  absl::optional<AnimationTimeDelta> old_current_time = CurrentTimeInternal();
 
   CancelAnimationOnCompositor();
 
@@ -920,7 +920,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
         case kPaused:
           if (old_current_time) {
             reset_current_time_on_resume_ = true;
-            start_time_ = base::nullopt;
+            start_time_ = absl::nullopt;
             SetHoldTimeAndPhase(old_current_time, TimelinePhase::kInactive);
           } else if (PendingInternal()) {
             start_time_ = boundary_time;
@@ -961,11 +961,11 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
   NotifyProbe();
 }
 
-base::Optional<AnimationTimeDelta> Animation::CalculateStartTime(
+absl::optional<AnimationTimeDelta> Animation::CalculateStartTime(
     AnimationTimeDelta current_time) const {
-  base::Optional<AnimationTimeDelta> start_time;
+  absl::optional<AnimationTimeDelta> start_time;
   if (timeline_) {
-    base::Optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
+    absl::optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
     if (timeline_time)
       start_time = timeline_time.value() - current_time / playback_rate_;
     // TODO(crbug.com/916117): Handle NaN time for scroll-linked animations.
@@ -974,11 +974,11 @@ base::Optional<AnimationTimeDelta> Animation::CalculateStartTime(
   return start_time;
 }
 
-base::Optional<AnimationTimeDelta> Animation::CalculateCurrentTime() const {
+absl::optional<AnimationTimeDelta> Animation::CalculateCurrentTime() const {
   if (!start_time_ || !timeline_ || !timeline_->IsActive())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
+  absl::optional<AnimationTimeDelta> timeline_time = timeline_->CurrentTime();
   // timeline_ must be active here, make sure it is returning a current_time.
   DCHECK(timeline_time);
 
@@ -1002,7 +1002,7 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
     return;
   }
 
-  base::Optional<AnimationTimeDelta> new_start_time;
+  absl::optional<AnimationTimeDelta> new_start_time;
   if (start_time) {
     new_start_time =
         AnimationTimeDelta::FromMillisecondsD(start_time->GetAsDouble());
@@ -1014,9 +1014,9 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
   //    animation is associated with. If there is no timeline associated with
   //    animation or the associated timeline is inactive, let the timeline time
   //    be unresolved.
-  base::Optional<AnimationTimeDelta> timeline_time =
+  absl::optional<AnimationTimeDelta> timeline_time =
       timeline_ && timeline_->IsActive() ? timeline_->CurrentTime()
-                                         : base::nullopt;
+                                         : absl::nullopt;
 
   // 2. If timeline time is unresolved and new start time is resolved, make
   //    animation’s hold time unresolved.
@@ -1028,7 +1028,7 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
   }
 
   // 3. Let previous current time be animation’s current time.
-  base::Optional<AnimationTimeDelta> previous_current_time =
+  absl::optional<AnimationTimeDelta> previous_current_time =
       CurrentTimeInternal();
   TimelinePhase previous_current_phase = CurrentPhaseInternal();
 
@@ -1080,7 +1080,7 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
   UpdateFinishedState(UpdateType::kDiscontinuous, NotificationType::kAsync);
 
   // Update user agent.
-  base::Optional<AnimationTimeDelta> new_current_time = CurrentTimeInternal();
+  absl::optional<AnimationTimeDelta> new_current_time = CurrentTimeInternal();
   // Even when the animation is not outdated,call SetOutdated to ensure
   // the animation is tracked by its timeline for future timing
   // updates.
@@ -1181,7 +1181,7 @@ void Animation::setEffect(AnimationEffect* new_effect) {
     //     The timing phase is ‘before’.
     //   Otherwise,
     //     The timing phase is ‘after’.
-    base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+    absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
     Timing::Phase phase;
     if (!current_time)
       phase = Timing::kPhaseNone;
@@ -1309,7 +1309,7 @@ void Animation::pause(ExceptionState& exception_state) {
     return;
 
   // 3. Let seek time be a time value that is initially unresolved.
-  base::Optional<AnimationTimeDelta> seek_time;
+  absl::optional<AnimationTimeDelta> seek_time;
 
   // 4. Let has finite timeline be true if animation has an associated timeline
   //    that is not monotonically increasing.
@@ -1414,7 +1414,7 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   bool enable_seek =
       auto_rewind == AutoRewind::kEnabled || reset_current_time_on_resume_;
   bool has_pending_ready_promise = false;
-  base::Optional<AnimationTimeDelta> seek_time;
+  absl::optional<AnimationTimeDelta> seek_time;
   bool has_finite_timeline =
       timeline_ && !timeline_->IsMonotonicallyIncreasing();
 
@@ -1442,14 +1442,14 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   //    is unresolved,
   //    5c1. Set seek time to zero.
   double effective_playback_rate = EffectivePlaybackRate();
-  base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+  absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
 
   if (reset_current_time_on_resume_) {
-    current_time = base::nullopt;
+    current_time = absl::nullopt;
     reset_current_time_on_resume_ = false;
   }
 
-  base::Optional<AnimationTimeDelta> effect_end = EffectEnd();
+  absl::optional<AnimationTimeDelta> effect_end = EffectEnd();
   if (effective_playback_rate > 0 && enable_seek &&
       (!current_time || current_time < AnimationTimeDelta() ||
        current_time >= effect_end)) {
@@ -1488,7 +1488,7 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
 
   // 7. If animation's hold time is resolved, let its start time be unresolved.
   if (hold_time_)
-    start_time_ = base::nullopt;
+    start_time_ = absl::nullopt;
 
   // 8. If animation has a pending play task or a pending pause task,
   //   8.1 Cancel that task.
@@ -1544,7 +1544,7 @@ void Animation::reverse(ExceptionState& exception_state) {
   // 2. Let original pending playback rate be animation’s pending playback rate.
   // 3. Let animation’s pending playback rate be the additive inverse of its
   //    effective playback rate (i.e. -effective playback rate).
-  base::Optional<double> original_pending_playback_rate =
+  absl::optional<double> original_pending_playback_rate =
       pending_playback_rate_;
   pending_playback_rate_ = -EffectivePlaybackRate();
 
@@ -1616,7 +1616,7 @@ void Animation::UpdateFinishedState(UpdateType update_type,
   // required to accommodate timelines that may change direction. Without this
   // distinction, a once-finished animation would remain finished even when its
   // timeline progresses in the opposite direction.
-  base::Optional<AnimationTimeDelta> unconstrained_current_time =
+  absl::optional<AnimationTimeDelta> unconstrained_current_time =
       did_seek ? CurrentTimeInternal() : CalculateCurrentTime();
 
   // 2. Conditionally update the hold time.
@@ -1630,7 +1630,7 @@ void Animation::UpdateFinishedState(UpdateType update_type,
     // boundary. The value of previous current time is used to retain this
     // value.
     double playback_rate = EffectivePlaybackRate();
-    base::Optional<AnimationTimeDelta> hold_time;
+    absl::optional<AnimationTimeDelta> hold_time;
     TimelinePhase hold_phase;
 
     if (playback_rate > 0 &&
@@ -1798,18 +1798,18 @@ void Animation::updatePlaybackRate(double playback_rate,
     //         animation with the did seek flag set to false, and the
     //         synchronously notify flag set to false.
     case kFinished: {
-      base::Optional<AnimationTimeDelta> unconstrained_current_time =
+      absl::optional<AnimationTimeDelta> unconstrained_current_time =
           CalculateCurrentTime();
-      base::Optional<AnimationTimeDelta> timeline_time =
-          timeline_ ? timeline_->CurrentTime() : base::nullopt;
+      absl::optional<AnimationTimeDelta> timeline_time =
+          timeline_ ? timeline_->CurrentTime() : absl::nullopt;
       if (playback_rate) {
         if (timeline_time) {
           start_time_ = (timeline_time && unconstrained_current_time)
-                            ? base::make_optional<AnimationTimeDelta>(
+                            ? absl::make_optional<AnimationTimeDelta>(
                                   (timeline_time.value() -
                                    unconstrained_current_time.value()) /
                                   playback_rate)
-                            : base::nullopt;
+                            : absl::nullopt;
         }
       } else {
         start_time_ = timeline_time;
@@ -1915,13 +1915,13 @@ double Animation::EffectivePlaybackRate() const {
 void Animation::ApplyPendingPlaybackRate() {
   if (pending_playback_rate_) {
     playback_rate_ = pending_playback_rate_.value();
-    pending_playback_rate_ = base::nullopt;
+    pending_playback_rate_ = absl::nullopt;
   }
 }
 
 void Animation::setPlaybackRate(double playback_rate,
                                 ExceptionState& exception_state) {
-  base::Optional<AnimationTimeDelta> start_time_before = start_time_;
+  absl::optional<AnimationTimeDelta> start_time_before = start_time_;
 
   // 1. Clear any pending playback rate on animation.
   // 2. Let previous time be the value of the current time of animation before
@@ -1929,7 +1929,7 @@ void Animation::setPlaybackRate(double playback_rate,
   // 3. Set the playback rate to new playback rate.
   // 4. If previous time is resolved, set the current time of animation to
   //    previous time
-  pending_playback_rate_ = base::nullopt;
+  pending_playback_rate_ = absl::nullopt;
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   V8CSSNumberish* previous_current_time = currentTime();
   playback_rate_ = playback_rate;
@@ -2013,7 +2013,7 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // TimeTicks. These animations will stall, be finished next frame, or
   // stuck in the before phase. In any case, there will be no visible changes
   // after the initial frame.
-  base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+  absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
   if (current_time.has_value() &&
       !SupportedTimeValue(current_time.value().InMillisecondsF()))
     reasons |= CompositorAnimations::kEffectHasUnsupportedTimingParameters;
@@ -2068,7 +2068,7 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
 
   bool reversed = playback_rate < 0;
 
-  base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+  absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
   if (!current_time)
     return base::TimeDelta();
 
@@ -2089,7 +2089,7 @@ void Animation::StartAnimationOnCompositor(
 
   bool reversed = EffectivePlaybackRate() < 0;
 
-  base::Optional<AnimationTimeDelta> start_time;
+  absl::optional<AnimationTimeDelta> start_time;
   base::TimeDelta time_offset = base::TimeDelta();
   // Start the animation on the compositor with either a start time or time
   // offset. The start time is used for synchronous updates where the
@@ -2110,7 +2110,7 @@ void Animation::StartAnimationOnCompositor(
 
   DCHECK_NE(compositor_group_, 0);
   DCHECK(To<KeyframeEffect>(content_.Get()));
-  base::Optional<double> start_time_s;
+  absl::optional<double> start_time_s;
   if (start_time) {
     start_time_s = start_time.value().InSecondsF();
   }
@@ -2201,7 +2201,7 @@ bool Animation::Update(TimingUpdateReason reason) {
     UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
 
   if (content_) {
-    base::Optional<AnimationTimeDelta> inherited_time;
+    absl::optional<AnimationTimeDelta> inherited_time;
     TimelinePhase inherited_phase = TimelinePhase::kInactive;
 
     if (!idle) {
@@ -2248,9 +2248,9 @@ bool Animation::Update(TimingUpdateReason reason) {
 void Animation::QueueFinishedEvent() {
   const AtomicString& event_type = event_type_names::kFinish;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    base::Optional<AnimationTimeDelta> event_current_time =
+    absl::optional<AnimationTimeDelta> event_current_time =
         CurrentTimeInternal();
-    base::Optional<double> event_current_time_ms;
+    absl::optional<double> event_current_time_ms;
     if (event_current_time)
       event_current_time_ms = event_current_time.value().InMillisecondsF();
     // TODO(crbug.com/916117): Handle NaN values for scroll-linked animations.
@@ -2279,13 +2279,13 @@ bool Animation::IsEventDispatchAllowed() const {
   return Paused() || start_time_;
 }
 
-base::Optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
+absl::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
   DCHECK(!outdated_);
   if (!start_time_ || hold_time_ || !playback_rate_)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!content_) {
-    base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+    absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
     DCHECK(current_time);
     return -current_time.value() / playback_rate_;
   }
@@ -2315,7 +2315,7 @@ void Animation::cancel() {
 
     const AtomicString& event_type = event_type_names::kCancel;
     if (GetExecutionContext() && HasEventListeners(event_type)) {
-      base::Optional<double> event_current_time = base::nullopt;
+      absl::optional<double> event_current_time = absl::nullopt;
       // TODO(crbug.com/916117): Handle NaN values for scroll-linked
       // animations.
       pending_cancelled_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
@@ -2326,12 +2326,12 @@ void Animation::cancel() {
     }
   } else {
     // Quietly reset without rejecting promises.
-    pending_playback_rate_ = base::nullopt;
+    pending_playback_rate_ = absl::nullopt;
     pending_pause_ = pending_play_ = false;
   }
 
   ResetHoldTimeAndPhase();
-  start_time_ = base::nullopt;
+  start_time_ = absl::nullopt;
 
   // Apply changes synchronously.
   SetCompositorPending(/*effect_changed=*/false);
@@ -2433,7 +2433,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
   // animation.
   SetCurrentTimeInternal(pause_time);
   if (HasActiveAnimationsOnCompositor()) {
-    base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+    absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
     DCHECK(current_time);
     To<KeyframeEffect>(content_.Get())
         ->PauseAnimationForTestingOnCompositor(
@@ -2447,7 +2447,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
   pending_pause_ = false;
   pending_play_ = false;
   SetHoldTimeAndPhase(pause_time, TimelinePhase::kActive);
-  start_time_ = base::nullopt;
+  start_time_ = absl::nullopt;
 }
 
 void Animation::SetEffectSuppressed(bool suppressed) {
@@ -2627,9 +2627,9 @@ void Animation::RemoveReplacedAnimation() {
   replace_state_ = kRemoved;
   const AtomicString& event_type = event_type_names::kRemove;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
-    base::Optional<AnimationTimeDelta> event_current_time =
+    absl::optional<AnimationTimeDelta> event_current_time =
         CurrentTimeInternal();
-    base::Optional<double> event_current_time_ms;
+    absl::optional<double> event_current_time_ms;
     if (event_current_time)
       event_current_time_ms = event_current_time.value().InMillisecondsF();
     pending_remove_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(

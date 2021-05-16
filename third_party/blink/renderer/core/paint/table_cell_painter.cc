@@ -84,7 +84,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
   const DisplayItemClient* client = nullptr;
   PhysicalRect paint_rect;
   IntRect visual_rect;
-  base::Optional<ScopedBoxContentsPaintState> contents_paint_state;
+  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (box_decoration_data.IsPaintingScrollingBackground()) {
     // See BoxPainter::PaintBoxDecorationBackground() for explanations.
     // TODO(wangxianzhu): Perhaps we can merge them for CompositeAfterPaint.

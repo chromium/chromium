@@ -103,7 +103,7 @@ struct WebContentSecurityPolicy {
   bool use_reporting_api;
   WebVector<WebString> report_endpoints;
   network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
-  base::Optional<WebCSPTrustedTypes> trusted_types;
+  absl::optional<WebCSPTrustedTypes> trusted_types;
   WebVector<WebString> parsing_errors;
 };
 

@@ -248,7 +248,7 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   CHECK_NE(0, settings_.max_aspect_ratio());
 
-  base::Optional<double> max_fps_override =
+  absl::optional<double> max_fps_override =
       Platform::Current()->GetWebRtcMaxCaptureFrameRate();
   if (max_fps_override) {
     DVLOG(1) << "Overriding max frame rate.  Was=" << settings_.max_frame_rate()

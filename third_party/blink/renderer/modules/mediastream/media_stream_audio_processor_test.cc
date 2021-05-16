@@ -455,7 +455,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableDefaultAgc1) {
           properties, /*use_multichannel_processing=*/true,
           webrtc_audio_device));
 
-  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+  absl::optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
   ASSERT_TRUE(apm_config);
 
@@ -496,7 +496,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
           properties, /*use_multichannel_processing=*/true,
           webrtc_audio_device));
 
-  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+  absl::optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
   ASSERT_TRUE(apm_config);
 
@@ -548,7 +548,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcSimdNotAllowed) {
           properties, /*use_multichannel_processing=*/true,
           webrtc_audio_device));
 
-  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+  absl::optional<webrtc::AudioProcessing::Config> apm_config =
       audio_processor->GetAudioProcessingModuleConfig();
   ASSERT_TRUE(apm_config);
 

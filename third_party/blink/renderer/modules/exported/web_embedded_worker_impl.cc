@@ -218,7 +218,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       network::mojom::ReferrerPolicy::kDefault, starter_origin.get(),
       starter_secure_context, starter_https_state, nullptr /* worker_clients */,
       std::move(content_settings_proxy),
-      base::nullopt /* response_address_space */,
+      absl::nullopt /* response_address_space */,
       nullptr /* OriginTrialTokens */, worker_start_data->devtools_worker_token,
       std::move(worker_settings),
       // Generate the full code cache in the first execution of the script.

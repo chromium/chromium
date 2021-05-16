@@ -386,7 +386,7 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   bool has_inline_size_containment = Node().ShouldApplyInlineSizeContainment();
   if (has_inline_size_containment) {
     // Size containment does not consider the legend for sizing.
-    base::Optional<MinMaxSizesResult> result_without_children =
+    absl::optional<MinMaxSizesResult> result_without_children =
         CalculateMinMaxSizesIgnoringChildren(Node(), BorderScrollbarPadding());
     if (result_without_children)
       return *result_without_children;

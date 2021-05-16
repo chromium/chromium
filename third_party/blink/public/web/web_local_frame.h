@@ -11,11 +11,11 @@
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -246,7 +246,7 @@ class WebLocalFrame : public WebFrame {
   // Returns the embedding token for this frame or nullopt if the frame hasn't
   // committed a navigation. This token changes when a new document is committed
   // in this WebLocalFrame.
-  virtual const base::Optional<base::UnguessableToken>& GetEmbeddingToken()
+  virtual const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
       const = 0;
 
   // Navigation Ping --------------------------------------------------------
@@ -768,7 +768,7 @@ class WebLocalFrame : public WebFrame {
   virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) = 0;
 
   // See blink::LocalFrame::AdEvidence()
-  virtual const base::Optional<blink::FrameAdEvidence>& AdEvidence() = 0;
+  virtual const absl::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
 
   // True iff a script tagged as an ad was on the v8 stack when the frame was
   // created and the frame is a subframe. This is not currently propagated when

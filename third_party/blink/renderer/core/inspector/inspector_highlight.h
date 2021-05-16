@@ -91,15 +91,15 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
  public:
   InspectorFlexContainerHighlightConfig();
 
-  base::Optional<LineStyle> container_border;
-  base::Optional<LineStyle> line_separator;
-  base::Optional<LineStyle> item_separator;
+  absl::optional<LineStyle> container_border;
+  absl::optional<LineStyle> line_separator;
+  absl::optional<LineStyle> item_separator;
 
-  base::Optional<BoxStyle> main_distributed_space;
-  base::Optional<BoxStyle> cross_distributed_space;
-  base::Optional<BoxStyle> row_gap_space;
-  base::Optional<BoxStyle> column_gap_space;
-  base::Optional<LineStyle> cross_alignment;
+  absl::optional<BoxStyle> main_distributed_space;
+  absl::optional<BoxStyle> cross_distributed_space;
+  absl::optional<BoxStyle> row_gap_space;
+  absl::optional<BoxStyle> column_gap_space;
+  absl::optional<LineStyle> cross_alignment;
 };
 
 struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
@@ -108,8 +108,8 @@ struct CORE_EXPORT InspectorScrollSnapContainerHighlightConfig {
  public:
   InspectorScrollSnapContainerHighlightConfig() = default;
 
-  base::Optional<LineStyle> snapport_border;
-  base::Optional<LineStyle> snap_area_border;
+  absl::optional<LineStyle> snapport_border;
+  absl::optional<LineStyle> snap_area_border;
 
   Color scroll_margin_color;
   Color scroll_padding_color;
@@ -121,9 +121,9 @@ struct CORE_EXPORT InspectorFlexItemHighlightConfig {
  public:
   InspectorFlexItemHighlightConfig();
 
-  base::Optional<BoxStyle> base_size_box;
-  base::Optional<LineStyle> base_size_border;
-  base::Optional<LineStyle> flexibility_arrow;
+  absl::optional<BoxStyle> base_size_box;
+  absl::optional<LineStyle> base_size_border;
+  absl::optional<LineStyle> flexibility_arrow;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {

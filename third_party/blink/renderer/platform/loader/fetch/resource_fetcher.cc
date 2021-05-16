@@ -780,7 +780,7 @@ void ResourceFetcher::RemovePreload(Resource* resource) {
     preloads_.erase(it);
 }
 
-base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
+absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     FetchParameters& params,
     const ResourceFactory& factory,
     WebScopedVirtualTimePauser& virtual_time_pauser) {
@@ -825,7 +825,7 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   // Before modifying the request for CSP, evaluate report-only headers. This
   // allows site owners to learn about requests that are being modified
   // (e.g. mixed content that is being upgraded by upgrade-insecure-requests).
-  const base::Optional<ResourceRequest::RedirectInfo>& redirect_info =
+  const absl::optional<ResourceRequest::RedirectInfo>& redirect_info =
       resource_request.GetRedirectInfo();
   const KURL& url_before_redirects =
       redirect_info ? redirect_info->original_url : params.Url();
@@ -899,13 +899,13 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
       "priority", resource_request.Priority());
 
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
-  base::Optional<ResourceRequestBlockedReason> blocked_reason =
+  absl::optional<ResourceRequestBlockedReason> blocked_reason =
       Context().CanRequest(resource_type, resource_request, url, options,
                            reporting_disposition,
                            resource_request.GetRedirectInfo());
 
   if (Context().CalculateIfAdSubresource(resource_request,
-                                         base::nullopt /* alias_url */,
+                                         absl::nullopt /* alias_url */,
                                          resource_type, options.initiator_info))
     resource_request.SetIsAdResource();
 
@@ -933,7 +933,7 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     AttachWebBundleTokenIfNeeded(resource_request);
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ResourceFetcher::AttachWebBundleTokenIfNeeded(
@@ -1002,7 +1002,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   WebScopedVirtualTimePauser pauser;
 
-  base::Optional<ResourceRequestBlockedReason> blocked_reason =
+  absl::optional<ResourceRequestBlockedReason> blocked_reason =
       PrepareRequest(params, factory, pauser);
   if (blocked_reason) {
     return ResourceForBlockedRequest(params, factory, blocked_reason.value(),

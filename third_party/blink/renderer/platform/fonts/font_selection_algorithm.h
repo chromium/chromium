@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_ALGORITHM_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 

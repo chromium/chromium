@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/optional.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
@@ -184,9 +184,9 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     capabilities_.device_capabilities.push_back(std::move(device));
 
     capabilities_.noise_reduction_capabilities = {
-        base::Optional<bool>(),
-        base::Optional<bool>(true),
-        base::Optional<bool>(false),
+        absl::optional<bool>(),
+        absl::optional<bool>(true),
+        absl::optional<bool>(false),
     };
 
     default_device_ = &capabilities_.device_capabilities[0];
@@ -228,7 +228,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, Unconstrained) {
   EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
   EXPECT_EQ(*default_closest_format_, result.Format());
   // Should select default settings for other constraints.
-  EXPECT_EQ(base::Optional<bool>(), result.noise_reduction());
+  EXPECT_EQ(absl::optional<bool>(), result.noise_reduction());
 }
 
 // The "Overconstrained" tests verify that failure of any single required
@@ -411,7 +411,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
                                 media::PIXEL_FORMAT_I420),
   };
   capabilities.device_capabilities.push_back(std::move(device));
-  capabilities.noise_reduction_capabilities = {base::Optional<bool>(false)};
+  capabilities.noise_reduction_capabilities = {absl::optional<bool>(false)};
 
   constraint_factory_.Reset();
   constraint_factory_.basic().goog_noise_reduction.SetExact(true);
@@ -2003,9 +2003,9 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   device.control_support.zoom = false;
   capabilities.device_capabilities.push_back(std::move(device));
   capabilities.noise_reduction_capabilities = {
-      base::Optional<bool>(),
-      base::Optional<bool>(true),
-      base::Optional<bool>(false),
+      absl::optional<bool>(),
+      absl::optional<bool>(true),
+      absl::optional<bool>(false),
   };
 
   for (auto& constraint : kPanTiltZoomConstraints) {

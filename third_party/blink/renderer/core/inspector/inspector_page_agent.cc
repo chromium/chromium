@@ -861,7 +861,7 @@ Response InspectorPageAgent::getPermissionsPolicyState(
     if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
       continue;
 
-    base::Optional<blink::PermissionsPolicyBlockLocator> locator =
+    absl::optional<blink::PermissionsPolicyBlockLocator> locator =
         blink::TracePermissionsPolicyBlockSource(frame, feature);
 
     std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
@@ -1419,7 +1419,7 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .setMimeType(cached_resource->GetResponse().MimeType())
             .setContentSize(cached_resource->GetResponse().DecodedBodyLength())
             .build();
-    base::Optional<base::Time> last_modified =
+    absl::optional<base::Time> last_modified =
         cached_resource->GetResponse().LastModified();
     if (last_modified)
       resource_object->setLastModified(last_modified.value().ToDoubleT());

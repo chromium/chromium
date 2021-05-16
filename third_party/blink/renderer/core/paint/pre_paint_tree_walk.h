@@ -67,7 +67,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
 #endif
     }
 
-    base::Optional<PaintPropertyTreeBuilderContext> tree_builder_context;
+    absl::optional<PaintPropertyTreeBuilderContext> tree_builder_context;
 
     PaintInvalidatorContext paint_invalidator_context;
 

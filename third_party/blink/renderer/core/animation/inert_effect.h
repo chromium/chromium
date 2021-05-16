@@ -45,8 +45,8 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
   InertEffect(KeyframeEffectModelBase*,
               const Timing&,
               bool paused,
-              base::Optional<AnimationTimeDelta> inherited_time,
-              base::Optional<TimelinePhase> inherited_phase);
+              absl::optional<AnimationTimeDelta> inherited_time,
+              absl::optional<TimelinePhase> inherited_phase);
 
   void Sample(HeapVector<Member<Interpolation>>&) const;
   KeyframeEffectModelBase* Model() const { return model_.Get(); }
@@ -60,14 +60,14 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
   void UpdateChildrenAndEffects() const override {}
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<AnimationTimeDelta> inherited_time,
+      absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
 
  private:
   Member<KeyframeEffectModelBase> model_;
   bool paused_;
-  base::Optional<AnimationTimeDelta> inherited_time_;
-  base::Optional<TimelinePhase> inherited_phase_;
+  absl::optional<AnimationTimeDelta> inherited_time_;
+  absl::optional<TimelinePhase> inherited_phase_;
 };
 
 template <>

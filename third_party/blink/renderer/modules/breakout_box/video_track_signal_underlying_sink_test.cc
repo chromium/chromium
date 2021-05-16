@@ -74,7 +74,7 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
 
   ScriptValue CreateSetMinFrameRateChunk(
       ScriptState* script_state,
-      const base::Optional<double>& frame_rate = 10.0) {
+      const absl::optional<double>& frame_rate = 10.0) {
     MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
     signal->setSignalType("set-min-frame-rate");
     if (frame_rate)
@@ -164,7 +164,7 @@ TEST_F(VideoTrackSignalUnderlyingSinkTest, WriteInvalidDataFails) {
 
   DummyExceptionStateForTesting exception_state;
   auto set_min_frame_rate_chunk =
-      CreateSetMinFrameRateChunk(script_state, base::nullopt);
+      CreateSetMinFrameRateChunk(script_state, absl::nullopt);
   underlying_sink->write(script_state, set_min_frame_rate_chunk, nullptr,
                          exception_state);
   EXPECT_TRUE(exception_state.HadException());

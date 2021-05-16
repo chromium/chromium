@@ -14,7 +14,7 @@ TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
             StringToFeature("WebFileSystem"));
   ASSERT_EQ(WebSchedulerTrackedFeature::kDocumentLoaded,
             StringToFeature("DocumentLoaded"));
-  ASSERT_EQ(base::nullopt, StringToFeature("FeatureThatNeverExists"));
+  ASSERT_EQ(absl::nullopt, StringToFeature("FeatureThatNeverExists"));
 }
 
 }  // namespace scheduler

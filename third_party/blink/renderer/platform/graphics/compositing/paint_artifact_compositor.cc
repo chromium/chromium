@@ -629,18 +629,18 @@ static bool ClipChainHasCompositedTransformTo(
 //    transform space.
 // 4. The local space of each clip and effect node on the ancestor chain must
 //    be within compositing boundary of the home transform space.
-base::Optional<PropertyTreeState> CanUpcastWith(const PropertyTreeState& guest,
+absl::optional<PropertyTreeState> CanUpcastWith(const PropertyTreeState& guest,
                                                 const PropertyTreeState& home) {
   DCHECK_EQ(&home.Effect(), &guest.Effect());
 
   if (home.Transform().IsBackfaceHidden() !=
       guest.Transform().IsBackfaceHidden())
-    return base::nullopt;
+    return absl::nullopt;
 
   auto* upcast_transform =
       NonCompositedLowestCommonAncestor(home.Transform(), guest.Transform());
   if (!upcast_transform)
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto& clip_lca =
       home.Clip().LowestCommonAncestor(guest.Clip()).Unalias();
@@ -648,7 +648,7 @@ base::Optional<PropertyTreeState> CanUpcastWith(const PropertyTreeState& guest,
                                         *upcast_transform) ||
       ClipChainHasCompositedTransformTo(guest.Clip(), clip_lca,
                                         *upcast_transform))
-    return base::nullopt;
+    return absl::nullopt;
 
   return PropertyTreeState(*upcast_transform, clip_lca, home.Effect());
 }
@@ -670,7 +670,7 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
   if (&property_tree_state.Effect() != &guest_state.Effect())
     return false;
 
-  const base::Optional<PropertyTreeState>& merged_state =
+  const absl::optional<PropertyTreeState>& merged_state =
       CanUpcastWith(guest_state, property_tree_state);
   if (!merged_state)
     return false;
@@ -791,7 +791,7 @@ bool PaintArtifactCompositor::DecompositeEffect(
                                     ? effect.OutputClip()->Unalias()
                                     : layer.property_tree_state.Clip(),
                                 effect);
-  base::Optional<PropertyTreeState> upcast_state =
+  absl::optional<PropertyTreeState> upcast_state =
       CanUpcastWith(layer.property_tree_state, group_state);
   if (!upcast_state)
     return false;

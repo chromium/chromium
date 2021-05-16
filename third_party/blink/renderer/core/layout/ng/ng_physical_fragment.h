@@ -464,7 +464,7 @@ class CORE_EXPORT NGPhysicalFragment
   typedef int DumpFlags;
 
   String DumpFragmentTree(DumpFlags,
-                          base::Optional<PhysicalOffset> = base::nullopt,
+                          absl::optional<PhysicalOffset> = absl::nullopt,
                           unsigned indent = 2) const;
 
   static String DumpFragmentTree(const LayoutObject& root, DumpFlags);

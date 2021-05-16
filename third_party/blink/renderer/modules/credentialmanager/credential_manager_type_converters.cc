@@ -226,8 +226,8 @@ PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
 }
 
 // static
-base::Optional<AuthenticatorTransport>
-TypeConverter<base::Optional<AuthenticatorTransport>, String>::Convert(
+absl::optional<AuthenticatorTransport>
+TypeConverter<absl::optional<AuthenticatorTransport>, String>::Convert(
     const String& transport) {
   if (transport == "usb")
     return AuthenticatorTransport::USB;
@@ -239,7 +239,7 @@ TypeConverter<base::Optional<AuthenticatorTransport>, String>::Convert(
     return AuthenticatorTransport::CABLE;
   if (transport == "internal")
     return AuthenticatorTransport::INTERNAL;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
@@ -260,8 +260,8 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
 }
 
 // static
-base::Optional<blink::mojom::blink::ResidentKeyRequirement>
-TypeConverter<base::Optional<blink::mojom::blink::ResidentKeyRequirement>,
+absl::optional<blink::mojom::blink::ResidentKeyRequirement>
+TypeConverter<absl::optional<blink::mojom::blink::ResidentKeyRequirement>,
               String>::Convert(const String& requirement) {
   if (requirement == "discouraged")
     return ResidentKeyRequirement::DISCOURAGED;
@@ -273,7 +273,7 @@ TypeConverter<base::Optional<blink::mojom::blink::ResidentKeyRequirement>,
   // AuthenticatorSelection.resident_key is defined as DOMString expressing a
   // ResidentKeyRequirement and unknown values must be treated as if the
   // property were unset.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // static
@@ -308,8 +308,8 @@ TypeConverter<AttestationConveyancePreference, String>::Convert(
 
 // static
 AuthenticatorAttachment
-TypeConverter<AuthenticatorAttachment, base::Optional<String>>::Convert(
-    const base::Optional<String>& attachment) {
+TypeConverter<AuthenticatorAttachment, absl::optional<String>>::Convert(
+    const absl::optional<String>& attachment) {
   if (!attachment.has_value())
     return AuthenticatorAttachment::NO_PREFERENCE;
   if (attachment.value() == "platform")
@@ -322,8 +322,8 @@ TypeConverter<AuthenticatorAttachment, base::Optional<String>>::Convert(
 
 // static
 LargeBlobSupport
-TypeConverter<LargeBlobSupport, base::Optional<String>>::Convert(
-    const base::Optional<String>& large_blob_support) {
+TypeConverter<LargeBlobSupport, absl::optional<String>>::Convert(
+    const absl::optional<String>& large_blob_support) {
   if (large_blob_support) {
     if (*large_blob_support == "required")
       return LargeBlobSupport::REQUIRED;
@@ -342,14 +342,14 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
     Convert(const blink::AuthenticatorSelectionCriteria& criteria) {
   auto mojo_criteria =
       blink::mojom::blink::AuthenticatorSelectionCriteria::New();
-  base::Optional<String> attachment;
+  absl::optional<String> attachment;
   if (criteria.hasAuthenticatorAttachment())
     attachment = criteria.authenticatorAttachment();
   mojo_criteria->authenticator_attachment =
       ConvertTo<AuthenticatorAttachment>(attachment);
-  base::Optional<ResidentKeyRequirement> resident_key;
+  absl::optional<ResidentKeyRequirement> resident_key;
   if (criteria.hasResidentKey()) {
-    resident_key = ConvertTo<base::Optional<ResidentKeyRequirement>>(
+    resident_key = ConvertTo<absl::optional<ResidentKeyRequirement>>(
         criteria.residentKey());
   }
   if (resident_key) {
@@ -425,7 +425,7 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
   if (descriptor.hasTransports() && !descriptor.transports().IsEmpty()) {
     for (const auto& transport : descriptor.transports()) {
       auto maybe_transport(
-          ConvertTo<base::Optional<AuthenticatorTransport>>(transport));
+          ConvertTo<absl::optional<AuthenticatorTransport>>(transport));
       if (maybe_transport) {
         mojo_descriptor->transports.push_back(*maybe_transport);
       }
@@ -574,7 +574,7 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->cred_props = true;
     }
     if (extensions->hasLargeBlob()) {
-      base::Optional<WTF::String> support;
+      absl::optional<WTF::String> support;
       if (extensions->largeBlob()->hasSupport()) {
         support = extensions->largeBlob()->support();
       }

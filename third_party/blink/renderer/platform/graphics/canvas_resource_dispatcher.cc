@@ -174,7 +174,7 @@ void CanvasResourceDispatcher::DispatchFrameSync(
   WTF::Vector<viz::ReturnedResource> resources;
   sink_->SubmitCompositorFrameSync(
       parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(frame), base::nullopt, 0, &resources);
+      std::move(frame), absl::nullopt, 0, &resources);
   DidReceiveCompositorFrameAck(std::move(resources));
 }
 
@@ -194,7 +194,7 @@ void CanvasResourceDispatcher::DispatchFrame(
   pending_compositor_frames_++;
   sink_->SubmitCompositorFrame(
       parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
-      std::move(frame), base::nullopt, 0);
+      std::move(frame), absl::nullopt, 0);
 }
 
 bool CanvasResourceDispatcher::PrepareFrame(
@@ -243,7 +243,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(),
-              base::nullopt, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
+              absl::nullopt, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
 
   viz::TransferableResource resource;
   auto frame_resource = std::make_unique<FrameResource>();

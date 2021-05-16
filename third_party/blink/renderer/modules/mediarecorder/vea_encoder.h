@@ -34,7 +34,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
       const VideoTrackRecorder::OnErrorCB& on_error_cb,
       int32_t bits_per_second,
       media::VideoCodecProfile codec,
-      base::Optional<uint8_t> level,
+      absl::optional<uint8_t> level,
       const gfx::Size& size,
       bool use_native_input,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -70,7 +70,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
              const VideoTrackRecorder::OnErrorCB& on_error_cb,
              int32_t bits_per_second,
              media::VideoCodecProfile codec,
-             base::Optional<uint8_t> level,
+             absl::optional<uint8_t> level,
              const gfx::Size& size,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -91,7 +91,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
 
   const media::VideoCodecProfile codec_;
 
-  const base::Optional<uint8_t> level_;
+  const absl::optional<uint8_t> level_;
 
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;

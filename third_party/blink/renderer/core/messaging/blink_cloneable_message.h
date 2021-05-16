@@ -28,7 +28,7 @@ struct CORE_EXPORT BlinkCloneableMessage {
   scoped_refptr<blink::SerializedScriptValue> message;
   scoped_refptr<const blink::SecurityOrigin> sender_origin;
   v8_inspector::V8StackTraceId sender_stack_trace_id;
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id;
+  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BlinkCloneableMessage);

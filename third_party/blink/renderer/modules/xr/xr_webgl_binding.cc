@@ -198,7 +198,7 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
   XRWebGLLayer* base_layer = session->renderState()->baseLayer();
   DCHECK(base_layer);
 
-  base::Optional<gpu::MailboxHolder> camera_image_mailbox_holder =
+  absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder =
       base_layer->CameraImageMailboxHolder();
 
   if (!camera_image_mailbox_holder) {

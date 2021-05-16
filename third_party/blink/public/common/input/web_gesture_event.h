@@ -212,7 +212,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;
   void Coalesce(const WebInputEvent& event) override;
-  base::Optional<ui::ScrollInputType> GetScrollInputType() const override;
+  absl::optional<ui::ScrollInputType> GetScrollInputType() const override;
 
   void SetPositionInWidget(const gfx::PointF& point) {
     position_in_widget_ = point;

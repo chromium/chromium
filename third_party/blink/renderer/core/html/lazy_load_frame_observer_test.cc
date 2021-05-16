@@ -8,7 +8,7 @@
 #include <memory>
 #include <tuple>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -816,7 +816,7 @@ TEST_P(LazyLoadFramesParamsTest,
 TEST_P(LazyLoadFramesParamsTest,
        LoadSameOriginFrameFarFromViewportWithLoadingAttributeLazy) {
   SimRequest main_resource("https://example.com/", "text/html");
-  base::Optional<SimRequest> child_frame_resource;
+  absl::optional<SimRequest> child_frame_resource;
 
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled()) {
     // This SimRequest needs to be created now if the frame won't actually be
@@ -917,7 +917,7 @@ TEST_P(LazyLoadFramesParamsTest,
 TEST_P(LazyLoadFramesParamsTest,
        LoadCrossOriginFrameFarFromViewportThenSetLoadingAttributeEager) {
   SimRequest main_resource("https://example.com/", "text/html");
-  base::Optional<SimRequest> child_frame_resource;
+  absl::optional<SimRequest> child_frame_resource;
 
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled()) {
     // This SimRequest needs to be created now if the frame won't actually be
@@ -1006,7 +1006,7 @@ TEST_P(LazyLoadFramesParamsTest,
   // even further down such that it's not near the viewport. If LazyLoad is
   // enabled, it should be deferred even though it's nested inside a frame that
   // was previously deferred, because it has the attribute loading=lazy.
-  base::Optional<SimRequest> nested_frame_resource;
+  absl::optional<SimRequest> nested_frame_resource;
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled())
     nested_frame_resource.emplace("https://test.com/", "text/html");
 
@@ -1061,7 +1061,7 @@ TEST_P(LazyLoadFramesParamsTest,
   // enabled, it should be deferred because it has the attribute loading=lazy,
   // even though it's nested inside a frame that has the attribute
   // loading=eager.
-  base::Optional<SimRequest> nested_frame_resource;
+  absl::optional<SimRequest> nested_frame_resource;
   if (!RuntimeEnabledFeatures::LazyFrameLoadingEnabled())
     nested_frame_resource.emplace("https://test.com/", "text/html");
 

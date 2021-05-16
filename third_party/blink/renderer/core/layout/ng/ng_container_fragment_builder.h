@@ -65,7 +65,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   // The BFC block-offset is where this fragment was positioned within the BFC.
   // If it is not set, this fragment may be placed anywhere within the BFC.
-  const base::Optional<LayoutUnit>& BfcBlockOffset() const {
+  const absl::optional<LayoutUnit>& BfcBlockOffset() const {
     return bfc_block_offset_;
   }
   void SetBfcBlockOffset(LayoutUnit bfc_block_offset) {
@@ -127,7 +127,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
           NGLogicalStaticPosition::kInlineStart,
       NGLogicalStaticPosition::BlockEdge = NGLogicalStaticPosition::kBlockStart,
       bool needs_block_offset_adjustment = true,
-      const base::Optional<LogicalRect> containing_block_rect = base::nullopt);
+      const absl::optional<LogicalRect> containing_block_rect = absl::nullopt);
 
   void AddOutOfFlowChildCandidate(
       const NGLogicalOutOfFlowPositionedNode& candidate);
@@ -295,7 +295,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
       const LayoutInline* inline_container = nullptr,
-      base::Optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
+      absl::optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   void AddChildInternal(scoped_refptr<const NGPhysicalFragment>,
                         const LogicalOffset&);
@@ -304,7 +304,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   const NGConstraintSpace* space_;
 
   LayoutUnit bfc_line_offset_;
-  base::Optional<LayoutUnit> bfc_block_offset_;
+  absl::optional<LayoutUnit> bfc_block_offset_;
   NGMarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
 

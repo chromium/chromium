@@ -44,7 +44,7 @@ namespace blink {
 struct SecurityOriginHash {
   STATIC_ONLY(SecurityOriginHash);
   static unsigned GetHash(const SecurityOrigin* origin) {
-    base::Optional<base::UnguessableToken> nonce =
+    absl::optional<base::UnguessableToken> nonce =
         origin->GetNonceForSerialization();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
 

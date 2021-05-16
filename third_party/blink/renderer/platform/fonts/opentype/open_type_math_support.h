@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_MATH_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_MATH_SUPPORT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_stretch_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -86,14 +86,14 @@ class PLATFORM_EXPORT OpenTypeMathSupport {
   // kScriptScriptPercentScaleDown and kRadicalDegreeBottomRaisePercent) which
   // are represented by a number between 0 and 1.
   // https://docs.microsoft.com/en-us/typography/opentype/spec/math#mathconstants-table
-  static base::Optional<float> MathConstant(const HarfBuzzFace*, MathConstants);
+  static absl::optional<float> MathConstant(const HarfBuzzFace*, MathConstants);
 
   // Returns the italic correction corresponding to the specified glyph or null
   // if the font does not have any OpenType MATH table. This value provides an
   // estimation of how much the glyph is slanted, which can be used e.g. when
   // attaching scripts to the glyph.
   // https://docs.microsoft.com/en-us/typography/opentype/spec/math#mathitalicscorrectioninfo-table
-  static base::Optional<float> MathItalicCorrection(const HarfBuzzFace*, Glyph);
+  static absl::optional<float> MathItalicCorrection(const HarfBuzzFace*, Glyph);
 
   // Returns a vector of GlyphVariantRecords corresponding to the specified
   // glyph and stretch axis. The base glyph is always added as the first item.

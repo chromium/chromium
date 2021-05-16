@@ -36,7 +36,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -44,6 +43,7 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/media_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
@@ -638,8 +638,8 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // WebRTC ----------------------------------------------------------
 
-  virtual base::Optional<double> GetWebRtcMaxCaptureFrameRate() {
-    return base::nullopt;
+  virtual absl::optional<double> GetWebRtcMaxCaptureFrameRate() {
+    return absl::nullopt;
   }
 
   virtual scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
@@ -653,8 +653,8 @@ class BLINK_PLATFORM_EXPORT Platform {
     return media::AudioLatency::LATENCY_PLAYBACK;
   }
 
-  virtual base::Optional<std::string> GetWebRTCAudioProcessingConfiguration() {
-    return base::nullopt;
+  virtual absl::optional<std::string> GetWebRTCAudioProcessingConfiguration() {
+    return absl::nullopt;
   }
 
   virtual bool ShouldEnforceWebRTCRoutingPreferences() { return true; }
@@ -684,8 +684,8 @@ class BLINK_PLATFORM_EXPORT Platform {
                                             uint16_t* udp_max_port,
                                             bool* allow_mdns_obfuscation) {}
 
-  virtual base::Optional<int> GetAgcStartupMinimumVolume() {
-    return base::nullopt;
+  virtual absl::optional<int> GetAgcStartupMinimumVolume() {
+    return absl::nullopt;
   }
 
   virtual bool IsWebRtcHWH264DecodingEnabled(

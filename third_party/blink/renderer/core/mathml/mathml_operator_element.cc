@@ -82,7 +82,7 @@ static const QualifiedName& OperatorPropertyFlagToAttributeName(
 
 MathMLOperatorElement::MathMLOperatorElement(Document& doc)
     : MathMLElement(mathml_names::kMoTag, doc) {
-  operator_content_ = base::nullopt;
+  operator_content_ = absl::nullopt;
   properties_.dictionary_category =
       MathMLOperatorDictionaryCategory::kUndefined;
   properties_.dirty_flags = kOperatorPropertyFlagsAll;
@@ -104,7 +104,7 @@ MathMLOperatorElement::ParseOperatorContent() {
 
 void MathMLOperatorElement::ChildrenChanged(
     const ChildrenChange& children_change) {
-  operator_content_ = base::nullopt;
+  operator_content_ = absl::nullopt;
   properties_.dictionary_category =
       MathMLOperatorDictionaryCategory::kUndefined;
   properties_.dirty_flags = kOperatorPropertyFlagsAll;
@@ -225,7 +225,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
 void MathMLOperatorElement::ComputeOperatorProperty(OperatorPropertyFlag flag) {
   DCHECK(properties_.dirty_flags & flag);
   const auto& name = OperatorPropertyFlagToAttributeName(flag);
-  if (base::Optional<bool> value = BooleanAttribute(name)) {
+  if (absl::optional<bool> value = BooleanAttribute(name)) {
     // https://mathml-refresh.github.io/mathml-core/#dfn-algorithm-for-determining-the-properties-of-an-embellished-operator
     // Step 1.
     if (*value) {

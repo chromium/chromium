@@ -86,7 +86,7 @@ sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float radius_x = GetFilter()->ApplyHorizontalScale(radius_x_);
   float radius_y = GetFilter()->ApplyVerticalScale(radius_y_);
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   MorphologyPaintFilter::MorphType morph_type =
       type_ == FEMORPHOLOGY_OPERATOR_DILATE
           ? MorphologyPaintFilter::MorphType::kDilate

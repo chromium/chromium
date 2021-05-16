@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/sensor/ambient_light_sensor.h"
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -51,8 +51,8 @@ class MockSensorProxyObserver
   }
 
  private:
-  base::Optional<base::RunLoop> sensor_initialized_run_loop_;
-  base::Optional<base::RunLoop> sensor_reading_changed_run_loop_;
+  absl::optional<base::RunLoop> sensor_initialized_run_loop_;
+  absl::optional<base::RunLoop> sensor_reading_changed_run_loop_;
 };
 
 }  // namespace

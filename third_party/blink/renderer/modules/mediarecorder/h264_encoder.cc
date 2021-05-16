@@ -7,9 +7,9 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -27,7 +27,7 @@ namespace blink {
 
 namespace {
 
-base::Optional<EProfileIdc> ToOpenH264Profile(
+absl::optional<EProfileIdc> ToOpenH264Profile(
     media::VideoCodecProfile profile) {
   static const HashMap<media::VideoCodecProfile, EProfileIdc>
       kProfileToEProfileIdc({
@@ -41,10 +41,10 @@ base::Optional<EProfileIdc> ToOpenH264Profile(
   if (it != kProfileToEProfileIdc.end()) {
     return it->value;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
+absl::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   static const HashMap<uint8_t, ELevelIdc> kLevelToELevelIdc({
       {10, LEVEL_1_0},
       {9, LEVEL_1_B},
@@ -68,7 +68,7 @@ base::Optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
   const auto& it = kLevelToELevelIdc.find(level);
   if (it != kLevelToELevelIdc.end())
     return it->value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

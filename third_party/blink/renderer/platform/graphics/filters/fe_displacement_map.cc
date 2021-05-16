@@ -115,7 +115,7 @@ sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
       InputEffect(1), OperatingInterpolationSpace());
   SkColorChannel type_x = ToSkiaMode(x_channel_selector_);
   SkColorChannel type_y = ToSkiaMode(y_channel_selector_);
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   // FIXME : Only applyHorizontalScale is used and applyVerticalScale is ignored
   // This can be fixed by adding a 2nd scale parameter to
   // DisplacementMapEffectPaintFilter.

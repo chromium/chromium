@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 
 #include <algorithm>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -245,7 +245,7 @@ class RadialGradient final : public Gradient {
                                   const SkMatrix& local_matrix,
                                   SkColor fallback_color) const override {
     const SkMatrix* matrix = &local_matrix;
-    base::Optional<SkMatrix> adjusted_local_matrix;
+    absl::optional<SkMatrix> adjusted_local_matrix;
     if (aspect_ratio_ != 1) {
       // CSS3 elliptical gradients: apply the elliptical scaling at the
       // gradient center point.
@@ -312,7 +312,7 @@ class ConicGradient final : public Gradient {
     // Skia's sweep gradient angles are relative to the x-axis, not the y-axis.
     const float skia_rotation = rotation_ - 90;
     const SkMatrix* matrix = &local_matrix;
-    base::Optional<SkMatrix> adjusted_local_matrix;
+    absl::optional<SkMatrix> adjusted_local_matrix;
     if (skia_rotation) {
       adjusted_local_matrix.emplace(local_matrix);
       adjusted_local_matrix->preRotate(skia_rotation, position_.X(),

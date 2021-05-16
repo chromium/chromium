@@ -137,8 +137,8 @@ VideoTrackRecorderImpl::CodecProfile::CodecProfile(CodecId codec_id)
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
     CodecId codec_id,
-    base::Optional<media::VideoCodecProfile> opt_profile,
-    base::Optional<uint8_t> opt_level)
+    absl::optional<media::VideoCodecProfile> opt_profile,
+    absl::optional<uint8_t> opt_level)
     : codec_id(codec_id), profile(opt_profile), level(opt_level) {}
 
 VideoTrackRecorderImpl::CodecProfile::CodecProfile(
@@ -804,7 +804,7 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
   }
   state_ = KeyFrameState::kKeyFrameReceivedOK;
 
-  base::Optional<gfx::ColorSpace> color_space;
+  absl::optional<gfx::ColorSpace> color_space;
   if (encoded_frame->ColorSpace())
     color_space = encoded_frame->ColorSpace()->ToGfxColorSpace();
   auto span = encoded_frame->Data();

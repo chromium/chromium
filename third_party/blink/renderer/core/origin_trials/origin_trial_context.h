@@ -32,12 +32,12 @@ enum class OriginTrialStatus {
 struct OriginTrialTokenResult {
   OriginTrialTokenResult(const String& raw_token,
                          OriginTrialTokenStatus status,
-                         const base::Optional<TrialToken>& parsed_token);
+                         const absl::optional<TrialToken>& parsed_token);
   ~OriginTrialTokenResult() = default;
 
   String raw_token;
   OriginTrialTokenStatus status;
-  base::Optional<TrialToken> parsed_token;
+  absl::optional<TrialToken> parsed_token;
 };
 
 struct OriginTrialResult {

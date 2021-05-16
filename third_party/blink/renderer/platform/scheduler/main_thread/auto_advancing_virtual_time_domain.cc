@@ -66,12 +66,12 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::Now() const {
   return now_ticks_;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 AutoAdvancingVirtualTimeDomain::DelayTillNextTask(
     base::sequence_manager::LazyNow* lazy_now) {
-  base::Optional<base::TimeTicks> run_time = NextScheduledRunTime();
+  absl::optional<base::TimeTicks> run_time = NextScheduledRunTime();
   if (!run_time)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We may have advanced virtual time past the next task when a
   // WebScopedVirtualTimePauser unpauses.
@@ -80,7 +80,7 @@ AutoAdvancingVirtualTimeDomain::DelayTillNextTask(
 
   // Rely on MaybeFastForwardToNextTask to be called to advance
   // virtual time.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToNextTask(
@@ -88,7 +88,7 @@ bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToNextTask(
   if (!can_advance_virtual_time_)
     return false;
 
-  base::Optional<base::TimeTicks> run_time = NextScheduledRunTime();
+  absl::optional<base::TimeTicks> run_time = NextScheduledRunTime();
   if (!run_time)
     return false;
 
@@ -173,7 +173,7 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
 
   // Delayed tasks are being excessively starved, so allow virtual time to
   // advance.
-  base::Optional<base::TimeTicks> run_time = NextScheduledRunTime();
+  absl::optional<base::TimeTicks> run_time = NextScheduledRunTime();
   if (run_time && MaybeAdvanceVirtualTime(*run_time))
     task_starvation_count_ = 0;
 }

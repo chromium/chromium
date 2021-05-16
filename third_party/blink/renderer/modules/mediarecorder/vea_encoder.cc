@@ -43,7 +43,7 @@ scoped_refptr<VEAEncoder> VEAEncoder::Create(
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
     int32_t bits_per_second,
     media::VideoCodecProfile codec,
-    base::Optional<uint8_t> level,
+    absl::optional<uint8_t> level,
     const gfx::Size& size,
     bool use_native_input,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
@@ -66,7 +66,7 @@ VEAEncoder::VEAEncoder(
     const VideoTrackRecorder::OnErrorCB& on_error_cb,
     int32_t bits_per_second,
     media::VideoCodecProfile codec,
-    base::Optional<uint8_t> level,
+    absl::optional<uint8_t> level,
     const gfx::Size& size,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : Encoder(on_encoded_video_cb,
@@ -317,7 +317,7 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
 
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_, bits_per_second_,
-      base::nullopt, base::nullopt, level_, false, storage_type,
+      absl::nullopt, absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ || !video_encoder_->Initialize(config, this))
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);

@@ -26,12 +26,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
@@ -52,12 +52,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
     )");
   iframe_resource2.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
@@ -73,12 +73,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
   LoadURL("https://example.com");
   main_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
@@ -99,12 +99,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
@@ -132,12 +132,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
@@ -163,12 +163,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
@@ -185,12 +185,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
@@ -216,12 +216,12 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
     )");
   iframe_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  ASSERT_NE(locator, base::nullopt);
+  ASSERT_NE(locator, absl::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
   EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
@@ -256,7 +256,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
     )");
   bar_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
@@ -276,7 +276,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
                   ->GetSecurityContext()
                   ->IsFeatureEnabled(
                       mojom::blink::PermissionsPolicyFeature::kFullscreen));
-  EXPECT_EQ(locator, base::nullopt);
+  EXPECT_EQ(locator, absl::nullopt);
 }
 
 TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNoBlockage) {
@@ -289,11 +289,11 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNoBlockage) {
   LoadURL("https://example.com");
   main_resource.Finish();
 
-  base::Optional<PermissionsPolicyBlockLocator> locator =
+  absl::optional<PermissionsPolicyBlockLocator> locator =
       TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
-  EXPECT_EQ(locator, base::nullopt);
+  EXPECT_EQ(locator, absl::nullopt);
 }
 }  // namespace blink

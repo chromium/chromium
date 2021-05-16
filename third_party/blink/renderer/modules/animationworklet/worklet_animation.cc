@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/animationworklet/worklet_animation.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -208,7 +208,7 @@ void StartEffectOnCompositor(CompositorAnimation* animation,
       target, target.ComputedStyleRef(), target.ParentComputedStyle());
 
   int group = 0;
-  base::Optional<double> start_time = base::nullopt;
+  absl::optional<double> start_time = absl::nullopt;
 
   // Normally the playback rate of a blink animation gets translated into
   // equivalent playback rate of cc::KeyframeModels.
@@ -233,14 +233,14 @@ unsigned NextSequenceNumber() {
   return ++next;
 }
 
-double ToMilliseconds(base::Optional<base::TimeDelta> time) {
+double ToMilliseconds(absl::optional<base::TimeDelta> time) {
   return time ? time->InMillisecondsF()
               : std::numeric_limits<double>::quiet_NaN();
 }
 
 // Calculates start time backwards from the current time and
 // timeline.currentTime.
-base::Optional<base::TimeDelta> CalculateStartTime(
+absl::optional<base::TimeDelta> CalculateStartTime(
     base::TimeDelta current_time,
     double playback_rate,
     AnimationTimeline& timeline) {
@@ -251,7 +251,7 @@ base::Optional<base::TimeDelta> CalculateStartTime(
     return base::TimeDelta::FromMilliseconds(0);
   if (current_time.is_min())
     return base::TimeDelta::Max();
-  base::Optional<double> timeline_current_time_ms =
+  absl::optional<double> timeline_current_time_ms =
       timeline.CurrentTimeMilliseconds();
   return base::TimeDelta::FromMillisecondsD(timeline_current_time_ms.value()) -
          (current_time / playback_rate);
@@ -393,7 +393,7 @@ WorkletAnimation::WorkletAnimation(
   for (auto& effect : effects_) {
     AnimationEffect* target_effect = effect;
     target_effect->Attach(this);
-    local_times_.push_back(base::nullopt);
+    local_times_.push_back(absl::nullopt);
     timings->data.push_back(target_effect->SpecifiedTiming());
   }
   effect_timings_ = std::make_unique<WorkletAnimationEffectTimings>(timings);
@@ -453,19 +453,19 @@ void WorkletAnimation::play(ExceptionState& exception_state) {
   }
 }
 
-base::Optional<double> WorkletAnimation::currentTime() {
-  base::Optional<base::TimeDelta> current_time = CurrentTime();
+absl::optional<double> WorkletAnimation::currentTime() {
+  absl::optional<base::TimeDelta> current_time = CurrentTime();
   if (!current_time)
-    return base::nullopt;
+    return absl::nullopt;
   return ToMilliseconds(current_time.value());
 }
 
-base::Optional<double> WorkletAnimation::startTime() {
+absl::optional<double> WorkletAnimation::startTime() {
   // The timeline may have become newly active or inactive, which then can cause
   // the start time to change.
   UpdateCurrentTimeIfNeeded();
   if (!start_time_)
-    return base::nullopt;
+    return absl::nullopt;
   return ToMilliseconds(start_time_.value());
 }
 
@@ -483,7 +483,7 @@ void WorkletAnimation::pause(ExceptionState& exception_state) {
 
   // If animation is playing then we should hold the current time
   // otherwise hold zero.
-  base::Optional<base::TimeDelta> new_current_time =
+  absl::optional<base::TimeDelta> new_current_time =
       IsCurrentTimeInitialized() ? CurrentTime() : InitialCurrentTime();
 
   SetPlayState(Animation::kPaused);
@@ -500,7 +500,7 @@ void WorkletAnimation::cancel() {
     DestroyCompositorAnimation();
   }
   has_started_ = false;
-  local_times_.Fill(base::nullopt);
+  local_times_.Fill(absl::nullopt);
   running_on_main_thread_ = false;
   // TODO(crbug.com/883312): Because this animation has been detached and will
   // not receive updates anymore, we have to update its value upon cancel.
@@ -508,12 +508,12 @@ void WorkletAnimation::cancel() {
   // update the value in the next frame.
   if (IsActive(play_state_)) {
     for (auto& effect : effects_) {
-      effect->UpdateInheritedTime(base::nullopt, base::nullopt,
+      effect->UpdateInheritedTime(absl::nullopt, absl::nullopt,
                                   kTimingUpdateOnDemand);
     }
   }
   SetPlayState(Animation::kIdle);
-  SetCurrentTime(base::nullopt);
+  SetCurrentTime(absl::nullopt);
 
   for (auto& effect : effects_) {
     Element* target = effect->EffectTarget();
@@ -570,7 +570,7 @@ void WorkletAnimation::SetPlaybackRateInternal(double playback_rate) {
   DCHECK_NE(playback_rate, playback_rate_);
   DCHECK(playback_rate);
 
-  base::Optional<base::TimeDelta> previous_current_time = CurrentTime();
+  absl::optional<base::TimeDelta> previous_current_time = CurrentTime();
   playback_rate_ = playback_rate;
   // Update startTime in order to maintain previous currentTime and, as a
   // result, prevent the animation from jumping.
@@ -593,9 +593,9 @@ void WorkletAnimation::Update(TimingUpdateReason reason) {
   for (wtf_size_t i = 0; i < effects_.size(); ++i) {
     effects_[i]->UpdateInheritedTime(
         local_times_[i]
-            ? base::make_optional(AnimationTimeDelta(local_times_[i].value()))
-            : base::nullopt,
-        base::nullopt, reason);
+            ? absl::make_optional(AnimationTimeDelta(local_times_[i].value()))
+            : absl::nullopt,
+        absl::nullopt, reason);
   }
 }
 
@@ -613,7 +613,7 @@ bool WorkletAnimation::CheckCanStart(String* failure_message) {
 }
 
 void WorkletAnimation::SetCurrentTime(
-    base::Optional<base::TimeDelta> seek_time) {
+    absl::optional<base::TimeDelta> seek_time) {
   DCHECK(timeline_);
   // The procedure either:
   // 1) updates the hold time (for paused animations, non-existent or inactive
@@ -622,12 +622,12 @@ void WorkletAnimation::SetCurrentTime(
   bool should_hold =
       play_state_ == Animation::kPaused || !seek_time || !IsTimelineActive();
   if (should_hold) {
-    start_time_ = base::nullopt;
+    start_time_ = absl::nullopt;
     hold_time_ = seek_time;
   } else {
     start_time_ =
         CalculateStartTime(seek_time.value(), playback_rate_, *timeline_);
-    hold_time_ = base::nullopt;
+    hold_time_ = absl::nullopt;
   }
   last_current_time_ = seek_time;
   was_timeline_active_ = IsTimelineActive();
@@ -672,7 +672,7 @@ void WorkletAnimation::InvalidateCompositingState() {
 
 void WorkletAnimation::StartOnMain() {
   running_on_main_thread_ = true;
-  base::Optional<base::TimeDelta> current_time =
+  absl::optional<base::TimeDelta> current_time =
       IsCurrentTimeInitialized() ? CurrentTime() : InitialCurrentTime();
   SetPlayState(Animation::kRunning);
   SetCurrentTime(current_time);
@@ -839,17 +839,17 @@ bool WorkletAnimation::IsCurrentTimeInitialized() const {
 // TODO(https://crbug.com/986925): The playback rate should be taken into
 // consideration when calculating the initial current time.
 // https://drafts.csswg.org/web-animations/#playing-an-animation-section
-base::Optional<base::TimeDelta> WorkletAnimation::InitialCurrentTime() const {
+absl::optional<base::TimeDelta> WorkletAnimation::InitialCurrentTime() const {
   if (play_state_ == Animation::kIdle || play_state_ == Animation::kUnset ||
       !IsTimelineActive())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<base::TimeDelta> starting_time =
+  absl::optional<base::TimeDelta> starting_time =
       timeline_->InitialStartTimeForAnimations();
-  base::Optional<double> current_time = timeline_->CurrentTimeMilliseconds();
+  absl::optional<double> current_time = timeline_->CurrentTimeMilliseconds();
 
   if (!starting_time || !current_time) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return (base::TimeDelta::FromMillisecondsD(current_time.value()) -
@@ -877,9 +877,9 @@ void WorkletAnimation::UpdateCurrentTimeIfNeeded() {
   }
 }
 
-base::Optional<base::TimeDelta> WorkletAnimation::CurrentTime() {
+absl::optional<base::TimeDelta> WorkletAnimation::CurrentTime() {
   if (play_state_ == Animation::kIdle || play_state_ == Animation::kUnset)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Current time calculated for scroll-linked animations depends on style
   // of the associated scroller. However it does not force style recalc when it
@@ -890,9 +890,9 @@ base::Optional<base::TimeDelta> WorkletAnimation::CurrentTime() {
   return last_current_time_;
 }
 
-base::Optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
+absl::optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
   if (play_state_ == Animation::kIdle || play_state_ == Animation::kUnset)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (hold_time_)
     return hold_time_.value();
@@ -900,7 +900,7 @@ base::Optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
   // We return early here when the animation has started with inactive
   // timeline and the timeline has never been activated.
   if (!IsTimelineActive())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Currently ScrollTimeline may return unresolved current time when:
   // - Current scroll offset is less than startScrollOffset and fill mode is
@@ -908,10 +908,10 @@ base::Optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
   // OR
   // - Current scroll offset is greater than or equal to endScrollOffset and
   //   fill mode is none or backwards.
-  base::Optional<double> timeline_time_ms =
+  absl::optional<double> timeline_time_ms =
       timeline_->CurrentTimeMilliseconds();
   if (!timeline_time_ms)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::TimeDelta timeline_time =
       base::TimeDelta::FromMillisecondsD(timeline_time_ms.value());
@@ -921,7 +921,7 @@ base::Optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
 
 void WorkletAnimation::UpdateInputState(
     AnimationWorkletDispatcherInput* input_state) {
-  base::Optional<base::TimeDelta> current_time = CurrentTime();
+  absl::optional<base::TimeDelta> current_time = CurrentTime();
   if (!running_on_main_thread_) {
     return;
   }
@@ -966,7 +966,7 @@ void WorkletAnimation::SetOutputState(
 }
 
 void WorkletAnimation::NotifyLocalTimeUpdated(
-    base::Optional<base::TimeDelta> local_time) {
+    absl::optional<base::TimeDelta> local_time) {
   DCHECK(!running_on_main_thread_);
   local_times_[0] = local_time;
 }

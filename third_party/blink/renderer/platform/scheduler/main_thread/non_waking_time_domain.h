@@ -21,7 +21,7 @@ class NonWakingTimeDomain : public base::sequence_manager::TimeDomain {
   // TimeDomain:
   base::sequence_manager::LazyNow CreateLazyNow() const override;
   base::TimeTicks Now() const override;
-  base::Optional<base::TimeDelta> DelayTillNextTask(
+  absl::optional<base::TimeDelta> DelayTillNextTask(
       base::sequence_manager::LazyNow* lazy_now) override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
   const char* GetName() const override;

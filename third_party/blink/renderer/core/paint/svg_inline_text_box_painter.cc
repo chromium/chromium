@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/svg_inline_text_box_painter.h"
 
 #include <memory>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
@@ -92,8 +92,8 @@ void SVGInlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   LayoutObject& parent_layout_object = ParentInlineLayoutObject();
   const ComputedStyle& style = parent_layout_object.StyleRef();
 
-  base::Optional<SelectionBoundsRecorder> start_bounds_recorder;
-  base::Optional<SelectionBoundsRecorder> end_bounds_recorder;
+  absl::optional<SelectionBoundsRecorder> start_bounds_recorder;
+  absl::optional<SelectionBoundsRecorder> end_bounds_recorder;
   if (have_selection && paint_info.phase == PaintPhase::kForeground) {
     const FrameSelection& frame_selection =
         InlineLayoutObject().GetFrame()->Selection();
@@ -181,7 +181,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
 
   for (const SVGTextFragment& fragment : svg_inline_text_box_.TextFragments()) {
     GraphicsContextStateSaver state_saver(paint_info.context, false);
-    base::Optional<AffineTransform> shader_transform;
+    absl::optional<AffineTransform> shader_transform;
     if (fragment.IsTransformed()) {
       state_saver.Save();
       const auto fragment_transform = fragment.BuildFragmentTransform();
@@ -428,7 +428,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
   float scaling_factor = text_layout_object.ScalingFactor();
   DCHECK(scaling_factor);
 
-  base::Optional<AffineTransform> paint_server_transform;
+  absl::optional<AffineTransform> paint_server_transform;
 
   if (scaling_factor != 1 || shader_transform) {
     paint_server_transform.emplace();
@@ -751,7 +751,7 @@ void SVGInlineTextBoxPainter::RecordSelectionBoundsForRange(
     SelectionState selection_state,
     const ComputedStyle& style,
     PaintController& paint_controller,
-    base::Optional<SelectionBoundsRecorder>& bounds_recorder) {
+    absl::optional<SelectionBoundsRecorder>& bounds_recorder) {
   const Vector<SVGTextFragmentWithRange> fragment_info_list =
       CollectFragmentsInRange(start_position, end_position);
   // We expect at most single fragment for which to record the selection rect.

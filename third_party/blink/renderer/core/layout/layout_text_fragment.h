@@ -56,7 +56,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
                                              LegacyLayout);
 
   Position PositionForCaretOffset(unsigned) const override;
-  base::Optional<unsigned> CaretOffsetForPosition(
+  absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const override;
 
   unsigned Start() const {

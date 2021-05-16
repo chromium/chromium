@@ -1059,8 +1059,8 @@ class RTCPeerConnectionHandler::Observer
     if (handler_) {
       handler_->OnIceCandidateError(
           address,
-          port ? base::Optional<uint16_t>(static_cast<uint16_t>(port))
-               : base::nullopt,
+          port ? absl::optional<uint16_t>(static_cast<uint16_t>(port))
+               : absl::nullopt,
           host_candidate, url, error_code, error_text);
     }
   }
@@ -2600,7 +2600,7 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
 
 void RTCPeerConnectionHandler::OnIceCandidateError(
     const String& address,
-    base::Optional<uint16_t> port,
+    absl::optional<uint16_t> port,
     const String& host_candidate,
     const String& url,
     int error_code,

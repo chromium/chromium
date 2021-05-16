@@ -36,7 +36,7 @@ class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
   scheduling_metrics::TaskDurationMetricReporter<FrameOriginType>
       background_dedicated_worker_per_parent_frame_status_duration_reporter_;
 
-  base::Optional<FrameOriginType> parent_frame_type_;
+  absl::optional<FrameOriginType> parent_frame_type_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerMetricsHelper);
 };

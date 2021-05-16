@@ -724,7 +724,7 @@ void UserMediaProcessor::SelectAudioSettings(
   SetupVideoInput();
 }
 
-base::Optional<base::UnguessableToken>
+absl::optional<base::UnguessableToken>
 UserMediaProcessor::DetermineExistingAudioSessionId() {
   DCHECK(current_request_info_->request()->Audio());
 
@@ -755,7 +755,7 @@ UserMediaProcessor::DetermineExistingAudioSessionId() {
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void UserMediaProcessor::SetupVideoInput() {
@@ -763,7 +763,7 @@ void UserMediaProcessor::SetupVideoInput() {
   DCHECK(current_request_info_);
 
   if (!current_request_info_->request()->Video()) {
-    base::Optional<base::UnguessableToken> audio_session_id =
+    absl::optional<base::UnguessableToken> audio_session_id =
         DetermineExistingAudioSessionId();
     GenerateStreamForCurrentRequestInfo(
         audio_session_id, audio_session_id.has_value()
@@ -848,9 +848,9 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   blink::VideoDeviceCaptureCapabilities capabilities;
   capabilities.device_capabilities =
       ToVideoInputDeviceCapabilities(video_input_capabilities);
-  capabilities.noise_reduction_capabilities = {base::Optional<bool>(),
-                                               base::Optional<bool>(true),
-                                               base::Optional<bool>(false)};
+  capabilities.noise_reduction_capabilities = {absl::optional<bool>(),
+                                               absl::optional<bool>(true),
+                                               absl::optional<bool>(false)};
   blink::VideoCaptureSettings settings = SelectSettingsVideoDeviceCapture(
       std::move(capabilities), user_media_request->VideoConstraints(),
       blink::MediaStreamVideoSource::kDefaultWidth,
@@ -871,7 +871,7 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
       settings, false /* is_content_capture */);
 
   if (current_request_info_->request()->Audio()) {
-    base::Optional<base::UnguessableToken> audio_session_id =
+    absl::optional<base::UnguessableToken> audio_session_id =
         DetermineExistingAudioSessionId();
     GenerateStreamForCurrentRequestInfo(
         audio_session_id, audio_session_id.has_value()
@@ -917,7 +917,7 @@ void UserMediaProcessor::SelectVideoContentSettings() {
 }
 
 void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
-    base::Optional<base::UnguessableToken> requested_audio_capture_session_id,
+    absl::optional<base::UnguessableToken> requested_audio_capture_session_id,
     blink::mojom::StreamSelectionStrategy strategy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_request_info_);

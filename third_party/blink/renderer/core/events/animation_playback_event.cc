@@ -12,8 +12,8 @@ namespace blink {
 
 AnimationPlaybackEvent::AnimationPlaybackEvent(
     const AtomicString& type,
-    base::Optional<double> current_time,
-    base::Optional<double> timeline_time)
+    absl::optional<double> current_time,
+    absl::optional<double> timeline_time)
     : Event(type, Bubbles::kNo, Cancelable::kNo),
       current_time_(current_time),
       timeline_time_(timeline_time) {

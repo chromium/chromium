@@ -92,11 +92,11 @@ void XRBoundedReferenceSpace::EnsureUpdated() {
   DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
 }
 
-base::Optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative() {
   EnsureUpdated();
 
   if (!mojo_from_bounded_native_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return *mojo_from_bounded_native_;
 }

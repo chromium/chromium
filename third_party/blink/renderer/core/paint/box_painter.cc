@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -63,7 +63,7 @@ void BoxPainter::PaintBoxDecorationBackground(
 
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
-  base::Optional<ScopedBoxContentsPaintState> contents_paint_state;
+  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   bool painting_scrolling_background =
       BoxDecorationData::IsPaintingScrollingBackground(paint_info, layout_box_);
   IntRect visual_rect;
@@ -136,7 +136,7 @@ void BoxPainter::PaintBoxDecorationBackgroundWithRect(
     const DisplayItemClient& background_client) {
   const ComputedStyle& style = layout_box_.StyleRef();
 
-  base::Optional<DisplayItemCacheSkipper> cache_skipper;
+  absl::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       BoxPainterBase::ShouldSkipPaintUnderInvalidationChecking(layout_box_))
     cache_skipper.emplace(paint_info.context);

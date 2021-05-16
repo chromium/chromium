@@ -104,7 +104,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     mojo::PendingRemote<mojom::blink::BlobURLToken>,
     base::TimeTicks,
     const String&,
-    const base::Optional<WebImpression>&,
+    const absl::optional<WebImpression>&,
     network::mojom::IPAddressSpace,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,

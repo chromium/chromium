@@ -82,7 +82,7 @@ struct CORE_EXPORT PaintInvalidatorContext {
  private:
   friend class PaintInvalidator;
 
-  base::Optional<LayoutShiftTracker::ContainingBlockScope>
+  absl::optional<LayoutShiftTracker::ContainingBlockScope>
       containing_block_scope_;
   const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
 };

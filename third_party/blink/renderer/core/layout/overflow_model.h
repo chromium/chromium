@@ -128,8 +128,8 @@ class SimpleVisualOverflowModel {
 };
 
 struct SimpleOverflowModel {
-  base::Optional<SimpleLayoutOverflowModel> layout_overflow;
-  base::Optional<SimpleVisualOverflowModel> visual_overflow;
+  absl::optional<SimpleLayoutOverflowModel> layout_overflow;
+  absl::optional<SimpleVisualOverflowModel> visual_overflow;
 };
 
 // BoxModelOverflow tracks overflows of a LayoutBox. It separates visual
@@ -227,8 +227,8 @@ class BoxVisualOverflowModel {
 };
 
 struct BoxOverflowModel {
-  base::Optional<BoxLayoutOverflowModel> layout_overflow;
-  base::Optional<BoxVisualOverflowModel> visual_overflow;
+  absl::optional<BoxLayoutOverflowModel> layout_overflow;
+  absl::optional<BoxVisualOverflowModel> visual_overflow;
 
   // Used by BoxPaintInvalidator. Stores the previous overflow data after the
   // last paint invalidation.
@@ -237,7 +237,7 @@ struct BoxOverflowModel {
     PhysicalRect previous_physical_visual_overflow_rect;
     PhysicalRect previous_physical_self_visual_overflow_rect;
   };
-  base::Optional<PreviousOverflowData> previous_overflow_data;
+  absl::optional<PreviousOverflowData> previous_overflow_data;
 
   USING_FAST_MALLOC(BoxOverflowModel);
 };

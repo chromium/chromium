@@ -69,7 +69,7 @@ class ViewCreatingClient : public frame_test_helpers::TestWebViewClient {
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const base::Optional<WebImpression>&) override {
+                      const absl::optional<WebImpression>&) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
 

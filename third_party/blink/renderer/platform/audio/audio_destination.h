@@ -75,7 +75,7 @@ class PLATFORM_EXPORT AudioDestination
   AudioDestination(AudioIOCallback&,
                    unsigned number_of_output_channels,
                    const WebAudioLatencyHint&,
-                   base::Optional<float> context_sample_rate,
+                   absl::optional<float> context_sample_rate,
                    unsigned render_quantum_frames);
   ~AudioDestination() override;
 
@@ -83,7 +83,7 @@ class PLATFORM_EXPORT AudioDestination
       AudioIOCallback&,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint&,
-      base::Optional<float> context_sample_rate,
+      absl::optional<float> context_sample_rate,
       unsigned render_quantum_frames);
 
   // The actual render function (WebAudioDevice::RenderCallback) isochronously

@@ -73,7 +73,7 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     AudioIOCallback& callback,
     unsigned number_of_output_channels,
     const WebAudioLatencyHint& latency_hint,
-    base::Optional<float> context_sample_rate,
+    absl::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
   return base::AdoptRef(
       new AudioDestination(callback, number_of_output_channels, latency_hint,
@@ -83,7 +83,7 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
 AudioDestination::AudioDestination(AudioIOCallback& callback,
                                    unsigned number_of_output_channels,
                                    const WebAudioLatencyHint& latency_hint,
-                                   base::Optional<float> context_sample_rate,
+                                   absl::optional<float> context_sample_rate,
                                    unsigned render_quantum_frames)
     : render_quantum_frames_(render_quantum_frames),
       number_of_output_channels_(number_of_output_channels),

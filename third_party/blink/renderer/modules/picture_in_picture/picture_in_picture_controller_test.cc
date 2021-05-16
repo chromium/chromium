@@ -52,7 +52,7 @@ class MockPictureInPictureSession
       Update,
       void(uint32_t,
            mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-           const base::Optional<viz::SurfaceId>&,
+           const absl::optional<viz::SurfaceId>&,
            const gfx::Size&,
            bool));
 
@@ -86,7 +86,7 @@ class MockPictureInPictureService
       StartSession,
       void(uint32_t,
            mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-           const base::Optional<viz::SurfaceId>&,
+           const absl::optional<viz::SurfaceId>&,
            const gfx::Size&,
            bool,
            mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
@@ -97,7 +97,7 @@ class MockPictureInPictureService
   void StartSessionInternal(
       uint32_t,
       mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-      const base::Optional<viz::SurfaceId>&,
+      const absl::optional<viz::SurfaceId>&,
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,

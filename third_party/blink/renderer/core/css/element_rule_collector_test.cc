@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -32,8 +32,8 @@ class ElementRuleCollectorTest : public PageTestBase {
   // Matches an element against a selector via ElementRuleCollector.
   //
   // Upon successful match, the combined CSSSelector::LinkMatchMask of
-  // of all matched rules is returned, or base::nullopt if no-match.
-  base::Optional<unsigned> Match(Element* element,
+  // of all matched rules is returned, or absl::nullopt if no-match.
+  absl::optional<unsigned> Match(Element* element,
                                  const String& selector,
                                  const ContainerNode* scope = nullptr) {
     ElementResolveContext context(*element);
@@ -47,7 +47,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     auto* style_rule =
         DynamicTo<StyleRule>(css_test_helpers::ParseRule(GetDocument(), rule));
     if (!style_rule)
-      return base::nullopt;
+      return absl::nullopt;
     RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
     rule_set->AddStyleRule(style_rule, kRuleHasNoSpecialState);
 
@@ -58,7 +58,7 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
     if (!vector.size())
-      return base::nullopt;
+      return absl::nullopt;
 
     // Either the normal rules matched, the visited dependent rules matched,
     // or both. There should be nothing else.
@@ -106,9 +106,9 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   const auto kMatchVisited = CSSSelector::kMatchVisited;
   const auto kMatchAll = CSSSelector::kMatchAll;
 
-  EXPECT_EQ(Match(foo, "#bar"), base::nullopt);
-  EXPECT_EQ(Match(visited, "#foo"), base::nullopt);
-  EXPECT_EQ(Match(link, "#foo"), base::nullopt);
+  EXPECT_EQ(Match(foo, "#bar"), absl::nullopt);
+  EXPECT_EQ(Match(visited, "#foo"), absl::nullopt);
+  EXPECT_EQ(Match(link, "#foo"), absl::nullopt);
 
   EXPECT_EQ(Match(foo, "#foo"), kMatchLink);
   EXPECT_EQ(Match(link, ":visited"), kMatchVisited);
@@ -122,8 +122,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
 
   EXPECT_EQ(Match(visited, ":link"), kMatchLink);
   EXPECT_EQ(Match(visited, ":visited"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":link:visited"), base::nullopt);
-  EXPECT_EQ(Match(visited, ":visited:link"), base::nullopt);
+  EXPECT_EQ(Match(visited, ":link:visited"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":visited:link"), absl::nullopt);
   EXPECT_EQ(Match(visited, "#visited:visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":visited#visited"), kMatchVisited);
   EXPECT_EQ(Match(visited, "body :link"), kMatchLink);
@@ -132,17 +132,17 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited_span, ":visited span"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:visited)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:link)"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), base::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:link):not(:visited)"), absl::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:not(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :not(:link))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:not(:visited), :not(:link))"), kMatchAll);
-  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), base::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:not(:visited):not(:link))"), absl::nullopt);
   EXPECT_EQ(Match(visited, ":is(:not(:visited):link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:link))"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":not(:is(:visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:visited)))"), kMatchVisited);
-  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), base::nullopt);
+  EXPECT_EQ(Match(visited, ":not(:is(:link, :visited))"), absl::nullopt);
   EXPECT_EQ(Match(visited, ":not(:is(:link:visited))"), kMatchAll);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):visited))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":not(:is(:not(:link):not(:visited)))"), kMatchAll);
@@ -156,8 +156,8 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   EXPECT_EQ(Match(visited, ":is(:link, #visited)"), kMatchAll);
   EXPECT_EQ(Match(visited, ":is(:visited)"), kMatchVisited);
   EXPECT_EQ(Match(visited, ":is(:link)"), kMatchLink);
-  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), base::nullopt);
-  EXPECT_EQ(Match(visited, ":is(:link:visited)"), base::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link):is(:visited)"), absl::nullopt);
+  EXPECT_EQ(Match(visited, ":is(:link:visited)"), absl::nullopt);
   EXPECT_EQ(Match(visited, ":is(:link, :link)"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:is(:link))"), kMatchLink);
   EXPECT_EQ(Match(visited, ":is(:link, :visited)"), kMatchAll);
@@ -170,10 +170,10 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   // behavior for privacy reasons.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/Privacy_and_the_:visited_selector
   EXPECT_EQ(Match(bar, ":link + #bar"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":visited + #bar"), base::nullopt);
+  EXPECT_EQ(Match(bar, ":visited + #bar"), absl::nullopt);
   EXPECT_EQ(Match(bar, ":is(:link + #bar)"), kMatchLink);
-  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), base::nullopt);
-  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), base::nullopt);
+  EXPECT_EQ(Match(bar, ":is(:visited ~ #bar)"), absl::nullopt);
+  EXPECT_EQ(Match(bar, ":not(:is(:link + #bar))"), absl::nullopt);
   EXPECT_EQ(Match(bar, ":not(:is(:visited ~ #bar))"), kMatchLink);
 }
 

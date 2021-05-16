@@ -116,13 +116,13 @@ class CORE_EXPORT DedicatedWorker final
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
       network::mojom::ReferrerPolicy,
-      base::Optional<network::mojom::IPAddressSpace> response_address_space,
+      absl::optional<network::mojom::IPAddressSpace> response_address_space,
       const String& source_code,
       RejectCoepUnsafeNone reject_coep_unsafe_none);
   std::unique_ptr<GlobalScopeCreationParams> CreateGlobalScopeCreationParams(
       const KURL& script_url,
       network::mojom::ReferrerPolicy,
-      base::Optional<network::mojom::IPAddressSpace> response_address_space);
+      absl::optional<network::mojom::IPAddressSpace> response_address_space);
   scoped_refptr<WebWorkerFetchContext> CreateWebWorkerFetchContext();
   // May return nullptr.
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();

@@ -53,7 +53,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       WorkerThread*,
       const KURL&,
       const String& global_scope_name,
-      const base::Optional<const DedicatedWorkerToken>& token);
+      const absl::optional<const DedicatedWorkerToken>& token);
   static void WorkerThreadTerminated(ExecutionContext* parent_context,
                                      WorkerThread*);
 

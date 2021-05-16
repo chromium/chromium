@@ -213,7 +213,7 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
                                const void* data_base_ptr,
                                unsigned data_bytes_per_element,
                                uint64_t data_element_offset,
-                               base::Optional<uint64_t> data_element_count,
+                               absl::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
   if (buffer_offset % 4 != 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,

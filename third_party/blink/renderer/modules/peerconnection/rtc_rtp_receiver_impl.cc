@@ -204,7 +204,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         webrtc_receiver_->GetParameters());
   }
 
-  void SetJitterBufferMinimumDelay(base::Optional<double> delay_seconds) {
+  void SetJitterBufferMinimumDelay(absl::optional<double> delay_seconds) {
     webrtc_receiver_->SetJitterBufferMinimumDelay(
         blink::ToAbslOptional(delay_seconds));
   }
@@ -346,7 +346,7 @@ std::unique_ptr<webrtc::RtpParameters> RTCRtpReceiverImpl::GetParameters()
 }
 
 void RTCRtpReceiverImpl::SetJitterBufferMinimumDelay(
-    base::Optional<double> delay_seconds) {
+    absl::optional<double> delay_seconds) {
   internal_->SetJitterBufferMinimumDelay(delay_seconds);
 }
 
@@ -411,13 +411,13 @@ webrtc::RTCError RTCRtpReceiverOnlyTransceiver::SetDirection(
   return webrtc::RTCError::OK();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpReceiverOnlyTransceiver::CurrentDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpReceiverOnlyTransceiver::FiredDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;

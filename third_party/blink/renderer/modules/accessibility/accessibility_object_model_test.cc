@@ -144,7 +144,7 @@ TEST_F(AccessibilityObjectModelTest, AOMPropertiesCanBeCleared) {
   // Null the AOM properties.
   button->accessibleNode()->setRole(g_null_atom);
   button->accessibleNode()->setLabel(g_null_atom);
-  button->accessibleNode()->setDisabled(base::nullopt);
+  button->accessibleNode()->setDisabled(absl::nullopt);
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 

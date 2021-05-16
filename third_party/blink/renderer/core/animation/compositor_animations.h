@@ -119,7 +119,7 @@ class CORE_EXPORT CompositorAnimations {
   static void StartAnimationOnCompositor(
       const Element&,
       int group,
-      base::Optional<double> start_time,
+      absl::optional<double> start_time,
       base::TimeDelta time_offset,
       const Timing&,
       const Animation*,
@@ -158,7 +158,7 @@ class CORE_EXPORT CompositorAnimations {
       const Element&,
       const Timing&,
       int group,
-      base::Optional<double> start_time,
+      absl::optional<double> start_time,
       base::TimeDelta time_offset,
       const KeyframeEffectModelBase&,
       Vector<std::unique_ptr<CompositorKeyframeModel>>& animations,

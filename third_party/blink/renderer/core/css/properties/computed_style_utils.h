@@ -245,7 +245,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                                 bool allow_visited_style);
   static CSSValue* ScrollCustomizationFlagsToCSSValue(
       scroll_customization::ScrollDirection);
-  static CSSValue* ValueForGapLength(const base::Optional<Length>&,
+  static CSSValue* ValueForGapLength(const absl::optional<Length>&,
                                      const ComputedStyle&);
   static CSSValue* ValueForStyleName(const StyleName&);
   static CSSValue* ValueForStyleNameOrKeyword(const StyleNameOrKeyword&);

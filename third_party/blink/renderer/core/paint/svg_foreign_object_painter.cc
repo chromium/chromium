@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/paint/block_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -31,7 +31,7 @@ void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
   // they are painted in a fragmented context and may do something bad in a
   // fragmented context, e.g. creating subsequences. Skip cache to avoid that.
   // This will be unnecessary when the contents are fragment aware.
-  base::Optional<DisplayItemCacheSkipper> cache_skipper;
+  absl::optional<DisplayItemCacheSkipper> cache_skipper;
   if (layout_svg_foreign_object_.Layer()->Parent()->EnclosingPaginationLayer())
     cache_skipper.emplace(paint_info.context);
 

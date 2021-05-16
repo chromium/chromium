@@ -42,9 +42,9 @@ int64_t EncodedVideoChunk::timestamp() const {
   return timestamp_.InMicroseconds();
 }
 
-base::Optional<uint64_t> EncodedVideoChunk::duration() const {
+absl::optional<uint64_t> EncodedVideoChunk::duration() const {
   if (!duration_.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   return duration_->InMicroseconds();
 }
 

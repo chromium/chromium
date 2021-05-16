@@ -481,7 +481,7 @@ void LocalFrameClientImpl::BeginNavigation(
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     base::TimeTicks input_start_time,
     const String& href_translate,
-    const base::Optional<WebImpression>& impression,
+    const absl::optional<WebImpression>& impression,
     network::mojom::IPAddressSpace initiator_address_space,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
@@ -778,10 +778,10 @@ String LocalFrameClientImpl::UserAgent() {
   return user_agent_;
 }
 
-base::Optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
+absl::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
   bool ua_override_on = web_frame_->Client() &&
                         !web_frame_->Client()->UserAgentOverride().IsEmpty();
-  base::Optional<blink::UserAgentMetadata> user_agent_metadata =
+  absl::optional<blink::UserAgentMetadata> user_agent_metadata =
       ua_override_on ? web_frame_->Client()->UserAgentMetadataOverride()
                      : Platform::Current()->UserAgentMetadata();
 

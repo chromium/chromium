@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/workers/worklet.h"
 
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -127,7 +127,7 @@ void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
     return;
 
   // Step 6: "Let credentialOptions be the credentials member of options."
-  base::Optional<network::mojom::CredentialsMode> credentials_mode =
+  absl::optional<network::mojom::CredentialsMode> credentials_mode =
       Request::ParseCredentialsMode(credentials);
   DCHECK(credentials_mode);
 

@@ -190,7 +190,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (!file.IsValid()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -199,7 +199,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   bool seek_failed = seek_distance < 0;
   base::UmaHistogramBoolean("Storage.Blob.RendererFileSeekFailed", seek_failed);
   if (seek_failed) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -234,7 +234,7 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
       base::UmaHistogramBoolean("Storage.Blob.RendererFileWriteFailed",
                                 write_failed);
       if (write_failed) {
-        std::move(callback).Run(base::nullopt);
+        std::move(callback).Run(absl::nullopt);
         return;
       }
       written += actual_written;
@@ -244,12 +244,12 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   }
 
   if (!file.Flush()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   base::File::Info info;
   if (!file.GetInfo(&info)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(info.last_modified);

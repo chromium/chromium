@@ -356,13 +356,13 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       ScriptState* script_state,
       const AtomicString& measure_name,
       const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
-      base::Optional<String> end_mark,
+      absl::optional<String> end_mark,
       ExceptionState& exception_state);
 
   PerformanceMeasure* MeasureWithDetail(ScriptState* script_state,
                                         const AtomicString& measure_name,
                                         const V8UnionDoubleOrString* start,
-                                        const base::Optional<double>& duration,
+                                        const absl::optional<double>& duration,
                                         const V8UnionDoubleOrString* end,
                                         const ScriptValue& detail,
                                         ExceptionState& exception_state);

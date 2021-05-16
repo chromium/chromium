@@ -72,7 +72,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     kShouldActivateAnimation,
   };
   AnimationState animation_state_ = kActiveAnimation;
-  base::Optional<SkFilterQuality> filter_quality_ = base::nullopt;
+  absl::optional<SkFilterQuality> filter_quality_ = absl::nullopt;
 };
 
 }  // namespace blink

@@ -364,7 +364,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     break_opportunity.offset = range_end;
     if (break_opportunity.non_hangable_run_end &&
         range_end < break_opportunity.non_hangable_run_end) {
-      break_opportunity.non_hangable_run_end = base::nullopt;
+      break_opportunity.non_hangable_run_end = absl::nullopt;
     }
     if (IsBreakableSpace(text[range_end - 1])) {
       break_opportunity.non_hangable_run_end =

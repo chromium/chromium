@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -62,8 +62,8 @@ struct BLINK_COMMON_EXPORT Manifest {
     ~ShortcutItem();
 
     std::u16string name;
-    base::Optional<std::u16string> short_name;
-    base::Optional<std::u16string> description;
+    absl::optional<std::u16string> short_name;
+    absl::optional<std::u16string> description;
     GURL url;
     std::vector<ImageResource> icons;
   };
@@ -78,9 +78,9 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams();
     ~ShareTargetParams();
 
-    base::Optional<std::u16string> title;
-    base::Optional<std::u16string> text;
-    base::Optional<std::u16string> url;
+    absl::optional<std::u16string> title;
+    absl::optional<std::u16string> text;
+    absl::optional<std::u16string> url;
     std::vector<FileFilter> files;
   };
 
@@ -135,7 +135,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // The platform on which the application can be found. This can be any
     // string, and is interpreted by the consumer of the object. Empty if the
     // parsing failed.
-    base::Optional<std::u16string> platform;
+    absl::optional<std::u16string> platform;
 
     // URL at which the application can be found. One of |url| and |id| must be
     // present. Empty if the parsing failed or the field was not present.
@@ -144,7 +144,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // An id which is used to represent the application on the platform. One of
     // |url| and |id| must be present. Empty if the parsing failed or the field
     // was not present.
-    base::Optional<std::u16string> id;
+    absl::optional<std::u16string> id;
   };
 
   Manifest();
@@ -156,13 +156,13 @@ struct BLINK_COMMON_EXPORT Manifest {
   bool IsEmpty() const;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> name;
+  absl::optional<std::u16string> name;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> short_name;
+  absl::optional<std::u16string> short_name;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<std::u16string> description;
+  absl::optional<std::u16string> description;
 
   // Empty if the parsing failed or the field was not present.
   GURL start_url;
@@ -193,7 +193,7 @@ struct BLINK_COMMON_EXPORT Manifest {
   std::vector<ShortcutItem> shortcuts;
 
   // Null if parsing failed or the field was not present.
-  base::Optional<ShareTarget> share_target;
+  absl::optional<ShareTarget> share_target;
 
   // Empty if parsing failed or the field was not present.
   // TODO(crbug.com/829689): This field is non-standard and part of a Chrome
@@ -219,7 +219,7 @@ struct BLINK_COMMON_EXPORT Manifest {
   // incubation. See:
   // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
   // Null if parsing failed or the field was not present.
-  base::Optional<NoteTaking> note_taking;
+  absl::optional<NoteTaking> note_taking;
 
   // Empty if the parsing failed, the field was not present, empty or all the
   // applications inside the array were invalid. The order of the array
@@ -232,15 +232,15 @@ struct BLINK_COMMON_EXPORT Manifest {
   bool prefer_related_applications = false;
 
   // Null if field is not present or parsing failed.
-  base::Optional<SkColor> theme_color;
+  absl::optional<SkColor> theme_color;
 
   // Null if field is not present or parsing failed.
-  base::Optional<SkColor> background_color;
+  absl::optional<SkColor> background_color;
 
   // This is a proprietary extension of the web Manifest, double-check that it
   // is okay to use this entry.
   // Null if parsing failed or the field was not present.
-  base::Optional<std::u16string> gcm_sender_id;
+  absl::optional<std::u16string> gcm_sender_id;
 
   // Empty if the parsing failed. Otherwise defaults to the start URL (or
   // document URL if start URL isn't present) with filename, query, and fragment

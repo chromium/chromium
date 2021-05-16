@@ -57,7 +57,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   void StepUntilJustBeforeNextFrameIsRendered(
       base::TimeDelta render_interval,
-      base::Optional<int> expected_id = base::nullopt) {
+      absl::optional<int> expected_id = absl::nullopt) {
     // No frame will be rendered until the total render time that has passed is
     // greater than the frame duration of a frame.
     base::TimeTicks start_time = current_render_time_;

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_TRUNCATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_TRUNCATOR_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -71,11 +71,11 @@ class CORE_EXPORT NGLineTruncator final {
                       LayoutUnit ellipsis_width,
                       bool is_first_child,
                       NGLogicalLineItem*,
-                      base::Optional<NGLogicalLineItem>* truncated_child);
+                      absl::optional<NGLogicalLineItem>* truncated_child);
   bool TruncateChild(LayoutUnit space_for_this_child,
                      bool is_first_child,
                      const NGLogicalLineItem& child,
-                     base::Optional<NGLogicalLineItem>* truncated_child);
+                     absl::optional<NGLogicalLineItem>* truncated_child);
   // Create |NGLogicalLineItem| by truncating text |item| at |offset_to_fit|.
   // |direction| specifies which side of the text is trimmed; if |kLtr|, it
   // keeps the left end and trims the right end.

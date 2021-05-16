@@ -1152,7 +1152,7 @@ void PaymentRequest::OnUpdatePaymentDetails(
   }
 
   if (!options_->requestShipping())
-    validated_details->shipping_options = base::nullopt;
+    validated_details->shipping_options = absl::nullopt;
 
   if (is_waiting_for_show_promise_to_resolve_) {
     is_waiting_for_show_promise_to_resolve_ = false;
@@ -1323,7 +1323,7 @@ PaymentRequest::PaymentRequest(
       skip_to_gpay_ready = false;
     }
   } else {
-    validated_details->shipping_options = base::nullopt;
+    validated_details->shipping_options = absl::nullopt;
   }
 
   DCHECK(shipping_type_.IsNull() || shipping_type_ == "shipping" ||

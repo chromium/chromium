@@ -55,7 +55,7 @@ struct CORE_EXPORT NGInlineItemResult {
   NGTextOffset text_offset;
 
   // Indicates the limits of the trailing space run.
-  base::Optional<unsigned> non_hangable_run_end;
+  absl::optional<unsigned> non_hangable_run_end;
 
   // Inline size of this item.
   LayoutUnit inline_size;
@@ -80,7 +80,7 @@ struct CORE_EXPORT NGInlineItemResult {
   // NGPositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
-  base::Optional<NGPositionedFloat> positioned_float;
+  absl::optional<NGPositionedFloat> positioned_float;
 
   // Margins, borders, and padding for open tags.
   // Margins are set for atomic inlines too.

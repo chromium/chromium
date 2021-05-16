@@ -52,7 +52,7 @@ void FakeLocalFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}
 
 void FakeLocalFrameHost::DidChangeThemeColor(
-    base::Optional<::SkColor> theme_color) {}
+    absl::optional<::SkColor> theme_color) {}
 
 void FakeLocalFrameHost::DidChangeBackgroundColor(SkColor background_color,
                                                   bool color_adjust) {}
@@ -195,7 +195,7 @@ void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) {}
 
 void FakeLocalFrameHost::DidChangeOpener(
-    const base::Optional<LocalFrameToken>& opener_frame) {}
+    const absl::optional<LocalFrameToken>& opener_frame) {}
 
 void FakeLocalFrameHost::DidChangeCSPAttribute(
     const blink::FrameToken& child_frame_token,

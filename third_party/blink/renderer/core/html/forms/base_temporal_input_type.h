@@ -86,7 +86,7 @@ class BaseTemporalInputType : public InputType {
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   double ValueAsDate() const override;
-  void SetValueAsDate(const base::Optional<base::Time>&,
+  void SetValueAsDate(const absl::optional<base::Time>&,
                       ExceptionState&) const override;
   double ValueAsDouble() const override;
   void SetValueAsDouble(double,
@@ -102,7 +102,7 @@ class BaseTemporalInputType : public InputType {
                           const Decimal& maximum) const override;
   Decimal DefaultValueForStepUp() const override;
   bool IsSteppable() const override;
-  virtual String SerializeWithDate(const base::Optional<base::Time>&) const;
+  virtual String SerializeWithDate(const absl::optional<base::Time>&) const;
   String LocalizeValue(const String&) const override;
   bool SupportsReadOnly() const override;
   bool ShouldRespectListAttribute() override;

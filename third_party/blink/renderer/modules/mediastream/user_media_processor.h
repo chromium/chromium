@@ -268,11 +268,11 @@ class MODULES_EXPORT UserMediaProcessor
       const blink::VideoCaptureSettings& settings);
   void SelectVideoContentSettings();
 
-  base::Optional<base::UnguessableToken> DetermineExistingAudioSessionId();
+  absl::optional<base::UnguessableToken> DetermineExistingAudioSessionId();
 
   void GenerateStreamForCurrentRequestInfo(
-      base::Optional<base::UnguessableToken>
-          requested_audio_capture_session_id = base::nullopt,
+      absl::optional<base::UnguessableToken>
+          requested_audio_capture_session_id = absl::nullopt,
       blink::mojom::StreamSelectionStrategy strategy =
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_DEVICE_ID);
 

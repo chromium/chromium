@@ -36,11 +36,11 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -115,7 +115,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       base::TimeDelta timeout_interval,
       WebURLLoaderClient* client,
       WebURLResponse& response,
-      base::Optional<WebURLError>& error,
+      absl::optional<WebURLError>& error,
       WebData& data,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,

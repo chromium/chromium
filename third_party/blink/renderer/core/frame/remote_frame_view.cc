@@ -392,7 +392,7 @@ uint32_t RemoteFrameView::CapturePaintPreview(const IntRect& rect,
   // to this HTMLFrameOwnerElement yet (over IPC). If the token is null the
   // failure can be handled gracefully by simply ignoring the subframe in the
   // result.
-  base::Optional<base::UnguessableToken> maybe_embedding_token =
+  absl::optional<base::UnguessableToken> maybe_embedding_token =
       remote_frame_->GetEmbeddingToken();
   if (!maybe_embedding_token.has_value())
     return 0;

@@ -21,7 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,6 +52,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
@@ -425,7 +425,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   bool in_two_phase_read_ = false;
   bool is_in_on_body_available_ = false;
 
-  base::Optional<network::URLLoaderCompletionStatus> completion_status_;
+  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
 
   std::unique_ptr<WebResourceRequestSender> resource_request_sender_;
 
@@ -969,7 +969,7 @@ void WebURLLoader::LoadSynchronously(
     base::TimeDelta timeout_interval,
     WebURLLoaderClient* client,
     WebURLResponse& response,
-    base::Optional<WebURLError>& error,
+    absl::optional<WebURLError>& error,
     WebData& data,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,

@@ -13,9 +13,9 @@
 namespace mojo {
 
 template <>
-struct TypeConverter<base::Optional<blink::XRPlane::Orientation>,
+struct TypeConverter<absl::optional<blink::XRPlane::Orientation>,
                      device::mojom::blink::XRPlaneOrientation> {
-  static base::Optional<blink::XRPlane::Orientation> Convert(
+  static absl::optional<blink::XRPlane::Orientation> Convert(
       const device::mojom::blink::XRPlaneOrientation& orientation);
 };
 

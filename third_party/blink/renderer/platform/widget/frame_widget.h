@@ -152,8 +152,8 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Return the edit context bounds in window coordinates.
   virtual void GetEditContextBoundsInWindow(
-      base::Optional<gfx::Rect>* control_bounds,
-      base::Optional<gfx::Rect>* selection_bounds) = 0;
+      absl::optional<gfx::Rect>* control_bounds,
+      absl::optional<gfx::Rect>* selection_bounds) = 0;
 
   virtual int32_t ComputeWebTextInputNextPreviousFlags() = 0;
   virtual void ResetVirtualKeyboardVisibilityRequest() = 0;

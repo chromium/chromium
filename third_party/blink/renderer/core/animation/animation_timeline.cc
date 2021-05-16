@@ -43,34 +43,34 @@ bool CompareAnimations(const Member<Animation>& left,
 
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 V8CSSNumberish* AnimationTimeline::currentTime() {
-  const base::Optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
+  const absl::optional<base::TimeDelta>& result = CurrentPhaseAndTime().time;
   if (result)
     return MakeGarbageCollected<V8CSSNumberish>(result->InMillisecondsF());
   return nullptr;
 }
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 void AnimationTimeline::currentTime(CSSNumberish& currentTime) {
-  base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
   currentTime = result ? CSSNumberish::FromDouble(result->InMillisecondsF())
                        : CSSNumberish();
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-base::Optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
-  base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? base::make_optional(AnimationTimeDelta(result.value()))
-                : base::nullopt;
+absl::optional<AnimationTimeDelta> AnimationTimeline::CurrentTime() {
+  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? absl::make_optional(AnimationTimeDelta(result.value()))
+                : absl::nullopt;
 }
 
-base::Optional<double> AnimationTimeline::CurrentTimeMilliseconds() {
-  base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? base::make_optional(result->InMillisecondsF())
-                : base::nullopt;
+absl::optional<double> AnimationTimeline::CurrentTimeMilliseconds() {
+  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? absl::make_optional(result->InMillisecondsF())
+                : absl::nullopt;
 }
 
-base::Optional<double> AnimationTimeline::CurrentTimeSeconds() {
-  base::Optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
-  return result ? base::make_optional(result->InSecondsF()) : base::nullopt;
+absl::optional<double> AnimationTimeline::CurrentTimeSeconds() {
+  absl::optional<base::TimeDelta> result = CurrentPhaseAndTime().time;
+  return result ? absl::make_optional(result->InSecondsF()) : absl::nullopt;
 }
 
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)

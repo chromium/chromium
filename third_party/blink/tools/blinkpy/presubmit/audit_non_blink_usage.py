@@ -29,6 +29,7 @@ _CONFIG = [
             'gfx::RadToDeg',
 
             # absl optional constructs.
+            'absl::optional',
             'absl::in_place',
 
             # //base constructs that are allowed everywhere
@@ -50,7 +51,6 @@ _CONFIG = [
             "base::i18n::ToUCharPtr",
             'base::Location',
             'base::MakeRefCounted',
-            'base::Optional',
             'base::OptionalFromPtr',
             'base::OptionalOrNullptr',
             'base::PlatformThread',
@@ -83,9 +83,9 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::as_bytes',
             'base::in_place',
-            'base::make_optional',
+            'absl::make_optional',
             'base::make_span',
-            'base::nullopt',
+            'absl::nullopt',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::size',

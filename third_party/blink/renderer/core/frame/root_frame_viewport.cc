@@ -650,7 +650,7 @@ const cc::SnapContainerData* RootFrameViewport::GetSnapContainerData() const {
 }
 
 void RootFrameViewport::SetSnapContainerData(
-    base::Optional<cc::SnapContainerData> data) {
+    absl::optional<cc::SnapContainerData> data) {
   LayoutViewport().SetSnapContainerData(data);
 }
 
@@ -675,7 +675,7 @@ void RootFrameViewport::SetNeedsResnap(bool needs_resnap) {
   LayoutViewport().SetNeedsResnap(needs_resnap);
 }
 
-base::Optional<FloatPoint> RootFrameViewport::GetSnapPositionAndSetTarget(
+absl::optional<FloatPoint> RootFrameViewport::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }

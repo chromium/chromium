@@ -115,7 +115,7 @@ void VideoFrameResourceProvider::AppendQuads(
 
   resource_updater_->AppendQuads(render_pass, std::move(frame), transform,
                                  quad_rect, visible_quad_rect, mask_filter_info,
-                                 /*clip_rect=*/base::nullopt, is_opaque,
+                                 /*clip_rect=*/absl::nullopt, is_opaque,
                                  draw_opacity, sorting_context_id);
 }
 

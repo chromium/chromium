@@ -140,7 +140,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   std::unique_ptr<FileReaderLoader> loader_;
   Member<DOMException> error_;
-  base::Optional<base::ElapsedTimer> last_progress_notification_time_;
+  absl::optional<base::ElapsedTimer> last_progress_notification_time_;
 };
 
 }  // namespace blink

@@ -34,11 +34,11 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
@@ -189,7 +189,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               const ClientHintsPreferences& client_hints_preferences,
               float device_pixel_ratio,
               const String& user_agent,
-              const base::Optional<UserAgentMetadata>& user_agent_metadata,
+              const absl::optional<UserAgentMetadata>& user_agent_metadata,
               bool is_svg_image_chrome_client,
               bool is_prerendering)
       : url(url),
@@ -212,7 +212,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   const ClientHintsPreferences client_hints_preferences;
   const float device_pixel_ratio;
   const String user_agent;
-  const base::Optional<UserAgentMetadata> user_agent_metadata;
+  const absl::optional<UserAgentMetadata> user_agent_metadata;
   const bool is_svg_image_chrome_client;
   const bool is_prerendering;
 
@@ -454,10 +454,10 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       SecurityOrigin::Create(request.Url())->ToUrlOrigin();
   bool is_1p_origin = IsFirstPartyOrigin(request.Url());
 
-  base::Optional<UserAgentMetadata> ua = GetUserAgentMetadata();
+  absl::optional<UserAgentMetadata> ua = GetUserAgentMetadata();
 
-  base::Optional<ClientHintImageInfo> image_info;
-  base::Optional<WTF::AtomicString> lang;
+  absl::optional<ClientHintImageInfo> image_info;
+  absl::optional<WTF::AtomicString> lang;
 
   if (document_) {  // Only get frame info if the frame is not detached
     image_info = ClientHintImageInfo();
@@ -621,10 +621,10 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
 
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
-    const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
+    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    const base::Optional<String>& devtools_id) const {
+    const absl::optional<String>& devtools_id) const {
   if (GetResourceFetcherProperties().IsDetached()) {
     // TODO(yhirano): Implement the detached case.
     return false;
@@ -718,7 +718,7 @@ String FrameFetchContext::GetUserAgent() const {
   return GetFrame()->Loader().UserAgent();
 }
 
-base::Optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
+absl::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
     const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->user_agent_metadata;
@@ -770,7 +770,7 @@ void FrameFetchContext::Trace(Visitor* visitor) const {
 
 bool FrameFetchContext::CalculateIfAdSubresource(
     const ResourceRequestHead& resource_request,
-    const base::Optional<KURL>& alias_url,
+    const absl::optional<KURL>& alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info) {
   // Mark the resource as an Ad if the BaseFetchContext thinks it's an ad.
@@ -790,7 +790,7 @@ bool FrameFetchContext::CalculateIfAdSubresource(
 
 bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     const KURL& url,
-    const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
+    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
     ReportingDisposition reporting_disposition,
     const String& devtools_request_id) const {
   if (GetResourceFetcherProperties().IsDetached())
@@ -864,7 +864,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     ReportAttributionIssue(GetFrame(),
                            mojom::blink::AttributionReportingIssueType::
                                kAttributionUntrustworthyOrigin,
-                           base::nullopt, nullptr, devtools_request_id,
+                           absl::nullopt, nullptr, devtools_request_id,
                            redirect_origin->ToString());
     return false;
   }
@@ -893,14 +893,14 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
       ReportAttributionIssue(
           GetFrame(),
           mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-          base::nullopt, nullptr, devtools_request_id,
+          absl::nullopt, nullptr, devtools_request_id,
           search_params->get(kTriggerDataParam));
     }
   } else {
     ReportAttributionIssue(
         GetFrame(),
         mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-        base::nullopt, nullptr, devtools_request_id);
+        absl::nullopt, nullptr, devtools_request_id);
   }
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.
@@ -954,13 +954,13 @@ FrameFetchContext::GetContentSecurityNotifier() const {
   return document_loader_->GetContentSecurityNotifier();
 }
 
-base::Optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
+absl::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
     ResourceType type,
     const ResourceRequest& resource_request,
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
-    const base::Optional<ResourceRequest::RedirectInfo>& redirect_info) const {
+    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info) const {
   if (!GetResourceFetcherProperties().IsDetached() &&
       document_->IsFreezingInProgress() && !resource_request.GetKeepalive()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

@@ -166,7 +166,7 @@ bool IsDeprecated(Feature feature) {
 
 }  // namespace
 
-base::Optional<Feature> AddressSpaceFeature(
+absl::optional<Feature> AddressSpaceFeature(
     FetchType fetch_type,
     AddressSpace client_address_space,
     bool client_is_secure_context,
@@ -178,7 +178,7 @@ base::Optional<Feature> AddressSpaceFeature(
 
   const FeatureEntry* entry = FindFeatureEntry(key);
   if (!entry) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   switch (fetch_type) {
@@ -197,7 +197,7 @@ void RecordAddressSpaceFeature(FetchType fetch_type,
   }
 
   LocalDOMWindow* window = client_frame->DomWindow();
-  base::Optional<WebFeature> feature =
+  absl::optional<WebFeature> feature =
       AddressSpaceFeature(fetch_type, window->AddressSpace(),
                           window->IsSecureContext(), response.AddressSpace());
   if (!feature.has_value()) {

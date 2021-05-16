@@ -51,7 +51,7 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
       const NGConstraintSpace& space,
       const NGBlockNode& node) {
     NGLayoutCacheStatus cache_status;
-    base::Optional<NGFragmentGeometry> initial_fragment_geometry;
+    absl::optional<NGFragmentGeometry> initial_fragment_geometry;
     return To<LayoutBlockFlow>(node.GetLayoutBox())
         ->CachedLayoutResult(space, nullptr, nullptr,
                              &initial_fragment_geometry, &cache_status);

@@ -44,7 +44,7 @@ class BLINK_COMMON_EXPORT FontTableMatcher {
   // against the internal list of unique font names.
   // Return a font filesystem path and a TrueType collection index to identify a
   // font binary to uniquely identify instantiate a font.
-  base::Optional<MatchResult> MatchName(const std::string& name_request) const;
+  absl::optional<MatchResult> MatchName(const std::string& name_request) const;
 
   // Returns the number of fonts available after parsing the
   // ReadOnlySharedMemoryMapping.

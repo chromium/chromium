@@ -227,7 +227,7 @@ class WidgetBaseInputHandler::HandlingState {
     event_overscroll_ = std::move(params);
   }
 
-  base::Optional<WebTouchAction>& touch_action() { return touch_action_; }
+  absl::optional<WebTouchAction>& touch_action() { return touch_action_; }
 
   std::vector<WidgetBaseInputHandler::InjectScrollGestureParams>&
   injected_scroll_params() {
@@ -243,7 +243,7 @@ class WidgetBaseInputHandler::HandlingState {
   // supporting overscroll IPC notifications due to fling animation updates.
   std::unique_ptr<InputHandlerProxy::DidOverscrollParams> event_overscroll_;
 
-  base::Optional<WebTouchAction> touch_action_;
+  absl::optional<WebTouchAction> touch_action_;
 
   // Used to hold a sequence of parameters corresponding to scroll gesture
   // events that should be injected once the current input event is done
@@ -627,7 +627,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     scrollbar_latency_info.AddLatencyNumber(
         ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
 
-    base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+    absl::optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
     if (params.type == WebInputEvent::Type::kGestureScrollUpdate) {
       if (input_event.GetType() != WebInputEvent::Type::kGestureScrollUpdate) {
         scrollbar_latency_info.AddLatencyNumberWithTimestamp(

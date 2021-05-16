@@ -528,7 +528,7 @@ DOMDataView* NDEFRecord::data() const {
 }
 
 // https://w3c.github.io/web-nfc/#dfn-convert-ndefrecord-data-bytes
-base::Optional<HeapVector<Member<NDEFRecord>>> NDEFRecord::toRecords(
+absl::optional<HeapVector<Member<NDEFRecord>>> NDEFRecord::toRecords(
     ExceptionState& exception_state) const {
   if (record_type_ != "smart-poster" &&
       category_ != device::mojom::blink::NDEFRecordTypeCategory::kExternal &&
@@ -537,11 +537,11 @@ base::Optional<HeapVector<Member<NDEFRecord>>> NDEFRecord::toRecords(
         DOMExceptionCode::kNotSupportedError,
         "Only {smart-poster, external, local} type records could have a ndef "
         "message as payload.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!payload_message_)
-    return base::nullopt;
+    return absl::nullopt;
 
   return payload_message_->records();
 }

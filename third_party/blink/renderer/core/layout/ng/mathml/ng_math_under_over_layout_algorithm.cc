@@ -130,7 +130,7 @@ bool HasAccent(const NGBlockNode& node, bool accent_under) {
          (accent_under && script_type == MathScriptType::kUnder) ||
          (!accent_under && script_type == MathScriptType::kOver));
 
-  base::Optional<bool> attribute_value =
+  absl::optional<bool> attribute_value =
       accent_under ? underover->AccentUnder() : underover->Accent();
   return attribute_value && *attribute_value;
 }

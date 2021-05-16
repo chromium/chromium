@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -162,7 +162,7 @@ ScriptPromise BackgroundFetchRegistration::match(
                    /* match_all = */ false);
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(
-      script_state, base::make_optional<RequestOrUSVString>(request),
+      script_state, absl::make_optional<RequestOrUSVString>(request),
       mojom::blink::CacheQueryOptions::From(options), exception_state,
       /* match_all = */ false);
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -176,7 +176,7 @@ ScriptPromise BackgroundFetchRegistration::matchAll(
                    /* cache_query_options = */ nullptr, exception_state,
                    /* match_all = */ true);
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  return MatchImpl(script_state, /* request = */ base::nullopt,
+  return MatchImpl(script_state, /* request = */ absl::nullopt,
                    /* cache_query_options = */ nullptr, exception_state,
                    /* match_all = */ true);
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -198,7 +198,7 @@ ScriptPromise BackgroundFetchRegistration::matchAll(
                    /* match_all = */ true);
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   return MatchImpl(
-      script_state, base::make_optional<RequestOrUSVString>(request),
+      script_state, absl::make_optional<RequestOrUSVString>(request),
       mojom::blink::CacheQueryOptions::From(options), exception_state,
       /* match_all = */ true);
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -209,7 +209,7 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     const V8RequestInfo* request,
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-    base::Optional<RequestOrUSVString> request,
+    absl::optional<RequestOrUSVString> request,
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     mojom::blink::CacheQueryOptionsPtr cache_query_options,
     ExceptionState& exception_state,

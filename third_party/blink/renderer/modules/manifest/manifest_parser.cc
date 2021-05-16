@@ -143,12 +143,12 @@ void ManifestParser::Parse() {
   manifest_->prefer_related_applications =
       ParsePreferRelatedApplications(root_object.get());
 
-  base::Optional<RGBA32> theme_color = ParseThemeColor(root_object.get());
+  absl::optional<RGBA32> theme_color = ParseThemeColor(root_object.get());
   manifest_->has_theme_color = theme_color.has_value();
   if (manifest_->has_theme_color)
     manifest_->theme_color = *theme_color;
 
-  base::Optional<RGBA32> background_color =
+  absl::optional<RGBA32> background_color =
       ParseBackgroundColor(root_object.get());
   manifest_->has_background_color = background_color.has_value();
   if (manifest_->has_background_color)
@@ -191,17 +191,17 @@ bool ManifestParser::ParseBoolean(const JSONObject* object,
   return value;
 }
 
-base::Optional<String> ManifestParser::ParseString(const JSONObject* object,
+absl::optional<String> ManifestParser::ParseString(const JSONObject* object,
                                                    const String& key,
                                                    TrimType trim) {
   JSONValue* json_value = object->Get(key);
   if (!json_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   String value;
   if (!json_value->AsString(&value) || value.IsNull()) {
     AddErrorInfo("property '" + key + "' ignored, type " + "string expected.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (trim == Trim)
@@ -209,7 +209,7 @@ base::Optional<String> ManifestParser::ParseString(const JSONObject* object,
   return value;
 }
 
-base::Optional<String> ManifestParser::ParseStringForMember(
+absl::optional<String> ManifestParser::ParseStringForMember(
     const JSONObject* object,
     const String& member_name,
     const String& key,
@@ -222,14 +222,14 @@ base::Optional<String> ManifestParser::ParseStringForMember(
                    "' not present.");
     }
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   String value;
   if (!json_value->AsString(&value)) {
     AddErrorInfo("property '" + key + "' of '" + member_name +
                  "' ignored, type string expected.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (trim == TrimType::Trim)
     value = value.StripWhiteSpace();
@@ -238,23 +238,23 @@ base::Optional<String> ManifestParser::ParseStringForMember(
     AddErrorInfo("property '" + key + "' of '" + member_name +
                  "' is an empty string.");
     if (required)
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   return value;
 }
 
-base::Optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
+absl::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
                                                   const String& key) {
-  base::Optional<String> parsed_color = ParseString(object, key, Trim);
+  absl::optional<String> parsed_color = ParseString(object, key, Trim);
   if (!parsed_color.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   Color color;
   if (!CSSParser::ParseColor(color, *parsed_color, true)) {
     AddErrorInfo("property '" + key + "' ignored, '" + *parsed_color +
                  "' is not a " + "valid color.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return color.Rgb();
@@ -264,7 +264,7 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
                               const String& key,
                               const KURL& base_url,
                               ParseURLRestrictions origin_restriction) {
-  base::Optional<String> url_str = ParseString(object, key, NoTrim);
+  absl::optional<String> url_str = ParseString(object, key, NoTrim);
   if (!url_str.has_value())
     return KURL();
 
@@ -302,27 +302,27 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
 }
 
 String ManifestParser::ParseName(const JSONObject* object) {
-  base::Optional<String> name = ParseString(object, "name", Trim);
+  absl::optional<String> name = ParseString(object, "name", Trim);
   if (name.has_value()) {
     name = name->RemoveCharacters(IsCrLfOrTabChar);
     if (name->length() == 0)
-      name = base::nullopt;
+      name = absl::nullopt;
   }
   return name.has_value() ? *name : String();
 }
 
 String ManifestParser::ParseShortName(const JSONObject* object) {
-  base::Optional<String> short_name = ParseString(object, "short_name", Trim);
+  absl::optional<String> short_name = ParseString(object, "short_name", Trim);
   if (short_name.has_value()) {
     short_name = short_name->RemoveCharacters(IsCrLfOrTabChar);
     if (short_name->length() == 0)
-      short_name = base::nullopt;
+      short_name = absl::nullopt;
   }
   return short_name.has_value() ? *short_name : String();
 }
 
 String ManifestParser::ParseDescription(const JSONObject* object) {
-  base::Optional<String> description = ParseString(object, "description", Trim);
+  absl::optional<String> description = ParseString(object, "description", Trim);
   return description.has_value() ? *description : String();
 }
 
@@ -358,7 +358,7 @@ KURL ManifestParser::ParseScope(const JSONObject* object,
 
 blink::mojom::DisplayMode ManifestParser::ParseDisplay(
     const JSONObject* object) {
-  base::Optional<String> display = ParseString(object, "display", Trim);
+  absl::optional<String> display = ParseString(object, "display", Trim);
   if (!display.has_value())
     return blink::mojom::DisplayMode::kUndefined;
 
@@ -418,7 +418,7 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
 
 device::mojom::blink::ScreenOrientationLockType
 ManifestParser::ParseOrientation(const JSONObject* object) {
-  base::Optional<String> orientation = ParseString(object, "orientation", Trim);
+  absl::optional<String> orientation = ParseString(object, "orientation", Trim);
 
   if (!orientation.has_value())
     return device::mojom::blink::ScreenOrientationLockType::DEFAULT;
@@ -437,12 +437,12 @@ KURL ManifestParser::ParseIconSrc(const JSONObject* icon) {
 }
 
 String ManifestParser::ParseIconType(const JSONObject* icon) {
-  base::Optional<String> type = ParseString(icon, "type", Trim);
+  absl::optional<String> type = ParseString(icon, "type", Trim);
   return type.has_value() ? *type : String("");
 }
 
 Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
-  base::Optional<String> sizes_str = ParseString(icon, "sizes", NoTrim);
+  absl::optional<String> sizes_str = ParseString(icon, "sizes", NoTrim);
   if (!sizes_str.has_value())
     return Vector<gfx::Size>();
 
@@ -457,9 +457,9 @@ Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
   return sizes;
 }
 
-base::Optional<Vector<mojom::blink::ManifestImageResource::Purpose>>
+absl::optional<Vector<mojom::blink::ManifestImageResource::Purpose>>
 ManifestParser::ParseIconPurpose(const JSONObject* icon) {
-  base::Optional<String> purpose_str = ParseString(icon, "purpose", NoTrim);
+  absl::optional<String> purpose_str = ParseString(icon, "purpose", NoTrim);
   Vector<mojom::blink::ManifestImageResource::Purpose> purposes;
 
   if (!purpose_str.has_value()) {
@@ -501,7 +501,7 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
   // invalidate the whole icon.
   if (purposes.IsEmpty()) {
     AddErrorInfo("found icon with no valid purpose; ignoring it.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (unrecognised_purpose) {
@@ -563,19 +563,19 @@ ManifestParser::ParseImageResource(const String& key,
 }
 
 String ManifestParser::ParseShortcutName(const JSONObject* shortcut) {
-  base::Optional<String> name =
+  absl::optional<String> name =
       ParseStringForMember(shortcut, "shortcut", "name", true, Trim);
   return name.has_value() ? *name : String();
 }
 
 String ManifestParser::ParseShortcutShortName(const JSONObject* shortcut) {
-  base::Optional<String> short_name =
+  absl::optional<String> short_name =
       ParseStringForMember(shortcut, "shortcut", "short_name", false, Trim);
   return short_name.has_value() ? *short_name : String();
 }
 
 String ManifestParser::ParseShortcutDescription(const JSONObject* shortcut) {
-  base::Optional<String> description =
+  absl::optional<String> description =
       ParseStringForMember(shortcut, "shortcut", "description", false, Trim);
   return description.has_value() ? *description : String();
 }
@@ -732,7 +732,7 @@ void ManifestParser::ParseFileFilter(
   files->push_back(std::move(file));
 }
 
-base::Optional<mojom::blink::ManifestShareTarget::Method>
+absl::optional<mojom::blink::ManifestShareTarget::Method>
 ManifestParser::ParseShareTargetMethod(const JSONObject* share_target_object) {
   if (!share_target_object->Get("method")) {
     AddErrorInfo(
@@ -743,7 +743,7 @@ ManifestParser::ParseShareTargetMethod(const JSONObject* share_target_object) {
 
   String value;
   if (!share_target_object->GetString("method", &value))
-    return base::nullopt;
+    return absl::nullopt;
 
   String method = value.UpperASCII();
   if (method == "GET")
@@ -751,10 +751,10 @@ ManifestParser::ParseShareTargetMethod(const JSONObject* share_target_object) {
   if (method == "POST")
     return mojom::blink::ManifestShareTarget::Method::kPost;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<mojom::blink::ManifestShareTarget::Enctype>
+absl::optional<mojom::blink::ManifestShareTarget::Enctype>
 ManifestParser::ParseShareTargetEnctype(const JSONObject* share_target_object) {
   if (!share_target_object->Get("enctype")) {
     AddErrorInfo(
@@ -766,7 +766,7 @@ ManifestParser::ParseShareTargetEnctype(const JSONObject* share_target_object) {
 
   String value;
   if (!share_target_object->GetString("enctype", &value))
-    return base::nullopt;
+    return absl::nullopt;
 
   String enctype = value.LowerASCII();
   if (enctype == "application/x-www-form-urlencoded")
@@ -775,7 +775,7 @@ ManifestParser::ParseShareTargetEnctype(const JSONObject* share_target_object) {
   if (enctype == "multipart/form-data")
     return mojom::blink::ManifestShareTarget::Enctype::kMultipartFormData;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 mojom::blink::ManifestShareTargetParamsPtr
@@ -784,12 +784,12 @@ ManifestParser::ParseShareTargetParams(const JSONObject* share_target_params) {
 
   // NOTE: These are key names for query parameters, which are filled with share
   // data. As such, |params.url| is just a string.
-  base::Optional<String> text = ParseString(share_target_params, "text", Trim);
+  absl::optional<String> text = ParseString(share_target_params, "text", Trim);
   params->text = text.has_value() ? *text : String();
-  base::Optional<String> title =
+  absl::optional<String> title =
       ParseString(share_target_params, "title", Trim);
   params->title = title.has_value() ? *title : String();
-  base::Optional<String> url = ParseString(share_target_params, "url", Trim);
+  absl::optional<String> url = ParseString(share_target_params, "url", Trim);
   params->url = url.has_value() ? *url : String();
 
   auto files = ParseTargetFiles("files", share_target_params);
@@ -798,11 +798,11 @@ ManifestParser::ParseShareTargetParams(const JSONObject* share_target_params) {
   return params;
 }
 
-base::Optional<mojom::blink::ManifestShareTargetPtr>
+absl::optional<mojom::blink::ManifestShareTargetPtr>
 ManifestParser::ParseShareTarget(const JSONObject* object) {
   const JSONObject* share_target_object = object->GetJSONObject("share_target");
   if (!share_target_object)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto share_target = mojom::blink::ManifestShareTarget::New();
   share_target->action = ParseURL(share_target_object, "action", manifest_url_,
@@ -811,7 +811,7 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
     AddErrorInfo(
         "property 'share_target' ignored. Property 'action' is "
         "invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto method = ParseShareTargetMethod(share_target_object);
@@ -823,7 +823,7 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
     AddErrorInfo(
         "property 'share_target' ignored. Property 'params' type "
         "dictionary expected.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   share_target->params = ParseShareTargetParams(share_target_params_object);
@@ -831,7 +831,7 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
     AddErrorInfo(
         "invalid method. Allowed methods are:"
         "GET and POST.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   share_target->method = method.value();
 
@@ -839,7 +839,7 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
     AddErrorInfo(
         "invalid enctype. Allowed enctypes are:"
         "application/x-www-form-urlencoded and multipart/form-data.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   share_target->enctype = enctype.value();
 
@@ -849,7 +849,7 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
       AddErrorInfo(
           "invalid enctype for GET method. Only "
           "application/x-www-form-urlencoded is allowed.");
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -859,14 +859,14 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
         share_target->enctype !=
             mojom::blink::ManifestShareTarget::Enctype::kMultipartFormData) {
       AddErrorInfo("files are only supported with multipart/form-data POST.");
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
   if (share_target->params->files.has_value() &&
       !VerifyFiles(*share_target->params->files)) {
     AddErrorInfo("invalid mime type inside files.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return share_target;
@@ -892,7 +892,7 @@ Vector<mojom::blink::ManifestFileHandlerPtr> ManifestParser::ParseFileHandlers(
       continue;
     }
 
-    base::Optional<mojom::blink::ManifestFileHandlerPtr> entry =
+    absl::optional<mojom::blink::ManifestFileHandlerPtr> entry =
         ParseFileHandler(json_entry);
     if (!entry)
       continue;
@@ -903,7 +903,7 @@ Vector<mojom::blink::ManifestFileHandlerPtr> ManifestParser::ParseFileHandlers(
   return result;
 }
 
-base::Optional<mojom::blink::ManifestFileHandlerPtr>
+absl::optional<mojom::blink::ManifestFileHandlerPtr>
 ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   mojom::blink::ManifestFileHandlerPtr entry =
       mojom::blink::ManifestFileHandler::New();
@@ -911,7 +911,7 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
                            ParseURLRestrictions::kWithinScope);
   if (!entry->action.IsValid()) {
     AddErrorInfo("FileHandler ignored. Property 'action' is invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   entry->name = ParseString(file_handler, "name", Trim).value_or("");
@@ -919,7 +919,7 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   entry->accept = ParseFileHandlerAccept(file_handler->GetJSONObject("accept"));
   if (entry->accept.IsEmpty()) {
     AddErrorInfo("FileHandler ignored. Property 'accept' is invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return entry;
@@ -1009,7 +1009,7 @@ ManifestParser::ParseProtocolHandlers(const JSONObject* from) {
       continue;
     }
 
-    base::Optional<mojom::blink::ManifestProtocolHandlerPtr> protocol =
+    absl::optional<mojom::blink::ManifestProtocolHandlerPtr> protocol =
         ParseProtocolHandler(protocol_object);
     if (!protocol)
       continue;
@@ -1020,7 +1020,7 @@ ManifestParser::ParseProtocolHandlers(const JSONObject* from) {
   return protocols;
 }
 
-base::Optional<mojom::blink::ManifestProtocolHandlerPtr>
+absl::optional<mojom::blink::ManifestProtocolHandlerPtr>
 ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   DCHECK(
       base::FeatureList::IsEnabled(
@@ -1030,11 +1030,11 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
     AddErrorInfo(
         "protocol_handlers entry ignored, required property 'protocol' is "
         "missing.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto protocol_handler = mojom::blink::ManifestProtocolHandler::New();
-  base::Optional<String> protocol = ParseString(object, "protocol", Trim);
+  absl::optional<String> protocol = ParseString(object, "protocol", Trim);
   String error_message;
   bool is_valid_protocol = protocol.has_value();
 
@@ -1049,14 +1049,14 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
     AddErrorInfo(
         "protocol_handlers entry ignored, required property 'protocol' is "
         "invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   protocol_handler->protocol = protocol.value();
 
   if (!object->Get("url")) {
     AddErrorInfo(
         "protocol_handlers entry ignored, required property 'url' is missing.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   protocol_handler->url = ParseURL(object, "url", manifest_url_,
                                    ParseURLRestrictions::kWithinScope);
@@ -1078,7 +1078,7 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   if (!is_valid_url) {
     AddErrorInfo(
         "protocol_handlers entry ignored, required property 'url' is invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::move(protocol_handler);
@@ -1113,7 +1113,7 @@ Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
       continue;
     }
 
-    base::Optional<mojom::blink::ManifestUrlHandlerPtr> url_handler =
+    absl::optional<mojom::blink::ManifestUrlHandlerPtr> url_handler =
         ParseUrlHandler(handler_object);
     if (!url_handler) {
       continue;
@@ -1123,21 +1123,21 @@ Vector<mojom::blink::ManifestUrlHandlerPtr> ManifestParser::ParseUrlHandlers(
   return url_handlers;
 }
 
-base::Optional<mojom::blink::ManifestUrlHandlerPtr>
+absl::optional<mojom::blink::ManifestUrlHandlerPtr>
 ManifestParser::ParseUrlHandler(const JSONObject* object) {
   DCHECK(
       base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers));
   if (!object->Get("origin")) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' is missing.");
-    return base::nullopt;
+    return absl::nullopt;
   }
-  const base::Optional<String> origin_string =
+  const absl::optional<String> origin_string =
       ParseString(object, "origin", Trim);
   if (!origin_string.has_value()) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' is invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // TODO(crbug.com/1072058): pre-process for input without scheme.
@@ -1150,20 +1150,20 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
         "url_handlers entry ignored, 'origin' exceeds maximum character length "
         "of " +
         String::Number(kMaxOriginLength) + " .");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto origin = SecurityOrigin::CreateFromString(*origin_string);
   if (!origin || origin->IsOpaque()) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' is invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (origin->Protocol() != url::kHttpsScheme) {
     AddErrorInfo(
         "url_handlers entry ignored, required property 'origin' must use the "
         "https scheme.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   String host = origin->Host();
@@ -1183,7 +1183,7 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
     AddErrorInfo(
         "url_handlers entry ignored, domain of required property 'origin' is "
         "invalid.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (url_handler->has_origin_wildcard) {
@@ -1192,7 +1192,7 @@ ManifestParser::ParseUrlHandler(const JSONObject* object) {
     if (!origin_string.has_value()) {
       AddErrorInfo(
           "url_handlers entry ignored, required property 'origin' is invalid.");
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -1236,11 +1236,11 @@ mojom::blink::ManifestNoteTakingPtr ManifestParser::ParseNoteTaking(
 
 String ManifestParser::ParseRelatedApplicationPlatform(
     const JSONObject* application) {
-  base::Optional<String> platform = ParseString(application, "platform", Trim);
+  absl::optional<String> platform = ParseString(application, "platform", Trim);
   return platform.has_value() ? *platform : String();
 }
 
-base::Optional<KURL> ManifestParser::ParseRelatedApplicationURL(
+absl::optional<KURL> ManifestParser::ParseRelatedApplicationURL(
     const JSONObject* application) {
   return ParseURL(application, "url", manifest_url_,
                   ParseURLRestrictions::kNoRestrictions);
@@ -1248,7 +1248,7 @@ base::Optional<KURL> ManifestParser::ParseRelatedApplicationURL(
 
 String ManifestParser::ParseRelatedApplicationId(
     const JSONObject* application) {
-  base::Optional<String> id = ParseString(application, "id", Trim);
+  absl::optional<String> id = ParseString(application, "id", Trim);
   return id.has_value() ? *id : String();
 }
 
@@ -1306,18 +1306,18 @@ bool ManifestParser::ParsePreferRelatedApplications(const JSONObject* object) {
   return ParseBoolean(object, "prefer_related_applications", false);
 }
 
-base::Optional<RGBA32> ManifestParser::ParseThemeColor(
+absl::optional<RGBA32> ManifestParser::ParseThemeColor(
     const JSONObject* object) {
   return ParseColor(object, "theme_color");
 }
 
-base::Optional<RGBA32> ManifestParser::ParseBackgroundColor(
+absl::optional<RGBA32> ManifestParser::ParseBackgroundColor(
     const JSONObject* object) {
   return ParseColor(object, "background_color");
 }
 
 String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
-  base::Optional<String> gcm_sender_id =
+  absl::optional<String> gcm_sender_id =
       ParseString(object, "gcm_sender_id", Trim);
   return gcm_sender_id.has_value() ? *gcm_sender_id : String();
 }

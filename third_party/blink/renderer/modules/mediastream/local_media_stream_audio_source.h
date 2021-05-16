@@ -43,7 +43,7 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // MediaStreamAudioSource implementation.
   void ChangeSourceImpl(const MediaStreamDevice& new_device) final;
 
-  base::Optional<AudioProcessingProperties> GetAudioProcessingProperties()
+  absl::optional<AudioProcessingProperties> GetAudioProcessingProperties()
       const final;
 
  private:

@@ -63,7 +63,7 @@ class MODULES_EXPORT NavigatorAuction final
 
  private:
   // Completion callback for Mojo call made by runAdAuction().
-  void AuctionComplete(ScriptPromiseResolver*, const base::Optional<KURL>&);
+  void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
   HeapMojoRemote<mojom::blink::RestrictedInterestGroupStore>

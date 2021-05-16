@@ -215,7 +215,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       Vector<std::unique_ptr<CompositorKeyframeModel>>& keyframe_models,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
-        *element_, timing, 0, base::nullopt, base::TimeDelta(), effect,
+        *element_, timing, 0, absl::nullopt, base::TimeDelta(), effect,
         keyframe_models, animation_playback_rate);
   }
 

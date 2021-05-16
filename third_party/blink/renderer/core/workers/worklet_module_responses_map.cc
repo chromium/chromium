@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -30,7 +30,7 @@ void WorkletModuleResponsesMap::Entry::AddClient(
 // "fetch a worklet script" algorithm:
 // https://drafts.css-houdini.org/worklets/#fetch-a-worklet-script
 void WorkletModuleResponsesMap::Entry::SetParams(
-    const base::Optional<ModuleScriptCreationParams>& params) {
+    const absl::optional<ModuleScriptCreationParams>& params) {
   DCHECK_EQ(state_, State::kFetching);
 
   if (params) {
@@ -125,7 +125,7 @@ bool WorkletModuleResponsesMap::GetEntry(
 void WorkletModuleResponsesMap::SetEntryParams(
     const KURL& url,
     ModuleType module_type,
-    const base::Optional<ModuleScriptCreationParams>& params) {
+    const absl::optional<ModuleScriptCreationParams>& params) {
   MutexLocker lock(mutex_);
   if (!is_available_)
     return;
@@ -142,7 +142,7 @@ void WorkletModuleResponsesMap::Dispose() {
   for (auto& it : entries_) {
     switch (it.value->GetState()) {
       case Entry::State::kFetching:
-        it.value->SetParams(base::nullopt);
+        it.value->SetParams(absl::nullopt);
         break;
       case Entry::State::kFetched:
       case Entry::State::kFailed:

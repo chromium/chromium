@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DEVTOOLS_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DEVTOOLS_SUPPORT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,8 +31,8 @@ struct PermissionsPolicyBlockLocator {
 };
 
 // Traces the root reason for a feature to be disabled in a frame.
-// Returns base::nullopt when the feature is enabled in the frame.
-CORE_EXPORT base::Optional<PermissionsPolicyBlockLocator>
+// Returns absl::nullopt when the feature is enabled in the frame.
+CORE_EXPORT absl::optional<PermissionsPolicyBlockLocator>
 TracePermissionsPolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
 
 }  // namespace blink

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_MESSAGING_PROXY_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_MESSAGING_PROXY_BASE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -73,8 +73,8 @@ class CORE_EXPORT ThreadedMessagingProxyBase
 
   void InitializeWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
-      const base::Optional<WorkerBackingThreadStartupData>&,
-      const base::Optional<const blink::DedicatedWorkerToken>&);
+      const absl::optional<WorkerBackingThreadStartupData>&,
+      const absl::optional<const blink::DedicatedWorkerToken>&);
 
   ExecutionContext* GetExecutionContext() const;
   ParentExecutionContextTaskRunners* GetParentExecutionContextTaskRunners()

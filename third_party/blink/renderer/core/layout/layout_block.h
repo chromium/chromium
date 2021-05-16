@@ -458,7 +458,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual bool HasLineIfEmpty() const;
   // Returns baseline offset if we can get |SimpleFontData| from primary font.
   // Or returns no value if we can't get font data.
-  base::Optional<LayoutUnit> BaselineForEmptyLine(
+  absl::optional<LayoutUnit> BaselineForEmptyLine(
       LineDirectionMode line_direction) const;
 
  protected:
@@ -477,8 +477,8 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutUnit FirstLineBoxBaseline() const override;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const override;
-  base::Optional<LayoutUnit> FirstLineBoxBaselineOverride() const;
-  base::Optional<LayoutUnit> InlineBlockBaselineOverride(
+  absl::optional<LayoutUnit> FirstLineBoxBaselineOverride() const;
+  absl::optional<LayoutUnit> InlineBlockBaselineOverride(
       LineDirectionMode) const;
 
   bool HitTestOverflowControl(

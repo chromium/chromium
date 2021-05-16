@@ -31,8 +31,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -217,7 +217,7 @@ void CreateMixedContentIssue(
     const mojom::blink::RequestContextType request_context,
     LocalFrame* frame,
     const mojom::blink::MixedContentResolutionStatus resolution_status,
-    const base::Optional<String>& devtools_id) {
+    const absl::optional<String>& devtools_id) {
   auto mixedContent = mojom::blink::MixedContentIssueDetails::New();
   mixedContent->request_context = request_context,
   mixedContent->resolution_status = resolution_status;
@@ -416,7 +416,7 @@ bool MixedContentChecker::ShouldBlockFetch(
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
-    const base::Optional<String>& devtools_id,
+    const absl::optional<String>& devtools_id,
     ReportingDisposition reporting_disposition,
     mojom::blink::ContentSecurityNotifier& notifier) {
   Frame* mixed_frame = InWhichFrameIsContentMixed(frame, url);
@@ -679,7 +679,7 @@ bool MixedContentChecker::IsWebSocketAllowed(
       allowed
           ? mojom::blink::MixedContentResolutionStatus::kMixedContentWarning
           : mojom::blink::MixedContentResolutionStatus::kMixedContentBlocked,
-      base::Optional<String>());
+      absl::optional<String>());
   return allowed;
 }
 
@@ -753,7 +753,7 @@ bool MixedContentChecker::IsMixedFormAction(
       MainResourceUrlForFrame(mixed_frame), url,
       mojom::blink::RequestContextType::FORM, frame,
       mojom::blink::MixedContentResolutionStatus::kMixedContentWarning,
-      base::Optional<String>());
+      absl::optional<String>());
 
   return true;
 }
@@ -819,7 +819,7 @@ void MixedContentChecker::MixedContentFound(
       was_allowed
           ? mojom::blink::MixedContentResolutionStatus::kMixedContentWarning
           : mojom::blink::MixedContentResolutionStatus::kMixedContentBlocked,
-      base::Optional<String>());
+      absl::optional<String>());
   // Reports to the CSP policy.
   ContentSecurityPolicy* policy =
       frame->DomWindow()->GetContentSecurityPolicy();

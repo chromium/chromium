@@ -27,7 +27,7 @@ namespace blink {
 
 namespace {
 
-absl::optional<bool> ToAbslOptionalBool(const base::Optional<bool>& value) {
+absl::optional<bool> ToAbslOptionalBool(const absl::optional<bool>& value) {
   return value ? absl::optional<bool>(*value) : absl::nullopt;
 }
 

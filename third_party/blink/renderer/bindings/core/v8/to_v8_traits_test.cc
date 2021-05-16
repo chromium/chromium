@@ -459,20 +459,20 @@ TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
 TEST(ToV8TraitsTest, Nullable) {
   const V8TestingScope scope;
   // Nullable Boolean
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "null", absl::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "true", true);
   // Nullable Integer
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLByte>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLByte>, "null", absl::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLUnsignedLong>, "0",
-                   base::Optional<uint32_t>(0));
+                   absl::optional<uint32_t>(0));
   // Nullable Float
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null", absl::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "0.5",
-                   base::Optional<float>(0.5));
+                   absl::optional<float>(0.5));
   // Nullable Double
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null", absl::nullopt);
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "3.14",
-                   base::Optional<double>(3.14));
+                   absl::optional<double>(3.14));
 }
 
 TEST(ToV8TraitsTest, NullableString) {
@@ -549,8 +549,8 @@ TEST(ToV8TraitsTest, NullableCallbackInterface) {
 
 TEST(ToV8TraitsTest, NullableEnumeration) {
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "null", base::nullopt);
-  const base::Optional<V8AddressSpace> v8_address_space =
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "null", absl::nullopt);
+  const absl::optional<V8AddressSpace> v8_address_space =
       V8AddressSpace::Create("public");
   TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
                    v8_address_space);
@@ -559,7 +559,7 @@ TEST(ToV8TraitsTest, NullableEnumeration) {
 TEST(ToV8TraitsTest, NullableArray) {
   const V8TestingScope scope;
   TEST_TOV8_TRAITS(scope, IDLNullable<IDLArray<DOMPointInit>>, "null",
-                   base::nullopt);
+                   absl::nullopt);
 
   DOMPointInit* dom_point_init1 = DOMPointInit::Create();
   DOMPointInit* dom_point_init2 = DOMPointInit::Create();
@@ -572,7 +572,7 @@ TEST(ToV8TraitsTest, NullableArray) {
 
 TEST(ToV8TraitsTest, NullableDate) {
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", absl::nullopt);
 
   base::Time expected_date;
   EXPECT_TRUE(
@@ -580,7 +580,7 @@ TEST(ToV8TraitsTest, NullableDate) {
   v8::Local<v8::Value> result;
   ASSERT_TRUE(
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          scope.GetScriptState(), base::Optional<base::Time>(expected_date))
+          scope.GetScriptState(), absl::optional<base::Time>(expected_date))
           .ToLocal(&result));
   String actual_string =
       ToCoreString(result->ToString(scope.GetContext()).ToLocalChecked());

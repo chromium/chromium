@@ -27,7 +27,7 @@ struct CORE_EXPORT NGMathMLPaintInfo {
   LayoutUnit operator_ascent;
   LayoutUnit operator_descent;
   NGBoxStrut radical_base_margins;
-  base::Optional<LayoutUnit> radical_operator_inline_offset;
+  absl::optional<LayoutUnit> radical_operator_inline_offset;
 };
 
 }  // namespace blink

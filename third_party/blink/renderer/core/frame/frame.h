@@ -30,9 +30,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_H_
 
 #include "base/i18n/rtl.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
@@ -263,7 +263,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   const std::string& ToTraceValue();
 
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
-  const base::Optional<base::UnguessableToken>& GetEmbeddingToken() const {
+  const absl::optional<base::UnguessableToken>& GetEmbeddingToken() const {
     return embedding_token_;
   }
 
@@ -487,13 +487,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   bool is_loading_;
   // Contains token to be used as a frame id in the devtools protocol.
   base::UnguessableToken devtools_frame_token_;
-  base::Optional<std::string> trace_value_;
+  absl::optional<std::string> trace_value_;
 
   // Embedding token, if existing, associated to this frame. For local frames
   // this will only be valid if the frame has committed a navigation and will
   // change when a new document is committed. For remote frames this will only
   // be valid when owned by an HTMLFrameOwnerElement.
-  base::Optional<base::UnguessableToken> embedding_token_;
+  absl::optional<base::UnguessableToken> embedding_token_;
 
   // The user activation state of the current frame.  See |UserActivationState|
   // for details on how this state is maintained.

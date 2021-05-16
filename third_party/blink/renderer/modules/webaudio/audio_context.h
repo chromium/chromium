@@ -43,7 +43,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
 
   AudioContext(Document&,
                const WebAudioLatencyHint&,
-               base::Optional<float> sample_rate);
+               absl::optional<float> sample_rate);
   ~AudioContext() override;
   void Trace(Visitor*) const override;
 
@@ -179,12 +179,12 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   // Autoplay status associated with this AudioContext, if any.
   // Will only be set if there is an autoplay policy in place.
   // Will never be set for OfflineAudioContext.
-  base::Optional<AutoplayStatus> autoplay_status_;
+  absl::optional<AutoplayStatus> autoplay_status_;
 
   // Autoplay unlock type for this AudioContext.
   // Will only be set if there is an autoplay policy in place.
   // Will never be set for OfflineAudioContext.
-  base::Optional<AutoplayUnlockType> autoplay_unlock_type_;
+  absl::optional<AutoplayUnlockType> autoplay_unlock_type_;
 
   // Records if start() was ever called for any source node in this context.
   bool source_node_started_ = false;

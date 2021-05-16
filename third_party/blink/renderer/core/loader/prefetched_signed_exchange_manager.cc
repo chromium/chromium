@@ -8,9 +8,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -75,7 +75,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       base::TimeDelta timeout_interval,
       WebURLLoaderClient* client,
       WebURLResponse& response,
-      base::Optional<WebURLError>& error,
+      absl::optional<WebURLError>& error,
       WebData& data,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,

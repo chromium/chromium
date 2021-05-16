@@ -23,7 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -156,7 +156,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     unsigned end_offset;
   };
 
-  base::Optional<MarkerOffsets> ComputeOffsetsAfterShift(
+  absl::optional<MarkerOffsets> ComputeOffsetsAfterShift(
       unsigned offset,
       unsigned old_length,
       unsigned new_length) const;

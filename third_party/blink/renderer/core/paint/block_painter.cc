@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/block_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -103,7 +103,7 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     // Apply overflow clip if needed. TODO(wangxianzhu): Move PaintCarets()
     // under |contents_paint_state| in the above block and let the caret
     // painters paint in the space of scrolling contents.
-    base::Optional<ScopedPaintChunkProperties> paint_chunk_properties;
+    absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
     if (const auto* fragment = paint_state.FragmentToPaint()) {
       if (const auto* properties = fragment->PaintProperties()) {
         if (const auto* overflow_clip = properties->OverflowClip()) {

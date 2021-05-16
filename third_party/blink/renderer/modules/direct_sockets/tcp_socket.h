@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_SOCKET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_SOCKET_H_
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
@@ -45,8 +45,8 @@ class MODULES_EXPORT TCPSocket final
   mojo::PendingRemote<network::mojom::blink::SocketObserver>
   GetTCPSocketObserver();
   void Init(int32_t result,
-            const base::Optional<net::IPEndPoint>& local_addr,
-            const base::Optional<net::IPEndPoint>& peer_addr,
+            const absl::optional<net::IPEndPoint>& local_addr,
+            const absl::optional<net::IPEndPoint>& peer_addr,
             mojo::ScopedDataPipeConsumerHandle receive_stream,
             mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -85,8 +85,8 @@ class MODULES_EXPORT TCPSocket final
 
   Member<TCPReadableStreamWrapper> tcp_readable_stream_wrapper_;
   Member<TCPWritableStreamWrapper> tcp_writable_stream_wrapper_;
-  base::Optional<net::IPEndPoint> local_addr_;
-  base::Optional<net::IPEndPoint> peer_addr_;
+  absl::optional<net::IPEndPoint> local_addr_;
+  absl::optional<net::IPEndPoint> peer_addr_;
 };
 
 }  // namespace blink

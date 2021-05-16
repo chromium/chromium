@@ -11,20 +11,20 @@ namespace blink {
 class AnimationTimingTest : public testing::Test {
  public:
   Timing::CalculatedTiming CalculateTimings(
-      base::Optional<AnimationTimeDelta> local_time,
+      absl::optional<AnimationTimeDelta> local_time,
       double playback_rate) {
     const bool is_keyframe_effect = false;
     Timing::AnimationDirection animation_direction =
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
                           : Timing::AnimationDirection::kForwards;
     return timing_.CalculateTimings(
-        local_time, /*timeline_phase*/ base::nullopt, animation_direction,
+        local_time, /*timeline_phase*/ absl::nullopt, animation_direction,
         is_keyframe_effect, playback_rate);
   }
-  bool IsCurrent(base::Optional<double> local_time, double playback_rate) {
-    base::Optional<AnimationTimeDelta> local_time_delta;
+  bool IsCurrent(absl::optional<double> local_time, double playback_rate) {
+    absl::optional<AnimationTimeDelta> local_time_delta;
     if (local_time) {
-      local_time_delta = base::make_optional(
+      local_time_delta = absl::make_optional(
           AnimationTimeDelta::FromSecondsD(local_time.value()));
     }
     return CalculateTimings(local_time_delta, playback_rate).is_current;
@@ -91,11 +91,11 @@ TEST_F(AnimationTimingTest, IsCurrent) {
   EXPECT_TRUE(IsCurrent(2, -1))
       << "Expected 'current' with a negative playback rate in the after phase";
 
-  EXPECT_FALSE(IsCurrent(base::nullopt, 1))
+  EXPECT_FALSE(IsCurrent(absl::nullopt, 1))
       << "Expected 'not current' when time is unresolved";
-  EXPECT_FALSE(IsCurrent(base::nullopt, 0))
+  EXPECT_FALSE(IsCurrent(absl::nullopt, 0))
       << "Expected 'not current' when time is unresolved";
-  EXPECT_FALSE(IsCurrent(base::nullopt, -1))
+  EXPECT_FALSE(IsCurrent(absl::nullopt, -1))
       << "Expected 'not current' when time is unresolved";
 }
 

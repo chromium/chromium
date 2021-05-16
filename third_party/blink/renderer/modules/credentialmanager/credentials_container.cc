@@ -1352,7 +1352,7 @@ ScriptPromise CredentialsContainer::create(
   }
   if (options->publicKey()->hasAuthenticatorSelection() &&
       options->publicKey()->authenticatorSelection()->hasResidentKey() &&
-      !mojo::ConvertTo<base::Optional<mojom::blink::ResidentKeyRequirement>>(
+      !mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(
           options->publicKey()->authenticatorSelection()->residentKey())) {
     resolver->DomWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(

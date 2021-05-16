@@ -40,7 +40,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
     const LayoutInline* inline_container,
-    base::Optional<LayoutUnit> adjustment_for_oof_propagation) {
+    absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
   if (adjustment_for_oof_propagation) {
     PropagateOOFPositionedInfo(child, child_offset, relative_offset,
                                /* offset_adjustment */ LogicalOffset(),
@@ -145,7 +145,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
     NGLogicalStaticPosition::InlineEdge inline_edge,
     NGLogicalStaticPosition::BlockEdge block_edge,
     bool needs_block_offset_adjustment,
-    const base::Optional<LogicalRect> containing_block_rect) {
+    const absl::optional<LogicalRect> containing_block_rect) {
   DCHECK(child);
 
   // If an OOF-positioned candidate has a static-position which uses a

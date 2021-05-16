@@ -587,7 +587,7 @@ IntSize HTMLVideoElement::BitmapSourceSize() const {
 
 ScriptPromise HTMLVideoElement::CreateImageBitmap(
     ScriptState* script_state,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<IntRect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (getNetworkState() == HTMLMediaElement::kNetworkEmpty) {

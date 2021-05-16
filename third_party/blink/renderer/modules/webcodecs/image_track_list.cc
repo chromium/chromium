@@ -25,9 +25,9 @@ int32_t ImageTrackList::selectedIndex() const {
   return selected_track_id_.value_or(-1);
 }
 
-base::Optional<ImageTrack*> ImageTrackList::selectedTrack() const {
+absl::optional<ImageTrack*> ImageTrackList::selectedTrack() const {
   if (!selected_track_id_)
-    return base::nullopt;
+    return absl::nullopt;
   return tracks_[*selected_track_id_].Get();
 }
 

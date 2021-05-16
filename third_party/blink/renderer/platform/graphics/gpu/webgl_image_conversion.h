@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -155,7 +155,7 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     void ExtractImage(bool premultiply_alpha, bool ignore_color_space);
 
     Image* image_;
-    base::Optional<ImagePixelLocker> image_pixel_locker_;
+    absl::optional<ImagePixelLocker> image_pixel_locker_;
     ImageHtmlDomSource image_html_dom_source_;
     unsigned image_width_;
     unsigned image_height_;

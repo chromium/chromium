@@ -207,14 +207,14 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
       http_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      http_favicon_url, base::Optional<String>(),
+      http_favicon_url, absl::optional<String>(),
       ReportingDisposition::kSuppressReporting, *notifier_remote));
 
   // Test that a secure favicon is not blocked.
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
       https_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      https_favicon_url, base::Optional<String>(),
+      https_favicon_url, absl::optional<String>(),
       ReportingDisposition::kSuppressReporting, *notifier_remote));
 }
 

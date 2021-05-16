@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/timer/timer.h"
@@ -15,6 +14,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_request_peer.h"

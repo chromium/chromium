@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -25,7 +25,7 @@ namespace blink {
 constexpr int kMaxScrollAnchorSelectorLength = 500;
 
 struct BLINK_COMMON_EXPORT ExplodedHttpBody {
-  base::Optional<std::u16string> http_content_type;
+  absl::optional<std::u16string> http_content_type;
   scoped_refptr<network::ResourceRequestBody> request_body;
   bool contains_passwords;
 
@@ -34,12 +34,12 @@ struct BLINK_COMMON_EXPORT ExplodedHttpBody {
 };
 
 struct BLINK_COMMON_EXPORT ExplodedFrameState {
-  base::Optional<std::u16string> url_string;
-  base::Optional<std::u16string> referrer;
-  base::Optional<url::Origin> initiator_origin;
-  base::Optional<std::u16string> target;
-  base::Optional<std::u16string> state_object;
-  std::vector<base::Optional<std::u16string>> document_state;
+  absl::optional<std::u16string> url_string;
+  absl::optional<std::u16string> referrer;
+  absl::optional<url::Origin> initiator_origin;
+  absl::optional<std::u16string> target;
+  absl::optional<std::u16string> state_object;
+  std::vector<absl::optional<std::u16string>> document_state;
   blink::mojom::ScrollRestorationType scroll_restoration_type =
       blink::mojom::ScrollRestorationType::kAuto;
   bool did_save_scroll_or_scale_state = true;
@@ -51,12 +51,12 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
   ExplodedHttpBody http_body;
-  base::Optional<std::u16string> scroll_anchor_selector;
+  absl::optional<std::u16string> scroll_anchor_selector;
   gfx::PointF scroll_anchor_offset;
   uint64_t scroll_anchor_simhash = 0;
-  base::Optional<std::u16string> app_history_key;
-  base::Optional<std::u16string> app_history_id;
-  base::Optional<std::u16string> app_history_state;
+  absl::optional<std::u16string> app_history_key;
+  absl::optional<std::u16string> app_history_id;
+  absl::optional<std::u16string> app_history_state;
   std::vector<ExplodedFrameState> children;
 
   ExplodedFrameState();
@@ -73,7 +73,7 @@ struct BLINK_COMMON_EXPORT ExplodedPageState {
   // extract referenced files from ExplodedHttpBody.  |referenced_files|
   // currently contains a list from all frames, but cannot be deserialized into
   // the files referenced by each frame.  See http://crbug.com/441966.
-  std::vector<base::Optional<std::u16string>> referenced_files;
+  std::vector<absl::optional<std::u16string>> referenced_files;
   ExplodedFrameState top;
 
   ExplodedPageState();

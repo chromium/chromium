@@ -62,16 +62,16 @@ void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
       /*cross_origin_isolated_capability=*/true);
 
   sample->setTimestamp(relative_timestamp);
-  if (base::Optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
+  if (absl::optional<wtf_size_t> stack_id = GetOrInsertStackId(node))
     sample->setStackId(*stack_id);
 
   samples_.push_back(sample);
 }
 
-base::Optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
+absl::optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
     const v8::CpuProfileNode* node) {
   if (!node)
-    return base::Optional<wtf_size_t>();
+    return absl::optional<wtf_size_t>();
 
   // Omit frames that don't pass a cross-origin check.
   // Do this at the stack level (rather than the frame level) to avoid
@@ -93,7 +93,7 @@ base::Optional<wtf_size_t> ProfilerTraceBuilder::GetOrInsertStackId(
   auto* stack = ProfilerStack::Create();
   wtf_size_t frame_id = GetOrInsertFrameId(node);
   stack->setFrameId(frame_id);
-  if (base::Optional<int> parent_stack_id =
+  if (absl::optional<int> parent_stack_id =
           GetOrInsertStackId(node->GetParent()))
     stack->setParentId(*parent_stack_id);
 

@@ -205,7 +205,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
                     int,
                     const base::UnguessableToken&,
                     const std::string&,
-                    const base::Optional<base::UnguessableToken>&));
+                    const absl::optional<base::UnguessableToken>&));
 
   media::MockAudioRendererSink* mock_sink() {
     return audio_device_factory_platform_->mock_sink();
@@ -223,7 +223,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
 
   blink::ScopedTestingPlatformSupport<AudioDeviceFactoryTestingPlatformSupport>
       audio_device_factory_platform_;
-  const base::Optional<base::UnguessableToken> kAudioProcessingId =
+  const absl::optional<base::UnguessableToken> kAudioProcessingId =
       base::UnguessableToken::Create();
   std::unique_ptr<MockAudioRendererSource> source_;
   Persistent<MediaStreamDescriptor> stream_descriptor_;

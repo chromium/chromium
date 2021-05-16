@@ -75,7 +75,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, base::nullopt, settings,
+    return ValidateAndCreate(width, height, absl::nullopt, settings,
                              exception_state);
   }
 
@@ -84,7 +84,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
                              exception_state);
   }
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
@@ -100,7 +100,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMUint16Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
                              exception_state, RequireCanvasColorManagement);
   }
   static ImageData* Create(NotShared<DOMUint16Array> data,
@@ -117,7 +117,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMFloat32Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
                              exception_state, RequireCanvasColorManagement);
   }
   static ImageData* Create(NotShared<DOMFloat32Array> data,
@@ -146,8 +146,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   };
   static ImageData* ValidateAndCreate(
       unsigned width,
-      base::Optional<unsigned> height,
-      base::Optional<NotShared<DOMArrayBufferView>> data,
+      absl::optional<unsigned> height,
+      absl::optional<NotShared<DOMArrayBufferView>> data,
       const ImageDataSettings* settings,
       ExceptionState& exception_state,
       uint32_t flags = 0);
@@ -197,7 +197,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const override { return size_; }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  base::Optional<IntRect> crop_rect,
+                                  absl::optional<IntRect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

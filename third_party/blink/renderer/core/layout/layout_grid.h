@@ -117,7 +117,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
                          GridTrackSizingDirection,
                          size_t start_line,
                          size_t span,
-                         base::Optional<LayoutUnit> available_size) const;
+                         absl::optional<LayoutUnit> available_size) const;
   bool CachedHasDefiniteLogicalHeight() const;
   bool IsBaselineAlignmentForChild(const LayoutBox& child) const;
   bool IsBaselineAlignmentForChild(const LayoutBox& child, GridAxis) const;
@@ -176,7 +176,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   size_t ComputeAutoRepeatTracksCount(
       GridTrackSizingDirection,
-      base::Optional<LayoutUnit> available_size) const;
+      absl::optional<LayoutUnit> available_size) const;
   size_t ClampAutoRepeatTracks(GridTrackSizingDirection,
                                size_t auto_repeat_tracks) const;
 
@@ -188,7 +188,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   void PlaceItemsOnGrid(
       GridTrackSizingAlgorithm&,
-      base::Optional<LayoutUnit> available_logical_width) const;
+      absl::optional<LayoutUnit> available_logical_width) const;
   void PopulateExplicitGridAndOrderIterator(Grid&) const;
   std::unique_ptr<GridArea> CreateEmptyGridAreaAtSpecifiedPositionsOutsideGrid(
       const Grid&,
@@ -205,7 +205,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   GridTrackSizingDirection AutoPlacementMajorAxisDirection() const;
   GridTrackSizingDirection AutoPlacementMinorAxisDirection() const;
 
-  base::Optional<LayoutUnit> OverrideIntrinsicContentLogicalSize(
+  absl::optional<LayoutUnit> OverrideIntrinsicContentLogicalSize(
       GridTrackSizingDirection) const;
 
   void ComputeTrackSizesForIndefiniteSize(GridTrackSizingAlgorithm&,
@@ -307,7 +307,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   LayoutUnit RowAxisBaselineOffsetForChild(const LayoutBox&) const;
 
   LayoutUnit GridGap(GridTrackSizingDirection,
-                     base::Optional<LayoutUnit> available_size) const;
+                     absl::optional<LayoutUnit> available_size) const;
 
   size_t GridItemSpan(const LayoutBox&, GridTrackSizingDirection);
 
@@ -329,14 +329,14 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
   ContentAlignmentData offset_between_columns_;
   ContentAlignmentData offset_between_rows_;
 
-  typedef HashMap<const LayoutBox*, base::Optional<size_t>>
+  typedef HashMap<const LayoutBox*, absl::optional<size_t>>
       OutOfFlowPositionsMap;
   OutOfFlowPositionsMap column_of_positioned_item_;
   OutOfFlowPositionsMap row_of_positioned_item_;
 
   bool has_any_orthogonal_item_{false};
   bool baseline_items_cached_{false};
-  base::Optional<bool> has_definite_logical_height_;
+  absl::optional<bool> has_definite_logical_height_;
 };
 
 template <>

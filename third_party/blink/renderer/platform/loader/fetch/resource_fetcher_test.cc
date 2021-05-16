@@ -32,11 +32,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
@@ -157,12 +157,12 @@ class ResourceFetcherTest : public testing::Test {
                         const ResourceError&,
                         int64_t encoded_data_length,
                         IsInternalRequest is_internal_request) override {}
-    const base::Optional<PartialResourceRequest>& GetLastRequest() const {
+    const absl::optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }
 
    private:
-    base::Optional<PartialResourceRequest> request_;
+    absl::optional<PartialResourceRequest> request_;
   };
 
  protected:
@@ -537,7 +537,7 @@ TEST_F(ResourceFetcherTest, WillSendRequestAdBit) {
   Resource* new_resource = RawResource::Fetch(fetch_params, fetcher, nullptr);
 
   EXPECT_EQ(resource, new_resource);
-  base::Optional<PartialResourceRequest> new_request =
+  absl::optional<PartialResourceRequest> new_request =
       observer->GetLastRequest();
   EXPECT_TRUE(new_request.has_value());
   EXPECT_TRUE(new_request.value().IsAdResource());
@@ -1313,7 +1313,7 @@ TEST_F(ResourceFetcherTest, StaleWhileRevalidate) {
   EXPECT_TRUE(GetMemoryCache()->Contains(resource));
   static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
       ->RunUntilIdle();
-  base::Optional<PartialResourceRequest> swr_request =
+  absl::optional<PartialResourceRequest> swr_request =
       observer->GetLastRequest();
   ASSERT_TRUE(swr_request.has_value());
   EXPECT_EQ(ResourceLoadPriority::kVeryLow, swr_request->Priority());

@@ -188,11 +188,11 @@ class CORE_EXPORT HTMLInputElement
   // delay the 'input' event with EventQueueScope.
   void SetValueFromRenderer(const String&);
 
-  base::Optional<uint32_t> selectionStartForBinding(ExceptionState&) const;
-  base::Optional<uint32_t> selectionEndForBinding(ExceptionState&) const;
+  absl::optional<uint32_t> selectionStartForBinding(ExceptionState&) const;
+  absl::optional<uint32_t> selectionEndForBinding(ExceptionState&) const;
   String selectionDirectionForBinding(ExceptionState&) const;
-  void setSelectionStartForBinding(base::Optional<uint32_t>, ExceptionState&);
-  void setSelectionEndForBinding(base::Optional<uint32_t>, ExceptionState&);
+  void setSelectionStartForBinding(absl::optional<uint32_t>, ExceptionState&);
+  void setSelectionEndForBinding(absl::optional<uint32_t>, ExceptionState&);
   void setSelectionDirectionForBinding(const String&, ExceptionState&);
   void setSelectionRangeForBinding(unsigned start,
                                    unsigned end,

@@ -120,7 +120,7 @@ double NumericRangeNativeFitness(const NumericConstraint& constraint,
 // Returns the fitness distance between the ideal value of |constraint| and
 // an optional boolean |value|.
 // Based on https://w3c.github.io/mediacapture-main/#dfn-fitness-distance.
-double OptionalBoolFitness(const base::Optional<bool>& value,
+double OptionalBoolFitness(const absl::optional<bool>& value,
                            const BooleanConstraint& constraint) {
   if (!constraint.HasIdeal())
     return 0.0;
@@ -188,10 +188,10 @@ class CandidateFormat {
   }
 
   // Convenience accessors for constrained_frame_rate() fields.
-  const base::Optional<double>& MinFrameRateConstraint() const {
+  const absl::optional<double>& MinFrameRateConstraint() const {
     return constrained_frame_rate_.Min();
   }
-  const base::Optional<double>& MaxFrameRateConstraint() const {
+  const absl::optional<double>& MaxFrameRateConstraint() const {
     return constrained_frame_rate_.Max();
   }
 
@@ -496,19 +496,19 @@ class PTZDeviceState {
     return nullptr;
   }
 
-  base::Optional<double> SelectPan(
+  absl::optional<double> SelectPan(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::pan_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::pan);
   }
 
-  base::Optional<double> SelectTilt(
+  absl::optional<double> SelectTilt(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::tilt_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::tilt);
   }
 
-  base::Optional<double> SelectZoom(
+  absl::optional<double> SelectZoom(
       const MediaTrackConstraintSetPlatform& basic_set) const {
     return SelectProperty(&PTZDeviceState::zoom_set_, basic_set,
                           &MediaTrackConstraintSetPlatform::zoom);
@@ -523,7 +523,7 @@ class PTZDeviceState {
   // * If minimum is provided, return minimum.
   // * Otherwise, if maximum is provided, return maximum.
   // * Otherwise, return nullopt.
-  base::Optional<double> SelectProperty(
+  absl::optional<double> SelectProperty(
       DoubleRangeSet PTZDeviceState::*ptz_field,
       const MediaTrackConstraintSetPlatform& basic_set,
       DoubleConstraint MediaTrackConstraintSetPlatform::*basic_set_field)
@@ -599,7 +599,7 @@ bool DeviceSatisfiesConstraintSet(
 // If |constraint| is not satisfied and |failed_constraint_name| is not null,
 // |failed_constraint_name| is set to |constraints|'s name.
 bool OptionalBoolSatisfiesConstraint(
-    const base::Optional<bool>& value,
+    const absl::optional<bool>& value,
     const BooleanConstraint& constraint,
     const char** failed_constraint_name = nullptr) {
   if (!constraint.HasExact())
@@ -630,7 +630,7 @@ double DeviceFitness(const DeviceInfo& device,
 double CandidateFitness(const DeviceInfo& device,
                         const PTZDeviceState& ptz_state,
                         const CandidateFormat& candidate_format,
-                        const base::Optional<bool>& noise_reduction,
+                        const absl::optional<bool>& noise_reduction,
                         const MediaTrackConstraintSetPlatform& constraint_set,
                         VideoTrackAdapterSettings* track_settings) {
   return DeviceFitness(device, constraint_set) +
@@ -649,7 +649,7 @@ double CandidateFitness(const DeviceInfo& device,
 void AppendDistancesFromDefault(
     const DeviceInfo& device,
     const CandidateFormat& candidate_format,
-    const base::Optional<bool>& noise_reduction,
+    const absl::optional<bool>& noise_reduction,
     const VideoDeviceCaptureCapabilities& capabilities,
     int default_width,
     int default_height,

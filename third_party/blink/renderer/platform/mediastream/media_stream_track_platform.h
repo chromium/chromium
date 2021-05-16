@@ -39,9 +39,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     String group_id;
     FacingMode facing_mode = FacingMode::kNone;
     String resize_mode;
-    base::Optional<bool> echo_cancellation;
-    base::Optional<bool> auto_gain_control;
-    base::Optional<bool> noise_supression;
+    absl::optional<bool> echo_cancellation;
+    absl::optional<bool> auto_gain_control;
+    absl::optional<bool> noise_supression;
     String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;
@@ -52,9 +52,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     String video_kind;
 
     // Screen Capture extensions
-    base::Optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
-    base::Optional<bool> logical_surface;
-    base::Optional<media::mojom::CursorCaptureType> cursor;
+    absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
+    absl::optional<bool> logical_surface;
+    absl::optional<media::mojom::CursorCaptureType> cursor;
   };
 
   explicit MediaStreamTrackPlatform(bool is_local_track);

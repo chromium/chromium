@@ -213,7 +213,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
   restart_callback_ = std::move(callback);
 
   if (send_black_frame) {
-    const base::Optional<gfx::Size> source_size =
+    const absl::optional<gfx::Size> source_size =
         GetTrackAdapter()->source_frame_size();
     scoped_refptr<media::VideoFrame> black_frame =
         media::VideoFrame::CreateBlackFrame(
@@ -339,16 +339,16 @@ base::SingleThreadTaskRunner* MediaStreamVideoSource::io_task_runner() const {
   return Platform::Current()->GetIOTaskRunner().get();
 }
 
-base::Optional<media::VideoCaptureFormat>
+absl::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Optional<media::VideoCaptureFormat>();
+  return absl::optional<media::VideoCaptureFormat>();
 }
 
-base::Optional<media::VideoCaptureParams>
+absl::optional<media::VideoCaptureParams>
 MediaStreamVideoSource::GetCurrentCaptureParams() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Optional<media::VideoCaptureParams>();
+  return absl::optional<media::VideoCaptureParams>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {
@@ -454,7 +454,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks() {
 
 void MediaStreamVideoSource::StartFrameMonitoring() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::Optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
+  absl::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
   double frame_rate = current_format ? current_format->frame_rate : 0.0;
   if (current_format && enable_device_rotation_detection_) {
     GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);

@@ -82,7 +82,7 @@ class PLATFORM_EXPORT DrawingRecorder {
   const DisplayItemClient& client_;
   const DisplayItem::Type type_;
   IntRect visual_rect_;
-  base::Optional<DOMNodeId> dom_node_id_to_restore_;
+  absl::optional<DOMNodeId> dom_node_id_to_restore_;
 
   DISALLOW_COPY_AND_ASSIGN(DrawingRecorder);
 };

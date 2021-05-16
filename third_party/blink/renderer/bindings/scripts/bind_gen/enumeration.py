@@ -57,11 +57,10 @@ def make_factory_methods(cg_context):
           "${class_name}();"),
     ])
 
-    func_def = CxxFuncDefNode(
-        name="Create",
-        arg_decls=["const String& value"],
-        return_type="base::Optional<${class_name}>",
-        static=True)
+    func_def = CxxFuncDefNode(name="Create",
+                              arg_decls=["const String& value"],
+                              return_type="absl::optional<${class_name}>",
+                              static=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
     decls.append(func_def)
 
@@ -69,7 +68,7 @@ def make_factory_methods(cg_context):
         T("const auto& result = bindings::FindIndexInEnumStringTable"
           "(value, string_table_);"),
         T("if (!result)\n"
-          "  return base::nullopt;"),
+          "  return absl::nullopt;"),
         T("return ${class_name}(static_cast<Enum>(result.value()));"),
     ])
 

@@ -31,7 +31,7 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   wtf_size_t section_index = ConstraintSpace().TableSectionIndex();
 
-  base::Optional<LayoutUnit> section_baseline;
+  absl::optional<LayoutUnit> section_baseline;
 
   LogicalOffset offset;
   bool is_first_row = true;

@@ -70,7 +70,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
   void SuccessCursorPrefetch(Vector<std::unique_ptr<IDBKey>> keys,
                              Vector<std::unique_ptr<IDBKey>> primary_keys,
                              Vector<std::unique_ptr<IDBValue>> values) override;
@@ -85,7 +85,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>>) override;
+      absl::optional<std::unique_ptr<IDBValue>>) override;
   void ReceiveGetAllResults(
       bool key_only,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver)

@@ -65,10 +65,10 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   return FloatRect(To<LayoutInline>(object).ReferenceBoxForClipPath());
 }
 
-base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
+absl::optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
   if (object.IsText() || !object.StyleRef().HasClipPath())
-    return base::nullopt;
+    return absl::nullopt;
 
   FloatRect reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
@@ -85,7 +85,7 @@ base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
   LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper)
-    return base::nullopt;
+    return absl::nullopt;
 
   FloatRect bounding_box = clipper->ResourceBoundingBox(reference_box);
   if (UsesZoomedReferenceBox(object) &&
@@ -119,7 +119,7 @@ static AffineTransform MaskToContentTransform(
   return mask_to_content;
 }
 
-static base::Optional<Path> PathBasedClipInternal(
+static absl::optional<Path> PathBasedClipInternal(
     const LayoutObject& clip_path_owner,
     bool uses_zoomed_reference_box,
     const FloatRect& reference_box) {
@@ -129,8 +129,8 @@ static base::Optional<Path> PathBasedClipInternal(
     LayoutSVGResourceClipper* resource_clipper =
         ResolveElementReference(clip_path_owner, *reference_clip);
     if (!resource_clipper)
-      return base::nullopt;
-    base::Optional<Path> path = resource_clipper->AsPath();
+      return absl::nullopt;
+    absl::optional<Path> path = resource_clipper->AsPath();
     if (!path)
       return path;
     path->Transform(MaskToContentTransform(
@@ -195,7 +195,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 
     if (resource_clipper->StyleRef().HasClipPath()) {
       // Try to apply nested clip-path as path-based clip.
-      if (const base::Optional<Path>& path = PathBasedClipInternal(
+      if (const absl::optional<Path>& path = PathBasedClipInternal(
               *resource_clipper, uses_zoomed_reference_box, reference_box)) {
         context.ClipPath(path->GetSkPath(), kAntiAliased);
         rest_of_the_chain_already_appled = true;
@@ -230,7 +230,7 @@ bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
   return !resource_clipper->AsPath();
 }
 
-base::Optional<Path> ClipPathClipper::PathBasedClip(
+absl::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner) {
   return PathBasedClipInternal(clip_path_owner,
                                UsesZoomedReferenceBox(clip_path_owner),

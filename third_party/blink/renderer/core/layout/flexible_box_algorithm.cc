@@ -79,7 +79,7 @@ FlexItem::FlexItem(const FlexLayoutAlgorithm* algorithm,
                    const ComputedStyle& style,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
-                   base::Optional<MinMaxSizes> min_max_cross_sizes,
+                   absl::optional<MinMaxSizes> min_max_cross_sizes,
                    LayoutUnit main_axis_border_padding,
                    LayoutUnit cross_axis_border_padding,
                    NGPhysicalBoxStrut physical_margins,
@@ -590,14 +590,14 @@ LayoutUnit FlexLayoutAlgorithm::GapBetweenItems(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
   if (IsColumnFlow(style)) {
-    if (const base::Optional<Length>& row_gap = style.RowGap()) {
+    if (const absl::optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
           *row_gap,
           percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
-  if (const base::Optional<Length>& column_gap = style.ColumnGap()) {
+  if (const absl::optional<Length>& column_gap = style.ColumnGap()) {
     return MinimumValueForLength(
         *column_gap,
         percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
@@ -610,14 +610,14 @@ LayoutUnit FlexLayoutAlgorithm::GapBetweenLines(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
   if (!IsColumnFlow(style)) {
-    if (const base::Optional<Length>& row_gap = style.RowGap()) {
+    if (const absl::optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
           *row_gap,
           percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
-  if (const base::Optional<Length>& column_gap = style.ColumnGap()) {
+  if (const absl::optional<Length>& column_gap = style.ColumnGap()) {
     return MinimumValueForLength(
         *column_gap,
         percent_resolution_sizes.inline_size.ClampIndefiniteToZero());

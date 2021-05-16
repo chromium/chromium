@@ -73,7 +73,7 @@ class MODULES_EXPORT NavigatorManagedData final
 
   void OnConfigurationReceived(
       ScriptPromiseResolver* scoped_resolver,
-      const base::Optional<HashMap<String, String>>& configurations);
+      const absl::optional<HashMap<String, String>>& configurations);
 
   void OnAttributeReceived(ScriptState* script_state,
                            ScriptPromiseResolver* scoped_resolver,

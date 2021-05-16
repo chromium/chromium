@@ -11,7 +11,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_DOUBLE_OR_DOUBLE_OR_NULL_SEQUENCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_TESTS_RESULTS_CORE_DOUBLE_OR_DOUBLE_OR_NULL_SEQUENCE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -33,9 +33,9 @@ class CORE_EXPORT DoubleOrDoubleOrNullSequence final {
   static DoubleOrDoubleOrNullSequence FromDouble(double);
 
   bool IsDoubleOrNullSequence() const { return type_ == SpecificType::kDoubleOrNullSequence; }
-  const Vector<base::Optional<double>>& GetAsDoubleOrNullSequence() const;
-  void SetDoubleOrNullSequence(const Vector<base::Optional<double>>&);
-  static DoubleOrDoubleOrNullSequence FromDoubleOrNullSequence(const Vector<base::Optional<double>>&);
+  const Vector<absl::optional<double>>& GetAsDoubleOrNullSequence() const;
+  void SetDoubleOrNullSequence(const Vector<absl::optional<double>>&);
+  static DoubleOrDoubleOrNullSequence FromDoubleOrNullSequence(const Vector<absl::optional<double>>&);
 
   DoubleOrDoubleOrNullSequence(const DoubleOrDoubleOrNullSequence&);
   ~DoubleOrDoubleOrNullSequence();
@@ -51,7 +51,7 @@ class CORE_EXPORT DoubleOrDoubleOrNullSequence final {
   SpecificType type_;
 
   double double_;
-  Vector<base::Optional<double>> double_or_null_sequence_;
+  Vector<absl::optional<double>> double_or_null_sequence_;
 
   friend CORE_EXPORT v8::Local<v8::Value> ToV8(const DoubleOrDoubleOrNullSequence&, v8::Local<v8::Object>, v8::Isolate*);
 };

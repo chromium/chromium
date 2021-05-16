@@ -98,7 +98,7 @@ class FragmentTreeDumper {
       : builder_(builder), flags_(flags) {}
 
   void Append(const NGPhysicalFragment* fragment,
-              base::Optional<PhysicalOffset> fragment_offset,
+              absl::optional<PhysicalOffset> fragment_offset,
               unsigned indent = 2) {
     AppendIndentation(indent);
 
@@ -211,7 +211,7 @@ class FragmentTreeDumper {
     }
     const LayoutBox& box_descendant = To<LayoutBox>(layout_object);
     DCHECK_EQ(box_descendant.PhysicalFragmentCount(), 1u);
-    Append(box_descendant.GetPhysicalFragment(0), base::nullopt, indent + 4);
+    Append(box_descendant.GetPhysicalFragment(0), absl::nullopt, indent + 4);
   }
 
  private:
@@ -250,7 +250,7 @@ class FragmentTreeDumper {
   }
 
   bool AppendOffsetAndSize(const NGPhysicalFragment* fragment,
-                           base::Optional<PhysicalOffset> fragment_offset,
+                           absl::optional<PhysicalOffset> fragment_offset,
                            bool has_content) {
     if (flags_ & NGPhysicalFragment::DumpOffset) {
       if (has_content)
@@ -612,7 +612,7 @@ String NGPhysicalFragment::ToString() const {
 
 String NGPhysicalFragment::DumpFragmentTree(
     DumpFlags flags,
-    base::Optional<PhysicalOffset> fragment_offset,
+    absl::optional<PhysicalOffset> fragment_offset,
     unsigned indent) const {
   StringBuilder string_builder;
   if (flags & DumpHeaderText)

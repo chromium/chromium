@@ -67,7 +67,7 @@ double BaseTemporalInputType::ValueAsDate() const {
 }
 
 void BaseTemporalInputType::SetValueAsDate(
-    const base::Optional<base::Time>& value,
+    const absl::optional<base::Time>& value,
     ExceptionState&) const {
   GetElement().setValue(SerializeWithDate(value));
 }
@@ -171,7 +171,7 @@ String BaseTemporalInputType::SerializeWithComponents(
 }
 
 String BaseTemporalInputType::SerializeWithDate(
-    const base::Optional<base::Time>& value) const {
+    const absl::optional<base::Time>& value) const {
   if (!value)
     return g_empty_string;
   return Serialize(Decimal::FromDouble(value->ToJsTimeIgnoringNull()));

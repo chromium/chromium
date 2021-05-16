@@ -130,7 +130,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override {
+      const absl::optional<GURL>& new_url) override {
     headers_removed_on_redirect_ = removed_headers;
     headers_modified_on_redirect_ = modified_headers;
     cors_exempt_headers_modified_on_redirect_ = modified_cors_exempt_headers;

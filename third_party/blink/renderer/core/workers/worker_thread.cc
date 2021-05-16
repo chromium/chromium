@@ -166,7 +166,7 @@ WorkerThread::~WorkerThread() {
 
 void WorkerThread::Start(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   devtools_worker_token_ = devtools_params->devtools_worker_token;
@@ -594,7 +594,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
 
 void WorkerThread::InitializeOnWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
     std::unique_ptr<WorkerDevToolsParams> devtools_params) {
   DCHECK(IsCurrentThread());
   worker_reporting_proxy_.WillInitializeWorkerContext();

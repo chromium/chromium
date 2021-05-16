@@ -90,7 +90,7 @@ class MODULES_EXPORT AudioEncoder final
       ParsedConfig* active_config,
       uint32_t reset_count,
       media::EncodedAudioBuffer encoded_buffer,
-      base::Optional<media::AudioEncoder::CodecDescription> codec_desc);
+      absl::optional<media::AudioEncoder::CodecDescription> codec_desc);
 };
 
 }  // namespace blink

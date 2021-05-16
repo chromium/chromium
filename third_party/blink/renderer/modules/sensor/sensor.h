@@ -53,7 +53,7 @@ class MODULES_EXPORT Sensor : public EventTargetWithInlineData,
   // Getters
   bool activated() const;
   virtual bool hasReading() const;
-  base::Optional<DOMHighResTimeStamp> timestamp(ScriptState*) const;
+  absl::optional<DOMHighResTimeStamp> timestamp(ScriptState*) const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reading, kReading)

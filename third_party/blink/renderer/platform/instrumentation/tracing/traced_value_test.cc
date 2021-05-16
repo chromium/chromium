@@ -12,7 +12,7 @@
 
 namespace blink {
 
-base::Optional<base::Value> ParseTracedValue(
+absl::optional<base::Value> ParseTracedValue(
     std::unique_ptr<TracedValueJSON> value) {
   return base::JSONReader::Read(value->ToJSON().Utf8());
 }
@@ -24,7 +24,7 @@ TEST(TracedValueTest, FlatDictionary) {
   value->SetBooleanWithCopiedName("bool", true);
   value->SetStringWithCopiedName("string", "string");
 
-  base::Optional<base::Value> parsed = ParseTracedValue(std::move(value));
+  absl::optional<base::Value> parsed = ParseTracedValue(std::move(value));
   base::DictionaryValue* dictionary;
   ASSERT_TRUE(parsed->GetAsDictionary(&dictionary));
   int int_value;
@@ -59,7 +59,7 @@ TEST(TracedValueTest, Hierarchy) {
   value->EndArray();
   value->SetStringWithCopiedName("s0", "foo");
 
-  base::Optional<base::Value> parsed = ParseTracedValue(std::move(value));
+  absl::optional<base::Value> parsed = ParseTracedValue(std::move(value));
   base::DictionaryValue* dictionary;
   ASSERT_TRUE(parsed->GetAsDictionary(&dictionary));
   int i0;
@@ -106,7 +106,7 @@ TEST(TracedValueTest, Escape) {
   value->SetStringWithCopiedName("s3\\", "value3");
   value->SetStringWithCopiedName("\"s4\"", "value4");
 
-  base::Optional<base::Value> parsed = ParseTracedValue(std::move(value));
+  absl::optional<base::Value> parsed = ParseTracedValue(std::move(value));
   base::DictionaryValue* dictionary;
   ASSERT_TRUE(parsed->GetAsDictionary(&dictionary));
   std::string s0;
@@ -142,7 +142,7 @@ TEST(TracedValueTest, NonCopiedNames) {
   value->PushInteger(2);
   value->EndArray();
 
-  base::Optional<base::Value> parsed = ParseTracedValue(std::move(value));
+  absl::optional<base::Value> parsed = ParseTracedValue(std::move(value));
   base::DictionaryValue* dictionary;
   ASSERT_TRUE(parsed->GetAsDictionary(&dictionary));
   int int_value;

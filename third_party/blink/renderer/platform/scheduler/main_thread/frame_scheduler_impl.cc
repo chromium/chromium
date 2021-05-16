@@ -1130,7 +1130,7 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
 
   // Consult per-agent scheduling strategy to see if it wants to affect queue
   // priority. Done here to avoid interfering with other policy decisions.
-  base::Optional<TaskQueue::QueuePriority> per_agent_priority =
+  absl::optional<TaskQueue::QueuePriority> per_agent_priority =
       main_thread_scheduler_->agent_scheduling_strategy().QueuePriority(
           *task_queue);
   if (per_agent_priority.has_value())

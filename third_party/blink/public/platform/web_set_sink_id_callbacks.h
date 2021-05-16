@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SET_SINK_ID_CALLBACKS_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
@@ -19,7 +19,7 @@ enum class WebSetSinkIdError {
 };
 
 using WebSetSinkIdCompleteCallback =
-    base::OnceCallback<void(base::Optional<WebSetSinkIdError> error)>;
+    base::OnceCallback<void(absl::optional<WebSetSinkIdError> error)>;
 
 }  // namespace blink
 

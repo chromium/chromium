@@ -91,8 +91,8 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
                 : cricket::MEDIA_TYPE_VIDEO,
             CreateWebRtcSender(local_track, local_stream_id),
             CreateWebRtcReceiver(remote_track_id, remote_stream_id),
-            base::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
-            base::nullopt);
+            absl::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
+            absl::nullopt);
     if (transport.get()) {
       transceiver->SetTransport(transport);
     }

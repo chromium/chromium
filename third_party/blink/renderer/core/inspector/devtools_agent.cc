@@ -319,7 +319,7 @@ std::unique_ptr<WorkerDevToolsParams> DevToolsAgent::WorkerThreadCreated(
     WorkerThread* worker_thread,
     const KURL& url,
     const String& global_scope_name,
-    const base::Optional<const blink::DedicatedWorkerToken>& token) {
+    const absl::optional<const blink::DedicatedWorkerToken>& token) {
   auto result = std::make_unique<WorkerDevToolsParams>();
   base::UnguessableToken devtools_worker_token =
       token.has_value() ? token.value().value()

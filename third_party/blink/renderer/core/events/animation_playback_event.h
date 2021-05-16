@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_ANIMATION_PLAYBACK_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_ANIMATION_PLAYBACK_EVENT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 
 namespace blink {
@@ -23,22 +23,22 @@ class AnimationPlaybackEvent final : public Event {
   }
 
   AnimationPlaybackEvent(const AtomicString& type,
-                         base::Optional<double> current_time,
-                         base::Optional<double> timeline_time);
+                         absl::optional<double> current_time,
+                         absl::optional<double> timeline_time);
   AnimationPlaybackEvent(const AtomicString&,
                          const AnimationPlaybackEventInit*);
   ~AnimationPlaybackEvent() override;
 
-  base::Optional<double> currentTime() const { return current_time_; }
-  base::Optional<double> timelineTime() const { return timeline_time_; }
+  absl::optional<double> currentTime() const { return current_time_; }
+  absl::optional<double> timelineTime() const { return timeline_time_; }
 
   const AtomicString& InterfaceName() const override;
 
   void Trace(Visitor*) const override;
 
  private:
-  base::Optional<double> current_time_;
-  base::Optional<double> timeline_time_;
+  absl::optional<double> current_time_;
+  absl::optional<double> timeline_time_;
 };
 
 }  // namespace blink

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_CLIP_PATH_CLIPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_CLIP_PATH_CLIPPER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -34,7 +34,7 @@ class CORE_EXPORT ClipPathClipper {
   // Returns the bounding box of the computed clip path, which could be
   // smaller or bigger than the reference box. Returns nullopt if the
   // clip path is invalid.
-  static base::Optional<FloatRect> LocalClipPathBoundingBox(
+  static absl::optional<FloatRect> LocalClipPathBoundingBox(
       const LayoutObject&);
 
   // Returns true if the object has a clip-path that must be implemented with
@@ -46,7 +46,7 @@ class CORE_EXPORT ClipPathClipper {
   // same as the layout object getting clipped, but in the case of nested
   // clip-path, it could be one of the SVG clip path in the chain.
   // Returns the path if the clip-path can use path-based clip.
-  static base::Optional<Path> PathBasedClip(
+  static absl::optional<Path> PathBasedClip(
       const LayoutObject& clip_path_owner);
 };
 

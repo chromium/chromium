@@ -51,7 +51,7 @@ class ContactsManager final : public ScriptWrappable,
 
   void OnContactsSelected(
       ScriptPromiseResolver* resolver,
-      base::Optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
+      absl::optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
 
   const Vector<String>& GetProperties(ScriptState* script_state);
 

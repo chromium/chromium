@@ -399,7 +399,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
   // We may be able to hit the cache without calculating fragment geometry
   // (calculating that isn't necessarily very cheap). So, start off without it.
-  base::Optional<NGFragmentGeometry> fragment_geometry;
+  absl::optional<NGFragmentGeometry> fragment_geometry;
 
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
@@ -1527,14 +1527,14 @@ LogicalSize NGBlockNode::GetAspectRatio() const {
   return LogicalSize();
 }
 
-base::Optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
+absl::optional<TransformationMatrix> NGBlockNode::GetTransformForChildFragment(
     const NGPhysicalBoxFragment& child_fragment,
     PhysicalSize size) const {
   const auto* child_layout_object = child_fragment.GetLayoutObject();
   DCHECK(child_layout_object);
 
   if (!child_layout_object->ShouldUseTransformFromContainer(box_))
-    return base::nullopt;
+    return absl::nullopt;
 
   TransformationMatrix transform;
   child_layout_object->GetTransformFromContainer(box_, PhysicalOffset(),

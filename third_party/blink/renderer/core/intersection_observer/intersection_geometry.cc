@@ -55,7 +55,7 @@ void ApplyMargin(
     PhysicalRect& expand_rect,
     const Vector<Length>& margin,
     float zoom,
-    const base::Optional<PhysicalRect>& resolution_rect = base::nullopt) {
+    const absl::optional<PhysicalRect>& resolution_rect = absl::nullopt) {
   if (margin.IsEmpty())
     return;
 

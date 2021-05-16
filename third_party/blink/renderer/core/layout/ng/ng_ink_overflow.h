@@ -115,7 +115,7 @@ class CORE_EXPORT NGInkOverflow {
                           const PhysicalSize& size,
                           PhysicalRect* ink_overflow_out);
 
-  static base::Optional<PhysicalRect> ComputeTextInkOverflow(
+  static absl::optional<PhysicalRect> ComputeTextInkOverflow(
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const PhysicalSize& size);

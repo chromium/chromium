@@ -116,7 +116,7 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // The top-frame-origin for the worker. For a dedicated worker this is the
   // top-frame origin of the page that created the worker. For a shared worker
   // or a service worker this is unset.
-  virtual base::Optional<WebSecurityOrigin> TopFrameOrigin() const = 0;
+  virtual absl::optional<WebSecurityOrigin> TopFrameOrigin() const = 0;
 
   // Sets the builder object of WebDocumentSubresourceFilter on the main thread
   // which will be used in TakeSubresourceFilter() to create a

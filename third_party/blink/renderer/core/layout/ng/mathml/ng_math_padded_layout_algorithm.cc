@@ -27,18 +27,18 @@ LayoutUnit NGMathPaddedLayoutAlgorithm::RequestedVOffset() const {
   return ValueForLength(Style().GetMathPaddedVOffset(), LayoutUnit());
 }
 
-base::Optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedAscent(
+absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedAscent(
     LayoutUnit content_ascent) const {
   if (Style().GetMathBaseline().IsAuto())
-    return base::nullopt;
+    return absl::nullopt;
   return std::max(LayoutUnit(),
                   ValueForLength(Style().GetMathBaseline(), content_ascent));
 }
 
-base::Optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedDescent(
+absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedDescent(
     LayoutUnit content_descent) const {
   if (Style().GetMathPaddedDepth().IsAuto())
-    return base::nullopt;
+    return absl::nullopt;
   return std::max(LayoutUnit(), ValueForLength(Style().GetMathPaddedDepth(),
                                                content_descent));
 }

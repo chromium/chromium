@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/default_tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
@@ -81,7 +81,7 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
   return WTF::g_empty_atom;
 }
 
-base::Optional<MediaSessionAction> ActionNameToMojomAction(
+absl::optional<MediaSessionAction> ActionNameToMojomAction(
     const String& action_name) {
   if ("play" == action_name)
     return MediaSessionAction::kPlay;
@@ -109,7 +109,7 @@ base::Optional<MediaSessionAction> ActionNameToMojomAction(
     return MediaSessionAction::kHangUp;
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 const AtomicString& MediaSessionPlaybackStateToString(

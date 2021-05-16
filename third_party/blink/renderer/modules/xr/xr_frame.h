@@ -113,7 +113,7 @@ class XRFrame final : public ScriptWrappable {
       ScriptState* script_state,
       const blink::TransformationMatrix& native_origin_from_anchor,
       XRSpace* space,
-      base::Optional<uint64_t> maybe_plane_id,
+      absl::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
 
   const Member<XRSession> session_;

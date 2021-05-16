@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_UTIL_H_
 
-#include "base/optional.h"
 #include "cc/animation/scroll_timeline.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
@@ -27,8 +27,8 @@ scoped_refptr<CompositorScrollTimeline> CORE_EXPORT
 ToCompositorScrollTimeline(AnimationTimeline*);
 
 // Retrieves the 'scroll' compositor element id for the input node, or
-// base::nullopt if it does not exist.
-base::Optional<CompositorElementId> CORE_EXPORT
+// absl::nullopt if it does not exist.
+absl::optional<CompositorElementId> CORE_EXPORT
 GetCompositorScrollElementId(const Node*);
 
 // Convert the blink concept of a ScrollTimeline orientation into the cc one.

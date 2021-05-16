@@ -42,9 +42,9 @@ class BluetoothAdvertisingEvent final : public Event {
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   const HeapVector<StringOrUnsignedLong>& uuids() const;
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  base::Optional<uint16_t> appearance() const { return appearance_; }
-  base::Optional<int8_t> txPower() const { return txPower_; }
-  base::Optional<int8_t> rssi() const { return rssi_; }
+  absl::optional<uint16_t> appearance() const { return appearance_; }
+  absl::optional<int8_t> txPower() const { return txPower_; }
+  absl::optional<int8_t> rssi() const { return rssi_; }
   BluetoothManufacturerDataMap* manufacturerData() const;
   BluetoothServiceDataMap* serviceData() const;
 
@@ -56,9 +56,9 @@ class BluetoothAdvertisingEvent final : public Event {
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   HeapVector<StringOrUnsignedLong> uuids_;
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
-  base::Optional<uint16_t> appearance_;
-  base::Optional<int8_t> txPower_;
-  base::Optional<int8_t> rssi_;
+  absl::optional<uint16_t> appearance_;
+  absl::optional<int8_t> txPower_;
+  absl::optional<int8_t> rssi_;
   const Member<BluetoothManufacturerDataMap> manufacturer_data_map_;
   const Member<BluetoothServiceDataMap> service_data_map_;
 };

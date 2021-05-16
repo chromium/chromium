@@ -31,8 +31,8 @@
 
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
@@ -124,11 +124,11 @@ SharedWorker* SharedWorker::Create(
     case V8UnionStringOrWorkerOptions::ContentType::kWorkerOptions: {
       WorkerOptions* worker_options = name_or_options->GetAsWorkerOptions();
       options->name = worker_options->name();
-      base::Optional<mojom::blink::ScriptType> type_result =
+      absl::optional<mojom::blink::ScriptType> type_result =
           Script::ParseScriptType(worker_options->type());
       DCHECK(type_result);
       options->type = type_result.value();
-      base::Optional<network::mojom::CredentialsMode> credentials_result =
+      absl::optional<network::mojom::CredentialsMode> credentials_result =
           Request::ParseCredentialsMode(worker_options->credentials());
       DCHECK(credentials_result);
       options->credentials = credentials_result.value();
@@ -141,11 +141,11 @@ SharedWorker* SharedWorker::Create(
   } else if (name_or_options.IsWorkerOptions()) {
     WorkerOptions* worker_options = name_or_options.GetAsWorkerOptions();
     options->name = worker_options->name();
-    base::Optional<mojom::blink::ScriptType> type_result =
+    absl::optional<mojom::blink::ScriptType> type_result =
         Script::ParseScriptType(worker_options->type());
     DCHECK(type_result);
     options->type = type_result.value();
-    base::Optional<network::mojom::CredentialsMode> credentials_result =
+    absl::optional<network::mojom::CredentialsMode> credentials_result =
         Request::ParseCredentialsMode(worker_options->credentials());
     DCHECK(credentials_result);
     options->credentials = credentials_result.value();

@@ -58,7 +58,7 @@ void GatherInlineContainerFragmentsFromItems(
     if (it == inline_containing_block_map->end())
       continue;
 
-    base::Optional<NGBoxFragmentBuilder::InlineContainingBlockGeometry>&
+    absl::optional<NGBoxFragmentBuilder::InlineContainingBlockGeometry>&
         containing_block_geometry = it->value;
     LineBoxPair& containing_lineboxes =
         containing_linebox_map->insert(key, LineBoxPair{nullptr, nullptr})
@@ -97,7 +97,7 @@ void GatherInlineContainerFragmentsFromItems(
 
 void NGBoxFragmentBuilder::AddBreakBeforeChild(
     NGLayoutInputNode child,
-    base::Optional<NGBreakAppeal> appeal,
+    absl::optional<NGBreakAppeal> appeal,
     bool is_forced_break) {
   if (appeal) {
     break_appeal_ = *appeal;
@@ -165,7 +165,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 void NGBoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
-    base::Optional<LogicalOffset> relative_offset,
+    absl::optional<LogicalOffset> relative_offset,
     bool propagate_oof_descendants) {
   const auto& fragment = child_layout_result.PhysicalFragment();
   if (items_builder_) {
@@ -181,7 +181,7 @@ void NGBoxFragmentBuilder::AddResult(
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
-  base::Optional<LayoutUnit> adjustment_for_oof_propagation;
+  absl::optional<LayoutUnit> adjustment_for_oof_propagation;
   if (propagate_oof_descendants)
     adjustment_for_oof_propagation = BlockOffsetAdjustmentForFragmentainer();
 
@@ -198,8 +198,8 @@ void NGBoxFragmentBuilder::AddChild(
     const LayoutInline* inline_container,
     const NGMarginStrut* margin_strut,
     bool is_self_collapsing,
-    base::Optional<LogicalOffset> relative_offset,
-    base::Optional<LayoutUnit> adjustment_for_oof_propagation) {
+    absl::optional<LogicalOffset> relative_offset,
+    absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
 #if DCHECK_IS_ON()
   needs_inflow_bounds_explicitly_set_ = !!relative_offset;
   needs_may_have_descendant_above_block_start_explicitly_set_ =

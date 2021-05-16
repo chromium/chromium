@@ -151,7 +151,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   base::TimeTicks slice_origin_timestamp_;
 
   // The last seen video codec of the last received encoded video frame.
-  base::Optional<media::VideoCodec> last_seen_codec_;
+  absl::optional<media::VideoCodec> last_seen_codec_;
 
   bool invalidated_ = false;
   bool recording_;

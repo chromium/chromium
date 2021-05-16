@@ -448,7 +448,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutBoxModelObject* ContinuationBefore(LayoutObject* before_child);
 
-  base::Optional<PhysicalOffset> FirstLineBoxTopLeftInternal() const;
+  absl::optional<PhysicalOffset> FirstLineBoxTopLeftInternal() const;
   PhysicalOffset AnchorPhysicalLocation() const;
 
   LayoutObjectChildList children_;

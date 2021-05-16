@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
@@ -253,11 +253,11 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
-      const base::Optional<SkColor>& accent_color = base::nullopt) {}
+      const absl::optional<SkColor>& accent_color = absl::nullopt) {}
 
-  virtual base::Optional<SkColor> GetSystemColor(
+  virtual absl::optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }

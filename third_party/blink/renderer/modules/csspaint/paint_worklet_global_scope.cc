@@ -59,7 +59,7 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
         return false;
 
       for (const auto& type : argument_types) {
-        base::Optional<CSSSyntaxDefinition> syntax_definition =
+        absl::optional<CSSSyntaxDefinition> syntax_definition =
             CSSSyntaxStringParser(type).Parse();
         if (!syntax_definition) {
           exception_state->ThrowTypeError("Invalid argument types.");

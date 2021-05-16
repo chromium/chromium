@@ -57,11 +57,11 @@ class WebPrescientNetworking;
 namespace {
 
 // Decide the prerender type based on the link rel attribute. Returns
-// base::nullopt if the attribute doesn't indicate the prerender type.
-base::Optional<mojom::blink::PrerenderRelType> PrerenderRelTypeFromRelAttribute(
+// absl::nullopt if the attribute doesn't indicate the prerender type.
+absl::optional<mojom::blink::PrerenderRelType> PrerenderRelTypeFromRelAttribute(
     const LinkRelAttribute& rel_attribute,
     Document& document) {
-  base::Optional<mojom::blink::PrerenderRelType> rel_type;
+  absl::optional<mojom::blink::PrerenderRelType> rel_type;
   if (rel_attribute.IsLinkPrerender()) {
     UseCounter::Count(document, WebFeature::kLinkRelPrerender);
     rel_type = mojom::blink::PrerenderRelType::kPrerender;
@@ -180,7 +180,7 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, this);
 
-  base::Optional<mojom::blink::PrerenderRelType> prerender_rel_type =
+  absl::optional<mojom::blink::PrerenderRelType> prerender_rel_type =
       PrerenderRelTypeFromRelAttribute(params.rel, document);
   if (prerender_rel_type) {
     // The previous prerender should already be aborted by Abort().

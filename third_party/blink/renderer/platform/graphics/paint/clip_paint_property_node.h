@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
     scoped_refptr<const TransformPaintPropertyNodeOrAlias>
         local_transform_space;
-    base::Optional<FloatClipRect> clip_rect_excluding_overlay_scrollbars;
+    absl::optional<FloatClipRect> clip_rect_excluding_overlay_scrollbars;
     scoped_refptr<const RefCountedPath> clip_path;
 
     void SetClipRect(const FloatRoundedRect& clip_rect_arg,

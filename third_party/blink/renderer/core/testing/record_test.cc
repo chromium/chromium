@@ -22,11 +22,11 @@ Vector<std::pair<String, int32_t>> RecordTest::getStringLongRecord() {
 }
 
 void RecordTest::setNullableStringLongRecord(
-    const base::Optional<Vector<std::pair<String, int32_t>>>& arg) {
+    const absl::optional<Vector<std::pair<String, int32_t>>>& arg) {
   nullable_string_long_record_ = arg;
 }
 
-base::Optional<Vector<std::pair<String, int32_t>>>
+absl::optional<Vector<std::pair<String, int32_t>>>
 RecordTest::getNullableStringLongRecord() {
   return nullable_string_long_record_;
 }

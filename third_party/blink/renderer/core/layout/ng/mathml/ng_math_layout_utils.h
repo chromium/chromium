@@ -48,7 +48,7 @@ inline float RuleThicknessFallback(const ComputedStyle& style) {
 
 LayoutUnit MathAxisHeight(const ComputedStyle& style);
 
-inline base::Optional<float> MathConstant(
+inline absl::optional<float> MathConstant(
     const ComputedStyle& style,
     OpenTypeMathSupport::MathConstants constant) {
   const SimpleFontData* font_data = style.GetFont().PrimaryFont();

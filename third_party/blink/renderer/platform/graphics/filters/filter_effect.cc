@@ -138,7 +138,7 @@ sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
       std::move(color_filter), nullptr, base::OptionalOrNullptr(GetCropRect()));
 }
 
-base::Optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
+absl::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
   if (!ClipsToBounds())
     return {};
   FloatRect computed_bounds = FilterPrimitiveSubregion();

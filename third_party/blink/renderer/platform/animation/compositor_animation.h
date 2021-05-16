@@ -9,10 +9,10 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/worklet_animation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -83,7 +83,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
                                base::TimeTicks animation_start_time,
                                std::unique_ptr<gfx::AnimationCurve>) override;
   void NotifyLocalTimeUpdated(
-      base::Optional<base::TimeDelta> local_time) override;
+      absl::optional<base::TimeDelta> local_time) override;
 
   scoped_refptr<cc::Animation> animation_;
   CompositorAnimationDelegate* delegate_;

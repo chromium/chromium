@@ -31,7 +31,7 @@ using HandledEventCallback =
     base::OnceCallback<void(mojom::blink::InputEventResultState ack_state,
                             const ui::LatencyInfo& latency_info,
                             mojom::blink::DidOverscrollParamsPtr,
-                            base::Optional<cc::TouchAction>)>;
+                            absl::optional<cc::TouchAction>)>;
 
 // All interaction with the MainThreadEventQueueClient will occur
 // on the main thread.

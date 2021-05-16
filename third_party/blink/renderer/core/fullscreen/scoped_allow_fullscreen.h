@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FULLSCREEN_SCOPED_ALLOW_FULLSCREEN_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -18,13 +18,13 @@ class CORE_EXPORT ScopedAllowFullscreen {
  public:
   enum Reason { kOrientationChange, kXrOverlay, kXrSession };
 
-  static base::Optional<Reason> FullscreenAllowedReason();
+  static absl::optional<Reason> FullscreenAllowedReason();
   explicit ScopedAllowFullscreen(Reason);
   ~ScopedAllowFullscreen();
 
  private:
-  static base::Optional<Reason> reason_;
-  base::Optional<Reason> previous_reason_;
+  static absl::optional<Reason> reason_;
+  absl::optional<Reason> previous_reason_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAllowFullscreen);
 };

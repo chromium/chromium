@@ -17,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
@@ -31,6 +30,7 @@
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -150,7 +150,7 @@ const char* RendererProcessTypeToString(WebRendererProcessType process_type) {
 }
 
 const char* OptionalTaskDescriptionToString(
-    base::Optional<MainThreadSchedulerImpl::TaskDescriptionForTracing> desc) {
+    absl::optional<MainThreadSchedulerImpl::TaskDescriptionForTracing> desc) {
   if (!desc)
     return nullptr;
   if (desc->task_type != TaskType::kDeprecatedNone)
@@ -161,7 +161,7 @@ const char* OptionalTaskDescriptionToString(
 }
 
 const char* OptionalTaskPriorityToString(
-    base::Optional<TaskQueue::QueuePriority> priority) {
+    absl::optional<TaskQueue::QueuePriority> priority) {
   if (!priority)
     return nullptr;
   return TaskQueue::PriorityToString(priority.value());
@@ -211,7 +211,7 @@ MainThreadSchedulerImpl* g_main_thread_scheduler = nullptr;
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-    base::Optional<base::Time> initial_virtual_time)
+    absl::optional<base::Time> initial_virtual_time)
     : sequence_manager_(std::move(sequence_manager)),
       helper_(sequence_manager_.get(), this),
       idle_helper_queue_(helper_.NewTaskQueue(
@@ -251,9 +251,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
                               base::Unretained(this)),
           helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
               TaskType::kMainThreadTaskQueueControl)),
-      main_thread_only_(this,
-                        helper_.GetClock(),
-                        helper_.NowTicks()),
+      main_thread_only_(this, helper_.GetClock(), helper_.NowTicks()),
       any_thread_(this),
       policy_may_need_update_(&any_thread_lock_),
       notify_agent_strategy_task_posted_(&any_thread_lock_) {
@@ -471,12 +469,12 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
                    &main_thread_scheduler_impl->tracing_controller_,
                    RendererProcessTypeToString),
       task_description_for_tracing(
-          base::nullopt,
+          absl::nullopt,
           "Scheduler.MainThreadTask",
           &main_thread_scheduler_impl->tracing_controller_,
           OptionalTaskDescriptionToString),
       task_priority_for_tracing(
-          base::nullopt,
+          absl::nullopt,
           "Scheduler.TaskPriority",
           &main_thread_scheduler_impl->tracing_controller_,
           OptionalTaskPriorityToString),
@@ -1714,11 +1712,11 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 }
 
 void MainThreadSchedulerImpl::OnAgentStrategyUpdated() {
-  UpdateStateForAllTaskQueues(base::nullopt);
+  UpdateStateForAllTaskQueues(absl::nullopt);
 }
 
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
-    base::Optional<Policy> previous_policy) {
+    absl::optional<Policy> previous_policy) {
   helper_.CheckOnValidThread();
 
   const Policy& current_policy = main_thread_only().current_policy;
@@ -2689,13 +2687,13 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   main_thread_only().task_description_for_tracing = TaskDescriptionForTracing{
       static_cast<TaskType>(task.task_type),
       queue
-          ? base::Optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
-          : base::nullopt};
+          ? absl::optional<MainThreadTaskQueue::QueueType>(queue->queue_type())
+          : absl::nullopt};
 
   main_thread_only().task_priority_for_tracing =
-      queue ? base::Optional<TaskQueue::QueuePriority>(
+      queue ? absl::optional<TaskQueue::QueuePriority>(
                   queue->GetTaskQueue()->GetQueuePriority())
-            : base::nullopt;
+            : absl::nullopt;
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
@@ -2731,10 +2729,10 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // TODO(altimin): Per-page metrics should also be considered.
   main_thread_only().metrics_helper.RecordTaskMetrics(queue.get(), task,
                                                       *task_timing);
-  main_thread_only().task_description_for_tracing = base::nullopt;
+  main_thread_only().task_description_for_tracing = absl::nullopt;
 
   // Unset the state of |task_priority_for_tracing|.
-  main_thread_only().task_priority_for_tracing = base::nullopt;
+  main_thread_only().task_priority_for_tracing = absl::nullopt;
 
   RecordTaskUkm(queue.get(), task, *task_timing);
 
@@ -2956,7 +2954,7 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
              current_use_case() == UseCase::kEarlyLoading) {
     return TaskQueue::QueuePriority::kHighPriority;
   } else {
-    base::Optional<TaskQueue::QueuePriority> computed_compositor_priority =
+    absl::optional<TaskQueue::QueuePriority> computed_compositor_priority =
         ComputeCompositorPriorityFromUseCase();
     if (computed_compositor_priority) {
       return computed_compositor_priority.value();
@@ -2980,7 +2978,7 @@ void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
   }
 }
 
-base::Optional<TaskQueue::QueuePriority>
+absl::optional<TaskQueue::QueuePriority>
 MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
   switch (current_use_case()) {
     case UseCase::kCompositorGesture:
@@ -3000,7 +2998,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // to the page's functionality or not.
       if (main_thread_only().main_thread_compositing_is_fast)
         return TaskQueue::QueuePriority::kHighestPriority;
-      return base::nullopt;
+      return absl::nullopt;
 
     case UseCase::kMainThreadGesture:
     case UseCase::kTouchstart:
@@ -3013,11 +3011,11 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
     case UseCase::kNone:
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
-      return base::nullopt;
+      return absl::nullopt;
 
     default:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

@@ -58,9 +58,9 @@ class NGSVGTextLayoutAlgorithm {
   bool horizontal_;
 
   struct NGSVGPerCharacterInfo {
-    base::Optional<float> x;
-    base::Optional<float> y;
-    base::Optional<float> rotate;
+    absl::optional<float> x;
+    absl::optional<float> y;
+    absl::optional<float> rotate;
     bool hidden = false;
     bool middle = false;
     bool anchored_chunk = false;

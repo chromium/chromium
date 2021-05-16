@@ -98,21 +98,21 @@ bool DocumentTimeline::IsActive() const {
 
 // Document-linked animations are initialized with start time of the document
 // timeline current time.
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 DocumentTimeline::InitialStartTimeForAnimations() {
-  base::Optional<double> current_time_ms = CurrentTimeMilliseconds();
+  absl::optional<double> current_time_ms = CurrentTimeMilliseconds();
   if (current_time_ms.has_value()) {
     return base::TimeDelta::FromMillisecondsD(current_time_ms.value());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DocumentTimeline::ScheduleNextService() {
   DCHECK_EQ(outdated_animation_count_, 0U);
 
-  base::Optional<AnimationTimeDelta> time_to_next_effect;
+  absl::optional<AnimationTimeDelta> time_to_next_effect;
   for (const auto& animation : animations_needing_update_) {
-    base::Optional<AnimationTimeDelta> time_to_effect_change =
+    absl::optional<AnimationTimeDelta> time_to_effect_change =
         animation->TimeToEffectChange();
     if (!time_to_effect_change)
       continue;
@@ -169,10 +169,10 @@ void DocumentTimeline::SetTimingForTesting(PlatformTiming* timing) {
 
 AnimationTimeline::PhaseAndTime DocumentTimeline::CurrentPhaseAndTime() {
   if (!IsActive()) {
-    return {TimelinePhase::kInactive, /*current_time*/ base::nullopt};
+    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt};
   }
 
-  base::Optional<base::TimeDelta> result =
+  absl::optional<base::TimeDelta> result =
       playback_rate_ == 0
           ? CalculateZeroTime().since_origin()
           : (CurrentAnimationTime(GetDocument()) - CalculateZeroTime()) *

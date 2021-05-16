@@ -3,7 +3,6 @@ include_rules = [
     "+base/files/file_path.h",
     "+base/i18n/rtl.h",
     "+base/observer_list_types.h",
-    "+base/optional.h",
     "+base/macros.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
@@ -63,6 +62,7 @@ include_rules = [
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h",
 
     # Allowed only inside INSIDE_BLINK
+    "+third_party/abseil-cpp/absl/types/optional.h",
     "+third_party/blink/renderer/core",
     "+third_party/blink/renderer/platform",
 ]

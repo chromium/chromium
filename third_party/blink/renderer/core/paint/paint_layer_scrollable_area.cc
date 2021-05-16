@@ -1840,7 +1840,7 @@ const cc::SnapContainerData* PaintLayerScrollableArea::GetSnapContainerData()
 }
 
 void PaintLayerScrollableArea::SetSnapContainerData(
-    base::Optional<cc::SnapContainerData> data) {
+    absl::optional<cc::SnapContainerData> data) {
   EnsureRareData().snap_container_data_ = data;
 }
 
@@ -1879,15 +1879,15 @@ void PaintLayerScrollableArea::SetNeedsResnap(bool needs_resnap) {
   EnsureRareData().needs_resnap_ = needs_resnap;
 }
 
-base::Optional<FloatPoint>
+absl::optional<FloatPoint>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   if (!RareData() || !RareData()->snap_container_data_)
-    return base::nullopt;
+    return absl::nullopt;
 
   cc::SnapContainerData& data = RareData()->snap_container_data_.value();
   if (!data.size())
-    return base::nullopt;
+    return absl::nullopt;
 
   // If the document has a focused element that is coincident with the snap
   // target, update the snap target to point to the focused element. This
@@ -1903,7 +1903,7 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
 
   cc::TargetSnapAreaElementIds snap_targets;
   gfx::ScrollOffset snap_position;
-  base::Optional<FloatPoint> snap_point;
+  absl::optional<FloatPoint> snap_point;
   if (data.FindSnapPosition(strategy, &snap_position, &snap_targets,
                             active_element_id)) {
     snap_point = FloatPoint(snap_position.x(), snap_position.y());

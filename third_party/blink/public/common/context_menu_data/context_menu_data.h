@@ -90,7 +90,7 @@ struct ContextMenuData {
 
   // If the node is a link, the impression declared by the link's conversion
   // measurement attributes.
-  base::Optional<Impression> impression;
+  absl::optional<Impression> impression;
 
   // The raw text of the selection in context.
   std::string selected_text;

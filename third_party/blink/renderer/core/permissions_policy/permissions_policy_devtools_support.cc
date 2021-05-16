@@ -12,14 +12,14 @@
 
 namespace blink {
 
-base::Optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
+absl::optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
     Frame* frame,
     mojom::PermissionsPolicyFeature feature) {
   const PermissionsPolicy* current_policy =
       frame->GetSecurityContext()->GetPermissionsPolicy();
   DCHECK(current_policy);
   if (current_policy->IsFeatureEnabled(feature))
-    return base::nullopt;
+    return absl::nullopt;
 
   Frame* current_frame = frame;
   Frame* child_frame = nullptr;

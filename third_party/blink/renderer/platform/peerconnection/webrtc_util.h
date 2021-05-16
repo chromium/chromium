@@ -5,22 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
 // TODO(crbug.com/787254): Move these template definitions out of the Blink
 // exposed API when all their clients get Onion souped.
 template <typename OptionalT>
-base::Optional<typename OptionalT::value_type> ToBaseOptional(
+absl::optional<typename OptionalT::value_type> ToBaseOptional(
     const OptionalT& optional) {
-  return optional ? base::make_optional(*optional) : base::nullopt;
+  return optional ? absl::make_optional(*optional) : absl::nullopt;
 }
 
 template <typename OptionalT>
-base::Optional<typename OptionalT::value_type> ToBaseOptional(
+absl::optional<typename OptionalT::value_type> ToBaseOptional(
     OptionalT&& optional) {
-  return optional ? base::make_optional(*optional) : base::nullopt;
+  return optional ? absl::make_optional(*optional) : absl::nullopt;
 }
 
 template <typename OptionalT>

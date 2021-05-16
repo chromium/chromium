@@ -39,14 +39,14 @@ namespace {
 const char* kIceRoleControllingStr = "controlling";
 const char* kIceRoleControlledStr = "controlled";
 
-base::Optional<cricket::Candidate> ConvertToCricketIceCandidate(
+absl::optional<cricket::Candidate> ConvertToCricketIceCandidate(
     const RTCIceCandidate& candidate) {
   webrtc::JsepIceCandidate jsep_candidate("", 0);
   webrtc::SdpParseError error;
   if (!webrtc::SdpDeserializeCandidate(candidate.candidate().Utf8(),
                                        &jsep_candidate, &error)) {
     LOG(WARNING) << "Failed to deserialize candidate: " << error.description;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return jsep_candidate.candidate();
 }
@@ -385,7 +385,7 @@ void RTCIceTransport::addRemoteCandidate(RTCIceCandidate* remote_candidate,
   if (RaiseExceptionIfClosed(exception_state)) {
     return;
   }
-  base::Optional<cricket::Candidate> converted_remote_candidate =
+  absl::optional<cricket::Candidate> converted_remote_candidate =
       ConvertToCricketIceCandidate(*remote_candidate);
   if (!converted_remote_candidate) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,

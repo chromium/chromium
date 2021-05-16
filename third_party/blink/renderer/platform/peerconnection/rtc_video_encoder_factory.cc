@@ -23,7 +23,7 @@ namespace blink {
 
 namespace {
 
-base::Optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
+absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
     const webrtc::SdpVideoFormat& sdp) {
   if (sdp.name == "H264") {
 #if !defined(OS_ANDROID)
@@ -36,7 +36,7 @@ base::Optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
         blink::features::kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     if (!webrtc_h264_sw_enabled)
-      return base::nullopt;
+      return absl::nullopt;
 #endif
 
     return media::VideoCodecProfile::H264PROFILE_MIN;
@@ -45,12 +45,12 @@ base::Optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
   } else if (sdp.name == "VP9") {
     return media::VideoCodecProfile::VP9PROFILE_MIN;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Translate from media::VideoEncodeAccelerator::SupportedProfile to
 // webrtc::SdpVideoFormat, or return nothing if the profile isn't supported.
-base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
+absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     const media::VideoEncodeAccelerator::SupportedProfile& profile) {
   DCHECK_EQ(profile.max_framerate_denominator, 1U);
 
@@ -70,7 +70,7 @@ base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         blink::features::kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     if (!webrtc_h264_sw_enabled)
-      return base::nullopt;
+      return absl::nullopt;
 #endif
 
     webrtc::H264::Profile h264_profile;
@@ -94,7 +94,7 @@ base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         break;
       default:
         // Unsupported H264 profile in WebRTC.
-        return base::nullopt;
+        return absl::nullopt;
     }
 
     const int width = profile.max_resolution.width();
@@ -128,7 +128,7 @@ base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         break;
       default:
         // Unsupported VP9 profiles (profile1 & profile3) in WebRTC.
-        return base::nullopt;
+        return absl::nullopt;
     }
     webrtc::SdpVideoFormat format("VP9");
     format.parameters = {
@@ -137,7 +137,7 @@ base::Optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     return format;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }  // namespace
 
 struct SupportedFormats {
@@ -157,7 +157,7 @@ SupportedFormats GetSupportedFormatsInternal(
   // querying GPU process.
   supported_formats.unknown = false;
   for (const auto& profile : *profiles) {
-    base::Optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
+    absl::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.sdp_formats.push_back(std::move(*format));

@@ -39,7 +39,7 @@ WebThreadScheduler::CreateMainThreadScheduler(
           : base::sequence_manager::CreateSequenceManagerOnCurrentThread(
                 std::move(settings));
   return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager),
-                                                   base::nullopt);
+                                                   absl::nullopt);
 }
 
 // static

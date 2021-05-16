@@ -94,7 +94,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
     return data.actions;
   }
 
-  static base::Optional<base::Time> show_trigger_timestamp(
+  static absl::optional<base::Time> show_trigger_timestamp(
       const blink::PlatformNotificationData& data) {
     return data.show_trigger_timestamp;
   }

@@ -14,8 +14,8 @@ TEST(ConfigAutomaticGainControlTest, EnableDefaultAGC1) {
   ConfigAutomaticGainControl(
       /*agc_enabled=*/true,
       /*experimental_agc_enabled=*/false,
-      /*agc2_properties=*/base::nullopt,
-      /*compression_gain_db=*/base::nullopt, apm_config);
+      /*agc2_properties=*/absl::nullopt,
+      /*compression_gain_db=*/absl::nullopt, apm_config);
   EXPECT_TRUE(apm_config.gain_controller1.enabled);
   EXPECT_EQ(
       apm_config.gain_controller1.mode,
@@ -32,7 +32,7 @@ TEST(ConfigAutomaticGainControlTest, EnableFixedDigitalAGC2) {
   ConfigAutomaticGainControl(
       /*agc_enabled=*/true,
       /*experimental_agc_enabled=*/false,
-      /*agc2_properties=*/base::nullopt, compression_gain_db, apm_config);
+      /*agc2_properties=*/absl::nullopt, compression_gain_db, apm_config);
   EXPECT_FALSE(apm_config.gain_controller1.enabled);
   EXPECT_TRUE(apm_config.gain_controller2.enabled);
   EXPECT_FALSE(apm_config.gain_controller2.adaptive_digital.enabled);
@@ -99,10 +99,10 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
 TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
   AudioProcessingProperties properties;
-  base::Optional<double> gain_control_compression_gain_db;
+  absl::optional<double> gain_control_compression_gain_db;
 
   PopulateApmConfig(&apm_config, properties,
-                    base::nullopt,  // |audio_processing_platform_config_json|.
+                    absl::nullopt,  // |audio_processing_platform_config_json|.
                     &gain_control_compression_gain_db);
   EXPECT_FALSE(gain_control_compression_gain_db.has_value());
   EXPECT_TRUE(apm_config.high_pass_filter.enabled);
@@ -122,10 +122,10 @@ TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
 TEST(PopulateApmConfigTest, SetGainsInConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
   AudioProcessingProperties properties;
-  base::Optional<std::string> audio_processing_platform_config_json =
+  absl::optional<std::string> audio_processing_platform_config_json =
       "{\"gain_control_compression_gain_db\": 10, "
       "\"pre_amplifier_fixed_gain_factor\": 2.0}";
-  base::Optional<double> gain_control_compression_gain_db;
+  absl::optional<double> gain_control_compression_gain_db;
 
   PopulateApmConfig(&apm_config, properties,
                     audio_processing_platform_config_json,
@@ -150,9 +150,9 @@ TEST(PopulateApmConfigTest, SetGainsInConfigJson) {
 TEST(PopulateApmConfigTest, SetNoiseSuppressionLevelInConfigJson) {
   webrtc::AudioProcessing::Config apm_config;
   AudioProcessingProperties properties;
-  base::Optional<std::string> audio_processing_platform_config_json =
+  absl::optional<std::string> audio_processing_platform_config_json =
       "{\"noise_suppression_level\": 3}";
-  base::Optional<double> gain_control_compression_gain_db;
+  absl::optional<double> gain_control_compression_gain_db;
 
   PopulateApmConfig(&apm_config, properties,
                     audio_processing_platform_config_json,

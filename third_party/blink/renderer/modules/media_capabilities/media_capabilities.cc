@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mime_util.h"
@@ -25,6 +24,7 @@
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
@@ -649,7 +649,7 @@ MediaCapabilities::PendingCallbackState::PendingCallbackState(
     ScriptPromiseResolver* resolver,
     MediaKeySystemAccess* access,
     const base::TimeTicks& request_time,
-    base::Optional<IdentifiableToken> input_token)
+    absl::optional<IdentifiableToken> input_token)
     : resolver(resolver),
       key_system_access(access),
       request_time(request_time),
@@ -1326,7 +1326,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
 
 void MediaCapabilities::OnBadWindowPrediction(
     int callback_id,
-    const base::Optional<::media::learning::TargetHistogram>& histogram) {
+    const absl::optional<::media::learning::TargetHistogram>& histogram) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 
@@ -1350,7 +1350,7 @@ void MediaCapabilities::OnBadWindowPrediction(
 
 void MediaCapabilities::OnNnrPrediction(
     int callback_id,
-    const base::Optional<::media::learning::TargetHistogram>& histogram) {
+    const absl::optional<::media::learning::TargetHistogram>& histogram) {
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 

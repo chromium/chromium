@@ -20,8 +20,8 @@ namespace blink {
 namespace {
 
 struct TestParam {
-  base::Optional<media::VideoCodecProfile> profile;
-  base::Optional<uint8_t> level;
+  absl::optional<media::VideoCodecProfile> profile;
+  absl::optional<uint8_t> level;
   int32_t bitrate;
 };
 
@@ -36,15 +36,15 @@ const TestParam kH264EncoderParameterTestParam[] = {
     {media::VideoCodecProfile::H264PROFILE_HIGH, 52,
      kFrameWidth* kFrameHeight * 8},
     // Test optional input.
-    {base::nullopt, base::nullopt, kFrameWidth* kFrameHeight * 8},
+    {absl::nullopt, absl::nullopt, kFrameWidth* kFrameHeight * 8},
 };
 
 }  // namespace
 
 class H264EncoderFixture : public ::testing::Test {
  public:
-  H264EncoderFixture(base::Optional<media::VideoCodecProfile> profile,
-                     base::Optional<uint8_t> level,
+  H264EncoderFixture(absl::optional<media::VideoCodecProfile> profile,
+                     absl::optional<uint8_t> level,
                      int32_t bitrate)
       : profile_(profile),
         level_(level),
@@ -131,8 +131,8 @@ class H264EncoderFixture : public ::testing::Test {
   }
 
  private:
-  const base::Optional<media::VideoCodecProfile> profile_;
-  const base::Optional<uint8_t> level_;
+  const absl::optional<media::VideoCodecProfile> profile_;
+  const absl::optional<uint8_t> level_;
   const int32_t bitrate_;
   // Serves as IO thread pushing/retrieving frames.
   std::unique_ptr<base::Thread> testing_render_thread_;

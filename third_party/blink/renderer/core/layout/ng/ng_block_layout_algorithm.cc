@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
@@ -396,7 +396,7 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
 LogicalOffset NGBlockLayoutAlgorithm::CalculateLogicalOffset(
     const NGFragment& fragment,
     LayoutUnit child_bfc_line_offset,
-    const base::Optional<LayoutUnit>& child_bfc_block_offset) {
+    const absl::optional<LayoutUnit>& child_bfc_block_offset) {
   LayoutUnit inline_size = container_builder_.InlineSize();
   TextDirection direction = ConstraintSpace().Direction();
 
@@ -1149,7 +1149,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
         positioned_float.bfc_offset.block_offset;
     BreakBeforeChild(ConstraintSpace(), child, *positioned_float.layout_result,
                      fragmentainer_block_offset,
-                     /* appeal */ base::nullopt,
+                     /* appeal */ absl::nullopt,
                      /* is_forced_break */ false, &container_builder_);
 
     // After breaking before the float, carry on with layout of this
@@ -1321,7 +1321,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
       DCHECK(!ConstraintSpace().AncestorHasClearancePastAdjoiningFloats());
       ResolveBfcBlockOffset(previous_inflow_position,
                             non_adjoining_bfc_offset_estimate,
-                            /* forced_bfc_block_offset */ base::nullopt);
+                            /* forced_bfc_block_offset */ absl::nullopt);
 
       if ((bfc_offset_already_resolved || has_adjoining_floats) &&
           old_offset != *container_builder_.BfcBlockOffset()) {
@@ -1602,7 +1602,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
       HasClearancePastAdjoiningFloats(container_builder_.AdjoiningObjectTypes(),
                                       child.Style(), Style());
 
-  base::Optional<LayoutUnit> forced_bfc_block_offset;
+  absl::optional<LayoutUnit> forced_bfc_block_offset;
 
   // If we can separate the previous margin strut from what is to follow, do
   // that. Then we're able to resolve *our* BFC block offset and position any
@@ -1659,7 +1659,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context,
     scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token) {
-  base::Optional<LayoutUnit> child_bfc_block_offset =
+  absl::optional<LayoutUnit> child_bfc_block_offset =
       layout_result->BfcBlockOffset();
 
   bool is_self_collapsing = layout_result->IsSelfCollapsing();
@@ -1703,7 +1703,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     DCHECK(!ConstraintSpace().AncestorHasClearancePastAdjoiningFloats());
 
     if (!ResolveBfcBlockOffset(previous_inflow_position, bfc_block_offset,
-                               /* forced_bfc_block_offset */ base::nullopt))
+                               /* forced_bfc_block_offset */ absl::nullopt))
       return NGLayoutResult::kBfcBlockOffsetResolved;
   }
 
@@ -2019,7 +2019,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     const NGPreviousInflowPosition& previous_inflow_position,
     const NGLayoutInputNode child,
     const NGInflowChildData& child_data,
-    const base::Optional<LayoutUnit>& child_bfc_block_offset,
+    const absl::optional<LayoutUnit>& child_bfc_block_offset,
     const LogicalOffset& logical_offset,
     const NGLayoutResult& layout_result,
     const NGFragment& fragment,
@@ -2539,7 +2539,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const NGInflowChildData& child_data,
     const LogicalSize child_available_size,
     bool is_new_fc,
-    const base::Optional<LayoutUnit> child_bfc_block_offset,
+    const absl::optional<LayoutUnit> child_bfc_block_offset,
     bool has_clearance_past_adjoining_floats,
     LayoutUnit block_start_annotation_space) {
   const ComputedStyle& style = Style();
@@ -2736,7 +2736,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
 bool NGBlockLayoutAlgorithm::ResolveBfcBlockOffset(
     NGPreviousInflowPosition* previous_inflow_position,
     LayoutUnit bfc_block_offset,
-    base::Optional<LayoutUnit> forced_bfc_block_offset) {
+    absl::optional<LayoutUnit> forced_bfc_block_offset) {
   if (container_builder_.BfcBlockOffset())
     return true;
 
@@ -2785,17 +2785,17 @@ bool NGBlockLayoutAlgorithm::NeedsAbortOnBfcBlockOffsetChange() const {
          ConstraintSpace().ExpectedBfcBlockOffset();
 }
 
-base::Optional<LayoutUnit>
+absl::optional<LayoutUnit>
 NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
     const NGMarginStrut& end_margin_strut) {
   if (!Node().IsQuirkyAndFillsViewport())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!Style().LogicalHeight().IsAuto())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (ConstraintSpace().IsNewFormattingContext())
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK(Node().IsBody());
   LayoutUnit block_end_margin =

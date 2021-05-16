@@ -1523,7 +1523,7 @@ static LayoutUnit ComputeContentSize(
     const MinMaxSizesFloatInput& float_input,
     NGLineBreakerMode mode,
     NGLineBreaker::MaxSizeCache* max_size_cache,
-    base::Optional<LayoutUnit>* max_size_out,
+    absl::optional<LayoutUnit>* max_size_out,
     bool* depends_on_block_constraints_out) {
   const ComputedStyle& style = node.Style();
   LayoutUnit available_inline_size =
@@ -1817,7 +1817,7 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   // break opportunity.
   NGLineBreaker::MaxSizeCache max_size_cache;
   MinMaxSizes sizes;
-  base::Optional<LayoutUnit> max_size;
+  absl::optional<LayoutUnit> max_size;
   bool depends_on_block_constraints = false;
   sizes.min_size =
       ComputeContentSize(*this, container_writing_mode, space, float_input,

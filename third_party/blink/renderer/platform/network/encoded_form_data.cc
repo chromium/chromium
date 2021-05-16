@@ -44,7 +44,7 @@ FormDataElement::FormDataElement(
     const String& filename,
     int64_t file_start,
     int64_t file_length,
-    const base::Optional<base::Time>& expected_file_modification_time)
+    const absl::optional<base::Time>& expected_file_modification_time)
     : type_(kEncodedFile),
       filename_(filename),
       file_start_(file_start),
@@ -179,7 +179,7 @@ void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
 
 void EncodedFormData::AppendFile(
     const String& filename,
-    const base::Optional<base::Time>& expected_modification_time) {
+    const absl::optional<base::Time>& expected_modification_time) {
   elements_.push_back(FormDataElement(filename, 0, BlobData::kToEndOfFile,
                                       expected_modification_time));
 }
@@ -188,7 +188,7 @@ void EncodedFormData::AppendFileRange(
     const String& filename,
     int64_t start,
     int64_t length,
-    const base::Optional<base::Time>& expected_modification_time) {
+    const absl::optional<base::Time>& expected_modification_time) {
   elements_.push_back(
       FormDataElement(filename, start, length, expected_modification_time));
 }

@@ -29,7 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -98,11 +98,11 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
   // True if this is an internal display of the device; it is a static value
   // provided upon construction. This member is only valid for Screen objects
   // obtained via the experimental Window Placement API.
-  const base::Optional<bool> internal_;
+  const absl::optional<bool> internal_;
   // True if this is the primary screen of the operating system; it is a static
   // value provided upon construction. This member is only valid for Screen
   // objects obtained via the experimental Window Placement API.
-  const base::Optional<bool> primary_;
+  const absl::optional<bool> primary_;
   // A web-exposed device id; it is a static value provided upon construction.
   // This member is only valid for Screen objects obtained via the experimental
   // Window Placement API.

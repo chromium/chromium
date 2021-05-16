@@ -76,7 +76,7 @@ static AffineTransform MakeMapBetweenRects(const FloatRect& source,
   return transform;
 }
 
-static base::Optional<AffineTransform> ComputeViewportAdjustmentTransform(
+static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
     const SVGElement* element,
     const FloatRect& target_rect) {
   // If we're referencing an element with percentage units, eg. <rect
@@ -88,7 +88,7 @@ static base::Optional<AffineTransform> ComputeViewportAdjustmentTransform(
   SVGLengthContext length_context(element);
   FloatSize viewport_size;
   if (!length_context.DetermineViewport(viewport_size))
-    return base::nullopt;
+    return absl::nullopt;
   return MakeMapBetweenRects(FloatRect(FloatPoint(), viewport_size),
                              target_rect);
 }

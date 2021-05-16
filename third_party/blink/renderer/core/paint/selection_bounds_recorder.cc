@@ -125,8 +125,8 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
 }
 
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
-  base::Optional<PaintedSelectionBound> start;
-  base::Optional<PaintedSelectionBound> end;
+  absl::optional<PaintedSelectionBound> start;
+  absl::optional<PaintedSelectionBound> end;
   auto selection_rect = PixelSnappedIntRect(selection_rect_);
   const bool is_ltr = IsLtr(text_direction_);
   BoundEdges edges = GetBoundEdges(writing_mode_, is_ltr);

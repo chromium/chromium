@@ -95,7 +95,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
   if (auto* idleness_detector = frame->GetIdlenessDetector())
     idleness_detector->OnWillSendRequest(document_->Fetcher());
   if (auto* interactive_detector = InteractiveDetector::From(*document_))
-    interactive_detector->OnResourceLoadBegin(base::nullopt);
+    interactive_detector->OnResourceLoadBegin(absl::nullopt);
   UpdatePowerModeVote();
 }
 
@@ -276,7 +276,7 @@ void ResourceLoadObserverForFrame::DidFailLoading(
   if (auto* interactive_detector = InteractiveDetector::From(*document_)) {
     // We have not yet recorded load_finish_time. Pass nullopt here; we will
     // call base::TimeTicks::Now() lazily when we need it.
-    interactive_detector->OnResourceLoadEnd(base::nullopt);
+    interactive_detector->OnResourceLoadEnd(absl::nullopt);
   }
   if (IdlenessDetector* idleness_detector = frame->GetIdlenessDetector()) {
     idleness_detector->OnDidLoadResource();

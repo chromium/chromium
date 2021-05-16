@@ -92,7 +92,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                                          ExceptionState&);
   static ScriptPromise CreateImageBitmap(ScriptState*,
                                          ImageBitmapSource*,
-                                         base::Optional<IntRect> crop_rect,
+                                         absl::optional<IntRect> crop_rect,
                                          const ImageBitmapOptions*,
                                          ExceptionState&);
 
@@ -173,7 +173,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                                   public FileReaderLoaderClient {
    public:
     static ImageBitmapLoader* Create(ImageBitmapFactories& factory,
-                                     base::Optional<IntRect> crop_rect,
+                                     absl::optional<IntRect> crop_rect,
                                      const ImageBitmapOptions* options,
                                      ScriptState* script_state) {
       return MakeGarbageCollected<ImageBitmapLoader>(factory, crop_rect,
@@ -181,7 +181,7 @@ class MODULES_EXPORT ImageBitmapFactories final
     }
 
     ImageBitmapLoader(ImageBitmapFactories&,
-                      base::Optional<IntRect> crop_rect,
+                      absl::optional<IntRect> crop_rect,
                       ScriptState*,
                       const ImageBitmapOptions*);
 
@@ -218,7 +218,7 @@ class MODULES_EXPORT ImageBitmapFactories final
     std::unique_ptr<FileReaderLoader> loader_;
     Member<ImageBitmapFactories> factory_;
     Member<ScriptPromiseResolver> resolver_;
-    base::Optional<IntRect> crop_rect_;
+    absl::optional<IntRect> crop_rect_;
     Member<const ImageBitmapOptions> options_;
   };
 
@@ -226,7 +226,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   static ScriptPromise CreateImageBitmapFromBlob(
       ScriptState*,
       ImageBitmapSource*,
-      base::Optional<IntRect> crop_rect,
+      absl::optional<IntRect> crop_rect,
       const ImageBitmapOptions*);
 
   void AddLoader(ImageBitmapLoader*);

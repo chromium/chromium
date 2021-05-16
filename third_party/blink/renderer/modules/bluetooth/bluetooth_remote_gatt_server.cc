@@ -122,7 +122,7 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesCallback(
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     ScriptPromiseResolver* resolver,
     mojom::blink::WebBluetoothResult result,
-    base::Optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
+    absl::optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
         services) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())

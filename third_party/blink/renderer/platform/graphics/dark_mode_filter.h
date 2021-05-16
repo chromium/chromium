@@ -36,7 +36,7 @@ class PLATFORM_EXPORT DarkModeFilter {
   enum class ElementRole { kText, kListSymbol, kBackground, kSVG };
 
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
-  base::Optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
+  absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
       const cc::PaintFlags& flags,
       ElementRole element_role);
 
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT DarkModeFilter {
 
   // Following two members used for color classifications are not thread-safe.
   // TODO(prashant.n): Remove element override concept.
-  base::Optional<ElementRole> role_override_;
+  absl::optional<ElementRole> role_override_;
   // TODO(prashant.n): Move cache out of dark mode filter.
   std::unique_ptr<DarkModeInvertedColorCache> inverted_color_cache_;
 };
@@ -104,7 +104,7 @@ class PLATFORM_EXPORT ScopedDarkModeElementRoleOverride {
 
  private:
   GraphicsContext* graphics_context_;
-  base::Optional<DarkModeFilter::ElementRole> previous_role_override_;
+  absl::optional<DarkModeFilter::ElementRole> previous_role_override_;
 };
 
 }  // namespace blink

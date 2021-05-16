@@ -134,42 +134,42 @@ void InteractiveDetector::StartOrPostponeCITimer(
   }
 }
 
-base::Optional<base::TimeDelta> InteractiveDetector::GetFirstInputDelay()
+absl::optional<base::TimeDelta> InteractiveDetector::GetFirstInputDelay()
     const {
   return page_event_times_.first_input_delay;
 }
 
-WTF::Vector<base::Optional<base::TimeDelta>>
+WTF::Vector<absl::optional<base::TimeDelta>>
 InteractiveDetector::GetFirstInputDelaysAfterBackForwardCacheRestore() const {
   return page_event_times_.first_input_delays_after_back_forward_cache_restore;
 }
 
-base::Optional<base::TimeTicks> InteractiveDetector::GetFirstInputTimestamp()
+absl::optional<base::TimeTicks> InteractiveDetector::GetFirstInputTimestamp()
     const {
   return page_event_times_.first_input_timestamp;
 }
 
-base::Optional<base::TimeDelta> InteractiveDetector::GetLongestInputDelay()
+absl::optional<base::TimeDelta> InteractiveDetector::GetLongestInputDelay()
     const {
   return page_event_times_.longest_input_delay;
 }
 
-base::Optional<base::TimeTicks> InteractiveDetector::GetLongestInputTimestamp()
+absl::optional<base::TimeTicks> InteractiveDetector::GetLongestInputTimestamp()
     const {
   return page_event_times_.longest_input_timestamp;
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 InteractiveDetector::GetFirstInputProcessingTime() const {
   return page_event_times_.first_input_processing_time;
 }
 
-base::Optional<base::TimeTicks> InteractiveDetector::GetFirstScrollTimestamp()
+absl::optional<base::TimeTicks> InteractiveDetector::GetFirstScrollTimestamp()
     const {
   return page_event_times_.first_scroll_timestamp;
 }
 
-base::Optional<base::TimeDelta> InteractiveDetector::GetFirstScrollDelay()
+absl::optional<base::TimeDelta> InteractiveDetector::GetFirstScrollDelay()
     const {
   return page_event_times_.frist_scroll_delay;
 }
@@ -343,7 +343,7 @@ void InteractiveDetector::EndNetworkQuietPeriod(base::TimeTicks current_time) {
 // clock_->NowTicks().
 void InteractiveDetector::UpdateNetworkQuietState(
     double request_count,
-    base::Optional<base::TimeTicks> opt_current_time) {
+    absl::optional<base::TimeTicks> opt_current_time) {
   if (request_count <= kNetworkQuietMaximumConnections &&
       active_network_quiet_window_start_.is_null()) {
     // Not using `value_or(clock_->NowTicks())` here because arguments to
@@ -360,7 +360,7 @@ void InteractiveDetector::UpdateNetworkQuietState(
 }
 
 void InteractiveDetector::OnResourceLoadBegin(
-    base::Optional<base::TimeTicks> load_begin_time) {
+    absl::optional<base::TimeTicks> load_begin_time) {
   if (!GetSupplementable())
     return;
   if (!interactive_time_.is_null())
@@ -373,7 +373,7 @@ void InteractiveDetector::OnResourceLoadBegin(
 // The optional load_finish_time, if provided, saves us a call to
 // clock_->NowTicks.
 void InteractiveDetector::OnResourceLoadEnd(
-    base::Optional<base::TimeTicks> load_finish_time) {
+    absl::optional<base::TimeTicks> load_finish_time) {
   if (!GetSupplementable())
     return;
   if (!interactive_time_.is_null())
@@ -679,7 +679,7 @@ void InteractiveDetector::OnRestoredFromBackForwardCache() {
   // Allocate the last element with 0, which indicates that the first input
   // after this navigation doesn't happen yet.
   page_event_times_.first_input_delays_after_back_forward_cache_restore
-      .push_back(base::nullopt);
+      .push_back(absl::nullopt);
 }
 
 }  // namespace blink

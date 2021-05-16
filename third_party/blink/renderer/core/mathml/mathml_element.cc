@@ -150,22 +150,22 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
   Element::ParseAttribute(param);
 }
 
-base::Optional<bool> MathMLElement::BooleanAttribute(
+absl::optional<bool> MathMLElement::BooleanAttribute(
     const QualifiedName& name) const {
   const AtomicString& value = FastGetAttribute(name);
   if (EqualIgnoringASCIICase(value, "true"))
     return true;
   if (EqualIgnoringASCIICase(value, "false"))
     return false;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<Length> MathMLElement::AddMathLengthToComputedStyle(
+absl::optional<Length> MathMLElement::AddMathLengthToComputedStyle(
     const CSSToLengthConversionData& conversion_data,
     const QualifiedName& attr_name,
     AllowPercentages allow_percentages) {
   if (!FastHasAttribute(attr_name))
-    return base::nullopt;
+    return absl::nullopt;
   auto value = FastGetAttribute(attr_name);
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
@@ -173,7 +173,7 @@ base::Optional<Length> MathMLElement::AddMathLengthToComputedStyle(
   if (!parsed_value || parsed_value->IsCalculated() ||
       (parsed_value->IsPercentage() &&
        (!value.EndsWith('%') || allow_percentages == AllowPercentages::kNo)))
-    return base::nullopt;
+    return absl::nullopt;
   return parsed_value->ConvertToLength(conversion_data);
 }
 

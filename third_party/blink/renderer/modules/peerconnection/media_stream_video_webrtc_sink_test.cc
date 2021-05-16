@@ -26,7 +26,7 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
     // no valid format, using the track will cause a crash.
   }
 
-  void SetVideoTrack(const base::Optional<bool>& noise_reduction) {
+  void SetVideoTrack(const absl::optional<bool>& noise_reduction) {
     registry_.Init();
     registry_.AddVideoTrack("test video track",
                             blink::VideoTrackAdapterSettings(), noise_reduction,

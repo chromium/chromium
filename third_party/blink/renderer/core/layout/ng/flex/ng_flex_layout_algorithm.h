@@ -79,7 +79,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const FlexItem&,
       const NGBoxFragment&,
       LayoutUnit block_offset,
-      base::Optional<LayoutUnit>* fallback_baseline);
+      absl::optional<LayoutUnit>* fallback_baseline);
 
   const bool is_column_;
   const bool is_horizontal_flow_;

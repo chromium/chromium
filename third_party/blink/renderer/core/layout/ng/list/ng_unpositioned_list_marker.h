@@ -57,10 +57,10 @@ class CORE_EXPORT NGUnpositionedListMarker final {
 
   // Returns the baseline that the list-marker should place itself along.
   //
-  // |base::nullopt| indicates that the child |content| does not have a baseline
+  // |absl::nullopt| indicates that the child |content| does not have a baseline
   // to align to, and that caller should try next child, or use the
   // |AddToBoxWithoutLineBoxes()| method.
-  base::Optional<LayoutUnit> ContentAlignmentBaseline(
+  absl::optional<LayoutUnit> ContentAlignmentBaseline(
       const NGConstraintSpace&,
       FontBaseline,
       const NGPhysicalFragment& content) const;

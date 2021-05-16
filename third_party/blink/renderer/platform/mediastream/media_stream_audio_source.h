@@ -122,9 +122,9 @@ class PLATFORM_EXPORT MediaStreamAudioSource
 
   // Returns the audio processing properties associated to this source if any,
   // or nullopt otherwise.
-  virtual base::Optional<blink::AudioProcessingProperties>
+  virtual absl::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  protected:

@@ -1837,7 +1837,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   if (is_new_auto) {
     CalculateAndAdjustAutoDirectionality(this);
   } else {
-    base::Optional<TextDirection> text_direction;
+    absl::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;
     } else if (EqualIgnoringASCIICase(params.new_value, "rtl")) {

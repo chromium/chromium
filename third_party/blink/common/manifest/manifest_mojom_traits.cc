@@ -16,10 +16,10 @@
 namespace mojo {
 namespace {
 
-// A wrapper around base::Optional<std::u16string> so a custom StructTraits
+// A wrapper around absl::optional<std::u16string> so a custom StructTraits
 // specialization can enforce maximum string length.
 struct TruncatedString16 {
-  base::Optional<std::u16string> string;
+  absl::optional<std::u16string> string;
 };
 
 // This function should be kept in sync with IsHostValidForUrlHandler in
@@ -205,7 +205,7 @@ bool StructTraits<blink::mojom::ManifestRelatedApplicationDataView,
     return false;
   out->platform = std::move(string.string);
 
-  base::Optional<GURL> url;
+  absl::optional<GURL> url;
   if (!data.ReadUrl(&url))
     return false;
   out->url = std::move(url).value_or(GURL());

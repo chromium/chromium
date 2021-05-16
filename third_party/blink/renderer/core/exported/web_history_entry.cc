@@ -54,9 +54,9 @@ namespace blink {
 
 namespace {
 
-WebVector<base::Optional<std::u16string>> ToOptionalString16Vector(
+WebVector<absl::optional<std::u16string>> ToOptionalString16Vector(
     const WebVector<WebString>& input,
-    WebVector<base::Optional<std::u16string>> output) {
+    WebVector<absl::optional<std::u16string>> output) {
   output.reserve(output.size() + input.size());
   for (const auto& i : input)
     output.emplace_back(WebString::ToOptionalString16(i));
@@ -124,7 +124,7 @@ void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
   WebVector<WebString> document_state(state.document_state.size());
   std::transform(state.document_state.begin(), state.document_state.end(),
                  document_state.begin(),
-                 [](const base::Optional<std::u16string>& s) {
+                 [](const absl::optional<std::u16string>& s) {
                    return WebString::FromUTF16(s);
                  });
   item.SetDocumentState(document_state);

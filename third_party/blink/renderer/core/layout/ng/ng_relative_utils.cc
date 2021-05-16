@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -26,21 +26,21 @@ LogicalOffset ComputeRelativeOffset(
 
   // Helper function to correctly resolve insets.
   auto ResolveInset = [](const Length& length,
-                         LayoutUnit size) -> base::Optional<LayoutUnit> {
+                         LayoutUnit size) -> absl::optional<LayoutUnit> {
     if (length.IsAuto())
-      return base::nullopt;
+      return absl::nullopt;
     if (length.IsPercentOrCalc() && size == kIndefiniteSize)
-      return base::nullopt;
+      return absl::nullopt;
     return MinimumValueForLength(length, size);
   };
 
-  base::Optional<LayoutUnit> left =
+  absl::optional<LayoutUnit> left =
       ResolveInset(child_style.Left(), physical_size.width);
-  base::Optional<LayoutUnit> right =
+  absl::optional<LayoutUnit> right =
       ResolveInset(child_style.Right(), physical_size.width);
-  base::Optional<LayoutUnit> top =
+  absl::optional<LayoutUnit> top =
       ResolveInset(child_style.Top(), physical_size.height);
-  base::Optional<LayoutUnit> bottom =
+  absl::optional<LayoutUnit> bottom =
       ResolveInset(child_style.Bottom(), physical_size.height);
 
   // Common case optimization.

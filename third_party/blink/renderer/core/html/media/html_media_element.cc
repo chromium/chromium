@@ -1914,7 +1914,7 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
           current_src_after_redirects_ == current_src_
               ? ResourceRequest::RedirectStatus::kNoRedirect
               : ResourceRequest::RedirectStatus::kFollowedRedirect,
-          current_src_after_redirects_, /* devtools_id= */ base::nullopt,
+          current_src_after_redirects_, /* devtools_id= */ absl::nullopt,
           ReportingDisposition::kReport,
           GetDocument().Loader()->GetContentSecurityNotifier());
     }
@@ -2554,7 +2554,7 @@ ScriptPromise HTMLMediaElement::playForBindings(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
   play_promise_resolvers_.push_back(resolver);
 
-  base::Optional<DOMExceptionCode> code = Play();
+  absl::optional<DOMExceptionCode> code = Play();
   if (code) {
     DCHECK(!play_promise_resolvers_.IsEmpty());
     play_promise_resolvers_.pop_back();
@@ -2580,10 +2580,10 @@ ScriptPromise HTMLMediaElement::playForBindings(ScriptState* script_state) {
   return promise;
 }
 
-base::Optional<DOMExceptionCode> HTMLMediaElement::Play() {
+absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
   DVLOG(2) << "play(" << *this << ")";
 
-  base::Optional<DOMExceptionCode> exception_code =
+  absl::optional<DOMExceptionCode> exception_code =
       autoplay_policy_->RequestPlay();
 
   if (exception_code == DOMExceptionCode::kNotAllowedError) {
@@ -2591,7 +2591,7 @@ base::Optional<DOMExceptionCode> HTMLMediaElement::Play() {
     // Call playInternal to handle scheduling the promise resolution.
     if (!paused_) {
       PlayInternal();
-      return base::nullopt;
+      return absl::nullopt;
     }
     return exception_code;
   }
@@ -2605,7 +2605,7 @@ base::Optional<DOMExceptionCode> HTMLMediaElement::Play() {
 
   PlayInternal();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void HTMLMediaElement::PlayInternal() {

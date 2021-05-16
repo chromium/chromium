@@ -68,7 +68,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::MatchUniqueNameLookupTable(
   if (!IsFontUniqueNameLookupReadyForSyncLookup())
     return nullptr;
 
-  base::Optional<FontTableMatcher::MatchResult> match_result =
+  absl::optional<FontTableMatcher::MatchResult> match_result =
       font_table_matcher_->MatchName(font_unique_name.Utf8());
   if (!match_result)
     return nullptr;

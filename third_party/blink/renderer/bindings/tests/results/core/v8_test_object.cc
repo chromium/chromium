@@ -1331,7 +1331,7 @@ static void BooleanOrNullAttributeAttributeGetter(const v8::FunctionCallbackInfo
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  base::Optional<bool> cpp_value(impl->booleanOrNullAttribute());
+  absl::optional<bool> cpp_value(impl->booleanOrNullAttribute());
 
   if (!cpp_value.has_value()) {
     V8SetReturnValueNull(info);
@@ -1356,7 +1356,7 @@ static void BooleanOrNullAttributeAttributeSetter(
   bool is_null = IsUndefinedOrNull(v8_value);
 
   // Prepare the value to be set.
-  base::Optional<bool> cpp_value{ is_null ? base::nullopt : base::Optional<bool>(NativeValueTraits<IDLBoolean>::NativeValue(info.GetIsolate(), v8_value, exception_state)) };
+  absl::optional<bool> cpp_value{ is_null ? absl::nullopt : absl::optional<bool>(NativeValueTraits<IDLBoolean>::NativeValue(info.GetIsolate(), v8_value, exception_state)) };
   if (exception_state.HadException())
     return;
 
@@ -1394,7 +1394,7 @@ static void LongOrNullAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  base::Optional<int32_t> cpp_value(impl->longOrNullAttribute());
+  absl::optional<int32_t> cpp_value(impl->longOrNullAttribute());
 
   if (!cpp_value.has_value()) {
     V8SetReturnValueNull(info);
@@ -1419,7 +1419,7 @@ static void LongOrNullAttributeAttributeSetter(
   bool is_null = IsUndefinedOrNull(v8_value);
 
   // Prepare the value to be set.
-  base::Optional<int32_t> cpp_value{ is_null ? base::nullopt : base::Optional<int32_t>(NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8_value, exception_state)) };
+  absl::optional<int32_t> cpp_value{ is_null ? absl::nullopt : absl::optional<int32_t>(NativeValueTraits<IDLLong>::NativeValue(info.GetIsolate(), v8_value, exception_state)) };
   if (exception_state.HadException())
     return;
 
@@ -5225,7 +5225,7 @@ static void VoidMethodNullableSequenceLongArgMethod(const v8::FunctionCallbackIn
     return;
   }
 
-  base::Optional<Vector<int32_t>> long_sequence_arg;
+  absl::optional<Vector<int32_t>> long_sequence_arg;
   if (!info[0]->IsNullOrUndefined()) {
     long_sequence_arg = NativeValueTraits<IDLSequence<IDLLong>>::NativeValue(info.GetIsolate(), info[0], exception_state);
     if (exception_state.HadException())
@@ -5280,7 +5280,7 @@ static void VoidMethodTestInterfaceEmptyFrozenArrayMethodMethod(const v8::Functi
 static void NullableLongMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestObject* impl = V8TestObject::ToImpl(info.Holder());
 
-  base::Optional<int32_t> result = impl->nullableLongMethod();
+  absl::optional<int32_t> result = impl->nullableLongMethod();
   if (!result)
     V8SetReturnValueNull(info);
   else
@@ -5302,7 +5302,7 @@ static void NullableTestInterfaceMethodMethod(const v8::FunctionCallbackInfo<v8:
 static void NullableLongSequenceMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestObject* impl = V8TestObject::ToImpl(info.Holder());
 
-  base::Optional<Vector<int32_t>> result = impl->nullableLongSequenceMethod();
+  absl::optional<Vector<int32_t>> result = impl->nullableLongSequenceMethod();
   if (!result)
     V8SetReturnValueNull(info);
   else

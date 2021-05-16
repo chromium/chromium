@@ -56,16 +56,16 @@ CSSMathMax* CSSMathMax::Create(CSSNumericValueVector values) {
                      final_type);
 }
 
-base::Optional<CSSNumericSumValue> CSSMathMax::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSMathMax::SumValue() const {
   auto cur_max = NumericValues()[0]->SumValue();
   if (!cur_max || cur_max->terms.size() != 1)
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
     if (!child_sum || child_sum->terms.size() != 1 ||
         child_sum->terms[0].units != cur_max->terms[0].units)
-      return base::nullopt;
+      return absl::nullopt;
 
     if (child_sum->terms[0].value > cur_max->terms[0].value)
       cur_max = child_sum;

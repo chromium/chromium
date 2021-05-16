@@ -31,11 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_ERROR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_ERROR_H_
 
-#include "base/optional.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url.h"
 
 namespace blink {
@@ -94,10 +94,10 @@ struct WebURLError {
   bool has_copy_in_cache() const { return has_copy_in_cache_; }
   bool is_web_security_violation() const { return is_web_security_violation_; }
   const WebURL& url() const { return url_; }
-  const base::Optional<network::CorsErrorStatus> cors_error_status() const {
+  const absl::optional<network::CorsErrorStatus> cors_error_status() const {
     return cors_error_status_;
   }
-  const base::Optional<network::mojom::BlockedByResponseReason>
+  const absl::optional<network::mojom::BlockedByResponseReason>
   blocked_by_response_reason() const {
     return blocked_by_response_reason_;
   }
@@ -129,14 +129,14 @@ struct WebURLError {
   WebURL url_;
 
   // Optional CORS error details.
-  base::Optional<network::CorsErrorStatus> cors_error_status_;
+  absl::optional<network::CorsErrorStatus> cors_error_status_;
 
   // True if the initiator of this request should be collapsed.
   bool should_collapse_initiator_ = false;
 
   // More detailed reason for failing the response with
   // ERR_net::ERR_BLOCKED_BY_RESPONSE |error_code|.
-  base::Optional<network::mojom::BlockedByResponseReason>
+  absl::optional<network::mojom::BlockedByResponseReason>
       blocked_by_response_reason_;
 
   // More detailed reason for failing the response with

@@ -2033,7 +2033,7 @@ ImageData* BaseRenderingContext2D::createImageData(
     ImageData* image_data,
     ExceptionState& exception_state) const {
   return ImageData::ValidateAndCreate(
-      image_data->Size().Width(), image_data->Size().Height(), base::nullopt,
+      image_data->Size().Width(), image_data->Size().Height(), absl::nullopt,
       image_data->getSettings(), exception_state,
       ImageData::Context2DErrorMode);
 }
@@ -2043,7 +2043,7 @@ ImageData* BaseRenderingContext2D::createImageData(
     int sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
-  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), base::nullopt,
+  return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
                                       image_data_settings, exception_state,
                                       ImageData::Context2DErrorMode);
 }
@@ -2120,7 +2120,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
       ImageData::GetImageDataStorageFormat(
           image_data_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
-    return ImageData::ValidateAndCreate(sw, sh, base::nullopt,
+    return ImageData::ValidateAndCreate(sw, sh, absl::nullopt,
                                         image_data_settings, exception_state,
                                         ImageData::Context2DErrorMode);
   }

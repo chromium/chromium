@@ -1116,7 +1116,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (auto* html_frame_owner_element =
           DynamicTo<HTMLFrameOwnerElement>(GetElement())) {
     if (Frame* child_frame = html_frame_owner_element->ContentFrame()) {
-      base::Optional<base::UnguessableToken> child_token =
+      absl::optional<base::UnguessableToken> child_token =
           child_frame->GetEmbeddingToken();
       if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
         ui::AXTreeID child_tree_id =
@@ -3170,7 +3170,7 @@ bool AXObject::ElementsFromAttribute(Element* from,
   // element references set via the IDL, or computed from the content attribute.
   TokenVectorFromAttribute(from, ids, attribute);
 
-  base::Optional<HeapVector<Member<Element>>> attr_associated_elements =
+  absl::optional<HeapVector<Member<Element>>> attr_associated_elements =
       from->GetElementArrayAttribute(attribute);
   if (!attr_associated_elements)
     return false;
@@ -3260,7 +3260,7 @@ AXObject* AXObject::PreviousOnLine() const {
   return nullptr;
 }
 
-base::Optional<const DocumentMarker::MarkerType>
+absl::optional<const DocumentMarker::MarkerType>
 AXObject::GetAriaSpellingOrGrammarMarker() const {
   AtomicString aria_invalid_value;
   const AncestorsIterator iter = std::find_if(
@@ -3272,12 +3272,12 @@ AXObject::GetAriaSpellingOrGrammarMarker() const {
       });
 
   if (iter == UnignoredAncestorsEnd())
-    return base::nullopt;
+    return absl::nullopt;
   if (EqualIgnoringASCIICase(aria_invalid_value, "spelling"))
     return DocumentMarker::kSpelling;
   if (EqualIgnoringASCIICase(aria_invalid_value, "grammar"))
     return DocumentMarker::kGrammar;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AXObject::TextCharacterOffsets(Vector<int>&) const {}

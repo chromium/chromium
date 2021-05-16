@@ -9,7 +9,7 @@
 namespace blink {
 
 HttpsState CalculateHttpsState(const SecurityOrigin* security_origin,
-                               base::Optional<HttpsState> parent_https_state) {
+                               absl::optional<HttpsState> parent_https_state) {
   if (security_origin && security_origin->Protocol() == "https")
     return HttpsState::kModern;
 

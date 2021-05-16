@@ -52,9 +52,9 @@ class GeometryMapperTest : public testing::Test,
   PropertyTreeStateOrAlias ancestor_state = PropertyTreeState::Root();
   FloatRect input_rect;
   FloatClipRect expected_visual_rect;
-  base::Optional<FloatClipRect> expected_visual_rect_expanded_for_animation;
+  absl::optional<FloatClipRect> expected_visual_rect_expanded_for_animation;
   FloatSize expected_translation_2d;
-  base::Optional<TransformationMatrix> expected_transform;
+  absl::optional<TransformationMatrix> expected_transform;
   FloatClipRect expected_clip;
   bool expected_clip_has_transform_animation = false;
   FloatRect expected_transformed_rect;

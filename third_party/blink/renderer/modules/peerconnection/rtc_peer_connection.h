@@ -234,7 +234,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   String connectionState() const;
 
-  base::Optional<bool> canTrickleIceCandidates() const;
+  absl::optional<bool> canTrickleIceCandidates() const;
 
   void restartIce();
 
@@ -346,7 +346,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   void DidGenerateICECandidate(RTCIceCandidatePlatform*) override;
   void DidFailICECandidate(const String& address,
-                           base::Optional<uint16_t> port,
+                           absl::optional<uint16_t> port,
                            const String& host_candidate,
                            const String& url,
                            int error_code,
@@ -398,11 +398,11 @@ class MODULES_EXPORT RTCPeerConnection final
   // SLD/SRD Helper method, public for testing.
   // This function returns a value that indicates if complex SDP is being used
   // and whether a format is explicitly specified. If the SDP is not complex or
-  // it could not be parsed, base::nullopt is returned.
+  // it could not be parsed, absl::nullopt is returned.
   // When "Complex" SDP (i.e., SDP that has multiple tracks) is used without
   // explicitly specifying the SDP format, there may be errors if the
   // application assumes a format that differs from the actual default format.
-  base::Optional<ComplexSdpCategory> CheckForComplexSdp(
+  absl::optional<ComplexSdpCategory> CheckForComplexSdp(
       const ParsedSessionDescription&) const;
 
   const CallSetupStateTracker& call_setup_state_tracker() const;

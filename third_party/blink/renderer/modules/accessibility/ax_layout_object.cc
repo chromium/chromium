@@ -543,7 +543,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // FIXME(aboxhall): may need to move?
-  base::Optional<String> alt_text = GetCSSAltText(node);
+  absl::optional<String> alt_text = GetCSSAltText(node);
   if (alt_text)
     return alt_text->IsEmpty();
 
@@ -1027,7 +1027,7 @@ String AXLayoutObject::TextAlternative(bool recursive,
                                        AXRelatedObjectVector* related_objects,
                                        NameSources* name_sources) const {
   if (layout_object_) {
-    base::Optional<String> text_alternative = GetCSSAltText(GetNode());
+    absl::optional<String> text_alternative = GetCSSAltText(GetNode());
     bool found_text_alternative = false;
     if (text_alternative) {
       if (name_sources) {

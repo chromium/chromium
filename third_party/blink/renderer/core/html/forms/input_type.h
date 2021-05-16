@@ -95,7 +95,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual ValueMode GetValueMode() const = 0;
 
   virtual double ValueAsDate() const;
-  virtual void SetValueAsDate(const base::Optional<base::Time>&,
+  virtual void SetValueAsDate(const absl::optional<base::Time>&,
                               ExceptionState&) const;
   virtual double ValueAsDouble() const;
   virtual void SetValueAsDouble(double,

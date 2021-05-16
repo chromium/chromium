@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/optional.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -55,8 +55,8 @@ SerializeLangClientHint(const std::string& raw_language_list);
 // Language hints will only be kept if |permit_lang_hints| is true;
 // UA-related ones if |permit_ua_hints| is.
 BLINK_COMMON_EXPORT
-base::Optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
-    base::Optional<std::vector<network::mojom::WebClientHintsType>> in,
+absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
+    absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
     bool permit_lang_hints,
     bool permit_ua_hints);
 

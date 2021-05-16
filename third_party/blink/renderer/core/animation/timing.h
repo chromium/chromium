@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
@@ -139,7 +139,7 @@ struct CORE_EXPORT Timing {
   double iteration_start = 0;
   double iteration_count = 1;
   // If empty, indicates the 'auto' value.
-  base::Optional<AnimationTimeDelta> iteration_duration = base::nullopt;
+  absl::optional<AnimationTimeDelta> iteration_duration = absl::nullopt;
 
   PlaybackDirection direction = PlaybackDirection::NORMAL;
   scoped_refptr<TimingFunction> timing_function =
@@ -152,12 +152,12 @@ struct CORE_EXPORT Timing {
   struct CalculatedTiming {
     DISALLOW_NEW();
     Phase phase = Phase::kPhaseNone;
-    base::Optional<double> current_iteration = 0;
-    base::Optional<double> progress = 0;
+    absl::optional<double> current_iteration = 0;
+    absl::optional<double> progress = 0;
     bool is_current = false;
     bool is_in_effect = false;
     bool is_in_play = false;
-    base::Optional<AnimationTimeDelta> local_time;
+    absl::optional<AnimationTimeDelta> local_time;
     AnimationTimeDelta time_to_forwards_effect_change =
         AnimationTimeDelta::Max();
     AnimationTimeDelta time_to_reverse_effect_change =
@@ -166,11 +166,11 @@ struct CORE_EXPORT Timing {
   };
 
   CalculatedTiming CalculateTimings(
-      base::Optional<AnimationTimeDelta> local_time,
-      base::Optional<Phase> timeline_phase,
+      absl::optional<AnimationTimeDelta> local_time,
+      absl::optional<Phase> timeline_phase,
       AnimationDirection animation_direction,
       bool is_keyframe_effect,
-      base::Optional<double> playback_rate) const;
+      absl::optional<double> playback_rate) const;
   ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
                                           bool is_keyframe_effect) const;
 };

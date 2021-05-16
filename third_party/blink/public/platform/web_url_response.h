@@ -33,11 +33,11 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/http/http_response_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -227,7 +227,7 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetSecurityStyle(SecurityStyle);
 
   BLINK_PLATFORM_EXPORT void SetSecurityDetails(const WebSecurityDetails&);
-  BLINK_PLATFORM_EXPORT base::Optional<WebSecurityDetails>
+  BLINK_PLATFORM_EXPORT absl::optional<WebSecurityDetails>
   SecurityDetailsForTesting();
 
   BLINK_PLATFORM_EXPORT void SetAsyncRevalidationRequested(bool);
@@ -330,7 +330,7 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetWasInPrefetchCache(bool);
   BLINK_PLATFORM_EXPORT void SetWasCookieInRequest(bool);
   BLINK_PLATFORM_EXPORT void SetRecursivePrefetchToken(
-      const base::Optional<base::UnguessableToken>&);
+      const absl::optional<base::UnguessableToken>&);
 
   // Whether this resource is from a MHTML archive.
   BLINK_PLATFORM_EXPORT bool FromArchive() const;
@@ -344,8 +344,8 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetWebBundleURL(const WebURL&);
 
   BLINK_PLATFORM_EXPORT void SetAuthChallengeInfo(
-      const base::Optional<net::AuthChallengeInfo>&);
-  BLINK_PLATFORM_EXPORT const base::Optional<net::AuthChallengeInfo>&
+      const absl::optional<net::AuthChallengeInfo>&);
+  BLINK_PLATFORM_EXPORT const absl::optional<net::AuthChallengeInfo>&
   AuthChallengeInfo() const;
 
 #if INSIDE_BLINK

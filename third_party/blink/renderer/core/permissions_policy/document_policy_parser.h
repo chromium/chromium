@@ -18,12 +18,12 @@ class CORE_EXPORT DocumentPolicyParser {
  public:
   // Parse document policy header and 'policy' attribute on iframe to
   // DocumentPolicy::FeatureState.
-  static base::Optional<DocumentPolicy::ParsedDocumentPolicy> Parse(
+  static absl::optional<DocumentPolicy::ParsedDocumentPolicy> Parse(
       const String& policy_string,
       PolicyParserMessageBuffer&);
 
   // Internal parsing method for testing.
-  static base::Optional<DocumentPolicy::ParsedDocumentPolicy> ParseInternal(
+  static absl::optional<DocumentPolicy::ParsedDocumentPolicy> ParseInternal(
       const String& policy_string,
       const DocumentPolicyNameFeatureMap& name_feature_map,
       const DocumentPolicyFeatureInfoMap& feature_info_map,

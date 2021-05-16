@@ -285,7 +285,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(sync_client_);
 
-  base::Optional<viz::CompositorFrame> submit_frame;
+  absl::optional<viz::CompositorFrame> submit_frame;
   gfx::Size child_size = in_software_draw_
                              ? sw_viewport_for_current_draw_.size()
                              : frame.size_in_pixels();
@@ -359,13 +359,13 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
         embed_render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
     shared_quad_state->SetAll(
         child_transform, gfx::Rect(child_size), gfx::Rect(child_size),
-        gfx::MaskFilterInfo(), base::nullopt /* clip_rect */,
+        gfx::MaskFilterInfo(), absl::nullopt /* clip_rect */,
         are_contents_opaque /* are_contents_opaque */, 1.f /* opacity */,
         SkBlendMode::kSrcOver, 0 /* sorting_context_id */);
     surface_quad->SetNew(
         shared_quad_state, gfx::Rect(child_size), gfx::Rect(child_size),
         viz::SurfaceRange(
-            base::nullopt,
+            absl::nullopt,
             viz::SurfaceId(kChildFrameSinkId, child_local_surface_id_)),
         SK_ColorWHITE, false /* stretch_content_to_fill_bounds */);
 

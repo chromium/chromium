@@ -25,7 +25,7 @@ class CullRectTest : public testing::Test {
   void ApplyTransforms(CullRect& cull_rect,
                        const TransformPaintPropertyNode& source,
                        const TransformPaintPropertyNode& destination,
-                       const base::Optional<CullRect>& old_cull_rect) {
+                       const absl::optional<CullRect>& old_cull_rect) {
     PropertyTreeState source_state(source, c0(), e0());
     PropertyTreeState destination_state(destination, c0(), e0());
     cull_rect.ApplyPaintProperties(PropertyTreeState::Root(), source_state,
@@ -344,9 +344,9 @@ TEST_F(CullRectTest, ApplyPaintPropertiesSameState) {
   PropertyTreeState state(*transform, *clip, e0());
 
   CullRect cull_rect1(IntRect(1, 1, 50, 50));
-  cull_rect1.ApplyPaintProperties(state, state, state, base::nullopt);
+  cull_rect1.ApplyPaintProperties(state, state, state, absl::nullopt);
   EXPECT_EQ(IntRect(1, 1, 50, 50), cull_rect1.Rect());
-  cull_rect1.ApplyPaintProperties(root, state, state, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, state, state, absl::nullopt);
   EXPECT_EQ(IntRect(1, 1, 50, 50), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
@@ -359,9 +359,9 @@ TEST_F(CullRectTest, ApplyPaintPropertiesSameState) {
   EXPECT_EQ(cull_rect1, cull_rect2);
 
   CullRect infinite = CullRect::Infinite();
-  infinite.ApplyPaintProperties(state, state, state, base::nullopt);
+  infinite.ApplyPaintProperties(state, state, state, absl::nullopt);
   EXPECT_TRUE(infinite.IsInfinite());
-  infinite.ApplyPaintProperties(root, state, state, base::nullopt);
+  infinite.ApplyPaintProperties(root, state, state, absl::nullopt);
   EXPECT_TRUE(infinite.IsInfinite());
 }
 
@@ -374,11 +374,11 @@ TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
   PropertyTreeState state2(*t2, c0(), e0());
 
   CullRect cull_rect1(IntRect(1, 1, 50, 50));
-  cull_rect1.ApplyPaintProperties(root, state1, state2, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, state1, state2, absl::nullopt);
   EXPECT_EQ(IntRect(-9, -19, 50, 50), cull_rect1.Rect());
 
   CullRect cull_rect2(IntRect(1, 1, 50, 50));
-  cull_rect2.ApplyPaintProperties(root, root, state2, base::nullopt);
+  cull_rect2.ApplyPaintProperties(root, root, state2, absl::nullopt);
   EXPECT_EQ(IntRect(-10, -21, 50, 50), cull_rect2.Rect());
 
   CullRect old_cull_rect = cull_rect2;
@@ -389,7 +389,7 @@ TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
   EXPECT_EQ(cull_rect2, cull_rect3);
 
   CullRect infinite = CullRect::Infinite();
-  infinite.ApplyPaintProperties(root, root, state2, base::nullopt);
+  infinite.ApplyPaintProperties(root, root, state2, absl::nullopt);
   EXPECT_TRUE(infinite.IsInfinite());
 }
 
@@ -406,7 +406,7 @@ TEST_F(CullRectTest, ApplyTransformsSingleScrollWholeScrollingContents) {
   // Same as ApplyScrollTranslationWholeScrollingContents.
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state,
-                                  base::nullopt);
+                                  absl::nullopt);
   EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
@@ -419,7 +419,7 @@ TEST_F(CullRectTest, ApplyTransformsSingleScrollWholeScrollingContents) {
 
   CullRect cull_rect3 = CullRect::Infinite();
   cull_rect3.ApplyPaintProperties(state1, state1, scroll_translation_state,
-                                  base::nullopt);
+                                  absl::nullopt);
   EXPECT_EQ(IntRect(0, 0, 2000, 2000), cull_rect3.Rect());
 }
 
@@ -432,7 +432,7 @@ TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
   PropertyTreeState state1(*t1, c0(), e0());
   PropertyTreeState state2(*t2, c0(), e0());
   CullRect cull_rect1(IntRect(0, 0, 50, 200));
-  cull_rect1.ApplyPaintProperties(root, state1, state2, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, state1, state2, absl::nullopt);
   EXPECT_EQ(IntRect(-50, -100, 100, 400), cull_rect1.Rect());
 }
 
@@ -450,7 +450,7 @@ TEST_F(CullRectTest, ApplyTransformsSingleScrollPartialScrollingContents) {
   // Same as ApplyScrollTranslationPartialScrollingContents.
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state,
-                                  base::nullopt);
+                                  absl::nullopt);
   EXPECT_EQ(IntRect(0, 1010, 7050, 6990), cull_rect1.Rect());
 
   CullRect old_cull_rect(IntRect(0, 1100, 7050, 6900));
@@ -469,7 +469,7 @@ TEST_F(CullRectTest, ApplyTransformsSingleScrollPartialScrollingContents) {
 
   CullRect cull_rect4 = CullRect::Infinite();
   cull_rect4.ApplyPaintProperties(state1, state1, scroll_translation_state,
-                                  base::nullopt);
+                                  absl::nullopt);
   // This result differs from the first result in height (7050 vs 7060)
   // because it's not clipped by the infinite input cull rect.
   EXPECT_EQ(IntRect(0, 1010, 7060, 6990), cull_rect4.Rect());
@@ -495,7 +495,7 @@ TEST_F(CullRectTest, ApplyTransformsEscapingScroll) {
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   // Ignore the current cull rect, and apply paint properties from root to
   // state1 on infinite cull rect instead.
-  cull_rect1.ApplyPaintProperties(root, state2, state1, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, state2, state1, absl::nullopt);
   EXPECT_EQ(IntRect(110, 220, 333, 444), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
@@ -506,7 +506,7 @@ TEST_F(CullRectTest, ApplyTransformsEscapingScroll) {
   EXPECT_EQ(cull_rect1, cull_rect2);
 
   CullRect cull_rect3 = CullRect::Infinite();
-  cull_rect3.ApplyPaintProperties(root, state2, state1, base::nullopt);
+  cull_rect3.ApplyPaintProperties(root, state2, state1, absl::nullopt);
   EXPECT_EQ(cull_rect1, cull_rect3);
 }
 
@@ -532,7 +532,7 @@ TEST_F(CullRectTest, ApplyTransformsSmallScrollContentsAfterBigScrollContents) {
 
   CullRect cull_rect1(IntRect(0, 0, 50, 100));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state2,
-                                  base::nullopt);
+                                  absl::nullopt);
   EXPECT_EQ(IntRect(0, 0, 200, 400), cull_rect1.Rect());
 
   CullRect old_cull_rect = cull_rect1;
@@ -566,7 +566,7 @@ TEST_F(CullRectTest, ApplyTransformsBigScrollContentsAfterSmallScrollContents) {
 
   CullRect cull_rect1(IntRect(0, 0, 100, 200));
   cull_rect1.ApplyPaintProperties(state1, state1, scroll_translation_state2,
-                                  base::nullopt);
+                                  absl::nullopt);
   // After the first scroll: (-3960, -3965, 8070, 8180)
   // After t2: (-3980, -3975, 8070, 8180)
   // Clipped by the container rect of the second scroll: (20, 10, 50, 100)
@@ -599,7 +599,7 @@ TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(IntRect(0, 0, 300, 500));
-  cull_rect1.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, root, state1, absl::nullopt);
   // Clip by c1, then transformed by t1.
   EXPECT_EQ(IntRect(90, 180, 200, 300), cull_rect1.Rect());
 
@@ -610,11 +610,11 @@ TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
   EXPECT_EQ(cull_rect1, cull_rect2);
 
   CullRect cull_rect3 = CullRect::Infinite();
-  cull_rect3.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect3.ApplyPaintProperties(root, root, state1, absl::nullopt);
   EXPECT_EQ(IntRect(90, 180, 300, 400), cull_rect3.Rect());
 
   CullRect cull_rect4;
-  cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect4.ApplyPaintProperties(root, root, state1, absl::nullopt);
   EXPECT_EQ(IntRect(), cull_rect4.Rect());
 }
 
@@ -629,7 +629,7 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(IntRect(0, 0, 300, 500));
-  cull_rect1.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect1.ApplyPaintProperties(root, root, state1, absl::nullopt);
   // The result in NonCompositedTransformUnderClip expanded by 2000 (scaled by
   // maximum of 1/2 and 1/3).
   EXPECT_EQ(IntRect(-1955, -1940, 4100, 4100), cull_rect1.Rect());
@@ -648,11 +648,11 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   EXPECT_EQ(cull_rect1, cull_rect3);
 
   CullRect cull_rect4 = CullRect::Infinite();
-  cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect4.ApplyPaintProperties(root, root, state1, absl::nullopt);
   EXPECT_EQ(IntRect(-1955, -1940, 4150, 4134), cull_rect4.Rect());
 
   CullRect cull_rect5;
-  cull_rect4.ApplyPaintProperties(root, root, state1, base::nullopt);
+  cull_rect4.ApplyPaintProperties(root, root, state1, absl::nullopt);
   EXPECT_EQ(IntRect(), cull_rect5.Rect());
 }
 
@@ -677,24 +677,24 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   CullRect cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(
       root, root, PropertyTreeState(*scroll_translation, *c2a, e0()),
-      base::nullopt);
+      absl::nullopt);
   EXPECT_EQ(IntRect(0, 300, 100, 100), cull_rect.Rect());
   // Composited case. The cull rect should be expanded.
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2a, e0()),
-                                 base::nullopt);
+                                 absl::nullopt);
   EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
 
   // c2b is out of the expansion are of the composited scroll.
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(
       root, root, PropertyTreeState(*scroll_translation, *c2b, e0()),
-      base::nullopt);
+      absl::nullopt);
   EXPECT_EQ(IntRect(), cull_rect.Rect());
   // Composited case. The cull rect should be still empty.
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2b, e0()),
-                                 base::nullopt);
+                                 absl::nullopt);
   EXPECT_EQ(IntRect(), cull_rect.Rect());
 }
 

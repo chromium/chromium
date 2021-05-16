@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT RTCRtpReceiverPlatform {
                         const Vector<webrtc::NonStandardGroupId>&) = 0;
   virtual std::unique_ptr<webrtc::RtpParameters> GetParameters() const = 0;
   virtual void SetJitterBufferMinimumDelay(
-      base::Optional<double> delay_seconds) = 0;
+      absl::optional<double> delay_seconds) = 0;
   virtual RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
       const {
     return nullptr;

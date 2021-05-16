@@ -1189,10 +1189,10 @@ TEST_F(AnimationAnimationTestNoCompositing, SetEffectUnlimitsAnimation) {
 TEST_F(AnimationAnimationTestNoCompositing, EmptyAnimationsDontUpdateEffects) {
   animation = timeline->Play(nullptr);
   animation->Update(kTimingUpdateOnDemand);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 
   SimulateFrame(1234);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 }
 
 TEST_F(AnimationAnimationTestNoCompositing, AnimationsDisassociateFromEffect) {
@@ -1249,7 +1249,7 @@ TEST_F(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
 
   // Still in effect if fillmode = forward|both.
   SimulateFrame(3000);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 
   // Reset to start of animation. Next effect at the end of the start delay.
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -1271,7 +1271,7 @@ TEST_F(AnimationAnimationTestNoCompositing, AnimationsReturnTimeToNextEffect) {
   // Effectively a paused animation.
   animation->setPlaybackRate(0);
   animation->Update(kTimingUpdateOnDemand);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 
   // Reversed animation from end time. Next effect after end delay.
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -1303,7 +1303,7 @@ TEST_F(AnimationAnimationTestNoCompositing, TimeToNextEffectWhenPaused) {
   SimulateAwaitReady();
   EXPECT_FALSE(animation->pending());
   animation->Update(kTimingUpdateOnDemand);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 }
 
 TEST_F(AnimationAnimationTestNoCompositing,
@@ -1324,7 +1324,7 @@ TEST_F(AnimationAnimationTestNoCompositing,
   animation->Update(kTimingUpdateOnDemand);
   // This frame will fire the finish event event though no start time has been
   // received from the compositor yet, as cancel() nukes start times.
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 }
 
 TEST_F(AnimationAnimationTestNoCompositing,
@@ -1343,7 +1343,7 @@ TEST_F(AnimationAnimationTestNoCompositing,
   EXPECT_EQ("idle", animation->playState());
   EXPECT_FALSE(animation->pending());
   animation->Update(kTimingUpdateOnDemand);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 }
 
 TEST_F(AnimationAnimationTestNoCompositing,
@@ -1355,7 +1355,7 @@ TEST_F(AnimationAnimationTestNoCompositing,
   EXPECT_EQ("idle", animation->playState());
   EXPECT_FALSE(animation->pending());
   animation->Update(kTimingUpdateOnDemand);
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 }
 
 TEST_F(AnimationAnimationTestNoCompositing, AttachedAnimations) {
@@ -1492,7 +1492,7 @@ TEST_F(AnimationAnimationTestNoCompositing, SetPlaybackRateAfterFinish) {
   animation->finish();
   animation->Update(kTimingUpdateOnDemand);
   EXPECT_EQ("finished", animation->playState());
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 
   // Reversing a finished animation marks the animation as outdated. Required
   // to recompute the time to next interval.
@@ -1511,7 +1511,7 @@ TEST_F(AnimationAnimationTestNoCompositing, UpdatePlaybackRateAfterFinish) {
   animation->finish();
   animation->Update(kTimingUpdateOnDemand);
   EXPECT_EQ("finished", animation->playState());
-  EXPECT_EQ(base::nullopt, animation->TimeToEffectChange());
+  EXPECT_EQ(absl::nullopt, animation->TimeToEffectChange());
 
   // Reversing a finished animation marks the animation as outdated. Required
   // to recompute the time to next interval. The pending playback rate is

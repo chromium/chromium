@@ -9,11 +9,11 @@
 
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "media/base/audio_point.h"
 #include "media/base/audio_processing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -138,15 +138,15 @@ struct PLATFORM_EXPORT AdaptiveGainController2Properties {
 PLATFORM_EXPORT void ConfigAutomaticGainControl(
     bool agc_enabled,
     bool experimental_agc_enabled,
-    base::Optional<AdaptiveGainController2Properties> agc2_properties,
-    base::Optional<double> compression_gain_db,
+    absl::optional<AdaptiveGainController2Properties> agc2_properties,
+    absl::optional<double> compression_gain_db,
     AudioProcessing::Config& apm_config);
 
 PLATFORM_EXPORT void PopulateApmConfig(
     AudioProcessing::Config* apm_config,
     const AudioProcessingProperties& properties,
-    const base::Optional<std::string>& audio_processing_platform_config_json,
-    base::Optional<double>* gain_control_compression_gain_db);
+    const absl::optional<std::string>& audio_processing_platform_config_json,
+    absl::optional<double>* gain_control_compression_gain_db);
 
 }  // namespace blink
 

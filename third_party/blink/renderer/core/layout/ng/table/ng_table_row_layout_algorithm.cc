@@ -24,7 +24,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
 
   auto CreateCellConstraintSpace = [this, &table_data](
                                        NGBlockNode cell, wtf_size_t cell_index,
-                                       base::Optional<LayoutUnit> row_baseline,
+                                       absl::optional<LayoutUnit> row_baseline,
                                        bool row_is_collapsed,
                                        wtf_size_t* cell_location_start_column) {
     const wtf_size_t start_column = table_data.cells[cell_index].start_column;
@@ -92,7 +92,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
       wtf_size_t cell_location_start_column;
 
       NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
-          cell, cell_index, base::nullopt, row.is_collapsed,
+          cell, cell_index, absl::nullopt, row.is_collapsed,
           &cell_location_start_column);
       scoped_refptr<const NGLayoutResult> layout_result =
           cell.Layout(cell_constraint_space);

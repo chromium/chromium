@@ -9,13 +9,13 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -86,7 +86,7 @@ class SyncLoadContext::SignalHelper final {
   base::WaitableEvent* redirect_or_response_event_;
   base::WaitableEvent* abort_event_;
   base::WaitableEventWatcher abort_watcher_;
-  base::Optional<base::OneShotTimer> timeout_timer_;
+  absl::optional<base::OneShotTimer> timeout_timer_;
 };
 
 // static

@@ -63,7 +63,7 @@ class SetSinkIdResolver : public ScriptPromiseResolver {
  private:
   void DoSetSinkId();
 
-  void OnSetSinkIdComplete(base::Optional<WebSetSinkIdError> error);
+  void OnSetSinkIdComplete(absl::optional<WebSetSinkIdError> error);
 
   Member<HTMLMediaElement> element_;
   String sink_id_;
@@ -133,7 +133,7 @@ void SetSinkIdResolver::DoSetSinkId() {
 }
 
 void SetSinkIdResolver::OnSetSinkIdComplete(
-    base::Optional<WebSetSinkIdError> error) {
+    absl::optional<WebSetSinkIdError> error) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 

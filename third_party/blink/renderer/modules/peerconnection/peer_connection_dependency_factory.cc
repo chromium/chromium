@@ -207,7 +207,7 @@ class PeerConnectionStaticDeps {
   rtc::Thread* worker_thread_ = nullptr;
   rtc::Thread* network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
-  base::Optional<base::Thread> chrome_worker_thread_;
+  absl::optional<base::Thread> chrome_worker_thread_;
   base::Thread chrome_network_thread_;
 
   // WaitableEvents for observing thread initialization.

@@ -62,7 +62,7 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
   virtual void NegotiationNeeded() = 0;
   virtual void DidGenerateICECandidate(RTCIceCandidatePlatform*) = 0;
   virtual void DidFailICECandidate(const String& address,
-                                   base::Optional<uint16_t> port,
+                                   absl::optional<uint16_t> port,
                                    const String& host_candidate,
                                    const String& url,
                                    int error_code,

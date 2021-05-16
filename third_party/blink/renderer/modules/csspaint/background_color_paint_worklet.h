@@ -33,7 +33,7 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,
-                             const base::Optional<double>& progress);
+                             const absl::optional<double>& progress);
 
   // Get the animated colors and offsets from the animation keyframes. Moreover,
   // we obtain the progress of the animation from the main thread, such that if
@@ -45,7 +45,7 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   static bool GetBGColorPaintWorkletParams(Node* node,
                                            Vector<Color>* animated_colors,
                                            Vector<double>* offsets,
-                                           base::Optional<double>* progress);
+                                           absl::optional<double>* progress);
 
   // Shared code that is being called in multiple places.
   static Animation* GetAnimationIfCompositable(const Element* element);

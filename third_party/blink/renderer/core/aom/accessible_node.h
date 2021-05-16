@@ -140,14 +140,14 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
                           HeapVector<Member<Element>>&);
 
   // Returns the given boolean property.
-  base::Optional<bool> GetProperty(AOMBooleanProperty) const;
+  absl::optional<bool> GetProperty(AOMBooleanProperty) const;
 
   // Returns the value of the given property if the
   // Element has an AccessibleNode. Sets |isNull| if the property and
   // attribute are not present.
-  static base::Optional<int32_t> GetProperty(Element*, AOMIntProperty);
-  static base::Optional<uint32_t> GetProperty(Element*, AOMUIntProperty);
-  static base::Optional<float> GetProperty(Element*, AOMFloatProperty);
+  static absl::optional<int32_t> GetProperty(Element*, AOMIntProperty);
+  static absl::optional<uint32_t> GetProperty(Element*, AOMUIntProperty);
+  static absl::optional<float> GetProperty(Element*, AOMFloatProperty);
 
   // Does the attribute value match one of the ARIA undefined patterns for
   // boolean and token properties?
@@ -197,26 +197,26 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AccessibleNode* activeDescendant() const;
   void setActiveDescendant(AccessibleNode*);
 
-  base::Optional<bool> atomic() const;
-  void setAtomic(base::Optional<bool>);
+  absl::optional<bool> atomic() const;
+  void setAtomic(absl::optional<bool>);
 
   AtomicString autocomplete() const;
   void setAutocomplete(const AtomicString&);
 
-  base::Optional<bool> busy() const;
-  void setBusy(base::Optional<bool>);
+  absl::optional<bool> busy() const;
+  void setBusy(absl::optional<bool>);
 
   AtomicString checked() const;
   void setChecked(const AtomicString&);
 
-  base::Optional<int32_t> colCount() const;
-  void setColCount(base::Optional<int32_t>);
+  absl::optional<int32_t> colCount() const;
+  void setColCount(absl::optional<int32_t>);
 
-  base::Optional<uint32_t> colIndex() const;
-  void setColIndex(base::Optional<uint32_t>);
+  absl::optional<uint32_t> colIndex() const;
+  void setColIndex(absl::optional<uint32_t>);
 
-  base::Optional<uint32_t> colSpan() const;
-  void setColSpan(base::Optional<uint32_t>);
+  absl::optional<uint32_t> colSpan() const;
+  void setColSpan(absl::optional<uint32_t>);
 
   AccessibleNodeList* controls() const;
   void setControls(AccessibleNodeList*);
@@ -233,14 +233,14 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AccessibleNodeList* details() const;
   void setDetails(AccessibleNodeList*);
 
-  base::Optional<bool> disabled() const;
-  void setDisabled(base::Optional<bool>);
+  absl::optional<bool> disabled() const;
+  void setDisabled(absl::optional<bool>);
 
   AccessibleNode* errorMessage() const;
   void setErrorMessage(AccessibleNode*);
 
-  base::Optional<bool> expanded() const;
-  void setExpanded(base::Optional<bool>);
+  absl::optional<bool> expanded() const;
+  void setExpanded(absl::optional<bool>);
 
   AccessibleNodeList* flowTo() const;
   void setFlowTo(AccessibleNodeList*);
@@ -248,8 +248,8 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AtomicString hasPopUp() const;
   void setHasPopUp(const AtomicString&);
 
-  base::Optional<bool> hidden() const;
-  void setHidden(base::Optional<bool>);
+  absl::optional<bool> hidden() const;
+  void setHidden(absl::optional<bool>);
 
   AtomicString invalid() const;
   void setInvalid(const AtomicString&);
@@ -263,20 +263,20 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AccessibleNodeList* labeledBy();
   void setLabeledBy(AccessibleNodeList*);
 
-  base::Optional<uint32_t> level() const;
-  void setLevel(base::Optional<uint32_t>);
+  absl::optional<uint32_t> level() const;
+  void setLevel(absl::optional<uint32_t>);
 
   AtomicString live() const;
   void setLive(const AtomicString&);
 
-  base::Optional<bool> modal() const;
-  void setModal(base::Optional<bool>);
+  absl::optional<bool> modal() const;
+  void setModal(absl::optional<bool>);
 
-  base::Optional<bool> multiline() const;
-  void setMultiline(base::Optional<bool>);
+  absl::optional<bool> multiline() const;
+  void setMultiline(absl::optional<bool>);
 
-  base::Optional<bool> multiselectable() const;
-  void setMultiselectable(base::Optional<bool>);
+  absl::optional<bool> multiselectable() const;
+  void setMultiselectable(absl::optional<bool>);
 
   AtomicString orientation() const;
   void setOrientation(const AtomicString&);
@@ -287,20 +287,20 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AtomicString placeholder() const;
   void setPlaceholder(const AtomicString&);
 
-  base::Optional<uint32_t> posInSet() const;
-  void setPosInSet(base::Optional<uint32_t>);
+  absl::optional<uint32_t> posInSet() const;
+  void setPosInSet(absl::optional<uint32_t>);
 
   AtomicString pressed() const;
   void setPressed(const AtomicString&);
 
-  base::Optional<bool> readOnly() const;
-  void setReadOnly(base::Optional<bool>);
+  absl::optional<bool> readOnly() const;
+  void setReadOnly(absl::optional<bool>);
 
   AtomicString relevant() const;
   void setRelevant(const AtomicString&);
 
-  base::Optional<bool> required() const;
-  void setRequired(base::Optional<bool>);
+  absl::optional<bool> required() const;
+  void setRequired(absl::optional<bool>);
 
   AtomicString role() const;
   void setRole(const AtomicString&);
@@ -308,32 +308,32 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   AtomicString roleDescription() const;
   void setRoleDescription(const AtomicString&);
 
-  base::Optional<int32_t> rowCount() const;
-  void setRowCount(base::Optional<int32_t>);
+  absl::optional<int32_t> rowCount() const;
+  void setRowCount(absl::optional<int32_t>);
 
-  base::Optional<uint32_t> rowIndex() const;
-  void setRowIndex(base::Optional<uint32_t>);
+  absl::optional<uint32_t> rowIndex() const;
+  void setRowIndex(absl::optional<uint32_t>);
 
-  base::Optional<uint32_t> rowSpan() const;
-  void setRowSpan(base::Optional<uint32_t>);
+  absl::optional<uint32_t> rowSpan() const;
+  void setRowSpan(absl::optional<uint32_t>);
 
-  base::Optional<bool> selected() const;
-  void setSelected(base::Optional<bool>);
+  absl::optional<bool> selected() const;
+  void setSelected(absl::optional<bool>);
 
-  base::Optional<int32_t> setSize() const;
-  void setSetSize(base::Optional<int32_t>);
+  absl::optional<int32_t> setSize() const;
+  void setSetSize(absl::optional<int32_t>);
 
   AtomicString sort() const;
   void setSort(const AtomicString&);
 
-  base::Optional<float> valueMax() const;
-  void setValueMax(base::Optional<float>);
+  absl::optional<float> valueMax() const;
+  void setValueMax(absl::optional<float>);
 
-  base::Optional<float> valueMin() const;
-  void setValueMin(base::Optional<float>);
+  absl::optional<float> valueMin() const;
+  void setValueMin(absl::optional<float>);
 
-  base::Optional<float> valueNow() const;
-  void setValueNow(base::Optional<float>);
+  absl::optional<float> valueNow() const;
+  void setValueNow(absl::optional<float>);
 
   AtomicString valueText() const;
   void setValueText(const AtomicString&);
@@ -373,10 +373,10 @@ class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   void SetStringProperty(AOMStringProperty, const AtomicString&);
   void SetRelationProperty(AOMRelationProperty, AccessibleNode*);
   void SetRelationListProperty(AOMRelationListProperty, AccessibleNodeList*);
-  void SetBooleanProperty(AOMBooleanProperty, base::Optional<bool> value);
-  void SetIntProperty(AOMIntProperty, base::Optional<int32_t> value);
-  void SetUIntProperty(AOMUIntProperty, base::Optional<uint32_t> value);
-  void SetFloatProperty(AOMFloatProperty, base::Optional<float> value);
+  void SetBooleanProperty(AOMBooleanProperty, absl::optional<bool> value);
+  void SetIntProperty(AOMIntProperty, absl::optional<int32_t> value);
+  void SetUIntProperty(AOMUIntProperty, absl::optional<uint32_t> value);
+  void SetFloatProperty(AOMFloatProperty, absl::optional<float> value);
   void NotifyAttributeChanged(const blink::QualifiedName&);
   AXObjectCache* GetAXObjectCache();
 

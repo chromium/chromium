@@ -23,7 +23,7 @@ struct WebImpression {
 
   // Optional origin that will receive all conversion measurement reports
   // associated with this impression. Declared by the impression tag.
-  base::Optional<WebSecurityOrigin> reporting_origin;
+  absl::optional<WebSecurityOrigin> reporting_origin;
 
   // Data that will be sent in conversion reports to identify this impression.
   // Declared by the impression tag.
@@ -31,7 +31,7 @@ struct WebImpression {
 
   // Optional expiry specifying the amount of time this impression can convert.
   // Declared by the impression tag.
-  base::Optional<base::TimeDelta> expiry;
+  absl::optional<base::TimeDelta> expiry;
 
   // Priority for the attribution source. Declared by the impression tag.
   // This is 64 bits to allow timestamps to be used as a prioirty.

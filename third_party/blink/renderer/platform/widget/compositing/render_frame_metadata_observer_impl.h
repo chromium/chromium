@@ -76,7 +76,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   bool report_all_frame_submissions_for_testing_enabled_ = false;
 
   uint32_t last_frame_token_ = 0;
-  base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
+  absl::optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   // These are destroyed when BindToCurrentThread() is called.
   mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>

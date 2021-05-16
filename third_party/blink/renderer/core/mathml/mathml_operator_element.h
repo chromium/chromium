@@ -49,7 +49,7 @@ class CORE_EXPORT MathMLOperatorElement final : public MathMLElement {
   void CheckFormAfterSiblingChange();
 
  private:
-  base::Optional<OperatorContent> operator_content_;
+  absl::optional<OperatorContent> operator_content_;
   // Operator properties calculated from dictionary and attributes.
   // It contains dirty flags to allow efficient dictionary updating.
   struct Properties {

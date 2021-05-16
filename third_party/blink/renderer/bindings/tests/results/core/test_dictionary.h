@@ -131,18 +131,18 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   void setDoubleOrNullOrDoubleOrNullSequenceMember(const DoubleOrDoubleOrNullSequence&);
 
   bool hasDoubleOrNullRecordMember() const { return has_double_or_null_record_member_; }
-  const Vector<std::pair<String, base::Optional<double>>>& doubleOrNullRecordMember() const {
+  const Vector<std::pair<String, absl::optional<double>>>& doubleOrNullRecordMember() const {
     DCHECK(has_double_or_null_record_member_);
     return double_or_null_record_member_;
   }
-  void setDoubleOrNullRecordMember(const Vector<std::pair<String, base::Optional<double>>>&);
+  void setDoubleOrNullRecordMember(const Vector<std::pair<String, absl::optional<double>>>&);
 
   bool hasDoubleOrNullSequenceMember() const { return has_double_or_null_sequence_member_; }
-  const Vector<base::Optional<double>>& doubleOrNullSequenceMember() const {
+  const Vector<absl::optional<double>>& doubleOrNullSequenceMember() const {
     DCHECK(has_double_or_null_sequence_member_);
     return double_or_null_sequence_member_;
   }
-  void setDoubleOrNullSequenceMember(const Vector<base::Optional<double>>&);
+  void setDoubleOrNullSequenceMember(const Vector<absl::optional<double>>&);
 
   bool hasDoubleOrStringMember() const { return !double_or_string_member_.IsNull(); }
   const DoubleOrString& doubleOrStringMember() const {
@@ -580,8 +580,8 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   String dom_string_treat_null_as_empty_string_member_;
   double double_or_null_member_;
   DoubleOrDoubleOrNullSequence double_or_null_or_double_or_null_sequence_member_;
-  Vector<std::pair<String, base::Optional<double>>> double_or_null_record_member_;
-  Vector<base::Optional<double>> double_or_null_sequence_member_;
+  Vector<std::pair<String, absl::optional<double>>> double_or_null_record_member_;
+  Vector<absl::optional<double>> double_or_null_sequence_member_;
   DoubleOrString double_or_string_member_;
   HeapVector<DoubleOrString> double_or_string_sequence_member_;
   Member<Element> element_or_null_member_;

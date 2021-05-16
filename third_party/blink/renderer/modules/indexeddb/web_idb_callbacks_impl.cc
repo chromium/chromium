@@ -121,7 +121,7 @@ void WebIDBCallbacksImpl::SuccessCursor(
     mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
     std::unique_ptr<IDBKey> key,
     std::unique_ptr<IDBKey> primary_key,
-    base::Optional<std::unique_ptr<IDBValue>> optional_value) {
+    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
   if (!request_)
     return;
 
@@ -248,7 +248,7 @@ void WebIDBCallbacksImpl::Success() {
 void WebIDBCallbacksImpl::SuccessCursorContinue(
     std::unique_ptr<IDBKey> key,
     std::unique_ptr<IDBKey> primary_key,
-    base::Optional<std::unique_ptr<IDBValue>> optional_value) {
+    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
   if (!request_)
     return;
 

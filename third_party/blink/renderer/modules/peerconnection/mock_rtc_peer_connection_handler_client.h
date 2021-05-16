@@ -30,7 +30,7 @@ class MockRTCPeerConnectionHandlerClient
                void(RTCIceCandidatePlatform* candidate));
   MOCK_METHOD6(DidFailICECandidate,
                void(const String& address,
-                    base::Optional<uint16_t> port,
+                    absl::optional<uint16_t> port,
                     const String& host_candidate,
                     const String& url,
                     int error_code,
@@ -88,7 +88,7 @@ class MockRTCPeerConnectionHandlerClient
       Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed);
 
   const std::string& candidate_sdp() const { return candidate_sdp_; }
-  const base::Optional<uint16_t>& candidate_mlineindex() const {
+  const absl::optional<uint16_t>& candidate_mlineindex() const {
     return candidate_mline_index_;
   }
   const std::string& candidate_mid() const { return candidate_mid_; }
@@ -97,7 +97,7 @@ class MockRTCPeerConnectionHandlerClient
  private:
   String remote_stream_id_;
   std::string candidate_sdp_;
-  base::Optional<uint16_t> candidate_mline_index_;
+  absl::optional<uint16_t> candidate_mline_index_;
   std::string candidate_mid_;
 
   DISALLOW_COPY_AND_ASSIGN(MockRTCPeerConnectionHandlerClient);

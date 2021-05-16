@@ -15,13 +15,13 @@ RtpTransceiverState::RtpTransceiverState(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
     scoped_refptr<webrtc::RtpTransceiverInterface> webrtc_transceiver,
-    base::Optional<blink::RtpSenderState> sender_state,
-    base::Optional<blink::RtpReceiverState> receiver_state,
-    base::Optional<std::string> mid,
+    absl::optional<blink::RtpSenderState> sender_state,
+    absl::optional<blink::RtpReceiverState> receiver_state,
+    absl::optional<std::string> mid,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    base::Optional<webrtc::RtpTransceiverDirection> current_direction,
-    base::Optional<webrtc::RtpTransceiverDirection> fired_direction,
+    absl::optional<webrtc::RtpTransceiverDirection> current_direction,
+    absl::optional<webrtc::RtpTransceiverDirection> fired_direction,
     WTF::Vector<webrtc::RtpHeaderExtensionCapability>
         header_extensions_negotiated)
     : main_task_runner_(std::move(main_task_runner)),
@@ -123,7 +123,7 @@ RtpTransceiverState::webrtc_transceiver() const {
   return webrtc_transceiver_;
 }
 
-const base::Optional<blink::RtpSenderState>& RtpTransceiverState::sender_state()
+const absl::optional<blink::RtpSenderState>& RtpTransceiverState::sender_state()
     const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return sender_state_;
@@ -131,12 +131,12 @@ const base::Optional<blink::RtpSenderState>& RtpTransceiverState::sender_state()
 
 blink::RtpSenderState RtpTransceiverState::MoveSenderState() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::Optional<blink::RtpSenderState> temp(base::nullopt);
+  absl::optional<blink::RtpSenderState> temp(absl::nullopt);
   sender_state_.swap(temp);
   return *std::move(temp);
 }
 
-const base::Optional<blink::RtpReceiverState>&
+const absl::optional<blink::RtpReceiverState>&
 RtpTransceiverState::receiver_state() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return receiver_state_;
@@ -144,17 +144,17 @@ RtpTransceiverState::receiver_state() const {
 
 blink::RtpReceiverState RtpTransceiverState::MoveReceiverState() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::Optional<blink::RtpReceiverState> temp(base::nullopt);
+  absl::optional<blink::RtpReceiverState> temp(absl::nullopt);
   receiver_state_.swap(temp);
   return *std::move(temp);
 }
 
-base::Optional<std::string> RtpTransceiverState::mid() const {
+absl::optional<std::string> RtpTransceiverState::mid() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return mid_;
 }
 
-void RtpTransceiverState::set_mid(base::Optional<std::string> mid) {
+void RtpTransceiverState::set_mid(absl::optional<std::string> mid) {
   mid_ = mid;
 }
 
@@ -174,13 +174,13 @@ void RtpTransceiverState::set_direction(
   direction_ = direction;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RtpTransceiverState::current_direction() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return current_direction_;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RtpTransceiverState::fired_direction() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return fired_direction_;
@@ -246,7 +246,7 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
     receiver_->set_state(state_.MoveReceiverState());
   }
 
-  void set_mid(base::Optional<std::string> mid) { state_.set_mid(mid); }
+  void set_mid(absl::optional<std::string> mid) { state_.set_mid(mid); }
 
   blink::RTCRtpSenderImpl* content_sender() {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -400,9 +400,9 @@ String RTCRtpTransceiverImpl::Mid() const {
   return mid ? String::FromUTF8(*mid) : String();
 }
 
-void RTCRtpTransceiverImpl::SetMid(base::Optional<String> mid) {
-  internal_->set_mid(mid ? base::Optional<std::string>(mid->Utf8())
-                         : base::nullopt);
+void RTCRtpTransceiverImpl::SetMid(absl::optional<String> mid) {
+  internal_->set_mid(mid ? absl::optional<std::string>(mid->Utf8())
+                         : absl::nullopt);
 }
 
 std::unique_ptr<blink::RTCRtpSenderPlatform> RTCRtpTransceiverImpl::Sender()
@@ -428,12 +428,12 @@ webrtc::RTCError RTCRtpTransceiverImpl::SetDirection(
   return internal_->SetDirection(direction);
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpTransceiverImpl::CurrentDirection() const {
   return internal_->state().current_direction();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpTransceiverImpl::FiredDirection() const {
   return internal_->state().fired_direction();
 }

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRELOAD_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRELOAD_HELPER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {
@@ -72,7 +72,7 @@ class PreloadHelper final {
                                     const ViewportDescription*,
                                     SingleModuleClient*);
 
-  static base::Optional<ResourceType> GetResourceTypeFromAsAttribute(
+  static absl::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);
 };
 

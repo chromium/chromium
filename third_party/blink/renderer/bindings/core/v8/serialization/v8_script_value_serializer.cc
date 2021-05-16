@@ -799,7 +799,7 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
     // hence always have this hardcoded 1.
     WriteUint32(1);
     WriteUint64(file->size());
-    base::Optional<base::Time> last_modified =
+    absl::optional<base::Time> last_modified =
         file->LastModifiedTimeForSerialization();
     WriteDouble(last_modified ? last_modified->ToJsTimeIgnoringNull()
                               : std::numeric_limits<double>::quiet_NaN());

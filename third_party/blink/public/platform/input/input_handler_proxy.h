@@ -307,12 +307,12 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   // within a single touch sequence. This value will get returned for
   // subsequent TouchMove events to allow passive events not to block
   // scrolling.
-  base::Optional<EventDisposition> touch_result_;
+  absl::optional<EventDisposition> touch_result_;
 
   // The result of the last mouse wheel event in a wheel phase sequence. This
   // value is used to determine whether the next wheel scroll is blocked on the
   // Main thread or not.
-  base::Optional<EventDisposition> mouse_wheel_result_;
+  absl::optional<EventDisposition> mouse_wheel_result_;
 
   // Used to record overscroll notifications while an event is being
   // dispatched.  If the event causes overscroll, the overscroll metadata is
@@ -323,7 +323,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
 
   // Set only when the compositor input handler is handling a gesture. Tells
   // which source device is currently performing a gesture based scroll.
-  base::Optional<blink::WebGestureDevice> currently_active_gesture_device_;
+  absl::optional<blink::WebGestureDevice> currently_active_gesture_device_;
 
   // Tracks whether the first scroll update gesture event has been seen after a
   // scroll begin. This is set/reset when scroll gestures are processed in

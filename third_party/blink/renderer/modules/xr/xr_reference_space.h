@@ -29,10 +29,10 @@ class XRReferenceSpace : public XRSpace {
                    device::mojom::blink::XRReferenceSpaceType type);
   ~XRReferenceSpace() override;
 
-  base::Optional<TransformationMatrix> NativeFromViewer(
-      const base::Optional<TransformationMatrix>& mojo_from_viewer) override;
+  absl::optional<TransformationMatrix> NativeFromViewer(
+      const absl::optional<TransformationMatrix>& mojo_from_viewer) override;
 
-  base::Optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() override;
 
   bool IsStationary() const override;
 
@@ -49,7 +49,7 @@ class XRReferenceSpace : public XRSpace {
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(reset, kReset)
 
-  base::Optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
+  absl::optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
       const final;
 
   std::string ToString() const override;

@@ -519,7 +519,7 @@ String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
   return String();
 }
 
-static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
+static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     mojom::blink::RequestContextType context) {
   switch (context) {
     case mojom::blink::RequestContextType::AUDIO:
@@ -580,7 +580,7 @@ static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::LOCATION:
     case mojom::blink::RequestContextType::PLUGIN:
     case mojom::blink::RequestContextType::UNSPECIFIED:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -595,7 +595,7 @@ bool ContentSecurityPolicy::AllowRequest(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) {
-  base::Optional<CSPDirectiveName> type =
+  absl::optional<CSPDirectiveName> type =
       GetDirectiveTypeFromRequestContextType(context);
 
   if (!type)
@@ -910,7 +910,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
 
   // Step 4. Set violation’s status to the HTTP status code for the resource
   // associated with violation’s global object. [spec text]
-  base::Optional<uint16_t> status_code = delegate->GetStatusCode();
+  absl::optional<uint16_t> status_code = delegate->GetStatusCode();
   if (status_code)
     init->setStatusCode(*status_code);
 

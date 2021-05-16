@@ -27,7 +27,7 @@ namespace blink {
 void ThreadedIconLoader::Start(
     ExecutionContext* execution_context,
     const ResourceRequestHead& resource_request,
-    const base::Optional<gfx::Size>& resize_dimensions,
+    const absl::optional<gfx::Size>& resize_dimensions,
     IconCallback callback) {
   DCHECK(!stopped_);
   DCHECK(resource_request.Url().IsValid());

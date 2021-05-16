@@ -125,7 +125,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->referrer = u"https://www.google.com/search?q=dev.chromium.org";
     frame_state->referrer_policy = network::mojom::ReferrerPolicy::kAlways;
     frame_state->target = u"foo";
-    frame_state->state_object = base::nullopt;
+    frame_state->state_object = absl::nullopt;
     frame_state->document_state.push_back(u"1");
     frame_state->document_state.push_back(u"q");
     frame_state->document_state.push_back(u"text");
@@ -142,12 +142,12 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->scroll_anchor_simhash = 12345;
     frame_state->app_history_key = u"abcd";
     frame_state->app_history_id = u"wxyz";
-    frame_state->app_history_state = base::nullopt;
+    frame_state->app_history_state = absl::nullopt;
   }
 
   void PopulateHttpBody(
       ExplodedHttpBody* http_body,
-      std::vector<base::Optional<std::u16string>>* referenced_files) {
+      std::vector<absl::optional<std::u16string>>* referenced_files) {
     http_body->request_body = new network::ResourceRequestBody();
     http_body->request_body->set_identifier(12345);
     http_body->contains_passwords = false;
@@ -169,7 +169,7 @@ class PageStateSerializationTest : public testing::Test {
     if (version < 28) {
       // Older versions didn't cover |initiator_origin| -  we expect that
       // deserialization will set it to the default, null value.
-      frame_state->initiator_origin = base::nullopt;
+      frame_state->initiator_origin = absl::nullopt;
     } else {
       frame_state->initiator_origin =
           url::Origin::Create(GURL("https://initiator.example.com"));

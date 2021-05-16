@@ -167,7 +167,7 @@ void MediaControlsRotateToFullscreenDelegate::OnDeviceOrientationAvailable(
   // zero, even though that's a valid (albeit unlikely) device orientation.
   DeviceOrientationData* data = event->Orientation();
   device_orientation_supported_ =
-      base::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
+      absl::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
                           (data->Beta() != 0.0 || data->Gamma() != 0.0));
 }
 

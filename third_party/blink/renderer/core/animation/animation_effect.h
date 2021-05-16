@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_EFFECT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -87,10 +87,10 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   bool IsCurrent() const { return EnsureCalculated().is_current; }
   bool IsInEffect() const { return EnsureCalculated().is_in_effect; }
   bool IsInPlay() const { return EnsureCalculated().is_in_play; }
-  base::Optional<double> CurrentIteration() const {
+  absl::optional<double> CurrentIteration() const {
     return EnsureCalculated().current_iteration;
   }
-  base::Optional<double> Progress() const {
+  absl::optional<double> Progress() const {
     return EnsureCalculated().progress;
   }
   AnimationTimeDelta TimeToForwardsEffectChange() const {
@@ -99,7 +99,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   AnimationTimeDelta TimeToReverseEffectChange() const {
     return EnsureCalculated().time_to_reverse_effect_change;
   }
-  base::Optional<AnimationTimeDelta> LocalTime() const {
+  absl::optional<AnimationTimeDelta> LocalTime() const {
     return EnsureCalculated().local_time;
   }
 
@@ -136,8 +136,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   // When AnimationEffect receives a new inherited time via updateInheritedTime
   // it will (if necessary) recalculate timings and (if necessary) call
   // updateChildrenAndEffects.
-  void UpdateInheritedTime(base::Optional<AnimationTimeDelta> inherited_time,
-                           base::Optional<TimelinePhase> inherited_phase,
+  void UpdateInheritedTime(absl::optional<AnimationTimeDelta> inherited_time,
+                           absl::optional<TimelinePhase> inherited_phase,
                            TimingUpdateReason) const;
   void Invalidate() const { needs_update_ = true; }
   void InvalidateAndNotifyOwner() const;
@@ -158,7 +158,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<AnimationTimeDelta> local_time,
+      absl::optional<AnimationTimeDelta> local_time,
       AnimationTimeDelta time_to_next_iteration) const = 0;
 
   const Animation* GetAnimation() const;
@@ -170,8 +170,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
 
   mutable Timing::CalculatedTiming calculated_;
   mutable bool needs_update_;
-  mutable base::Optional<AnimationTimeDelta> last_update_time_;
-  mutable base::Optional<Timing::Phase> last_update_phase_;
+  mutable absl::optional<AnimationTimeDelta> last_update_time_;
+  mutable absl::optional<Timing::Phase> last_update_phase_;
   AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
 };

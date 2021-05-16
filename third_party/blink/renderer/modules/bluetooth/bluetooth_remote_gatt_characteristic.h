@@ -115,7 +115,7 @@ class BluetoothRemoteGATTCharacteristic final
 
   void ReadValueCallback(ScriptPromiseResolver*,
                          mojom::blink::WebBluetoothResult,
-                         const base::Optional<Vector<uint8_t>>& value);
+                         const absl::optional<Vector<uint8_t>>& value);
   void WriteValueCallback(ScriptPromiseResolver*,
                           const Vector<uint8_t>& value,
                           mojom::blink::WebBluetoothResult);
@@ -138,7 +138,7 @@ class BluetoothRemoteGATTCharacteristic final
       mojom::blink::WebBluetoothGATTQueryQuantity,
       ScriptPromiseResolver*,
       mojom::blink::WebBluetoothResult,
-      base::Optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
+      absl::optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
           descriptors);
 
   String CreateInvalidCharacteristicErrorMessage();

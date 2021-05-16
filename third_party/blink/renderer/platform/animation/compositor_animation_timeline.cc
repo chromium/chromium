@@ -34,7 +34,7 @@ cc::AnimationTimeline* CompositorAnimationTimeline::GetAnimationTimeline()
 }
 
 void CompositorAnimationTimeline::UpdateCompositorTimeline(
-    base::Optional<CompositorElementId> pending_id,
+    absl::optional<CompositorElementId> pending_id,
     const std::vector<double> scroll_offsets) {
   ToScrollTimeline(animation_timeline_.get())
       ->UpdateScrollerIdAndScrollOffsets(pending_id, scroll_offsets);

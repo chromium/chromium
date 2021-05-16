@@ -142,7 +142,7 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
   }
 
   void SetJitterBufferMinimumDelay(
-      base::Optional<double> delay_seconds) override {}
+      absl::optional<double> delay_seconds) override {}
 
  private:
   const uintptr_t id_;
@@ -229,13 +229,13 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
       webrtc::RtpTransceiverDirection direction) override {
     return internal_->set_direction(direction);
   }
-  base::Optional<webrtc::RtpTransceiverDirection> CurrentDirection()
+  absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<webrtc::RtpTransceiverDirection> FiredDirection()
+  absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
   webrtc::RTCError SetOfferedRtpHeaderExtensions(
       Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override {

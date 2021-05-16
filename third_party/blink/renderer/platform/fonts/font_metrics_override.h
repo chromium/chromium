@@ -5,16 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_OVERRIDE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_OVERRIDE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
 struct FontMetricsOverride {
-  base::Optional<float> ascent_override;
-  base::Optional<float> descent_override;
-  base::Optional<float> line_gap_override;
-  base::Optional<float> advance_override;
-  base::Optional<float> advance_override_vertical_upright;
+  absl::optional<float> ascent_override;
+  absl::optional<float> descent_override;
+  absl::optional<float> line_gap_override;
+  absl::optional<float> advance_override;
+  absl::optional<float> advance_override_vertical_upright;
 };
 
 }  // namespace blink

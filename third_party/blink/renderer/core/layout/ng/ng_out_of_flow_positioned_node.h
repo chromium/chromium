@@ -186,7 +186,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
   const LayoutUnit fragmentainer_consumed_block_size;
   NGContainingBlock<LogicalOffset> containing_block;
   NGContainingBlock<LogicalOffset> fixedpos_containing_block;
-  base::Optional<LogicalRect> containing_block_rect;
+  absl::optional<LogicalRect> containing_block_rect;
 
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
@@ -197,7 +197,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
           NGContainingBlock<LogicalOffset>(),
       NGContainingBlock<LogicalOffset> fixedpos_containing_block =
           NGContainingBlock<LogicalOffset>(),
-      const base::Optional<LogicalRect> containing_block_rect = base::nullopt)
+      const absl::optional<LogicalRect> containing_block_rect = absl::nullopt)
       : box(node.GetLayoutBox()),
         static_position(static_position),
         inline_container(inline_container),

@@ -79,7 +79,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData {
       const PaintLayerScrollableAreaRareData&) = delete;
 
   StickyConstraintsMap sticky_constraints_map_;
-  base::Optional<cc::SnapContainerData> snap_container_data_;
+  absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
   Vector<IntRect> tickmarks_override_;
@@ -245,7 +245,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
    private:
     PaintLayerScrollableArea* scrollable_area_;
-    base::Optional<FreezeScrollbarsScope> freezer_;
+    absl::optional<FreezeScrollbarsScope> freezer_;
   };
 
   // If a DelayScrollOffsetClampScope object is alive, updateAfterLayout() will
@@ -598,14 +598,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 
   const cc::SnapContainerData* GetSnapContainerData() const override;
-  void SetSnapContainerData(base::Optional<cc::SnapContainerData>) override;
+  void SetSnapContainerData(absl::optional<cc::SnapContainerData>) override;
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
   bool SnapContainerDataNeedsUpdate() const override;
   void SetSnapContainerDataNeedsUpdate(bool) override;
   bool NeedsResnap() const override;
   void SetNeedsResnap(bool) override;
 
-  base::Optional<FloatPoint> GetSnapPositionAndSetTarget(
+  absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
 
   void DisposeImpl() override;
@@ -864,7 +864,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   ScrollingBackgroundDisplayItemClient
       scrolling_background_display_item_client_{*this};
   ScrollCornerDisplayItemClient scroll_corner_display_item_client_{*this};
-  base::Optional<HistoryItem::ViewState> pending_view_state_;
+  absl::optional<HistoryItem::ViewState> pending_view_state_;
 };
 
 }  // namespace blink

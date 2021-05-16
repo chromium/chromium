@@ -104,7 +104,7 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   // See https://w3c.github.io/webappsec-csp/#create-violation-for-global.
   // These functions are used to create the violation object.
   virtual std::unique_ptr<SourceLocation> GetSourceLocation() = 0;
-  virtual base::Optional<uint16_t> GetStatusCode() = 0;
+  virtual absl::optional<uint16_t> GetStatusCode() = 0;
   // If the Delegate is not bound to a document, a null string should be
   // returned as the referrer.
   virtual String GetDocumentReferrer() = 0;

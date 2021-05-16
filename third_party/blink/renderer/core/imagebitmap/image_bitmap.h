@@ -39,32 +39,32 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // Expects the ImageElementBase to return/have an SVGImage.
   static ScriptPromise CreateAsync(
       ImageElementBase*,
-      base::Optional<IntRect>,
+      absl::optional<IntRect>,
       ScriptState*,
       const ImageBitmapOptions* = ImageBitmapOptions::Create());
   static sk_sp<SkImage> GetSkImageFromDecoder(std::unique_ptr<ImageDecoder>);
 
   ImageBitmap(ImageElementBase*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(HTMLVideoElement*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(HTMLCanvasElement*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(OffscreenCanvas*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(ImageData*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(ImageBitmap*,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   ImageBitmap(scoped_refptr<StaticBitmapImage>);
   ImageBitmap(scoped_refptr<StaticBitmapImage>,
-              base::Optional<IntRect>,
+              absl::optional<IntRect>,
               const ImageBitmapOptions* = ImageBitmapOptions::Create());
   // This constructor may called by structured-cloning an ImageBitmap.
   // isImageBitmapOriginClean indicates whether the original ImageBitmap is
@@ -108,7 +108,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const override { return Size(); }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  base::Optional<IntRect>,
+                                  absl::optional<IntRect>,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

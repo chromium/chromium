@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
-#include "base/optional.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -25,6 +24,7 @@
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/power_scheduler/power_mode_voter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Don't use except for tracing.
   struct TaskDescriptionForTracing {
     TaskType task_type;
-    base::Optional<MainThreadTaskQueue::QueueType> queue_type;
+    absl::optional<MainThreadTaskQueue::QueueType> queue_type;
 
     // Required in order to wrap in TraceableState.
     constexpr bool operator!=(const TaskDescriptionForTracing& rhs) const {
@@ -162,7 +162,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // start at |initial_virtual_time|.
   MainThreadSchedulerImpl(
       std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-      base::Optional<base::Time> initial_virtual_time);
+      absl::optional<base::Time> initial_virtual_time);
 
   ~MainThreadSchedulerImpl() override;
 
@@ -728,7 +728,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // enabled/disabled state based on current policy. When triggered from a
   // policy update, |previous_policy| should be populated with the pre-update
   // policy.
-  void UpdateStateForAllTaskQueues(base::Optional<Policy> previous_policy);
+  void UpdateStateForAllTaskQueues(absl::optional<Policy> previous_policy);
 
   void UpdateTaskQueueState(
       MainThreadTaskQueue* task_queue,
@@ -768,7 +768,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
-  base::Optional<TaskQueue::QueuePriority>
+  absl::optional<TaskQueue::QueuePriority>
   ComputeCompositorPriorityFromUseCase() const;
 
   static void RunIdleTask(Thread::IdleTask, base::TimeTicks deadline);
@@ -896,7 +896,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         rail_mode_for_tracing;  // Don't use except for tracing.
 
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_hidden;
-    base::Optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
+    absl::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     TraceableState<bool, TracingCategoryName::kTopLevel> renderer_backgrounded;
     TraceableState<bool, TracingCategoryName::kDefault>
         keep_active_fetch_or_worker;
@@ -923,11 +923,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     MainThreadMetricsHelper metrics_helper;
     TraceableState<WebRendererProcessType, TracingCategoryName::kTopLevel>
         process_type;
-    TraceableState<base::Optional<TaskDescriptionForTracing>,
+    TraceableState<absl::optional<TaskDescriptionForTracing>,
                    TracingCategoryName::kInfo>
         task_description_for_tracing;  // Don't use except for tracing.
     TraceableState<
-        base::Optional<base::sequence_manager::TaskQueue::QueuePriority>,
+        absl::optional<base::sequence_manager::TaskQueue::QueuePriority>,
         TracingCategoryName::kInfo>
         task_priority_for_tracing;  // Only used for tracing.
     base::Time initial_virtual_time;

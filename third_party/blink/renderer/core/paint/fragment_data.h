@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_DATA_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -77,9 +77,9 @@ class CORE_EXPORT FragmentData {
   }
   void InvalidateClipPathCache();
 
-  base::Optional<IntRect> ClipPathBoundingBox() const {
+  absl::optional<IntRect> ClipPathBoundingBox() const {
     DCHECK(IsClipPathCacheValid());
-    return rare_data_ ? rare_data_->clip_path_bounding_box : base::nullopt;
+    return rare_data_ ? rare_data_->clip_path_bounding_box : absl::nullopt;
   }
   const RefCountedPath* ClipPathPath() const {
     DCHECK(IsClipPathCacheValid());
@@ -90,7 +90,7 @@ class CORE_EXPORT FragmentData {
   void ClearClipPathCache() {
     if (rare_data_) {
       rare_data_->is_clip_path_cache_valid = true;
-      rare_data_->clip_path_bounding_box = base::nullopt;
+      rare_data_->clip_path_bounding_box = absl::nullopt;
       rare_data_->clip_path_path = nullptr;
     }
   }
@@ -229,7 +229,7 @@ class CORE_EXPORT FragmentData {
     std::unique_ptr<ObjectPaintProperties> paint_properties;
     std::unique_ptr<RefCountedPropertyTreeState> local_border_box_properties;
     bool is_clip_path_cache_valid = false;
-    base::Optional<IntRect> clip_path_bounding_box;
+    absl::optional<IntRect> clip_path_bounding_box;
     scoped_refptr<const RefCountedPath> clip_path_path;
     CullRect cull_rect_;
     CullRect contents_cull_rect_;

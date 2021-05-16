@@ -62,8 +62,8 @@ String ImageDataStorageFormatToName(ImageDataStorageFormat storage_format) {
 
 ImageData* ImageData::ValidateAndCreate(
     unsigned width,
-    base::Optional<unsigned> height,
-    base::Optional<NotShared<DOMArrayBufferView>> data,
+    absl::optional<unsigned> height,
+    absl::optional<NotShared<DOMArrayBufferView>> data,
     const ImageDataSettings* settings,
     ExceptionState& exception_state,
     uint32_t flags) {
@@ -278,7 +278,7 @@ ImageData* ImageData::CreateForTest(const IntSize& size,
 }
 
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
-                                           base::Optional<IntRect> crop_rect,
+                                           absl::optional<IntRect> crop_rect,
                                            const ImageBitmapOptions* options,
                                            ExceptionState& exception_state) {
   if (IsBufferBaseDetached()) {

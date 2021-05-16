@@ -140,13 +140,13 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
                          WTF::Unretained(this), new_capture_params));
 }
 
-base::Optional<media::VideoCaptureFormat>
+absl::optional<media::VideoCaptureFormat>
 MediaStreamVideoCapturerSource::GetCurrentFormat() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return capture_params_.requested_format;
 }
 
-base::Optional<media::VideoCaptureParams>
+absl::optional<media::VideoCaptureParams>
 MediaStreamVideoCapturerSource::GetCurrentCaptureParams() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return capture_params_;

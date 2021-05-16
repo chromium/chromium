@@ -261,7 +261,7 @@ bool AutoplayPolicy::RequestAutoplayByAttribute() {
   return false;
 }
 
-base::Optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+absl::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
   if (!LocalFrame::HasTransientUserActivation(
           element_->GetDocument().GetFrame())) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
@@ -273,7 +273,7 @@ base::Optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
 
   MaybeSetAutoplayInitiated();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool AutoplayPolicy::IsAutoplayingMutedInternal(bool muted) const {

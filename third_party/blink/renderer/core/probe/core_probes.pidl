@@ -87,7 +87,7 @@ interface CoreProbes {
   void DidResizeMainFrame(LocalFrame*);
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
-  void ApplyUserAgentMetadataOverride(CoreProbeSink*, base::Optional<blink::UserAgentMetadata>* ua_metadata_override);
+  void ApplyUserAgentMetadataOverride(CoreProbeSink*, absl::optional<blink::UserAgentMetadata>* ua_metadata_override);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);

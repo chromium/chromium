@@ -9,9 +9,9 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -56,7 +56,7 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // null, the message receiver must handle the message like it is from an
   // unknown remote origin by dispatching the 'messageerror' event when
   // |file_system_access_tokens| is not an empty array.
-  base::Optional<url::Origin> sender_origin;
+  absl::optional<url::Origin> sender_origin;
 
   // Stack trace captured by sender.
   // For more details see v8_inspector::V8StackTraceId.
@@ -68,7 +68,7 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // If not null, this message is locked to the given agent cluster ID.
   // See
   // https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-cluster-formalism
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id;
+  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
 
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.

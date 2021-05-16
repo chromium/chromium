@@ -1089,7 +1089,7 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   if (hyphenation_)
     return false;
 
-  base::Optional<LineBreakType> saved_line_break_type;
+  absl::optional<LineBreakType> saved_line_break_type;
   if (break_anywhere_if_overflow_ && !override_break_anywhere_) {
     saved_line_break_type = break_iterator_.BreakType();
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
@@ -2012,7 +2012,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 
   // Save the hyphenation states before we may make changes.
   NGInlineItemResults* item_results = line_info->MutableResults();
-  base::Optional<wtf_size_t> hyphen_index_before = hyphen_index_;
+  absl::optional<wtf_size_t> hyphen_index_before = hyphen_index_;
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(item_results);
 

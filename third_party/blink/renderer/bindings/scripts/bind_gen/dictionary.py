@@ -317,7 +317,7 @@ def make_dict_member_get(cg_context):
         arg_type = blink_type.const_ref_t
         return_type = blink_type.value_t
     elif idl_type.unwrap().is_enumeration:
-        arg_type = ("base::nullopt_t"
+        arg_type = ("absl::nullopt_t"
                     if idl_type.is_nullable else blink_type.value_t)
         return_type = blink_type.value_t
     elif idl_type.unwrap().is_dictionary:
@@ -329,7 +329,7 @@ def make_dict_member_get(cg_context):
     elif idl_type.is_nullable and (idl_type.unwrap().is_sequence
                                    or idl_type.unwrap().is_frozen_array
                                    or idl_type.unwrap().is_record):
-        arg_type = "base::nullopt_t"
+        arg_type = "absl::nullopt_t"
         return_type = blink_type.value_t
     else:
         arg_type = None
@@ -463,7 +463,7 @@ def make_dict_member_set(cg_context):
 
     # Migration Adapter
     if (real_type.is_nullable and
-            blink_type_info(real_type).typename.startswith("base::Optional")):
+            blink_type_info(real_type).typename.startswith("absl::optional")):
         to_null_func_def = CxxFuncDefNode(
             name=_format("{}ToNull", blink_member_name.set_api),
             arg_decls=[],
@@ -471,7 +471,7 @@ def make_dict_member_set(cg_context):
         decls.append(to_null_func_def)
         to_null_func_def.set_base_template_vars(cg_context.template_bindings())
         to_null_func_def.body.append(
-            T(_format("{}(base::nullopt);", blink_member_name.set_api)))
+            T(_format("{}(absl::nullopt);", blink_member_name.set_api)))
 
     return decls, defs
 
@@ -524,7 +524,7 @@ def make_dict_member_migration_adapters(cg_context):
     defs = ListNode()
 
     # Accessors for non-null values, if the usual getter returns
-    # base::Optional<T>.
+    # absl::optional<T>.
     blink_inner_type = blink_type_info(real_type.inner_type)
     get_api = blink_member_name.get_api
     has_api = blink_member_name.has_api

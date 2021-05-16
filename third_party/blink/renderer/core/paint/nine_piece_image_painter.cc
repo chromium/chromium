@@ -17,14 +17,14 @@ namespace blink {
 
 namespace {
 
-base::Optional<float> CalculateSpaceNeeded(const float destination,
+absl::optional<float> CalculateSpaceNeeded(const float destination,
                                            const float source) {
   DCHECK_GT(source, 0);
   DCHECK_GT(destination, 0);
 
   float repeat_tiles_count = floorf(destination / source);
   if (!repeat_tiles_count)
-    return base::nullopt;
+    return absl::nullopt;
 
   float space = destination;
   space -= source * repeat_tiles_count;
@@ -38,7 +38,7 @@ struct TileParameters {
   float spacing;
 };
 
-base::Optional<TileParameters> ComputeTileParameters(
+absl::optional<TileParameters> ComputeTileParameters(
     ENinePieceImageRule tile_rule,
     float dst_pos,
     float dst_extent,
@@ -61,10 +61,10 @@ base::Optional<TileParameters> ComputeTileParameters(
       return TileParameters{in_scale_factor, phase, 0};
     }
     case kSpaceImageRule: {
-      base::Optional<float> spacing =
+      absl::optional<float> spacing =
           CalculateSpaceNeeded(dst_extent, src_extent);
       if (!spacing)
-        return base::nullopt;
+        return absl::nullopt;
       return TileParameters{1, src_pos - *spacing, *spacing};
     }
     case kStretchImageRule:
@@ -72,7 +72,7 @@ base::Optional<TileParameters> ComputeTileParameters(
     default:
       NOTREACHED();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {
@@ -129,11 +129,11 @@ void PaintPieces(GraphicsContext& context,
     }
 
     // TODO(cavalcantii): see crbug.com/662513.
-    base::Optional<TileParameters> h_tile = ComputeTileParameters(
+    absl::optional<TileParameters> h_tile = ComputeTileParameters(
         draw_info.tile_rule.horizontal, draw_info.destination.X(),
         draw_info.destination.Width(), draw_info.source.X(),
         draw_info.source.Width(), draw_info.tile_scale.Width());
-    base::Optional<TileParameters> v_tile = ComputeTileParameters(
+    absl::optional<TileParameters> v_tile = ComputeTileParameters(
         draw_info.tile_rule.vertical, draw_info.destination.Y(),
         draw_info.destination.Height(), draw_info.source.Y(),
         draw_info.source.Height(), draw_info.tile_scale.Height());
@@ -146,7 +146,7 @@ void PaintPieces(GraphicsContext& context,
     FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
 
     // TODO(cavalcantii): see crbug.com/662507.
-    base::Optional<ScopedInterpolationQuality> interpolation_quality_override;
+    absl::optional<ScopedInterpolationQuality> interpolation_quality_override;
     if (draw_info.tile_rule.horizontal == kRoundImageRule ||
         draw_info.tile_rule.vertical == kRoundImageRule)
       interpolation_quality_override.emplace(context, kInterpolationMedium);

@@ -86,7 +86,7 @@ class CORE_EXPORT TextTrackCue : public EventTargetWithInlineData {
 
   // Returns the first timestamp value greater than the given time at which an
   // inter-cue update occurs, if such a timestamp exists.
-  virtual base::Optional<double> GetNextIntraCueTime(
+  virtual absl::optional<double> GetNextIntraCueTime(
       double movie_time) const = 0;
 
   // FIXME: Refactor to eliminate removeDisplayTree(). https://crbug.com/322434

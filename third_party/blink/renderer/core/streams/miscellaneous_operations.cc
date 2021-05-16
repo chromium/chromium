@@ -9,7 +9,7 @@
 
 #include <math.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -54,7 +54,7 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
 
 class DefaultSizeAlgorithm final : public StrategySizeAlgorithm {
  public:
-  base::Optional<double> Run(ScriptState*,
+  absl::optional<double> Run(ScriptState*,
                              v8::Local<v8::Value>,
                              ExceptionState&) override {
     return 1;
@@ -66,7 +66,7 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
   JavaScriptSizeAlgorithm(v8::Isolate* isolate, v8::Local<v8::Function> size)
       : function_(isolate, size) {}
 
-  base::Optional<double> Run(ScriptState* script_state,
+  absl::optional<double> Run(ScriptState* script_state,
                              v8::Local<v8::Value> chunk,
                              ExceptionState& exception_state) override {
     auto* isolate = script_state->GetIsolate();
@@ -81,7 +81,7 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
       exception_state.RethrowV8Exception(trycatch.Exception());
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // This conversion to double comes from the EnqueueValueWithSize
@@ -91,7 +91,7 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
     v8::Local<v8::Number> number;
     if (!number_maybe.ToLocal(&number)) {
       exception_state.RethrowV8Exception(trycatch.Exception());
-      return base::nullopt;
+      return absl::nullopt;
     }
     return number->Value();
   }

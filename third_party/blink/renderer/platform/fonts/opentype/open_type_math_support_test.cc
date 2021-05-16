@@ -41,7 +41,7 @@ class OpenTypeMathSupportTest : public testing::Test {
         CreateMathFont(name).PrimaryFont()->PlatformData().GetHarfBuzzFace());
   }
 
-  base::Optional<float> MathConstant(
+  absl::optional<float> MathConstant(
       const String& name,
       OpenTypeMathSupport::MathConstants constant) {
     Font math = CreateMathFont(name);
@@ -428,7 +428,7 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
     Glyph glyph_with_italic_correction = variants[2];
 
     // MathItalicCorrection with a value.
-    base::Optional<float> glyph_with_italic_correction_value =
+    absl::optional<float> glyph_with_italic_correction_value =
         OpenTypeMathSupport::MathItalicCorrection(
             math.PrimaryFont()->PlatformData().GetHarfBuzzFace(),
             glyph_with_italic_correction);

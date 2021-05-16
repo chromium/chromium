@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAME_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
@@ -31,15 +31,15 @@ class CORE_EXPORT CSSPropertyName {
     DCHECK(!custom_property_name.IsNull());
   }
 
-  static base::Optional<CSSPropertyName> From(
+  static absl::optional<CSSPropertyName> From(
       const ExecutionContext* execution_context,
       const String& value) {
     const CSSPropertyID property_id = CssPropertyID(execution_context, value);
     if (property_id == CSSPropertyID::kInvalid)
-      return base::nullopt;
+      return absl::nullopt;
     if (property_id == CSSPropertyID::kVariable)
-      return base::make_optional(CSSPropertyName(AtomicString(value)));
-    return base::make_optional(CSSPropertyName(property_id));
+      return absl::make_optional(CSSPropertyName(AtomicString(value)));
+    return absl::make_optional(CSSPropertyName(property_id));
   }
 
   bool operator==(const CSSPropertyName&) const;

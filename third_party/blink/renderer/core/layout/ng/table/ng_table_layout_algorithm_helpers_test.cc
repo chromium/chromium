@@ -14,7 +14,7 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
  public:
   NGTableTypes::Column MakeColumn(int min_width,
                                   int max_width,
-                                  base::Optional<float> percent = base::nullopt,
+                                  absl::optional<float> percent = absl::nullopt,
                                   bool is_constrained = false) {
     return NGTableTypes::Column{LayoutUnit(min_width),
                                 LayoutUnit(max_width),
@@ -29,7 +29,7 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
   NGTableTypes::Row MakeRow(int block_size,
                             bool is_constrained = false,
                             bool has_rowspan_start = false,
-                            base::Optional<float> percent = base::nullopt) {
+                            absl::optional<float> percent = absl::nullopt) {
     return NGTableTypes::Row{
         LayoutUnit(block_size), LayoutUnit(), percent,           0,    0,
         is_constrained,         false,        has_rowspan_start, false};
@@ -39,7 +39,7 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
       NGTableTypes::Rows* rows,
       int block_size,
       wtf_size_t rowspan = 1,
-      base::Optional<float> percent = base::nullopt) {
+      absl::optional<float> percent = absl::nullopt) {
     wtf_size_t start_row = rows->size();
     for (wtf_size_t i = 0; i < rowspan; i++)
       rows->push_back(MakeRow(10));
@@ -135,9 +135,9 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeConstrained) {
   // Columns min/max: 0/10, 0/10, 0/20
   // Distribute 25, 25, 50
   column_constraints->data.Shrink(0);
-  column_constraints->data.push_back(MakeColumn(0, 10, base::nullopt, true));
-  column_constraints->data.push_back(MakeColumn(10, 10, base::nullopt, true));
-  column_constraints->data.push_back(MakeColumn(0, 20, base::nullopt, true));
+  column_constraints->data.push_back(MakeColumn(0, 10, absl::nullopt, true));
+  column_constraints->data.push_back(MakeColumn(10, 10, absl::nullopt, true));
+  column_constraints->data.push_back(MakeColumn(0, 20, absl::nullopt, true));
   NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
       colspan_cells, LayoutUnit(), false, column_constraints.get());
   EXPECT_EQ(column_constraints->data[0].min_inline_size, 25);
@@ -156,16 +156,16 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
       base::MakeRefCounted<NGTableTypes::Columns>();
   column_constraints->data.Shrink(0);
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(0), column_widths[0], base::nullopt,
+      NGTableTypes::Column{LayoutUnit(0), column_widths[0], absl::nullopt,
                            LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[1], base::nullopt,
+      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[1], absl::nullopt,
                            LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[2], base::nullopt,
+      NGTableTypes::Column{LayoutUnit(3.33333), column_widths[2], absl::nullopt,
                            LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
-      NGTableTypes::Column{LayoutUnit(0), column_widths[3], base::nullopt,
+      NGTableTypes::Column{LayoutUnit(0), column_widths[3], absl::nullopt,
                            LayoutUnit(), false, false, false, false});
 
   LayoutUnit assignable_table_inline_size =
@@ -245,7 +245,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
       LayoutUnit(300),      LayoutUnit(), NGBoxStrut(), 0, 0, 3,
       EVerticalAlign::kTop, true};
   NGTableTypes::RowspanCell rowspan_cell = NGTableTypes::CreateRowspanCell(
-      0, 3, &cell_block_constraint, base::nullopt);
+      0, 3, &cell_block_constraint, absl::nullopt);
   NGTableTypes::Rows rows;
 
   // Distribute to regular rows, rows grow in proportion to size.

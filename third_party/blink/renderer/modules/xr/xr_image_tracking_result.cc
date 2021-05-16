@@ -28,10 +28,10 @@ XRImageTrackingResult::XRImageTrackingResult(
   }
 }
 
-base::Optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
+absl::optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
     const {
   if (!mojo_from_this_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return TransformationMatrix(mojo_from_this_->ToTransform().matrix());

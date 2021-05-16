@@ -257,7 +257,7 @@ ThrottlingURLLoader::StartInfo::StartInfo(
     uint32_t in_options,
     network::ResourceRequest* in_url_request,
     scoped_refptr<base::SingleThreadTaskRunner> in_task_runner,
-    base::Optional<std::vector<std::string>> in_cors_exempt_header_list)
+    absl::optional<std::vector<std::string>> in_cors_exempt_header_list)
     : url_loader_factory(std::move(in_url_loader_factory)),
       request_id(in_request_id),
       options(in_options),
@@ -297,7 +297,7 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
     network::mojom::URLLoaderClient* client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::Optional<std::vector<std::string>> cors_exempt_header_list) {
+    absl::optional<std::vector<std::string>> cors_exempt_header_list) {
   DCHECK(url_request);
   std::unique_ptr<ThrottlingURLLoader> loader(new ThrottlingURLLoader(
       std::move(throttles), client, traffic_annotation));
@@ -375,7 +375,7 @@ void ThrottlingURLLoader::FollowRedirect(
   }
 
   if (url_loader_) {
-    base::Optional<GURL> new_url;
+    absl::optional<GURL> new_url;
     if (!throttle_will_redirect_redirect_url_.is_empty())
       new_url = throttle_will_redirect_redirect_url_;
     url_loader_->FollowRedirect(removed_headers_, modified_headers_,
@@ -437,7 +437,7 @@ void ThrottlingURLLoader::Start(
     uint32_t options,
     network::ResourceRequest* url_request,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::Optional<std::vector<std::string>> cors_exempt_header_list) {
+    absl::optional<std::vector<std::string>> cors_exempt_header_list) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
 
@@ -537,12 +537,12 @@ void ThrottlingURLLoader::StartNow() {
         start_info_->url_request.referrer.spec(),
         // Use status code 307 to preserve the method, so POST requests work.
         net::HTTP_TEMPORARY_REDIRECT, throttle_will_start_redirect_url_,
-        base::nullopt, false, false, false);
+        absl::nullopt, false, false, false);
 
     bool should_clear_upload = false;
     net::RedirectUtil::UpdateHttpRequest(
         start_info_->url_request.url, start_info_->url_request.method,
-        redirect_info, base::nullopt, base::nullopt,
+        redirect_info, absl::nullopt, absl::nullopt,
         &start_info_->url_request.headers, &should_clear_upload);
 
     if (should_clear_upload)

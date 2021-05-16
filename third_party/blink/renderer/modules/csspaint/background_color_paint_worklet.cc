@@ -34,7 +34,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
       int worklet_id,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
-      const base::Optional<double>& progress,
+      const absl::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(container_size, worklet_id, std::move(property_keys)),
         animated_colors_(animated_colors),
@@ -45,7 +45,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
 
   const Vector<Color>& AnimatedColors() const { return animated_colors_; }
   const Vector<double>& Offsets() const { return offsets_; }
-  const base::Optional<double>& MainThreadProgress() const { return progress_; }
+  const absl::optional<double>& MainThreadProgress() const { return progress_; }
 
  private:
   // TODO(xidachen): wrap these 3 into a structure.
@@ -54,7 +54,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   // progress_: the progress obtained from the main thread animation.
   Vector<Color> animated_colors_;
   Vector<double> offsets_;
-  base::Optional<double> progress_;
+  absl::optional<double> progress_;
 };
 
 class BackgroundColorPaintWorkletProxyClient
@@ -202,7 +202,7 @@ bool GetBGColorPaintWorkletParamsInternal(
     Element* element,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
-    base::Optional<double>* progress,
+    absl::optional<double>* progress,
     const Animation* compositable_animation) {
   element->GetLayoutObject()->GetMutableForPainting().EnsureId();
   const AnimationEffect* effect = compositable_animation->effect();
@@ -282,7 +282,7 @@ scoped_refptr<Image> BackgroundColorPaintWorklet::Paint(
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
-    const base::Optional<double>& progress) {
+    const absl::optional<double>& progress) {
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
       CompositorAnimations::CompositorElementNamespaceForProperty(
@@ -302,7 +302,7 @@ bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
     Node* node,
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
-    base::Optional<double>* progress) {
+    absl::optional<double>* progress) {
   DCHECK(node->IsElementNode());
   Element* element = static_cast<Element*>(node);
   Animation* compositable_animation = GetAnimationIfCompositable(element);
@@ -318,7 +318,7 @@ sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest(
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
   FloatSize container_size(100, 100);
-  base::Optional<double> progress = 0;
+  absl::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
   scoped_refptr<BackgroundColorPaintWorkletInput> input =
       base::MakeRefCounted<BackgroundColorPaintWorkletInput>(

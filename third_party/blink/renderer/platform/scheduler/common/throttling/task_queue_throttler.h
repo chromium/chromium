@@ -7,11 +7,11 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/cancelable_closure_holder.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -218,7 +218,7 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
       base::sequence_manager::TaskQueue* queue,
       bool is_wake_up);
 
-  base::Optional<QueueBlockType> GetQueueBlockType(
+  absl::optional<QueueBlockType> GetQueueBlockType(
       base::TimeTicks now,
       base::sequence_manager::TaskQueue* queue);
 
@@ -233,7 +233,7 @@ class PLATFORM_EXPORT TaskQueueThrottler : public BudgetPoolController {
   std::unique_ptr<ThrottledTimeDomain> time_domain_;
 
   CancelableClosureHolder pump_throttled_tasks_closure_;
-  base::Optional<base::TimeTicks> pending_pump_throttled_tasks_runtime_;
+  absl::optional<base::TimeTicks> pending_pump_throttled_tasks_runtime_;
   bool allow_throttling_;
 
   HashMap<BudgetPool*, std::unique_ptr<BudgetPool>> budget_pools_;

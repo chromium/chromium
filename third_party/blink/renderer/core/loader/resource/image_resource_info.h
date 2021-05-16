@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -39,7 +39,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   virtual bool IsAccessAllowed(
       DoesCurrentFrameHaveSingleSecurityOrigin) const = 0;
   virtual bool HasCacheControlNoStoreHeader() const = 0;
-  virtual base::Optional<ResourceError> GetResourceError() const = 0;
+  virtual absl::optional<ResourceError> GetResourceError() const = 0;
 
   // TODO(hiroshige): Remove this once MemoryCache becomes further weaker.
   virtual void SetDecodedSize(size_t) = 0;

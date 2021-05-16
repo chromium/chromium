@@ -31,10 +31,10 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -389,9 +389,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // the lifetime of its parent. This is used for resource usage attribution,
   // where the resource usage of a child context will be charged to its parent
   // (and so on up the tree).
-  virtual base::Optional<ExecutionContextToken> GetParentExecutionContextToken()
+  virtual absl::optional<ExecutionContextToken> GetParentExecutionContextToken()
       const {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // ExecutionContext subclasses are usually the V8 global object, which means

@@ -106,7 +106,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -142,7 +142,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   State state_ = State::kWaitForBody;
 
   // Set if OnComplete() is called during sniffing.
-  base::Optional<network::URLLoaderCompletionStatus> complete_status_;
+  absl::optional<network::URLLoaderCompletionStatus> complete_status_;
 
   std::vector<char> buffered_body_;
   size_t bytes_remaining_in_buffer_;

@@ -747,7 +747,7 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
                             scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
 
-  base::Optional<FloatPoint> snap_point =
+  absl::optional<FloatPoint> snap_point =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_point)
     return;
@@ -910,7 +910,7 @@ bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
           gfx::ScrollOffset(*out_initial_position),
           gfx::ScrollOffset(natural_displacement),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
-  base::Optional<FloatPoint> snap_end =
+  absl::optional<FloatPoint> snap_end =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_end.has_value())
     return false;

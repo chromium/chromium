@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
@@ -249,7 +249,7 @@ static void ProduceCacheInternal(
                 inspector_compile_script_event::V8CacheResult(
                     inspector_compile_script_event::V8CacheResult::
                         ProduceResult(cached_data ? cached_data->length : 0),
-                    base::Optional<inspector_compile_script_event::
+                    absl::optional<inspector_compile_script_event::
                                        V8CacheResult::ConsumeResult>()),
                 is_streamed, not_streaming_reason);
           });
@@ -359,7 +359,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
             inspector_compile_script_event::V8CacheResult(
                 inspector_compile_script_event::V8CacheResult::ProduceResult(
                     cached_data ? cached_data->length : 0),
-                base::Optional<inspector_compile_script_event::V8CacheResult::
+                absl::optional<inspector_compile_script_event::V8CacheResult::
                                    ConsumeResult>()),
             false, ScriptStreamer::NotStreamingReason::kHasCodeCache);
       });

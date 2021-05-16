@@ -2738,7 +2738,7 @@ static void MethodWithNullableSequencesMethod(const v8::FunctionCallbackInfo<v8:
     return;
   }
 
-  Vector<base::Optional<double>> numbers;
+  Vector<absl::optional<double>> numbers;
   Vector<String> strings;
   HeapVector<Member<Element>> elements;
   HeapVector<DoubleOrString> unions;
@@ -2771,7 +2771,7 @@ static void MethodWithNullableRecordsMethod(const v8::FunctionCallbackInfo<v8::V
     return;
   }
 
-  Vector<std::pair<String, base::Optional<double>>> numbers;
+  Vector<std::pair<String, absl::optional<double>>> numbers;
   Vector<std::pair<String, String>> strings;
   HeapVector<std::pair<String, Member<Element>>> elements;
   HeapVector<std::pair<String, DoubleOrString>> unions;

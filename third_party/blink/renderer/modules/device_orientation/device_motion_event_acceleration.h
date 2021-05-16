@@ -46,9 +46,9 @@ class MODULES_EXPORT DeviceMotionEventAcceleration final
 
   bool HasAccelerationData() const;
 
-  base::Optional<double> x() const;
-  base::Optional<double> y() const;
-  base::Optional<double> z() const;
+  absl::optional<double> x() const;
+  absl::optional<double> y() const;
+  absl::optional<double> z() const;
 
  private:
   const double x_;

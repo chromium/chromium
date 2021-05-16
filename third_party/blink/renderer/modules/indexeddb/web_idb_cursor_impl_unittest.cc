@@ -98,7 +98,7 @@ class MockContinueCallbacks : public testing::StrictMock<MockWebIDBCallbacks> {
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primaryKey,
-      base::Optional<std::unique_ptr<IDBValue>> value) override {
+      absl::optional<std::unique_ptr<IDBValue>> value) override {
     if (key_)
       *key_ = IDBKey::Clone(key);
     if (blobs_ && value.has_value())

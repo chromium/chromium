@@ -243,32 +243,32 @@ double WebPerformance::FirstInputOrScrollNotifiedTimestamp() const {
       private_->timing()->FirstInputOrScrollNotifiedTimestamp());
 }
 
-base::Optional<base::TimeDelta> WebPerformance::FirstInputDelay() const {
+absl::optional<base::TimeDelta> WebPerformance::FirstInputDelay() const {
   return private_->timing()->FirstInputDelay();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::FirstInputTimestamp() const {
+absl::optional<base::TimeDelta> WebPerformance::FirstInputTimestamp() const {
   return private_->timing()->FirstInputTimestamp();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::LongestInputDelay() const {
+absl::optional<base::TimeDelta> WebPerformance::LongestInputDelay() const {
   return private_->timing()->LongestInputDelay();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::LongestInputTimestamp() const {
+absl::optional<base::TimeDelta> WebPerformance::LongestInputTimestamp() const {
   return private_->timing()->LongestInputTimestamp();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::FirstInputProcessingTime()
+absl::optional<base::TimeDelta> WebPerformance::FirstInputProcessingTime()
     const {
   return private_->timing()->FirstInputProcessingTime();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::FirstScrollDelay() const {
+absl::optional<base::TimeDelta> WebPerformance::FirstScrollDelay() const {
   return private_->timing()->FirstScrollDelay();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::FirstScrollTimestamp() const {
+absl::optional<base::TimeDelta> WebPerformance::FirstScrollTimestamp() const {
   return private_->timing()->FirstScrollTimestamp();
 }
 
@@ -303,34 +303,34 @@ double WebPerformance::ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
           ->ParseBlockedOnScriptExecutionFromDocumentWriteDuration());
 }
 
-base::Optional<base::TimeTicks> WebPerformance::LastPortalActivatedPaint()
+absl::optional<base::TimeTicks> WebPerformance::LastPortalActivatedPaint()
     const {
   return private_->timing()->LastPortalActivatedPaint();
 }
 
-base::Optional<base::TimeTicks> WebPerformance::UnloadStart() const {
+absl::optional<base::TimeTicks> WebPerformance::UnloadStart() const {
   return private_->timing()->UnloadStart();
 }
 
-base::Optional<base::TimeTicks> WebPerformance::UnloadEnd() const {
+absl::optional<base::TimeTicks> WebPerformance::UnloadEnd() const {
   return private_->timing()->UnloadEnd();
 }
 
-base::Optional<base::TimeTicks> WebPerformance::CommitNavigationEnd() const {
+absl::optional<base::TimeTicks> WebPerformance::CommitNavigationEnd() const {
   return private_->timing()->CommitNavigationEnd();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyLoaded()
+absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyLoaded()
     const {
   return private_->timing()->UserTimingMarkFullyLoaded();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyVisible()
+absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkFullyVisible()
     const {
   return private_->timing()->UserTimingMarkFullyVisible();
 }
 
-base::Optional<base::TimeDelta> WebPerformance::UserTimingMarkInteractive()
+absl::optional<base::TimeDelta> WebPerformance::UserTimingMarkInteractive()
     const {
   return private_->timing()->UserTimingMarkInteractive();
 }

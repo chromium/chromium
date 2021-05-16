@@ -27,7 +27,7 @@ namespace blink {
 
 namespace {
 std::unique_ptr<TransformationMatrix> TryGetTransformationMatrix(
-    const base::Optional<gfx::Transform>& transform) {
+    const absl::optional<gfx::Transform>& transform) {
   if (transform) {
     return std::make_unique<TransformationMatrix>(transform->matrix());
   }
@@ -226,7 +226,7 @@ void XRInputSource::SetGamepadConnected(bool state) {
 }
 
 void XRInputSource::UpdateGamepad(
-    const base::Optional<device::Gamepad>& gamepad) {
+    const absl::optional<device::Gamepad>& gamepad) {
   if (gamepad) {
     if (!gamepad_) {
       gamepad_ = MakeGarbageCollected<Gamepad>(this, -1, state_.base_timestamp,
@@ -242,21 +242,21 @@ void XRInputSource::UpdateGamepad(
   }
 }
 
-base::Optional<TransformationMatrix> XRInputSource::MojoFromInput() const {
+absl::optional<TransformationMatrix> XRInputSource::MojoFromInput() const {
   if (!mojo_from_input_.get()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return *(mojo_from_input_.get());
 }
 
-base::Optional<TransformationMatrix> XRInputSource::InputFromPointer() const {
+absl::optional<TransformationMatrix> XRInputSource::InputFromPointer() const {
   if (!input_from_pointer_.get()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return *(input_from_pointer_.get());
 }
 
-base::Optional<device::mojom::blink::XRNativeOriginInformation>
+absl::optional<device::mojom::blink::XRNativeOriginInformation>
 XRInputSource::nativeOrigin() const {
   return XRNativeOriginInformation::Create(this);
 }

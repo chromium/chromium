@@ -120,7 +120,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   LogicalSize GetAspectRatio() const;
 
   // Returns the transform to apply to a child (e.g. for layout-overflow).
-  base::Optional<TransformationMatrix> GetTransformForChildFragment(
+  absl::optional<TransformationMatrix> GetTransformForChildFragment(
       const NGPhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
 

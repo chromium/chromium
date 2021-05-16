@@ -45,8 +45,8 @@ UDPSocket::GetUDPSocketListener() {
 }
 
 void UDPSocket::Init(int32_t result,
-                     const base::Optional<net::IPEndPoint>& local_addr,
-                     const base::Optional<net::IPEndPoint>& peer_addr) {
+                     const absl::optional<net::IPEndPoint>& local_addr,
+                     const absl::optional<net::IPEndPoint>& peer_addr) {
   DCHECK(resolver_);
   if (result == net::Error::OK) {
     // TODO(crbug.com/1119620): Finish initialization.
@@ -66,8 +66,8 @@ ScriptPromise UDPSocket::close(ScriptState*, ExceptionState&) {
 }
 
 void UDPSocket::OnReceived(int32_t result,
-                           const base::Optional<::net::IPEndPoint>& src_addr,
-                           base::Optional<::base::span<const ::uint8_t>> data) {
+                           const absl::optional<::net::IPEndPoint>& src_addr,
+                           absl::optional<::base::span<const ::uint8_t>> data) {
   // TODO(crbug.com/1119620): Implement.
   NOTIMPLEMENTED();
 }

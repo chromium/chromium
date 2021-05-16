@@ -410,7 +410,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
         // Compute start of the legacy text box.
         if (unit.AssociatedNode()) {
           // In case of |text_| comes from DOM node.
-          const base::Optional<unsigned> box_start =
+          const absl::optional<unsigned> box_start =
               CaretOffsetForPosition(mapping->GetLastPosition(clamped_start));
           DCHECK(box_start.has_value());
           results.push_back(TextBoxInfo{rect, *box_start, box_length});
@@ -2452,7 +2452,7 @@ Position LayoutText::PositionForCaretOffset(unsigned offset) const {
   return Position(node, clamped_offset);
 }
 
-base::Optional<unsigned> LayoutText::CaretOffsetForPosition(
+absl::optional<unsigned> LayoutText::CaretOffsetForPosition(
     const Position& position) const {
   NOT_DESTROYED();
   // ::first-letter handling should be done by LayoutTextFragment override.
@@ -2462,7 +2462,7 @@ base::Optional<unsigned> LayoutText::CaretOffsetForPosition(
   // WBR handling should be done by LayoutWordBreak override.
   DCHECK(!IsWordBreak());
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(GetNode()->IsTextNode());
   if (position.IsBeforeAnchor())
     return 0;
@@ -2483,7 +2483,7 @@ int LayoutText::CaretMinOffset() const {
     const Position first_position = PositionForCaretOffset(0);
     if (first_position.IsNull())
       return 0;
-    base::Optional<unsigned> candidate = CaretOffsetForPosition(
+    absl::optional<unsigned> candidate = CaretOffsetForPosition(
         mapping->StartOfNextNonCollapsedContent(first_position));
     // Align with the legacy behavior that 0 is returned if the entire node
     // contains only collapsed whitespaces.
@@ -2508,7 +2508,7 @@ int LayoutText::CaretMaxOffset() const {
     const Position last_position = PositionForCaretOffset(TextLength());
     if (last_position.IsNull())
       return TextLength();
-    base::Optional<unsigned> candidate = CaretOffsetForPosition(
+    absl::optional<unsigned> candidate = CaretOffsetForPosition(
         mapping->EndOfLastNonCollapsedContent(last_position));
     // Align with the legacy behavior that |TextLenght()| is returned if the
     // entire node contains only collapsed whitespaces.
@@ -2536,9 +2536,9 @@ unsigned LayoutText::ResolvedTextLength() const {
       return 0;
     }
     DCHECK(end_position.IsNotNull()) << start_position;
-    base::Optional<unsigned> start =
+    absl::optional<unsigned> start =
         mapping->GetTextContentOffset(start_position);
-    base::Optional<unsigned> end = mapping->GetTextContentOffset(end_position);
+    absl::optional<unsigned> end = mapping->GetTextContentOffset(end_position);
     if (!start.has_value() || !end.has_value()) {
       DCHECK(!start.has_value()) << this;
       DCHECK(!end.has_value()) << this;

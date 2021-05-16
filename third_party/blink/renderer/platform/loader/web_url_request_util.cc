@@ -85,7 +85,7 @@ WebHTTPBody GetWebHTTPBodyForRequestBody(
       }
       case network::DataElement::Tag::kFile: {
         const auto& file = element.As<network::DataElementFile>();
-        base::Optional<base::Time> modification_time;
+        absl::optional<base::Time> modification_time;
         if (!file.expected_modification_time().is_null())
           modification_time = file.expected_modification_time();
         http_body.AppendFileRange(

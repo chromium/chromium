@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 
-#include "base/optional.h"
 #include "cc/paint/paint_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -36,7 +36,7 @@ TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlags) {
   flags.setColor(SK_ColorWHITE);
   auto flags_or_nullopt = filter.ApplyToFlagsIfNeeded(
       flags, DarkModeFilter::ElementRole::kBackground);
-  ASSERT_NE(flags_or_nullopt, base::nullopt);
+  ASSERT_NE(flags_or_nullopt, absl::nullopt);
   EXPECT_EQ(SK_ColorBLACK, flags_or_nullopt.value().getColor());
 }
 

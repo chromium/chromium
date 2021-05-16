@@ -214,7 +214,7 @@ class FrameSchedulerImplTest : public testing::Test {
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMockTickClock()),
-        base::nullopt);
+        absl::nullopt);
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_ =
         CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
@@ -2893,7 +2893,7 @@ class MockMainThreadScheduler : public MainThreadSchedulerImpl {
                 nullptr,
                 task_environment.GetMainThreadTaskRunner(),
                 task_environment.GetMockTickClock()),
-            base::nullopt) {}
+            absl::nullopt) {}
 
   MOCK_METHOD(void, OnMainFramePaint, ());
 };

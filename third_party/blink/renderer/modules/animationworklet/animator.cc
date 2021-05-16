@@ -20,7 +20,7 @@ Animator::Animator(v8::Isolate* isolate,
                    v8::Local<v8::Value> instance,
                    const String& name,
                    WorkletAnimationOptions options,
-                   const Vector<base::Optional<base::TimeDelta>>& local_times,
+                   const Vector<absl::optional<base::TimeDelta>>& local_times,
                    const Vector<Timing>& timings)
     : definition_(definition),
       instance_(isolate, instance),

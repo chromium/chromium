@@ -140,7 +140,7 @@ class NativeIOFileManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::NativeIOHost> backend_;
 
   // Caches results of checking if storage access is allowed.
-  base::Optional<bool> storage_access_allowed_;
+  absl::optional<bool> storage_access_allowed_;
 };
 
 }  // namespace blink

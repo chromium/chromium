@@ -79,7 +79,7 @@ sk_sp<PaintFilter> FEGaussianBlur::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float std_x = GetFilter()->ApplyHorizontalScale(std_x_);
   float std_y = GetFilter()->ApplyVerticalScale(std_y_);
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<BlurPaintFilter>(
       SkFloatToScalar(std_x), SkFloatToScalar(std_y), SkTileMode::kDecal,
       std::move(input), base::OptionalOrNullptr(crop_rect));

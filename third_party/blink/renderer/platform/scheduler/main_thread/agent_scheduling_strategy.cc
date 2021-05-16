@@ -9,9 +9,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/pollable_thread_safe_flag.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
@@ -64,15 +64,15 @@ class NoOpStrategy final : public AgentSchedulingStrategy {
     return ShouldUpdatePolicy::kNo;
   }
 
-  base::Optional<bool> QueueEnabledState(
+  absl::optional<bool> QueueEnabledState(
       const MainThreadTaskQueue& task_queue) const override {
     VerifyValidSequence();
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<TaskQueue::QueuePriority> QueuePriority(
+  absl::optional<TaskQueue::QueuePriority> QueuePriority(
       const MainThreadTaskQueue& task_queue) const override {
     VerifyValidSequence();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool ShouldNotifyOnInputEvent() const override { return false; }
@@ -174,7 +174,7 @@ class TrackMainFrameSignal final : public AgentSchedulingStrategy {
     return SignalReached(frame_scheduler);
   }
 
-  base::Optional<bool> QueueEnabledState(
+  absl::optional<bool> QueueEnabledState(
       const MainThreadTaskQueue& task_queue) const override {
     VerifyValidSequence();
 
@@ -183,10 +183,10 @@ class TrackMainFrameSignal final : public AgentSchedulingStrategy {
       return false;
     }
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<TaskQueue::QueuePriority> QueuePriority(
+  absl::optional<TaskQueue::QueuePriority> QueuePriority(
       const MainThreadTaskQueue& task_queue) const override {
     VerifyValidSequence();
 
@@ -195,7 +195,7 @@ class TrackMainFrameSignal final : public AgentSchedulingStrategy {
       return TaskQueue::QueuePriority::kBestEffortPriority;
     }
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   bool ShouldNotifyOnInputEvent() const override {

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"
@@ -31,11 +31,11 @@ int ComputeUnderlineOffsetAuto(const blink::FontMetrics& font_metrics,
   return font_metrics.Ascent() + gap + roundf(text_underline_offset);
 }
 
-base::Optional<int> ComputeUnderlineOffsetFromFont(
+absl::optional<int> ComputeUnderlineOffsetFromFont(
     const blink::FontMetrics& font_metrics,
     float text_underline_offset) {
   if (!font_metrics.UnderlinePosition())
-    return base::nullopt;
+    return absl::nullopt;
 
   return roundf(font_metrics.FloatAscent() + *font_metrics.UnderlinePosition() +
                 text_underline_offset);

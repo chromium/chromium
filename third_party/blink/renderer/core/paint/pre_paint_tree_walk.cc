@@ -554,7 +554,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   PaintInvalidatorContext& paint_invalidator_context =
       context.paint_invalidator_context;
 
-  base::Optional<NGPrePaintInfo> pre_paint_info_storage;
+  absl::optional<NGPrePaintInfo> pre_paint_info_storage;
   NGPrePaintInfo* pre_paint_info = nullptr;
   if (iterator) {
     bool allow_reset = context.NeedsTreeBuilderContext();
@@ -566,7 +566,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   // some of the state computed here.
   UpdateAuxiliaryObjectProperties(object, context);
 
-  base::Optional<PaintPropertyTreeBuilder> property_tree_builder;
+  absl::optional<PaintPropertyTreeBuilder> property_tree_builder;
   PaintPropertyChangeType property_changed =
       PaintPropertyChangeType::kUnchanged;
   if (context.tree_builder_context) {

@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PROFILER_TRACE_BUILDER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -88,7 +88,7 @@ class ProfilerTraceBuilder final
   void AddSample(const v8::CpuProfileNode* node, base::TimeTicks timestamp);
   // Obtains the stack ID of the substack with the given node as its leaf,
   // performing origin-based filtering.
-  base::Optional<wtf_size_t> GetOrInsertStackId(const v8::CpuProfileNode* node);
+  absl::optional<wtf_size_t> GetOrInsertStackId(const v8::CpuProfileNode* node);
   // Obtains the frame ID of the stack frame represented by the given node.
   wtf_size_t GetOrInsertFrameId(const v8::CpuProfileNode* node);
   // Obtains the resource ID for the given resource name.

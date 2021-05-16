@@ -36,8 +36,8 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/latin1_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -58,7 +58,7 @@ namespace blink {
 // * WebString::FromUTF8(const std::string& utf8)
 // * WebString::FromUTF16(const char16_t* utf16)
 // * WebString::FromUTF16(const std::u16string& utf16)
-// * WebString::FromUTF16(const base::Optional<std::u16string>& utf16)
+// * WebString::FromUTF16(const absl::optional<std::u16string>& utf16)
 //
 // Similarly, use either of following methods to convert WebString to
 // ASCII, Latin1, UTF-8 or UTF-16:
@@ -139,10 +139,10 @@ class WebString {
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(const char16_t*);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(const std::u16string&);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(
-      const base::Optional<std::u16string>&);
+      const absl::optional<std::u16string>&);
 
-  static base::Optional<std::u16string> ToOptionalString16(const WebString& s) {
-    return s.IsNull() ? base::nullopt : base::make_optional(s.Utf16());
+  static absl::optional<std::u16string> ToOptionalString16(const WebString& s) {
+    return s.IsNull() ? absl::nullopt : absl::make_optional(s.Utf16());
   }
 
   BLINK_PLATFORM_EXPORT std::string Latin1() const;

@@ -30,7 +30,7 @@ ALIGNMENT_ORDER = [
     'RotateTransformOperation',
     'TranslateTransformOperation',
     'GridTrackList',
-    'base::Optional<IntSize>',
+    'absl::optional<IntSize>',
     'double',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
@@ -54,7 +54,7 @@ ALIGNMENT_ORDER = [
     'TextDecorationThickness',
     'StyleAspectRatio',
     # Aligns like float
-    'base::Optional<Length>',
+    'absl::optional<Length>',
     'StyleOffsetRotation',
     'TransformOrigin',
     'ScrollPadding',

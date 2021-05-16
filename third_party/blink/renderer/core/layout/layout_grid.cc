@@ -420,9 +420,9 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
 
 LayoutUnit LayoutGrid::GridGap(
     GridTrackSizingDirection direction,
-    base::Optional<LayoutUnit> available_size) const {
+    absl::optional<LayoutUnit> available_size) const {
   NOT_DESTROYED();
-  const base::Optional<Length>& gap =
+  const absl::optional<Length>& gap =
       direction == kForColumns ? StyleRef().ColumnGap() : StyleRef().RowGap();
   if (!gap)
     return LayoutUnit();
@@ -435,7 +435,7 @@ LayoutUnit LayoutGrid::GridGap(GridTrackSizingDirection direction) const {
   LayoutUnit available_size;
   bool is_row_axis = direction == kForColumns;
 
-  const base::Optional<Length>& gap =
+  const absl::optional<Length>& gap =
       is_row_axis ? StyleRef().ColumnGap() : StyleRef().RowGap();
   if (!gap)
     return LayoutUnit();
@@ -455,7 +455,7 @@ LayoutUnit LayoutGrid::GuttersSize(
     GridTrackSizingDirection direction,
     size_t start_line,
     size_t span,
-    base::Optional<LayoutUnit> available_size) const {
+    absl::optional<LayoutUnit> available_size) const {
   NOT_DESTROYED();
   if (span <= 1)
     return LayoutUnit();
@@ -545,7 +545,7 @@ MinMaxSizes LayoutGrid::ComputeIntrinsicLogicalWidths() const {
 
   std::unique_ptr<Grid> grid = Grid::Create(this);
   GridTrackSizingAlgorithm algorithm(this, *grid);
-  PlaceItemsOnGrid(algorithm, base::nullopt);
+  PlaceItemsOnGrid(algorithm, absl::nullopt);
 
   PerformGridItemsPreLayout(algorithm);
 
@@ -564,7 +564,7 @@ MinMaxSizes LayoutGrid::ComputeIntrinsicLogicalWidths() const {
 
   size_t number_of_tracks = algorithm.Tracks(kForColumns).size();
   LayoutUnit total_gutters_size = GuttersSize(
-      algorithm.GetGrid(), kForColumns, 0, number_of_tracks, base::nullopt);
+      algorithm.GetGrid(), kForColumns, 0, number_of_tracks, absl::nullopt);
 
   sizes.min_size += algorithm.MinContentSize() + total_gutters_size;
   sizes.max_size += algorithm.MaxContentSize() + total_gutters_size;
@@ -576,7 +576,7 @@ void LayoutGrid::ComputeTrackSizesForIndefiniteSize(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   const Grid& grid = algo.GetGrid();
-  algo.Setup(direction, NumTracks(direction, grid), base::nullopt);
+  algo.Setup(direction, NumTracks(direction, grid), absl::nullopt);
   algo.Run();
 
 #if DCHECK_IS_ON()
@@ -584,14 +584,14 @@ void LayoutGrid::ComputeTrackSizesForIndefiniteSize(
 #endif
 }
 
-base::Optional<LayoutUnit> LayoutGrid::OverrideIntrinsicContentLogicalSize(
+absl::optional<LayoutUnit> LayoutGrid::OverrideIntrinsicContentLogicalSize(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   if (direction == kForColumns && HasOverrideIntrinsicContentLogicalWidth())
     return OverrideIntrinsicContentLogicalWidth();
   if (direction == kForRows && HasOverrideIntrinsicContentLogicalHeight())
     return OverrideIntrinsicContentLogicalHeight();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 LayoutUnit LayoutGrid::OverrideContainingBlockContentSizeForChild(
@@ -603,16 +603,16 @@ LayoutUnit LayoutGrid::OverrideContainingBlockContentSizeForChild(
 }
 
 // Unfortunately there are still many layout methods that return -1 for
-// non-resolvable sizes. We prefer to represent them with base::nullopt.
-static base::Optional<LayoutUnit> ConvertLayoutUnitToOptional(LayoutUnit size) {
+// non-resolvable sizes. We prefer to represent them with absl::nullopt.
+static absl::optional<LayoutUnit> ConvertLayoutUnitToOptional(LayoutUnit size) {
   if (size == -1)
-    return base::nullopt;
+    return absl::nullopt;
   return size;
 }
 
 size_t LayoutGrid::ComputeAutoRepeatTracksCount(
     GridTrackSizingDirection direction,
-    base::Optional<LayoutUnit> available_size) const {
+    absl::optional<LayoutUnit> available_size) const {
   NOT_DESTROYED();
   DCHECK(!available_size || available_size.value() != -1);
   bool is_row_axis = direction == kForColumns;
@@ -637,7 +637,7 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
   if (!available_size) {
     const Length& max_size = is_row_axis ? StyleRef().LogicalMaxWidth()
                                          : StyleRef().LogicalMaxHeight();
-    base::Optional<LayoutUnit> containing_block_available_size;
+    absl::optional<LayoutUnit> containing_block_available_size;
     LayoutUnit available_max_size = LayoutUnit();
     if (max_size.IsSpecified()) {
       if (max_size.IsPercentOrCalc()) {
@@ -654,7 +654,7 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
               : AdjustContentBoxLogicalHeightForBoxSizing(max_size_value);
     }
 
-    base::Optional<LayoutUnit> intrinsic_size_override =
+    absl::optional<LayoutUnit> intrinsic_size_override =
         OverrideIntrinsicContentLogicalSize(direction);
 
     const Length& min_size = is_row_axis ? StyleRef().LogicalMinWidth()
@@ -841,7 +841,7 @@ size_t LayoutGrid::ClampAutoRepeatTracks(GridTrackSizingDirection direction,
 // does know whether the available logical width is indefinite or not.
 void LayoutGrid::PlaceItemsOnGrid(
     GridTrackSizingAlgorithm& algorithm,
-    base::Optional<LayoutUnit> available_logical_width) const {
+    absl::optional<LayoutUnit> available_logical_width) const {
   NOT_DESTROYED();
   Grid& grid = algorithm.GetMutableGrid();
   size_t auto_repeat_rows = ComputeAutoRepeatTracksCount(
@@ -2264,7 +2264,7 @@ void LayoutGrid::GridAreaPositionForOutOfFlowChild(
   auto& line_of_positioned_item =
       is_row_axis ? column_of_positioned_item_ : row_of_positioned_item_;
   start = is_row_axis ? BorderLogicalLeft() : BorderBefore();
-  if (base::Optional<size_t> line = line_of_positioned_item.at(&child)) {
+  if (absl::optional<size_t> line = line_of_positioned_item.at(&child)) {
     auto& positions = is_row_axis ? column_positions_ : row_positions_;
     start = positions[line.value()];
   }

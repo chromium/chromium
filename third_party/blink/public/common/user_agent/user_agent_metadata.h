@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -35,10 +35,10 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   // is just non-trivial enough that it's better to be in one place.
   const std::string SerializeBrandVersionList();
 
-  static base::Optional<UserAgentMetadata> Demarshal(
-      const base::Optional<std::string>& encoded);
-  static base::Optional<std::string> Marshal(
-      const base::Optional<UserAgentMetadata>& ua_metadata);
+  static absl::optional<UserAgentMetadata> Demarshal(
+      const absl::optional<std::string>& encoded);
+  static absl::optional<std::string> Marshal(
+      const absl::optional<UserAgentMetadata>& ua_metadata);
   UserAgentBrandList brand_version_list;
 
   std::string full_version;
@@ -71,7 +71,7 @@ struct BLINK_COMMON_EXPORT UserAgentOverride {
   // Non-nullopt if custom values for user agent client hint properties
   // should be used. If this is null, and |ua_string_override| is non-empty,
   // no UA client hints will be sent.
-  base::Optional<UserAgentMetadata> ua_metadata_override;
+  absl::optional<UserAgentMetadata> ua_metadata_override;
 };
 
 bool BLINK_COMMON_EXPORT operator==(const UserAgentMetadata& a,

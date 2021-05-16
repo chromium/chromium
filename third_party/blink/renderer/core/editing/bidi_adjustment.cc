@@ -260,7 +260,7 @@ class AbstractInlineBoxAndSideAffinity {
       return {cursor,
               is_at_start ? NGCaretPositionType::kBeforeBox
                           : NGCaretPositionType::kAfterBox,
-              base::nullopt};
+              absl::nullopt};
     }
 
     return {cursor, NGCaretPositionType::kAtTextOffset,

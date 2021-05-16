@@ -157,7 +157,7 @@ StringKeyframeVector ProcessKeyframesRule(
 }
 
 // Finds the index of a keyframe with matching offset and easing.
-base::Optional<int> FindIndexOfMatchingKeyframe(
+absl::optional<int> FindIndexOfMatchingKeyframe(
     const StringKeyframeVector& keyframes,
     wtf_size_t start_index,
     double offset,
@@ -173,7 +173,7 @@ base::Optional<int> FindIndexOfMatchingKeyframe(
     if (easing.ToString() == keyframe->Easing().ToString())
       return i;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Tests conditions for inserting a bounding keyframe, which are outlined in
@@ -280,7 +280,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
 
     // Avoid unnecessary creation of extra keyframes by merging into
     // existing keyframes.
-    base::Optional<int> existing_keyframe_index = FindIndexOfMatchingKeyframe(
+    absl::optional<int> existing_keyframe_index = FindIndexOfMatchingKeyframe(
         keyframes, source_index + merged_frame_count + 1, keyframe_offset,
         easing);
     int target_index;
@@ -766,11 +766,11 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             timeline != existing_animation->Timeline()) {
           DCHECK(!is_animation_style_change);
 
-          base::Optional<TimelinePhase> inherited_phase;
-          base::Optional<AnimationTimeDelta> inherited_time;
+          absl::optional<TimelinePhase> inherited_phase;
+          absl::optional<AnimationTimeDelta> inherited_time;
 
           if (timeline) {
-            inherited_phase = base::make_optional(timeline->Phase());
+            inherited_phase = absl::make_optional(timeline->Phase());
             inherited_time = animation->UnlimitedCurrentTime();
 
             if (will_be_playing &&
@@ -798,12 +798,12 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
         AnimationTimeline* timeline =
             ComputeTimeline(&element, timeline_name, scroll_timeline_rule,
                             nullptr /* existing_timeline */);
-        base::Optional<TimelinePhase> inherited_phase;
-        base::Optional<AnimationTimeDelta> inherited_time =
+        absl::optional<TimelinePhase> inherited_phase;
+        absl::optional<AnimationTimeDelta> inherited_time =
             AnimationTimeDelta();
 
         if (timeline && !timeline->IsMonotonicallyIncreasing()) {
-          inherited_phase = base::make_optional(timeline->Phase());
+          inherited_phase = absl::make_optional(timeline->Phase());
           inherited_time = timeline->CurrentTime();
         }
         update.StartAnimation(
@@ -852,9 +852,9 @@ AnimationEffect::EventDelegate* CSSAnimations::CreateEventDelegate(
   Timing::Phase previous_phase =
       old_animation_delegate ? old_animation_delegate->getPreviousPhase()
                              : Timing::kPhaseNone;
-  base::Optional<double> previous_iteration =
+  absl::optional<double> previous_iteration =
       old_animation_delegate ? old_animation_delegate->getPreviousIteration()
-                             : base::nullopt;
+                             : absl::nullopt;
   return MakeGarbageCollected<AnimationEventDelegate>(
       element, animation_name, previous_phase, previous_iteration);
 }
@@ -1214,8 +1214,8 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
   double reversing_shortening_factor = 1;
   if (interrupted_transition) {
     AnimationEffect* effect = interrupted_transition->animation->effect();
-    const base::Optional<double> interrupted_progress =
-        effect ? effect->Progress() : base::nullopt;
+    const absl::optional<double> interrupted_progress =
+        effect ? effect->Progress() : absl::nullopt;
     if (interrupted_progress) {
       reversing_adjusted_start_value = interrupted_transition->to.get();
       reversing_shortening_factor =
@@ -1265,7 +1265,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
       *MakeGarbageCollected<InertEffect>(model, timing, false,
-                                         AnimationTimeDelta(), base::nullopt));
+                                         AnimationTimeDelta(), absl::nullopt));
   DCHECK(!state.animating_element.GetElementAnimations() ||
          !state.animating_element.GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -1453,7 +1453,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
       DCHECK(!current_time_numberish.IsCSSNumericValue());
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-      base::Optional<AnimationTimeDelta> current_time =
+      absl::optional<AnimationTimeDelta> current_time =
           AnimationTimeDelta::FromMillisecondsD(
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
               current_time_numberish->GetAsDouble()
@@ -1468,7 +1468,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
           effect->Model(), effect->SpecifiedTiming(), false, current_time,
-          base::nullopt);
+          absl::nullopt);
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);
@@ -1676,7 +1676,7 @@ bool CSSAnimations::AnimationEventDelegate::RequiresIterationEvents(
 void CSSAnimations::AnimationEventDelegate::OnEventCondition(
     const AnimationEffect& animation_node,
     Timing::Phase current_phase) {
-  const base::Optional<double> current_iteration =
+  const absl::optional<double> current_iteration =
       animation_node.CurrentIteration();
 
   // See http://drafts.csswg.org/css-animations-2/#event-dispatch
@@ -1810,7 +1810,7 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
       // Per the css-transitions-2 spec, transitioncancel is fired with the
       // "active time of the animation at the moment it was cancelled,
       // calculated using a fill mode of both".
-      base::Optional<AnimationTimeDelta> cancel_active_time =
+      absl::optional<AnimationTimeDelta> cancel_active_time =
           CalculateActiveTime(animation_node.SpecifiedTiming().ActiveDuration(),
                               Timing::FillMode::BOTH,
                               animation_node.LocalTime(), previous_phase_,

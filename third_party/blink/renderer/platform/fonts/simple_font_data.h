@@ -218,8 +218,8 @@ class PLATFORM_EXPORT SimpleFontData : public FontData {
 
   // The multiplier to the advance of each letter as defined by the
   // advance-override value in @font-face.
-  base::Optional<float> advance_override_;
-  base::Optional<float> advance_override_vertical_upright_;
+  absl::optional<float> advance_override_;
+  absl::optional<float> advance_override_vertical_upright_;
 
   mutable FontHeight normalized_typo_ascent_descent_;
 

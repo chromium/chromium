@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_NAVIGATION_BODY_LOADER_H_
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 
@@ -39,7 +39,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
         int64_t total_encoded_body_length,
         int64_t total_decoded_body_length,
         bool should_report_corb_blocking,
-        const base::Optional<WebURLError>& error) = 0;
+        const absl::optional<WebURLError>& error) = 0;
   };
 
   // It should be safe to destroy WebNavigationBodyLoader at any moment,

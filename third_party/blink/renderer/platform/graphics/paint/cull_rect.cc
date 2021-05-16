@@ -134,7 +134,7 @@ CullRect::ApplyTransformResult CullRect::ApplyScrollTranslation(
 
 void CullRect::ApplyTransforms(const TransformPaintPropertyNode& source,
                                const TransformPaintPropertyNode& destination,
-                               const base::Optional<CullRect>& old_cull_rect) {
+                               const absl::optional<CullRect>& old_cull_rect) {
   DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
 
   Vector<const TransformPaintPropertyNode*> scroll_translations;
@@ -200,7 +200,7 @@ bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& root,
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
-    const base::Optional<CullRect>& old_cull_rect) {
+    const absl::optional<CullRect>& old_cull_rect) {
   DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
          RuntimeEnabledFeatures::CullRectUpdateEnabled());
 

@@ -76,7 +76,7 @@ class IsolatedWorldCSPDelegate final
   std::unique_ptr<SourceLocation> GetSourceLocation() override {
     return nullptr;
   }
-  base::Optional<uint16_t> GetStatusCode() override { return base::nullopt; }
+  absl::optional<uint16_t> GetStatusCode() override { return absl::nullopt; }
   String GetDocumentReferrer() override { return g_empty_string; }
   void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
                               Element*) override {

@@ -207,7 +207,7 @@ class MockHandledEventCallback {
                  void(mojom::InputEventResultState,
                       const ui::LatencyInfo&,
                       InputHandlerProxy::DidOverscrollParams*,
-                      base::Optional<cc::TouchAction>));
+                      absl::optional<cc::TouchAction>));
 
   WebWidget::HandledEventCallback GetCallback() {
     return base::BindOnce(&MockHandledEventCallback::HandleCallback,
@@ -219,7 +219,7 @@ class MockHandledEventCallback {
       mojom::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll,
-      base::Optional<cc::TouchAction> touch_action) {
+      absl::optional<cc::TouchAction> touch_action) {
     Run(ack_state, latency_info, overscroll.get(), touch_action);
   }
 

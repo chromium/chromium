@@ -14,12 +14,12 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
@@ -276,7 +276,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
     return frame_task_queue_controller_.get();
   }
 
-  // Create the QueueTraits for a specific TaskType. This returns base::nullopt
+  // Create the QueueTraits for a specific TaskType. This returns absl::nullopt
   // for loading tasks and non-frame-level tasks.
   static MainThreadTaskQueue::QueueTraits CreateQueueTraitsForTaskType(
       TaskType);

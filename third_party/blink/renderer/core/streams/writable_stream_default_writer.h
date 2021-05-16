@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -100,9 +100,9 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   WritableStream* OwnerWritableStream() { return owner_writable_stream_; }
 
   // This is a variant of GetDesiredSize() that doesn't create an intermediate
-  // JavaScript object. Instead it returns base::nullopt where the JavaScript
+  // JavaScript object. Instead it returns absl::nullopt where the JavaScript
   // version would return null.
-  base::Optional<double> GetDesiredSizeInternal() const;
+  absl::optional<double> GetDesiredSizeInternal() const;
 
   void SetReadyPromise(StreamPromiseResolver*);
 

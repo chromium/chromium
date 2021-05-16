@@ -396,7 +396,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
   // unexpected scroll begin arrives. We currently think we're in a scroll
   // because of the first ScrollBegin so clear this so we don't spurriously
   // call ScrollEnd. It will be set again in HandleGestureScrollBegin.
-  currently_active_gesture_device_ = base::nullopt;
+  currently_active_gesture_device_ = absl::nullopt;
 
   auto* gesture_event =
       static_cast<blink::WebGestureEvent*>(event->EventPointer());
@@ -484,7 +484,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
     case WebGestureEvent::Type::kGestureScrollEnd:
     case WebGestureEvent::Type::kGesturePinchEnd:
       if (!handling_gesture_on_impl_thread_)
-        currently_active_gesture_device_ = base::nullopt;
+        currently_active_gesture_device_ = absl::nullopt;
       break;
     default:
       break;
@@ -573,7 +573,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
   DCHECK(!scrollbar_latency_info.FindLatency(
       ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT, nullptr));
 
-  base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+  absl::optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
   if (type == WebInputEvent::Type::kGestureScrollBegin) {
     last_injected_gesture_was_begin_ = true;
   } else {
@@ -651,7 +651,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     return DROP_EVENT;
   }
 
-  if (base::Optional<InputHandlerProxy::EventDisposition> handled =
+  if (absl::optional<InputHandlerProxy::EventDisposition> handled =
           cursor_control_handler_->ObserveInputEvent(event))
     return *handled;
 
@@ -826,7 +826,7 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
   const bool is_compositor_scroll =
       reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain;
 
-  base::Optional<EventDisposition> disposition =
+  absl::optional<EventDisposition> disposition =
       (device == WebGestureDevice::kTouchpad ? mouse_wheel_result_
                                              : touch_result_);
 
@@ -865,7 +865,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
            wheel_event.momentum_phase != WebMouseWheelEvent::kPhaseNone);
 
     // TODO(bokan): This should never happen but after changing
-    // mouse_event_result_ to a base::Optional, crashes indicate that it does
+    // mouse_event_result_ to a absl::optional, crashes indicate that it does
     // so |if| maintains prior behavior. https://crbug.com/1069760.
     if (mouse_wheel_result_.has_value()) {
       result = mouse_wheel_result_.value();
@@ -1023,7 +1023,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
     TRACE_EVENT_INSTANT0("input", "Move Scroll To Main Thread",
                          TRACE_EVENT_SCOPE_THREAD);
     handling_gesture_on_impl_thread_ = false;
-    currently_active_gesture_device_ = base::nullopt;
+    currently_active_gesture_device_ = absl::nullopt;
     client_->GenerateScrollBeginAndSendToMainThread(
         gesture_event, original_attribution, original_metrics);
 
@@ -1097,7 +1097,7 @@ void InputHandlerProxy::InputHandlerScrollEnd() {
   handling_gesture_on_impl_thread_ = false;
 
   DCHECK(!gesture_pinch_in_progress_);
-  currently_active_gesture_device_ = base::nullopt;
+  currently_active_gesture_device_ = absl::nullopt;
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(

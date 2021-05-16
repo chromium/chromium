@@ -45,8 +45,8 @@ TCPSocket::GetTCPSocketObserver() {
 }
 
 void TCPSocket::Init(int32_t result,
-                     const base::Optional<net::IPEndPoint>& local_addr,
-                     const base::Optional<net::IPEndPoint>& peer_addr,
+                     const absl::optional<net::IPEndPoint>& local_addr,
+                     const absl::optional<net::IPEndPoint>& peer_addr,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(resolver_);
@@ -138,8 +138,8 @@ void TCPSocket::OnWritableStreamAbort() {
 }
 
 void TCPSocket::DoClose(bool is_local_close) {
-  local_addr_ = base::nullopt;
-  peer_addr_ = base::nullopt;
+  local_addr_ = absl::nullopt;
+  peer_addr_ = absl::nullopt;
   tcp_socket_.reset();
   socket_observer_receiver_.reset();
   feature_handle_for_scheduler_.reset();

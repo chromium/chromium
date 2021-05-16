@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 
@@ -28,7 +28,7 @@ class MockMediaStreamRegistry final {
   MockMediaStreamVideoSource* AddVideoTrack(
       const std::string& track_id,
       const VideoTrackAdapterSettings& adapter_settings,
-      const base::Optional<bool>& noise_reduction,
+      const absl::optional<bool>& noise_reduction,
       bool is_screen_cast,
       double min_frame_rate);
   MockMediaStreamVideoSource* AddVideoTrack(const std::string& track_id);

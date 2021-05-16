@@ -166,7 +166,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   gfx::PointF VisualViewportOffset() const override;
   gfx::SizeF VisualViewportSize() const override;
   void SetScreenOrientationOverrideForTesting(
-      base::Optional<blink::mojom::ScreenOrientation> orientation) override;
+      absl::optional<blink::mojom::ScreenOrientation> orientation) override;
   void UseSynchronousResizeModeForTesting(bool enable) override;
   void SetWindowRectSynchronouslyForTesting(
       const gfx::Rect& new_window_rect) override;
@@ -206,7 +206,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   const web_pref::WebPreferences& GetWebPreferences() override;
   void SetHistoryListFromNavigation(
       int32_t history_offset,
-      base::Optional<int32_t> history_length) override;
+      absl::optional<int32_t> history_length) override;
   void IncreaseHistoryListFromNavigation() override;
   int32_t HistoryBackListCount() const override;
   int32_t HistoryForwardListCount() const override;
@@ -240,9 +240,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   //
   // Add new methods with clear precedence for new use cases.
   void SetBackgroundColorOverrideForFullscreenController(
-      base::Optional<SkColor>);
+      absl::optional<SkColor>);
   void SetBaseBackgroundColorOverrideTransparent(bool override_to_transparent);
-  void SetBaseBackgroundColorOverrideForInspector(base::Optional<SkColor>);
+  void SetBaseBackgroundColorOverrideForInspector(absl::optional<SkColor>);
 
   // Resize the WebView. You likely should be using
   // MainFrameWidget()->Resize instead.
@@ -287,7 +287,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float DefaultMaximumPageScaleFactor() const;
   float ClampPageScaleFactorToLimits(float) const;
   void ResetScaleStateImmediately();
-  base::Optional<mojom::blink::ScreenOrientation> ScreenOrientationOverride();
+  absl::optional<mojom::blink::ScreenOrientation> ScreenOrientationOverride();
 
   // This is only for non-composited WebViewPlugin.
   void InvalidateContainer();
@@ -816,9 +816,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
 
-  base::Optional<SkColor> background_color_override_for_fullscreen_controller_;
+  absl::optional<SkColor> background_color_override_for_fullscreen_controller_;
   bool override_base_background_color_to_transparent_ = false;
-  base::Optional<SkColor> base_background_color_override_for_inspector_;
+  absl::optional<SkColor> base_background_color_override_for_inspector_;
   SkColor base_background_color_ = Color::kWhite;
 
   float zoom_factor_override_ = 0.f;
@@ -871,7 +871,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost>
       remote_main_frame_host_remote_;
 
-  base::Optional<mojom::blink::ScreenOrientation> screen_orientation_override_;
+  absl::optional<mojom::blink::ScreenOrientation> screen_orientation_override_;
 
   mojo::AssociatedReceiver<mojom::blink::PageBroadcast> receiver_;
 

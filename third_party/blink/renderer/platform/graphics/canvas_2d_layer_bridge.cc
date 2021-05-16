@@ -484,7 +484,7 @@ void Canvas2DLayerBridge::FlushRecording() {
       (raster_interface || !IsAccelerated()) && will_measure;
 
   RasterTimer rasterTimer;
-  base::Optional<base::ElapsedTimer> timer;
+  absl::optional<base::ElapsedTimer> timer;
   // Start Recording the raster duration
   if (measure_raster_metric) {
     if (IsAccelerated()) {

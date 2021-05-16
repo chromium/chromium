@@ -29,7 +29,7 @@ class PLATFORM_EXPORT FontFeatures {
 
   const hb_feature_t* data() const { return features_.data(); }
 
-  base::Optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
+  absl::optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
 
   void Append(const hb_feature_t& feature) { features_.push_back(feature); }
   void Insert(const hb_feature_t& feature) { features_.push_front(feature); }

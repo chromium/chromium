@@ -224,7 +224,7 @@ void RegisterWithScheduler(ExecutionContext* execution_context,
     return;
   // TODO(altimin): Ideally we would also support tracking unregistration of
   // event listeners, but we don't do this for performance reasons.
-  base::Optional<SchedulingPolicy::Feature> feature_for_scheduler;
+  absl::optional<SchedulingPolicy::Feature> feature_for_scheduler;
   if (event_type == event_type_names::kPageshow) {
     feature_for_scheduler = SchedulingPolicy::Feature::kPageShowEventListener;
   } else if (event_type == event_type_names::kPagehide) {

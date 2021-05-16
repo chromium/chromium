@@ -295,7 +295,7 @@ int WebResourceRequestSender::SendAsync(
           std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
           loader_options, request.get(), client.get(), traffic_annotation,
           std::move(loading_task_runner),
-          base::make_optional(std_cors_exempt_header_list));
+          absl::make_optional(std_cors_exempt_header_list));
 
   // The request may be canceled by `ThrottlingURLLoader::CreateAndStart()`, in
   // which case `DeletePendingRequest()` has reset the `request_info_` to

@@ -10,8 +10,8 @@ namespace blink {
 // static
 LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     const String& file,
-    base::Optional<uint32_t> line_number,
-    base::Optional<uint32_t> column_number) {
+    absl::optional<uint32_t> line_number,
+    absl::optional<uint32_t> column_number) {
   return file.IsEmpty() ? CreateReportLocation(SourceLocation::Capture())
                         : ReportLocation{file, line_number, column_number};
 }
@@ -40,7 +40,7 @@ void LocationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
 }
 
 unsigned LocationReportBody::MatchId() const {
-  const base::Optional<uint32_t> line = lineNumber(), column = columnNumber();
+  const absl::optional<uint32_t> line = lineNumber(), column = columnNumber();
 
   unsigned hash = sourceFile().IsNull() ? 0 : sourceFile().Impl()->GetHash();
   hash = WTF::HashInts(hash,

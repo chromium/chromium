@@ -43,7 +43,7 @@ class CORE_EXPORT CSSMathMin final : public CSSMathVariadic {
  private:
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
-  base::Optional<CSSNumericSumValue> SumValue() const final;
+  absl::optional<CSSNumericSumValue> SumValue() const final;
 };
 
 }  // namespace blink

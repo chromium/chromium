@@ -208,7 +208,7 @@ FloatPoint Path::PointAtLength(float length) const {
   return PointAndNormalAtLength(length).point;
 }
 
-static base::Optional<PointAndTangent> CalculatePointAndNormalOnPath(
+static absl::optional<PointAndTangent> CalculatePointAndNormalOnPath(
     SkPathMeasure& measure,
     SkScalar& contour_start,
     SkScalar length) {
@@ -229,13 +229,13 @@ static base::Optional<PointAndTangent> CalculatePointAndNormalOnPath(
     }
     contour_start = contour_end;
   } while (measure.nextContour());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 PointAndTangent Path::PointAndNormalAtLength(float length) const {
   SkPathMeasure measure(path_, false);
   SkScalar start = 0;
-  if (base::Optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+  if (absl::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
           measure, start, WebCoreFloatToSkScalar(length)))
     return *result;
   return {FloatPoint(path_.getPoint(0)), 0};
@@ -255,7 +255,7 @@ PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
       accumulated_length_ = 0;
     }
 
-    base::Optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
+    absl::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
         path_measure_, accumulated_length_, sk_length);
     if (result)
       return *result;

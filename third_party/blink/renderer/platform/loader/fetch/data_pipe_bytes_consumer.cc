@@ -213,7 +213,7 @@ void DataPipeBytesConsumer::SignalComplete() {
 void DataPipeBytesConsumer::SignalSize(uint64_t size) {
   if (!IsReadableOrWaiting() || has_pending_complete_ || has_pending_error_)
     return;
-  total_size_ = base::make_optional(size);
+  total_size_ = absl::make_optional(size);
   DCHECK_LE(num_read_bytes_, *total_size_);
   if (!data_pipe_.is_valid() && num_read_bytes_ < *total_size_) {
     SignalError(Error());

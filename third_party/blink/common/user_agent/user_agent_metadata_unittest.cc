@@ -4,9 +4,9 @@
 
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
-#include "base/optional.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_mojom_traits.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 
@@ -30,9 +30,9 @@ blink::UserAgentMetadata MakeToEncode() {
 }  // namespace
 
 TEST(UserAgentMetaDataTest, Boundary) {
-  EXPECT_EQ(base::nullopt, UserAgentMetadata::Marshal(base::nullopt));
-  EXPECT_EQ(base::nullopt, UserAgentMetadata::Demarshal(base::nullopt));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt, UserAgentMetadata::Marshal(absl::nullopt));
+  EXPECT_EQ(absl::nullopt, UserAgentMetadata::Demarshal(absl::nullopt));
+  EXPECT_EQ(absl::nullopt,
             UserAgentMetadata::Demarshal(std::string("nonsense")));
 }
 

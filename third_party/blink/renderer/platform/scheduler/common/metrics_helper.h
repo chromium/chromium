@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_METRICS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_METRICS_HELPER_H_
 
-#include "base/optional.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/thread_metrics.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

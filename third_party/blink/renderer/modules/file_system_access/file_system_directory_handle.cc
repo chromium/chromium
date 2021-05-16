@@ -186,7 +186,7 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
       possible_child->Transfer(),
       WTF::Bind(
           [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
-             const base::Optional<Vector<String>>& path) {
+             const absl::optional<Vector<String>>& path) {
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               file_system_access_error::Reject(resolver, *result);
               return;
@@ -260,7 +260,7 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
           [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                                      bool)> callback,
              FileSystemAccessErrorPtr result,
-             const base::Optional<Vector<String>>& path) {
+             const absl::optional<Vector<String>>& path) {
             std::move(callback).Run(std::move(result),
                                     path.has_value() && path->IsEmpty());
           },

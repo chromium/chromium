@@ -345,7 +345,7 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
 
   MainThreadSchedulerImplForTest(
       std::unique_ptr<base::sequence_manager::SequenceManager> manager,
-      base::Optional<base::Time> initial_virtual_time)
+      absl::optional<base::Time> initial_virtual_time)
       : MainThreadSchedulerImpl(std::move(manager), initial_virtual_time),
         update_policy_count_(0) {}
 
@@ -420,7 +420,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetRandomisedSamplingEnabled(true)
                 .Build()),
-        base::nullopt));
+        absl::nullopt));
     if (initially_ensure_usecase_none_)
       EnsureUseCaseNone();
   }

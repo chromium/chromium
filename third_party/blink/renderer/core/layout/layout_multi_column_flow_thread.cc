@@ -856,7 +856,7 @@ void LayoutMultiColumnFlowThread::CalculateColumnCountAndWidth(
 
 LayoutUnit LayoutMultiColumnFlowThread::ColumnGap(const ComputedStyle& style,
                                                   LayoutUnit available_width) {
-  if (const base::Optional<Length>& column_gap = style.ColumnGap())
+  if (const absl::optional<Length>& column_gap = style.ColumnGap())
     return ValueForLength(*column_gap, available_width);
 
   // "1em" is recommended as the normal gap setting. Matches <p> margins.

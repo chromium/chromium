@@ -11,11 +11,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/optional.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom-blink.h"
 #include "third_party/blink/public/platform/input/synchronous_input_handler_proxy.h"
@@ -64,8 +64,8 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   void SubmitCompositorFrame(
       uint32_t layer_tree_frame_sink_id,
       const viz::LocalSurfaceId& local_surface_id,
-      base::Optional<viz::CompositorFrame> frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list) final;
+      absl::optional<viz::CompositorFrame> frame,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list) final;
   void SetNeedsBeginFrames(bool needs_begin_frames) final;
   void SinkDestroyed() final;
 
@@ -104,9 +104,9 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
       mojom::blink::SyncCompositorCommonRendererParamsPtr,
       uint32_t layer_tree_frame_sink_id,
       uint32_t metadata_version,
-      const base::Optional<viz::LocalSurfaceId>& local_surface_id,
-      base::Optional<viz::CompositorFrame>,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list);
+      const absl::optional<viz::LocalSurfaceId>& local_surface_id,
+      absl::optional<viz::CompositorFrame>,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list);
 
   DemandDrawHwCallback hardware_draw_reply_;
   DemandDrawSwCallback software_draw_reply_;

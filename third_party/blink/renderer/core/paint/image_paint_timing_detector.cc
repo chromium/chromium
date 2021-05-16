@@ -142,7 +142,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
 
 void ImagePaintTimingDetector::OnPaintFinished() {
   frame_index_++;
-  viewport_size_ = base::nullopt;
+  viewport_size_ = absl::nullopt;
   if (need_update_timing_at_frame_end_) {
     need_update_timing_at_frame_end_ = false;
     frame_view_->GetPaintTimingDetector()
@@ -260,7 +260,7 @@ void ImagePaintTimingDetector::RecordImage(
       cached_image.IsLoaded()) {
     records_manager_.OnImageLoaded(record_id, frame_index_, style_image);
     need_update_timing_at_frame_end_ = true;
-    if (base::Optional<PaintTimingVisualizer>& visualizer =
+    if (absl::optional<PaintTimingVisualizer>& visualizer =
             frame_view_->GetPaintTimingDetector().Visualizer()) {
       FloatRect mapped_visual_rect =
           frame_view_->GetPaintTimingDetector().CalculateVisualRect(
@@ -303,7 +303,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const LayoutObject& object,
     const ImageResourceContent& cached_image) {
-  if (base::Optional<PaintTimingVisualizer>& visualizer =
+  if (absl::optional<PaintTimingVisualizer>& visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
     visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
                                        cached_image);

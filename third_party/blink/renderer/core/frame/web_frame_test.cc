@@ -35,7 +35,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
@@ -54,6 +53,7 @@
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -704,7 +704,7 @@ class CapabilityDelegationMessageListener final : public NativeEventListener {
   }
 
  private:
-  base::Optional<bool> delegate_payment_request_;
+  absl::optional<bool> delegate_payment_request_;
 };
 
 }  // namespace
@@ -1253,14 +1253,14 @@ TEST_F(WebFrameTest, PostMessageEvent) {
   scoped_refptr<SecurityOrigin> correct_origin =
       SecurityOrigin::Create(ToKURL(base_url_));
   frame->PostMessageEvent(
-      base::nullopt, g_empty_string, correct_origin->ToString(),
+      absl::nullopt, g_empty_string, correct_origin->ToString(),
       BlinkTransferableMessage::FromMessageEvent(message_event));
 
   // Send another message with incorrect origin.
   scoped_refptr<SecurityOrigin> incorrect_origin =
       SecurityOrigin::Create(ToKURL(chrome_url_));
   frame->PostMessageEvent(
-      base::nullopt, g_empty_string, incorrect_origin->ToString(),
+      absl::nullopt, g_empty_string, incorrect_origin->ToString(),
       BlinkTransferableMessage::FromMessageEvent(message_event));
 
   // Verify that only the first addition is in the body of the page.
@@ -7183,7 +7183,7 @@ class TestNewWindowWebViewClient
                       network::mojom::blink::WebSandboxFlags,
                       const SessionStorageNamespaceId&,
                       bool& consumed_user_gesture,
-                      const base::Optional<WebImpression>&) override {
+                      const absl::optional<WebImpression>&) override {
     EXPECT_TRUE(false);
     return nullptr;
   }
@@ -8885,7 +8885,7 @@ class ThemeColorTestLocalFrameHost : public FakeLocalFrameHost {
 
  private:
   // FakeLocalFrameHost:
-  void DidChangeThemeColor(base::Optional<::SkColor> theme_color) override {
+  void DidChangeThemeColor(absl::optional<::SkColor> theme_color) override {
     did_notify_ = true;
   }
 
@@ -8940,7 +8940,7 @@ TEST_F(WebFrameTest, ThemeColor) {
       "document.getElementById('tc2').removeAttribute('name');"));
   RunPendingTasks();
   EXPECT_TRUE(host.DidNotify());
-  EXPECT_EQ(base::nullopt, frame->GetDocument().ThemeColor());
+  EXPECT_EQ(absl::nullopt, frame->GetDocument().ThemeColor());
 }
 
 // Make sure that an embedder-triggered detach with a remote frame parent
@@ -9642,7 +9642,7 @@ class RemoteToLocalSwapWebFrameClient
     return *history_commit_type_;
   }
 
-  base::Optional<WebHistoryCommitType> history_commit_type_;
+  absl::optional<WebHistoryCommitType> history_commit_type_;
 };
 
 // The commit type should be Initial if we are swapping a RemoteFrame to a
@@ -10874,7 +10874,7 @@ class TestViewportIntersection : public FakeRemoteFrameHost {
   // FakeRemoteFrameHost:
   void UpdateViewportIntersection(
       mojom::blink::ViewportIntersectionStatePtr intersection_state,
-      const base::Optional<FrameVisualProperties>& visual_properties) override {
+      const absl::optional<FrameVisualProperties>& visual_properties) override {
     intersection_state_ = std::move(intersection_state);
   }
 
@@ -12990,7 +12990,7 @@ class ContextMenuWebFrameClient
   // WebLocalFrameClient:
   void UpdateContextMenuDataForTesting(
       const ContextMenuData& data,
-      const base::Optional<gfx::Point>&) override {
+      const absl::optional<gfx::Point>&) override {
     menu_data_ = data;
   }
 

@@ -69,7 +69,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   const String& encoding() const { return encoding_; }
   const String& lang() const { return lang_; }
   DOMDataView* data() const;
-  base::Optional<HeapVector<Member<NDEFRecord>>> toRecords(
+  absl::optional<HeapVector<Member<NDEFRecord>>> toRecords(
       ExceptionState& exception_state) const;
 
   device::mojom::NDEFRecordTypeCategory category() const { return category_; }

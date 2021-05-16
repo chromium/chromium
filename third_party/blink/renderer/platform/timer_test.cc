@@ -64,7 +64,7 @@ class TimerTest : public testing::Test {
         platform_->GetMainThreadScheduler()
             ->real_time_domain()
             ->CreateLazyNow();
-    base::Optional<base::TimeDelta> delay = platform_->GetMainThreadScheduler()
+    absl::optional<base::TimeDelta> delay = platform_->GetMainThreadScheduler()
                                                 ->GetActiveTimeDomain()
                                                 ->DelayTillNextTask(&lazy_now);
     if (!delay)

@@ -7,7 +7,7 @@
 #include <set>
 
 #include "base/memory/singleton.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
 
@@ -55,7 +55,7 @@ DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
   return ClassifyWithFeatures(features_or_null.value());
 }
 
-base::Optional<DarkModeImageClassifier::Features>
+absl::optional<DarkModeImageClassifier::Features>
 DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
                                      const SkIRect& src) const {
   DCHECK(!pixmap.bounds().isEmpty());
@@ -68,7 +68,7 @@ DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
   // loaded and how we can fetch the correct resource. This condition will
   // prevent going further with the rest of the classification logic.
   if (sampled_pixels.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return ComputeFeatures(sampled_pixels, transparency_ratio, background_ratio);
 }

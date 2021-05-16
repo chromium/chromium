@@ -87,7 +87,7 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
   // the corresponding offscreen canvas.
   if (filter_quality_) {
     SkFilterQuality quality = filter_quality_.value();
-    filter_quality_ = base::nullopt;
+    filter_quality_ = absl::nullopt;
     UpdateOffscreenCanvasFilterQuality(quality);
   }
 }

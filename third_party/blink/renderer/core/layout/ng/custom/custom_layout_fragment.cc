@@ -15,7 +15,7 @@ CustomLayoutFragment::CustomLayoutFragment(
     CustomLayoutToken* token,
     scoped_refptr<const NGLayoutResult> layout_result,
     const LogicalSize& size,
-    const base::Optional<LayoutUnit> baseline,
+    const absl::optional<LayoutUnit> baseline,
     v8::Isolate* isolate)
     : child_(child),
       token_(token),

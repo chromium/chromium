@@ -1209,8 +1209,8 @@ inspector_compile_script_event::V8CacheResult::ConsumeResult::ConsumeResult(
 }
 
 inspector_compile_script_event::V8CacheResult::V8CacheResult(
-    base::Optional<ProduceResult> produce_result,
-    base::Optional<ConsumeResult> consume_result)
+    absl::optional<ProduceResult> produce_result,
+    absl::optional<ConsumeResult> consume_result)
     : produce_result(std::move(produce_result)),
       consume_result(std::move(consume_result)) {}
 

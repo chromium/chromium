@@ -66,7 +66,7 @@ bool UnsortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
   bool did_shift_marker = false;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
   for (const Member<DocumentMarker>& marker : *list) {
-    base::Optional<DocumentMarker::MarkerOffsets> result =
+    absl::optional<DocumentMarker::MarkerOffsets> result =
         marker->ComputeOffsetsAfterShift(offset, old_length, new_length);
     if (!result) {
       did_shift_marker = true;

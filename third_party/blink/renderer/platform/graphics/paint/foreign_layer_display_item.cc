@@ -48,7 +48,7 @@ void RecordForeignLayer(GraphicsContext& context,
   PaintController& paint_controller = context.GetPaintController();
   // This is like ScopedPaintChunkProperties but uses null id because foreign
   // layer chunk doesn't need an id nor a client.
-  base::Optional<PropertyTreeStateOrAlias> previous_properties;
+  absl::optional<PropertyTreeStateOrAlias> previous_properties;
   if (properties) {
     previous_properties.emplace(paint_controller.CurrentPaintChunkProperties());
     paint_controller.UpdateCurrentPaintChunkProperties(nullptr, *properties);

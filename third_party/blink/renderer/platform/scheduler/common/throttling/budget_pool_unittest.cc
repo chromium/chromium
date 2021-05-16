@@ -34,7 +34,7 @@ class BudgetPoolTest : public testing::Test {
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, null_task_runner_, &clock_),
-        base::nullopt);
+        absl::nullopt);
     task_queue_throttler_ = scheduler_->task_queue_throttler();
     start_time_ = clock_.NowTicks();
   }

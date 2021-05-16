@@ -91,7 +91,7 @@ void LinkHeader::SetValue(LinkParameterName name, const String& value) {
 template <typename Iterator>
 LinkHeader::LinkHeader(Iterator begin, Iterator end) : is_valid_(true) {
   std::string url;
-  std::unordered_map<std::string, base::Optional<std::string>> params;
+  std::unordered_map<std::string, absl::optional<std::string>> params;
   is_valid_ = link_header_util::ParseLinkHeaderValue(begin, end, &url, &params);
   if (!is_valid_)
     return;

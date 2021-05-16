@@ -158,35 +158,35 @@ ComputedEffectTiming* Timing::getComputedTiming(
 }
 
 Timing::CalculatedTiming Timing::CalculateTimings(
-    base::Optional<AnimationTimeDelta> local_time,
-    base::Optional<Phase> timeline_phase,
+    absl::optional<AnimationTimeDelta> local_time,
+    absl::optional<Phase> timeline_phase,
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
-    base::Optional<double> playback_rate) const {
+    absl::optional<double> playback_rate) const {
   const AnimationTimeDelta active_duration = ActiveDuration();
 
   Timing::Phase current_phase = CalculatePhase(
       active_duration, local_time, timeline_phase, animation_direction, *this);
 
-  const base::Optional<AnimationTimeDelta> active_time =
+  const absl::optional<AnimationTimeDelta> active_time =
       CalculateActiveTime(active_duration, ResolvedFillMode(is_keyframe_effect),
                           local_time, current_phase, *this);
 
-  base::Optional<double> progress;
+  absl::optional<double> progress;
 
-  const base::Optional<double> overall_progress =
+  const absl::optional<double> overall_progress =
       CalculateOverallProgress(current_phase, active_time, IterationDuration(),
                                iteration_count, iteration_start);
-  const base::Optional<double> simple_iteration_progress =
+  const absl::optional<double> simple_iteration_progress =
       CalculateSimpleIterationProgress(current_phase, overall_progress,
                                        iteration_start, active_time,
                                        active_duration, iteration_count);
-  const base::Optional<double> current_iteration =
+  const absl::optional<double> current_iteration =
       CalculateCurrentIteration(current_phase, active_time, iteration_count,
                                 overall_progress, simple_iteration_progress);
   const bool current_direction_is_forwards =
       IsCurrentDirectionForwards(current_iteration, direction);
-  const base::Optional<double> directed_progress = CalculateDirectedProgress(
+  const absl::optional<double> directed_progress = CalculateDirectedProgress(
       simple_iteration_progress, current_iteration, direction);
 
   progress = CalculateTransformedProgress(current_phase, directed_progress,
@@ -200,9 +200,9 @@ Timing::CalculatedTiming Timing::CalculateTimings(
     const AnimationTimeDelta start_offset =
         MultiplyZeroAlwaysGivesZero(IterationDuration(), iteration_start);
     DCHECK_GE(start_offset, AnimationTimeDelta());
-    const base::Optional<AnimationTimeDelta> offset_active_time =
+    const absl::optional<AnimationTimeDelta> offset_active_time =
         CalculateOffsetActiveTime(active_duration, active_time, start_offset);
-    const base::Optional<AnimationTimeDelta> iteration_time =
+    const absl::optional<AnimationTimeDelta> iteration_time =
         CalculateIterationTime(IterationDuration(), active_duration,
                                offset_active_time, start_offset, current_phase,
                                *this);

@@ -7,7 +7,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -141,7 +141,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   // If the object is a flow thread, this records the clip rect for this
   // fragment.
-  base::Optional<PhysicalRect> fragment_clip;
+  absl::optional<PhysicalRect> fragment_clip;
 
   // If the object is fragmented, this records the logical top of this fragment
   // in the flow thread.
@@ -312,7 +312,7 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE bool ObjectTypeMightNeedPaintProperties() const;
   ALWAYS_INLINE void UpdateCompositedLayerPaginationOffset();
   ALWAYS_INLINE PaintPropertyTreeBuilderFragmentContext
-  ContextForFragment(const base::Optional<PhysicalRect>& fragment_clip,
+  ContextForFragment(const absl::optional<PhysicalRect>& fragment_clip,
                      LayoutUnit logical_top_in_flow_thread) const;
   ALWAYS_INLINE void CreateFragmentContextsInFlowThread(
       bool needs_paint_properties);

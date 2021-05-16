@@ -462,7 +462,7 @@ inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
 // Nullable types
 template <typename CallbackInfo, typename T, typename... ExtraArgs>
 void V8SetReturnValue(const CallbackInfo& info,
-                      base::Optional<T> value,
+                      absl::optional<T> value,
                       ExtraArgs... extra_args) {
   if (value.has_value()) {
     V8SetReturnValue(info, value.value(),

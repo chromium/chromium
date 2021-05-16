@@ -61,7 +61,7 @@ void RemoteDOMWindow::ForwardPostMessage(
   if (!GetFrame())
     return;
 
-  base::Optional<base::UnguessableToken> agent_cluster;
+  absl::optional<base::UnguessableToken> agent_cluster;
   if (event->IsLockedToAgentCluster())
     agent_cluster = source->GetAgentClusterID();
   GetFrame()->ForwardPostMessage(event, agent_cluster, std::move(target),

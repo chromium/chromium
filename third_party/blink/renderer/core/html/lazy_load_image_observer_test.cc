@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -481,11 +481,11 @@ TEST_P(LazyLoadImagesParamsTest, NearViewport) {
 
   SimSubresourceRequest eager_resource("https://example.com/eager.png",
                                        "image/png");
-  base::Optional<SimSubresourceRequest> lazy_resource, auto_resource,
+  absl::optional<SimSubresourceRequest> lazy_resource, auto_resource,
       unset_resource;
-    lazy_resource.emplace("https://example.com/lazy.png", "image/png");
-    auto_resource.emplace("https://example.com/auto.png", "image/png");
-    unset_resource.emplace("https://example.com/unset.png", "image/png");
+  lazy_resource.emplace("https://example.com/lazy.png", "image/png");
+  auto_resource.emplace("https://example.com/auto.png", "image/png");
+  unset_resource.emplace("https://example.com/unset.png", "image/png");
   LoadURL("https://example.com/");
 
   main_resource.Complete(String::Format(
@@ -588,11 +588,11 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
 
   SimSubresourceRequest eager_resource("https://example.com/eager.png",
                                        "image/png");
-  base::Optional<SimSubresourceRequest> lazy_resource, auto_resource,
+  absl::optional<SimSubresourceRequest> lazy_resource, auto_resource,
       unset_resource;
-    lazy_resource.emplace("https://example.com/lazy.png", "image/png");
-    auto_resource.emplace("https://example.com/auto.png", "image/png");
-    unset_resource.emplace("https://example.com/unset.png", "image/png");
+  lazy_resource.emplace("https://example.com/lazy.png", "image/png");
+  auto_resource.emplace("https://example.com/auto.png", "image/png");
+  unset_resource.emplace("https://example.com/unset.png", "image/png");
 
   LoadURL("https://example.com/");
 

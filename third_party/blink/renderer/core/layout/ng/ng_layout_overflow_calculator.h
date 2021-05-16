@@ -34,7 +34,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
 
   // Applies the final adjustments given the bounds of any inflow children
   // (|inflow_bounds|), and returns the final layout-overflow.
-  const PhysicalRect Result(const base::Optional<PhysicalRect> inflow_bounds);
+  const PhysicalRect Result(const absl::optional<PhysicalRect> inflow_bounds);
 
   // Adds layout-overflow from |child_fragment|, at |offset|.
   void AddChild(const NGPhysicalBoxFragment& child_fragment,

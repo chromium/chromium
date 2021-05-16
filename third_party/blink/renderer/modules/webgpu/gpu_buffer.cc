@@ -92,7 +92,7 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
                                   uint32_t mode,
                                   uint64_t offset,
                                   ExceptionState& exception_state) {
-  return MapAsyncImpl(script_state, mode, offset, base::nullopt,
+  return MapAsyncImpl(script_state, mode, offset, absl::nullopt,
                       exception_state);
 }
 
@@ -107,7 +107,7 @@ ScriptPromise GPUBuffer::mapAsync(ScriptState* script_state,
 DOMArrayBuffer* GPUBuffer::getMappedRange(ExecutionContext* execution_context,
                                           uint64_t offset,
                                           ExceptionState& exception_state) {
-  return GetMappedRangeImpl(offset, base::nullopt, execution_context,
+  return GetMappedRangeImpl(offset, absl::nullopt, execution_context,
                             exception_state);
 }
 
@@ -131,7 +131,7 @@ void GPUBuffer::destroy(ScriptState* script_state) {
 ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
                                       uint32_t mode,
                                       uint64_t offset,
-                                      base::Optional<uint64_t> size,
+                                      absl::optional<uint64_t> size,
                                       ExceptionState& exception_state) {
   // Compute the defaulted size which is "until the end of the buffer" or 0 if
   // offset is past the end of the buffer.
@@ -172,7 +172,7 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
 
 DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(
     uint64_t offset,
-    base::Optional<uint64_t> size,
+    absl::optional<uint64_t> size,
     ExecutionContext* execution_context,
     ExceptionState& exception_state) {
   // Compute the defaulted size which is "until the end of the buffer" or 0 if

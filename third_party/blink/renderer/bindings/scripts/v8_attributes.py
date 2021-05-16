@@ -180,7 +180,7 @@ def attribute_context(interface, attribute, interfaces, component_info):
 
     cpp_type = idl_type.cpp_type
     if idl_type.is_explicit_nullable:
-        cpp_type = v8_types.cpp_template_type('base::Optional', cpp_type)
+        cpp_type = v8_types.cpp_template_type('absl::optional', cpp_type)
 
     context = {
         # [ActivityLogging]

@@ -113,7 +113,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     size_t total_sent_nodes_ = 0;
     // Histogram could be disabed in low time resolution OS, see
     // base::TimeTicks::IsHighResolution and ContentCaptureTask.
-    base::Optional<SentNodeCountCallback> callback_;
+    absl::optional<SentNodeCountCallback> callback_;
   };
 
   TaskSession();

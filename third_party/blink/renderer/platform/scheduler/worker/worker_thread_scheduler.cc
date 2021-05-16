@@ -48,7 +48,7 @@ constexpr double kDefaultRecoveryRate = 0.01;
 constexpr base::TimeDelta kDefaultMaxThrottlingDelay =
     base::TimeDelta::FromSeconds(60);
 
-base::Optional<base::TimeDelta> GetMaxBudgetLevel() {
+absl::optional<base::TimeDelta> GetMaxBudgetLevel() {
   int max_budget_level_ms;
   if (!base::StringToInt(
           base::GetFieldTrialParamValue(kWorkerThrottlingTrial,
@@ -57,7 +57,7 @@ base::Optional<base::TimeDelta> GetMaxBudgetLevel() {
     return kDefaultMaxBudget;
   }
   if (max_budget_level_ms < 0)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeDelta::FromMilliseconds(max_budget_level_ms);
 }
 
@@ -72,7 +72,7 @@ double GetBudgetRecoveryRate() {
   return recovery_rate;
 }
 
-base::Optional<base::TimeDelta> GetMaxThrottlingDelay() {
+absl::optional<base::TimeDelta> GetMaxThrottlingDelay() {
   int max_throttling_delay_ms;
   if (!base::StringToInt(
           base::GetFieldTrialParamValue(kWorkerThrottlingTrial,
@@ -81,7 +81,7 @@ base::Optional<base::TimeDelta> GetMaxThrottlingDelay() {
     return kDefaultMaxThrottlingDelay;
   }
   if (max_throttling_delay_ms < 0)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeDelta::FromMilliseconds(max_throttling_delay_ms);
 }
 

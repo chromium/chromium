@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -183,7 +183,7 @@ void DedicatedWorker::Start() {
     // https://html.spec.whatwg.org/C/#workeroptions
     auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
     if (options_->type() == "module") {
-      base::Optional<network::mojom::CredentialsMode> result =
+      absl::optional<network::mojom::CredentialsMode> result =
           Request::ParseCredentialsMode(options_->credentials());
       DCHECK(result);
       credentials_mode = result.value();
@@ -260,7 +260,7 @@ void DedicatedWorker::OnHostCreated(
     ContinueStart(script_request_url_,
                   nullptr /* worker_main_script_load_params */,
                   network::mojom::ReferrerPolicy::kDefault,
-                  base::nullopt /* response_address_space */,
+                  absl::nullopt /* response_address_space */,
                   String() /* source_code */, reject_coep_unsafe_none);
     return;
   }
@@ -325,7 +325,7 @@ void DedicatedWorker::OnScriptLoadStarted(
   // worker thread.
   ContinueStart(script_request_url_, std::move(worker_main_script_load_params),
                 network::mojom::ReferrerPolicy::kDefault,
-                base::nullopt /* response_address_space */,
+                absl::nullopt /* response_address_space */,
                 String() /* source_code */, RejectCoepUnsafeNone(false));
 }
 
@@ -395,7 +395,7 @@ void DedicatedWorker::ContinueStart(
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
     network::mojom::ReferrerPolicy referrer_policy,
-    base::Optional<network::mojom::IPAddressSpace> response_address_space,
+    absl::optional<network::mojom::IPAddressSpace> response_address_space,
     const String& source_code,
     RejectCoepUnsafeNone reject_coep_unsafe_none) {
   context_proxy_->StartWorkerGlobalScope(
@@ -411,7 +411,7 @@ std::unique_ptr<GlobalScopeCreationParams>
 DedicatedWorker::CreateGlobalScopeCreationParams(
     const KURL& script_url,
     network::mojom::ReferrerPolicy referrer_policy,
-    base::Optional<network::mojom::IPAddressSpace> response_address_space) {
+    absl::optional<network::mojom::IPAddressSpace> response_address_space) {
   base::UnguessableToken parent_devtools_token;
   std::unique_ptr<WorkerSettings> settings;
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {

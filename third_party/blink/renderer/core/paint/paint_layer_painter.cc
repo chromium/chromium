@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -284,7 +284,7 @@ void PaintLayerPainter::AdjustForPaintProperties(
       // TODO(paint-dev): Become block fragmentation aware. Just using the first
       // fragment seems wrong.
       cull_rect.MoveBy(RoundedIntPoint(first_root_fragment.PaintOffset()));
-      base::Optional<CullRect> old_cull_rect;
+      absl::optional<CullRect> old_cull_rect;
       if (!paint_layer_.SelfOrDescendantNeedsRepaint() &&
           !RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
         old_cull_rect = paint_layer_.PreviousCullRect();
@@ -436,7 +436,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       should_paint_content &&
       ShouldCreateSubsequence(paint_layer_, context, painting_info);
 
-  base::Optional<SubsequenceRecorder> subsequence_recorder;
+  absl::optional<SubsequenceRecorder> subsequence_recorder;
   if (should_create_subsequence) {
     if (!ShouldRepaintSubsequence(paint_layer_, painting_info) &&
         SubsequenceRecorder::UseCachedSubsequenceIfPossible(context,
@@ -524,7 +524,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       !is_painting_overlay_overflow_controls;
   bool is_video = IsA<LayoutVideo>(object);
 
-  base::Optional<ScopedPaintChunkHint> paint_chunk_hint;
+  absl::optional<ScopedPaintChunkHint> paint_chunk_hint;
   if (should_paint_content) {
     paint_chunk_hint.emplace(context.GetPaintController(),
                              object.FirstFragment().LocalBorderBoxProperties(),
@@ -545,7 +545,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   }
 
   if (should_paint_own_contents) {
-    base::Optional<ScopedPaintChunkHint> paint_chunk_hint_foreground;
+    absl::optional<ScopedPaintChunkHint> paint_chunk_hint_foreground;
     if (paint_chunk_hint && paint_chunk_hint->HasCreatedPaintChunk()) {
       // Hint a foreground chunk if we have created any chunks, to give the
       // paint chunk after the previous forced paint chunks a stable id.
@@ -643,7 +643,7 @@ static void ForAllFragments(GraphicsContext& context,
                             const PaintLayerFragments& fragments,
                             const Function& function) {
   for (wtf_size_t i = 0; i < fragments.size(); ++i) {
-    base::Optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
+    absl::optional<ScopedDisplayItemFragment> scoped_display_item_fragment;
     if (i)
       scoped_display_item_fragment.emplace(context, i);
     function(fragments[i]);

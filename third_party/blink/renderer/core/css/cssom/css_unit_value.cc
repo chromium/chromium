@@ -146,7 +146,7 @@ CSSUnitValue* CSSUnitValue::ConvertTo(
   return CSSUnitValue::Create(value_ * scale_factor, target_unit);
 }
 
-base::Optional<CSSNumericSumValue> CSSUnitValue::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSUnitValue::SumValue() const {
   CSSNumericSumValue sum;
   CSSNumericSumValue::UnitMap unit_map;
   if (unit_ != CSSPrimitiveValue::UnitType::kNumber)

@@ -346,7 +346,7 @@ PerformanceTiming::BackForwardCacheRestore() const {
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>>
       request_animation_frames =
           paint_timing->RequestAnimationFramesAfterBackForwardCacheRestore();
-  WTF::Vector<base::Optional<base::TimeDelta>> first_input_delays =
+  WTF::Vector<absl::optional<base::TimeDelta>> first_input_delays =
       interactive_detector->GetFirstInputDelaysAfterBackForwardCacheRestore();
   DCHECK_EQ(navigation_starts.size(), first_paints.size());
   DCHECK_EQ(navigation_starts.size(), request_animation_frames.size());
@@ -511,63 +511,63 @@ uint64_t PerformanceTiming::FirstInputOrScrollNotifiedTimestamp() const {
       paint_timing_detector->FirstInputOrScrollNotifiedTimestamp());
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::FirstInputDelay() const {
+absl::optional<base::TimeDelta> PerformanceTiming::FirstInputDelay() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return interactive_detector->GetFirstInputDelay();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::FirstInputTimestamp() const {
+absl::optional<base::TimeDelta> PerformanceTiming::FirstInputTimestamp() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return MonotonicTimeToPseudoWallTime(
       interactive_detector->GetFirstInputTimestamp());
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::LongestInputDelay() const {
+absl::optional<base::TimeDelta> PerformanceTiming::LongestInputDelay() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return interactive_detector->GetLongestInputDelay();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::LongestInputTimestamp()
+absl::optional<base::TimeDelta> PerformanceTiming::LongestInputTimestamp()
     const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return MonotonicTimeToPseudoWallTime(
       interactive_detector->GetLongestInputTimestamp());
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::FirstInputProcessingTime()
+absl::optional<base::TimeDelta> PerformanceTiming::FirstInputProcessingTime()
     const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return interactive_detector->GetFirstInputProcessingTime();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::FirstScrollDelay() const {
+absl::optional<base::TimeDelta> PerformanceTiming::FirstScrollDelay() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return interactive_detector->GetFirstScrollDelay();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::FirstScrollTimestamp()
+absl::optional<base::TimeDelta> PerformanceTiming::FirstScrollTimestamp()
     const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
-    return base::nullopt;
+    return absl::nullopt;
 
   return MonotonicTimeToPseudoWallTime(
       interactive_detector->GetFirstScrollTimestamp());
@@ -630,54 +630,54 @@ PerformanceTiming::ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
       cross_origin_isolated_capability_);
 }
 
-base::Optional<base::TimeTicks> PerformanceTiming::LastPortalActivatedPaint()
+absl::optional<base::TimeTicks> PerformanceTiming::LastPortalActivatedPaint()
     const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
-    return base::nullopt;
+    return absl::nullopt;
 
   return timing->LastPortalActivatedPaint();
 }
 
-base::Optional<base::TimeTicks> PerformanceTiming::UnloadStart() const {
+absl::optional<base::TimeTicks> PerformanceTiming::UnloadStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing)
-    return base::nullopt;
+    return absl::nullopt;
 
   return timing->UnloadEventStart();
 }
 
-base::Optional<base::TimeTicks> PerformanceTiming::UnloadEnd() const {
+absl::optional<base::TimeTicks> PerformanceTiming::UnloadEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing)
-    return base::nullopt;
+    return absl::nullopt;
 
   return timing->UnloadEventEnd();
 }
 
-base::Optional<base::TimeTicks> PerformanceTiming::CommitNavigationEnd() const {
+absl::optional<base::TimeTicks> PerformanceTiming::CommitNavigationEnd() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing)
-    return base::nullopt;
+    return absl::nullopt;
 
   return timing->CommitNavigationEnd();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyLoaded()
+absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyLoaded()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
   return timing->UserTimingMarkFullyLoaded();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyVisible()
+absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkFullyVisible()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
   return timing->UserTimingMarkFullyVisible();
 }
 
-base::Optional<base::TimeDelta> PerformanceTiming::UserTimingMarkInteractive()
+absl::optional<base::TimeDelta> PerformanceTiming::UserTimingMarkInteractive()
     const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
 
@@ -735,15 +735,15 @@ PaintTimingDetector* PerformanceTiming::GetPaintTimingDetector() const {
   return &DomWindow()->GetFrame()->View()->GetPaintTimingDetector();
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 PerformanceTiming::MonotonicTimeToPseudoWallTime(
-    const base::Optional<base::TimeTicks>& time) const {
+    const absl::optional<base::TimeTicks>& time) const {
   if (!time.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   const DocumentLoadTiming* timing = GetDocumentLoadTiming();
   if (!timing)
-    return base::nullopt;
+    return absl::nullopt;
 
   return timing->MonotonicTimeToPseudoWallTime(*time);
 }

@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_output_ipc.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -50,7 +50,7 @@ class MODULES_EXPORT MojoAudioOutputIPC
   void CreateStream(
       media::AudioOutputIPCDelegate* delegate,
       const media::AudioParameters& params,
-      const base::Optional<base::UnguessableToken>& processing_id) override;
+      const absl::optional<base::UnguessableToken>& processing_id) override;
   void PlayStream() override;
   void PauseStream() override;
   void FlushStream() override;
@@ -95,7 +95,7 @@ class MODULES_EXPORT MojoAudioOutputIPC
   // This is the state that |delegate_| expects the stream to be in. It is
   // maintained for when the stream is created.
   enum { kPaused, kPlaying } expected_state_ = kPaused;
-  base::Optional<double> volume_;
+  absl::optional<double> volume_;
 
   mojo::Receiver<media::mojom::blink::AudioOutputStreamProviderClient>
       receiver_{this};

@@ -98,7 +98,7 @@ WebString WebString::FromUTF16(const std::u16string& s) {
   return WebString(s.data(), s.length());
 }
 
-WebString WebString::FromUTF16(const base::Optional<std::u16string>& s) {
+WebString WebString::FromUTF16(const absl::optional<std::u16string>& s) {
   if (!s.has_value())
     return WebString();
   return WebString(s->data(), s->length());

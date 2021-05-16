@@ -70,7 +70,7 @@ inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
 
 inline const NGInlineCursor& InlineCursorForBlockFlow(
     const NGInlineCursor& cursor,
-    base::Optional<NGInlineCursor>* storage) {
+    absl::optional<NGInlineCursor>* storage) {
   if (*storage)
     return **storage;
   *storage = cursor;
@@ -146,7 +146,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const bool is_printing = document.Printing();
 
   // Determine whether or not we're selected.
-  base::Optional<NGHighlightPainter::SelectionPaintState> selection;
+  absl::optional<NGHighlightPainter::SelectionPaintState> selection;
   if (UNLIKELY(!is_printing && paint_info.phase != PaintPhase::kTextClip &&
                layout_object->IsSelected())) {
     const NGInlineCursor& root_inline_cursor =
@@ -185,14 +185,14 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // The text clip phase already has a DrawingRecorder. Text clips are initiated
   // only in BoxPainterBase::PaintFillLayer, which is already within a
   // DrawingRecorder.
-  base::Optional<DrawingRecorder> recorder;
+  absl::optional<DrawingRecorder> recorder;
   const auto& display_item_client =
       AsDisplayItemClient(cursor_, selection.has_value());
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
   // whether the diplay item that contains the actual selection painting is
   // reused.
-  base::Optional<SelectionBoundsRecorder> selection_recorder;
+  absl::optional<SelectionBoundsRecorder> selection_recorder;
   if (UNLIKELY(selection && paint_info.phase == PaintPhase::kForeground &&
                !is_printing)) {
     if (SelectionBoundsRecorder::ShouldRecordSelection(
@@ -261,8 +261,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const bool paint_marker_backgrounds =
       paint_info.phase != PaintPhase::kSelectionDragImage &&
       paint_info.phase != PaintPhase::kTextClip && !is_printing;
-  base::Optional<GraphicsContextStateSaver> state_saver;
-  base::Optional<AffineTransform> rotation;
+  absl::optional<GraphicsContextStateSaver> state_saver;
+  absl::optional<AffineTransform> rotation;
   const WritingMode writing_mode = style.GetWritingMode();
   const bool is_horizontal = IsHorizontalWritingMode(writing_mode);
   int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
@@ -337,7 +337,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (!highlight_painter.Selection() ||
       !highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
     // Paint text decorations except line-through.
-    base::Optional<TextDecorationInfo> decoration_info;
+    absl::optional<TextDecorationInfo> decoration_info;
     bool has_line_through_decoration = false;
     if (style.TextDecorationsInEffect() != TextDecoration::kNone &&
         // Ellipsis should not have text decorations. This is not defined, but 4
@@ -345,13 +345,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
         !text_item.IsEllipsis()) {
       PhysicalOffset local_origin = box_rect.offset;
       LayoutUnit width = box_rect.Width();
-      base::Optional<AppliedTextDecoration> selection_text_decoration =
+      absl::optional<AppliedTextDecoration> selection_text_decoration =
           UNLIKELY(highlight_painter.Selection())
-              ? base::Optional<AppliedTextDecoration>(
+              ? absl::optional<AppliedTextDecoration>(
                     highlight_painter.Selection()
                         ->GetSelectionStyle()
                         .selection_text_decoration)
-              : base::nullopt;
+              : absl::nullopt;
 
       decoration_info.emplace(box_rect.offset, local_origin, width,
                               style.GetFontBaseline(), style,

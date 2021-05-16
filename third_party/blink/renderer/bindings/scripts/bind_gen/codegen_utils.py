@@ -85,7 +85,7 @@ def collect_forward_decls_and_include_headers(idl_types):
             ])
         elif idl_type.is_nullable:
             if not blink_type_info(idl_type.inner_type).has_null_value:
-                header_include_headers.add("base/optional.h")
+                header_include_headers.add("third_party/abseil-cpp/absl/types/optional.h")
         elif idl_type.is_promise:
             header_include_headers.add(
                 "third_party/blink/renderer/bindings/core/v8/script_promise.h")

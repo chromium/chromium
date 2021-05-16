@@ -73,7 +73,7 @@ MediaStreamDevice::MediaStreamDevice(
     const std::string& name,
     const media::VideoCaptureControlSupport& control_support,
     media::VideoFacingMode facing,
-    const base::Optional<std::string>& group_id)
+    const absl::optional<std::string>& group_id)
     : type(type),
       id(id),
       video_control_support(control_support),

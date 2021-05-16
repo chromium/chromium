@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_AUDIO_CONFIGURATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_AUDIO_CONFIGURATION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
@@ -19,9 +19,9 @@ struct WebAudioConfiguration {
 
   // `channels` is Optional too but it will be reflected with `isNull()`.
   WebString channels;
-  base::Optional<unsigned> bitrate;
-  base::Optional<unsigned> samplerate;
-  base::Optional<bool> spatialRendering;
+  absl::optional<unsigned> bitrate;
+  absl::optional<unsigned> samplerate;
+  absl::optional<bool> spatialRendering;
 };
 
 }  // namespace blink

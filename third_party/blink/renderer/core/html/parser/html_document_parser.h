@@ -130,7 +130,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
    public:
     CompactHTMLTokenStream tokens;
     PreloadRequestStream preloads;
-    base::Optional<ViewportDescription> viewport;
+    absl::optional<ViewportDescription> viewport;
     HTMLTokenizer::State tokenizer_state;
     HTMLTreeBuilderSimulator::State tree_builder_state;
     HTMLInputCheckpoint input_checkpoint;

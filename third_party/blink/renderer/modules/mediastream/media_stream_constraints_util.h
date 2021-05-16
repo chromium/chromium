@@ -68,13 +68,13 @@ class MODULES_EXPORT VideoCaptureSettings {
   // Creates an object with the given values.
   VideoCaptureSettings(std::string device_id,
                        media::VideoCaptureParams capture_params_,
-                       base::Optional<bool> noise_reduction_,
+                       absl::optional<bool> noise_reduction_,
                        const VideoTrackAdapterSettings& track_adapter_settings,
-                       base::Optional<double> min_frame_rate,
-                       base::Optional<double> max_frame_rate,
-                       base::Optional<double> pan = base::nullopt,
-                       base::Optional<double> tilt = base::nullopt,
-                       base::Optional<double> zoom = base::nullopt);
+                       absl::optional<double> min_frame_rate,
+                       absl::optional<double> max_frame_rate,
+                       absl::optional<double> pan = absl::nullopt,
+                       absl::optional<double> tilt = absl::nullopt,
+                       absl::optional<double> zoom = absl::nullopt);
 
   VideoCaptureSettings(const VideoCaptureSettings& other);
   VideoCaptureSettings& operator=(const VideoCaptureSettings& other);
@@ -116,7 +116,7 @@ class MODULES_EXPORT VideoCaptureSettings {
     DCHECK(HasValue());
     return capture_params_;
   }
-  const base::Optional<bool>& noise_reduction() const {
+  const absl::optional<bool>& noise_reduction() const {
     DCHECK(HasValue());
     return noise_reduction_;
   }
@@ -124,23 +124,23 @@ class MODULES_EXPORT VideoCaptureSettings {
     DCHECK(HasValue());
     return track_adapter_settings_;
   }
-  const base::Optional<double>& min_frame_rate() const {
+  const absl::optional<double>& min_frame_rate() const {
     DCHECK(HasValue());
     return min_frame_rate_;
   }
-  const base::Optional<double>& max_frame_rate() const {
+  const absl::optional<double>& max_frame_rate() const {
     DCHECK(HasValue());
     return max_frame_rate_;
   }
-  const base::Optional<double>& pan() const {
+  const absl::optional<double>& pan() const {
     DCHECK(HasValue());
     return pan_;
   }
-  const base::Optional<double>& tilt() const {
+  const absl::optional<double>& tilt() const {
     DCHECK(HasValue());
     return tilt_;
   }
-  const base::Optional<double>& zoom() const {
+  const absl::optional<double>& zoom() const {
     DCHECK(HasValue());
     return zoom_;
   }
@@ -149,13 +149,13 @@ class MODULES_EXPORT VideoCaptureSettings {
   const char* failed_constraint_name_;
   std::string device_id_;
   media::VideoCaptureParams capture_params_;
-  base::Optional<bool> noise_reduction_;
+  absl::optional<bool> noise_reduction_;
   VideoTrackAdapterSettings track_adapter_settings_;
-  base::Optional<double> min_frame_rate_;
-  base::Optional<double> max_frame_rate_;
-  base::Optional<double> pan_;
-  base::Optional<double> tilt_;
-  base::Optional<double> zoom_;
+  absl::optional<double> min_frame_rate_;
+  absl::optional<double> max_frame_rate_;
+  absl::optional<double> pan_;
+  absl::optional<double> tilt_;
+  absl::optional<double> zoom_;
 };
 
 // This class represents the output the SelectSettings algorithm for audio
@@ -207,7 +207,7 @@ class MODULES_EXPORT AudioCaptureSettings {
   // Creates an object with the given values.
   AudioCaptureSettings(
       std::string device_id,
-      const base::Optional<int>& requested_buffer_size,
+      const absl::optional<int>& requested_buffer_size,
       bool disable_local_echo,
       bool enable_automatic_output_device_selection,
       ProcessingType processing_type,
@@ -226,7 +226,7 @@ class MODULES_EXPORT AudioCaptureSettings {
     DCHECK(HasValue());
     return device_id_;
   }
-  const base::Optional<int>& requested_buffer_size() const {
+  const absl::optional<int>& requested_buffer_size() const {
     DCHECK(HasValue());
     return requested_buffer_size_;
   }
@@ -254,7 +254,7 @@ class MODULES_EXPORT AudioCaptureSettings {
  private:
   const char* failed_constraint_name_;
   std::string device_id_;
-  base::Optional<int> requested_buffer_size_;
+  absl::optional<int> requested_buffer_size_;
   bool disable_local_echo_;
   bool render_to_associated_sink_;
   ProcessingType processing_type_;
@@ -348,7 +348,7 @@ ComputeCapabilitiesForVideoSource(
     const media::VideoCaptureFormats& formats,
     mojom::blink::FacingMode facing_mode,
     bool is_device_capture,
-    const base::Optional<std::string>& group_id = base::nullopt);
+    const absl::optional<std::string>& group_id = absl::nullopt);
 
 }  // namespace blink
 

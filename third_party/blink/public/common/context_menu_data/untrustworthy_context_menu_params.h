@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -50,9 +50,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // Will be empty if |link_url| is empty.
   std::u16string link_text;
 
-  // The impression declared by the link. May be base::nullopt even if
+  // The impression declared by the link. May be absl::nullopt even if
   // |link_url| is non-empty.
-  base::Optional<blink::Impression> impression;
+  absl::optional<blink::Impression> impression;
 
   // The link URL to be used ONLY for "copy link address". We don't validate
   // this field in the frontend process.

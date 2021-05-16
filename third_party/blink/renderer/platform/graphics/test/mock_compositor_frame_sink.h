@@ -39,7 +39,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t) override {
     SubmitCompositorFrame_(&frame);
   }
@@ -47,7 +47,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t,
       SubmitCompositorFrameSyncCallback cb) override {
     SubmitCompositorFrameSync_(&frame);

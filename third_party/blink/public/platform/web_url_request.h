@@ -33,9 +33,9 @@
 
 #include <memory>
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/base/page_transition_types.h"
@@ -107,7 +107,7 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT const net::SiteForCookies& SiteForCookies() const;
   BLINK_PLATFORM_EXPORT void SetSiteForCookies(const net::SiteForCookies&);
 
-  BLINK_PLATFORM_EXPORT base::Optional<WebSecurityOrigin> TopFrameOrigin()
+  BLINK_PLATFORM_EXPORT absl::optional<WebSecurityOrigin> TopFrameOrigin()
       const;
   BLINK_PLATFORM_EXPORT void SetTopFrameOrigin(const WebSecurityOrigin&);
 
@@ -267,7 +267,7 @@ class WebURLRequest {
 
   // If this request was created from an anchor with a download attribute, this
   // is the value provided there.
-  BLINK_PLATFORM_EXPORT base::Optional<WebString> GetSuggestedFilename() const;
+  BLINK_PLATFORM_EXPORT absl::optional<WebString> GetSuggestedFilename() const;
 
   // Returns true if this request is tagged as an ad. This is done using various
   // heuristics so it is not expected to be 100% accurate.
@@ -287,7 +287,7 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT bool IsRevalidating() const;
 
   // Returns the DevTools ID to throttle the network request.
-  BLINK_PLATFORM_EXPORT const base::Optional<base::UnguessableToken>&
+  BLINK_PLATFORM_EXPORT const absl::optional<base::UnguessableToken>&
   GetDevToolsToken() const;
 
   // Remembers 'X-Requested-With' header value. Blink should not set this header
@@ -306,7 +306,7 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT const base::UnguessableToken& GetFetchWindowId() const;
   BLINK_PLATFORM_EXPORT void SetFetchWindowId(const base::UnguessableToken&);
 
-  BLINK_PLATFORM_EXPORT base::Optional<WebString> GetDevToolsId() const;
+  BLINK_PLATFORM_EXPORT absl::optional<WebString> GetDevToolsId() const;
 
   BLINK_PLATFORM_EXPORT int GetLoadFlagsForWebUrlRequest() const;
 
@@ -314,7 +314,7 @@ class WebURLRequest {
 
   BLINK_PLATFORM_EXPORT bool IsSignedExchangePrefetchCacheEnabled() const;
 
-  BLINK_PLATFORM_EXPORT base::Optional<base::UnguessableToken>
+  BLINK_PLATFORM_EXPORT absl::optional<base::UnguessableToken>
   RecursivePrefetchToken() const;
 
   // Specifies a Trust Tokens protocol operation to execute alongside the
@@ -322,8 +322,8 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT network::OptionalTrustTokenParams TrustTokenParams()
       const;
 
-  BLINK_PLATFORM_EXPORT base::Optional<WebURL> WebBundleUrl() const;
-  BLINK_PLATFORM_EXPORT base::Optional<base::UnguessableToken> WebBundleToken()
+  BLINK_PLATFORM_EXPORT absl::optional<WebURL> WebBundleUrl() const;
+  BLINK_PLATFORM_EXPORT absl::optional<base::UnguessableToken> WebBundleToken()
       const;
 
 #if INSIDE_BLINK

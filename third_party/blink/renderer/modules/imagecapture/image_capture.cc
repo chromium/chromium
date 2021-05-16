@@ -774,9 +774,9 @@ void ImageCapture::SetPanTiltZoomSettingsFromTrack(
   auto* video_track = MediaStreamVideoTrack::From(stream_track_->Component());
   DCHECK(video_track);
 
-  base::Optional<double> pan = video_track->pan();
-  base::Optional<double> tilt = video_track->tilt();
-  base::Optional<double> zoom = video_track->zoom();
+  absl::optional<double> pan = video_track->pan();
+  absl::optional<double> tilt = video_track->tilt();
+  absl::optional<double> zoom = video_track->zoom();
 
   const bool ptz_requested =
       pan.has_value() || tilt.has_value() || zoom.has_value();

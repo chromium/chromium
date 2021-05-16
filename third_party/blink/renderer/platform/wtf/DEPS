@@ -17,7 +17,6 @@ include_rules = [
     "+base/metrics/histogram_macros.h",
     "+base/no_destructor.h",
     "+base/numerics",
-    "+base/optional.h",
     "+base/process/process_metrics.h",
     "+base/rand_util.h",
     "+base/stl_util.h",
@@ -29,6 +28,7 @@ include_rules = [
     "+base/threading",
     "+base/time/time.h",
     "+base/tuple.h",
+    "+third_party/abseil-cpp/absl/types/optional.h",
     # To avoid recursive dependency, we impose a blanket ban on using other
     # platform files. Think carefully if you want to relax this restriction.
     "-third_party/blink/renderer/platform",

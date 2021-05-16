@@ -118,15 +118,15 @@ class TransmissionEncodingInfoHandlerTest : public testing::Test {
       const std::string& codec) {
     return blink::WebAudioConfiguration{blink::WebString::FromASCII(mime_type),
                                         blink::WebString::FromASCII(codec),
-                                        blink::WebString(), base::nullopt,
-                                        base::nullopt};
+                                        blink::WebString(), absl::nullopt,
+                                        absl::nullopt};
   }
 
   blink::WebMediaConfiguration ComposeWebMediaConfigurationForVideo(
       const std::string& mime_type,
       const std::string& codec) {
     return blink::WebMediaConfiguration(
-        blink::MediaConfigurationType::kTransmission, base::nullopt,
+        blink::MediaConfigurationType::kTransmission, absl::nullopt,
         ComposeVideoConfiguration(mime_type, codec));
   }
 
@@ -135,7 +135,7 @@ class TransmissionEncodingInfoHandlerTest : public testing::Test {
       const std::string& codec) {
     return blink::WebMediaConfiguration(
         blink::MediaConfigurationType::kTransmission,
-        ComposeAudioConfiguration(mime_type, codec), base::nullopt);
+        ComposeAudioConfiguration(mime_type, codec), absl::nullopt);
   }
 
   void VerifyEncodingInfo(const TransmissionEncodingInfoHandler& handler,
@@ -220,7 +220,7 @@ TEST_F(TransmissionEncodingInfoHandlerTest, SmoothVideoCodecVgaResolution) {
 
   // VP8 encoding for 640x480 video.
   blink::WebMediaConfiguration config(
-      blink::MediaConfigurationType::kTransmission, base::nullopt,
+      blink::MediaConfigurationType::kTransmission, absl::nullopt,
       ComposeVideoConfiguration("video/vp8", "", 640, 480));
 
   VerifyEncodingInfo(handler, config, true, true, false);
@@ -233,7 +233,7 @@ TEST_F(TransmissionEncodingInfoHandlerTest, SmoothVideoCodecBelowHdResolution) {
 
   // VP8 encoding for 1024x768 video. Note its area size is below 1280x720).
   blink::WebMediaConfiguration config(
-      blink::MediaConfigurationType::kTransmission, base::nullopt,
+      blink::MediaConfigurationType::kTransmission, absl::nullopt,
       ComposeVideoConfiguration("video/vp8", "", 1024, 768));
 
   VerifyEncodingInfo(handler, config, true, true, false);

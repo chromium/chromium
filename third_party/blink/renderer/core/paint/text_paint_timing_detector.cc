@@ -204,7 +204,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
             aggregator, aggregated_visual_rect, property_tree_state,
             frame_view_),
         aggregated_visual_rect, mapped_visual_rect);
-    if (base::Optional<PaintTimingVisualizer>& visualizer =
+    if (absl::optional<PaintTimingVisualizer>& visualizer =
             frame_view_->GetPaintTimingDetector().Visualizer()) {
       visualizer->DumpTextDebuggingRect(aggregator, mapped_visual_rect);
     }

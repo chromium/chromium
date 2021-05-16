@@ -276,7 +276,7 @@ class WebView {
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(
-      base::Optional<blink::mojom::ScreenOrientation> orientation) = 0;
+      absl::optional<blink::mojom::ScreenOrientation> orientation) = 0;
 
   // Enable/Disable synchronous resize mode that is used for web tests.
   virtual void UseSynchronousResizeModeForTesting(bool enable) = 0;
@@ -446,7 +446,7 @@ class WebView {
   // History list ---------------------------------------------------------
   virtual void SetHistoryListFromNavigation(
       int32_t history_offset,
-      base::Optional<int32_t> history_length) = 0;
+      absl::optional<int32_t> history_length) = 0;
   virtual void IncreaseHistoryListFromNavigation() = 0;
 
   // Session history -----------------------------------------------------

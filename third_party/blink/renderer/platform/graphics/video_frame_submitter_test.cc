@@ -89,7 +89,7 @@ class VideoMockCompositorFrameSink
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId& id,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
     last_submitted_compositor_frame_ = std::move(frame);
     DoSubmitCompositorFrame(id, &last_submitted_compositor_frame_);
@@ -97,7 +97,7 @@ class VideoMockCompositorFrameSink
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& id,
       viz::CompositorFrame frame,
-      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      absl::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       const SubmitCompositorFrameSyncCallback callback) override {
     last_submitted_compositor_frame_ = std::move(frame);

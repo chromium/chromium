@@ -46,7 +46,7 @@ bool StructTraits<blink::mojom::blink::CloneableMessage::DataView,
                      data.stack_trace_debugger_id_second()),
       data.stack_trace_should_pause());
 
-  base::Optional<base::UnguessableToken> locked_agent_cluster_id;
+  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
   if (!data.ReadLockedAgentClusterId(&locked_agent_cluster_id))
     return false;
   out->locked_agent_cluster_id = locked_agent_cluster_id;

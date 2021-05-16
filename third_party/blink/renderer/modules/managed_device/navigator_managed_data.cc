@@ -181,7 +181,7 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
 
 void NavigatorManagedData::OnConfigurationReceived(
     ScriptPromiseResolver* scoped_resolver,
-    const base::Optional<HashMap<String, String>>& configurations) {
+    const absl::optional<HashMap<String, String>>& configurations) {
   pending_promises_.erase(scoped_resolver);
 
   ScriptState* script_state = scoped_resolver->GetScriptState();

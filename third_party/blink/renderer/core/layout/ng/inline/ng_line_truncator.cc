@@ -135,7 +135,7 @@ LayoutUnit NGLineTruncator::TruncateLine(LayoutUnit line_width,
   // to place the ellipsis. Children maybe truncated or moved as part of the
   // process.
   NGLogicalLineItem* ellipsized_child = nullptr;
-  base::Optional<NGLogicalLineItem> truncated_child;
+  absl::optional<NGLogicalLineItem> truncated_child;
   if (IsLtr(line_direction_)) {
     NGLogicalLineItem* first_child = line_box->FirstInFlowChild();
     for (auto it = line_box->rbegin(); it != line_box->rend(); it++) {
@@ -430,7 +430,7 @@ bool NGLineTruncator::EllipsizeChild(
     LayoutUnit ellipsis_width,
     bool is_first_child,
     NGLogicalLineItem* child,
-    base::Optional<NGLogicalLineItem>* truncated_child) {
+    absl::optional<NGLogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
 
   // Leave out-of-flow children as is.
@@ -485,7 +485,7 @@ bool NGLineTruncator::TruncateChild(
     LayoutUnit space_for_child,
     bool is_first_child,
     const NGLogicalLineItem& child,
-    base::Optional<NGLogicalLineItem>* truncated_child) {
+    absl::optional<NGLogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
 
   // If the space is not enough, try the next child.

@@ -32,7 +32,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
@@ -45,6 +44,7 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader.mojom-blink.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -365,14 +365,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
     cors_preflight_policy_ = policy;
   }
 
-  const base::Optional<RedirectInfo>& GetRedirectInfo() const {
+  const absl::optional<RedirectInfo>& GetRedirectInfo() const {
     return redirect_info_;
   }
 
-  void SetSuggestedFilename(const base::Optional<String>& suggested_filename) {
+  void SetSuggestedFilename(const absl::optional<String>& suggested_filename) {
     suggested_filename_ = suggested_filename;
   }
-  const base::Optional<String>& GetSuggestedFilename() const {
+  const absl::optional<String>& GetSuggestedFilename() const {
     return suggested_filename_;
   }
 
@@ -394,11 +394,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetAllowStaleResponse(bool value) { allow_stale_response_ = value; }
   bool AllowsStaleResponse() const { return allow_stale_response_; }
 
-  const base::Optional<base::UnguessableToken>& GetDevToolsToken() const {
+  const absl::optional<base::UnguessableToken>& GetDevToolsToken() const {
     return devtools_token_;
   }
   void SetDevToolsToken(
-      const base::Optional<base::UnguessableToken>& devtools_token) {
+      const absl::optional<base::UnguessableToken>& devtools_token) {
     devtools_token_ = devtools_token;
   }
 
@@ -414,8 +414,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_accepted_stream_types_ = types;
   }
 
-  const base::Optional<String>& GetDevToolsId() const { return devtools_id_; }
-  void SetDevToolsId(const base::Optional<String>& devtools_id) {
+  const absl::optional<String>& GetDevToolsId() const { return devtools_id_; }
+  void SetDevToolsId(const absl::optional<String>& devtools_id) {
     devtools_id_ = devtools_id;
   }
 
@@ -436,10 +436,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // can use this to display the initiator call stack when debugging a process
   // that later intercepts the request, e.g., in a service worker fetch event
   // handler.
-  const base::Optional<String>& GetDevToolsStackId() const {
+  const absl::optional<String>& GetDevToolsStackId() const {
     return devtools_stack_id_;
   }
-  void SetDevToolsStackId(const base::Optional<String>& devtools_stack_id) {
+  void SetDevToolsStackId(const absl::optional<String>& devtools_stack_id) {
     devtools_stack_id_ = devtools_stack_id;
   }
 
@@ -458,10 +458,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   void SetRecursivePrefetchToken(
-      const base::Optional<base::UnguessableToken>& token) {
+      const absl::optional<base::UnguessableToken>& token) {
     recursive_prefetch_token_ = token;
   }
-  const base::Optional<base::UnguessableToken>& RecursivePrefetchToken() const {
+  const absl::optional<base::UnguessableToken>& RecursivePrefetchToken() const {
     return recursive_prefetch_token_;
   }
 
@@ -504,12 +504,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
         prefetch_maybe_for_top_level_navigation;
   }
 
-  const base::Optional<network::mojom::blink::TrustTokenParams>&
+  const absl::optional<network::mojom::blink::TrustTokenParams>&
   TrustTokenParams() const {
     return trust_token_params_;
   }
   void SetTrustTokenParams(
-      base::Optional<network::mojom::blink::TrustTokenParams> params) {
+      absl::optional<network::mojom::blink::TrustTokenParams> params) {
     trust_token_params_ = std::move(params);
   }
 
@@ -524,7 +524,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return allowHTTP1ForStreamingUpload_;
   }
 
-  const base::Optional<ResourceRequestHead::WebBundleTokenParams>&
+  const absl::optional<ResourceRequestHead::WebBundleTokenParams>&
   GetWebBundleTokenParams() const {
     return web_bundle_token_params_;
   }
@@ -588,10 +588,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
   network::mojom::ReferrerPolicy referrer_policy_;
   bool is_external_request_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;
-  base::Optional<RedirectInfo> redirect_info_;
-  base::Optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
+  absl::optional<RedirectInfo> redirect_info_;
+  absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
 
-  base::Optional<String> suggested_filename_;
+  absl::optional<String> suggested_filename_;
 
   mutable CacheControlHeader cache_control_header_cache_;
 
@@ -604,13 +604,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   bool is_automatic_upgrade_ = false;
 
-  base::Optional<base::UnguessableToken> devtools_token_;
-  base::Optional<String> devtools_id_;
+  absl::optional<base::UnguessableToken> devtools_token_;
+  absl::optional<String> devtools_id_;
   String requested_with_header_;
   String client_data_header_;
   String purpose_header_;
 
-  base::Optional<String> devtools_stack_id_;
+  absl::optional<String> devtools_stack_id_;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
@@ -637,12 +637,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // This is used when fetching preload header requests from cross-origin
   // prefetch responses. The browser process uses this token to ensure the
   // request is cached correctly.
-  base::Optional<base::UnguessableToken> recursive_prefetch_token_;
+  absl::optional<base::UnguessableToken> recursive_prefetch_token_;
 
   // This is used when fetching either a WebBundle or a subresrouce in the
   // WebBundle. The network process uses this token to associate the request to
   // the bundle.
-  base::Optional<WebBundleTokenParams> web_bundle_token_params_;
+  absl::optional<WebBundleTokenParams> web_bundle_token_params_;
 
   // Render blocking behavior of the resource. Used in maintaining correct
   // reporting for redirects.
@@ -652,7 +652,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  // Instead of using base::Optional, we use scoped_refptr to reduce
+  // Instead of using absl::optional, we use scoped_refptr to reduce
   // blink memory footprint because the attribute is only used by DevTools
   // and we should keep the footprint minimal when DevTools is closed.
   scoped_refptr<

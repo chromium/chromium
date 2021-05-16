@@ -28,13 +28,13 @@ Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
   return Timing::PlaybackDirection::NORMAL;
 }
 
-base::Optional<AnimationTimeDelta> ConvertIterationDuration(
+absl::optional<AnimationTimeDelta> ConvertIterationDuration(
     const UnrestrictedDoubleOrString& duration) {
   if (duration.IsUnrestrictedDouble()) {
     return AnimationTimeDelta::FromMillisecondsD(
         duration.GetAsUnrestrictedDouble());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 Timing ConvertEffectTiming(const EffectTiming* timing_input,

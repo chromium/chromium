@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
@@ -150,7 +150,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Optional impression associated with this navigation. This is attached when
   // a navigation results from a click on an anchor tag that has conversion
   // measurement attributes.
-  base::Optional<WebImpression> impression;
+  absl::optional<WebImpression> impression;
 
   // The navigation initiator's address space.
   network::mojom::IPAddressSpace initiator_address_space =
@@ -163,7 +163,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
-  base::Optional<LocalFrameToken> initiator_frame_token;
+  absl::optional<LocalFrameToken> initiator_frame_token;
 
   // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
   // alive until we create the NavigationRequest.
@@ -303,7 +303,7 @@ struct BLINK_EXPORT WebNavigationParams {
   bool is_client_redirect = false;
   // Cache mode to be used for subresources, instead of the one determined
   // by |frame_load_type|.
-  base::Optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
+  absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
 
   // Miscellaneous parameters.
 
@@ -385,7 +385,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;
 
-  base::Optional<WebOriginPolicy> origin_policy;
+  absl::optional<WebOriginPolicy> origin_policy;
 
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.
@@ -401,8 +401,8 @@ struct BLINK_EXPORT WebNavigationParams {
   ukm::SourceId document_ukm_source_id = ukm::kInvalidSourceId;
 
   // The frame policy specified by the frame owner element.
-  // Should be base::nullopt for top level navigations
-  base::Optional<FramePolicy> frame_policy;
+  // Should be absl::nullopt for top level navigations
+  absl::optional<FramePolicy> frame_policy;
 
   // A list of origin trial names to enable for the document being loaded.
   WebVector<WebString> force_enabled_origin_trials;

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -567,7 +567,7 @@ bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
                                   Node* node,
                                   Vector<Color>* animated_colors,
                                   Vector<double>* offsets,
-                                  base::Optional<double>* progress) {
+                                  absl::optional<double>* progress) {
   if (!info.should_paint_color_with_paint_worklet_image)
     return false;
   BackgroundColorPaintImageGenerator* generator =
@@ -583,7 +583,7 @@ void FillRectWithPaintWorklet(const Document* document,
                               GraphicsContext& context,
                               const Vector<Color>& animated_colors,
                               const Vector<double>& offsets,
-                              const base::Optional<double>& progress) {
+                              const absl::optional<double>& progress) {
   FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
@@ -605,7 +605,7 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   // that function doesn't need to return these parameters.
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   if (GetBGColorPaintWorkletParams(info, document, node, &animated_colors,
                                    &offsets, &progress)) {
     FillRectWithPaintWorklet(document, info, node, dest_rect, context,
@@ -690,7 +690,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   // At this point we're committed to the fast path: the destination (r)rect
   // fits within a single tile, and we can paint it using direct draw(R)Rect()
   // calls.
-  base::Optional<RoundedInnerRectClipper> clipper;
+  absl::optional<RoundedInnerRectClipper> clipper;
   if (info.is_rounded_fill && !color_border.IsRenderable()) {
     // When the rrect is not renderable, we resort to clipping.
     // RoundedInnerRectClipper handles this case via discrete, corner-wise
@@ -975,7 +975,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
 
   scoped_refptr<Image> image;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
-  base::Optional<ScopedInterpolationQuality> interpolation_quality_context;
+  absl::optional<ScopedInterpolationQuality> interpolation_quality_context;
   if (info.should_paint_image) {
     geometry.Calculate(paint_info.PaintContainer(), paint_info.phase,
                        paint_info.GetGlobalPaintFlags(), bg_layer,
@@ -1015,7 +1015,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     return;
   }
 
-  base::Optional<RoundedInnerRectClipper> clip_to_border;
+  absl::optional<RoundedInnerRectClipper> clip_to_border;
   if (info.is_rounded_fill)
     clip_to_border.emplace(context, rect, border_rect);
 

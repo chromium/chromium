@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_BYTE_STREAM_CONTROLLER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
@@ -37,10 +37,10 @@ class ReadableByteStreamController : public ReadableStreamController {
   ReadableStreamBYOBRequest* byobRequest();
 
   // https://streams.spec.whatwg.org/#rbs-controller-desired-size
-  base::Optional<double> desiredSize();
+  absl::optional<double> desiredSize();
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-get-desired-size
-  static base::Optional<double> GetDesiredSize(ReadableByteStreamController*);
+  static absl::optional<double> GetDesiredSize(ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#rbs-controller-close
   void close(ScriptState*, ExceptionState&);

@@ -53,14 +53,14 @@ net::structured_headers::Item PolicyValueToItem(const PolicyValue& value) {
 }  // namespace
 
 // static
-base::Optional<std::string> DocumentPolicy::Serialize(
+absl::optional<std::string> DocumentPolicy::Serialize(
     const DocumentPolicyFeatureState& policy) {
   return DocumentPolicy::SerializeInternal(policy,
                                            GetDocumentPolicyFeatureInfoMap());
 }
 
 // static
-base::Optional<std::string> DocumentPolicy::SerializeInternal(
+absl::optional<std::string> DocumentPolicy::SerializeInternal(
     const DocumentPolicyFeatureState& policy,
     const DocumentPolicyFeatureInfoMap& feature_info_map) {
   net::structured_headers::Dictionary root;
@@ -154,13 +154,13 @@ PolicyValue DocumentPolicy::GetFeatureValue(
   return internal_feature_state_[static_cast<size_t>(feature)];
 }
 
-const base::Optional<std::string> DocumentPolicy::GetFeatureEndpoint(
+const absl::optional<std::string> DocumentPolicy::GetFeatureEndpoint(
     mojom::DocumentPolicyFeature feature) const {
   auto endpoint_it = endpoint_map_.find(feature);
   if (endpoint_it != endpoint_map_.end()) {
     return endpoint_it->second;
   } else {
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 

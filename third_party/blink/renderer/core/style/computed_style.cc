@@ -2429,10 +2429,10 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return GetListStyleType()->GetStringValue();
 }
 
-base::Optional<Color> ComputedStyle::AccentColorResolved() const {
+absl::optional<Color> ComputedStyle::AccentColorResolved() const {
   const StyleAutoColor& auto_color = AccentColor();
   if (auto_color.IsAutoColor())
-    return base::nullopt;
+    return absl::nullopt;
   return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
 }
 

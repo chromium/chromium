@@ -49,11 +49,11 @@ Position LayoutWordBreak::PositionForCaretOffset(unsigned offset) const {
   return Position::BeforeNode(*GetNode());
 }
 
-base::Optional<unsigned> LayoutWordBreak::CaretOffsetForPosition(
+absl::optional<unsigned> LayoutWordBreak::CaretOffsetForPosition(
     const Position& position) const {
   NOT_DESTROYED();
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor());
   // The only allowed caret offset is 0, since LayoutWordBreak always has
   // |TextLength() == 0|.

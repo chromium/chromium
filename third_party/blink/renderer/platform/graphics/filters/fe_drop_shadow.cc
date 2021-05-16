@@ -71,7 +71,7 @@ sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
   float std_y = GetFilter()->ApplyVerticalScale(std_y_);
   Color color = AdaptColorToOperatingInterpolationSpace(
       shadow_color_.CombineWithAlpha(shadow_opacity_));
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<DropShadowPaintFilter>(
       SkFloatToScalar(dx), SkFloatToScalar(dy), SkFloatToScalar(std_x),
       SkFloatToScalar(std_y), color.Rgb(),

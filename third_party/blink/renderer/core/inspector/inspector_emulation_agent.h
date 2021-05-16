@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_EMULATION_AGENT_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -93,7 +93,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   void ApplyAcceptLanguageOverride(String* accept_lang);
   void ApplyUserAgentOverride(String* user_agent);
   void ApplyUserAgentMetadataOverride(
-      base::Optional<blink::UserAgentMetadata>* ua_metadata);
+      absl::optional<blink::UserAgentMetadata>* ua_metadata);
   void FrameStartedLoading(LocalFrame*);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
@@ -118,8 +118,8 @@ class CORE_EXPORT InspectorEmulationAgent final
 
   struct PendingVirtualTimePolicy {
     PageScheduler::VirtualTimePolicy policy;
-    base::Optional<double> virtual_time_budget_ms;
-    base::Optional<int> max_virtual_time_task_starvation_count;
+    absl::optional<double> virtual_time_budget_ms;
+    absl::optional<int> max_virtual_time_task_starvation_count;
   };
   void ApplyVirtualTimePolicy(const PendingVirtualTimePolicy& new_policy);
 
@@ -131,7 +131,7 @@ class CORE_EXPORT InspectorEmulationAgent final
 
   // Supports a virtual time policy change scheduled to occur after any
   // navigation has started.
-  base::Optional<PendingVirtualTimePolicy> pending_virtual_time_policy_;
+  absl::optional<PendingVirtualTimePolicy> pending_virtual_time_policy_;
   bool enabled_ = false;
 
   InspectorAgentState::Bytes default_background_color_override_rgba_;
@@ -146,7 +146,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::String navigator_platform_override_;
   InspectorAgentState::String user_agent_override_;
   InspectorAgentState::Bytes serialized_ua_metadata_override_;
-  base::Optional<blink::UserAgentMetadata> ua_metadata_override_;
+  absl::optional<blink::UserAgentMetadata> ua_metadata_override_;
   InspectorAgentState::String accept_language_override_;
   InspectorAgentState::String locale_override_;
   InspectorAgentState::Double virtual_time_budget_;

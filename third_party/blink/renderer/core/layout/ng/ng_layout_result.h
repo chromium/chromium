@@ -54,8 +54,8 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   // fragment-tree consistency.
   static scoped_refptr<const NGLayoutResult> CloneWithPostLayoutFragments(
       const NGLayoutResult& other,
-      const base::Optional<PhysicalRect> updated_layout_overflow =
-          base::nullopt);
+      const absl::optional<PhysicalRect> updated_layout_overflow =
+          absl::nullopt);
 
   // Create a copy of NGLayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is
@@ -64,7 +64,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
                  const NGConstraintSpace& new_space,
                  const NGMarginStrut& new_end_margin_strut,
                  LayoutUnit bfc_line_offset,
-                 base::Optional<LayoutUnit> bfc_block_offset,
+                 absl::optional<LayoutUnit> bfc_block_offset,
                  LayoutUnit block_offset_delta);
   ~NGLayoutResult();
 
@@ -154,7 +154,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return bfc_offset_.line_offset;
   }
 
-  const base::Optional<LayoutUnit> BfcBlockOffset() const {
+  const absl::optional<LayoutUnit> BfcBlockOffset() const {
     if (HasRareData())
       return rare_data_->bfc_block_offset;
 
@@ -164,7 +164,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     }
 
     if (bitfields_.is_bfc_block_offset_nullopt)
-      return base::nullopt;
+      return absl::nullopt;
 
     return bfc_offset_.block_offset;
   }
@@ -411,7 +411,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
 
    public:
     RareData(LayoutUnit bfc_line_offset,
-             base::Optional<LayoutUnit> bfc_block_offset)
+             absl::optional<LayoutUnit> bfc_block_offset)
         : bfc_line_offset(bfc_line_offset),
           bfc_block_offset(bfc_block_offset) {}
     RareData(const RareData& rare_data)
@@ -440,7 +440,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     }
 
     LayoutUnit bfc_line_offset;
-    base::Optional<LayoutUnit> bfc_block_offset;
+    absl::optional<LayoutUnit> bfc_block_offset;
 
     scoped_refptr<const NGEarlyBreak> early_break;
     NGBreakAppeal early_break_appeal = kBreakAppealLastResort;
@@ -470,7 +470,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
     std::unique_ptr<const NGGridData> grid_layout_data_;
-    base::Optional<MathData> math_layout_data_;
+    absl::optional<MathData> math_layout_data_;
   };
 
   bool HasRareData() const { return bitfields_.has_rare_data; }

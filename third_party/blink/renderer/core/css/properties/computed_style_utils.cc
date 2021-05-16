@@ -2718,7 +2718,7 @@ CSSValue* ComputedStyleUtils::ScrollCustomizationFlagsToCSSValue(
 }
 
 CSSValue* ComputedStyleUtils::ValueForGapLength(
-    const base::Optional<Length>& gap_length,
+    const absl::optional<Length>& gap_length,
     const ComputedStyle& style) {
   if (!gap_length)
     return CSSIdentifierValue::Create(CSSValueID::kNormal);

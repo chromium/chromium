@@ -67,11 +67,11 @@ class XRWebGLLayer final : public XRLayer {
 
   HTMLCanvasElement* output_canvas() const;
   uint32_t CameraImageTextureId() const;
-  base::Optional<gpu::MailboxHolder> CameraImageMailboxHolder() const;
+  absl::optional<gpu::MailboxHolder> CameraImageMailboxHolder() const;
 
   void OnFrameStart(
-      const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-      const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+      const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
+      const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
   void OnFrameEnd();
   void OnResize();
 
@@ -85,10 +85,10 @@ class XRWebGLLayer final : public XRLayer {
 
  private:
   uint32_t GetBufferTextureId(
-      const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder);
+      const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
 
   void BindBufferTexture(
-      const base::Optional<gpu::MailboxHolder>& buffer_mailbox_holder);
+      const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder);
 
   Member<XRViewport> left_viewport_;
   Member<XRViewport> right_viewport_;
@@ -105,7 +105,7 @@ class XRWebGLLayer final : public XRLayer {
   uint32_t clean_frame_count = 0;
 
   uint32_t camera_image_texture_id_;
-  base::Optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
+  absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
 };
 
 }  // namespace blink

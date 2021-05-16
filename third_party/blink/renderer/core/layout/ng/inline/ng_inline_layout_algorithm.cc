@@ -784,23 +784,23 @@ void NGInlineLayoutAlgorithm::PlaceListMarker(const NGInlineItem& item,
 
 // Justify the line. This changes the size of items by adding spacing.
 // Returns false if justification failed and should fall back to start-aligned.
-base::Optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
+absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     LayoutUnit space,
     NGLineInfo* line_info) {
   // Empty lines should align to start.
   if (line_info->IsEmptyLine())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Justify the end of visible text, ignoring preserved trailing spaces.
   unsigned end_offset = line_info->EndOffsetForJustify();
 
   // If this line overflows, fallback to 'text-align: start'.
   if (space <= 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Can't justify an empty string.
   if (end_offset == line_info->StartOffset())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Construct the line text to compute spacing for.
   StringBuilder line_text_builder;
@@ -829,7 +829,7 @@ base::Optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     // LayoutRubyText.
     if (box && (box->IsRubyText() || box->IsRubyBase()))
       return space / 2;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   LayoutUnit inset;
@@ -891,7 +891,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ApplyTextAlign(NGLineInfo* line_info) {
 
   ETextAlign text_align = line_info->TextAlign();
   if (text_align == ETextAlign::kJustify) {
-    base::Optional<LayoutUnit> offset = ApplyJustify(space, line_info);
+    absl::optional<LayoutUnit> offset = ApplyJustify(space, line_info);
     if (offset)
       return *offset;
 

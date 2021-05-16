@@ -125,7 +125,7 @@ class CORE_EXPORT FetchResponseData final
     has_range_requested_ = has_range_requested;
   }
   void SetAuthChallengeInfo(
-      const base::Optional<net::AuthChallengeInfo>& auth_challenge_info);
+      const absl::optional<net::AuthChallengeInfo>& auth_challenge_info);
 
   // If the type is Default, replaces |buffer_|.
   // If the type is Basic or CORS, replaces |buffer_| and
@@ -168,7 +168,7 @@ class CORE_EXPORT FetchResponseData final
   AtomicString alpn_negotiated_protocol_;
   bool was_fetched_via_spdy_;
   bool has_range_requested_;
-  // |auth_challenge_info_| is a std::unique_ptr instead of base::Optional
+  // |auth_challenge_info_| is a std::unique_ptr instead of absl::optional
   // |because this member is empty in most cases.
   std::unique_ptr<net::AuthChallengeInfo> auth_challenge_info_;
 

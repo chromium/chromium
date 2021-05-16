@@ -398,11 +398,11 @@ static base::TimeDelta CurrentAge(const ResourceResponse& response,
                                   base::Time response_timestamp) {
   // RFC2616 13.2.3
   // No compensation for latency as that is not terribly important in practice
-  base::Optional<base::Time> date_value = response.Date();
+  absl::optional<base::Time> date_value = response.Date();
   base::TimeDelta apparent_age;
   if (date_value && response_timestamp >= date_value.value())
     apparent_age = response_timestamp - date_value.value();
-  base::Optional<base::TimeDelta> age_value = response.Age();
+  absl::optional<base::TimeDelta> age_value = response.Age();
   base::TimeDelta corrected_received_age =
       age_value ? std::max(apparent_age, age_value.value()) : apparent_age;
   base::TimeDelta resident_time = Now() - response_timestamp;
@@ -423,15 +423,15 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
     return base::TimeDelta::Max();
 
   // RFC2616 13.2.4
-  base::Optional<base::TimeDelta> max_age_value = response.CacheControlMaxAge();
+  absl::optional<base::TimeDelta> max_age_value = response.CacheControlMaxAge();
   if (max_age_value)
     return max_age_value.value();
-  base::Optional<base::Time> expires = response.Expires();
-  base::Optional<base::Time> date = response.Date();
+  absl::optional<base::Time> expires = response.Expires();
+  absl::optional<base::Time> date = response.Date();
   base::Time creation_time = date ? date.value() : response_timestamp;
   if (expires)
     return expires.value() - creation_time;
-  base::Optional<base::Time> last_modified = response.LastModified();
+  absl::optional<base::Time> last_modified = response.LastModified();
   if (last_modified)
     return (creation_time - last_modified.value()) * 0.1;
   // If no cache headers are present, the specification leaves the decision to
@@ -456,8 +456,8 @@ static bool CanUseResponse(const ResourceResponse& response,
 
   if (response.HttpStatusCode() == 302 || response.HttpStatusCode() == 307) {
     // Default to not cacheable unless explicitly allowed.
-    bool has_max_age = response.CacheControlMaxAge() != base::nullopt;
-    bool has_expires = response.Expires() != base::nullopt;
+    bool has_max_age = response.CacheControlMaxAge() != absl::nullopt;
+    bool has_expires = response.Expires() != absl::nullopt;
     // TODO: consider catching Cache-Control "private" and "public" here.
     if (!has_max_age && !has_expires)
       return false;

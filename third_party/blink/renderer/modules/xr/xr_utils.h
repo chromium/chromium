@@ -44,8 +44,8 @@ constexpr char kUnableToNormalizeZeroLength[] =
 
 // Conversion method from transformation matrix to device::Pose. The conversion
 // may fail if the matrix cannot be decomposed. In case of failure, the method
-// will return base::nullopt.
-base::Optional<device::Pose> CreatePose(
+// will return absl::nullopt.
+absl::optional<device::Pose> CreatePose(
     const blink::TransformationMatrix& matrix);
 
 // Hand joint conversion methods

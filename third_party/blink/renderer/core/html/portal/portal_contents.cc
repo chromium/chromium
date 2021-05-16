@@ -174,7 +174,7 @@ void PortalContents::Destroy() {
     portal_element_->PortalContentsWillBeDestroyed(this);
     portal_element_ = nullptr;
   }
-  portal_token_ = base::nullopt;
+  portal_token_ = absl::nullopt;
   remote_portal_.reset();
   portal_client_receiver_.reset();
   DocumentPortals::From(GetDocument()).DeregisterPortalContents(this);

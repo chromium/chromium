@@ -12,10 +12,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video_capture_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/mediastream/media_stream_types.h"
@@ -154,13 +154,13 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Implementations must return the capture format if available.
   // Implementations supporting devices of type MEDIA_DEVICE_VIDEO_CAPTURE
   // must return a value.
-  virtual base::Optional<media::VideoCaptureFormat> GetCurrentFormat() const;
+  virtual absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const;
 
   // Implementations must return the capture parameters if available.
   // Implementations supporting devices of type MEDIA_DEVICE_VIDEO_CAPTURE
   // must return a value. The format in the returned VideoCaptureParams must
   // coincide with the value returned by GetCurrentFormat().
-  virtual base::Optional<media::VideoCaptureParams> GetCurrentCaptureParams()
+  virtual absl::optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const;
 
   // Returns true if encoded output can be enabled in the source.

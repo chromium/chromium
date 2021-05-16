@@ -154,7 +154,7 @@ void FragmentData::InvalidateClipPathCache() {
     return;
 
   rare_data_->is_clip_path_cache_valid = false;
-  rare_data_->clip_path_bounding_box = base::nullopt;
+  rare_data_->clip_path_bounding_box = absl::nullopt;
   rare_data_->clip_path_path = nullptr;
 }
 

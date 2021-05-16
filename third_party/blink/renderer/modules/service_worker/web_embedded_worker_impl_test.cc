@@ -56,7 +56,7 @@ class FakeWebURLLoader final : public WebURLLoader {
       base::TimeDelta timeout_interval,
       WebURLLoaderClient*,
       WebURLResponse&,
-      base::Optional<WebURLError>&,
+      absl::optional<WebURLError>&,
       WebData&,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,
@@ -130,8 +130,8 @@ class FakeWebServiceWorkerFetchContext final
   net::SiteForCookies SiteForCookies() const override {
     return net::SiteForCookies();
   }
-  base::Optional<WebSecurityOrigin> TopFrameOrigin() const override {
-    return base::Optional<WebSecurityOrigin>();
+  absl::optional<WebSecurityOrigin> TopFrameOrigin() const override {
+    return absl::optional<WebSecurityOrigin>();
   }
   WebString GetAcceptLanguages() const override { return WebString(); }
   CrossVariantMojoReceiver<mojom::blink::WorkerTimingContainerInterfaceBase>

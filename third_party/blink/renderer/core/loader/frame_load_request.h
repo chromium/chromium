@@ -167,11 +167,11 @@ struct CORE_EXPORT FrameLoadRequest {
 
   // Impressions are set when a FrameLoadRequest is created for a click on an
   // anchor tag that has conversion measurement attributes.
-  void SetImpression(const base::Optional<WebImpression>& impression) {
+  void SetImpression(const absl::optional<WebImpression>& impression) {
     impression_ = impression;
   }
 
-  const base::Optional<WebImpression>& Impression() const {
+  const absl::optional<WebImpression>& Impression() const {
     return impression_;
   }
 
@@ -202,8 +202,8 @@ struct CORE_EXPORT FrameLoadRequest {
   mojom::RequestContextFrameType frame_type_ =
       mojom::RequestContextFrameType::kNone;
   WebWindowFeatures window_features_;
-  base::Optional<WebImpression> impression_;
-  base::Optional<LocalFrameToken> initiator_frame_token_;
+  absl::optional<WebImpression> impression_;
+  absl::optional<LocalFrameToken> initiator_frame_token_;
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle_;
   std::unique_ptr<SourceLocation> source_location_;

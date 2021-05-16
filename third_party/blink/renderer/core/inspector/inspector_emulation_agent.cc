@@ -448,7 +448,7 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
   if (pending_virtual_time_policy_) {
     wait_for_navigation_.Set(false);
     ApplyVirtualTimePolicy(*pending_virtual_time_policy_);
-    pending_virtual_time_policy_ = base::nullopt;
+    pending_virtual_time_policy_ = absl::nullopt;
   }
 }
 
@@ -531,7 +531,7 @@ Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
     return response;
   if (!color.isJust()) {
     // Clear the override and state.
-    GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(base::nullopt);
+    GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(absl::nullopt);
     default_background_color_override_rgba_.Clear();
     return Response::Success();
   }
@@ -593,7 +593,7 @@ Response InspectorEmulationAgent::setUserAgentOverride(
         Platform::Current()->UserAgentMetadata();
 
     if (user_agent.IsEmpty()) {
-      ua_metadata_override_ = base::nullopt;
+      ua_metadata_override_ = absl::nullopt;
       serialized_ua_metadata_override_.Set(std::vector<uint8_t>());
       return Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
@@ -628,7 +628,7 @@ Response InspectorEmulationAgent::setUserAgentOverride(
     ua_metadata_override_->model = ua_metadata->getModel().Ascii();
     ua_metadata_override_->mobile = ua_metadata->getMobile();
   } else {
-    ua_metadata_override_ = base::nullopt;
+    ua_metadata_override_ = absl::nullopt;
   }
 
   std::string marshalled =
@@ -710,7 +710,7 @@ void InspectorEmulationAgent::ApplyUserAgentOverride(String* user_agent) {
 }
 
 void InspectorEmulationAgent::ApplyUserAgentMetadataOverride(
-    base::Optional<blink::UserAgentMetadata>* ua_metadata) {
+    absl::optional<blink::UserAgentMetadata>* ua_metadata) {
   // This applies when UA override is set.
   if (!user_agent_override_.Get().IsEmpty()) {
     *ua_metadata = ua_metadata_override_;

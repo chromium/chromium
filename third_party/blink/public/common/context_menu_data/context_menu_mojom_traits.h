@@ -36,7 +36,7 @@ struct BLINK_COMMON_EXPORT
     return r.link_text;
   }
 
-  static base::Optional<blink::Impression> impression(
+  static absl::optional<blink::Impression> impression(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.impression;
   }

@@ -180,7 +180,7 @@ void StorageBucket::DidSetExpires(ScriptPromiseResolver* resolver,
 }
 
 void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
-                                  const base::Optional<base::Time> expires,
+                                  const absl::optional<base::Time> expires,
                                   bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())

@@ -46,7 +46,7 @@ class CORE_EXPORT SecurityContextInit {
   void ApplyPermissionsPolicy(
       LocalFrame* frame,
       const ResourceResponse& response,
-      const base::Optional<WebOriginPolicy>& origin_policy,
+      const absl::optional<WebOriginPolicy>& origin_policy,
       const FramePolicy& frame_policy);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,

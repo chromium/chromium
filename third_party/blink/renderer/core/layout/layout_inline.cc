@@ -969,7 +969,7 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
                                         MapCoordinatesFlags mode,
                                         bool map_to_absolute) const {
   NOT_DESTROYED();
-  base::Optional<TransformationMatrix> mapping_to_absolute;
+  absl::optional<TransformationMatrix> mapping_to_absolute;
   // Set to true if the transform to absolute space depends on the point
   // being mapped (in which case we can't use LocalToAbsoluteTransform).
   bool transform_depends_on_point = false;
@@ -1005,14 +1005,14 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
   }
 }
 
-base::Optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
+absl::optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     NGInlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     if (!cursor)
-      return base::nullopt;
+      return absl::nullopt;
     return cursor.CurrentOffsetInBlockFlow();
   }
   if (const InlineBox* first_box = FirstLineBoxIncludingCulling()) {
@@ -1023,7 +1023,7 @@ base::Optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
     }
     return PhysicalOffset(location);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 PhysicalOffset LayoutInline::AnchorPhysicalLocation() const {

@@ -68,7 +68,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   Element* element = object->GetElement();
   if (!element)
     return;
-  base::Optional<HeapVector<Member<Element>>> attr_associated_elements =
+  absl::optional<HeapVector<Member<Element>>> attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
   if (!attr_associated_elements || attr_associated_elements.value().IsEmpty())
     return;

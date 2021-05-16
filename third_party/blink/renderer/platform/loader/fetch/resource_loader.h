@@ -209,7 +209,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void OnProgress(uint64_t delta) override;
   void FinishedCreatingBlob(const scoped_refptr<BlobDataHandle>&);
 
-  base::Optional<ResourceRequestBlockedReason> CheckResponseNosniff(
+  absl::optional<ResourceRequestBlockedReason> CheckResponseNosniff(
       mojom::blink::RequestContextType,
       const ResourceResponse&);
 
@@ -263,7 +263,7 @@ class PLATFORM_EXPORT ResourceLoader final
     base::TimeTicks response_end_time;
     bool should_report_corb_blocking;
   };
-  base::Optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
+  absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;
 
   WebURLLoader::DeferType defers_ = WebURLLoader::DeferType::kNotDeferred;

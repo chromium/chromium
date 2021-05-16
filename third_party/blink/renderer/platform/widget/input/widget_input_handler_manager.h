@@ -229,7 +229,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       mojom::blink::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       mojom::blink::DidOverscrollParamsPtr overscroll_params,
-      base::Optional<cc::TouchAction> touch_action);
+      absl::optional<cc::TouchAction> touch_action);
 
   // This method calls into DidHandleInputEventSentToMain but has a
   // slightly different signature. TODO(dtapuska): Remove this
@@ -241,7 +241,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const ui::LatencyInfo& latency_info,
       std::unique_ptr<blink::InputHandlerProxy::DidOverscrollParams>
           overscroll_params,
-      base::Optional<cc::TouchAction> touch_action);
+      absl::optional<cc::TouchAction> touch_action);
 
   void ObserveGestureEventOnInputHandlingThread(
       const WebGestureEvent& gesture_event,
@@ -277,7 +277,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
-  base::Optional<cc::TouchAction> allowed_touch_action_;
+  absl::optional<cc::TouchAction> allowed_touch_action_;
 
   // Callback used to respond to the WaitForInputProcessed Mojo message. This
   // callback is set from and must be invoked from the Mojo-bound thread (i.e.

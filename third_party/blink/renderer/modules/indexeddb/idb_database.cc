@@ -30,7 +30,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
@@ -189,7 +189,7 @@ void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
     return;
   }
 
-  base::Optional<uint64_t> new_version_nullable;
+  absl::optional<uint64_t> new_version_nullable;
   if (new_version != IDBDatabaseMetadata::kNoVersion) {
     new_version_nullable = new_version;
   }

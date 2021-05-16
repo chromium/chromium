@@ -99,7 +99,7 @@ class ImageDocumentTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   float page_zoom_factor_ = 0.0f;
   float viewport_scaling_factor_ = 0.0f;
-  base::Optional<bool> force_zero_layout_height_;
+  absl::optional<bool> force_zero_layout_height_;
 };
 
 void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,

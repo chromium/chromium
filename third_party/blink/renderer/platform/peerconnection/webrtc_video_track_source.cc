@@ -170,8 +170,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // rtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
-  base::Optional<int> capture_counter = frame->metadata().capture_counter;
-  base::Optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
+  absl::optional<int> capture_counter = frame->metadata().capture_counter;
+  absl::optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
 
   const bool has_valid_update_rect =
       update_rect.has_value() && capture_counter.has_value() &&
@@ -187,7 +187,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
       accumulated_update_rect_->Union(*update_rect);
     }
   } else {
-    accumulated_update_rect_ = base::nullopt;
+    accumulated_update_rect_ = absl::nullopt;
   }
 
   if (accumulated_update_rect_) {
@@ -221,7 +221,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // The webrtc::VideoFrame::UpdateRect expected by WebRTC must
     // be relative to the |visible_rect()|. We need to translate.
-    base::Optional<gfx::Rect> cropped_rect;
+    absl::optional<gfx::Rect> cropped_rect;
     if (accumulated_update_rect_) {
       cropped_rect =
           CropRectangle(*accumulated_update_rect_, frame->visible_rect());

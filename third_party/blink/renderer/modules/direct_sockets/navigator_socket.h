@@ -81,15 +81,15 @@ class MODULES_EXPORT NavigatorSocket final
 
   void OnTcpOpen(TCPSocket* socket,
                  int32_t result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr,
+                 const absl::optional<net::IPEndPoint>& local_addr,
+                 const absl::optional<net::IPEndPoint>& peer_addr,
                  mojo::ScopedDataPipeConsumerHandle receive_stream,
                  mojo::ScopedDataPipeProducerHandle send_stream);
 
   void OnUdpOpen(UDPSocket* socket,
                  int32_t result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr);
+                 const absl::optional<net::IPEndPoint>& local_addr,
+                 const absl::optional<net::IPEndPoint>& peer_addr);
 
   void OnConnectionError();
 

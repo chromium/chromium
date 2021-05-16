@@ -163,7 +163,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back(
-      {scroll_element_id, gfx::ScrollOffset(0, 1), base::nullopt});
+      {scroll_element_id, gfx::ScrollOffset(0, 1), absl::nullopt});
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
   UpdateAllLifecyclePhases();
@@ -184,7 +184,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   ASSERT_EQ(overflow_scroll_layer,
             CcLayerByCcElementId(RootCcLayer(), scroll_element_id));
   commit_data.scrolls[0] = {scroll_element_id, gfx::ScrollOffset(0, 1),
-                            base::nullopt};
+                            absl::nullopt};
   overflow_scroll_layer->layer_tree_host()->ApplyCompositorChanges(
       &commit_data);
 
@@ -220,7 +220,7 @@ TEST_P(CompositingTest, FrameViewScroll) {
   EXPECT_EQ(ScrollOffset(), scrollable_area->GetScrollOffset());
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.push_back({scrollable_area->GetScrollElementId(),
-                                 gfx::ScrollOffset(0, 1), base::nullopt});
+                                 gfx::ScrollOffset(0, 1), absl::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(ScrollOffset(0, 1), scrollable_area->GetScrollOffset());
@@ -1770,7 +1770,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   // Simulate the scroll update with scroll delta from impl-side.
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
-      element_id, gfx::ScrollOffset(0, 10), base::nullopt));
+      element_id, gfx::ScrollOffset(0, 10), absl::nullopt));
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(FloatPoint(0, 10), scrollable_area->ScrollPosition());
   EXPECT_EQ(gfx::ScrollOffset(0, 10),

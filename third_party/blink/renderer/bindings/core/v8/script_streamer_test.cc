@@ -93,7 +93,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         base::TimeDelta timeout_interval,
         WebURLLoaderClient*,
         WebURLResponse&,
-        base::Optional<WebURLError>&,
+        absl::optional<WebURLError>&,
         WebData&,
         int64_t& encoded_data_length,
         int64_t& encoded_body_length,

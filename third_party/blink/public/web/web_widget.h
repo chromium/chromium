@@ -159,7 +159,7 @@ class WebWidget {
       mojom::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
-      base::Optional<cc::TouchAction>)>;
+      absl::optional<cc::TouchAction>)>;
 
   // Process the input event, invoking the callback when complete. This
   // method will call the callback synchronously.

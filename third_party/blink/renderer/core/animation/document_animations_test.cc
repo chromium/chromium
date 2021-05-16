@@ -26,7 +26,7 @@ class MockAnimationTimeline : public AnimationTimeline {
   MOCK_CONST_METHOD0(IsActive, bool());
   MOCK_METHOD0(ZeroTime, AnimationTimeDelta());
   MOCK_METHOD0(InitialStartTimeForAnimations,
-               base::Optional<base::TimeDelta>());
+               absl::optional<base::TimeDelta>());
   MOCK_METHOD0(NeedsAnimationTimingUpdate, bool());
   MOCK_CONST_METHOD0(HasOutdatedAnimation, bool());
   MOCK_CONST_METHOD0(HasAnimations, bool());

@@ -73,7 +73,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
               WebInputEvent::Type::kPointerRawUpdate);
     std::unique_ptr<cc::EventMetrics> metrics =
         cc::EventMetrics::CreateFromExisting(
-            raw_event->Event().GetTypeAsUiEventType(), base::nullopt,
+            raw_event->Event().GetTypeAsUiEventType(), absl::nullopt,
             raw_event->Event().GetScrollInputType(),
             cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
             original_metrics);
@@ -155,7 +155,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       // The |callback| won't be run, so our stored |callback_| should run
       // indicating error.
       HandledEvent(queue, mojom::blink::InputEventResultState::kNotConsumed,
-                   event_->latency_info(), nullptr, base::nullopt);
+                   event_->latency_info(), nullptr, absl::nullopt);
     }
   }
 
@@ -163,7 +163,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
                     mojom::blink::InputEventResultState ack_result,
                     const ui::LatencyInfo& latency_info,
                     mojom::blink::DidOverscrollParamsPtr overscroll,
-                    base::Optional<cc::TouchAction> touch_action) {
+                    absl::optional<cc::TouchAction> touch_action) {
     if (callback_) {
       std::move(callback_).Run(ack_result, latency_info, std::move(overscroll),
                                touch_action);
@@ -177,7 +177,7 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       for (auto&& callback : blocking_coalesced_callbacks_) {
         coalesced_latency_info.set_trace_id(callback.second);
         std::move(callback.first)
-            .Run(ack_result, coalesced_latency_info, nullptr, base::nullopt);
+            .Run(ack_result, coalesced_latency_info, nullptr, absl::nullopt);
       }
     }
 
@@ -394,7 +394,7 @@ void MainThreadEventQueue::HandleEvent(
 
   if (callback) {
     std::move(callback).Run(ack_result, cloned_latency_info, nullptr,
-                            base::nullopt);
+                            absl::nullopt);
   }
 }
 

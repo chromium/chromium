@@ -276,7 +276,7 @@ void FullscreenController::FullscreenElementChanged(
 
 void FullscreenController::RestoreBackgroundColorOverride() {
   web_view_base_->SetBackgroundColorOverrideForFullscreenController(
-      base::nullopt);
+      absl::nullopt);
 }
 
 void FullscreenController::NotifyFramesOfFullscreenEntry(bool granted) {

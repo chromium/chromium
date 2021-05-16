@@ -49,8 +49,8 @@ class SVGSVGElement final : public SVGGraphicsElement,
   explicit SVGSVGElement(Document&);
   ~SVGSVGElement() override;
 
-  base::Optional<float> IntrinsicWidth() const;
-  base::Optional<float> IntrinsicHeight() const;
+  absl::optional<float> IntrinsicWidth() const;
+  absl::optional<float> IntrinsicHeight() const;
   FloatSize CurrentViewportSize() const;
   FloatRect CurrentViewBoxRect() const;
   bool HasEmptyViewBox() const;

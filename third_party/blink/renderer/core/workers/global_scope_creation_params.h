@@ -7,12 +7,12 @@
 
 #include <memory>
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -46,7 +46,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       mojom::blink::ScriptType script_type,
       const String& global_scope_name,
       const String& user_agent,
-      const base::Optional<UserAgentMetadata>& ua_metadata,
+      const absl::optional<UserAgentMetadata>& ua_metadata,
       scoped_refptr<WebWorkerFetchContext>,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           outside_content_security_policies,
@@ -56,7 +56,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       HttpsState starter_https_state,
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
-      base::Optional<network::mojom::IPAddressSpace>,
+      absl::optional<network::mojom::IPAddressSpace>,
       const Vector<String>* origin_trial_tokens,
       const base::UnguessableToken& parent_devtools_token,
       std::unique_ptr<WorkerSettings>,
@@ -68,8 +68,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const PermissionsPolicy* parent_permissions_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
-      const base::Optional<ExecutionContextToken>& parent_context_token =
-          base::nullopt,
+      const absl::optional<ExecutionContextToken>& parent_context_token =
+          absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
       bool parent_direct_socket_capability = false);
 
@@ -147,7 +147,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Worker script response's address space. This is valid only when the worker
   // script is fetched on the main thread (i.e., when
   // |off_main_thread_fetch_option| is kDisabled).
-  base::Optional<network::mojom::IPAddressSpace> response_address_space;
+  absl::optional<network::mojom::IPAddressSpace> response_address_space;
 
   base::UnguessableToken parent_devtools_token;
 
@@ -175,7 +175,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // The identity of the parent ExecutionContext that is the sole owner of this
   // worker or worklet, which caused it to be created, and to whose lifetime
   // this worker/worklet is bound. This is used for resource usage attribution.
-  base::Optional<ExecutionContextToken> parent_context_token;
+  absl::optional<ExecutionContextToken> parent_context_token;
 
   // https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability
   // Used by dedicated workers, and set to false when there is no parent.

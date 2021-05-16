@@ -109,7 +109,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                        const void* data_base_ptr,
                        unsigned data_bytes_per_element,
                        uint64_t data_byte_offset,
-                       base::Optional<uint64_t> byte_size,
+                       absl::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   void WriteTextureImpl(GPUImageCopyTexture* destination,

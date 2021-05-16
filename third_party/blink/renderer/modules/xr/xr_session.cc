@@ -114,7 +114,7 @@ const float kMaxDefaultFramebufferScale = 1.0f;
 const unsigned int kMonoView = 0;
 
 // Returns the session feature corresponding to the given reference space type.
-base::Optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
+absl::optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
     device::mojom::blink::XRReferenceSpaceType type) {
   switch (type) {
     case device::mojom::blink::XRReferenceSpaceType::kViewer:
@@ -130,7 +130,7 @@ base::Optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<TransformationMatrix> getPoseMatrix(
@@ -146,7 +146,7 @@ std::unique_ptr<TransformationMatrix> getPoseMatrix(
       device_pose.ToTransform().matrix());
 }
 
-base::Optional<device::mojom::blink::EntityTypeForHitTest>
+absl::optional<device::mojom::blink::EntityTypeForHitTest>
 EntityTypeForHitTestFromString(const String& string) {
   if (string == "plane")
     return device::mojom::blink::EntityTypeForHitTest::PLANE;
@@ -155,7 +155,7 @@ EntityTypeForHitTestFromString(const String& string) {
     return device::mojom::blink::EntityTypeForHitTest::POINT;
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Returns a vector of entity types from hit test options, without duplicates.
@@ -623,7 +623,7 @@ ScriptPromise XRSession::CreateAnchorHelper(
     const blink::TransformationMatrix& native_origin_from_anchor,
     const device::mojom::blink::XRNativeOriginInformation&
         native_origin_information,
-    base::Optional<uint64_t> maybe_plane_id,
+    absl::optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
@@ -677,7 +677,7 @@ ScriptPromise XRSession::CreateAnchorHelper(
   return promise;
 }
 
-base::Optional<XRSession::ReferenceSpaceInformation>
+absl::optional<XRSession::ReferenceSpaceInformation>
 XRSession::GetStationaryReferenceSpace() const {
   // For anchor creation, we should first attempt to use the local space as it
   // is supposed to be more stable, but if that is unavailable, we can try using
@@ -696,7 +696,7 @@ XRSession::GetStationaryReferenceSpace() const {
 
   if (!mojo_from_space) {
     // Unbounded is also not available.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ReferenceSpaceInformation result;
@@ -773,10 +773,10 @@ ScriptPromise XRSession::requestHitTestSource(
   }
 
   // 1. Grab the native origin from the passed in XRSpace.
-  base::Optional<device::mojom::blink::XRNativeOriginInformation>
+  absl::optional<device::mojom::blink::XRNativeOriginInformation>
       maybe_native_origin = options_init && options_init->hasSpace()
                                 ? options_init->space()->NativeOrigin()
-                                : base::nullopt;
+                                : absl::nullopt;
 
   if (!maybe_native_origin) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1580,7 +1580,7 @@ void XRSession::UpdatePresentationFrameState(
   // Apply dynamic viewport scaling if available.
   if (frame_data && supports_viewport_scaling_) {
     float gpu_load = frame_data->rendering_time_ratio;
-    base::Optional<double> scale = base::nullopt;
+    absl::optional<double> scale = absl::nullopt;
     if (gpu_load > 0.0f) {
       if (!viewport_scaler_) {
         // Lazily create an instance of the viewport scaler on first use.
@@ -1728,7 +1728,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       world_light_probe_->ProcessLightEstimationData(light_data, timestamp);
     }
 
-    camera_image_size_ = base::nullopt;
+    camera_image_size_ = absl::nullopt;
     if (frame_data->camera_image_size.has_value()) {
       DCHECK(frame_data->camera_image_buffer_holder.has_value());
 
@@ -1752,7 +1752,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       world_light_probe_->ProcessLightEstimationData(nullptr, timestamp);
     }
 
-    camera_image_size_ = base::nullopt;
+    camera_image_size_ = absl::nullopt;
   }
 }
 
@@ -1768,8 +1768,8 @@ void XRSession::SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter) {
 
 void XRSession::OnFrame(
     double timestamp,
-    const base::Optional<gpu::MailboxHolder>& output_mailbox_holder,
-    const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+    const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
+    const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
   TRACE_EVENT0("gpu", __func__);
   DVLOG(2) << __func__ << ": ended_=" << ended_
            << ", pending_frame_=" << pending_frame_;
@@ -1884,11 +1884,11 @@ bool XRSession::CanEnableAntiAliasing() const {
   return enable_anti_aliasing_;
 }
 
-base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
+absl::optional<TransformationMatrix> XRSession::GetMojoFrom(
     device::mojom::blink::XRReferenceSpaceType space_type) const {
   if (!CanReportPoses()) {
     DVLOG(2) << __func__ << ": cannot report poses, returning nullopt";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   switch (space_type) {
@@ -1898,7 +1898,7 @@ base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
           return TransformationMatrix();
         }
 
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       return *mojo_from_viewer_;
@@ -1914,7 +1914,7 @@ base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
     case device::mojom::blink::XRReferenceSpaceType::kBoundedFloor:
       // Information about -floor spaces is currently stored elsewhere (in
       // stage_parameters_). It probably should eventually move here.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -2240,7 +2240,7 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
       // In non-immersive mode, if there is no explicit projection matrix
       // provided, the projection matrix must be aligned with the
       // output canvas dimensions.
-      base::Optional<double> inline_vertical_fov =
+      absl::optional<double> inline_vertical_fov =
           render_state_->inlineVerticalFieldOfView();
 
       // inlineVerticalFieldOfView should only be null in immersive mode.

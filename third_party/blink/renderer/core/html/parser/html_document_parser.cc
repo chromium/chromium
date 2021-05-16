@@ -1817,7 +1817,7 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   TRACE_EVENT0("blink", "HTMLDocumentParser::ScanAndPreload");
   DCHECK(preloader_);
   bool seen_csp_meta_tag = false;
-  base::Optional<ViewportDescription> viewport_description;
+  absl::optional<ViewportDescription> viewport_description;
   PreloadRequestStream requests =
       scanner->Scan(GetDocument()->ValidBaseElementURL(), &viewport_description,
                     seen_csp_meta_tag);

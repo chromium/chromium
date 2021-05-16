@@ -25,7 +25,7 @@ class PLATFORM_EXPORT ThrottledTimeDomain
   // TimeDomain implementation:
   base::sequence_manager::LazyNow CreateLazyNow() const override;
   base::TimeTicks Now() const override;
-  base::Optional<base::TimeDelta> DelayTillNextTask(
+  absl::optional<base::TimeDelta> DelayTillNextTask(
       base::sequence_manager::LazyNow* lazy_now) override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
 
@@ -37,7 +37,7 @@ class PLATFORM_EXPORT ThrottledTimeDomain
  private:
   // Next task run time provided by task queue throttler. Note that it does not
   // get reset, so it is valid only when in the future.
-  base::Optional<base::TimeTicks> next_task_run_time_;
+  absl::optional<base::TimeTicks> next_task_run_time_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottledTimeDomain);
 };

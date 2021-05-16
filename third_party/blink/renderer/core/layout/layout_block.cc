@@ -1820,12 +1820,12 @@ LayoutUnit LayoutBlock::EmptyLineBaseline(
   return baseline_offset ? *baseline_offset : LayoutUnit(-1);
 }
 
-base::Optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
+absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
   const SimpleFontData* font_data = FirstLineStyle()->GetFont().PrimaryFont();
   if (!font_data)
-    return base::nullopt;
+    return absl::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
   const LayoutUnit line_height =
       LineHeight(true, line_direction, kPositionOfInteriorLineBoxes);
@@ -1945,7 +1945,7 @@ LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
 // them. Just walking the block children in logical order seems rather wrong for
 // those two layout modes, though.
 
-base::Optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
+absl::optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
   NOT_DESTROYED();
   if (ShouldApplyLayoutContainment())
     return LayoutUnit(-1);
@@ -1955,13 +1955,13 @@ base::Optional<LayoutUnit> LayoutBlock::FirstLineBoxBaselineOverride() const {
   if (IsWritingModeRoot() && !IsRubyRun() && !IsGridItem())
     return LayoutUnit(-1);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 LayoutUnit LayoutBlock::FirstLineBoxBaseline() const {
   NOT_DESTROYED();
   DCHECK(!ChildrenInline());
-  if (const base::Optional<LayoutUnit> baseline =
+  if (const absl::optional<LayoutUnit> baseline =
           FirstLineBoxBaselineOverride())
     return *baseline;
 
@@ -1992,7 +1992,7 @@ bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
          ShouldApplyLayoutContainment();
 }
 
-base::Optional<LayoutUnit> LayoutBlock::InlineBlockBaselineOverride(
+absl::optional<LayoutUnit> LayoutBlock::InlineBlockBaselineOverride(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
   if (UseLogicalBottomMarginEdgeForInlineBlockBaseline()) {
@@ -2005,14 +2005,14 @@ base::Optional<LayoutUnit> LayoutBlock::InlineBlockBaselineOverride(
   if (IsWritingModeRoot() && !IsRubyRun())
     return LayoutUnit(-1);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 LayoutUnit LayoutBlock::InlineBlockBaseline(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
   DCHECK(!ChildrenInline());
-  if (const base::Optional<LayoutUnit> baseline =
+  if (const absl::optional<LayoutUnit> baseline =
           InlineBlockBaselineOverride(line_direction))
     return *baseline;
 

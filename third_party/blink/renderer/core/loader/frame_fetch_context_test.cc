@@ -32,12 +32,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -194,33 +194,33 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
                 is_associated_with_ad_subframe)));
   }
 
-  base::Optional<ResourceRequestBlockedReason> CanRequest() {
+  absl::optional<ResourceRequestBlockedReason> CanRequest() {
     return CanRequestInternal(ReportingDisposition::kReport);
   }
 
-  base::Optional<ResourceRequestBlockedReason> CanRequestKeepAlive() {
+  absl::optional<ResourceRequestBlockedReason> CanRequestKeepAlive() {
     return CanRequestInternal(ReportingDisposition::kReport,
                               true /* keepalive */);
   }
 
-  base::Optional<ResourceRequestBlockedReason> CanRequestPreload() {
+  absl::optional<ResourceRequestBlockedReason> CanRequestPreload() {
     return CanRequestInternal(ReportingDisposition::kSuppressReporting);
   }
 
-  base::Optional<ResourceRequestBlockedReason> CanRequestAndVerifyIsAd(
+  absl::optional<ResourceRequestBlockedReason> CanRequestAndVerifyIsAd(
       bool expect_is_ad) {
-    base::Optional<ResourceRequestBlockedReason> reason =
+    absl::optional<ResourceRequestBlockedReason> reason =
         CanRequestInternal(ReportingDisposition::kReport);
     ResourceRequest request(KURL("http://example.com/"));
     FetchInitiatorInfo initiator_info;
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
-                                request, base::nullopt /* alias_url */,
+                                request, absl::nullopt /* alias_url */,
                                 ResourceType::kMock, initiator_info));
     return reason;
   }
 
  private:
-  base::Optional<ResourceRequestBlockedReason> CanRequestInternal(
+  absl::optional<ResourceRequestBlockedReason> CanRequestInternal(
       ReportingDisposition reporting_disposition,
       bool keepalive = false) {
     const KURL input_url("http://example.com/");
@@ -234,7 +234,7 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
     // DJKim
     return GetFetchContext()->CanRequest(ResourceType::kImage, resource_request,
                                          input_url, options,
-                                         reporting_disposition, base::nullopt);
+                                         reporting_disposition, absl::nullopt);
   }
 
   int filtered_load_callback_counter_;
@@ -1168,10 +1168,10 @@ TEST_F(FrameFetchContextSubresourceFilterTest, Filter) {
 TEST_F(FrameFetchContextSubresourceFilterTest, Allow) {
   SetFilterPolicy(WebDocumentSubresourceFilter::kAllow);
 
-  EXPECT_EQ(base::nullopt, CanRequestAndVerifyIsAd(false));
+  EXPECT_EQ(absl::nullopt, CanRequestAndVerifyIsAd(false));
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 
-  EXPECT_EQ(base::nullopt, CanRequestPreload());
+  EXPECT_EQ(absl::nullopt, CanRequestPreload());
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 }
 
@@ -1179,19 +1179,19 @@ TEST_F(FrameFetchContextSubresourceFilterTest, DuringOnFreeze) {
   document->SetFreezingInProgress(true);
   // Only keepalive requests should succeed during onfreeze.
   EXPECT_EQ(ResourceRequestBlockedReason::kOther, CanRequest());
-  EXPECT_EQ(base::nullopt, CanRequestKeepAlive());
+  EXPECT_EQ(absl::nullopt, CanRequestKeepAlive());
   document->SetFreezingInProgress(false);
-  EXPECT_EQ(base::nullopt, CanRequest());
-  EXPECT_EQ(base::nullopt, CanRequestKeepAlive());
+  EXPECT_EQ(absl::nullopt, CanRequest());
+  EXPECT_EQ(absl::nullopt, CanRequestKeepAlive());
 }
 
 TEST_F(FrameFetchContextSubresourceFilterTest, WouldDisallow) {
   SetFilterPolicy(WebDocumentSubresourceFilter::kWouldDisallow);
 
-  EXPECT_EQ(base::nullopt, CanRequestAndVerifyIsAd(true));
+  EXPECT_EQ(absl::nullopt, CanRequestAndVerifyIsAd(true));
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 
-  EXPECT_EQ(base::nullopt, CanRequestPreload());
+  EXPECT_EQ(absl::nullopt, CanRequestPreload());
   EXPECT_EQ(0, GetFilteredLoadCallCount());
 }
 
@@ -1404,12 +1404,12 @@ TEST_F(FrameFetchContextSubresourceFilterTest,
        CanRequestBasedOnSubresourceFilterOnly) {
   const struct {
     WebDocumentSubresourceFilter::LoadPolicy policy;
-    base::Optional<ResourceRequestBlockedReason> expected_block_reason;
+    absl::optional<ResourceRequestBlockedReason> expected_block_reason;
   } kTestCases[] = {
       {WebDocumentSubresourceFilter::kDisallow,
        ResourceRequestBlockedReason::kSubresourceFilter},
-      {WebDocumentSubresourceFilter::kWouldDisallow, base::nullopt},
-      {WebDocumentSubresourceFilter::kAllow, base::nullopt}};
+      {WebDocumentSubresourceFilter::kWouldDisallow, absl::nullopt},
+      {WebDocumentSubresourceFilter::kAllow, absl::nullopt}};
 
   for (const auto& test : kTestCases) {
     SetFilterPolicy(test.policy);
@@ -1425,7 +1425,7 @@ TEST_F(FrameFetchContextSubresourceFilterTest,
     EXPECT_EQ(test.expected_block_reason,
               GetFetchContext()->CanRequestBasedOnSubresourceFilterOnly(
                   ResourceType::kScript, resource_request, url, options,
-                  ReportingDisposition::kReport, base::nullopt));
+                  ReportingDisposition::kReport, absl::nullopt));
   }
 }
 

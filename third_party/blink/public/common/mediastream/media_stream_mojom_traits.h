@@ -29,12 +29,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.video_facing;
   }
 
-  static const base::Optional<std::string>& group_id(
+  static const absl::optional<std::string>& group_id(
       const blink::MediaStreamDevice& device) {
     return device.group_id;
   }
 
-  static const base::Optional<std::string>& matched_output_device_id(
+  static const absl::optional<std::string>& matched_output_device_id(
       const blink::MediaStreamDevice& device) {
     return device.matched_output_device_id;
   }
@@ -48,12 +48,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.input;
   }
 
-  static const base::Optional<base::UnguessableToken>& session_id(
+  static const absl::optional<base::UnguessableToken>& session_id(
       const blink::MediaStreamDevice& device) {
     return device.serializable_session_id();
   }
 
-  static const base::Optional<media::mojom::DisplayMediaInformationPtr>&
+  static const absl::optional<media::mojom::DisplayMediaInformationPtr>&
   display_media_info(const blink::MediaStreamDevice& device) {
     return device.display_media_info;
   }

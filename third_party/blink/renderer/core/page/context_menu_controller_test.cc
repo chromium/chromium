@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
@@ -64,7 +64,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
  public:
   void UpdateContextMenuDataForTesting(
       const ContextMenuData& data,
-      const base::Optional<gfx::Point>&) override {
+      const absl::optional<gfx::Point>&) override {
     context_menu_data_ = data;
   }
 

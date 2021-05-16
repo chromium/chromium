@@ -10,11 +10,11 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -186,7 +186,7 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     return nullptr;
   }
 
-  base::Optional<base::Value> datadict = base::JSONReader::Read(token_payload);
+  absl::optional<base::Value> datadict = base::JSONReader::Read(token_payload);
   if (!datadict || !datadict->is_dict()) {
     return nullptr;
   }

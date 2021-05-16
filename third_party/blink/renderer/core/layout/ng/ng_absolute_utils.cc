@@ -124,7 +124,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
                          bool is_block_direction,
                          bool is_table,
                          bool is_shrink_to_fit,
-                         base::Optional<LayoutUnit> size,
+                         absl::optional<LayoutUnit> size,
                          LayoutUnit* size_out,
                          LayoutUnit* inset_start_out,
                          LayoutUnit* inset_end_out,
@@ -132,21 +132,21 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
                          LayoutUnit* margin_end_out) {
   DCHECK_NE(available_size, kIndefiniteSize);
 
-  base::Optional<LayoutUnit> margin_start;
+  absl::optional<LayoutUnit> margin_start;
   if (!margin_start_length.IsAuto()) {
     margin_start = MinimumValueForLength(margin_start_length,
                                          margin_percentage_resolution_size);
   }
-  base::Optional<LayoutUnit> margin_end;
+  absl::optional<LayoutUnit> margin_end;
   if (!margin_end_length.IsAuto()) {
     margin_end = MinimumValueForLength(margin_end_length,
                                        margin_percentage_resolution_size);
   }
-  base::Optional<LayoutUnit> inset_start;
+  absl::optional<LayoutUnit> inset_start;
   if (!inset_start_length.IsAuto()) {
     inset_start = MinimumValueForLength(inset_start_length, available_size);
   }
-  base::Optional<LayoutUnit> inset_end;
+  absl::optional<LayoutUnit> inset_end;
   if (!inset_end_length.IsAuto()) {
     inset_end = MinimumValueForLength(inset_end_length, available_size);
   }
@@ -349,7 +349,7 @@ bool ComputeOutOfFlowInlineDimensions(
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
-    const base::Optional<LogicalSize>& replaced_size,
+    const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
@@ -376,7 +376,7 @@ bool ComputeOutOfFlowInlineDimensions(
     if (dimensions->size.block_size == kIndefiniteSize) {
       ComputeOutOfFlowBlockDimensions(node, space, border_padding,
                                       static_position,
-                                      /* replaced_size */ base::nullopt,
+                                      /* replaced_size */ absl::nullopt,
                                       container_writing_direction, dimensions);
     }
 
@@ -393,7 +393,7 @@ bool ComputeOutOfFlowInlineDimensions(
   };
 
   Length min_inline_length = style.LogicalMinWidth();
-  base::Optional<LayoutUnit> inline_size;
+  absl::optional<LayoutUnit> inline_size;
   if (replaced_size) {
     DCHECK(node.IsReplaced());
     inline_size = replaced_size->inline_size;
@@ -465,7 +465,7 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
-    const base::Optional<LogicalSize>& replaced_size,
+    const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
@@ -509,7 +509,7 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
     return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
   };
 
-  base::Optional<LayoutUnit> block_size;
+  absl::optional<LayoutUnit> block_size;
   if (replaced_size) {
     DCHECK(node.IsReplaced());
     block_size = replaced_size->block_size;

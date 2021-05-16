@@ -546,11 +546,11 @@ TEST_F(CachedStorageAreaTest, KeyMutationsAreIgnoredUntilCompletion) {
   EXPECT_TRUE(cached_area_->SetItem(kKey, kValue, source_area_));
   mock_storage_area_.Flush();
   EXPECT_TRUE(IsIgnoringKeyMutations(kKey));
-  observer->KeyDeleted(KeyToUint8Vector(kKey), base::nullopt, kRemoteSource);
+  observer->KeyDeleted(KeyToUint8Vector(kKey), absl::nullopt, kRemoteSource);
   EXPECT_TRUE(IsIgnoringKeyMutations(kKey));
   EXPECT_EQ(kValue, cached_area_->GetItem(kKey));
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
-                       base::nullopt, source_);
+                       absl::nullopt, source_);
   EXPECT_FALSE(IsIgnoringKeyMutations(kKey));
 
   // RemoveItem
@@ -567,7 +567,7 @@ TEST_F(CachedStorageAreaTest, KeyMutationsAreIgnoredUntilCompletion) {
   EXPECT_TRUE(IsIgnoringKeyMutations(kKey));
   mock_storage_area_.Flush();
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
-                       base::nullopt, source_);
+                       absl::nullopt, source_);
   observer->KeyDeleted(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
                        source_);
   EXPECT_FALSE(IsIgnoringKeyMutations(kKey));
@@ -587,14 +587,14 @@ TEST_F(CachedStorageAreaTest, ChangeEvents) {
   cached_area_->SetItem(kKey, kValue2, source_area_);
   cached_area_->RemoveItem(kKey, source_area_);
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
-                       base::nullopt, source_);
+                       absl::nullopt, source_);
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue2),
                        ValueToUint8Vector(kValue), source_);
   observer->KeyDeleted(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue2),
                        source_);
 
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
-                       base::nullopt, kRemoteSource);
+                       absl::nullopt, kRemoteSource);
   observer->AllDeleted(/*was_nonempty=*/true, kRemoteSource);
 
   // Source area should have ignored all but the last two events.
@@ -661,7 +661,7 @@ TEST_F(CachedStorageAreaTest, RevertOnChangeFailedWithSubsequentChanges) {
   observer->KeyChangeFailed(KeyToUint8Vector(kKey), source_);
   EXPECT_EQ(kValue2, cached_area_->GetItem(kKey));
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue2),
-                       base::nullopt, source_);
+                       absl::nullopt, source_);
   EXPECT_EQ(kValue2, cached_area_->GetItem(kKey));
 }
 
@@ -691,7 +691,7 @@ TEST_F(CachedStorageAreaTest, RevertOnChangeFailedWithNonLocalChanges) {
   EXPECT_EQ(kValue, cached_area_->GetItem(kKey));
   // Should be ignored.
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue2),
-                       base::nullopt, kRemoteSource);
+                       absl::nullopt, kRemoteSource);
   EXPECT_EQ(kValue, cached_area_->GetItem(kKey));
   // Now that we fail the pending |SetItem()|, the above remote change should be
   // reflected.
@@ -710,7 +710,7 @@ TEST_F(CachedStorageAreaTest, RevertOnChangeFailedAfterNonLocalClear) {
   cached_area_->SetItem(kKey, kValue2, source_area_);
   EXPECT_EQ(kValue2, cached_area_->GetItem(kKey));
   observer->KeyChanged(KeyToUint8Vector(kKey), ValueToUint8Vector(kValue),
-                       base::nullopt, source_);
+                       absl::nullopt, source_);
   // We still have |kValue2| cached since its mutation is still pending.
   EXPECT_EQ(kValue2, cached_area_->GetItem(kKey));
 

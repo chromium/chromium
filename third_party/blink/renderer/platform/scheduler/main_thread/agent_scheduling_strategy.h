@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AGENT_SCHEDULING_STRATEGY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AGENT_SCHEDULING_STRATEGY_H_
 
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -67,12 +67,12 @@ class PLATFORM_EXPORT AgentSchedulingStrategy {
       const FrameSchedulerImpl& frame_scheduler) WARN_UNUSED_RESULT = 0;
 
   // The following functions should be consulted when making scheduling
-  // decisions. Will return |base::Optional| containing the desired value, or
+  // decisions. Will return |absl::optional| containing the desired value, or
   // |nullopt| to signify that the original scheduler's decision should not be
   // changed.
-  virtual base::Optional<bool> QueueEnabledState(
+  virtual absl::optional<bool> QueueEnabledState(
       const MainThreadTaskQueue& task_queue) const = 0;
-  virtual base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
+  virtual absl::optional<base::sequence_manager::TaskQueue::QueuePriority>
   QueuePriority(const MainThreadTaskQueue& task_queue) const = 0;
 
   // Returns true if the strategy is interested in getting input event

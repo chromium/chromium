@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/object_painter_base.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
@@ -522,7 +522,7 @@ float GetFocusRingBorderRadius(const ComputedStyle& style) {
     // For the elements that have not been styled and that have an appearance,
     // the focus ring should use the same border radius as the one used for
     // drawing the element.
-    base::Optional<ui::NativeTheme::Part> part;
+    absl::optional<ui::NativeTheme::Part> part;
     switch (style.EffectiveAppearance()) {
       case kCheckboxPart:
         part = ui::NativeTheme::kCheckbox;

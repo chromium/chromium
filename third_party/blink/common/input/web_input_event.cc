@@ -12,8 +12,8 @@ constexpr int kButtonModifiers =
     WebInputEvent::kForwardButtonDown;
 }
 
-base::Optional<ui::ScrollInputType> WebInputEvent::GetScrollInputType() const {
-  return base::nullopt;
+absl::optional<ui::ScrollInputType> WebInputEvent::GetScrollInputType() const {
+  return absl::nullopt;
 }
 
 WebInputEvent::DispatchType WebInputEvent::MergeDispatchTypes(

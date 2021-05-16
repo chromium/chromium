@@ -2987,10 +2987,10 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveUniform(
                                                type, size);
 }
 
-base::Optional<HeapVector<Member<WebGLShader>>>
+absl::optional<HeapVector<Member<WebGLShader>>>
 WebGLRenderingContextBase::getAttachedShaders(WebGLProgram* program) {
   if (!ValidateWebGLProgramOrShader("getAttachedShaders", program))
-    return base::nullopt;
+    return absl::nullopt;
 
   HeapVector<Member<WebGLShader>> shader_objects;
   for (GLenum shaderType : {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}) {
@@ -3874,10 +3874,10 @@ String WebGLRenderingContextBase::getShaderSource(WebGLShader* shader) {
   return EnsureNotNull(shader->Source());
 }
 
-base::Optional<Vector<String>>
+absl::optional<Vector<String>>
 WebGLRenderingContextBase::getSupportedExtensions() {
   if (isContextLost())
-    return base::nullopt;
+    return absl::nullopt;
 
   Vector<String> result;
 
@@ -4689,7 +4689,7 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
   // we want to avoid this error. Therefore we provide temporary memory here if
   // 'ArrayBufferView' does not provide a backing store but we actually read
   // zero pixels.
-  base::Optional<Vector<uint8_t>> buffer;
+  absl::optional<Vector<uint8_t>> buffer;
   if (!data && (width == 0 || height == 0)) {
     buffer.emplace(32);
     data = buffer->data();

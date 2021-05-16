@@ -629,7 +629,7 @@ class UserMediaClientTest : public ::testing::Test {
       MediaStreamComponent* component,
       int width,
       int height,
-      const base::Optional<double>& frame_rate = base::Optional<double>()) {
+      const absl::optional<double>& frame_rate = absl::optional<double>()) {
     blink::MockConstraintFactory factory;
     factory.basic().width.SetExact(width);
     factory.basic().height.SetExact(height);

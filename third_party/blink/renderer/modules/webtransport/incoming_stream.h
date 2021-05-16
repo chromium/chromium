@@ -9,10 +9,10 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -147,7 +147,7 @@ class MODULES_EXPORT IncomingStream final
   State state_ = State::kOpen;
 
   // This is set when OnIncomingStreamClosed() is called.
-  base::Optional<bool> fin_received_;
+  absl::optional<bool> fin_received_;
 
   // True when |data_pipe_| has been detected to be closed. The close is not
   // processed until |fin_received_| is also set.

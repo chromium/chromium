@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -383,7 +383,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Anything with CSS alt should be included.
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
-  base::Optional<String> alt_text = GetCSSAltText(GetNode());
+  absl::optional<String> alt_text = GetCSSAltText(GetNode());
   if (alt_text && !alt_text->IsEmpty())
     return kIncludeObject;
 
@@ -482,10 +482,10 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
-base::Optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
+absl::optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
   if (!node || !node->GetComputedStyle() ||
       node->GetComputedStyle()->ContentBehavesAsNormal()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const ComputedStyle* style = node->GetComputedStyle();
@@ -495,7 +495,7 @@ base::Optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
       if (content_data->IsAltText())
         return To<AltTextContentData>(content_data)->GetText();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // If the content property is used on a non-pseudo element, match the
@@ -507,7 +507,7 @@ base::Optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
     return To<AltTextContentData>(content_data->Next())->GetText();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool AXNodeObject::ComputeAccessibilityIsIgnored(
@@ -1672,7 +1672,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   std::vector<int32_t> marker_ends;
 
   // First use ARIA markers for spelling/grammar if available.
-  base::Optional<DocumentMarker::MarkerType> aria_marker_type =
+  absl::optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
     AXRange range = AXRange::RangeOfContents(*this);
@@ -1995,13 +1995,13 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   ImageBitmap* image_bitmap = nullptr;
   if (auto* image = DynamicTo<HTMLImageElement>(node)) {
     image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        image, base::Optional<IntRect>(), options);
+        image, absl::optional<IntRect>(), options);
   } else if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
     image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        canvas, base::Optional<IntRect>(), options);
+        canvas, absl::optional<IntRect>(), options);
   } else if (auto* video = DynamicTo<HTMLVideoElement>(node)) {
     image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        video, base::Optional<IntRect>(), options);
+        video, absl::optional<IntRect>(), options);
   }
   if (!image_bitmap)
     return String();

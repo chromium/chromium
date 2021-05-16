@@ -727,7 +727,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // dispatched already. Fills unload timing if present and |committing_origin|
   // has access to the unload timing of the document.
   void DispatchUnloadEvents(SecurityOrigin* committing_origin,
-                            base::Optional<Document::UnloadEventTiming>*);
+                            absl::optional<Document::UnloadEventTiming>*);
 
   void DispatchFreezeEvent();
 
@@ -1205,7 +1205,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Vector<IconURL> IconURLs(int icon_types_mask);
 
-  base::Optional<Color> ThemeColor() const;
+  absl::optional<Color> ThemeColor() const;
 
   // Returns the HTMLLinkElement currently in use for the Web Manifest.
   // Returns null if there is no such element.

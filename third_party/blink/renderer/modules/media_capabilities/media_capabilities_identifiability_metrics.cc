@@ -239,7 +239,7 @@ void ReportDecodingInfoResult(ExecutionContext* context,
 }
 
 void ReportDecodingInfoResult(ExecutionContext* context,
-                              base::Optional<IdentifiableToken> input_token,
+                              absl::optional<IdentifiableToken> input_token,
                               const MediaCapabilitiesDecodingInfo* output) {
   DCHECK_EQ(IsDecodingInfoTypeAllowed(), input_token.has_value());
   if (!input_token.has_value() || !ShouldSampleDecodingInfoType())
@@ -249,10 +249,10 @@ void ReportDecodingInfoResult(ExecutionContext* context,
                                       IdentifiableToken());
 }
 
-base::Optional<IdentifiableToken> ComputeDecodingInfoInputToken(
+absl::optional<IdentifiableToken> ComputeDecodingInfoInputToken(
     const MediaDecodingConfiguration* input) {
   if (!IsDecodingInfoTypeAllowed() || !ShouldSampleDecodingInfoType())
-    return base::nullopt;
+    return absl::nullopt;
 
   return ComputeToken(input);
 }

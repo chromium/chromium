@@ -62,8 +62,8 @@ namespace blink {
 namespace {
 
 // Converts the composite property of a BasePropertyIndexedKeyframe into a
-// vector of base::Optional<EffectModel::CompositeOperation> enums.
-Vector<base::Optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
+// vector of absl::optional<EffectModel::CompositeOperation> enums.
+Vector<absl::optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
     const BasePropertyIndexedKeyframe* keyframe) {
   const CompositeOperationOrAutoOrCompositeOperationOrAutoSequence& composite =
       keyframe->composite();
@@ -73,7 +73,7 @@ Vector<base::Optional<EffectModel::CompositeOperation>> ParseCompositeProperty(
         composite.GetAsCompositeOperationOrAuto())};
   }
 
-  Vector<base::Optional<EffectModel::CompositeOperation>> result;
+  Vector<absl::optional<EffectModel::CompositeOperation>> result;
   for (const String& composite_operation_string :
        composite.GetAsCompositeOperationOrAutoSequence()) {
     result.push_back(
@@ -366,7 +366,7 @@ StringKeyframeVector ConvertArrayForm(Element* element,
                        execution_context);
     }
 
-    base::Optional<EffectModel::CompositeOperation> composite =
+    absl::optional<EffectModel::CompositeOperation> composite =
         EffectModel::StringToCompositeOperation(base_keyframe->composite());
     if (composite) {
       keyframe->SetComposite(
@@ -450,9 +450,9 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   if (exception_state.HadException())
     return {};
 
-  Vector<base::Optional<double>> offsets;
+  Vector<absl::optional<double>> offsets;
   if (property_indexed_keyframe->offset().IsNull())
-    offsets.push_back(base::nullopt);
+    offsets.push_back(absl::nullopt);
   else if (property_indexed_keyframe->offset().IsDouble())
     offsets.push_back(property_indexed_keyframe->offset().GetAsDouble());
   else
@@ -466,7 +466,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   else
     easings = property_indexed_keyframe->easing().GetAsStringSequence();
 
-  Vector<base::Optional<EffectModel::CompositeOperation>> composite_operations =
+  Vector<absl::optional<EffectModel::CompositeOperation>> composite_operations =
       ParseCompositeProperty(property_indexed_keyframe);
 
   // Next extract all animatable properties from the input argument and iterate
@@ -557,7 +557,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
     auto* keyframe = keyframes.at(keys[i]);
 
     if (i < offsets.size()) {
-      base::Optional<double> offset = offsets[i];
+      absl::optional<double> offset = offsets[i];
       // 6. If processed keyframes is not loosely sorted by offset, throw a
       // TypeError and abort these steps.
       if (offset.has_value()) {
@@ -610,7 +610,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
       // property keyframes, repeat the elements in composite modes successively
       // starting from the beginning of the list until composite modes has as
       // many items as property keyframes.
-      base::Optional<EffectModel::CompositeOperation> composite =
+      absl::optional<EffectModel::CompositeOperation> composite =
           composite_operations[i % composite_operations.size()];
       if (composite) {
         keyframe->SetComposite(

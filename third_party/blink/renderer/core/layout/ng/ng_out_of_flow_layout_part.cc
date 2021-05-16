@@ -90,7 +90,7 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     const ComputedStyle& container_style,
     const NGConstraintSpace& container_space,
     NGBoxFragmentBuilder* container_builder,
-    base::Optional<LogicalSize> initial_containing_block_fixed_size)
+    absl::optional<LogicalSize> initial_containing_block_fixed_size)
     : container_builder_(container_builder),
       writing_mode_(container_style.GetWritingMode()),
       default_writing_direction_(container_style.GetWritingDirection()),
@@ -619,8 +619,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       multicol_container_builder.AddChild(
           *fragment, offset, /* inline_container */ nullptr,
           /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-          /* relative_offset */ base::nullopt,
-          /* adjustment_for_oof_propagation */ base::nullopt);
+          /* relative_offset */ absl::nullopt,
+          /* adjustment_for_oof_propagation */ absl::nullopt);
       multicol_children.emplace_back(MulticolChildInfo(&child));
     }
 
@@ -982,7 +982,7 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
       ComputeBorders(node_info.constraint_space, node_info.node) +
       ComputePadding(node_info.constraint_space, candidate_style);
 
-  base::Optional<LogicalSize> replaced_size;
+  absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
     replaced_size = ComputeReplacedSize(
         node_info.node, node_info.constraint_space, border_padding);
@@ -1114,7 +1114,7 @@ bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     NGBlockNode node,
     const LogicalSize& container_content_size_in_candidate_writing_mode,
-    const base::Optional<LayoutUnit>& block_estimate,
+    const absl::optional<LayoutUnit>& block_estimate,
     const NGLogicalOutOfFlowDimensions& node_dimensions,
     const LayoutUnit block_offset,
     const NGBlockBreakToken* break_token,
@@ -1365,8 +1365,8 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     container_builder_->AddChild(
         new_result->PhysicalFragment(), offset, /* inline_container */ nullptr,
         /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-        /* relative_offset */ base::nullopt,
-        /* adjustment_for_oof_propagation */ base::nullopt);
+        /* relative_offset */ absl::nullopt,
+        /* adjustment_for_oof_propagation */ absl::nullopt);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
     node.ReplaceColumnResult(new_result, fragment);

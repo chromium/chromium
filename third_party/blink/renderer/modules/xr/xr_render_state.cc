@@ -55,9 +55,9 @@ HTMLCanvasElement* XRRenderState::output_canvas() const {
   return nullptr;
 }
 
-base::Optional<double> XRRenderState::inlineVerticalFieldOfView() const {
+absl::optional<double> XRRenderState::inlineVerticalFieldOfView() const {
   if (immersive_)
-    return base::nullopt;
+    return absl::nullopt;
   return inline_vertical_fov_;
 }
 

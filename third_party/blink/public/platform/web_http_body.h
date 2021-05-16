@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_HTTP_BODY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_HTTP_BODY_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -57,7 +57,7 @@ class WebHTTPBody {
     WebString file_path;
     int64_t file_start;
     int64_t file_length;  // -1 means to the end of the file.
-    base::Optional<base::Time> modification_time;
+    absl::optional<base::Time> modification_time;
     uint64_t blob_length;
     CrossVariantMojoRemote<mojom::BlobInterfaceBase> optional_blob;
     CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
@@ -93,7 +93,7 @@ class WebHTTPBody {
       const WebString&,
       int64_t file_start,
       int64_t file_length,
-      const base::Optional<base::Time>& modification_time);
+      const absl::optional<base::Time>& modification_time);
   BLINK_PLATFORM_EXPORT void AppendBlob(const WebString& uuid);
   // TODO(shimazu): Remove this once Network Service is enabled.
   BLINK_PLATFORM_EXPORT void AppendBlob(

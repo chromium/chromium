@@ -23,7 +23,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
 
   auto* scroll_timeline = To<ScrollTimeline>(timeline);
   Node* scroll_source = scroll_timeline->ResolvedScrollSource();
-  base::Optional<CompositorElementId> element_id =
+  absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
@@ -52,11 +52,11 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
   );
 }
 
-base::Optional<CompositorElementId> GetCompositorScrollElementId(
+absl::optional<CompositorElementId> GetCompositorScrollElementId(
     const Node* node) {
   if (!node || !node->GetLayoutObject() ||
       !node->GetLayoutObject()->FirstFragment().PaintProperties()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),

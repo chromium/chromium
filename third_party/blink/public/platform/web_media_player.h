@@ -346,10 +346,10 @@ class WebMediaPlayer {
   virtual int GetDelegateId() { return -1; }
 
   // Returns the SurfaceId the video element is currently using.
-  // Returns base::nullopt if the element isn't a video or doesn't have a
+  // Returns absl::nullopt if the element isn't a video or doesn't have a
   // SurfaceId associated to it.
-  virtual base::Optional<viz::SurfaceId> GetSurfaceId() {
-    return base::nullopt;
+  virtual absl::optional<viz::SurfaceId> GetSurfaceId() {
+    return absl::nullopt;
   }
 
   // Provide the media URL, after any redirects are applied.  May return an

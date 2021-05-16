@@ -59,7 +59,7 @@ void MockMediaStreamRegistry::Init() {
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
     const std::string& track_id,
     const VideoTrackAdapterSettings& adapter_settings,
-    const base::Optional<bool>& noise_reduction,
+    const absl::optional<bool>& noise_reduction,
     bool is_screencast,
     double min_frame_rate) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
@@ -73,8 +73,8 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
       String::FromUTF8(track_id), source);
   component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
       native_source_ptr, adapter_settings, noise_reduction, is_screencast,
-      min_frame_rate, base::nullopt /* pan */, base::nullopt /* tilt */,
-      base::nullopt /* zoom */, false /* pan_tilt_zoom_allowed */,
+      min_frame_rate, absl::nullopt /* pan */, absl::nullopt /* tilt */,
+      absl::nullopt /* zoom */, false /* pan_tilt_zoom_allowed */,
       MediaStreamVideoSource::ConstraintsOnceCallback(), true /* enabled */));
   descriptor_->AddRemoteTrack(component);
   return native_source_ptr;
@@ -83,7 +83,7 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
     const std::string& track_id) {
   return AddVideoTrack(track_id, VideoTrackAdapterSettings(),
-                       base::Optional<bool>(), false /* is_screncast */,
+                       absl::optional<bool>(), false /* is_screncast */,
                        0.0 /* min_frame_rate */);
 }
 

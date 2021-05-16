@@ -170,12 +170,12 @@ std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
-base::Optional<WebSchedulerTrackedFeature> StringToFeature(
+absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str) {
   auto map = ShortStringToFeatureMap();
   auto it = map.find(str);
   if (it == map.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return it->second;
 }

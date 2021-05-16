@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -94,7 +94,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
   scoped_refptr<SharedFont> shared_font_;
 
   // Lazily initialized.
-  base::Optional<float> cached_text_width_;
+  absl::optional<float> cached_text_width_;
   sk_sp<PaintRecord> paint_record_for_current_frame_;
   PaintImage::ContentId paint_record_content_id_;
 };

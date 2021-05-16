@@ -15,7 +15,7 @@ namespace blink {
 XRTargetRaySpace::XRTargetRaySpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-base::Optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() {
   auto mojo_from_viewer = session()->GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType::kViewer);
   switch (input_source_->TargetRayMode()) {
@@ -24,7 +24,7 @@ base::Optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() {
       // viewer space is the input space.
       // So our result will be mojo_from_viewer * viewer_from_pointer
       if (!(mojo_from_viewer && input_source_->InputFromPointer()))
-        return base::nullopt;
+        return absl::nullopt;
 
       return *mojo_from_viewer * *(input_source_->InputFromPointer());
     }
@@ -38,7 +38,7 @@ base::Optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() {
       // mojo_from_pointer is just: MojoFromInput*InputFromPointer;
       if (!(input_source_->MojoFromInput() &&
             input_source_->InputFromPointer()))
-        return base::nullopt;
+        return absl::nullopt;
 
       return *(input_source_->MojoFromInput()) *
              *(input_source_->InputFromPointer());
@@ -50,7 +50,7 @@ bool XRTargetRaySpace::EmulatedPosition() const {
   return input_source_->emulatedPosition();
 }
 
-base::Optional<device::mojom::blink::XRNativeOriginInformation>
+absl::optional<device::mojom::blink::XRNativeOriginInformation>
 XRTargetRaySpace::NativeOrigin() const {
   return input_source_->nativeOrigin();
 }

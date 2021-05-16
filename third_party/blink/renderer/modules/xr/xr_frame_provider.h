@@ -101,8 +101,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void OnPreDispatchInlineFrame(
       XRSession* session,
       double timestamp,
-      const base::Optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+      const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
+      const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
 
   // Updates the |first_immersive_frame_time_| and
   // |first_immersive_frame_time_delta_| members and returns the computed high
@@ -130,9 +130,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   // Time the first immersive frame has arrived - used to align the monotonic
   // clock the devices use with the base::TimeTicks.
-  base::Optional<base::TimeTicks> first_immersive_frame_time_;
+  absl::optional<base::TimeTicks> first_immersive_frame_time_;
   // The time_delta value of the first immersive frame that has arrived.
-  base::Optional<base::TimeDelta> first_immersive_frame_time_delta_;
+  absl::optional<base::TimeDelta> first_immersive_frame_time_delta_;
 
   // Non-immersive session state
   HeapHashMap<Member<XRSession>,
@@ -149,8 +149,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   bool pending_immersive_vsync_ = false;
   bool pending_non_immersive_vsync_ = false;
 
-  base::Optional<gpu::MailboxHolder> buffer_mailbox_holder_;
-  base::Optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
+  absl::optional<gpu::MailboxHolder> buffer_mailbox_holder_;
+  absl::optional<gpu::MailboxHolder> camera_image_mailbox_holder_;
   bool last_has_focus_ = false;
 };
 

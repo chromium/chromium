@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
@@ -26,7 +26,7 @@ struct DeviceEmulationParams {
 
   // Position of view on the screen. Missing position means using default value:
   // original one for kDesktop screen position, (0, 0) for kMobile.
-  base::Optional<gfx::Point> view_position;
+  absl::optional<gfx::Point> view_position;
 
   // Emulated view size. A width or height of 0 means no override in that
   // dimension, but the other can still be applied. When both are 0, then the

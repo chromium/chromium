@@ -231,7 +231,7 @@ def method_context(interface, method, component_info, is_visible=True):
         'camel_case_name':
         NameStyleConverter(name).to_upper_camel_case(),
         'cpp_type':
-        (v8_types.cpp_template_type('base::Optional', idl_type.cpp_type)
+        (v8_types.cpp_template_type('absl::optional', idl_type.cpp_type)
          if idl_type.is_explicit_nullable else v8_types.cpp_type(
              idl_type, extended_attributes=extended_attributes)),
         'cpp_value':
@@ -373,7 +373,7 @@ def argument_context(interface, method, argument, index, is_visible=True):
     snake_case_name = NameStyleConverter(argument.name).to_snake_case()
     context = {
         'cpp_type': (v8_types.cpp_template_type(
-            'base::Optional', this_cpp_type) if idl_type.is_explicit_nullable
+            'absl::optional', this_cpp_type) if idl_type.is_explicit_nullable
                      and not argument.is_variadic else this_cpp_type),
         'cpp_value':
         this_cpp_value,
@@ -503,7 +503,7 @@ def v8_set_return_value(interface_name,
     # [CallWith=ScriptState], [RaisesException]
     if use_local_result(method):
         if idl_type.is_explicit_nullable:
-            # result is of type base::Optional<T>
+            # result is of type absl::optional<T>
             cpp_value = 'result.value()'
         else:
             cpp_value = 'result'

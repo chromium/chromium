@@ -101,7 +101,7 @@ class FailingLoader final : public WebURLLoader {
       base::TimeDelta timeout_interval,
       WebURLLoaderClient*,
       WebURLResponse&,
-      base::Optional<WebURLError>& error,
+      absl::optional<WebURLError>& error,
       WebData&,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,

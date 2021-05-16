@@ -846,7 +846,7 @@ PerformanceMeasure* Performance::measure(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   // When |startOrOptions| is not provided, it's assumed to be an empty
   // dictionary.
-  return MeasureInternal(script_state, measure_name, nullptr, base::nullopt,
+  return MeasureInternal(script_state, measure_name, nullptr, absl::nullopt,
                          exception_state);
 }
 
@@ -857,7 +857,7 @@ PerformanceMeasure* Performance::measure(
     const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
     ExceptionState& exception_state) {
   return MeasureInternal(script_state, measure_name, start_or_options,
-                         base::nullopt, exception_state);
+                         absl::nullopt, exception_state);
 }
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 PerformanceMeasure* Performance::measure(
@@ -868,7 +868,7 @@ PerformanceMeasure* Performance::measure(
   return MeasureInternal(
       script_state, measure_name,
       StringOrPerformanceMeasureOptionsToNewV8Union(start_or_options),
-      base::nullopt, exception_state);
+      absl::nullopt, exception_state);
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
@@ -880,7 +880,7 @@ PerformanceMeasure* Performance::measure(
     const String& end,
     ExceptionState& exception_state) {
   return MeasureInternal(script_state, measure_name, start_or_options,
-                         base::Optional<String>(end), exception_state);
+                         absl::optional<String>(end), exception_state);
 }
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 PerformanceMeasure* Performance::measure(
@@ -892,7 +892,7 @@ PerformanceMeasure* Performance::measure(
   return MeasureInternal(
       script_state, measure_name,
       StringOrPerformanceMeasureOptionsToNewV8Union(start_or_options),
-      base::Optional<String>(end), exception_state);
+      absl::optional<String>(end), exception_state);
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
@@ -910,13 +910,13 @@ PerformanceMeasure* Performance::measure(
 //  - If an options dictionary contains neither a 'start' nor an 'end' field.
 //  - If an options dictionary contains all of 'start', 'duration' and 'end'.
 //
-// |end_mark| will be base::nullopt unless the `performance.measure()` overload
+// |end_mark| will be absl::nullopt unless the `performance.measure()` overload
 // specified an end mark.
 PerformanceMeasure* Performance::MeasureInternal(
     ScriptState* script_state,
     const AtomicString& measure_name,
     const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
-    base::Optional<String> end_mark,
+    absl::optional<String> end_mark,
     ExceptionState& exception_state) {
   // An empty option is treated with no difference as null, undefined.
   if (start_or_options && start_or_options->IsPerformanceMeasureOptions() &&
@@ -951,7 +951,7 @@ PerformanceMeasure* Performance::MeasureInternal(
     if (options->hasStart()) {
       start = StringOrDoubleToV8UnionDoubleOrString(options->start());
     }
-    base::Optional<double> duration;
+    absl::optional<double> duration;
     if (options->hasDuration()) {
       duration = options->duration();
     }
@@ -979,7 +979,7 @@ PerformanceMeasure* Performance::MeasureInternal(
     end = MakeGarbageCollected<V8UnionDoubleOrString>(*end_mark);
   }
   return MeasureWithDetail(script_state, measure_name, start,
-                           /* duration = */ base::nullopt, end,
+                           /* duration = */ absl::nullopt, end,
                            ScriptValue::CreateNull(script_state->GetIsolate()),
                            exception_state);
 }
@@ -988,7 +988,7 @@ PerformanceMeasure* Performance::MeasureWithDetail(
     ScriptState* script_state,
     const AtomicString& measure_name,
     const V8UnionDoubleOrString* start,
-    const base::Optional<double>& duration,
+    const absl::optional<double>& duration,
     const V8UnionDoubleOrString* end,
     const ScriptValue& detail,
     ExceptionState& exception_state) {

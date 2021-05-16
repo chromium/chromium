@@ -94,7 +94,7 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
 }
 
 const PhysicalRect NGLayoutOverflowCalculator::Result(
-    const base::Optional<PhysicalRect> inflow_bounds) {
+    const absl::optional<PhysicalRect> inflow_bounds) {
   if (!inflow_bounds || !is_scroll_container_)
     return layout_overflow_;
 
@@ -312,7 +312,7 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
   }
 
   // Apply any transforms to the overflow.
-  if (base::Optional<TransformationMatrix> transform =
+  if (absl::optional<TransformationMatrix> transform =
           node_.GetTransformForChildFragment(child_fragment, size_)) {
     overflow =
         PhysicalRect::EnclosingRect(transform->MapRect(FloatRect(overflow)));

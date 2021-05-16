@@ -511,10 +511,10 @@ class CORE_EXPORT LocalFrame final
   // all other documents, just before commit (ReadyToCommitNavigation time).
   void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence);
 
-  // The evidence for or against a frame being an ad. `base::nullopt` if not yet
+  // The evidence for or against a frame being an ad. `absl::nullopt` if not yet
   // set or if the frame is a top-level frame as only subframes can be tagged as
   // ads.
-  const base::Optional<blink::FrameAdEvidence>& AdEvidence() const {
+  const absl::optional<blink::FrameAdEvidence>& AdEvidence() const {
     return ad_evidence_;
   }
 
@@ -666,7 +666,7 @@ class CORE_EXPORT LocalFrame final
       blink::mojom::blink::MediaPlayerActionPtr action) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
-      const base::Optional<RemoteFrameToken>& source_frame_token) final;
+      const absl::optional<RemoteFrameToken>& source_frame_token) final;
   void AdvanceFocusInForm(mojom::blink::FocusType focus_type) final;
   void ReportContentSecurityPolicyViolation(
       network::mojom::blink::CSPViolationPtr csp_violation) final;
@@ -678,7 +678,7 @@ class CORE_EXPORT LocalFrame final
   void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
   void OnScreensChange() final;
   void PostMessageEvent(
-      const base::Optional<RemoteFrameToken>& source_frame_token,
+      const absl::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,
       const String& target_origin,
       BlinkTransferableMessage message) final;
@@ -706,7 +706,7 @@ class CORE_EXPORT LocalFrame final
   void BindReportingObserver(
       mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
   void UpdateOpener(
-      const base::Optional<blink::FrameToken>& opener_routing_id) final;
+      const absl::optional<blink::FrameToken>& opener_routing_id) final;
   void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
   void MixedContentFound(
       const KURL& main_resource_url,
@@ -1048,7 +1048,7 @@ class CORE_EXPORT LocalFrame final
 
   std::unique_ptr<FrameOverlay> frame_color_overlay_;
 
-  base::Optional<base::UnguessableToken> embedding_token_;
+  absl::optional<base::UnguessableToken> embedding_token_;
 
   mojom::FrameLifecycleState lifecycle_state_;
 
@@ -1102,7 +1102,7 @@ class CORE_EXPORT LocalFrame final
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
 
-  // The evidence for or against a frame being an ad frame. `base::nullopt` if
+  // The evidence for or against a frame being an ad frame. `absl::nullopt` if
   // not yet set or if the frame is a top-level frame. (Only subframes can be
   // tagged as ad frames.) This is per-frame (as opposed to per-document) as we
   // want to decide whether a frame is an ad or not before commit, while the
@@ -1111,7 +1111,7 @@ class CORE_EXPORT LocalFrame final
   // This is constructed directly in the renderer in the case of an initial
   // synchronous commit and otherwise is signaled from the browser process at
   // ready-to-commit time.
-  base::Optional<blink::FrameAdEvidence> ad_evidence_;
+  absl::optional<blink::FrameAdEvidence> ad_evidence_;
 
   // True if this frame is a subframe that had a script tagged as an ad on the
   // v8 stack at the time of creation. This is not currently propagated when a

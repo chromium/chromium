@@ -258,7 +258,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       MakeGarbageCollected<WorkerClients>(),
       std::make_unique<SharedWorkerContentSettingsProxy>(
           std::move(content_settings)),
-      base::nullopt /* response_address_space */,
+      absl::nullopt /* response_address_space */,
       nullptr /* origin_trial_tokens */, devtools_worker_token,
       std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_response_map */,

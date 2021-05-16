@@ -7,7 +7,7 @@
 namespace blink {
 
 double CSSStyleImageValue::intrinsicWidth(bool& is_null) const {
-  const base::Optional<IntSize> size = IntrinsicSize();
+  const absl::optional<IntSize> size = IntrinsicSize();
   if (!size) {
     is_null = true;
     return 0;
@@ -16,7 +16,7 @@ double CSSStyleImageValue::intrinsicWidth(bool& is_null) const {
 }
 
 double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
-  const base::Optional<IntSize> size = IntrinsicSize();
+  const absl::optional<IntSize> size = IntrinsicSize();
   if (!size) {
     is_null = true;
     return 0;
@@ -25,7 +25,7 @@ double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
 }
 
 double CSSStyleImageValue::intrinsicRatio(bool& is_null) const {
-  const base::Optional<IntSize> size = IntrinsicSize();
+  const absl::optional<IntSize> size = IntrinsicSize();
   if (!size || size.value().Height() == 0) {
     is_null = true;
     return 0;

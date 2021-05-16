@@ -93,19 +93,19 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   void EnqueueNormal(int event_id,
                      StartCallback start_callback,
                      AbortCallback abort_callback,
-                     base::Optional<base::TimeDelta> custom_timeout);
+                     absl::optional<base::TimeDelta> custom_timeout);
 
   // Similar to EnqueueNormal(), but enqueues a Pending event.
   void EnqueuePending(int event_id,
                       StartCallback start_callback,
                       AbortCallback abort_callback,
-                      base::Optional<base::TimeDelta> custom_timeout);
+                      absl::optional<base::TimeDelta> custom_timeout);
 
   // Similar to EnqueueNormal(), but enqueues an Offline event.
   void EnqueueOffline(int event_id,
                       StartCallback start_callback,
                       AbortCallback abort_callback,
-                      base::Optional<base::TimeDelta> custom_timeout);
+                      absl::optional<base::TimeDelta> custom_timeout);
 
   // Returns true if |event_id| was enqueued and hasn't ended.
   bool HasEvent(int event_id) const;
@@ -166,7 +166,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
           Type type,
           StartCallback start_callback,
           AbortCallback abort_callback,
-          base::Optional<base::TimeDelta> custom_timeout);
+          absl::optional<base::TimeDelta> custom_timeout);
     ~Event();
     const int event_id;
     Type type;
@@ -177,7 +177,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
     // Callback which is run when a started event is aborted.
     AbortCallback abort_callback;
     // The custom timeout value.
-    base::Optional<base::TimeDelta> custom_timeout;
+    absl::optional<base::TimeDelta> custom_timeout;
   };
 
   // Represents the type of the currently running events.

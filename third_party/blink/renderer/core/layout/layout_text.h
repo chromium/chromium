@@ -287,7 +287,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Returns the offset in the |text_| string that corresponds to the given
   // position in DOM; Returns nullopt is the position is not in this LayoutText.
   // TODO(layout-dev): Fix it when text-transform changes text length.
-  virtual base::Optional<unsigned> CaretOffsetForPosition(
+  virtual absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const;
 
   // Returns true if the offset (0-based in the |text_| string) is next to a

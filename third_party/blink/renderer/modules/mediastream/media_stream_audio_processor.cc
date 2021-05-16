@@ -18,7 +18,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -30,6 +29,7 @@
 #include "media/base/limits.h"
 #include "media/webrtc/helpers.h"
 #include "media/webrtc/webrtc_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -563,7 +563,7 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   }
 
   // Create and configure the webrtc::AudioProcessing.
-  base::Optional<std::string> audio_processing_platform_config_json =
+  absl::optional<std::string> audio_processing_platform_config_json =
       Platform::Current()->GetWebRTCAudioProcessingConfiguration();
   webrtc::AudioProcessingBuilder ap_builder;
   if (properties.EchoCancellationIsWebRtcProvided()) {
@@ -592,14 +592,14 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   apm_config.pipeline.multi_channel_capture =
       use_capture_multi_channel_processing_;
 
-  base::Optional<double> gain_control_compression_gain_db;
+  absl::optional<double> gain_control_compression_gain_db;
   blink::PopulateApmConfig(&apm_config, properties,
                            audio_processing_platform_config_json,
                            &gain_control_compression_gain_db);
 
   if (properties.goog_auto_gain_control ||
       properties.goog_experimental_auto_gain_control) {
-    base::Optional<blink::AdaptiveGainController2Properties> agc2_properties;
+    absl::optional<blink::AdaptiveGainController2Properties> agc2_properties;
     if (properties.goog_experimental_auto_gain_control &&
         base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)) {
       DCHECK(properties.goog_auto_gain_control)

@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/fetch/request.h"
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -783,7 +783,7 @@ Request* Request::Create(
   return MakeGarbageCollected<Request>(script_state, data);
 }
 
-base::Optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
+absl::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
     const String& credentials_mode) {
   if (credentials_mode == "omit")
     return network::mojom::CredentialsMode::kOmit;
@@ -792,7 +792,7 @@ base::Optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
   if (credentials_mode == "include")
     return network::mojom::CredentialsMode::kInclude;
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 Request::Request(ScriptState* script_state,

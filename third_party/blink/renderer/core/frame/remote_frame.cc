@@ -228,7 +228,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   bool initiator_frame_has_download_sandbox_flag = false;
   bool initiator_frame_is_ad = false;
 
-  base::Optional<LocalFrameToken> initiator_frame_token =
+  absl::optional<LocalFrameToken> initiator_frame_token =
       base::OptionalFromPtr(frame_request.GetInitiatorFrameToken());
   mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle =
@@ -488,10 +488,10 @@ void RemoteFrame::CreateView() {
 
 void RemoteFrame::ForwardPostMessage(
     MessageEvent* message_event,
-    base::Optional<base::UnguessableToken> cluster_id,
+    absl::optional<base::UnguessableToken> cluster_id,
     scoped_refptr<const SecurityOrigin> target_security_origin,
     LocalFrame* source_frame) {
-  base::Optional<blink::LocalFrameToken> source_token;
+  absl::optional<blink::LocalFrameToken> source_token;
   if (source_frame)
     source_token = source_frame->GetLocalFrameToken();
 
@@ -823,7 +823,7 @@ void RemoteFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
 }
 
 void RemoteFrame::UpdateOpener(
-    const base::Optional<blink::FrameToken>& opener_frame_token) {
+    const absl::optional<blink::FrameToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
     Frame* opener_frame = nullptr;
     if (opener_frame_token)
@@ -861,9 +861,9 @@ void RemoteFrame::SetOpener(Frame* opener_frame) {
       DCHECK(opener_frame->IsLocalFrame());
       GetRemoteFrameHostRemote().DidChangeOpener(
           opener_frame
-              ? base::Optional<blink::LocalFrameToken>(
+              ? absl::optional<blink::LocalFrameToken>(
                     opener_frame->GetFrameToken().GetAs<LocalFrameToken>())
-              : base::nullopt);
+              : absl::nullopt);
     }
   }
   SetOpenerDoNotNotify(opener_frame);
@@ -1051,7 +1051,7 @@ void RemoteFrame::RecordSentVisualProperties() {
 }
 
 void RemoteFrame::ResendVisualProperties() {
-  sent_visual_properties_ = base::nullopt;
+  sent_visual_properties_ = absl::nullopt;
   SynchronizeVisualProperties();
 }
 
@@ -1069,7 +1069,7 @@ void RemoteFrame::DidUpdateVisualProperties(
 
 void RemoteFrame::SetViewportIntersection(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
-  base::Optional<FrameVisualProperties> visual_properties;
+  absl::optional<FrameVisualProperties> visual_properties;
   if (SynchronizeVisualProperties(/*propagate=*/false)) {
     visual_properties.emplace(pending_visual_properties_);
     RecordSentVisualProperties();

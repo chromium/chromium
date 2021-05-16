@@ -34,8 +34,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
@@ -110,30 +110,30 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // struct and this should take a moved-value of it.
   virtual void AddResourceTiming(const ResourceTimingInfo&);
   virtual bool AllowImage(bool, const KURL&) const { return false; }
-  virtual base::Optional<ResourceRequestBlockedReason> CanRequest(
+  virtual absl::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
   // In derived classes, performs *only* a SubresourceFilter check for whether
   // the request can go through or should be blocked.
-  virtual base::Optional<ResourceRequestBlockedReason>
+  virtual absl::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
       const ResourceRequest&,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
-  virtual base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+  virtual absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL&,
@@ -170,7 +170,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // which case it checks the latter.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const base::Optional<KURL>& alias_url,
+      const absl::optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) {
     return false;

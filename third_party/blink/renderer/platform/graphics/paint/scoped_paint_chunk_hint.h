@@ -53,7 +53,7 @@ class ScopedPaintChunkHint {
   }
 
   ~ScopedPaintChunkHint() {
-    paint_chunk_properties_ = base::nullopt;
+    paint_chunk_properties_ = absl::nullopt;
     if (!HasCreatedPaintChunk())
       paint_controller_.SetWillForceNewChunk(previous_force_new_chunk_);
   }
@@ -65,9 +65,9 @@ class ScopedPaintChunkHint {
 
  private:
   PaintController& paint_controller_;
-  // This is actually always emplaced, but is wrapped in base::Optional<> to
+  // This is actually always emplaced, but is wrapped in absl::optional<> to
   // control its lifetime related to SetForceNewChunk().
-  base::Optional<ScopedPaintChunkProperties> paint_chunk_properties_;
+  absl::optional<ScopedPaintChunkProperties> paint_chunk_properties_;
   wtf_size_t previous_num_chunks_;
   bool previous_force_new_chunk_;
 };

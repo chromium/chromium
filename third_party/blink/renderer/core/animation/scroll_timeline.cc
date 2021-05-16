@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -138,9 +138,9 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     scroll_offsets.push_back(scroll_offset);
   }
 
-  base::Optional<double> time_range;
+  absl::optional<double> time_range;
   if (options->timeRange().IsDouble()) {
-    time_range = base::make_optional(options->timeRange().GetAsDouble());
+    time_range = absl::make_optional(options->timeRange().GetAsDouble());
   }
 
   return MakeGarbageCollected<ScrollTimeline>(
@@ -152,7 +152,7 @@ ScrollTimeline::ScrollTimeline(
     Element* scroll_source,
     ScrollDirection orientation,
     HeapVector<Member<ScrollTimelineOffset>> scroll_offsets,
-    base::Optional<double> time_range)
+    absl::optional<double> time_range)
     : AnimationTimeline(document),
       scroll_source_(scroll_source),
       resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
@@ -374,7 +374,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
   WTF::Vector<double> resolved_offsets;
   if (!ComputeIsActive()) {
-    return {TimelinePhase::kInactive, /*current_time*/ base::nullopt,
+    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
             resolved_offsets};
   }
   LayoutBox* layout_box = resolved_scroll_source_->GetLayoutBox();
@@ -389,7 +389,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
 
   if (!resolved) {
     DCHECK(resolved_offsets.IsEmpty());
-    return {TimelinePhase::kInactive, /*current_time*/ base::nullopt,
+    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
             resolved_offsets};
   }
 
@@ -431,7 +431,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // 3.3.2 The current time is the result of evaluating the following
   // expression:
   //     progress × effective time range
-  base::Optional<base::TimeDelta> calculated_current_time =
+  absl::optional<base::TimeDelta> calculated_current_time =
       base::TimeDelta::FromMillisecondsD(scroll_timeline_util::ComputeProgress(
                                              current_offset, resolved_offsets) *
                                          duration);
@@ -439,7 +439,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
 }
 
 // Scroll-linked animations are initialized with the start time of zero.
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 ScrollTimeline::InitialStartTimeForAnimations() {
   return base::TimeDelta();
 }

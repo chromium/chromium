@@ -45,8 +45,8 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
 
   mojo::Remote<mojom::blink::DWriteFontProxy> service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  base::Optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
-  base::Optional<bool> sync_available_;
+  absl::optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
+  absl::optional<bool> sync_available_;
   void ReceiveReadOnlySharedMemoryRegion(
       base::ReadOnlySharedMemoryRegion shared_memory_region);
 

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 
 #include <algorithm>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -98,7 +98,7 @@ LayoutUnit ResolveInlineLengthInternal(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
-    const base::Optional<MinMaxSizes>& min_max_sizes,
+    const absl::optional<MinMaxSizes>& min_max_sizes,
     const Length& length,
     LayoutUnit available_inline_size_adjustment) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
@@ -496,7 +496,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       space, style, border_padding,
-      /* intrinsic_size */ kIndefiniteSize, /* inline_size */ base::nullopt);
+      /* intrinsic_size */ kIndefiniteSize, /* inline_size */ absl::nullopt);
   if (block_size == kIndefiniteSize)
     return kIndefiniteSize;
 
@@ -651,7 +651,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    base::Optional<LayoutUnit> inline_size,
+    absl::optional<LayoutUnit> inline_size,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
@@ -709,7 +709,7 @@ LayoutUnit ComputeBlockSizeForFragment(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    base::Optional<LayoutUnit> inline_size,
+    absl::optional<LayoutUnit> inline_size,
     LayoutUnit available_block_size_adjustment) {
   // The |available_block_size_adjustment| should only be used for <table>s.
   DCHECK(available_block_size_adjustment == LayoutUnit() ||
@@ -741,7 +741,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
-    base::Optional<LayoutUnit> inline_size,
+    absl::optional<LayoutUnit> inline_size,
     LayoutUnit available_block_size_adjustment) {
   if (space.IsFixedBlockSizeIndefinite())
     return intrinsic_size;
@@ -763,7 +763,7 @@ namespace {
 // It is not possible to have no aspect-ratio with no natural-size (as we'll
 // use the default replaced size of 300x150 as a last resort).
 // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
-base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
+absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
     const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const EBoxSizing box_sizing,
@@ -777,8 +777,8 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
     return natural_size.ConvertToLogical(style.GetWritingMode());
   };
 
-  base::Optional<LayoutUnit> intrinsic_inline;
-  base::Optional<LayoutUnit> intrinsic_block;
+  absl::optional<LayoutUnit> intrinsic_inline;
+  absl::optional<LayoutUnit> intrinsic_block;
   node.IntrinsicSize(&intrinsic_inline, &intrinsic_block);
 
   // Add the border-padding. If we *don't* have an aspect-ratio use the default
@@ -809,7 +809,7 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
   if (intrinsic_inline && intrinsic_block)
     return LogicalSize(*intrinsic_inline, *intrinsic_block);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -834,7 +834,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
 
   const Length& block_length = style.LogicalHeight();
   MinMaxSizes block_min_max_sizes;
-  base::Optional<LayoutUnit> replaced_block;
+  absl::optional<LayoutUnit> replaced_block;
   if (mode == ReplacedSizeMode::kIgnoreBlockLengths) {
     // Don't resolve any block lengths or constraints.
     block_min_max_sizes = {LayoutUnit(), LayoutUnit::Max()};
@@ -907,7 +907,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   }
 
   const LogicalSize aspect_ratio = node.GetAspectRatio();
-  const base::Optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
+  const absl::optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
       node, border_padding, box_sizing, aspect_ratio);
 
   auto StretchFit = [&]() -> LayoutUnit {
@@ -915,8 +915,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     LayoutUnit size =
         (space.AvailableSize().inline_size == kIndefiniteSize)
             ? border_padding.InlineSum()
-            : ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
-                  space, style, border_padding, base::nullopt,
+            : ResolveMainInlineLength<absl::optional<MinMaxSizes>>(
+                  space, style, border_padding, absl::nullopt,
                   Length::FillAvailable(), available_inline_size_adjustment);
 
     // If stretch-fit applies we must have an aspect-ratio.
@@ -954,7 +954,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
 
   const Length& inline_length = style.LogicalWidth();
   MinMaxSizes inline_min_max_sizes;
-  base::Optional<LayoutUnit> replaced_inline;
+  absl::optional<LayoutUnit> replaced_inline;
   if (mode == ReplacedSizeMode::kIgnoreInlineLengths) {
     // Don't resolve any inline lengths or constraints.
     inline_min_max_sizes = {LayoutUnit(), LayoutUnit::Max()};
@@ -1160,7 +1160,7 @@ LayoutUnit ResolveUsedColumnInlineSize(LayoutUnit available_size,
 
 LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
                                 const ComputedStyle& style) {
-  if (const base::Optional<Length>& column_gap = style.ColumnGap())
+  if (const absl::optional<Length>& column_gap = style.ColumnGap())
     return ValueForLength(*column_gap, available_size);
   return LayoutUnit(style.GetFontDescription().ComputedPixelSize());
 }
@@ -1480,7 +1480,7 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
 
   LayoutUnit default_block_size = CalculateDefaultBlockSize(
       constraint_space, node, border_scrollbar_padding);
-  base::Optional<LayoutUnit> inline_size;
+  absl::optional<LayoutUnit> inline_size;
   if (!is_intrinsic) {
     inline_size =
         ComputeInlineSizeForFragment(constraint_space, node, border_padding);
@@ -1609,7 +1609,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
   if (space.IsTableCell() && style.LogicalHeight().IsFixed()) {
     LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
         space, style, border_padding, kIndefiniteSize /* intrinsic_size */,
-        base::nullopt /* inline_size */);
+        absl::nullopt /* inline_size */);
     DCHECK_NE(block_size, kIndefiniteSize);
     return {child_available_size.inline_size,
             (block_size - border_scrollbar_padding.BlockSum())
@@ -1626,7 +1626,7 @@ LayoutUnit ClampIntrinsicBlockSize(
     const NGBlockNode& node,
     const NGBoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
-    base::Optional<LayoutUnit> body_margin_block_sum) {
+    absl::optional<LayoutUnit> body_margin_block_sum) {
   // Tables don't respect size containment, or apply the "fill viewport" quirk.
   DCHECK(!node.IsTable());
   const ComputedStyle& style = node.Style();
@@ -1667,7 +1667,7 @@ LayoutUnit ClampIntrinsicBlockSize(
   return current_intrinsic_block_size;
 }
 
-base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
+absl::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     const NGBlockNode& node,
     const NGBoxStrut& border_scrollbar_padding) {
   MinMaxSizes sizes;
@@ -1699,7 +1699,7 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
                              /* depends_on_block_constraints */ false};
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AddScrollbarFreeze(const NGBoxStrut& scrollbars_before,

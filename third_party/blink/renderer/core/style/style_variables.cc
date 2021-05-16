@@ -62,7 +62,7 @@ StyleVariables::OptionalData StyleVariables::GetData(
   auto i = data_.find(name);
   if (i != data_.end())
     return i->value.get();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleVariables::GetValue(
@@ -70,7 +70,7 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
   auto i = values_->find(name);
   if (i != values_->end())
     return i->value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StyleVariables::SetData(const AtomicString& name,

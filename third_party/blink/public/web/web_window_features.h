@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "third_party/blink/public/platform/web_impression.h"
 
@@ -67,7 +67,7 @@ struct WebWindowFeatures {
 
   // Represents the attribution source declared by Attribution Reporting related
   // window features, if any.
-  base::Optional<WebImpression> impression;
+  absl::optional<WebImpression> impression;
 };
 
 }  // namespace blink

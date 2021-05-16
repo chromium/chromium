@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -36,8 +36,8 @@ CSSValue* MakeThreshold(double threshold) {
 }
 
 CSSElementOffsetValue* MakeOffset(String id,
-                                  base::Optional<CSSValueID> edge,
-                                  base::Optional<double> threshold) {
+                                  absl::optional<CSSValueID> edge,
+                                  absl::optional<double> threshold) {
   return MakeGarbageCollected<CSSElementOffsetValue>(
       MakeSelectorFunction(id), edge ? MakeEdge(*edge) : nullptr,
       threshold ? MakeThreshold(*threshold) : nullptr);
@@ -60,8 +60,8 @@ TEST(CSSElementOffsetValueTest, Accessors) {
 TEST(CSSElementOffsetValueTest, Equals) {
   EXPECT_EQ(*MakeOffset("foo", CSSValueID::kEnd, 2.0),
             *MakeOffset("foo", CSSValueID::kEnd, 2.0));
-  EXPECT_EQ(*MakeOffset("foo", base::nullopt, base::nullopt),
-            *MakeOffset("foo", base::nullopt, base::nullopt));
+  EXPECT_EQ(*MakeOffset("foo", absl::nullopt, absl::nullopt),
+            *MakeOffset("foo", absl::nullopt, absl::nullopt));
   EXPECT_NE(*MakeOffset("foo", CSSValueID::kEnd, 2.0),
             *MakeOffset("bar", CSSValueID::kEnd, 2.0));
   EXPECT_NE(*MakeOffset("foo", CSSValueID::kEnd, 2.0),
@@ -75,11 +75,11 @@ TEST(CSSElementOffsetValueTest, CustomCSSText) {
             MakeOffset("foo", CSSValueID::kEnd, 2.0)->CustomCSSText());
   EXPECT_EQ(
       "selector(#foo) end",
-      MakeOffset("foo", CSSValueID::kEnd, base::nullopt)->CustomCSSText());
+      MakeOffset("foo", CSSValueID::kEnd, absl::nullopt)->CustomCSSText());
   EXPECT_EQ("selector(#foo) 2",
-            MakeOffset("foo", base::nullopt, 2.0)->CustomCSSText());
+            MakeOffset("foo", absl::nullopt, 2.0)->CustomCSSText());
   EXPECT_EQ("selector(#foo)",
-            MakeOffset("foo", base::nullopt, base::nullopt)->CustomCSSText());
+            MakeOffset("foo", absl::nullopt, absl::nullopt)->CustomCSSText());
 }
 
 }  // namespace blink

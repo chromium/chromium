@@ -884,9 +884,9 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
   }
 }
 
-base::Optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
+absl::optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
   if (!display_tree_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Iterate through children once, since in a well-formed VTTCue
@@ -903,13 +903,13 @@ base::Optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
           return timestamp;
         } else {
           // Timestamps should never be greater than the end time of the VTTCue.
-          return base::nullopt;
+          return absl::nullopt;
         }
       }
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 VTTCueBox* VTTCue::GetDisplayTree() {

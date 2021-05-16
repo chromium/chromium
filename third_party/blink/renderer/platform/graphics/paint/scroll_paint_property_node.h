@@ -8,10 +8,10 @@
 #include <algorithm>
 
 #include "base/dcheck_is_on.h"
-#include "base/optional.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     CompositorElementId compositor_element_id;
     cc::OverscrollBehavior overscroll_behavior =
         cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
-    base::Optional<cc::SnapContainerData> snap_container_data;
+    absl::optional<cc::SnapContainerData> snap_container_data;
 
     PaintPropertyChangeType ComputeChange(const State& other) const {
       if (container_rect != other.container_rect ||
@@ -127,7 +127,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
     return state_.overscroll_behavior.y;
   }
 
-  base::Optional<cc::SnapContainerData> GetSnapContainerData() const {
+  absl::optional<cc::SnapContainerData> GetSnapContainerData() const {
     return state_.snap_container_data;
   }
 

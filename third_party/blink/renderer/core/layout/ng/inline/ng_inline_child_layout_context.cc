@@ -12,7 +12,7 @@ namespace {
 
 struct SameSizeAsNGInlineChildLayoutContext {
   NGLogicalLineItems line_items_;
-  base::Optional<NGInlineLayoutStateStack> box_states_;
+  absl::optional<NGInlineLayoutStateStack> box_states_;
   void* pointers[2];
   unsigned number;
   Vector<scoped_refptr<const NGBlockBreakToken>> propagated_float_break_tokens_;

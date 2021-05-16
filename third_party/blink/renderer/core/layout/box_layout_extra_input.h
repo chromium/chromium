@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BOX_LAYOUT_EXTRA_INPUT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -23,11 +23,11 @@ struct BoxLayoutExtraInput {
 
   // When set, no attempt should be be made to resolve the inline size. Use this
   // one instead.
-  base::Optional<LayoutUnit> override_inline_size;
+  absl::optional<LayoutUnit> override_inline_size;
 
   // When set, no attempt should be be made to resolve the block size. Use this
   // one instead.
-  base::Optional<LayoutUnit> override_block_size;
+  absl::optional<LayoutUnit> override_block_size;
 
   // If the |override_block_size| should be treated as definite for the
   // purposes of percent block-size resolution.

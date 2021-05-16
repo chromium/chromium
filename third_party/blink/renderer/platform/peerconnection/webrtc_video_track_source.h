@@ -91,8 +91,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   // Stores the accumulated value of CAPTURE_UPDATE_RECT in case that frames
   // are dropped.
-  base::Optional<gfx::Rect> accumulated_update_rect_;
-  base::Optional<int> previous_capture_counter_;
+  absl::optional<gfx::Rect> accumulated_update_rect_;
+  absl::optional<int> previous_capture_counter_;
   gfx::Rect cropping_rect_of_previous_delivered_frame_;
   gfx::Size natural_size_of_previous_delivered_frame_;
 

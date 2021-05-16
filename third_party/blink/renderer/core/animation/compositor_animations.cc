@@ -561,7 +561,7 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
 void CompositorAnimations::StartAnimationOnCompositor(
     const Element& element,
     int group,
-    base::Optional<double> start_time,
+    absl::optional<double> start_time,
     base::TimeDelta time_offset,
     const Timing& timing,
     const Animation* animation,
@@ -768,7 +768,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const Element& target_element,
     const Timing& timing,
     int group,
-    base::Optional<double> start_time,
+    absl::optional<double> start_time,
     base::TimeDelta time_offset,
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<CompositorKeyframeModel>>& keyframe_models,

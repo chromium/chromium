@@ -50,7 +50,7 @@ class CORE_EXPORT WorkletModuleResponsesMap final
   // Called on worklet threads.
   void SetEntryParams(const KURL&,
                       ModuleType,
-                      const base::Optional<ModuleScriptCreationParams>&)
+                      const absl::optional<ModuleScriptCreationParams>&)
       LOCKS_EXCLUDED(mutex_);
 
   // Called when the associated document is destroyed and clears the map.
@@ -76,11 +76,11 @@ class CORE_EXPORT WorkletModuleResponsesMap final
     void AddClient(
         ModuleScriptFetcher::Client* client,
         scoped_refptr<base::SingleThreadTaskRunner> client_task_runner);
-    void SetParams(const base::Optional<ModuleScriptCreationParams>& params);
+    void SetParams(const absl::optional<ModuleScriptCreationParams>& params);
 
    private:
     State state_ = State::kFetching;
-    base::Optional<ModuleScriptCreationParams> params_;
+    absl::optional<ModuleScriptCreationParams> params_;
     HashMap<CrossThreadPersistent<ModuleScriptFetcher::Client>,
             scoped_refptr<base::SingleThreadTaskRunner>>
         clients_;

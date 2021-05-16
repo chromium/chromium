@@ -61,7 +61,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   const HeapVector<Member<PaymentDetailsModifier>>& modifiers() const;
   const String& instrumentKey() const;
   const ScriptValue paymentOptions(ScriptState*) const;
-  base::Optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
+  absl::optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
       const;
 
   ScriptPromise openWindow(ScriptState*, const String& url);

@@ -184,7 +184,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
   int GetDelegateId() override;
-  base::Optional<viz::SurfaceId> GetSurfaceId() override;
+  absl::optional<viz::SurfaceId> GetSurfaceId() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
 
@@ -243,7 +243,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   base::TimeDelta GetCurrentTimeInterval();
   media::PipelineStatistics GetPipelineStatistics();
 
-  base::Optional<media::mojom::MediaStreamType> GetMediaStreamType();
+  absl::optional<media::mojom::MediaStreamType> GetMediaStreamType();
 
   std::unique_ptr<MediaStreamInternalFrameWrapper> internal_frame_;
 

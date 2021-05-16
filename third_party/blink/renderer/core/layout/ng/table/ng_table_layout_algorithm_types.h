@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -33,7 +33,7 @@ class CORE_EXPORT NGTableTypes {
     DISALLOW_NEW();
     LayoutUnit min_inline_size;
     LayoutUnit max_inline_size;
-    base::Optional<float> percent;  // 100% is stored as 100.0f
+    absl::optional<float> percent;      // 100% is stored as 100.0f
     LayoutUnit percent_border_padding;  // Border/padding used for percentage
                                         // size resolution.
     bool is_constrained;  // True if this cell has a specified inline-size.
@@ -58,9 +58,9 @@ class CORE_EXPORT NGTableTypes {
   // Constraint for a column.
   struct Column {
     DISALLOW_NEW();
-    Column(const base::Optional<LayoutUnit>& min_inline_size,
-           const base::Optional<LayoutUnit>& max_inline_size,
-           const base::Optional<float>& percent,
+    Column(const absl::optional<LayoutUnit>& min_inline_size,
+           const absl::optional<LayoutUnit>& max_inline_size,
+           const absl::optional<float>& percent,
            LayoutUnit percent_border_padding,
            bool is_constrained,
            bool is_collapsed,
@@ -90,9 +90,9 @@ class CORE_EXPORT NGTableTypes {
 
     // These members are initialized from <col> and <colgroup>, then they
     // accumulate data from |CellInlineConstraint|s.
-    base::Optional<LayoutUnit> min_inline_size;
-    base::Optional<LayoutUnit> max_inline_size;
-    base::Optional<float> percent;  // 100% is stored as 100.0f
+    absl::optional<LayoutUnit> min_inline_size;
+    absl::optional<LayoutUnit> max_inline_size;
+    absl::optional<float> percent;      // 100% is stored as 100.0f
     LayoutUnit percent_border_padding;  // Border/padding used for percentage
                                         // size resolution.
     // True if any cell for this column is constrained.
@@ -101,7 +101,7 @@ class CORE_EXPORT NGTableTypes {
     bool is_table_fixed = false;
     bool is_mergeable = false;
 
-    void Encompass(const base::Optional<NGTableTypes::CellInlineConstraint>&);
+    void Encompass(const absl::optional<NGTableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
         LayoutUnit percentage_resolution_inline_size) const {
       return std::max(
@@ -186,7 +186,7 @@ class CORE_EXPORT NGTableTypes {
     DISALLOW_NEW();
     LayoutUnit block_size;
     LayoutUnit baseline;
-    base::Optional<float> percent;  // 100% is stored as 100.0f
+    absl::optional<float> percent;  // 100% is stored as 100.0f
     wtf_size_t start_cell_index;
     wtf_size_t cell_count;
     // |is_constrained| is true if row has specified block-size, or contains
@@ -207,14 +207,14 @@ class CORE_EXPORT NGTableTypes {
     wtf_size_t start_row;
     wtf_size_t rowspan;
     LayoutUnit block_size;
-    base::Optional<float> percent;
+    absl::optional<float> percent;
     bool is_constrained;
     bool is_tbody;
     bool needs_redistribution;
   };
 
   static Column CreateColumn(const ComputedStyle&,
-                             base::Optional<LayoutUnit> default_inline_size,
+                             absl::optional<LayoutUnit> default_inline_size,
                              bool is_table_fixed);
 
   static CellInlineConstraint CreateCellInlineConstraint(
@@ -243,13 +243,13 @@ class CORE_EXPORT NGTableTypes {
       wtf_size_t row_index,
       wtf_size_t rowspan,
       CellBlockConstraint*,
-      base::Optional<LayoutUnit> css_block_size);
+      absl::optional<LayoutUnit> css_block_size);
 
   // Columns are cached by LayoutNGTable, and need to be RefCounted.
   typedef base::RefCountedData<WTF::Vector<Column>> Columns;
   // Inline constraints are optional because we need to distinguish between an
   // empty cell, and a non-existent cell.
-  using CellInlineConstraints = Vector<base::Optional<CellInlineConstraint>>;
+  using CellInlineConstraints = Vector<absl::optional<CellInlineConstraint>>;
   using ColspanCells = Vector<ColspanCell>;
   using Caption = MinMaxSizes;
   using CellBlockConstraints = Vector<CellBlockConstraint>;

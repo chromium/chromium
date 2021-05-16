@@ -7,8 +7,8 @@
 #include <limits>
 
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -439,7 +439,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           computed_byte_length.ValueOrDie() != byte_length)
         return nullptr;
       ImageData* image_data = ImageData::ValidateAndCreate(
-          width, height, base::nullopt, settings.GetImageDataSettings(),
+          width, height, absl::nullopt, settings.GetImageDataSettings(),
           exception_state);
       if (!image_data)
         return nullptr;
@@ -662,7 +662,7 @@ File* V8ScriptValueDeserializer::ReadFile() {
   auto blob_handle = GetOrCreateBlobDataHandle(uuid, type, kSizeForDataHandle);
   if (!blob_handle)
     return nullptr;
-  base::Optional<base::Time> last_modified;
+  absl::optional<base::Time> last_modified;
   if (has_snapshot && std::isfinite(last_modified_ms))
     last_modified = base::Time::FromJsTime(last_modified_ms);
   return File::CreateFromSerialization(path, name, relative_path,

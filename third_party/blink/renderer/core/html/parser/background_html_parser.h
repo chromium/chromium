@@ -30,8 +30,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/html/parser/background_html_input_stream.h"
 #include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
@@ -115,7 +115,7 @@ class BackgroundHTMLParser {
 
   CompactHTMLTokenStream pending_tokens_;
   PreloadRequestStream pending_preloads_;
-  base::Optional<ViewportDescription> viewport_description_;
+  absl::optional<ViewportDescription> viewport_description_;
   std::unique_ptr<TokenPreloadScanner> preload_scanner_;
   std::unique_ptr<TextResourceDecoder> decoder_;
   DocumentEncodingData last_seen_encoding_data_;

@@ -1112,7 +1112,7 @@ class ComputedStyle : public ComputedStyleBase,
   // accent-color
   const StyleAutoColor& AccentColor() const { return AccentColorInternal(); }
   // An empty optional means the accent-color is 'auto'
-  base::Optional<Color> AccentColorResolved() const;
+  absl::optional<Color> AccentColorResolved() const;
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.

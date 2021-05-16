@@ -21,7 +21,7 @@ XRJointSpace::XRJointSpace(
       radius_(radius),
       handedness_(handedness) {}
 
-base::Optional<TransformationMatrix> XRJointSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRJointSpace::MojoFromNative() {
   return *mojo_from_joint_space_.get();
 }
 
@@ -29,7 +29,7 @@ bool XRJointSpace::EmulatedPosition() const {
   return false;
 }
 
-base::Optional<device::mojom::blink::XRNativeOriginInformation>
+absl::optional<device::mojom::blink::XRNativeOriginInformation>
 XRJointSpace::NativeOrigin() const {
   return XRNativeOriginInformation::Create(this);
 }

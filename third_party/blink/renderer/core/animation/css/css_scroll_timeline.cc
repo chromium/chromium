@@ -144,11 +144,11 @@ HeapVector<Member<ScrollTimelineOffset>> ComputeScrollOffsets(
   return offsets;
 }
 
-base::Optional<double> ComputeTimeRange(const CSSValue* value) {
+absl::optional<double> ComputeTimeRange(const CSSValue* value) {
   if (auto* primitive = DynamicTo<CSSPrimitiveValue>(value))
     return primitive->ComputeSeconds() * 1000.0;
   // TODO(crbug.com/1097041): Support 'auto' value.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 class ElementReferenceObserver : public IdTargetObserver {

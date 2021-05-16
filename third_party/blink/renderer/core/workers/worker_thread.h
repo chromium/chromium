@@ -30,12 +30,12 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
@@ -99,14 +99,14 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   // Starts the underlying thread and creates the global scope. Called on the
   // main thread.
-  // Startup data for WorkerBackingThread is base::nullopt if |this| doesn't own
+  // Startup data for WorkerBackingThread is absl::nullopt if |this| doesn't own
   // the underlying WorkerBackingThread.
   // TODO(nhiroki): We could separate WorkerBackingThread initialization from
   // GlobalScope initialization sequence, that is, InitializeOnWorkerThread().
   // After that, we could remove this startup data for WorkerBackingThread.
   // (https://crbug.com/710364)
   void Start(std::unique_ptr<GlobalScopeCreationParams>,
-             const base::Optional<WorkerBackingThreadStartupData>&,
+             const absl::optional<WorkerBackingThreadStartupData>&,
              std::unique_ptr<WorkerDevToolsParams>);
 
   // Posts a task to evaluate a top-level classic script on the worker thread.
@@ -332,7 +332,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   void InitializeSchedulerOnWorkerThread(base::WaitableEvent*);
   void InitializeOnWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
-      const base::Optional<WorkerBackingThreadStartupData>&,
+      const absl::optional<WorkerBackingThreadStartupData>&,
       std::unique_ptr<WorkerDevToolsParams>) LOCKS_EXCLUDED(mutex_);
 
   void EvaluateClassicScriptOnWorkerThread(

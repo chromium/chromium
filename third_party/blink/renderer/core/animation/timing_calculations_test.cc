@@ -94,14 +94,14 @@ TEST(AnimationTimingCalculationsTest, ActiveTime) {
 
   // None
   EXPECT_FALSE(CalculateActiveTime(AnimationTimeDelta::FromSecondsD(32),
-                                   Timing::FillMode::NONE, base::nullopt,
+                                   Timing::FillMode::NONE, absl::nullopt,
                                    Timing::kPhaseNone, timing));
 }
 
 TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {
   // if the active time is null
   EXPECT_FALSE(CalculateOffsetActiveTime(AnimationTimeDelta::FromSecondsD(4),
-                                         base::nullopt,
+                                         absl::nullopt,
                                          AnimationTimeDelta::FromSecondsD(5)));
 
   // normal case
@@ -135,7 +135,7 @@ TEST(AnimationTimingCalculationsTest, IterationTime) {
   // if the scaled active time is null
   EXPECT_FALSE(CalculateIterationTime(
       AnimationTimeDelta::FromSecondsD(1), AnimationTimeDelta::FromSecondsD(1),
-      base::nullopt, AnimationTimeDelta::FromSecondsD(1), Timing::kPhaseActive,
+      absl::nullopt, AnimationTimeDelta::FromSecondsD(1), Timing::kPhaseActive,
       timing));
 
   // if (complex-conditions)...
@@ -189,7 +189,7 @@ TEST(AnimationTimingCalculationsTest, OverallProgress) {
   // If the active time is null.
   EXPECT_FALSE(CalculateOverallProgress(
       Timing::kPhaseAfter,
-      /*active_time=*/base::nullopt,
+      /*active_time=*/absl::nullopt,
       /*iteration_duration=*/AnimationTimeDelta::FromSecondsD(1.0),
       /*iteration_count=*/1.0,
       /*iteration_start=*/1.0));
@@ -232,9 +232,9 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
   // If the overall progress is null.
   EXPECT_FALSE(CalculateSimpleIterationProgress(
       Timing::kPhaseAfter,
-      /*overall_progress=*/base::nullopt,
+      /*overall_progress=*/absl::nullopt,
       /*iteration_start=*/1.0,
-      /*active_time=*/base::nullopt,
+      /*active_time=*/absl::nullopt,
       /*active_duration=*/AnimationTimeDelta::FromSecondsD(1.0),
       /*iteration_count=*/1.0));
 
@@ -270,9 +270,9 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
 TEST(AnimationTimingCalculationsTest, CurrentIteration) {
   // If the active time is null.
   EXPECT_FALSE(CalculateCurrentIteration(Timing::kPhaseAfter,
-                                         /*active_time=*/base::nullopt,
+                                         /*active_time=*/absl::nullopt,
                                          /*iteration_count=*/1.0,
-                                         /*overall_progress=*/base::nullopt,
+                                         /*overall_progress=*/absl::nullopt,
                                          /*simple_iteration_progress=*/0));
 
   // If the iteration count is infinite.
@@ -337,7 +337,7 @@ TEST(AnimationTimingCalculationsTest, CalculateDirectedProgress) {
   //                           direction);
 
   // if the simple iteration progress is null
-  EXPECT_FALSE(CalculateDirectedProgress(base::nullopt, base::nullopt,
+  EXPECT_FALSE(CalculateDirectedProgress(absl::nullopt, absl::nullopt,
                                          Timing::PlaybackDirection::NORMAL));
 
   // forwards
@@ -386,7 +386,7 @@ TEST(AnimationTimingCalculationsTest, TransformedProgress) {
       StepsTimingFunction::Create(4, StepsTimingFunction::StepPosition::END);
 
   // directed_progress is null.
-  EXPECT_FALSE(CalculateTransformedProgress(Timing::kPhaseActive, base::nullopt,
+  EXPECT_FALSE(CalculateTransformedProgress(Timing::kPhaseActive, absl::nullopt,
                                             true, timing_function));
 
   // At step boundaries.

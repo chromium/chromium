@@ -32,9 +32,9 @@ ResourceResponse CreateTestResponse() {
 
 void RunHeaderRelatedTest(const ResourceResponse& response) {
   EXPECT_EQ(base::TimeDelta(), response.Age());
-  EXPECT_NE(base::nullopt, response.Date());
-  EXPECT_NE(base::nullopt, response.Expires());
-  EXPECT_NE(base::nullopt, response.LastModified());
+  EXPECT_NE(absl::nullopt, response.Date());
+  EXPECT_NE(absl::nullopt, response.Expires());
+  EXPECT_NE(absl::nullopt, response.LastModified());
   EXPECT_EQ(true, response.CacheControlContainsNoCache());
 }
 

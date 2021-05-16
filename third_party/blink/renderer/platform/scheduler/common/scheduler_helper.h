@@ -141,7 +141,7 @@ class PLATFORM_EXPORT SchedulerHelper
   Observer* observer_;  // NOT OWNED
 
   UkmTaskSampler ukm_task_sampler_;
-  base::Optional<base::SimpleTaskExecutor> simple_task_executor_;
+  absl::optional<base::SimpleTaskExecutor> simple_task_executor_;
 
   DISALLOW_COPY_AND_ASSIGN(SchedulerHelper);
 };

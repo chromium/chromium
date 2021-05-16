@@ -15,14 +15,14 @@ using testing::ElementsAre;
 TEST(NGBidiParagraph, SetParagraphHeuristicLtr) {
   String text(u"abc");
   NGBidiParagraph bidi;
-  bidi.SetParagraph(text, base::nullopt);
+  bidi.SetParagraph(text, absl::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kLtr);
 }
 
 TEST(NGBidiParagraph, SetParagraphHeuristicRtl) {
   String text(u"\u05D0\u05D1\u05D2");
   NGBidiParagraph bidi;
-  bidi.SetParagraph(text, base::nullopt);
+  bidi.SetParagraph(text, absl::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kRtl);
 }
 

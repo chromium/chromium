@@ -6,8 +6,8 @@
 
 #include <memory>
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -101,7 +101,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kModuleDedicatedWorker);
-    base::Optional<network::mojom::CredentialsMode> credentials_mode =
+    absl::optional<network::mojom::CredentialsMode> credentials_mode =
         Request::ParseCredentialsMode(options->credentials());
     DCHECK(credentials_mode);
 
@@ -252,7 +252,7 @@ void DedicatedWorkerMessagingProxy::Trace(Visitor* visitor) const {
   ThreadedMessagingProxyBase::Trace(visitor);
 }
 
-base::Optional<WorkerBackingThreadStartupData>
+absl::optional<WorkerBackingThreadStartupData>
 DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
     v8::Isolate* isolate) {
   using HeapLimitMode = WorkerBackingThreadStartupData::HeapLimitMode;

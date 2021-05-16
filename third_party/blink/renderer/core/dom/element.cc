@@ -845,7 +845,7 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
 
 void Element::SetElementArrayAttribute(
     const QualifiedName& name,
-    const base::Optional<HeapVector<Member<Element>>>& given_elements) {
+    const absl::optional<HeapVector<Member<Element>>>& given_elements) {
   ExplicitlySetAttrElementsMap* element_attribute_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
@@ -916,7 +916,7 @@ void Element::SetElementArrayAttribute(
   element_attribute_map->Set(name, stored_elements);
 }
 
-base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
+absl::optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
     const QualifiedName& name) {
   HeapVector<Member<Element>> result_elements;
   // TODO(chrishall): this will fail to preserve `e1.ariaFoo === e1.ariaFoo`,
@@ -944,7 +944,7 @@ base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
   }
 
   if (!hasAttribute(attr))
-    return base::nullopt;
+    return absl::nullopt;
 
   String attribute_value = getAttribute(attr).GetString();
   Vector<String> tokens;
@@ -1631,7 +1631,7 @@ void Element::setScrollLeft(double new_left) {
             gfx::ScrollOffset(
                 scrollable_area->ScrollOffsetToPosition(end_offset)),
             true, false);
-    base::Optional<FloatPoint> snap_point =
+    absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1684,7 +1684,7 @@ void Element::setScrollTop(double new_top) {
             gfx::ScrollOffset(
                 scrollable_area->ScrollOffsetToPosition(end_offset)),
             false, true);
-    base::Optional<FloatPoint> snap_point =
+    absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1877,7 +1877,7 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
             gfx::ScrollOffset(
                 scrollable_area->ScrollOffsetToPosition(new_offset)),
             scroll_to_options->hasLeft(), scroll_to_options->hasTop());
-    base::Optional<FloatPoint> snap_point =
+    absl::optional<FloatPoint> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());

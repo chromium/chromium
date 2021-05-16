@@ -387,7 +387,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   const NGConstraintSpace CreateConstraintSpace(
       const GridItemData& grid_item,
       const LogicalSize& containing_grid_area_size,
-      base::Optional<LayoutUnit> opt_fixed_block_size,
+      absl::optional<LayoutUnit> opt_fixed_block_size,
       NGCacheSlot cache_slot) const;
 
   const NGConstraintSpace CreateConstraintSpaceForLayout(
@@ -399,7 +399,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridGeometry& grid_geometry,
       const GridItemData& grid_item,
       GridTrackSizingDirection track_direction,
-      base::Optional<LayoutUnit> opt_fixed_block_size = base::nullopt) const;
+      absl::optional<LayoutUnit> opt_fixed_block_size = absl::nullopt) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const GridItems& grid_items,

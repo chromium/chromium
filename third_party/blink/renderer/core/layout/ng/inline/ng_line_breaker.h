@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_BREAKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_BREAKER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_line_layout_opportunity.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
@@ -292,7 +292,7 @@ class CORE_EXPORT NGLineBreaker {
   bool previous_line_had_forced_break_ = false;
   const Hyphenation* hyphenation_ = nullptr;
 
-  base::Optional<wtf_size_t> hyphen_index_;
+  absl::optional<wtf_size_t> hyphen_index_;
   bool has_any_hyphens_ = false;
 
   // Cache the result of |ComputeTrailingCollapsibleSpace| to avoid shaping
@@ -301,7 +301,7 @@ class CORE_EXPORT NGLineBreaker {
     NGInlineItemResult* item_result;
     scoped_refptr<const ShapeResultView> collapsed_shape_result;
   };
-  base::Optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
+  absl::optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
 
   // Keep track of handled float items. See HandleFloat().
   const NGPositionedFloatVector& leading_floats_;
@@ -335,7 +335,7 @@ class CORE_EXPORT NGLineBreaker {
     wtf_size_t from_item_index;
     wtf_size_t to_index;
   };
-  base::Optional<RewindIndex> last_rewind_;
+  absl::optional<RewindIndex> last_rewind_;
 };
 
 }  // namespace blink

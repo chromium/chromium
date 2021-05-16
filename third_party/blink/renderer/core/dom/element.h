@@ -202,11 +202,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name);
   Element* GetElementAttribute(const QualifiedName& name);
   void SetElementAttribute(const QualifiedName&, Element*);
-  base::Optional<HeapVector<Member<Element>>> GetElementArrayAttribute(
+  absl::optional<HeapVector<Member<Element>>> GetElementArrayAttribute(
       const QualifiedName& name);
   void SetElementArrayAttribute(
       const QualifiedName&,
-      const base::Optional<HeapVector<Member<Element>>>&);
+      const absl::optional<HeapVector<Member<Element>>>&);
 
   // Call this to get the value of an attribute that is known not to be the
   // style attribute or one of the SVG animatable attributes.

@@ -108,7 +108,7 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
     for (auto& layout_result : Base::layout_results_) {
       const auto& fragment =
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
-      base::Optional<PhysicalRect> layout_overflow;
+      absl::optional<PhysicalRect> layout_overflow;
 
       // Recalculate our layout-overflow if a child had its layout-overflow
       // changed, or if we are marked as dirty.
@@ -331,7 +331,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
       NGBlockNode(this), static_position,
       DynamicTo<LayoutInline>(css_container));
 
-  base::Optional<LogicalSize> initial_containing_block_fixed_size;
+  absl::optional<LogicalSize> initial_containing_block_fixed_size;
   auto* layout_view = DynamicTo<LayoutView>(container);
   if (layout_view && !Base::GetDocument().Printing()) {
     if (LocalFrameView* frame_view = layout_view->GetFrameView()) {

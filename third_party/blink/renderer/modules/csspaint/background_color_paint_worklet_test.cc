@@ -68,7 +68,7 @@ TEST_F(BackgroundColorPaintWorkletTest, SimpleBGColorAnimationNotFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
@@ -84,7 +84,7 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
   EXPECT_FALSE(element->GetElementAnimations());
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
@@ -133,7 +133,7 @@ TEST_F(BackgroundColorPaintWorkletTest, NoBGColorAnimationFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
   EXPECT_TRUE(animated_colors.IsEmpty());
@@ -182,7 +182,7 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }
@@ -240,7 +240,7 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  base::Optional<double> progress;
+  absl::optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
 }

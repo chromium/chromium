@@ -134,7 +134,7 @@ AlternateSignedExchangeResourceInfo::AlternateSignedExchangeResourceInfo(
 AlternateSignedExchangeResourceInfo::Entry*
 AlternateSignedExchangeResourceInfo::FindMatchingEntry(
     const KURL& url,
-    base::Optional<ResourceType> resource_type,
+    absl::optional<ResourceType> resource_type,
     const Vector<String>& languages) const {
   const char* accept_header = kDefaultAcceptHeader;
   if (resource_type == ResourceType::kCSSStyleSheet) {

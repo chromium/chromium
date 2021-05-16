@@ -1910,7 +1910,7 @@ TEST_F(StyleCascadeTest, SubstituteRegisteredUniversal) {
 }
 
 TEST_F(StyleCascadeTest, SubstituteRegisteredUniversalInvalid) {
-  RegisterProperty(GetDocument(), "--x", "*", base::nullopt, false);
+  RegisterProperty(GetDocument(), "--x", "*", absl::nullopt, false);
 
   TestCascade cascade(GetDocument());
   cascade.Add("--y", " var(--x) ");

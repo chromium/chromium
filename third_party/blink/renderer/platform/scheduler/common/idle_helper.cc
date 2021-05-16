@@ -82,7 +82,7 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
   }
 
   base::sequence_manager::LazyNow lazy_now(now);
-  base::Optional<base::TimeDelta> delay_till_next_task =
+  absl::optional<base::TimeDelta> delay_till_next_task =
       helper_->real_time_domain()->DelayTillNextTask(&lazy_now);
 
   base::TimeDelta max_long_idle_period_duration =

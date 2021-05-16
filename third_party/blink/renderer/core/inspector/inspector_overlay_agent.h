@@ -154,8 +154,8 @@ class CORE_EXPORT InspectorOverlayAgent final
       protocol::Overlay::ScrollSnapContainerHighlightConfig*);
   static std::unique_ptr<InspectorFlexItemHighlightConfig>
   ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
-  static base::Optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
-  static base::Optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
+  static absl::optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
+  static absl::optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
       protocol::Overlay::HighlightConfig*);
   InspectorOverlayAgent(WebLocalFrameImpl*,

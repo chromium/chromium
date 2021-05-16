@@ -55,7 +55,7 @@ int SandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
       StringFromFullPath(file_path), sync_dir);
 }
 
-base::Optional<sql::SandboxedVfs::PathAccessInfo>
+absl::optional<sql::SandboxedVfs::PathAccessInfo>
 SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   int32_t attributes = WebDatabaseHost::GetInstance().GetFileAttributes(
       StringFromFullPath(file_path));
@@ -71,7 +71,7 @@ SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
 #endif  // defined(OS_WIN)
 
   if (!file_exists)
-    return base::nullopt;
+    return absl::nullopt;
 
   sql::SandboxedVfs::PathAccessInfo access;
 #if defined(OS_WIN)

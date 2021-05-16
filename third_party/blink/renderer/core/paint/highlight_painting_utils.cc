@@ -227,7 +227,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
   return HighlightThemeBackgroundColor(document, style, pseudo);
 }
 
-base::Optional<AppliedTextDecoration>
+absl::optional<AppliedTextDecoration>
 HighlightPaintingUtils::HighlightTextDecoration(
     const ComputedStyle& style,
     const ComputedStyle& pseudo_style) {
@@ -237,9 +237,9 @@ HighlightPaintingUtils::HighlightTextDecoration(
       pseudo_style.AppliedTextDecorations();
 
   if (style_decorations.IsEmpty())
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<AppliedTextDecoration> highlight_text_decoration =
+  absl::optional<AppliedTextDecoration> highlight_text_decoration =
       style_decorations.back();
 
   if (pseudo_style_decorations.size() &&

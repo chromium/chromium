@@ -46,7 +46,7 @@ class VideoWakeLockPictureInPictureSession
   void Update(uint32_t player_id,
               mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
                   player_remote,
-              const base::Optional<viz::SurfaceId>&,
+              const absl::optional<viz::SurfaceId>&,
               const gfx::Size&,
               bool show_play_pause_button) final {}
 
@@ -71,7 +71,7 @@ class VideoWakeLockPictureInPictureService
   void StartSession(
       uint32_t,
       mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
-      const base::Optional<viz::SurfaceId>&,
+      const absl::optional<viz::SurfaceId>&,
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,

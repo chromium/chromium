@@ -553,7 +553,7 @@ Response InspectorDOMAgent::getNodesForSubtreeByStyle(
 
   HashMap<CSSPropertyID, HashSet<String>> properties;
   for (const auto& style : *computed_styles) {
-    base::Optional<CSSPropertyName> property_name = CSSPropertyName::From(
+    absl::optional<CSSPropertyName> property_name = CSSPropertyName::From(
         document_->GetExecutionContext(), style->getName());
     if (!property_name)
       return Response::InvalidParams("Invalid CSS property name");

@@ -102,14 +102,14 @@ class MockLearningTaskControllerService
   MOCK_METHOD3(BeginObservation,
                void(const base::UnguessableToken& id,
                     const WTF::Vector<FeatureValue>& features,
-                    const base::Optional<TargetValue>& default_target));
+                    const absl::optional<TargetValue>& default_target));
   MOCK_METHOD2(CompleteObservation,
                void(const base::UnguessableToken& id,
                     const ObservationCompletion& completion));
   MOCK_METHOD1(CancelObservation, void(const base::UnguessableToken& id));
   MOCK_METHOD2(UpdateDefaultTarget,
                void(const base::UnguessableToken& id,
-                    const base::Optional<TargetValue>& default_target));
+                    const absl::optional<TargetValue>& default_target));
   MOCK_METHOD2(PredictDistribution,
                void(const WTF::Vector<FeatureValue>& features,
                     PredictDistributionCallback callback));

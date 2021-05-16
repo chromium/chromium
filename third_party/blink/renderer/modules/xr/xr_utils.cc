@@ -91,7 +91,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-base::Optional<device::Pose> CreatePose(
+absl::optional<device::Pose> CreatePose(
     const blink::TransformationMatrix& matrix) {
   return device::Pose::Create(
       gfx::Transform(TransformationMatrix::ToSkMatrix44(matrix)));

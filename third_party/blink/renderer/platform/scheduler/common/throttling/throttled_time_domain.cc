@@ -36,22 +36,22 @@ void ThrottledTimeDomain::SetNextTaskRunTime(base::TimeTicks run_time) {
   next_task_run_time_ = run_time;
 }
 
-base::Optional<base::TimeDelta> ThrottledTimeDomain::DelayTillNextTask(
+absl::optional<base::TimeDelta> ThrottledTimeDomain::DelayTillNextTask(
     base::sequence_manager::LazyNow* lazy_now) {
   base::TimeTicks now = lazy_now->Now();
   if (next_task_run_time_ && next_task_run_time_ > now)
     return next_task_run_time_.value() - now;
 
-  base::Optional<base::TimeTicks> next_run_time = NextScheduledRunTime();
+  absl::optional<base::TimeTicks> next_run_time = NextScheduledRunTime();
   if (!next_run_time)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (now >= next_run_time)
     return base::TimeDelta();  // Makes DoWork post an immediate continuation.
 
   // We assume the owner (i.e. TaskQueueThrottler) will manage wake-ups on our
   // behalf.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool ThrottledTimeDomain::MaybeFastForwardToNextTask(

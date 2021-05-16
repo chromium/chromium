@@ -703,12 +703,12 @@ String VideoFrame::format() const {
   }
 }
 
-base::Optional<HeapVector<Member<Plane>>> VideoFrame::planes() {
+absl::optional<HeapVector<Member<Plane>>> VideoFrame::planes() {
   // Verify that |this| has not been invalidated, and that the format is
   // supported.
   auto local_frame = handle_->frame();
   if (!local_frame || !IsSupportedPlanarFormat(*local_frame))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Create a Plane for each VideoFrame plane, but only the first time.
   if (planes_.IsEmpty()) {
@@ -828,18 +828,18 @@ uint32_t VideoFrame::displayHeight() const {
   return local_frame->natural_size().width();
 }
 
-base::Optional<int64_t> VideoFrame::timestamp() const {
+absl::optional<int64_t> VideoFrame::timestamp() const {
   auto local_frame = handle_->frame();
   if (!local_frame || local_frame->timestamp() == media::kNoTimestamp)
-    return base::nullopt;
+    return absl::nullopt;
   return local_frame->timestamp().InMicroseconds();
 }
 
-base::Optional<uint64_t> VideoFrame::duration() const {
+absl::optional<uint64_t> VideoFrame::duration() const {
   auto local_frame = handle_->frame();
   // TODO(sandersd): Can a duration be kNoTimestamp?
   if (!local_frame || !local_frame->metadata().frame_duration.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
@@ -1051,7 +1051,7 @@ IntSize VideoFrame::BitmapSourceSize() const {
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
-                                            base::Optional<IntRect> crop_rect,
+                                            absl::optional<IntRect> crop_rect,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
   const auto local_handle = handle_->CloneForInternalUse();

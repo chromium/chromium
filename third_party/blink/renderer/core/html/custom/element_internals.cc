@@ -333,11 +333,11 @@ Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
   return *(stored_elements->begin());
 }
 
-base::Optional<HeapVector<Member<Element>>>
+absl::optional<HeapVector<Member<Element>>>
 ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
   if (iter == explicitly_set_attr_elements_map_.end()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Convert from our internal HeapLinkedHashSet of weak references to a
@@ -357,7 +357,7 @@ ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& name,
-    const base::Optional<HeapVector<Member<Element>>>& given_elements) {
+    const absl::optional<HeapVector<Member<Element>>>& given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
     return;

@@ -25,7 +25,7 @@ struct BLINK_COMMON_EXPORT
     return input.blobs;
   }
 
-  static const base::Optional<url::Origin>& sender_origin(
+  static const absl::optional<url::Origin>& sender_origin(
       const blink::CloneableMessage& input) {
     return input.sender_origin;
   }
@@ -48,7 +48,7 @@ struct BLINK_COMMON_EXPORT
     return input.stack_trace_should_pause;
   }
 
-  static const base::Optional<base::UnguessableToken>& locked_agent_cluster_id(
+  static const absl::optional<base::UnguessableToken>& locked_agent_cluster_id(
       const blink::CloneableMessage& input) {
     return input.locked_agent_cluster_id;
   }

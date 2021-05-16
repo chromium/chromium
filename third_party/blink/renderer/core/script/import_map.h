@@ -52,11 +52,11 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
 
   // Return values of Resolve(), ResolveImportsMatch() and
   // ResolveImportsMatchInternal():
-  // - base::nullopt: corresponds to returning a null in the spec,
+  // - absl::nullopt: corresponds to returning a null in the spec,
   //   i.e. allowing fallback to a less specific scope etc.
   // - An invalid KURL: corresponds to throwing an error in the spec.
   // - A valid KURL: corresponds to returning a valid URL in the spec.
-  base::Optional<KURL> Resolve(const ParsedSpecifier&,
+  absl::optional<KURL> Resolve(const ParsedSpecifier&,
                                const KURL& base_url,
                                String* debug_message) const;
 
@@ -68,10 +68,10 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
   using MatchResult = SpecifierMap::const_iterator;
 
   // https://wicg.github.io/import-maps/#resolve-an-imports-match
-  base::Optional<KURL> ResolveImportsMatch(const ParsedSpecifier&,
+  absl::optional<KURL> ResolveImportsMatch(const ParsedSpecifier&,
                                            const SpecifierMap&,
                                            String* debug_message) const;
-  base::Optional<MatchResult> MatchPrefix(const ParsedSpecifier&,
+  absl::optional<MatchResult> MatchPrefix(const ParsedSpecifier&,
                                           const SpecifierMap&) const;
   static SpecifierMap SortAndNormalizeSpecifierMap(const JSONObject* imports,
                                                    const KURL& base_url,

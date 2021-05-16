@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -114,7 +114,7 @@ class CORE_EXPORT DevToolsEmulator final
     FloatPoint position;
     double scale;
   };
-  base::Optional<ViewportOverride> viewport_override_;
+  absl::optional<ViewportOverride> viewport_override_;
 
   bool is_overlay_scrollbars_enabled_;
   bool is_orientation_event_enabled_;

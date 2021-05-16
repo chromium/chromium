@@ -81,7 +81,7 @@ void BluetoothRemoteGATTCharacteristic::AddedEventListener(
 void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     ScriptPromiseResolver* resolver,
     mojom::blink::WebBluetoothResult result,
-    const base::Optional<Vector<uint8_t>>& value) {
+    const absl::optional<Vector<uint8_t>>& value) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -433,7 +433,7 @@ void BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback(
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     ScriptPromiseResolver* resolver,
     mojom::blink::WebBluetoothResult result,
-    base::Optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
+    absl::optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
         descriptors) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())

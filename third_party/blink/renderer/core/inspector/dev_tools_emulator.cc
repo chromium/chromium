@@ -422,7 +422,7 @@ TransformationMatrix DevToolsEmulator::ForceViewport(
 }
 
 TransformationMatrix DevToolsEmulator::ResetViewport() {
-  viewport_override_ = base::nullopt;
+  viewport_override_ = absl::nullopt;
   return ComputeRootLayerTransform();
 }
 

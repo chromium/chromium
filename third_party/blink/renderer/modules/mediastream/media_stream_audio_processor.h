@@ -11,10 +11,10 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/aec_dump_agent_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
@@ -148,12 +148,12 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void OnPlayoutDataSourceChanged() override;
   void OnRenderThreadChanged() override;
 
-  base::Optional<webrtc::AudioProcessing::Config>
+  absl::optional<webrtc::AudioProcessing::Config>
   GetAudioProcessingModuleConfig() const {
     if (audio_processing_) {
       return audio_processing_->GetConfig();
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // This method is called on the libjingle thread.

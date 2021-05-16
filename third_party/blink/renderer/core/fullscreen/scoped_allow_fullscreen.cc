@@ -8,7 +8,7 @@
 
 namespace blink {
 
-base::Optional<ScopedAllowFullscreen::Reason> ScopedAllowFullscreen::reason_;
+absl::optional<ScopedAllowFullscreen::Reason> ScopedAllowFullscreen::reason_;
 
 ScopedAllowFullscreen::ScopedAllowFullscreen(Reason reason) {
   DCHECK(IsMainThread());
@@ -22,7 +22,7 @@ ScopedAllowFullscreen::~ScopedAllowFullscreen() {
 }
 
 // static
-base::Optional<ScopedAllowFullscreen::Reason>
+absl::optional<ScopedAllowFullscreen::Reason>
 ScopedAllowFullscreen::FullscreenAllowedReason() {
   DCHECK(IsMainThread());
   return reason_;

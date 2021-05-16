@@ -224,7 +224,7 @@ void HTMLAnchorElement::AttributeChanged(
   HTMLElement::AttributeChanged(params);
   if (params.name == html_names::kRegisterattributionsourceAttr &&
       !params.new_value.IsNull() && HasImpression()) {
-    base::Optional<WebImpression> impression = GetImpressionForAnchor(this);
+    absl::optional<WebImpression> impression = GetImpressionForAnchor(this);
     if (impression) {
       mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;
       GetDocument()
@@ -506,7 +506,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // set `target_frame` to `frame`, but end up targeting a new window.
     // Attach the impression regardless, the embedder will be able to drop
     // impressions for subframe navigations.
-    base::Optional<WebImpression> impression = GetImpressionForAnchor(this);
+    absl::optional<WebImpression> impression = GetImpressionForAnchor(this);
     if (impression)
       frame_request.SetImpression(*impression);
   }

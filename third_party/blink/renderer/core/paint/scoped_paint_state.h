@@ -115,8 +115,8 @@ class ScopedPaintState {
   const FragmentData* fragment_to_paint_;
   const PaintInfo& input_paint_info_;
   PhysicalOffset paint_offset_;
-  base::Optional<PaintInfo> adjusted_paint_info_;
-  base::Optional<ScopedPaintChunkProperties> chunk_properties_;
+  absl::optional<PaintInfo> adjusted_paint_info_;
+  absl::optional<ScopedPaintChunkProperties> chunk_properties_;
   bool paint_offset_translation_as_drawing_ = false;
 };
 

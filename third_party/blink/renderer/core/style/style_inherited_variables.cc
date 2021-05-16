@@ -31,7 +31,7 @@ StyleVariables::OptionalData StyleInheritedVariables::GetData(
     return *data;
   if (root_)
     return root_->variables_.GetData(name);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
@@ -40,7 +40,7 @@ StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
     return *data;
   if (root_)
     return root_->variables_.GetValue(name);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StyleInheritedVariables::CollectNames(HashSet<AtomicString>& names) const {

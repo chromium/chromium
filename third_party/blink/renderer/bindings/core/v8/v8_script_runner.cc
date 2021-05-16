@@ -176,7 +176,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
             CachedMetadataHandler::kDiscardLocally);
       }
       if (cache_result) {
-        cache_result->consume_result = base::make_optional(
+        cache_result->consume_result = absl::make_optional(
             inspector_compile_script_event::V8CacheResult::ConsumeResult(
                 v8::ScriptCompiler::kConsumeCodeCache, cached_data->length,
                 cached_data->rejected));
@@ -323,7 +323,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
           cache_handler->ClearCachedMetadata(
               CachedMetadataHandler::kDiscardLocally);
         }
-        cache_result.consume_result = base::make_optional(
+        cache_result.consume_result = absl::make_optional(
             inspector_compile_script_event::V8CacheResult::ConsumeResult(
                 compile_options, cached_data->length, cached_data->rejected));
         break;

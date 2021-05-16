@@ -151,7 +151,7 @@ void* MediaStreamAudioSource::GetClassIdentifier() const {
 
 bool MediaStreamAudioSource::HasSameReconfigurableSettings(
     const blink::AudioProcessingProperties& selected_properties) const {
-  base::Optional<blink::AudioProcessingProperties> configured_properties =
+  absl::optional<blink::AudioProcessingProperties> configured_properties =
       GetAudioProcessingProperties();
   if (!configured_properties)
     return false;
@@ -165,9 +165,9 @@ bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
   if (!other_source)
     return false;
 
-  base::Optional<blink::AudioProcessingProperties> others_properties =
+  absl::optional<blink::AudioProcessingProperties> others_properties =
       other_source->GetAudioProcessingProperties();
-  base::Optional<blink::AudioProcessingProperties> this_properties =
+  absl::optional<blink::AudioProcessingProperties> this_properties =
       GetAudioProcessingProperties();
 
   if (!others_properties || !this_properties)

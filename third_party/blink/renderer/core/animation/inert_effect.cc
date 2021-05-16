@@ -37,8 +37,8 @@ namespace blink {
 InertEffect::InertEffect(KeyframeEffectModelBase* model,
                          const Timing& timing,
                          bool paused,
-                         base::Optional<AnimationTimeDelta> inherited_time,
-                         base::Optional<TimelinePhase> inherited_phase)
+                         absl::optional<AnimationTimeDelta> inherited_time,
+                         absl::optional<TimelinePhase> inherited_phase)
     : AnimationEffect(timing),
       model_(model),
       paused_(paused),
@@ -52,7 +52,7 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
     return;
   }
 
-  base::Optional<double> iteration = CurrentIteration();
+  absl::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
@@ -61,7 +61,7 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
 
 AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(
     bool,
-    base::Optional<AnimationTimeDelta>,
+    absl::optional<AnimationTimeDelta>,
     AnimationTimeDelta) const {
   return AnimationTimeDelta::Max();
 }

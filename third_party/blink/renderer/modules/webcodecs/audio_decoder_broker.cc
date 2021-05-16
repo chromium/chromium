@@ -48,8 +48,8 @@ struct CrossThreadCopier<media::Status>
 };
 
 template <>
-struct CrossThreadCopier<base::Optional<DecoderDetails>>
-    : public CrossThreadCopierPassThrough<base::Optional<DecoderDetails>> {
+struct CrossThreadCopier<absl::optional<DecoderDetails>>
+    : public CrossThreadCopierPassThrough<absl::optional<DecoderDetails>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -65,7 +65,7 @@ class MediaAudioTaskWrapper {
  public:
   using CrossThreadOnceInitCB =
       WTF::CrossThreadOnceFunction<void(media::Status status,
-                                        base::Optional<DecoderDetails>)>;
+                                        absl::optional<DecoderDetails>)>;
   using CrossThreadOnceDecodeCB =
       WTF::CrossThreadOnceFunction<void(media::Status)>;
   using CrossThreadOnceResetCB = WTF::CrossThreadOnceClosure;
@@ -196,7 +196,7 @@ class MediaAudioTaskWrapper {
     decoder_ = std::move(decoder);
 
     media::Status status(media::StatusCode::kDecoderUnsupportedConfig);
-    base::Optional<DecoderDetails> decoder_details;
+    absl::optional<DecoderDetails> decoder_details;
     if (decoder_) {
       status = media::OkStatus();
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
@@ -327,7 +327,7 @@ int AudioDecoderBroker::CreateCallbackId() {
 }
 
 void AudioDecoderBroker::OnInitialize(media::Status status,
-                                      base::Optional<DecoderDetails> details) {
+                                      absl::optional<DecoderDetails> details) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   decoder_details_ = details;

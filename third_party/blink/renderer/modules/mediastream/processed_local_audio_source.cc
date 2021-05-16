@@ -149,7 +149,7 @@ void ProcessedLocalAudioSource::SendLogMessageWithSessionId(
                  "]");
 }
 
-base::Optional<blink::AudioProcessingProperties>
+absl::optional<blink::AudioProcessingProperties>
 ProcessedLocalAudioSource::GetAudioProcessingProperties() const {
   return audio_processing_properties_;
 }

@@ -33,9 +33,9 @@ TEST(ClientHintsTest, SerializeLangClientHint) {
 }
 
 TEST(ClientHintsTest, FilterAcceptCH) {
-  EXPECT_FALSE(FilterAcceptCH(base::nullopt, true, true).has_value());
+  EXPECT_FALSE(FilterAcceptCH(absl::nullopt, true, true).has_value());
 
-  base::Optional<std::vector<network::mojom::WebClientHintsType>> result;
+  absl::optional<std::vector<network::mojom::WebClientHintsType>> result;
 
   result =
       FilterAcceptCH(std::vector<network::mojom::WebClientHintsType>(

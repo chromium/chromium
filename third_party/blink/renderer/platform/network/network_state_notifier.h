@@ -29,9 +29,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -58,16 +58,16 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     double max_bandwidth_mbps = kInvalidMaxBandwidth;
     WebEffectiveConnectionType effective_type =
         WebEffectiveConnectionType::kTypeUnknown;
-    base::Optional<base::TimeDelta> http_rtt;
-    base::Optional<base::TimeDelta> transport_rtt;
-    base::Optional<double> downlink_throughput_mbps;
+    absl::optional<base::TimeDelta> http_rtt;
+    absl::optional<base::TimeDelta> transport_rtt;
+    absl::optional<double> downlink_throughput_mbps;
     bool save_data = false;
 
     // If set, then network quality corresponding to
     // |network_quality_web_holdback| should be returned to the web consumers.
     // Consumers within Blink should still receive the actual network quality
     // values.
-    base::Optional<WebEffectiveConnectionType> network_quality_web_holdback;
+    absl::optional<WebEffectiveConnectionType> network_quality_web_holdback;
   };
 
   class NetworkStateObserver {
@@ -77,9 +77,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
         WebConnectionType,
         double max_bandwidth_mbps,
         WebEffectiveConnectionType,
-        const base::Optional<base::TimeDelta>& http_rtt,
-        const base::Optional<base::TimeDelta>& transport_rtt,
-        const base::Optional<double>& downlink_throughput_mbps,
+        const absl::optional<base::TimeDelta>& http_rtt,
+        const absl::optional<base::TimeDelta>& transport_rtt,
+        const absl::optional<double>& downlink_throughput_mbps,
         bool save_data) {}
     virtual void OnLineStateChange(bool on_line) {}
   };
@@ -136,7 +136,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns the current HTTP RTT estimate. If the estimate is unavailable, the
   // returned optional value is null.
-  base::Optional<base::TimeDelta> HttpRtt() const {
+  absl::optional<base::TimeDelta> HttpRtt() const {
     MutexLocker locker(mutex_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
@@ -146,7 +146,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns the current transport RTT estimate. If the estimate is unavailable,
   // the returned optional value is null.
-  base::Optional<base::TimeDelta> TransportRtt() const {
+  absl::optional<base::TimeDelta> TransportRtt() const {
     MutexLocker locker(mutex_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.on_line_initialized);
@@ -155,7 +155,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns the current throughput estimate (in megabits per second). If the
   // estimate is unavailable, the returned optional value is null.
-  base::Optional<double> DownlinkThroughputMbps() const {
+  absl::optional<double> DownlinkThroughputMbps() const {
     MutexLocker locker(mutex_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
@@ -233,7 +233,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   void SetNetworkConnectionInfoOverride(
       bool on_line,
       WebConnectionType,
-      base::Optional<WebEffectiveConnectionType> effective_type,
+      absl::optional<WebEffectiveConnectionType> effective_type,
       int64_t http_rtt_msec,
       double max_bandwidth_mbps);
   void SetSaveDataEnabledOverride(bool enabled);
@@ -256,12 +256,12 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // Returns |rtt| after adding host-specific random noise, and rounding it as
   // per the NetInfo spec to improve privacy.
   uint32_t RoundRtt(const String& host,
-                    const base::Optional<base::TimeDelta>& rtt) const;
+                    const absl::optional<base::TimeDelta>& rtt) const;
 
   // Returns |downlink_mbps| after adding host-specific random noise, and
   // rounding it as per the NetInfo spec and to improve privacy.
   double RoundMbps(const String& host,
-                   const base::Optional<double>& downlink_mbps) const;
+                   const absl::optional<double>& downlink_mbps) const;
 
   // Returns the randomization salt (weak and insecure) that should be used when
   // adding noise to the network quality metrics. This is known only to the
@@ -273,20 +273,20 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // the web consumers. If the returned value is null, then the actual network
   // quality value should be returned to the web consumers.
   // Consumers within Blink should not call this API.
-  base::Optional<WebEffectiveConnectionType> GetWebHoldbackEffectiveType()
+  absl::optional<WebEffectiveConnectionType> GetWebHoldbackEffectiveType()
       const;
 
   // Returns the overriding HTTP RTT estimate that should be returned to
   // the web consumers. If the returned value is null, then the actual network
   // quality value should be returned to the web consumers.
   // Consumers within Blink should not call this API.
-  base::Optional<base::TimeDelta> GetWebHoldbackHttpRtt() const;
+  absl::optional<base::TimeDelta> GetWebHoldbackHttpRtt() const;
 
   // Returns the overriding HTTP RTT estimate that should be returned to
   // the web consumers. If the returned value is null, then the actual network
   // quality value should be returned to the web consumers.
   // Consumers within Blink should not call this API.
-  base::Optional<double> GetWebHoldbackDownlinkThroughputMbps() const;
+  absl::optional<double> GetWebHoldbackDownlinkThroughputMbps() const;
 
   // Sets the metrics of all the values while taking into account any network
   // quality web holdbacks in place. The caller must guarantee that all pointers
@@ -294,8 +294,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   void GetMetricsWithWebHoldback(WebConnectionType* type,
                                  double* downlink_max_mbps,
                                  WebEffectiveConnectionType* effective_type,
-                                 base::Optional<base::TimeDelta>* http_rtt,
-                                 base::Optional<double>* downlink_mbps,
+                                 absl::optional<base::TimeDelta>* http_rtt,
+                                 absl::optional<double>* downlink_mbps,
                                  bool* save_data) const;
 
  private:

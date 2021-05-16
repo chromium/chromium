@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -54,22 +54,22 @@ template <typename T>
 class NumericRangeSet {
  public:
   NumericRangeSet() = default;
-  NumericRangeSet(base::Optional<T> min, base::Optional<T> max)
+  NumericRangeSet(absl::optional<T> min, absl::optional<T> max)
       : min_(std::move(min)), max_(std::move(max)) {}
   NumericRangeSet(const NumericRangeSet& other) = default;
   NumericRangeSet& operator=(const NumericRangeSet& other) = default;
   ~NumericRangeSet() = default;
 
-  const base::Optional<T>& Min() const { return min_; }
-  const base::Optional<T>& Max() const { return max_; }
+  const absl::optional<T>& Min() const { return min_; }
+  const absl::optional<T>& Max() const { return max_; }
   bool IsEmpty() const { return max_ && min_ && *max_ < *min_; }
 
   NumericRangeSet Intersection(const NumericRangeSet& other) const {
-    base::Optional<T> min = min_;
+    absl::optional<T> min = min_;
     if (other.Min())
       min = min ? std::max(*min, *other.Min()) : other.Min();
 
-    base::Optional<T> max = max_;
+    absl::optional<T> max = max_;
     if (other.Max())
       max = max ? std::min(*max, *other.Max()) : other.Max();
 
@@ -103,10 +103,10 @@ class NumericRangeSet {
     return NumericRangeSet<T>(
         ConstraintHasMin(constraint) && ConstraintMin(constraint) >= lower_bound
             ? ConstraintMin(constraint)
-            : base::Optional<T>(),
+            : absl::optional<T>(),
         ConstraintHasMax(constraint) && ConstraintMax(constraint) <= upper_bound
             ? ConstraintMax(constraint)
-            : base::Optional<T>());
+            : absl::optional<T>());
   }
 
   // Creates a NumericRangeSet based on the minimum and maximum values of
@@ -115,9 +115,9 @@ class NumericRangeSet {
   static NumericRangeSet<T> FromConstraint(ConstraintType constraint) {
     return NumericRangeSet<T>(
         ConstraintHasMin(constraint) ? ConstraintMin(constraint)
-                                     : base::Optional<T>(),
+                                     : absl::optional<T>(),
         ConstraintHasMax(constraint) ? ConstraintMax(constraint)
-                                     : base::Optional<T>());
+                                     : absl::optional<T>());
   }
 
   // Creates a NumericRangeSet based on a single value representing both the
@@ -129,8 +129,8 @@ class NumericRangeSet {
   static NumericRangeSet<T> EmptySet() { return NumericRangeSet(1, 0); }
 
  private:
-  base::Optional<T> min_;
-  base::Optional<T> max_;
+  absl::optional<T> min_;
+  absl::optional<T> max_;
 };
 
 // This class defines a set of discrete elements suitable for resolving

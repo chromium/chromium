@@ -50,7 +50,7 @@ WebDOMMessageEvent::WebDOMMessageEvent(
     const WebFrame* source_frame,
     const WebDocument& target_document,
     WebVector<MessagePortChannel> channels)
-    : WebDOMMessageEvent(MessageEvent::Create(), base::nullopt) {
+    : WebDOMMessageEvent(MessageEvent::Create(), absl::nullopt) {
   DOMWindow* window = nullptr;
   if (source_frame)
     window = WebFrame::ToCoreFrame(*source_frame)->DomWindow();

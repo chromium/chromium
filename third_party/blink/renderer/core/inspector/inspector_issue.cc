@@ -43,10 +43,10 @@ void InspectorIssue::Trace(blink::Visitor* visitor) const {}
 void ReportAttributionIssue(
     LocalFrame* reporting_frame,
     mojom::blink::AttributionReportingIssueType type,
-    const base::Optional<base::UnguessableToken>& offending_frame_token,
+    const absl::optional<base::UnguessableToken>& offending_frame_token,
     Element* element,
-    const base::Optional<String>& request_id,
-    const base::Optional<String>& invalid_parameter) {
+    const absl::optional<String>& request_id,
+    const absl::optional<String>& invalid_parameter) {
   auto attribution_issue = mojom::blink::AttributionReportingIssue::New();
   attribution_issue->violation_type = type;
   if (offending_frame_token) {

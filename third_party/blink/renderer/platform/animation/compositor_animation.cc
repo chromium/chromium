@@ -130,7 +130,7 @@ void CompositorAnimation::NotifyAnimationTakeover(
 }
 
 void CompositorAnimation::NotifyLocalTimeUpdated(
-    base::Optional<base::TimeDelta> local_time) {
+    absl::optional<base::TimeDelta> local_time) {
   if (delegate_) {
     delegate_->NotifyLocalTimeUpdated(local_time);
   }

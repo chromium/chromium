@@ -168,14 +168,14 @@ class XRSession final
   // |native_origin_information| describes native origin relative to which the
   // transform is expressed.
   // |maybe_plane_id| is an ID of the plane to which the anchor should be
-  // attached - set to base::nullopt if the plane is not to be attached to any
+  // attached - set to absl::nullopt if the plane is not to be attached to any
   // plane.
   ScriptPromise CreateAnchorHelper(
       ScriptState* script_state,
       const blink::TransformationMatrix& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformation&
           native_origin_information,
-      base::Optional<uint64_t> maybe_plane_id,
+      absl::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
 
   // Helper POD type containing the information needed for anchor creation in
@@ -191,7 +191,7 @@ class XRSession final
   // for anchor creation (i.e. the native origin set in the struct will be
   // describing a stationary space). If a stationary reference space is not
   // available, the method returns nullopt.
-  base::Optional<ReferenceSpaceInformation> GetStationaryReferenceSpace() const;
+  absl::optional<ReferenceSpaceInformation> GetStationaryReferenceSpace() const;
 
   int requestAnimationFrame(V8XRFrameRequestCallback* callback);
   void cancelAnimationFrame(int id);
@@ -250,8 +250,8 @@ class XRSession final
   void OnFocusChanged();
   void OnFrame(
       double timestamp,
-      const base::Optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+      const absl::optional<gpu::MailboxHolder>& output_mailbox_holder,
+      const absl::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
 
   // XRInputSourceButtonListener
   void OnButtonEvent(
@@ -331,7 +331,7 @@ class XRSession final
   // Note: currently, the information about the mojo_from_-floor-type spaces is
   // stored elsewhere, this method will not work for those reference space
   // types.
-  base::Optional<TransformationMatrix> GetMojoFrom(
+  absl::optional<TransformationMatrix> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
   XRCPUDepthInformation* GetCpuDepthInformation(
@@ -377,7 +377,7 @@ class XRSession final
   HeapVector<Member<XRImageTrackingResult>> ImageTrackingResults(
       ExceptionState&);
 
-  const base::Optional<gfx::Size>& CameraImageSize() const {
+  const absl::optional<gfx::Size>& CameraImageSize() const {
     return camera_image_size_;
   }
 
@@ -552,7 +552,7 @@ class XRSession final
 
   // Populated iff the raw camera feature has been enabled and the session
   // received a frame from the device that contained the camera image.
-  base::Optional<gfx::Size> camera_image_size_;
+  absl::optional<gfx::Size> camera_image_size_;
 
   HeapVector<Member<XRViewData>> views_;
   Vector<device::mojom::blink::XRViewPtr> pending_views_;

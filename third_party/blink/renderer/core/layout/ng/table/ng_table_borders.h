@@ -327,7 +327,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
   wtf_size_t edges_per_row_ = 0;
   // Table border/padding are expensive to compute for collapsed tables.
   // We compute them once, and cache them.
-  base::Optional<NGBoxStrut> cached_table_border_;
+  absl::optional<NGBoxStrut> cached_table_border_;
   // Collapsed tables use first border to compute inline start/end.
   // Visual overflow use enclosing rectangle of all borders
   // to compute inline start/end.

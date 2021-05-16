@@ -16,13 +16,13 @@
 namespace mojo {
 
 struct UrlOriginAdapter {
-  static base::Optional<base::UnguessableToken> nonce_if_opaque(
+  static absl::optional<base::UnguessableToken> nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return origin->GetNonceForSerialization();
   }
   static scoped_refptr<blink::SecurityOrigin> CreateSecurityOrigin(
       const url::SchemeHostPort& tuple,
-      const base::Optional<base::UnguessableToken>& nonce_if_opaque) {
+      const absl::optional<base::UnguessableToken>& nonce_if_opaque) {
     scoped_refptr<blink::SecurityOrigin> tuple_origin;
     if (tuple.IsValid()) {
       tuple_origin = blink::SecurityOrigin::CreateFromValidTuple(
@@ -58,7 +58,7 @@ struct StructTraits<url::mojom::OriginDataView,
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return UrlOriginAdapter::GetOriginOrPrecursorOriginIfOpaque(origin)->Port();
   }
-  static base::Optional<base::UnguessableToken> nonce_if_opaque(
+  static absl::optional<base::UnguessableToken> nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
     return UrlOriginAdapter::nonce_if_opaque(origin);
   }
@@ -69,7 +69,7 @@ struct StructTraits<url::mojom::OriginDataView,
     // are made in that method.
     base::StringPiece scheme;
     base::StringPiece host;
-    base::Optional<base::UnguessableToken> nonce_if_opaque;
+    absl::optional<base::UnguessableToken> nonce_if_opaque;
     if (!data.ReadScheme(&scheme) || !data.ReadHost(&host) ||
         !data.ReadNonceIfOpaque(&nonce_if_opaque))
       return false;

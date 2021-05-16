@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_IMAGE_TRACKING_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_IMAGE_TRACKING_RESULT_H_
 
-#include "base/optional.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -26,7 +26,7 @@ class XRImageTrackingResult : public ScriptWrappable {
       const device::mojom::blink::XRTrackedImageData& image_tracking_result);
 
   XRSpace* imageSpace() const;
-  base::Optional<TransformationMatrix> MojoFromObject() const;
+  absl::optional<TransformationMatrix> MojoFromObject() const;
 
   uint32_t index() { return index_; }
 
@@ -42,7 +42,7 @@ class XRImageTrackingResult : public ScriptWrappable {
   Member<XRSession> session_;
   uint32_t index_;
   String tracking_state_string_;
-  base::Optional<device::Pose> mojo_from_this_;
+  absl::optional<device::Pose> mojo_from_this_;
   float width_in_meters_;
 
   // Cached image space - it will be created by `imageSpace()` if it's not set.

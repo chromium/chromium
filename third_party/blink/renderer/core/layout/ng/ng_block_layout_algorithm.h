@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_LAYOUT_ALGORITHM_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
@@ -108,7 +108,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGInflowChildData& child_data,
       const LogicalSize child_available_size,
       bool is_new_fc,
-      const base::Optional<LayoutUnit> bfc_block_offset = base::nullopt,
+      const absl::optional<LayoutUnit> bfc_block_offset = absl::nullopt,
       bool has_clearance_past_adjoining_floats = false,
       LayoutUnit block_start_annotation_space = LayoutUnit());
 
@@ -122,7 +122,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGPreviousInflowPosition&,
       const NGLayoutInputNode child,
       const NGInflowChildData&,
-      const base::Optional<LayoutUnit>& child_bfc_block_offset,
+      const absl::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
       const NGLayoutResult&,
       const NGFragment&,
@@ -269,7 +269,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   bool ResolveBfcBlockOffset(
       NGPreviousInflowPosition*,
       LayoutUnit bfc_block_offset,
-      const base::Optional<LayoutUnit> forced_bfc_block_offset);
+      const absl::optional<LayoutUnit> forced_bfc_block_offset);
 
   // This passes in the |forced_bfc_block_offset| from the input constraints,
   // which is almost always desired.
@@ -320,7 +320,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   LogicalOffset CalculateLogicalOffset(
       const NGFragment& fragment,
       LayoutUnit child_bfc_line_offset,
-      const base::Optional<LayoutUnit>& child_bfc_block_offset);
+      const absl::optional<LayoutUnit>& child_bfc_block_offset);
 
   // In quirks mode the body element will stretch to fit the viewport.
   //
@@ -330,7 +330,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // This block-direction margin is non-trivial to calculate for the body
   // element, and is computed upfront for the |ClampIntrinsicBlockSize|
   // function.
-  base::Optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
+  absl::optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
       const NGMarginStrut& end_margin_strut);
 
   // Return true if this is a list-item that may have to place a marker.
@@ -409,13 +409,13 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   // If set, this is the number of lines until a clamp. A value of 1 indicates
   // the current line should be clamped. This may go negative.
-  base::Optional<int> lines_until_clamp_;
+  absl::optional<int> lines_until_clamp_;
 
   NGExclusionSpace exclusion_space_;
 
   // If set, one of the lines was clamped and this is the intrinsic size at the
   // time of the clamp.
-  base::Optional<LayoutUnit> intrinsic_block_size_when_clamped_;
+  absl::optional<LayoutUnit> intrinsic_block_size_when_clamped_;
 };
 
 }  // namespace blink

@@ -103,7 +103,7 @@ void SecurityContextInit::ApplyDocumentPolicy(
   // yet (|document_| field in current frame is not yet initialized yet).
   DocumentPolicy::ParsedDocumentPolicy report_only_document_policy;
   PolicyParserMessageBuffer logger("%s", /* discard_message */ true);
-  base::Optional<DocumentPolicy::ParsedDocumentPolicy>
+  absl::optional<DocumentPolicy::ParsedDocumentPolicy>
       report_only_parsed_policy = DocumentPolicyParser::Parse(
           report_only_document_policy_header, logger);
   if (report_only_parsed_policy) {
@@ -121,7 +121,7 @@ void SecurityContextInit::ApplyDocumentPolicy(
 void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame* frame,
     const ResourceResponse& response,
-    const base::Optional<WebOriginPolicy>& origin_policy,
+    const absl::optional<WebOriginPolicy>& origin_policy,
     const FramePolicy& frame_policy) {
   // If we are a HTMLViewSourceDocument we use container, header or
   // inherited policies. https://crbug.com/898688.

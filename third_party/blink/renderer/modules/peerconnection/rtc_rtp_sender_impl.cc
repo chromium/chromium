@@ -617,13 +617,13 @@ webrtc::RTCError RTCRtpSenderOnlyTransceiver::SetDirection(
   return webrtc::RTCError::OK();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpSenderOnlyTransceiver::CurrentDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpSenderOnlyTransceiver::FiredDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;

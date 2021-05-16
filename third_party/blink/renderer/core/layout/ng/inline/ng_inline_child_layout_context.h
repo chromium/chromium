@@ -71,7 +71,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   NGLogicalLineItems logical_line_items_;
 
-  base::Optional<NGInlineLayoutStateStack> box_states_;
+  absl::optional<NGInlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.
   const Vector<NGInlineItem>* items_ = nullptr;

@@ -62,18 +62,18 @@ class MODULES_EXPORT MediaCapabilities final
     PendingCallbackState(ScriptPromiseResolver* resolver,
                          MediaKeySystemAccess* access,
                          const base::TimeTicks& request_time,
-                         base::Optional<IdentifiableToken> input_token);
+                         absl::optional<IdentifiableToken> input_token);
     virtual void Trace(blink::Visitor* visitor) const;
 
     Member<ScriptPromiseResolver> resolver;
     Member<MediaKeySystemAccess> key_system_access;
-    base::Optional<bool> is_bad_window_prediction_smooth;
-    base::Optional<bool> is_nnr_prediction_smooth;
-    base::Optional<bool> db_is_smooth;
-    base::Optional<bool> db_is_power_efficient;
-    base::Optional<bool> is_gpu_factories_supported;
+    absl::optional<bool> is_bad_window_prediction_smooth;
+    absl::optional<bool> is_nnr_prediction_smooth;
+    absl::optional<bool> db_is_smooth;
+    absl::optional<bool> db_is_power_efficient;
+    absl::optional<bool> is_gpu_factories_supported;
     base::TimeTicks request_time;
-    base::Optional<IdentifiableToken> input_token;
+    absl::optional<IdentifiableToken> input_token;
   };
 
   // Lazily binds remote LearningTaskControllers for ML smoothness predictions
@@ -126,12 +126,12 @@ class MODULES_EXPORT MediaCapabilities final
   // Callback for predictions from |bad_window_predictor_|.
   void OnBadWindowPrediction(
       int callback_id,
-      const base::Optional<::media::learning::TargetHistogram>& histogram);
+      const absl::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for predictions from |nnr_predictor_|.
   void OnNnrPrediction(
       int callback_id,
-      const base::Optional<::media::learning::TargetHistogram>& histogram);
+      const absl::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for GetGpuFactoriesSupport().
   void OnGpuFactoriesSupport(int callback_id, bool is_supported);

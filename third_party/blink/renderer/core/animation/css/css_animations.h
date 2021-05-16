@@ -229,7 +229,7 @@ class CORE_EXPORT CSSAnimations final {
         Element* animation_target,
         const AtomicString& name,
         Timing::Phase previous_phase = Timing::kPhaseNone,
-        base::Optional<double> previous_iteration = base::nullopt)
+        absl::optional<double> previous_iteration = absl::nullopt)
         : animation_target_(animation_target),
           name_(name),
           previous_phase_(previous_phase),
@@ -239,7 +239,7 @@ class CORE_EXPORT CSSAnimations final {
 
     bool IsAnimationEventDelegate() const override { return true; }
     Timing::Phase getPreviousPhase() const { return previous_phase_; }
-    base::Optional<double> getPreviousIteration() const {
+    absl::optional<double> getPreviousIteration() const {
       return previous_iteration_;
     }
 
@@ -256,7 +256,7 @@ class CORE_EXPORT CSSAnimations final {
     Member<Element> animation_target_;
     const AtomicString name_;
     Timing::Phase previous_phase_;
-    base::Optional<double> previous_iteration_;
+    absl::optional<double> previous_iteration_;
   };
 
   class TransitionEventDelegate final : public AnimationEffect::EventDelegate {

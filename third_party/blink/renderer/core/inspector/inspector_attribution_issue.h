@@ -23,11 +23,11 @@ class LocalFrame;
 void ReportAttributionIssue(
     LocalFrame* reporting_frame,
     mojom::blink::AttributionReportingIssueType type,
-    const base::Optional<base::UnguessableToken>& offending_frame_token =
-        base::nullopt,
+    const absl::optional<base::UnguessableToken>& offending_frame_token =
+        absl::nullopt,
     Element* element = nullptr,
-    const base::Optional<String>& request_id = base::nullopt,
-    const base::Optional<String>& invalid_parameter = base::nullopt);
+    const absl::optional<String>& request_id = absl::nullopt,
+    const absl::optional<String>& invalid_parameter = absl::nullopt);
 
 }  // namespace blink
 

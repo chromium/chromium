@@ -196,7 +196,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
         table_writing_direction, cell, cell_borders,
         {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
-        /* alignment_baseline */ base::nullopt, start_column,
+        /* alignment_baseline */ absl::nullopt, start_column,
         /* is_fixed_block_size_indefinite */ false,
         is_table_block_size_specified,
         /* is_hidden_for_paint */ false, has_collapsed_borders,
@@ -208,7 +208,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
   // will be cached. Needs to be fixed in NG framework.
 
   LayoutUnit max_cell_block_size;
-  base::Optional<float> row_percent;
+  absl::optional<float> row_percent;
   bool is_constrained = false;
   bool is_empty = true;
   bool has_rowspan_start = false;
@@ -251,8 +251,8 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         layout_result->HasDescendantThatDependsOnPercentageBlockSize());
 
     // Compute cell's css block size.
-    base::Optional<LayoutUnit> cell_css_block_size;
-    base::Optional<float> cell_css_percent;
+    absl::optional<LayoutUnit> cell_css_block_size;
+    absl::optional<float> cell_css_percent;
     const Length& cell_specified_block_length =
         is_parallel ? cell_style.LogicalHeight() : cell_style.LogicalWidth();
 
@@ -336,7 +336,7 @@ class ColumnConstraintsBuilder {
         NGTableTypes::CreateColumn(column.Style(),
                                    !is_fixed_layout_ && colgroup_constraint_
                                        ? colgroup_constraint_->max_inline_size
-                                       : base::nullopt,
+                                       : absl::nullopt,
                                    is_fixed_layout_);
     for (wtf_size_t i = 0; i < span; ++i)
       column_constraints_->data.push_back(col_constraint);
@@ -346,7 +346,7 @@ class ColumnConstraintsBuilder {
   void EnterColgroup(const NGLayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {
     colgroup_constraint_ = NGTableTypes::CreateColumn(
-        colgroup.Style(), base::nullopt, is_fixed_layout_);
+        colgroup.Style(), absl::nullopt, is_fixed_layout_);
   }
 
   void LeaveColgroup(const NGLayoutInputNode& colgroup,
@@ -371,7 +371,7 @@ class ColumnConstraintsBuilder {
  private:
   NGTableTypes::Columns* column_constraints_;
   bool is_fixed_layout_;
-  base::Optional<NGTableTypes::Column> colgroup_constraint_;
+  absl::optional<NGTableTypes::Column> colgroup_constraint_;
 };
 
 // Computes constraints specified on column elements.
@@ -428,7 +428,7 @@ void ComputeSectionInlineConstraints(
                                                      is_fixed_layout,
                                                      cell_border, cell_padding);
         if (colspan == 1) {
-          base::Optional<NGTableTypes::CellInlineConstraint>& constraint =
+          absl::optional<NGTableTypes::CellInlineConstraint>& constraint =
               (*cell_inline_constraints)[colspan_cell_tabulator
                                              .CurrentColumn()];
           // Standard cell, update final column inline size values.
@@ -459,7 +459,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
     const NGBoxStrut& cell_borders,
     LogicalSize cell_size,
     LayoutUnit percentage_inline_size,
-    base::Optional<LayoutUnit> alignment_baseline,
+    absl::optional<LayoutUnit> alignment_baseline,
     wtf_size_t column_index,
     bool is_fixed_block_size_indefinite,
     bool is_table_block_size_specified,

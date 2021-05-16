@@ -41,7 +41,7 @@ XRSpace* XRLightProbe::probeSpace() const {
   return probe_space_;
 }
 
-base::Optional<TransformationMatrix> XRLightProbe::MojoFromObject() const {
+absl::optional<TransformationMatrix> XRLightProbe::MojoFromObject() const {
   // For the moment we're making an assumption that the lighting estimations
   // are always generated from the local space origin. This is the case for
   // ARCore, but will need to be made more flexible as other runtimes or methods

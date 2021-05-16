@@ -11,11 +11,11 @@
 
 namespace blink {
 
-base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
+absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
     const LayoutObject& object,
     const PhysicalOffset& paint_offset) {
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
-    return base::nullopt;
+    return absl::nullopt;
 
   const ComputedStyle& style = object.StyleRef();
   if (object.IsSVG()) {
@@ -34,10 +34,10 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   }
 
   if (object.IsSVGChild() && !object.IsSVGForeignObject())
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!style.HasMask())
-    return base::nullopt;
+    return absl::nullopt;
 
   PhysicalRect maximum_mask_region;
   // For HTML/CSS objects, the extent of the mask is known as "mask

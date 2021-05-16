@@ -618,7 +618,7 @@ TEST_F(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   ImageBitmap* image_bitmap_derived = nullptr;
   {
     const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-    base::Optional<IntRect> crop_rect =
+    absl::optional<IntRect> crop_rect =
         IntRect(0, 0, canvas->width(), canvas->height());
     auto* image_bitmap_from_canvas =
         MakeGarbageCollected<ImageBitmap>(canvas, crop_rect, default_options);

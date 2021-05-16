@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -38,7 +38,7 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_request_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_request_headers,
-      const base::Optional<GURL>& new_url) override {
+      const absl::optional<GURL>& new_url) override {
     DCHECK(removed_headers.empty() && modified_request_headers.IsEmpty() &&
            modified_cors_exempt_request_headers.IsEmpty())
         << "Redirect with removed or modified headers was not supported yet. "
@@ -48,7 +48,7 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
            "crbug.com/845683";
     loader_sink_->FollowRedirect(
         {} /* removed_headers */, {} /* modified_headers */,
-        {} /* modified_cors_exempt_headers */, base::nullopt /* new_url */);
+        {} /* modified_cors_exempt_headers */, absl::nullopt /* new_url */);
   }
 
   void SetPriority(net::RequestPriority priority,

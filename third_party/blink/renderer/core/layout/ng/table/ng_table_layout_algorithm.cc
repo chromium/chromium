@@ -384,7 +384,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
     const NGBoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
   // Tables need autosizer.
-  base::Optional<TextAutosizer::TableLayoutScope> text_autosizer;
+  absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
     text_autosizer.emplace(To<LayoutNGTable>(table.GetLayoutBox()));
 
@@ -564,7 +564,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) const {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   // Tables need autosizer.
-  base::Optional<TextAutosizer::TableLayoutScope> text_autosizer;
+  absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
   if (!is_fixed_layout)
     text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
 
@@ -816,7 +816,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
       border_padding.inline_start + border_spacing.inline_size;
   section_offset.block_offset = block_offset + border_padding.block_start;
 
-  base::Optional<LayoutUnit> table_baseline;
+  absl::optional<LayoutUnit> table_baseline;
   wtf_size_t section_index = 0;
   bool needs_end_border_spacing = false;
   for (NGBlockNode section : grouped_children) {

@@ -101,7 +101,7 @@ void ServiceWorker::postMessage(ScriptState* script_state,
   if (msg.message->IsLockedToAgentCluster()) {
     msg.locked_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
   } else {
-    msg.locked_agent_cluster_id = base::nullopt;
+    msg.locked_agent_cluster_id = absl::nullopt;
   }
 
   host_->PostMessageToServiceWorker(std::move(msg));

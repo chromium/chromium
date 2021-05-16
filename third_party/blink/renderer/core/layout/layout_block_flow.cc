@@ -2555,7 +2555,7 @@ LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
   NOT_DESTROYED();
   if (!ChildrenInline())
     return LayoutBlock::FirstLineBoxBaseline();
-  if (const base::Optional<LayoutUnit> baseline =
+  if (const absl::optional<LayoutUnit> baseline =
           FirstLineBoxBaselineOverride())
     return *baseline;
   if (FirstLineBox()) {
@@ -2585,7 +2585,7 @@ LayoutUnit LayoutBlockFlow::InlineBlockBaseline(
   NOT_DESTROYED();
   if (!ChildrenInline())
     return LayoutBlock::InlineBlockBaseline(line_direction);
-  if (const base::Optional<LayoutUnit> baseline =
+  if (const absl::optional<LayoutUnit> baseline =
           InlineBlockBaselineOverride(line_direction))
     return *baseline;
   if (LastLineBox()) {

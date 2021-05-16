@@ -57,7 +57,7 @@ class MainThreadTest : public testing::Test {
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .SetTickClock(&clock_)
                 .Build()),
-        base::nullopt);
+        absl::nullopt);
     scheduler_overrider_ =
         std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
     thread_ = Thread::Current();

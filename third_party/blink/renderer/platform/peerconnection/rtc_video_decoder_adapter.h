@@ -169,7 +169,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   int32_t current_resolution_ = 0;
   // Time since construction.  Cleared when we record that a frame has been
   // successfully decoded.
-  base::Optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
+  absl::optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
 
   // Thread management.
   SEQUENCE_CHECKER(media_sequence_checker_);

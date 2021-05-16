@@ -11,10 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -45,11 +45,11 @@ WTF::String StructTraits<
 }
 
 // static
-base::Optional<blink::KURL> StructTraits<
+absl::optional<blink::KURL> StructTraits<
     blink::mojom::DragItemStringDataView,
     blink::WebDragData::Item>::base_url(const blink::WebDragData::Item& item) {
   if (item.base_url.IsNull())
-    return base::nullopt;
+    return absl::nullopt;
   return item.base_url;
 }
 
@@ -60,7 +60,7 @@ bool StructTraits<
                                     blink::WebDragData::Item* out) {
   blink::WebDragData::Item item;
   WTF::String string_type, string_data, title;
-  base::Optional<blink::KURL> url;
+  absl::optional<blink::KURL> url;
   if (!data.ReadStringType(&string_type) ||
       !data.ReadStringData(&string_data) || !data.ReadTitle(&title) ||
       !data.ReadBaseUrl(&url))

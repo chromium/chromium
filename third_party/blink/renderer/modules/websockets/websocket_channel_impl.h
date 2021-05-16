@@ -330,7 +330,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   void HandleDidClose(bool was_clean, uint16_t code, const String& reason);
 
   // Completion callback. It is called with the results of throttling.
-  void OnCompletion(const base::Optional<WebString>& error);
+  void OnCompletion(const absl::optional<WebString>& error);
 
   // Methods for BlobLoader.
   void DidFinishLoadingBlob(MessageData, size_t);

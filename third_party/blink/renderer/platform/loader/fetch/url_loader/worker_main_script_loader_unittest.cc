@@ -93,7 +93,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     void FollowRedirect(const std::vector<std::string>&,
                         const net::HttpRequestHeaders&,
                         const net::HttpRequestHeaders&,
-                        const base::Optional<GURL>&) override {}
+                        const absl::optional<GURL>&) override {}
     void SetPriority(net::RequestPriority priority,
                      int32_t intra_priority_value) override {}
     void PauseReadingBodyFromNet() override {}

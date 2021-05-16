@@ -101,10 +101,10 @@ std::unique_ptr<RTCRtpTransceiverPlatform> CreateDefaultTransceiver(
   if (implementation_type ==
       RTCRtpTransceiverPlatformImplementationType::kFullTransceiver) {
     transceiver = std::make_unique<blink::FakeRTCRtpTransceiverImpl>(
-        base::nullopt, std::move(sender), std::move(receiver),
+        absl::nullopt, std::move(sender), std::move(receiver),
         false /* stopped */,
         webrtc::RtpTransceiverDirection::kSendOnly /* direction */,
-        base::nullopt /* current_direction */);
+        absl::nullopt /* current_direction */);
   } else if (implementation_type ==
              RTCRtpTransceiverPlatformImplementationType::kPlanBSenderOnly) {
     transceiver = std::make_unique<blink::RTCRtpSenderOnlyTransceiver>(
@@ -321,16 +321,16 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
   blink::FakeRTCRtpTransceiverImpl transceiver(
-      base::nullopt,
+      absl::nullopt,
       blink::FakeRTCRtpSenderImpl(
-          base::nullopt, {},
+          absl::nullopt, {},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
       blink::FakeRTCRtpReceiverImpl(
           "receiverTrackId", {},
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
       false /* stopped */,
       webrtc::RtpTransceiverDirection::kInactive /* direction */,
-      base::nullopt /* current_direction */);
+      absl::nullopt /* current_direction */);
   String update_value;
   EXPECT_CALL(*mock_host_,
               UpdatePeerConnection(_, String("transceiverAdded"), _))

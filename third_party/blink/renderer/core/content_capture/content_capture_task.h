@@ -144,8 +144,8 @@ class CORE_EXPORT ContentCaptureTask
   std::unique_ptr<TaskDelay> task_delay_;
 
   scoped_refptr<ContentCaptureTaskHistogramReporter> histogram_reporter_;
-  base::Optional<TaskState> task_stop_for_testing_;
-  base::Optional<Vector<cc::NodeInfo>> captured_content_for_testing_;
+  absl::optional<TaskState> task_stop_for_testing_;
+  absl::optional<Vector<cc::NodeInfo>> captured_content_for_testing_;
 };
 
 }  // namespace blink

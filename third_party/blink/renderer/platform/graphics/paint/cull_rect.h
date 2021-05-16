@@ -62,7 +62,7 @@ class PLATFORM_EXPORT CullRect {
   // TODO(wangxianzhu): Remove this function for CullRectUpdate.
   void ApplyTransforms(const TransformPaintPropertyNode& source,
                        const TransformPaintPropertyNode& destination,
-                       const base::Optional<CullRect>& old_cull_rect);
+                       const absl::optional<CullRect>& old_cull_rect);
 
   // For CullRectUpdate only. Similar to the above but also applies clips and
   // expands for all directly composited transforms (including scrolling and
@@ -73,7 +73,7 @@ class PLATFORM_EXPORT CullRect {
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
-                            const base::Optional<CullRect>& old_cull_rect);
+                            const absl::optional<CullRect>& old_cull_rect);
 
   const IntRect& Rect() const { return rect_; }
 

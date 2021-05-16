@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 
-#include "base/optional.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
@@ -143,9 +143,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   // Used when preemptive link generation is enabled to report
   // whether |RequestSelector| was called before or after selector was ready.
-  base::Optional<bool> selector_requested_before_ready_;
+  absl::optional<bool> selector_requested_before_ready_;
 
-  base::Optional<shared_highlighting::LinkGenerationError> error_;
+  absl::optional<shared_highlighting::LinkGenerationError> error_;
 
   // Fields used for keeping track of context.
 

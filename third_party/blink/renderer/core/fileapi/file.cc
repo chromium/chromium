@@ -224,7 +224,7 @@ File::File(const String& path,
            UserVisibility user_visibility,
            bool has_snapshot_data,
            uint64_t size,
-           const base::Optional<base::Time>& last_modified,
+           const absl::optional<base::Time>& last_modified,
            scoped_refptr<BlobDataHandle> blob_data_handle)
     : Blob(std::move(blob_data_handle)),
       has_backing_file_(!path.IsEmpty() || !relative_path.IsEmpty()),
@@ -238,7 +238,7 @@ File::File(const String& path,
 }
 
 File::File(const String& name,
-           const base::Optional<base::Time>& modification_time,
+           const absl::optional<base::Time>& modification_time,
            scoped_refptr<BlobDataHandle> blob_data_handle)
     : Blob(std::move(blob_data_handle)),
       has_backing_file_(false),
@@ -323,7 +323,7 @@ ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
                      ToV8(LastModifiedTime(), script_state));
 }
 
-base::Optional<base::Time> File::LastModifiedTimeForSerialization() const {
+absl::optional<base::Time> File::LastModifiedTimeForSerialization() const {
   CaptureSnapshotIfNeeded();
 
   return snapshot_modification_time_;

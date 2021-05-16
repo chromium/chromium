@@ -79,7 +79,7 @@ class CORE_EXPORT MixedContentChecker final {
                                const KURL& url_before_redirects,
                                ResourceRequest::RedirectStatus redirect_status,
                                const KURL& url,
-                               const base::Optional<String>& devtools_id,
+                               const absl::optional<String>& devtools_id,
                                ReportingDisposition reporting_disposition,
                                mojom::blink::ContentSecurityNotifier& notifier);
 

@@ -343,7 +343,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
-  base::Optional<PhysicalRect> ink_overflow =
+  absl::optional<PhysicalRect> ink_overflow =
       ComputeTextInkOverflow(text_info, style, size);
   if (!ink_overflow) {
     *ink_overflow_out = {PhysicalOffset(), size};
@@ -354,7 +354,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
 }
 
 // static
-base::Optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
+absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalSize& size) {
@@ -414,7 +414,7 @@ base::Optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   // Uniting the frame rect ensures that non-ink spaces such side bearings, or
   // even space characters, are included in the visual rect for decorations.
   if (!HasOverflow(local_ink_overflow, size))
-    return base::nullopt;
+    return absl::nullopt;
 
   local_ink_overflow.Unite({{}, size});
   local_ink_overflow.ExpandEdgesToPixelBoundaries();
@@ -433,7 +433,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   PhysicalOffset offset;
   TextDecorationInfo decoration_info(offset, offset, ink_overflow.Width(),
                                      style.GetFontBaseline(), style,
-                                     base::nullopt, nullptr);
+                                     absl::nullopt, nullptr);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
                                            nullptr);
   const Vector<AppliedTextDecoration>& decorations =

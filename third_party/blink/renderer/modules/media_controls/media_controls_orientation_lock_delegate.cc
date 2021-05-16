@@ -158,7 +158,7 @@ void MediaControlsOrientationLockDelegate::MaybeListenToDeviceOrientation() {
   if (!RuntimeEnabledFeatures::VideoRotateToFullscreenEnabled())
     return;
 
-  if (is_auto_rotate_enabled_by_user_override_for_testing_ != base::nullopt) {
+  if (is_auto_rotate_enabled_by_user_override_for_testing_ != absl::nullopt) {
     GotIsAutoRotateEnabledByUser(
         is_auto_rotate_enabled_by_user_override_for_testing_.value());
     return;

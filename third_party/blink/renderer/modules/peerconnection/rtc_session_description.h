@@ -54,7 +54,7 @@ class RTCSessionDescription final : public ScriptWrappable {
   explicit RTCSessionDescription(RTCSessionDescriptionPlatform*);
 
   String type() const;
-  void setType(base::Optional<V8RTCSdpType> type);
+  void setType(absl::optional<V8RTCSdpType> type);
 
   String sdp() const;
   void setSdp(const String&);

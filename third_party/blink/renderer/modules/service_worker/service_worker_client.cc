@@ -115,7 +115,7 @@ void ServiceWorkerClient::postMessage(ScriptState* script_state,
   if (msg.message->IsLockedToAgentCluster()) {
     msg.locked_agent_cluster_id = context->GetAgentClusterID();
   } else {
-    msg.locked_agent_cluster_id = base::nullopt;
+    msg.locked_agent_cluster_id = absl::nullopt;
   }
 
   To<ServiceWorkerGlobalScope>(context)

@@ -386,7 +386,7 @@ FetchResponseData::FetchResponseData(Type type,
       has_range_requested_(false) {}
 
 void FetchResponseData::SetAuthChallengeInfo(
-    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+    const absl::optional<net::AuthChallengeInfo>& auth_challenge_info) {
   if (auth_challenge_info) {
     auth_challenge_info_ =
         std::make_unique<net::AuthChallengeInfo>(*auth_challenge_info);

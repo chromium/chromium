@@ -1477,13 +1477,13 @@ struct NativeValueTraits<
     : public NativeValueTraitsBase<IDLNullable<InnerType>> {
   // https://heycam.github.io/webidl/#es-nullable-type
   using ImplType =
-      base::Optional<typename NativeValueTraits<InnerType>::ImplType>;
+      absl::optional<typename NativeValueTraits<InnerType>::ImplType>;
 
   static ImplType NativeValue(v8::Isolate* isolate,
                               v8::Local<v8::Value> value,
                               ExceptionState& exception_state) {
     if (value->IsNullOrUndefined())
-      return base::nullopt;
+      return absl::nullopt;
     return NativeValueTraits<InnerType>::NativeValue(isolate, value,
                                                      exception_state);
   }
@@ -1493,7 +1493,7 @@ struct NativeValueTraits<
                                 v8::Local<v8::Value> value,
                                 ExceptionState& exception_state) {
     if (value->IsNullOrUndefined())
-      return base::nullopt;
+      return absl::nullopt;
     return NativeValueTraits<InnerType>::ArgumentValue(isolate, argument_index,
                                                        value, exception_state);
   }
@@ -1559,7 +1559,7 @@ template <>
 struct CORE_EXPORT NativeValueTraits<IDLDate>
     : public NativeValueTraitsBase<IDLDate> {
   // IDLDate must be always used as IDLNullable<IDLDate>.
-  static base::Optional<base::Time> NativeValue(
+  static absl::optional<base::Time> NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) = delete;
@@ -1568,7 +1568,7 @@ struct CORE_EXPORT NativeValueTraits<IDLDate>
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDate>>
     : public NativeValueTraitsBase<IDLNullable<IDLDate>> {
-  static base::Optional<base::Time> NativeValue(
+  static absl::optional<base::Time> NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {

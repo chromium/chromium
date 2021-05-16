@@ -142,7 +142,7 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
                                 LayoutObject* layout_object) {
   // This is a universal approach to find the containing layer, but it is
   // slower.
-  base::Optional<LayoutObject::AncestorSkipInfo> skip_info;
+  absl::optional<LayoutObject::AncestorSkipInfo> skip_info;
   if (skipped_ancestor)
     skip_info.emplace(&ancestor->GetLayoutObject());
   while (auto* container = layout_object->Container(
@@ -1820,7 +1820,7 @@ void PaintLayer::CollectFragments(
         root_layer, root_fragment_data, overlay_scrollbar_clip_behavior,
         respect_overflow_clip, sub_pixel_accumulation);
 
-    base::Optional<CullRect> fragment_cull_rect;
+    absl::optional<CullRect> fragment_cull_rect;
     if (cull_rect) {
       // |cull_rect| is in the coordinate space of |root_layer| (i.e. the
       // space of |root_layer|'s first fragment). Map the rect to the space of
@@ -2139,7 +2139,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   // The natural thing would be to keep HitTestingTransformState on the stack,
   // but it's big, so we heap-allocate.
   HitTestingTransformState* local_transform_state = nullptr;
-  STACK_UNINITIALIZED base::Optional<HitTestingTransformState> storage;
+  STACK_UNINITIALIZED absl::optional<HitTestingTransformState> storage;
 
   if (applied_transform) {
     // We computed the correct state in the caller (above code), so just
@@ -2167,7 +2167,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
   }
 
   HitTestingTransformState* unflattened_transform_state = local_transform_state;
-  STACK_UNINITIALIZED base::Optional<HitTestingTransformState>
+  STACK_UNINITIALIZED absl::optional<HitTestingTransformState>
       unflattened_storage;
   if (local_transform_state && !Preserves3D()) {
     // Keep a copy of the pre-flattening state, for computing z-offsets for the
@@ -2199,7 +2199,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
 
   // Collect the fragments. This will compute the clip rectangles for each
   // layer fragment.
-  STACK_UNINITIALIZED base::Optional<PaintLayerFragments> layer_fragments;
+  STACK_UNINITIALIZED absl::optional<PaintLayerFragments> layer_fragments;
   if (recursion_data.intersects_location) {
     layer_fragments.emplace();
     if (applied_transform) {
@@ -2457,7 +2457,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
   // been flattened (losing z) by our container.
   FloatPoint local_point = new_transform_state.MappedPoint();
   PhysicalRect bounds_of_mapped_area = new_transform_state.BoundsOfMappedArea();
-  base::Optional<HitTestLocation> new_location;
+  absl::optional<HitTestLocation> new_location;
   if (recursion_data.location.IsRectBasedTest())
     new_location.emplace(local_point, new_transform_state.MappedQuad());
   else
@@ -3875,7 +3875,7 @@ void showLayerTree(const blink::PaintLayer* layer) {
     return;
   }
 
-  base::Optional<blink::DisableCompositingQueryAsserts> disabler;
+  absl::optional<blink::DisableCompositingQueryAsserts> disabler;
   if (!blink::RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     disabler.emplace();
 

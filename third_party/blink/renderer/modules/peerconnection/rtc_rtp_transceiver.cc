@@ -39,16 +39,16 @@ String TransceiverDirectionToString(
 }
 
 String OptionalTransceiverDirectionToString(
-    const base::Optional<webrtc::RtpTransceiverDirection>& direction) {
+    const absl::optional<webrtc::RtpTransceiverDirection>& direction) {
   return direction ? TransceiverDirectionToString(*direction)
                    : String();  // null
 }
 
 bool TransceiverDirectionFromString(
     const String& direction_string,
-    base::Optional<webrtc::RtpTransceiverDirection>* direction_out) {
+    absl::optional<webrtc::RtpTransceiverDirection>* direction_out) {
   if (!direction_string) {
-    *direction_out = base::nullopt;
+    *direction_out = absl::nullopt;
     return true;
   }
   if (direction_string == "sendrecv") {
@@ -77,7 +77,7 @@ bool OptionalTransceiverDirectionFromStringWithStopped(
     *direction_out = webrtc::RtpTransceiverDirection::kStopped;
     return true;
   }
-  base::Optional<webrtc::RtpTransceiverDirection> base_direction;
+  absl::optional<webrtc::RtpTransceiverDirection> base_direction;
   bool result =
       TransceiverDirectionFromString(direction_string, &base_direction);
   if (base_direction)
@@ -91,7 +91,7 @@ webrtc::RtpTransceiverInit ToRtpTransceiverInit(
     ExecutionContext* context,
     const RTCRtpTransceiverInit* init) {
   webrtc::RtpTransceiverInit webrtc_init;
-  base::Optional<webrtc::RtpTransceiverDirection> direction;
+  absl::optional<webrtc::RtpTransceiverDirection> direction;
   if (init->hasDirection() &&
       TransceiverDirectionFromString(init->direction(), &direction) &&
       direction) {
@@ -118,7 +118,7 @@ RTCRtpTransceiver::RTCRtpTransceiver(
       platform_transceiver_(std::move(platform_transceiver)),
       sender_(sender),
       receiver_(receiver),
-      fired_direction_(base::nullopt) {
+      fired_direction_(absl::nullopt) {
   DCHECK(pc_);
   DCHECK(platform_transceiver_);
   DCHECK(sender_);
@@ -150,7 +150,7 @@ String RTCRtpTransceiver::direction() const {
 
 void RTCRtpTransceiver::setDirection(String direction,
                                      ExceptionState& exception_state) {
-  base::Optional<webrtc::RtpTransceiverDirection> webrtc_direction;
+  absl::optional<webrtc::RtpTransceiverDirection> webrtc_direction;
   if (!TransceiverDirectionFromString(direction, &webrtc_direction) ||
       !webrtc_direction) {
     exception_state.ThrowTypeError("Invalid RTCRtpTransceiverDirection.");
@@ -198,7 +198,7 @@ RTCRtpTransceiverPlatform* RTCRtpTransceiver::platform_transceiver() const {
   return platform_transceiver_.get();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpTransceiver::fired_direction() const {
   return fired_direction_;
 }

@@ -353,7 +353,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     return false;
   }
 
-  base::Optional<AXSelection::TextControlSelection> text_control_selection =
+  absl::optional<AXSelection::TextControlSelection> text_control_selection =
       AsTextControlSelection();
   if (text_control_selection.has_value()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
@@ -427,7 +427,7 @@ String AXSelection::ToString() const {
   return "AXSelection from " + Base().ToString() + " to " + Extent().ToString();
 }
 
-base::Optional<AXSelection::TextControlSelection>
+absl::optional<AXSelection::TextControlSelection>
 AXSelection::AsTextControlSelection() const {
   if (!IsValid() || !base_.IsTextPosition() || !extent_.IsTextPosition() ||
       base_.ContainerObject() != extent_.ContainerObject()) {

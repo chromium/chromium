@@ -31,7 +31,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sql_transaction_callback.h"
@@ -159,7 +159,7 @@ class SQLTransaction final : public ScriptWrappable,
   void executeSql(ScriptState*, const String& sql_statement, ExceptionState&);
   void executeSql(ScriptState*,
                   const String& sql_statement,
-                  const base::Optional<HeapVector<ScriptValue>>& arguments,
+                  const absl::optional<HeapVector<ScriptValue>>& arguments,
                   V8SQLStatementCallback*,
                   V8SQLStatementErrorCallback*,
                   ExceptionState&);

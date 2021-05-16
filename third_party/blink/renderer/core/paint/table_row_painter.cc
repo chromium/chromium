@@ -126,7 +126,7 @@ void TableRowPainter::PaintBoxDecorationBackground(
 void TableRowPainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                             const CellSpan& dirtied_columns) {
   ScopedPaintState paint_state(layout_table_row_, paint_info);
-  base::Optional<BoxDrawingRecorder> recorder;
+  absl::optional<BoxDrawingRecorder> recorder;
 
   HandleChangedPartialPaint(paint_info, dirtied_columns);
 

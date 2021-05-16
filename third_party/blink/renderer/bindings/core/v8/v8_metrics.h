@@ -45,7 +45,7 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
   };
 
   Document* GetDocument(ContextId context_id);
-  base::Optional<UkmRecorderAndSourceId> GetUkmRecorderAndSourceId(
+  absl::optional<UkmRecorderAndSourceId> GetUkmRecorderAndSourceId(
       ContextId context_id);
 
   v8::Isolate* isolate_;

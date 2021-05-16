@@ -347,7 +347,7 @@ void SQLTransaction::executeSql(ScriptState* script_state,
 void SQLTransaction::executeSql(
     ScriptState* script_state,
     const String& sql_statement,
-    const base::Optional<HeapVector<ScriptValue>>& arguments,
+    const absl::optional<HeapVector<ScriptValue>>& arguments,
     V8SQLStatementCallback* callback,
     V8SQLStatementErrorCallback* callback_error,
     ExceptionState& exception_state) {

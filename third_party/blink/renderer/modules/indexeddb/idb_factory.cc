@@ -139,7 +139,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override {
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override {
     NOTREACHED();
   }
 
@@ -173,7 +173,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> value) override {
+      absl::optional<std::unique_ptr<IDBValue>> value) override {
     NOTREACHED();
   }
 
@@ -199,7 +199,7 @@ class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
 
  private:
   probe::AsyncTaskId async_task_id_;
-  base::Optional<probe::AsyncTask> async_task_;
+  absl::optional<probe::AsyncTask> async_task_;
   Persistent<ScriptPromiseResolver> promise_resolver_;
 };
 

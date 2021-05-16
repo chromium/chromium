@@ -32,7 +32,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -88,12 +88,12 @@ class TokenPreloadScanner {
   void Scan(const HTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
-            base::Optional<ViewportDescription>*,
+            absl::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
   void Scan(const CompactHTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
-            base::Optional<ViewportDescription>*,
+            absl::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
   void SetPredictedBaseElementURL(const KURL& url) {
@@ -112,7 +112,7 @@ class TokenPreloadScanner {
   inline void ScanCommon(const Token&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
-                         base::Optional<ViewportDescription>*,
+                         absl::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
   template <typename Token>
@@ -188,7 +188,7 @@ class CORE_EXPORT HTMLPreloadScanner {
 
   void AppendToEnd(const SegmentedString&);
   PreloadRequestStream Scan(const KURL& document_base_element_url,
-                            base::Optional<ViewportDescription>*,
+                            absl::optional<ViewportDescription>*,
                             bool& has_csp_meta_tag);
 
  private:

@@ -54,7 +54,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   SVGUnitTypes::SVGUnitType ClipPathUnits() const;
   AffineTransform CalculateClipTransform(const FloatRect& reference_box) const;
 
-  base::Optional<Path> AsPath();
+  absl::optional<Path> AsPath();
   sk_sp<const PaintRecord> CreatePaintRecord();
 
  private:

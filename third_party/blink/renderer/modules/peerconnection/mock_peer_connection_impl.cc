@@ -238,10 +238,10 @@ FakeRtpTransceiver::FakeRtpTransceiver(
     cricket::MediaType media_type,
     rtc::scoped_refptr<FakeRtpSender> sender,
     rtc::scoped_refptr<FakeRtpReceiver> receiver,
-    base::Optional<std::string> mid,
+    absl::optional<std::string> mid,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    base::Optional<webrtc::RtpTransceiverDirection> current_direction)
+    absl::optional<webrtc::RtpTransceiverDirection> current_direction)
     : media_type_(media_type),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),

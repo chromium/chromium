@@ -41,7 +41,7 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
 
   MainThreadSchedulerImplForTest(
       std::unique_ptr<base::sequence_manager::SequenceManager> manager,
-      base::Optional<base::Time> initial_virtual_time)
+      absl::optional<base::Time> initial_virtual_time)
       : MainThreadSchedulerImpl(std::move(manager), initial_virtual_time) {}
 };
 
@@ -81,7 +81,7 @@ class TaskQueueThrottlerTest : public testing::Test {
     scheduler_ = std::make_unique<MainThreadSchedulerImplForTest>(
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, test_task_runner_, GetTickClock()),
-        base::nullopt);
+        absl::nullopt);
     task_queue_throttler_ = scheduler_->task_queue_throttler();
     wake_up_budget_pool_ =
         task_queue_throttler_->CreateWakeUpBudgetPool("Wake Up Budget Pool");
@@ -1443,8 +1443,8 @@ TEST_F(TaskQueueThrottlerTest,
       kShortDelay);
 
   // Pools did not observe wake ups yet whether they had pending tasks or not.
-  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), base::nullopt);
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
 
   // The first task should run after 1 minute, which is the wake up interval of
   // |one_minute_pool|.
@@ -1455,7 +1455,7 @@ TEST_F(TaskQueueThrottlerTest,
               ElementsAre(base::TimeTicks() + base::TimeDelta::FromMinutes(1)));
 
   // The second pool should not have woken up since it had no tasks.
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
 
   // No new task execution or wake-ups for the first queue since it did not
   // get new tasks executed.
@@ -1466,13 +1466,13 @@ TEST_F(TaskQueueThrottlerTest,
               ElementsAre(base::TimeTicks() + base::TimeDelta::FromMinutes(1)));
 
   // The second pool should not have woken up since it had no tasks.
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
 
   // Still no new executions so no update on the wake-up for the queues.
   test_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             base::TimeTicks() + base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
 
   // Clean up.
   two_minutes_pool->RemoveQueue(test_task_runner_->NowTicks(),
@@ -1521,8 +1521,8 @@ TEST_F(TaskQueueThrottlerTest,
       kShortDelay);
 
   // Pools do not observe wake ups yet.
-  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), base::nullopt);
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
 
   // The first task should run after 1 minute, which is the wake up interval of
   // |one_minute_pool|. The second task should run after 2 minutes, which is the
@@ -1530,7 +1530,7 @@ TEST_F(TaskQueueThrottlerTest,
   test_task_runner_->FastForwardBy(base::TimeDelta::FromMinutes(1));
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             base::TimeTicks() + base::TimeDelta::FromMinutes(1));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
   EXPECT_THAT(run_times,
               ElementsAre(base::TimeTicks() + base::TimeDelta::FromMinutes(1)));
 
@@ -1605,7 +1605,7 @@ TEST_F(TaskQueueThrottlerTest,
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
   EXPECT_EQ(one_minute_pool->last_wake_up_for_testing(),
             start_time + base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(two_minutes_pool->last_wake_up_for_testing(), absl::nullopt);
   EXPECT_THAT(run_times,
               ElementsAre(start_time + base::TimeDelta::FromSeconds(2)));
 
@@ -1711,12 +1711,12 @@ TEST_F(TaskQueueThrottlerTest,
       base::TimeDelta::FromSeconds(3));
 
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
-  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), base::nullopt);
-  EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), absl::nullopt);
+  EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(), absl::nullopt);
   EXPECT_THAT(run_times, ElementsAre());
 
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), base::nullopt);
+  EXPECT_EQ(aligned_pool->last_wake_up_for_testing(), absl::nullopt);
   EXPECT_EQ(unaligned_pool->last_wake_up_for_testing(),
             start_time + base::TimeDelta::FromSeconds(3));
   EXPECT_THAT(run_times,

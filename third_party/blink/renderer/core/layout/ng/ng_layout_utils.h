@@ -37,7 +37,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockNode& node,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    base::Optional<NGFragmentGeometry>* fragment_geometry);
+    absl::optional<NGFragmentGeometry>* fragment_geometry);
 
 // Similar to |MaySkipLayout| but for legacy layout roots. Doesn't attempt to
 // pre-compute the geometry of the fragment.
@@ -52,14 +52,14 @@ bool MaySkipLegacyLayout(const NGBlockNode& node,
 // |bfc_block_offset|, |block_offset_delta|, and |end_margin_strut| for the
 // layout result.
 //
-// |bfc_block_offset| may still be |base::nullopt| if not previously set.
+// |bfc_block_offset| may still be |absl::nullopt| if not previously set.
 //
 // If this function returns false, |bfc_block_offset|, |block_offset_delta|,
 // and |end_margin_strut| are in an undefined state and should not be used.
 bool MaySkipLayoutWithinBlockFormattingContext(
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    base::Optional<LayoutUnit>* bfc_block_offset,
+    absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     NGMarginStrut* end_margin_strut);
 

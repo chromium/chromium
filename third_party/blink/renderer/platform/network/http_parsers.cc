@@ -37,7 +37,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -46,6 +45,7 @@
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -100,7 +100,7 @@ String ConvertToBlink(const std::string& in) {
   return String::FromUTF8(in);
 }
 
-String ConvertToBlink(const base::Optional<std::string>& in) {
+String ConvertToBlink(const absl::optional<std::string>& in) {
   return in ? String::FromUTF8(*in) : String();
 }
 
@@ -245,12 +245,12 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
       in->cross_origin_opener_policy, in->origin_agent_cluster,
       in->accept_ch.has_value()
-          ? base::make_optional(ConvertToBlink(in->accept_ch.value()))
-          : base::nullopt,
+          ? absl::make_optional(ConvertToBlink(in->accept_ch.value()))
+          : absl::nullopt,
       in->accept_ch_lifetime,
       in->critical_ch.has_value()
-          ? base::make_optional(ConvertToBlink(in->critical_ch.value()))
-          : base::nullopt,
+          ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
+          : absl::nullopt,
       in->xfo, ConvertToBlink(in->link_headers),
       ConvertToBlink(in->timing_allow_origin), in->bfcache_opt_in_unload);
 }
@@ -421,7 +421,7 @@ bool ParseHTTPRefresh(const String& refresh,
   }
 }
 
-base::Optional<base::Time> ParseDate(const String& value) {
+absl::optional<base::Time> ParseDate(const String& value) {
   return ParseDateFromNullTerminatedCharacters(value.Utf8().c_str());
 }
 
@@ -600,8 +600,8 @@ CacheControlHeader ParseCacheControlDirectives(
     const AtomicString& pragma_value) {
   CacheControlHeader cache_control_header;
   cache_control_header.parsed = true;
-  cache_control_header.max_age = base::nullopt;
-  cache_control_header.stale_while_revalidate = base::nullopt;
+  cache_control_header.max_age = absl::nullopt;
+  cache_control_header.stale_while_revalidate = absl::nullopt;
 
   static const char kNoCacheDirective[] = "no-cache";
   static const char kNoStoreDirective[] = "no-store";

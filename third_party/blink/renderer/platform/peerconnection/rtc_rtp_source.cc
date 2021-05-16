@@ -38,9 +38,9 @@ uint32_t RTCRtpSource::Source() const {
   return source_.source_id();
 }
 
-base::Optional<double> RTCRtpSource::AudioLevel() const {
+absl::optional<double> RTCRtpSource::AudioLevel() const {
   if (!source_.audio_level())
-    return base::nullopt;
+    return absl::nullopt;
   // Converted according to equation defined here:
   // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-audiolevel
   uint8_t rfc_level = *source_.audio_level();
@@ -55,9 +55,9 @@ uint32_t RTCRtpSource::RtpTimestamp() const {
   return source_.rtp_timestamp();
 }
 
-base::Optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
+absl::optional<int64_t> RTCRtpSource::CaptureTimestamp() const {
   if (!source_.absolute_capture_time().has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return webrtc::UQ32x32ToInt64Ms(
       source_.absolute_capture_time()->absolute_capture_timestamp);

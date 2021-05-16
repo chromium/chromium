@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
 
   enum class ColorMode { kColor = 0, kGrayscale = 1 };
 
-  base::Optional<Features> GetFeatures(const SkPixmap& pixmap,
+  absl::optional<Features> GetFeatures(const SkPixmap& pixmap,
                                        const SkIRect& src) const;
   // Extracts a sample set of pixels (|sampled_pixels|), |transparency_ratio|,
   // and |background_ratio|.

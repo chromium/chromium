@@ -2764,7 +2764,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
-  base::Optional<MinMaxSizes> sizes;
+  absl::optional<MinMaxSizes> sizes;
 
   // Both column-count and column-width set. See
   // https://www.w3.org/TR/2016/WD-css-sizing-3-20160510/#multicol-intrinsic

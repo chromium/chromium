@@ -33,7 +33,7 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
  public:
   MainThreadSchedulerImplForTest(
       std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-      base::Optional<base::Time> initial_virtual_time)
+      absl::optional<base::Time> initial_virtual_time)
       : MainThreadSchedulerImpl(std::move(sequence_manager),
                                 initial_virtual_time) {}
 
@@ -65,7 +65,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, task_environment_.GetMainThreadTaskRunner(),
             task_environment_.GetMockTickClock()),
-        base::nullopt);
+        absl::nullopt);
     metrics_helper_ = &scheduler_->main_thread_only().metrics_helper;
   }
 

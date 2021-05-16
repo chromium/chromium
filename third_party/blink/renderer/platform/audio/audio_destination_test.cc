@@ -64,7 +64,7 @@ class AudioCallback : public blink::AudioIOCallback {
   int frames_processed_;
 };
 
-void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
+void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
   WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
   AudioCallback callback;
 
@@ -99,7 +99,7 @@ void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
 TEST(AudioDestinationTest, ResamplingTest) {
   ScopedTestingPlatformSupport<TestPlatform> platform;
 
-  CountWASamplesProcessedForRate(base::Optional<float>());
+  CountWASamplesProcessedForRate(absl::optional<float>());
   CountWASamplesProcessedForRate(8000);
   CountWASamplesProcessedForRate(24000);
   CountWASamplesProcessedForRate(44100);

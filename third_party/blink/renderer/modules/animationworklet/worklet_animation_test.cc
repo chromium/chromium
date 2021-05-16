@@ -148,7 +148,7 @@ TEST_F(WorkletAnimationTest, WorkletAnimationInElementAnimations) {
 
 // Regression test for crbug.com/1136120, pass if there is no crash.
 TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
-  base::Optional<base::TimeDelta> seek_time =
+  absl::optional<base::TimeDelta> seek_time =
       base::TimeDelta::FromString("inf");
   worklet_animation_->SetPlayState(Animation::kRunning);
   GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks::Max());

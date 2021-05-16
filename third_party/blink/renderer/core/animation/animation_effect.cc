@@ -108,9 +108,9 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
   InvalidateAndNotifyOwner();
 }
 
-base::Optional<Timing::Phase> TimelinePhaseToTimingPhase(
-    base::Optional<TimelinePhase> phase) {
-  base::Optional<Timing::Phase> result;
+absl::optional<Timing::Phase> TimelinePhaseToTimingPhase(
+    absl::optional<TimelinePhase> phase) {
+  absl::optional<Timing::Phase> result;
   if (phase) {
     switch (phase.value()) {
       case TimelinePhase::kBefore:
@@ -131,10 +131,10 @@ base::Optional<Timing::Phase> TimelinePhaseToTimingPhase(
 }
 
 void AnimationEffect::UpdateInheritedTime(
-    base::Optional<AnimationTimeDelta> inherited_time,
-    base::Optional<TimelinePhase> inherited_timeline_phase,
+    absl::optional<AnimationTimeDelta> inherited_time,
+    absl::optional<TimelinePhase> inherited_timeline_phase,
     TimingUpdateReason reason) const {
-  base::Optional<double> playback_rate = base::nullopt;
+  absl::optional<double> playback_rate = absl::nullopt;
   if (GetAnimation())
     playback_rate = GetAnimation()->playbackRate();
   const Timing::AnimationDirection direction =
@@ -142,7 +142,7 @@ void AnimationEffect::UpdateInheritedTime(
           ? Timing::AnimationDirection::kBackwards
           : Timing::AnimationDirection::kForwards;
 
-  base::Optional<Timing::Phase> timeline_phase =
+  absl::optional<Timing::Phase> timeline_phase =
       TimelinePhaseToTimingPhase(inherited_timeline_phase);
 
   bool needs_update = needs_update_ || last_update_time_ != inherited_time ||

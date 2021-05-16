@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
@@ -71,7 +71,7 @@ Animator* AnimationWorkletGlobalScope::CreateAnimatorFor(
     const String& name,
     WorkletAnimationOptions options,
     scoped_refptr<SerializedScriptValue> serialized_state,
-    const Vector<base::Optional<base::TimeDelta>>& local_times,
+    const Vector<absl::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings) {
   DCHECK(!animators_.at(animation_id));
   Animator* animator =
@@ -113,8 +113,8 @@ void AnimationWorkletGlobalScope::UpdateAnimatorsList(
                                  ->data;
     DCHECK_GE(timings.size(), 1u);
 
-    Vector<base::Optional<base::TimeDelta>> local_times(
-        static_cast<int>(timings.size()), base::nullopt);
+    Vector<absl::optional<base::TimeDelta>> local_times(
+        static_cast<int>(timings.size()), absl::nullopt);
 
     CreateAnimatorFor(id, name, options, nullptr /* serialized_state */,
                       local_times, timings);
@@ -231,7 +231,7 @@ Animator* AnimationWorkletGlobalScope::CreateInstance(
     const String& name,
     WorkletAnimationOptions options,
     scoped_refptr<SerializedScriptValue> serialized_state,
-    const Vector<base::Optional<base::TimeDelta>>& local_times,
+    const Vector<absl::optional<base::TimeDelta>>& local_times,
     const Vector<Timing>& timings) {
   DCHECK(IsContextThread());
   AnimatorDefinition* definition = animator_definitions_.at(name);
@@ -316,7 +316,7 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
       }
     }
 
-    Vector<base::Optional<base::TimeDelta>> local_times;
+    Vector<absl::optional<base::TimeDelta>> local_times;
     animator->GetLocalTimes(local_times);
     target_global_scope->CreateAnimatorFor(
         animation_id, animator->name(), animator->options(), serialized_state,

@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_KEYFRAME_EFFECT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -126,7 +126,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
       PropertyHandleSet* unsupported_properties = nullptr) const;
   // Must only be called once.
   void StartAnimationOnCompositor(int group,
-                                  base::Optional<double> start_time,
+                                  absl::optional<double> start_time,
                                   base::TimeDelta time_offset,
                                   double animation_playback_rate,
                                   CompositorAnimation* = nullptr);
@@ -172,7 +172,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void CountAnimatedProperties() const;
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<AnimationTimeDelta> inherited_time,
+      absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
   bool HasIncompatibleStyle() const;
   bool HasMultipleTransformProperties() const;
@@ -190,7 +190,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   bool ignore_css_keyframes_;
 
-  base::Optional<FloatSize> effect_target_size_;
+  absl::optional<FloatSize> effect_target_size_;
 };
 
 template <>

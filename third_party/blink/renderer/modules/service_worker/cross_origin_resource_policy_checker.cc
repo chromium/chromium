@@ -30,7 +30,7 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
     // the same origin.
     return false;
   }
-  base::Optional<std::string> corp_header_value;
+  absl::optional<std::string> corp_header_value;
   String wtf_corp_header_value;
   if (response.InternalHeaderList()->Get(
           network::CrossOriginResourcePolicy::kHeaderName,

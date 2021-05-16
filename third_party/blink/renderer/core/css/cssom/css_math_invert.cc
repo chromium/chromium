@@ -17,10 +17,10 @@ V8CSSNumberish* CSSMathInvert::value() {
 }
 #endif  // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
 
-base::Optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
   auto sum = value_->SumValue();
   if (!sum || sum->terms.size() != 1)
-    return base::nullopt;
+    return absl::nullopt;
 
   for (auto& unit_exponent : sum->terms[0].units)
     unit_exponent.value *= -1;

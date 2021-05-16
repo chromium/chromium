@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_THREADED_ICON_LOADER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
@@ -36,7 +36,7 @@ class CORE_EXPORT ThreadedIconLoader final
   // those dimensions.
   void Start(ExecutionContext* execution_context,
              const ResourceRequestHead& resource_request,
-             const base::Optional<gfx::Size>& resize_dimensions,
+             const absl::optional<gfx::Size>& resize_dimensions,
              IconCallback callback);
 
   // Stops the background task. The provided callback will not be run if
@@ -65,7 +65,7 @@ class CORE_EXPORT ThreadedIconLoader final
   scoped_refptr<SharedBuffer> data_;
 
   // Accessed from main thread and background thread.
-  base::Optional<gfx::Size> resize_dimensions_;
+  absl::optional<gfx::Size> resize_dimensions_;
   SkBitmap decoded_icon_;
 
   IconCallback icon_callback_;

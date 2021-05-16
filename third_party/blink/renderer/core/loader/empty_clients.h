@@ -286,7 +286,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       mojo::PendingRemote<mojom::blink::BlobURLToken>,
       base::TimeTicks,
       const String&,
-      const base::Optional<WebImpression>&,
+      const absl::optional<WebImpression>&,
       network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation>,
@@ -309,7 +309,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override {}
 
   String UserAgent() override { return ""; }
-  base::Optional<blink::UserAgentMetadata> UserAgentMetadata() override {
+  absl::optional<blink::UserAgentMetadata> UserAgentMetadata() override {
     return blink::UserAgentMetadata();
   }
 

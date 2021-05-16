@@ -482,7 +482,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,
-                                       const base::Optional<KURL>& result_url) {
+                                       const absl::optional<KURL>& result_url) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;

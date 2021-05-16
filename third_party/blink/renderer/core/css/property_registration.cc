@@ -81,7 +81,7 @@ static bool ComputationallyIndependent(const CSSValue& value) {
   return true;
 }
 
-static base::Optional<CSSSyntaxDefinition> ConvertSyntax(
+static absl::optional<CSSSyntaxDefinition> ConvertSyntax(
     const CSSValue& value) {
   return CSSSyntaxStringParser(To<CSSStringValue>(value).Value()).Parse();
 }
@@ -106,7 +106,7 @@ void PropertyRegistration::DeclareProperty(Document& document,
   const CSSValue* syntax_value = rule.GetSyntax();
   if (!syntax_value)
     return;
-  base::Optional<CSSSyntaxDefinition> syntax = ConvertSyntax(*syntax_value);
+  absl::optional<CSSSyntaxDefinition> syntax = ConvertSyntax(*syntax_value);
   if (!syntax)
     return;
 
@@ -178,7 +178,7 @@ void PropertyRegistration::registerProperty(
     return;
   }
 
-  base::Optional<CSSSyntaxDefinition> syntax_definition =
+  absl::optional<CSSSyntaxDefinition> syntax_definition =
       CSSSyntaxStringParser(property_definition->syntax()).Parse();
   if (!syntax_definition) {
     exception_state.ThrowDOMException(

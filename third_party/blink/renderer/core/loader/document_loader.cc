@@ -237,13 +237,13 @@ struct SameSizeAsDocumentLoader
   scoped_refptr<EncodedFormData> http_body;
   AtomicString http_content_type;
   PreviewsState previews_state;
-  base::Optional<WebOriginPolicy> origin_policy;
+  absl::optional<WebOriginPolicy> origin_policy;
   scoped_refptr<const SecurityOrigin> requestor_origin;
   KURL unreachable_url;
   KURL pre_redirect_url_for_failed_navigations;
   std::unique_ptr<WebNavigationBodyLoader> body_loader;
   bool grant_load_local_resources;
-  base::Optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
+  absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
   FramePolicy frame_policy;
   Member<LocalFrame> frame;
   Member<HistoryItem> history_item;
@@ -919,7 +919,7 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
     bool should_report_corb_blocking,
-    const base::Optional<WebURLError>& error) {
+    const absl::optional<WebURLError>& error) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
   response_.SetEncodedDataLength(total_encoded_data_length);
   response_.SetEncodedBodyLength(total_encoded_body_length);
@@ -1087,7 +1087,7 @@ void DocumentLoader::HandleRedirect(
   }
 
   // TODO(dgozman): check whether clearing origin policy is intended behavior.
-  origin_policy_ = base::nullopt;
+  origin_policy_ = absl::nullopt;
   probe::WillSendNavigationRequest(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
@@ -1470,7 +1470,7 @@ const KURL& DocumentLoader::UnreachableURL() const {
   return unreachable_url_;
 }
 
-const base::Optional<blink::mojom::FetchCacheMode>&
+const absl::optional<blink::mojom::FetchCacheMode>&
 DocumentLoader::ForceFetchCacheMode() const {
   return force_fetch_cache_mode_;
 }

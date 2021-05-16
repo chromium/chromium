@@ -129,7 +129,7 @@ TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
   UpdateAllLifecyclePhasesForTest();
 
   paint_preview::PaintPreviewTracker tracker(base::UnguessableToken::Create(),
-                                             base::nullopt, true);
+                                             absl::nullopt, true);
   PaintRecordBuilder builder;
   builder.Context().SetPaintPreviewTracker(&tracker);
 

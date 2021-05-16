@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_REQUEST_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -86,7 +86,7 @@ class SimRequestBase {
   bool start_immediately_;
   bool started_;
   WebURLResponse response_;
-  base::Optional<WebURLError> error_;
+  absl::optional<WebURLError> error_;
   WebURLLoaderClient* client_;
   unsigned total_encoded_data_length_;
   WTF::HashMap<String, String> response_http_headers_;

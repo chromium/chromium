@@ -14,8 +14,8 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
@@ -223,7 +223,7 @@ inline v8::Local<v8::Value> ToV8(const ToV8UndefinedGenerator& value,
 
 // Forward declaration to allow interleaving with sequences.
 template <typename InnerType>
-inline v8::Local<v8::Value> ToV8(const base::Optional<InnerType>& value,
+inline v8::Local<v8::Value> ToV8(const absl::optional<InnerType>& value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate*);
 
@@ -345,7 +345,7 @@ inline v8::Local<v8::Array> ToV8SequenceInternal(
 // Nullable
 
 template <typename InnerType>
-inline v8::Local<v8::Value> ToV8(const base::Optional<InnerType>& value,
+inline v8::Local<v8::Value> ToV8(const absl::optional<InnerType>& value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
   if (!value)

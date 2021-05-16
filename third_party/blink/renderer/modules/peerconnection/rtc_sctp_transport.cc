@@ -100,9 +100,9 @@ double RTCSctpTransport::maxMessageSize() const {
   return std::numeric_limits<double>::infinity();
 }
 
-base::Optional<int16_t> RTCSctpTransport::maxChannels() const {
+absl::optional<int16_t> RTCSctpTransport::maxChannels() const {
   if (!current_state_.MaxChannels())
-    return base::nullopt;
+    return absl::nullopt;
   return current_state_.MaxChannels().value();
 }
 

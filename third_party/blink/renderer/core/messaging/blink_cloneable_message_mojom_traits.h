@@ -54,7 +54,7 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
     return input.sender_stack_trace_id.should_pause;
   }
 
-  static const base::Optional<base::UnguessableToken>& locked_agent_cluster_id(
+  static const absl::optional<base::UnguessableToken>& locked_agent_cluster_id(
       const blink::BlinkCloneableMessage& input) {
     return input.locked_agent_cluster_id;
   }

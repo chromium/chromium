@@ -1313,7 +1313,7 @@ void WebViewImpl::Resize(const gfx::Size& new_size) {
 }
 
 void WebViewImpl::SetScreenOrientationOverrideForTesting(
-    base::Optional<blink::mojom::ScreenOrientation> orientation) {
+    absl::optional<blink::mojom::ScreenOrientation> orientation) {
   screen_orientation_override_ = orientation;
 
   // Since we updated the override value, notify all widgets.
@@ -1336,7 +1336,7 @@ void WebViewImpl::SetWindowRectSynchronouslyForTesting(
   web_widget_->SetWindowRectSynchronouslyForTesting(new_window_rect);
 }
 
-base::Optional<mojom::blink::ScreenOrientation>
+absl::optional<mojom::blink::ScreenOrientation>
 WebViewImpl::ScreenOrientationOverride() {
   return screen_orientation_override_;
 }
@@ -3042,7 +3042,7 @@ void WebViewImpl::SetBaseBackgroundColorOverrideTransparent(
 }
 
 void WebViewImpl::SetBaseBackgroundColorOverrideForInspector(
-    base::Optional<SkColor> optional_color) {
+    absl::optional<SkColor> optional_color) {
   if (base_background_color_override_for_inspector_ == optional_color)
     return;
   base_background_color_override_for_inspector_ = optional_color;
@@ -3198,7 +3198,7 @@ void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
 
 void WebViewImpl::SetHistoryListFromNavigation(
     int32_t history_offset,
-    base::Optional<int32_t> history_length) {
+    absl::optional<int32_t> history_length) {
   if (!history_length.has_value()) {
     history_list_offset_ = history_offset;
     return;
@@ -3381,7 +3381,7 @@ void WebViewImpl::TextAutosizerPageInfoChanged(
 }
 
 void WebViewImpl::SetBackgroundColorOverrideForFullscreenController(
-    base::Optional<SkColor> optional_color) {
+    absl::optional<SkColor> optional_color) {
   DCHECK(does_composite_);
 
   background_color_override_for_fullscreen_controller_ = optional_color;

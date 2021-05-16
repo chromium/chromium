@@ -624,7 +624,7 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
 
 Report* CreateReportInternal(const KURL& context_url,
                              const DeprecationInfo& info) {
-  base::Optional<base::Time> optional_removal_date;
+  absl::optional<base::Time> optional_removal_date;
   if (info.anticipated_removal != kUnknown) {
     base::Time removal_date;
     bool result = base::Time::FromUTCExploded(

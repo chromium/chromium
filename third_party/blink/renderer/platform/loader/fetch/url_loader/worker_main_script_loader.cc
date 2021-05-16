@@ -91,7 +91,7 @@ void WorkerMainScriptLoader::Start(
     client_->OnFailedLoadingWorkerMainScript();
     resource_load_observer_->DidFailLoading(
         initial_request_.Url(), initial_request_.InspectorId(),
-        ResourceError(net::ERR_FAILED, last_request_url_, base::nullopt),
+        ResourceError(net::ERR_FAILED, last_request_url_, absl::nullopt),
         resource_response_.EncodedDataLength(),
         ResourceLoadObserver::IsInternalRequest(
             resource_loader_options_.initiator_info.name ==
@@ -290,7 +290,7 @@ void WorkerMainScriptLoader::NotifyCompletionIfAppropriate() {
     client->OnFailedLoadingWorkerMainScript();
     resource_load_observer_->DidFailLoading(
         last_request_url_, initial_request_.InspectorId(),
-        ResourceError(status_.error_code, last_request_url_, base::nullopt),
+        ResourceError(status_.error_code, last_request_url_, absl::nullopt),
         resource_response_.EncodedDataLength(),
         ResourceLoadObserver::IsInternalRequest(
             ResourceLoadObserver::IsInternalRequest(

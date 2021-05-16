@@ -531,7 +531,7 @@ void DistributeColspanCellToColumnsFixed(
                                        static_cast<float>(effective_span));
   LayoutUnit new_max_size = LayoutUnit(colspan_cell_max_inline_size /
                                        static_cast<float>(effective_span));
-  base::Optional<float> new_percent;
+  absl::optional<float> new_percent;
   if (colspan_cell.cell_inline_constraint.percent) {
     new_percent = *colspan_cell.cell_inline_constraint.percent / effective_span;
   }
@@ -602,7 +602,7 @@ void DistributeColspanCellToColumnsAuto(
       (colspan_cell.cell_inline_constraint.max_inline_size -
        total_inner_border_spacing)
           .ClampNegativeToZero();
-  base::Optional<float> colspan_cell_percent =
+  absl::optional<float> colspan_cell_percent =
       colspan_cell.cell_inline_constraint.percent;
 
   if (colspan_cell_percent.has_value()) {

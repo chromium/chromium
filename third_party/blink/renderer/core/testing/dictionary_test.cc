@@ -133,25 +133,25 @@ InternalDictionaryDerivedDerived* DictionaryTest::getDerivedDerived(
 }
 
 void DictionaryTest::Reset() {
-  long_member_ = base::nullopt;
-  long_member_with_clamp_ = base::nullopt;
-  long_member_with_enforce_range_ = base::nullopt;
+  long_member_ = absl::nullopt;
+  long_member_with_clamp_ = absl::nullopt;
+  long_member_with_enforce_range_ = absl::nullopt;
   long_member_with_default_ = -1;  // This value should not be returned.
-  long_or_null_member_ = base::nullopt;
-  long_or_null_member_with_default_ = base::nullopt;
-  boolean_member_ = base::nullopt;
-  double_member_ = base::nullopt;
-  unrestricted_double_member_ = base::nullopt;
-  string_member_ = base::nullopt;
+  long_or_null_member_ = absl::nullopt;
+  long_or_null_member_with_default_ = absl::nullopt;
+  boolean_member_ = absl::nullopt;
+  double_member_ = absl::nullopt;
+  unrestricted_double_member_ = absl::nullopt;
+  string_member_ = absl::nullopt;
   string_member_with_default_ = String("Should not be returned");
-  byte_string_member_ = base::nullopt;
-  usv_string_member_ = base::nullopt;
-  string_sequence_member_ = base::nullopt;
+  byte_string_member_ = absl::nullopt;
+  usv_string_member_ = absl::nullopt;
+  string_sequence_member_ = absl::nullopt;
   string_sequence_member_with_default_.Fill("Should not be returned", 1);
-  string_sequence_or_null_member_ = base::nullopt;
-  enum_member_ = base::nullopt;
+  string_sequence_or_null_member_ = absl::nullopt;
+  enum_member_ = absl::nullopt;
   enum_member_with_default_ = String();
-  enum_or_null_member_ = base::nullopt;
+  enum_or_null_member_ = absl::nullopt;
   element_member_ = nullptr;
   element_or_null_member_.Clear();
   has_element_or_null_member_ = false;
@@ -160,11 +160,11 @@ void DictionaryTest::Reset() {
   double_or_string_member_ = DoubleOrString();
   double_or_string_sequence_or_null_member_ = nullptr;
   event_target_or_null_member_ = nullptr;
-  derived_string_member_ = base::nullopt;
+  derived_string_member_ = absl::nullopt;
   derived_string_member_with_default_ = String();
-  derived_derived_string_member_ = base::nullopt;
+  derived_derived_string_member_ = absl::nullopt;
   required_boolean_member_ = false;
-  dictionary_member_properties_ = base::nullopt;
+  dictionary_member_properties_ = absl::nullopt;
   internal_enum_or_internal_enum_sequence_ =
       InternalEnumOrInternalEnumSequence();
   any_member_ = ScriptValue();

@@ -71,7 +71,7 @@ static bool CheckChunkInvalidation(
     wtf_size_t index,
     PaintInvalidationReason reason,
     const IntPoint& layer_offset,
-    const base::Optional<IntRect>& chunk_rect = base::nullopt,
+    const absl::optional<IntRect>& chunk_rect = absl::nullopt,
     const MapFunction& mapper = base::DoNothing()) {
   const auto& chunk = *(chunks.begin() + index);
   return ChunkRectToLayer(chunk_rect ? *chunk_rect : chunk.drawable_bounds,
@@ -81,7 +81,7 @@ static bool CheckChunkInvalidation(
 
 MATCHER_P5(ChunkInvalidation, chunks, index, reason, layer_offset, mapper, "") {
   return CheckChunkInvalidation(arg, chunks, index, reason, layer_offset,
-                                base::nullopt, mapper);
+                                absl::nullopt, mapper);
 }
 
 MATCHER_P3(ChunkInvalidation, chunks, index, reason, "") {

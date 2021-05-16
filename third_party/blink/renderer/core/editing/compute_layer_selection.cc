@@ -152,17 +152,17 @@ static GraphicsLayer* GetGraphicsLayerFor(const LayoutObject& layout_object) {
   return paint_invalidation_container->GraphicsLayerBacking(&layout_object);
 }
 
-static base::Optional<cc::LayerSelectionBound>
+static absl::optional<cc::LayerSelectionBound>
 StartPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   const PositionWithAffinity position(selection.ComputeStartPosition(),
                                       selection.Affinity());
   const LocalCaretRect& local_caret_rect = LocalCaretRectOfPosition(position);
   const LayoutObject* const layout_object = local_caret_rect.layout_object;
   if (!layout_object)
-    return base::nullopt;
+    return absl::nullopt;
   GraphicsLayer* graphics_layer = GetGraphicsLayerFor(*layout_object);
   if (!graphics_layer)
-    return base::nullopt;
+    return absl::nullopt;
 
   PhysicalOffset edge_start_in_layer, edge_end_in_layer;
   std::tie(edge_start_in_layer, edge_end_in_layer) =
@@ -179,17 +179,17 @@ StartPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   return bound;
 }
 
-static base::Optional<cc::LayerSelectionBound>
+static absl::optional<cc::LayerSelectionBound>
 EndPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   const PositionWithAffinity position(selection.ComputeEndPosition(),
                                       selection.Affinity());
   const LocalCaretRect& local_caret_rect = LocalCaretRectOfPosition(position);
   const LayoutObject* const layout_object = local_caret_rect.layout_object;
   if (!layout_object)
-    return base::nullopt;
+    return absl::nullopt;
   GraphicsLayer* graphics_layer = GetGraphicsLayerFor(*layout_object);
   if (!graphics_layer)
-    return base::nullopt;
+    return absl::nullopt;
 
   PhysicalOffset edge_start_in_layer, edge_end_in_layer;
   std::tie(edge_start_in_layer, edge_end_in_layer) =

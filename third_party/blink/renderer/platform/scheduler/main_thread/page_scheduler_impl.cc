@@ -10,9 +10,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -74,14 +74,14 @@ constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
 
 // Values coming from the field trial config are interpreted as follows:
 //   -1 is "not set". Scheduler should use a reasonable default.
-//   0 corresponds to base::nullopt.
+//   0 corresponds to absl::nullopt.
 //   Other values are left without changes.
 
 struct BackgroundThrottlingSettings {
   double budget_recovery_rate;
-  base::Optional<base::TimeDelta> max_budget_level;
-  base::Optional<base::TimeDelta> max_throttling_delay;
-  base::Optional<base::TimeDelta> initial_budget;
+  absl::optional<base::TimeDelta> max_budget_level;
+  absl::optional<base::TimeDelta> max_throttling_delay;
+  absl::optional<base::TimeDelta> initial_budget;
 };
 
 double GetDoubleParameterFromMap(const base::FieldTrialParams& settings,
@@ -98,9 +98,9 @@ double GetDoubleParameterFromMap(const base::FieldTrialParams& settings,
   return parsed_value;
 }
 
-base::Optional<base::TimeDelta> DoubleToOptionalTime(double value) {
+absl::optional<base::TimeDelta> DoubleToOptionalTime(double value) {
   if (value == 0)
-    return base::nullopt;
+    return absl::nullopt;
   return base::TimeDelta::FromSecondsD(value);
 }
 
@@ -972,7 +972,7 @@ void PageSchedulerImpl::PageLifecycleStateTracker::SetPageLifecycleState(
     PageLifecycleState new_state) {
   if (new_state == current_state_)
     return;
-  base::Optional<PageLifecycleStateTransition> transition =
+  absl::optional<PageLifecycleStateTransition> transition =
       ComputePageLifecycleStateTransition(current_state_, new_state);
   if (transition) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -988,14 +988,14 @@ PageSchedulerImpl::PageLifecycleStateTracker::GetPageLifecycleState() const {
 }
 
 // static
-base::Optional<PageSchedulerImpl::PageLifecycleStateTransition>
+absl::optional<PageSchedulerImpl::PageLifecycleStateTransition>
 PageSchedulerImpl::PageLifecycleStateTracker::
     ComputePageLifecycleStateTransition(PageLifecycleState old_state,
                                         PageLifecycleState new_state) {
   switch (old_state) {
     case PageLifecycleState::kUnknown:
       // We don't track the initial transition.
-      return base::nullopt;
+      return absl::nullopt;
     case PageLifecycleState::kActive:
       switch (new_state) {
         case PageLifecycleState::kHiddenForegrounded:
@@ -1004,7 +1004,7 @@ PageSchedulerImpl::PageLifecycleStateTracker::
           return PageLifecycleStateTransition::kActiveToHiddenBackgrounded;
         default:
           NOTREACHED();
-          return base::nullopt;
+          return absl::nullopt;
       }
     case PageLifecycleState::kHiddenForegrounded:
       switch (new_state) {
@@ -1017,7 +1017,7 @@ PageSchedulerImpl::PageLifecycleStateTracker::
           return PageLifecycleStateTransition::kHiddenForegroundedToFrozen;
         default:
           NOTREACHED();
-          return base::nullopt;
+          return absl::nullopt;
       }
     case PageLifecycleState::kHiddenBackgrounded:
       switch (new_state) {
@@ -1030,7 +1030,7 @@ PageSchedulerImpl::PageLifecycleStateTracker::
           return PageLifecycleStateTransition::kHiddenBackgroundedToFrozen;
         default:
           NOTREACHED();
-          return base::nullopt;
+          return absl::nullopt;
       }
     case PageLifecycleState::kFrozen:
       switch (new_state) {
@@ -1042,7 +1042,7 @@ PageSchedulerImpl::PageLifecycleStateTracker::
           return PageLifecycleStateTransition::kFrozenToHiddenBackgrounded;
         default:
           NOTREACHED();
-          return base::nullopt;
+          return absl::nullopt;
       }
   }
 }

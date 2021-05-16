@@ -91,7 +91,7 @@ class CORE_EXPORT CSSMathExpressionNode
       CSSPrimitiveValue::LengthTypeFlags& types) const = 0;
   virtual scoped_refptr<const CalculationExpressionNode>
   ToCalculationExpression(const CSSToLengthConversionData&) const = 0;
-  virtual base::Optional<PixelsAndPercent> ToPixelsAndPercent(
+  virtual absl::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSToLengthConversionData&) const = 0;
 
   scoped_refptr<const CalculationValue> ToCalcValue(
@@ -109,7 +109,7 @@ class CORE_EXPORT CSSMathExpressionNode
   // - A type conversion that doesn't have a fixed conversion ratio is needed
   //   (e.g., between 'px' and 'em').
   // - There's an unsupported calculation, e.g., dividing two lengths.
-  virtual base::Optional<double> ComputeValueInCanonicalUnit() const = 0;
+  virtual absl::optional<double> ComputeValueInCanonicalUnit() const = 0;
 
   virtual String CustomCSSText() const = 0;
   virtual bool operator==(const CSSMathExpressionNode& other) const {
@@ -181,10 +181,10 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSToLengthConversionData&) const final;
-  base::Optional<PixelsAndPercent> ToPixelsAndPercent(
+  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSToLengthConversionData&) const final;
   double DoubleValue() const final;
-  base::Optional<double> ComputeValueInCanonicalUnit() const final;
+  absl::optional<double> ComputeValueInCanonicalUnit() const final;
   double ComputeLengthPx(
       const CSSToLengthConversionData& conversion_data) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -238,10 +238,10 @@ class CORE_EXPORT CSSMathExpressionBinaryOperation final
   bool IsZero() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSToLengthConversionData&) const final;
-  base::Optional<PixelsAndPercent> ToPixelsAndPercent(
+  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSToLengthConversionData&) const final;
   double DoubleValue() const final;
-  base::Optional<double> ComputeValueInCanonicalUnit() const final;
+  absl::optional<double> ComputeValueInCanonicalUnit() const final;
   double ComputeLengthPx(
       const CSSToLengthConversionData& conversion_data) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -307,7 +307,7 @@ class CSSMathExpressionVariadicOperation final : public CSSMathExpressionNode {
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSToLengthConversionData&) const final;
-  base::Optional<PixelsAndPercent> ToPixelsAndPercent(
+  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSToLengthConversionData&) const final;
   double DoubleValue() const final;
   double ComputeLengthPx(
@@ -316,7 +316,7 @@ class CSSMathExpressionVariadicOperation final : public CSSMathExpressionNode {
                              double multiplier) const final;
   void AccumulateLengthUnitTypes(
       CSSPrimitiveValue::LengthTypeFlags& types) const final;
-  base::Optional<double> ComputeValueInCanonicalUnit() const final;
+  absl::optional<double> ComputeValueInCanonicalUnit() const final;
   bool IsComputationallyIndependent() const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;

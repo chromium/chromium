@@ -92,7 +92,7 @@ struct BLINK_COMMON_EXPORT
     return data.browser_handles_all_top_level_requests;
   }
 
-  static base::Optional<base::TimeDelta> caret_blink_interval(
+  static absl::optional<base::TimeDelta> caret_blink_interval(
       const ::blink::RendererPreferences& data) {
     return data.caret_blink_interval;
   }

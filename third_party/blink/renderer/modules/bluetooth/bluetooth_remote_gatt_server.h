@@ -100,7 +100,7 @@ class BluetoothRemoteGATTServer
       mojom::blink::WebBluetoothGATTQueryQuantity,
       ScriptPromiseResolver*,
       mojom::blink::WebBluetoothResult,
-      base::Optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
+      absl::optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
           services);
 
   // Contains a ScriptPromiseResolver corresponding to each active algorithm

@@ -100,7 +100,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   struct PendingBuffer {
     scoped_refptr<media::DecoderBuffer> buffer;
-    base::Optional<media::VideoDecoderConfig> new_config;
+    absl::optional<media::VideoDecoderConfig> new_config;
   };
 
   // Called on the worker thread.
@@ -183,7 +183,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
       nullptr;
   // Time since construction.  Cleared when we record that a frame has been
   // successfully decoded.
-  base::Optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
+  absl::optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

@@ -61,7 +61,7 @@ class ScopedSVGTransformState {
   }
 
  private:
-  base::Optional<ScopedPaintChunkProperties> transform_property_scope_;
+  absl::optional<ScopedPaintChunkProperties> transform_property_scope_;
 };
 
 class ScopedSVGPaintState {
@@ -89,7 +89,7 @@ class ScopedSVGPaintState {
   const LayoutObject& object_;
   const PaintInfo& paint_info_;
   const DisplayItemClient& display_item_client_;
-  base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties_;
+  absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties_;
   bool should_paint_mask_ = false;
   bool should_paint_clip_path_as_mask_image_ = false;
 #if DCHECK_IS_ON()

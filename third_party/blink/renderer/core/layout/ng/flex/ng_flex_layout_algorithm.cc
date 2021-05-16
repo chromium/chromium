@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 
 #include <memory>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -344,7 +344,7 @@ namespace {
 LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
-    const base::Optional<LayoutUnit> definite_block_size,
+    const absl::optional<LayoutUnit> definite_block_size,
     const MinMaxSizes& used_min_max_block_sizes) {
   DCHECK(node.HasAspectRatio());
   LogicalSize aspect_ratio = node.GetAspectRatio();
@@ -352,10 +352,10 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
   NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
-  base::Optional<LayoutUnit> intrinsic_inline;
-  base::Optional<LayoutUnit> intrinsic_block;
+  absl::optional<LayoutUnit> intrinsic_inline;
+  absl::optional<LayoutUnit> intrinsic_block;
 
-  base::Optional<LayoutUnit> block_size_border_box;
+  absl::optional<LayoutUnit> block_size_border_box;
   if (definite_block_size.has_value()) {
     block_size_border_box = definite_block_size;
   } else {
@@ -403,7 +403,7 @@ LayoutUnit ComputeIntrinsicInlineSizeForAspectRatioElement(
 LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
-    const base::Optional<LayoutUnit> definite_inline_size,
+    const absl::optional<LayoutUnit> definite_inline_size,
     const MinMaxSizes& used_min_max_inline_sizes) {
   DCHECK(node.HasAspectRatio());
   LogicalSize aspect_ratio = node.GetAspectRatio();
@@ -411,10 +411,10 @@ LayoutUnit ComputeIntrinsicBlockSizeForAspectRatioElement(
   NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
 
-  base::Optional<LayoutUnit> intrinsic_inline;
-  base::Optional<LayoutUnit> intrinsic_block;
+  absl::optional<LayoutUnit> intrinsic_inline;
+  absl::optional<LayoutUnit> intrinsic_block;
 
-  base::Optional<LayoutUnit> inline_size_border_box;
+  absl::optional<LayoutUnit> inline_size_border_box;
   if (definite_inline_size.has_value()) {
     inline_size_border_box = definite_inline_size;
   } else {
@@ -505,7 +505,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     const Length& cross_axis_length =
         is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
 
-    base::Optional<MinMaxSizesResult> min_max_sizes;
+    absl::optional<MinMaxSizesResult> min_max_sizes;
     auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
       if (!min_max_sizes) {
         // We want the child's intrinsic inline sizes in its writing mode, so
@@ -540,7 +540,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           MinMaxSizesFunc);
     }
 
-    base::Optional<LayoutUnit> calculated_intrinsic_block_size;
+    absl::optional<LayoutUnit> calculated_intrinsic_block_size;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!calculated_intrinsic_block_size) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
@@ -628,7 +628,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           flex_base_border_box =
               ComputeIntrinsicInlineSizeForAspectRatioElement(
                   child, flex_basis_space, /* definite_block_size */
-                  base::nullopt, min_max_sizes_in_cross_axis_direction);
+                  absl::nullopt, min_max_sizes_in_cross_axis_direction);
         } else {
           flex_base_border_box =
               MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
@@ -638,14 +638,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         if (child.HasAspectRatio() && child.IsReplaced()) {
           // Legacy uses the post-layout size for this case, which isn't always
           // correct.
-          // With regard to |base::nullopt| in the next line:
+          // With regard to |absl::nullopt| in the next line:
           // ComputeIntrinsicBlockSizeForAspectRatioElement would honor a
           // definite inline size by multipying it by the aspect ratio, but if
           // control flow reaches here, we know we don't have a definite inline
           // size. If we did, we would have fallen into the "part B" section
           // above, not this "part C, D, E" section.
           flex_base_border_box = ComputeIntrinsicBlockSizeForAspectRatioElement(
-              child, flex_basis_space, base::nullopt /* definite_inline_size */,
+              child, flex_basis_space, absl::nullopt /* definite_inline_size */,
               min_max_sizes_in_cross_axis_direction);
         } else {
           flex_base_border_box = IntrinsicBlockSizeFunc();
@@ -691,7 +691,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       LayoutUnit content_size_suggestion;
       if (MainAxisIsInlineAxis(child)) {
         if (child.IsReplaced() && child.HasAspectRatio()) {
-          base::Optional<LayoutUnit> definite_block_size;
+          absl::optional<LayoutUnit> definite_block_size;
           if (!BlockLengthUnresolvable(flex_basis_space,
                                        child_style.LogicalHeight())) {
             definite_block_size = ResolveMainBlockLength(
@@ -712,7 +712,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         LayoutUnit intrinsic_block_size;
         if (child.IsReplaced()) {
           if (child.HasAspectRatio()) {
-            base::Optional<LayoutUnit> definite_inline_size;
+            absl::optional<LayoutUnit> definite_inline_size;
             if (!child_style.LogicalWidth().IsAuto()) {
               definite_inline_size = ResolveMainInlineLength(
                   flex_basis_space, child_style,
@@ -727,8 +727,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
             // This code block is needed to make
             // flex-aspect-ratio-img-column-017.html pass, but the test may be
             // wrong. https://github.com/web-platform-tests/wpt/issues/27653
-            base::Optional<LayoutUnit> computed_inline_size;
-            base::Optional<LayoutUnit> computed_block_size;
+            absl::optional<LayoutUnit> computed_inline_size;
+            absl::optional<LayoutUnit> computed_block_size;
             child.IntrinsicSize(&computed_inline_size, &computed_block_size);
 
             // The 150 is for replaced elements that have no size, which SVG
@@ -894,7 +894,7 @@ NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
 scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   // Freezing the scrollbars for the sub-tree shouldn't be strictly necessary,
   // but we do this just in case we trigger an unstable layout.
-  base::Optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
+  absl::optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
       freeze_scrollbars;
   if (ignore_child_scrollbar_changes_)
     freeze_scrollbars.emplace();
@@ -1133,7 +1133,7 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
                                    BorderScrollbarPadding().block_start);
   }
 
-  base::Optional<LayoutUnit> fallback_baseline;
+  absl::optional<LayoutUnit> fallback_baseline;
 
   bool success = true;
   for (FlexLine& line_context : line_contexts) {
@@ -1255,7 +1255,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
       container_builder_.Children();
   if (children.size() < 1) {
     const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
-    base::Optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine(
+    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine(
         layout_block->IsHorizontalWritingMode() ? kHorizontalLine
                                                 : kVerticalLine);
     if (container_builder_.Baseline() != baseline) {
@@ -1270,7 +1270,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   const NGConstraintSpace& space = ConstraintSpace();
   NGBoxFragment fragment(space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(*child.fragment));
-  base::Optional<LayoutUnit> child_baseline =
+  absl::optional<LayoutUnit> child_baseline =
       space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kFirstLine
           ? fragment.FirstBaseline()
           : fragment.Baseline();
@@ -1286,7 +1286,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
     const FlexItem& flex_item,
     const NGBoxFragment& fragment,
     LayoutUnit block_offset,
-    base::Optional<LayoutUnit>* fallback_baseline) {
+    absl::optional<LayoutUnit>* fallback_baseline) {
   // Check if we've already found an appropriate baseline.
   if (container_builder_.Baseline())
     return;

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_RECORD_TEST_H_
 
 #include <utility>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/boolean_or_byte_string_byte_string_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/float_or_string_element_record.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -31,8 +31,8 @@ class RecordTest final : public ScriptWrappable {
   Vector<std::pair<String, int32_t>> getStringLongRecord();
 
   void setNullableStringLongRecord(
-      const base::Optional<Vector<std::pair<String, int32_t>>>& arg);
-  base::Optional<Vector<std::pair<String, int32_t>>>
+      const absl::optional<Vector<std::pair<String, int32_t>>>& arg);
+  absl::optional<Vector<std::pair<String, int32_t>>>
   getNullableStringLongRecord();
 
   Vector<std::pair<String, String>> GetByteStringByteStringRecord();
@@ -69,7 +69,7 @@ class RecordTest final : public ScriptWrappable {
 
  private:
   Vector<std::pair<String, int32_t>> string_long_record_;
-  base::Optional<Vector<std::pair<String, int32_t>>>
+  absl::optional<Vector<std::pair<String, int32_t>>>
       nullable_string_long_record_;
   Vector<std::pair<String, String>> byte_string_byte_string_record_;
   HeapVector<std::pair<String, Member<Element>>> string_element_record_;

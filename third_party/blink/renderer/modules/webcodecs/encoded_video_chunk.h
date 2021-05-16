@@ -27,7 +27,7 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
   // encoded_video_chunk.idl implementation.
   String type() const;
   int64_t timestamp() const;
-  base::Optional<uint64_t> duration() const;
+  absl::optional<uint64_t> duration() const;
   DOMArrayBuffer* data() const;
 
   void Trace(Visitor* visitor) const override {
@@ -38,7 +38,7 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
  private:
   base::TimeDelta timestamp_;
   bool key_frame_ = false;
-  base::Optional<base::TimeDelta> duration_;
+  absl::optional<base::TimeDelta> duration_;
   Member<DOMArrayBuffer> buffer_;
 };
 

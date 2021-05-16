@@ -70,7 +70,7 @@ class BluetoothRemoteGATTService final : public ScriptWrappable {
       mojom::blink::WebBluetoothGATTQueryQuantity,
       ScriptPromiseResolver*,
       mojom::blink::WebBluetoothResult,
-      base::Optional<
+      absl::optional<
           Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
           characteristics);
 

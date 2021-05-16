@@ -31,9 +31,9 @@ n * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_FETCH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_FETCH_CONTEXT_H_
 
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
@@ -73,13 +73,13 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   ~FrameFetchContext() override = default;
 
   void AddAdditionalRequestHeaders(ResourceRequest&) override;
-  base::Optional<ResourceRequestBlockedReason> CanRequest(
+  absl::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType type,
       const ResourceRequest& resource_request,
       const KURL& url,
       const ResourceLoaderOptions& options,
       ReportingDisposition reporting_disposition,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
       const override;
   mojom::FetchCacheMode ResourceRequestCachePolicy(
       const ResourceRequest&,
@@ -113,13 +113,13 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const base::Optional<KURL>& alias_url,
+      const absl::optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 
   bool SendConversionRequestInsteadOfRedirecting(
       const KURL& url,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
       ReportingDisposition reporting_disposition,
       const String& devtools_request_id) const override;
 
@@ -167,10 +167,10 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       override;
   bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType request_context,
-      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
+      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
-      const base::Optional<String>& devtools_id) const override;
+      const absl::optional<String>& devtools_id) const override;
   bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                  const KURL&) const override;
 
@@ -182,7 +182,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;
   String GetUserAgent() const;
-  base::Optional<UserAgentMetadata> GetUserAgentMetadata() const;
+  absl::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const PermissionsPolicy* GetPermissionsPolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_CARET_POSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_CARET_POSITION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -40,7 +40,7 @@ struct NGCaretPosition {
 
   NGInlineCursor cursor;
   NGCaretPositionType position_type;
-  base::Optional<unsigned> text_offset;
+  absl::optional<unsigned> text_offset;
 };
 
 // Given an inline formatting context, a text offset in the context and a text

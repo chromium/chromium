@@ -16,7 +16,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEBSOCKET_HANDSHAKE_THROTTLE_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ class WebSocketHandshakeThrottle {
   // the callback. Callback must not be called after this object has been
   // destroyed.
   using OnCompletion =
-      base::OnceCallback<void(const base::Optional<WebString>& error)>;
+      base::OnceCallback<void(const absl::optional<WebString>& error)>;
   virtual void ThrottleHandshake(const WebURL&, OnCompletion) = 0;
 };
 

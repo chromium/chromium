@@ -333,8 +333,8 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   virtual void Coalesce(const WebInputEvent& event) = 0;
 
   // Returns the scroll input type if this is a scroll event; otherwise,
-  // returns base::nullopt.
-  virtual base::Optional<ui::ScrollInputType> GetScrollInputType() const;
+  // returns absl::nullopt.
+  virtual absl::optional<ui::ScrollInputType> GetScrollInputType() const;
 
   // Convert this WebInputEvent::Type to a ui::EventType. Note that this is
   // not a 1:1 relationship. Multiple blink types convert to the same

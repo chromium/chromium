@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -29,19 +29,19 @@ struct ImpressionFeatures {
 
 // Returns the WebImpression struct with all data declared by impression
 // related attributes on |element|. If the impression attributes do not contain
-// allowed values, base::nullopt is returned.
-base::Optional<WebImpression> GetImpressionForAnchor(
+// allowed values, absl::nullopt is returned.
+absl::optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element);
 
 // Same as GetImpressionForAnchor(), but gets an impression specified by the
 // features string associated with a window.open call.
-base::Optional<WebImpression> GetImpressionFromWindowFeatures(
+absl::optional<WebImpression> GetImpressionFromWindowFeatures(
     ExecutionContext* execution_context,
     const ImpressionFeatures& features);
 
 // Same as GetImpressionForAnchor(), but gets an impression specified by an
 // AttributionSourceParams dictionary associated with a window.open call.
-base::Optional<WebImpression> GetImpressionForParams(
+absl::optional<WebImpression> GetImpressionForParams(
     ExecutionContext* execution_context,
     const AttributionSourceParams* params);
 

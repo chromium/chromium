@@ -70,7 +70,7 @@ static inline IntRect NormalizeRect(const IntRect& rect) {
 }
 
 ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
-                                        base::Optional<IntRect> crop_rect,
+                                        absl::optional<IntRect> crop_rect,
                                         IntSize source_size) {
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == kImageOrientationFlipY) {
@@ -565,7 +565,7 @@ sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
 }
 
 ImageBitmap::ImageBitmap(ImageElementBase* image,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
   DCHECK(!input->IsTextureBacked());
@@ -634,7 +634,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 }
 
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, video->BitmapSourceSize());
@@ -660,7 +660,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
 }
 
 ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> image_input =
@@ -686,7 +686,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
 }
 
 ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
@@ -725,7 +725,7 @@ ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
 }
 
 ImageBitmap::ImageBitmap(ImageData* data,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, data->BitmapSourceSize());
@@ -806,7 +806,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
 }
 
 ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<StaticBitmapImage> input = bitmap->BitmapImage();
   if (!input)
@@ -829,7 +829,7 @@ ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
 }
 
 ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
-                         base::Optional<IntRect> crop_rect,
+                         absl::optional<IntRect> crop_rect,
                          const ImageBitmapOptions* options) {
   bool origin_clean = image->OriginClean();
   ParsedOptions parsed_options =
@@ -947,7 +947,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
 }
 
 ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
-                                       base::Optional<IntRect> crop_rect,
+                                       absl::optional<IntRect> crop_rect,
                                        ScriptState* script_state,
                                        const ImageBitmapOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -1066,7 +1066,7 @@ IntSize ImageBitmap::Size() const {
 }
 
 ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,
-                                             base::Optional<IntRect> crop_rect,
+                                             absl::optional<IntRect> crop_rect,
                                              const ImageBitmapOptions* options,
                                              ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(

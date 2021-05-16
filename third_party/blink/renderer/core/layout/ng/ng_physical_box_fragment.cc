@@ -125,7 +125,7 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
   WritingModeConverter converter(writing_direction, physical_size);
 
-  base::Optional<PhysicalRect> inflow_bounds;
+  absl::optional<PhysicalRect> inflow_bounds;
   if (builder->inflow_bounds_)
     inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
 
@@ -211,7 +211,7 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
 scoped_refptr<const NGPhysicalBoxFragment>
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other,
-    const base::Optional<PhysicalRect> updated_layout_overflow) {
+    const absl::optional<PhysicalRect> updated_layout_overflow) {
   PhysicalRect layout_overflow = other.LayoutOverflow();
   bool has_layout_overflow = other.has_layout_overflow_;
 
@@ -262,7 +262,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     const NGPhysicalBoxStrut& borders,
     bool has_padding,
     const NGPhysicalBoxStrut& padding,
-    const base::Optional<PhysicalRect>& inflow_bounds,
+    const absl::optional<PhysicalRect>& inflow_bounds,
     bool has_fragment_items,
     bool has_rare_data,
     WritingMode block_or_line_writing_mode)
@@ -406,7 +406,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     if (post_layout->IsFragmentainerBox()) {
       const auto& box_fragment = To<NGPhysicalBoxFragment>(*post_layout);
 
-      base::Optional<PhysicalRect> recalculated_layout_overflow;
+      absl::optional<PhysicalRect> recalculated_layout_overflow;
       if (recalculate_layout_overflow) {
         recalculated_layout_overflow =
             NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
@@ -881,8 +881,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     const WritingDirectionMode writing_direction;
     const LayoutUnit border_inline_start;
     const LayoutUnit border_block_start;
-    base::Optional<NGPhysicalBoxStrut> padding_strut;
-    base::Optional<PhysicalRect> lineboxes_enclosing_rect;
+    absl::optional<NGPhysicalBoxStrut> padding_strut;
+    absl::optional<PhysicalRect> lineboxes_enclosing_rect;
     PhysicalRect children_overflow;
     TextHeightType height_type;
   } context(*this, height_type);

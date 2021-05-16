@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TYPE_AHEAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TYPE_AHEAD_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -66,7 +66,7 @@ class CORE_EXPORT TypeAhead {
  private:
   TypeAheadDataSource* data_source_;
   // platform timestamp of last keyboard event in seconds
-  base::Optional<base::TimeTicks> last_type_time_;
+  absl::optional<base::TimeTicks> last_type_time_;
   UChar repeating_char_;
   StringBuilder buffer_;
 };

@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -24,10 +24,10 @@ inline base::StringPiece16 TruncateString16(const std::u16string& string) {
   return base::StringPiece16(string).substr(0, 4 * 1024);
 }
 
-inline base::Optional<base::StringPiece16> TruncateOptionalString16(
-    const base::Optional<std::u16string>& string) {
+inline absl::optional<base::StringPiece16> TruncateOptionalString16(
+    const absl::optional<std::u16string>& string) {
   if (!string)
-    return base::nullopt;
+    return absl::nullopt;
 
   return TruncateString16(*string);
 }
@@ -45,22 +45,22 @@ struct BLINK_COMMON_EXPORT
     *manifest = ::blink::Manifest();
   }
 
-  static base::Optional<base::StringPiece16> name(
+  static absl::optional<base::StringPiece16> name(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.name);
   }
 
-  static base::Optional<base::StringPiece16> short_name(
+  static absl::optional<base::StringPiece16> short_name(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.short_name);
   }
 
-  static base::Optional<base::StringPiece16> description(
+  static absl::optional<base::StringPiece16> description(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.description);
   }
 
-  static base::Optional<base::StringPiece16> gcm_sender_id(
+  static absl::optional<base::StringPiece16> gcm_sender_id(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.gcm_sender_id);
   }
@@ -118,7 +118,7 @@ struct BLINK_COMMON_EXPORT
     return manifest.shortcuts;
   }
 
-  static const base::Optional<::blink::Manifest::ShareTarget>& share_target(
+  static const absl::optional<::blink::Manifest::ShareTarget>& share_target(
       const ::blink::Manifest& manifest) {
     return manifest.share_target;
   }
@@ -138,7 +138,7 @@ struct BLINK_COMMON_EXPORT
     return manifest.url_handlers;
   }
 
-  static const base::Optional<::blink::Manifest::NoteTaking>& note_taking(
+  static const absl::optional<::blink::Manifest::NoteTaking>& note_taking(
       const ::blink::Manifest& manifest) {
     return manifest.note_taking;
   }
@@ -195,12 +195,12 @@ struct BLINK_COMMON_EXPORT
     return internal::TruncateString16(shortcut.name);
   }
 
-  static base::Optional<base::StringPiece16> short_name(
+  static absl::optional<base::StringPiece16> short_name(
       const ::blink::Manifest::ShortcutItem& shortcut) {
     return internal::TruncateOptionalString16(shortcut.short_name);
   }
 
-  static base::Optional<base::StringPiece16> description(
+  static absl::optional<base::StringPiece16> description(
       const ::blink::Manifest::ShortcutItem& shortcut) {
     return internal::TruncateOptionalString16(shortcut.description);
   }
@@ -222,7 +222,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestRelatedApplicationDataView,
                  ::blink::Manifest::RelatedApplication> {
-  static base::Optional<base::StringPiece16> platform(
+  static absl::optional<base::StringPiece16> platform(
       const ::blink::Manifest::RelatedApplication& related_application) {
     return internal::TruncateOptionalString16(related_application.platform);
   }
@@ -232,7 +232,7 @@ struct BLINK_COMMON_EXPORT
     return related_application.url;
   }
 
-  static base::Optional<base::StringPiece16> id(
+  static absl::optional<base::StringPiece16> id(
       const ::blink::Manifest::RelatedApplication& related_application) {
     return internal::TruncateOptionalString16(related_application.id);
   }
@@ -286,15 +286,15 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestShareTargetParamsDataView,
                  ::blink::Manifest::ShareTargetParams> {
-  static const base::Optional<base::StringPiece16> text(
+  static const absl::optional<base::StringPiece16> text(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
     return internal::TruncateOptionalString16(share_target_params.text);
   }
-  static const base::Optional<base::StringPiece16> title(
+  static const absl::optional<base::StringPiece16> title(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
     return internal::TruncateOptionalString16(share_target_params.title);
   }
-  static const base::Optional<base::StringPiece16> url(
+  static const absl::optional<base::StringPiece16> url(
       const ::blink::Manifest::ShareTargetParams& share_target_params) {
     return internal::TruncateOptionalString16(share_target_params.url);
   }

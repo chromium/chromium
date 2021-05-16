@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_attributes_builder.h"
 
 #include "base/containers/adapters.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
@@ -204,7 +204,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
   LayoutAttributesStack attr_stack;
   unsigned addressable_index = 0;
   bool in_text_path = false;
-  base::Optional<unsigned> text_path_start;
+  absl::optional<unsigned> text_path_start;
   bool first_char_in_text_path = false;
   const bool horizontal =
       IsHorizontalWritingMode(block_flow_->StyleRef().GetWritingMode());

@@ -69,7 +69,7 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
     return;
 
   // Note: .Ascii() would convert tab to ?, which is undesirable.
-  base::Optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
+  absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
       FilterAcceptCH(network::ParseClientHintsHeader(header_value.Latin1()),
                      RuntimeEnabledFeatures::LangClientHintHeaderEnabled(),
                      UserAgentClientHintEnabled());

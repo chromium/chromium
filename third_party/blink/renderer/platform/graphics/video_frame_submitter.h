@@ -9,7 +9,6 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_resource_provider.h"
@@ -183,7 +183,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   base::OneShotTimer empty_frame_timer_;
 
-  base::Optional<int> last_frame_id_;
+  absl::optional<int> last_frame_id_;
 
   cc::FrameSequenceTrackerCollection frame_trackers_;
 

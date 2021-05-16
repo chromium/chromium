@@ -429,7 +429,7 @@ class CORE_EXPORT DisplayLockContext final
   // computed style).
   bool set_requested_state_scope_ = false;
 
-  base::Optional<ScrollOffset> stashed_scroll_offset_;
+  absl::optional<ScrollOffset> stashed_scroll_offset_;
 };
 
 }  // namespace blink

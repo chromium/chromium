@@ -35,10 +35,10 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/speech_recognition_client.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -475,7 +475,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Update a context menu data for testing.
   virtual void UpdateContextMenuDataForTesting(
       const ContextMenuData&,
-      const base::Optional<gfx::Point>&) {}
+      const absl::optional<gfx::Point>&) {}
 
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.
@@ -612,8 +612,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Asks the embedder what values to send for User Agent client hints
   // (or nullopt if none).  Used only when UserAgentOverride() is non-empty;
   // Platform::current()->UserAgentMetadata() is used otherwise.
-  virtual base::Optional<UserAgentMetadata> UserAgentMetadataOverride() {
-    return base::nullopt;
+  virtual absl::optional<UserAgentMetadata> UserAgentMetadataOverride() {
+    return absl::nullopt;
   }
 
   // Do not track ----------------------------------------------------

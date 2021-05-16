@@ -166,7 +166,7 @@ class CORE_EXPORT WorkerGlobalScope
   // Spec: https://html.spec.whatwg.org/C/#run-a-worker Step 12 is completed,
   // and it's ready to proceed to Step 23.
   void WorkerScriptFetchFinished(Script&,
-                                 base::Optional<v8_inspector::V8StackTraceId>);
+                                 absl::optional<v8_inspector::V8StackTraceId>);
 
   // Fetches and evaluates the top-level classic script.
   virtual void FetchAndRunClassicScript(
@@ -313,7 +313,7 @@ class CORE_EXPORT WorkerGlobalScope
   ScriptEvalState script_eval_state_;
 
   Member<Script> worker_script_;
-  base::Optional<v8_inspector::V8StackTraceId> stack_id_;
+  absl::optional<v8_inspector::V8StackTraceId> stack_id_;
 
   HttpsState https_state_;
 

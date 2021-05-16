@@ -112,10 +112,10 @@ class PLATFORM_EXPORT BlobData {
       const String& path);
   static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
       const String& path,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
   static std::unique_ptr<BlobData> CreateForFileSystemURLWithUnknownSize(
       const KURL& file_system_url,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
 
   // Detaches from current thread so that it can be passed to another thread.
   void DetachFromCurrentThread();
@@ -133,7 +133,7 @@ class PLATFORM_EXPORT BlobData {
   void AppendFile(const String& path,
                   int64_t offset,
                   int64_t length,
-                  const base::Optional<base::Time>& expected_modification_time);
+                  const absl::optional<base::Time>& expected_modification_time);
 
   // The given blob must not be a file with unknown size. Please use the
   // File::appendTo instead.
@@ -144,7 +144,7 @@ class PLATFORM_EXPORT BlobData {
       const KURL&,
       int64_t offset,
       int64_t length,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
   void AppendText(const String&, bool normalize_line_endings_to_native);
 
   // The value of the size property for a Blob who has this data.
@@ -221,7 +221,7 @@ class PLATFORM_EXPORT BlobDataHandle
   // This does synchronous IPC, and possibly synchronous file operations. Think
   // twice before calling this function.
   bool CaptureSnapshot(uint64_t* snapshot_size,
-                       base::Optional<base::Time>* snapshot_modification_time);
+                       absl::optional<base::Time>* snapshot_modification_time);
 
   void SetBlobRemoteForTesting(mojo::PendingRemote<mojom::blink::Blob> remote) {
     MutexLocker locker(blob_remote_mutex_);

@@ -88,13 +88,13 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   // Video codec and its encoding profile/level.
   struct MODULES_EXPORT CodecProfile {
     CodecId codec_id;
-    base::Optional<media::VideoCodecProfile> profile;
-    base::Optional<uint8_t> level;
+    absl::optional<media::VideoCodecProfile> profile;
+    absl::optional<uint8_t> level;
 
     explicit CodecProfile(CodecId codec_id);
     CodecProfile(CodecId codec_id,
-                 base::Optional<media::VideoCodecProfile> opt_profile,
-                 base::Optional<uint8_t> opt_level);
+                 absl::optional<media::VideoCodecProfile> opt_profile,
+                 absl::optional<uint8_t> opt_level);
     CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
                  uint8_t level);

@@ -32,8 +32,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // fragment-tree consistency.
   static scoped_refptr<const NGPhysicalBoxFragment>
   CloneWithPostLayoutFragments(const NGPhysicalBoxFragment& other,
-                               const base::Optional<PhysicalRect>
-                                   updated_layout_overflow = base::nullopt);
+                               const absl::optional<PhysicalRect>
+                                   updated_layout_overflow = absl::nullopt);
 
   using MulticolCollection =
       HashMap<LayoutBox*, NGMulticolWithPendingOOFs<PhysicalOffset>>;
@@ -46,7 +46,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         const NGPhysicalBoxStrut& borders,
                         bool has_padding,
                         const NGPhysicalBoxStrut& padding,
-                        const base::Optional<PhysicalRect>& inflow_bounds,
+                        const absl::optional<PhysicalRect>& inflow_bounds,
                         bool has_fragment_items,
                         bool has_rare_data,
                         WritingMode block_or_line_writing_mode);
@@ -122,16 +122,16 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return const_has_fragment_items_ ? ComputeItemsAddress() : nullptr;
   }
 
-  base::Optional<LayoutUnit> Baseline() const {
+  absl::optional<LayoutUnit> Baseline() const {
     if (has_baseline_)
       return baseline_;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<LayoutUnit> LastBaseline() const {
+  absl::optional<LayoutUnit> LastBaseline() const {
     if (has_last_baseline_)
       return last_baseline_;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   PhysicalRect TableGridRect() const {
@@ -177,16 +177,16 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   // Returns the bounds of any inflow children for this fragment (specifically
-  // no out-of-flow positioned objects). This will return |base::nullopt| if:
+  // no out-of-flow positioned objects). This will return |absl::nullopt| if:
   //  - The fragment is *not* a scroll container.
   //  - The scroll container contains no inflow children.
   // This is normally the union of all inflow children's border-box rects
   // (without relative positioning applied), however for grid layout it is the
   // size and position of the grid instead.
   // This is used for scrollable overflow calculations.
-  const base::Optional<PhysicalRect> InflowBounds() const {
+  const absl::optional<PhysicalRect> InflowBounds() const {
     if (!has_inflow_bounds_)
-      return base::nullopt;
+      return absl::nullopt;
     return *ComputeInflowBoundsAddress();
   }
 

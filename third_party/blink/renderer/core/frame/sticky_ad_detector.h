@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_STICKY_AD_DETECTOR_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
@@ -45,7 +45,7 @@ class CORE_EXPORT StickyAdDetector {
  private:
   void OnLargeStickyAdDetected(LocalFrame* main_frame);
 
-  base::Optional<base::Time> last_detection_time_;
+  absl::optional<base::Time> last_detection_time_;
 
   DOMNodeId candidate_id_;
   int candidate_height_;

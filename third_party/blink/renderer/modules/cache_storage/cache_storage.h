@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_CACHE_STORAGE_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -66,7 +66,7 @@ class CacheStorage final : public ScriptWrappable,
   Member<CacheStorageBlobClientList> blob_client_list_;
 
   HeapMojoRemote<mojom::blink::CacheStorage> cache_storage_remote_;
-  base::Optional<bool> allowed_;
+  absl::optional<bool> allowed_;
   bool ever_used_;
 
   DISALLOW_COPY_AND_ASSIGN(CacheStorage);

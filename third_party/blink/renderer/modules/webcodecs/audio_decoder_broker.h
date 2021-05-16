@@ -12,11 +12,11 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/decode_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -46,7 +46,7 @@ class CrossThreadAudioDecoderClient {
   };
 
   virtual void OnInitialize(media::Status status,
-                            base::Optional<DecoderDetails> details) = 0;
+                            absl::optional<DecoderDetails> details) = 0;
 
   virtual void OnDecodeDone(int cb_id, media::Status status) = 0;
 
@@ -97,7 +97,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
 
   // MediaAudioTaskWrapper::CrossThreadAudioDecoderClient
   void OnInitialize(media::Status status,
-                    base::Optional<DecoderDetails> details) override;
+                    absl::optional<DecoderDetails> details) override;
   void OnDecodeDone(int cb_id, media::Status status) override;
   void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) override;
   void OnReset(int cb_id) override;
@@ -119,7 +119,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   std::unique_ptr<MediaAudioTaskWrapper> media_tasks_;
 
   // Wrapper state for DecoderType(), IsPlatformDecoder() and others.
-  base::Optional<DecoderDetails> decoder_details_;
+  absl::optional<DecoderDetails> decoder_details_;
 
   // Pending InitCB saved from the last call to Initialize();
   InitCB init_cb_;

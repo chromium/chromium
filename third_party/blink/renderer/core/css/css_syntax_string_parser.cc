@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 // https://drafts.css-houdini.org/css-properties-values-api-1/#supported-names
-base::Optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
+absl::optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   if (type == "length")
     return CSSSyntaxType::kLength;
   if (type == "number")
@@ -49,7 +49,7 @@ base::Optional<CSSSyntaxType> ParseSyntaxType(StringView type) {
   }
   if (type == "custom-ident")
     return CSSSyntaxType::kCustomIdent;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool IsPreMultiplied(CSSSyntaxType type) {
@@ -61,9 +61,9 @@ bool IsPreMultiplied(CSSSyntaxType type) {
 CSSSyntaxStringParser::CSSSyntaxStringParser(const String& string)
     : string_(string.StripWhiteSpace()), input_(string_) {}
 
-base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
+absl::optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
   if (string_.IsEmpty())
-    return base::nullopt;
+    return absl::nullopt;
   if (string_.length() == 1 && string_[0] == '*')
     return CSSSyntaxDefinition::CreateUniversal();
 
@@ -71,7 +71,7 @@ base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
 
   while (true) {
     if (!ConsumeSyntaxComponent(components))
-      return base::nullopt;
+      return absl::nullopt;
     input_.AdvanceUntilNonWhitespace();
     UChar cc = input_.NextInputChar();
     input_.Advance();
@@ -79,7 +79,7 @@ base::Optional<CSSSyntaxDefinition> CSSSyntaxStringParser::Parse() {
       break;
     if (cc == '|')
       continue;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return CSSSyntaxDefinition(std::move(components));

@@ -85,7 +85,7 @@ class TestAnimationEffect : public AnimationEffect {
   void UpdateInheritedTime(double time, TimingUpdateReason reason) {
     event_delegate_->Reset();
     AnimationEffect::UpdateInheritedTime(AnimationTimeDelta::FromSecondsD(time),
-                                         /*inherited_phase*/ base::nullopt,
+                                         /*inherited_phase*/ absl::nullopt,
                                          reason);
   }
 
@@ -96,7 +96,7 @@ class TestAnimationEffect : public AnimationEffect {
   }
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<AnimationTimeDelta> local_time,
+      absl::optional<AnimationTimeDelta> local_time,
       AnimationTimeDelta time_to_next_iteration) const override {
     local_time_ = local_time;
     time_to_next_iteration_ = time_to_next_iteration;
@@ -109,8 +109,8 @@ class TestAnimationEffect : public AnimationEffect {
     return result;
   }
 
-  base::Optional<AnimationTimeDelta> TakeTimeToNextIteration() {
-    const base::Optional<AnimationTimeDelta> result = time_to_next_iteration_;
+  absl::optional<AnimationTimeDelta> TakeTimeToNextIteration() {
+    const absl::optional<AnimationTimeDelta> result = time_to_next_iteration_;
     time_to_next_iteration_.reset();
     return result;
   }
@@ -122,8 +122,8 @@ class TestAnimationEffect : public AnimationEffect {
 
  private:
   Member<TestAnimationEffectEventDelegate> event_delegate_;
-  mutable base::Optional<AnimationTimeDelta> local_time_;
-  mutable base::Optional<AnimationTimeDelta> time_to_next_iteration_;
+  mutable absl::optional<AnimationTimeDelta> local_time_;
+  mutable absl::optional<AnimationTimeDelta> time_to_next_iteration_;
 };
 
 TEST(AnimationAnimationEffectTest, Sanity) {
@@ -708,7 +708,7 @@ TEST(AnimationAnimationEffectTest, TimeToEffectChange) {
 
   animation_node->UpdateInheritedTime(0);
   EXPECT_EQ(0, animation_node->TakeLocalTime());
-  base::Optional<AnimationTimeDelta> time_to_next_iteration =
+  absl::optional<AnimationTimeDelta> time_to_next_iteration =
       animation_node->TakeTimeToNextIteration();
   EXPECT_TRUE(time_to_next_iteration);
   EXPECT_TRUE(time_to_next_iteration->is_max());

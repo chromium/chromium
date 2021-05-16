@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DICTIONARY_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DICTIONARY_TEST_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/double_or_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/internal_enum_or_internal_enum_sequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -51,37 +51,37 @@ class DictionaryTest : public ScriptWrappable {
   void GetDerivedInternals(InternalDictionaryDerived*);
   void GetDerivedDerivedInternals(InternalDictionaryDerivedDerived*);
 
-  // The reason to use base::Optional<T> is convenience; we use
-  // base::Optional<T> here to record whether the member field is set or not.
-  // Some members are not wrapped with Optional because:
+  // The reason to use absl::optional<T> is convenience; we use
+  // absl::optional<T> here to record whether the member field is set or not.
+  // Some members are not wrapped with optional because:
   //  - |longMemberWithDefault| has a non-null default value
   //  - String and PtrTypes can express whether they are null
-  //  - base::Optional does not work with GarbageCollected types when used on
+  //  - absl::optional does not work with GarbageCollected types when used on
   //  heap.
-  base::Optional<int> long_member_;
-  base::Optional<int> long_member_with_clamp_;
-  base::Optional<int> long_member_with_enforce_range_;
+  absl::optional<int> long_member_;
+  absl::optional<int> long_member_with_clamp_;
+  absl::optional<int> long_member_with_enforce_range_;
   int long_member_with_default_;
-  base::Optional<int> long_or_null_member_;
-  base::Optional<int> long_or_null_member_with_default_;
-  base::Optional<bool> boolean_member_;
-  base::Optional<double> double_member_;
-  base::Optional<double> unrestricted_double_member_;
-  base::Optional<String> string_member_;
+  absl::optional<int> long_or_null_member_;
+  absl::optional<int> long_or_null_member_with_default_;
+  absl::optional<bool> boolean_member_;
+  absl::optional<double> double_member_;
+  absl::optional<double> unrestricted_double_member_;
+  absl::optional<String> string_member_;
   String string_member_with_default_;
-  base::Optional<String> byte_string_member_;
-  base::Optional<String> usv_string_member_;
-  base::Optional<Vector<String>> string_sequence_member_;
+  absl::optional<String> byte_string_member_;
+  absl::optional<String> usv_string_member_;
+  absl::optional<Vector<String>> string_sequence_member_;
   Vector<String> string_sequence_member_with_default_;
-  base::Optional<Vector<String>> string_sequence_or_null_member_;
-  base::Optional<String> enum_member_;
+  absl::optional<Vector<String>> string_sequence_or_null_member_;
+  absl::optional<String> enum_member_;
   String enum_member_with_default_;
 #ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
-  // The outer Optional<> represents if the member is missing, and the inner
-  // Optional<> represents if the member is a null value.
-  base::Optional<base::Optional<V8InternalEnum>> enum_or_null_member_;
+  // The outer optional<> represents if the member is missing, and the inner
+  // optional<> represents if the member is a null value.
+  absl::optional<absl::optional<V8InternalEnum>> enum_or_null_member_;
 #else
-  base::Optional<String> enum_or_null_member_;
+  absl::optional<String> enum_or_null_member_;
 #endif
   Member<Element> element_member_;
   Member<Element> element_or_null_member_;
@@ -91,11 +91,11 @@ class DictionaryTest : public ScriptWrappable {
   DoubleOrString double_or_string_member_;
   Member<HeapVector<DoubleOrString>> double_or_string_sequence_or_null_member_;
   Member<EventTarget> event_target_or_null_member_;
-  base::Optional<String> derived_string_member_;
+  absl::optional<String> derived_string_member_;
   String derived_string_member_with_default_;
-  base::Optional<String> derived_derived_string_member_;
+  absl::optional<String> derived_derived_string_member_;
   bool required_boolean_member_;
-  base::Optional<HashMap<String, String>> dictionary_member_properties_;
+  absl::optional<HashMap<String, String>> dictionary_member_properties_;
   InternalEnumOrInternalEnumSequence internal_enum_or_internal_enum_sequence_;
   ScriptValue any_member_;
   Member<V8TestCallback> callback_function_member_;

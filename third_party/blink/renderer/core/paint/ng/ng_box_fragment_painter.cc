@@ -441,7 +441,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     // Apply overflow clip if needed.
     // reveal-caret-of-multiline-contenteditable.html needs this.
     // TDOO(yoisn): We should share this code with |BlockPainter::Paint()|
-    base::Optional<ScopedPaintChunkProperties> paint_chunk_properties;
+    absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
     if (const auto* fragment = paint_state.FragmentToPaint()) {
       if (const auto* properties = fragment->PaintProperties()) {
         if (const auto* overflow_clip = properties->OverflowClip()) {
@@ -897,7 +897,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
 
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
-  base::Optional<ScopedBoxContentsPaintState> contents_paint_state;
+  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   bool painting_scrolling_background =
       IsPaintingScrollingBackground(paint_info);
   IntRect visual_rect;
@@ -1000,7 +1000,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     const DisplayItemClient& background_client) {
   const auto& layout_box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
 
-  base::Optional<DisplayItemCacheSkipper> cache_skipper;
+  absl::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
       ShouldSkipPaintUnderInvalidationChecking(layout_box))
     cache_skipper.emplace(paint_info.context);
@@ -1342,7 +1342,7 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
-  base::Optional<ScopedDisplayItemFragment> display_item_fragment;
+  absl::optional<ScopedDisplayItemFragment> display_item_fragment;
   if (ShouldRecordHitTestData(paint_info)) {
     display_item_fragment.emplace(paint_info.context, line_fragment_id);
     PhysicalRect border_box = line_box_fragment.LocalRect();
@@ -1545,7 +1545,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
       // PaintLayers (which should not be fragmented but legacy layout does) and
       // will produce duplicated PaintChunk ids for the fragments. Skip display
       // item cache to tolerate that.
-      base::Optional<DisplayItemCacheSkipper> skipper;
+      absl::optional<DisplayItemCacheSkipper> skipper;
       if (paint_info.context.GetPaintController().CurrentFragment())
         skipper.emplace(paint_info.context);
       PaintInlineChildBoxUsingLegacyFallback(child_fragment, paint_info);

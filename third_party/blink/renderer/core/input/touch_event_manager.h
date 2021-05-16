@@ -135,7 +135,7 @@ class CORE_EXPORT TouchEventManager final
   // action which is sent to the browser after handling each dispatched
   // 'touchstart' is the intersection of all the previously calculated effective
   // touch action values during the sequence.
-  base::Optional<TouchAction> delayed_effective_touch_action_;
+  absl::optional<TouchAction> delayed_effective_touch_action_;
 };
 
 }  // namespace blink

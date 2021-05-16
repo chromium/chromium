@@ -29,7 +29,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index_or_idb_cursor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -84,7 +84,7 @@ void IDBOpenDBRequest::EnqueueBlocked(int64_t old_version) {
   IDB_TRACE("IDBOpenDBRequest::onBlocked()");
   if (!ShouldEnqueueEvent())
     return;
-  base::Optional<uint64_t> new_version_nullable;
+  absl::optional<uint64_t> new_version_nullable;
   if (version_ != IDBDatabaseMetadata::kDefaultVersion) {
     new_version_nullable = version_;
   }
@@ -170,7 +170,7 @@ void IDBOpenDBRequest::EnqueueResponse(int64_t old_version) {
   }
   SetResult(MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
   EnqueueEvent(MakeGarbageCollected<IDBVersionChangeEvent>(
-      event_type_names::kSuccess, old_version, base::nullopt));
+      event_type_names::kSuccess, old_version, absl::nullopt));
 }
 
 bool IDBOpenDBRequest::ShouldEnqueueEvent() const {

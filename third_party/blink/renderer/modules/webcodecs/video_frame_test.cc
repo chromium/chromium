@@ -234,7 +234,7 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
 
   const auto* default_options = ImageBitmapOptions::Create();
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      UnacceleratedStaticBitmapImage::Create(original_image), base::nullopt,
+      UnacceleratedStaticBitmapImage::Create(original_image), absl::nullopt,
       default_options);
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
   auto* source = MakeGarbageCollected<V8CanvasImageSource>(image_bitmap);

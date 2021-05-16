@@ -231,7 +231,7 @@ ScriptPromise ContactsManager::select(
 
 void ContactsManager::OnContactsSelected(
     ScriptPromiseResolver* resolver,
-    base::Optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
+    absl::optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!script_state->ContextIsValid()) {

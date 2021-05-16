@@ -3407,7 +3407,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     const NGConstraintSpace& new_space,
     const NGBreakToken* break_token,
     const NGEarlyBreak* early_break,
-    base::Optional<NGFragmentGeometry>* initial_fragment_geometry,
+    absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
@@ -3535,7 +3535,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     return nullptr;
 
   LayoutUnit bfc_line_offset = new_space.BfcOffset().line_offset;
-  base::Optional<LayoutUnit> bfc_block_offset =
+  absl::optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
   LayoutUnit block_offset_delta;
   NGMarginStrut end_margin_strut = cached_layout_result->EndMarginStrut();
@@ -7126,7 +7126,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
   ClearLayoutOverflow();
 
   const WritingMode writing_mode = StyleRef().GetWritingMode();
-  base::Optional<PhysicalRect> layout_overflow;
+  absl::optional<PhysicalRect> layout_overflow;
   LayoutUnit consumed_block_size;
 
   // Iterate over all the fragments and unite their individual layout-overflow

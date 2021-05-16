@@ -47,22 +47,22 @@ DeviceOrientationEvent::DeviceOrientationEvent(
     : Event(event_type, Bubbles::kNo, Cancelable::kNo),
       orientation_(orientation) {}
 
-base::Optional<double> DeviceOrientationEvent::alpha() const {
+absl::optional<double> DeviceOrientationEvent::alpha() const {
   if (orientation_->CanProvideAlpha())
     return orientation_->Alpha();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> DeviceOrientationEvent::beta() const {
+absl::optional<double> DeviceOrientationEvent::beta() const {
   if (orientation_->CanProvideBeta())
     return orientation_->Beta();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<double> DeviceOrientationEvent::gamma() const {
+absl::optional<double> DeviceOrientationEvent::gamma() const {
   if (orientation_->CanProvideGamma())
     return orientation_->Gamma();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool DeviceOrientationEvent::absolute() const {

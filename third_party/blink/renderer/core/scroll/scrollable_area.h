@@ -160,7 +160,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual const cc::SnapContainerData* GetSnapContainerData() const {
     return nullptr;
   }
-  virtual void SetSnapContainerData(base::Optional<cc::SnapContainerData>) {}
+  virtual void SetSnapContainerData(absl::optional<cc::SnapContainerData>) {}
   virtual bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) {
     return false;
   }
@@ -201,9 +201,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   //
   // NOTE: If a target position is found, then it is expected that this position
   // will be scrolled to.
-  virtual base::Optional<FloatPoint> GetSnapPositionAndSetTarget(
+  virtual absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   virtual void DidAddScrollbar(Scrollbar&, ScrollbarOrientation);

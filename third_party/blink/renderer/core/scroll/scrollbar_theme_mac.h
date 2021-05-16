@@ -98,8 +98,8 @@ class PLATFORM_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
 
   // See WebScrollbarTheme for parameters description.
   static void UpdateScrollbarsWithNSDefaults(
-      base::Optional<float> initial_button_delay,
-      base::Optional<float> autoscroll_button_delay,
+      absl::optional<float> initial_button_delay,
+      absl::optional<float> autoscroll_button_delay,
       NSScrollerStyle preferred_scroller_style,
       bool redraw,
       bool jump_on_track_click);

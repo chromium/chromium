@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCE_H_
 
-#include "base/optional.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/modules/xr/xr_native_origin_information.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -81,11 +81,11 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
     return state_.target_ray_mode;
   }
 
-  base::Optional<TransformationMatrix> MojoFromInput() const;
+  absl::optional<TransformationMatrix> MojoFromInput() const;
 
-  base::Optional<TransformationMatrix> InputFromPointer() const;
+  absl::optional<TransformationMatrix> InputFromPointer() const;
 
-  base::Optional<device::mojom::blink::XRNativeOriginInformation> nativeOrigin()
+  absl::optional<device::mojom::blink::XRNativeOriginInformation> nativeOrigin()
       const;
 
   void OnSelectStart();
@@ -155,7 +155,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
 
   // Note that UpdateGamepad should only be called after a check/recreation
   // from InvalidatesSameObject
-  void UpdateGamepad(const base::Optional<device::Gamepad>& gamepad);
+  void UpdateGamepad(const absl::optional<device::Gamepad>& gamepad);
 
   XRInputSourceEvent* CreateInputSourceEvent(const AtomicString& type);
 

@@ -49,7 +49,7 @@ constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
 // nothing if the profile isn't supported.
-base::Optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
+absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
     const media::VideoDecoderConfig& config) {
   switch (config.codec()) {
     case media::VideoCodec::kCodecAV1:
@@ -70,7 +70,7 @@ base::Optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           break;
         default:
           // Unsupported profile in WebRTC.
-          return base::nullopt;
+          return absl::nullopt;
       }
       return webrtc::SdpVideoFormat(
           "VP9", {{webrtc::kVP9FmtpProfileId,
@@ -90,7 +90,7 @@ base::Optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           break;
         default:
           // Unsupported H264 profile in WebRTC.
-          return base::nullopt;
+          return absl::nullopt;
       }
 
       const int width = config.visible_rect().width();
@@ -110,7 +110,7 @@ base::Optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
       return format;
     }
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -225,7 +225,7 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
         media::VideoColorSpace(), media::kNoTransformation, kDefaultSize,
         gfx::Rect(kDefaultSize), kDefaultSize, media::EmptyExtraData(),
         media::EncryptionScheme::kUnencrypted);
-    base::Optional<webrtc::SdpVideoFormat> format;
+    absl::optional<webrtc::SdpVideoFormat> format;
 
     // The RTCVideoDecoderAdapter is for HW decoders only, so ignore it if there
     // are no gpu_factories_.

@@ -190,7 +190,7 @@ void WidgetBase::InitializeCompositing(
   layer_tree_view_ =
       std::make_unique<LayerTreeView>(this, main_thread_scheduler);
 
-  base::Optional<cc::LayerTreeSettings> default_settings;
+  absl::optional<cc::LayerTreeSettings> default_settings;
   if (!settings) {
     const ScreenInfo& screen_info = screen_infos.current();
     default_settings = GenerateLayerTreeSettings(
@@ -856,8 +856,8 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
   ui::mojom::VirtualKeyboardVisibilityRequest last_vk_visibility_request =
       ui::mojom::VirtualKeyboardVisibilityRequest::NONE;
   bool always_hide_ime = false;
-  base::Optional<gfx::Rect> control_bounds;
-  base::Optional<gfx::Rect> selection_bounds;
+  absl::optional<gfx::Rect> control_bounds;
+  absl::optional<gfx::Rect> selection_bounds;
   if (frame_widget) {
     new_info = frame_widget->TextInputInfo();
     // This will be used to decide whether or not to show VK when VK policy is

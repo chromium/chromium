@@ -28,8 +28,8 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -84,7 +84,7 @@ class CORE_EXPORT File final : public Blob {
       UserVisibility user_visibility,
       bool has_snapshot_data,
       uint64_t size,
-      const base::Optional<base::Time>& last_modified,
+      const absl::optional<base::Time>& last_modified,
       scoped_refptr<BlobDataHandle> blob_data_handle) {
     return MakeGarbageCollected<File>(
         path, name, relative_path, user_visibility, has_snapshot_data, size,
@@ -93,7 +93,7 @@ class CORE_EXPORT File final : public Blob {
   static File* CreateFromIndexedSerialization(
       const String& name,
       uint64_t size,
-      const base::Optional<base::Time>& last_modified,
+      const absl::optional<base::Time>& last_modified,
       scoped_refptr<BlobDataHandle> blob_data_handle) {
     return MakeGarbageCollected<File>(
         String(), name, String(), kIsNotUserVisible, true, size, last_modified,
@@ -141,10 +141,10 @@ class CORE_EXPORT File final : public Blob {
        UserVisibility,
        bool has_snapshot_data,
        uint64_t size,
-       const base::Optional<base::Time>& last_modified,
+       const absl::optional<base::Time>& last_modified,
        scoped_refptr<BlobDataHandle>);
   File(const String& name,
-       const base::Optional<base::Time>& modification_time,
+       const absl::optional<base::Time>& modification_time,
        scoped_refptr<BlobDataHandle>);
   File(const String& name, const FileMetadata&, UserVisibility);
   File(const KURL& file_system_url, const FileMetadata&, UserVisibility);
@@ -212,13 +212,13 @@ class CORE_EXPORT File final : public Blob {
   // If the modification time isn't known, the current time is returned.
   base::Time LastModifiedTime() const;
 
-  // Similar to |LastModifiedTime()|, except this returns base::nullopt rather
+  // Similar to |LastModifiedTime()|, except this returns absl::nullopt rather
   // than the current time if the modified time is unknown.
   // This is used by SerializedScriptValue to serialize the last modified time
   // of a File object.
   // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
   // IPC and file operations.
-  base::Optional<base::Time> LastModifiedTimeForSerialization() const;
+  absl::optional<base::Time> LastModifiedTimeForSerialization() const;
 
   UserVisibility GetUserVisibility() const { return user_visibility_; }
 
@@ -262,8 +262,8 @@ class CORE_EXPORT File final : public Blob {
   // we retrieve the latest metadata synchronously in size(),
   // LastModifiedTime() and slice().
   // Otherwise, the snapshot metadata are used directly in those methods.
-  mutable base::Optional<uint64_t> snapshot_size_;
-  mutable base::Optional<base::Time> snapshot_modification_time_;
+  mutable absl::optional<uint64_t> snapshot_size_;
+  mutable absl::optional<base::Time> snapshot_modification_time_;
 
   String relative_path_;
 };

@@ -185,15 +185,15 @@ class TestMediaPlayerObserver final
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 
-  const base::Optional<bool>& received_media_paused_stream_ended() const {
+  const absl::optional<bool>& received_media_paused_stream_ended() const {
     return received_media_paused_stream_ended_;
   }
 
-  const base::Optional<bool>& received_muted_status() const {
+  const absl::optional<bool>& received_muted_status() const {
     return received_muted_status_type_;
   }
 
-  const base::Optional<OnMetadataChangedResult>&
+  const absl::optional<OnMetadataChangedResult>&
   received_metadata_changed_result() const {
     return received_metadata_changed_result_;
   }
@@ -205,9 +205,9 @@ class TestMediaPlayerObserver final
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   bool received_media_playing_{false};
-  base::Optional<bool> received_media_paused_stream_ended_;
-  base::Optional<bool> received_muted_status_type_;
-  base::Optional<OnMetadataChangedResult> received_metadata_changed_result_;
+  absl::optional<bool> received_media_paused_stream_ended_;
+  absl::optional<bool> received_muted_status_type_;
+  absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
   bool received_buffer_underflow_{false};
 };

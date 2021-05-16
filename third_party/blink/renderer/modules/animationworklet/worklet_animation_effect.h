@@ -18,7 +18,7 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  WorkletAnimationEffect(base::Optional<base::TimeDelta> local_time,
+  WorkletAnimationEffect(absl::optional<base::TimeDelta> local_time,
                          const Timing& timing);
 
   // Because getTiming needs to be used below, SpecifiedTiming will be used to
@@ -30,14 +30,14 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   EffectTiming* getTiming() const;
   ComputedEffectTiming* getComputedTiming() const;
 
-  base::Optional<double> localTime() const;
-  void setLocalTime(base::Optional<double> time_ms);
-  base::Optional<base::TimeDelta> local_time() const;
+  absl::optional<double> localTime() const;
+  void setLocalTime(absl::optional<double> time_ms);
+  absl::optional<base::TimeDelta> local_time() const;
 
  private:
   void UpdateInheritedTime(double inherited_time) const;
 
-  base::Optional<base::TimeDelta> local_time_;
+  absl::optional<base::TimeDelta> local_time_;
   // We chose to not call this variable "timing_" to avoid confusion with the
   // above function call getTiming() which returns a pointer to an EffectTiming
   // object, as is defined in worklet_animation_effect.idl.
@@ -45,7 +45,7 @@ class MODULES_EXPORT WorkletAnimationEffect : public ScriptWrappable {
   mutable Timing::CalculatedTiming calculated_;
   // last_update_time_ has type base::TimeDelta to match the type of local_time_
   // since it is a cached value of local_time_
-  mutable base::Optional<base::TimeDelta> last_update_time_;
+  mutable absl::optional<base::TimeDelta> last_update_time_;
 };
 
 }  // namespace blink

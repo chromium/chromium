@@ -231,7 +231,7 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingVariantKey) {
     std::map<std::string, std::string> req_headers;
     std::string variants;
     std::vector<std::string> variant_key_list;
-    base::Optional<std::string> expected_result;
+    absl::optional<std::string> expected_result;
   } cases[] = {
       {
           "Content type negotiation: default value",
@@ -253,7 +253,7 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingVariantKey) {
           {{"accept-language", "en,fr"}},
           "accept-language;ja;ch",
           {"ch"},
-          base::nullopt  // There is no matching language.
+          absl::nullopt  // There is no matching language.
       },
       {
           "Content type negotiation: Q value",
@@ -276,14 +276,14 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingVariantKey) {
           {{"accept", "image/webp,image/jpg"}},
           " ",
           {},
-          base::nullopt  // Variants is invalid.
+          absl::nullopt  // Variants is invalid.
       },
       {
           "Variants size and Variant Key size don't match",
           {{"accept", "image/webp,image/jpg"}},
           "Accept;image/webp;image/apng,accept-language;ja;en",
           {"image/webp", "image/apng"},
-          base::nullopt  // There is no matching Variant Key.
+          absl::nullopt  // There is no matching Variant Key.
       },
       {
           "Unknown Variant",
@@ -291,7 +291,7 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingVariantKey) {
           "Accept;image/webp;image/jpg, FooBar;foo;bar",
           {"image/webp;foo", "image/webp;bar", "image/webp;jpg",
            "image/jpg;bar"},
-          base::nullopt  // FooBar is unknown.
+          absl::nullopt  // FooBar is unknown.
       },
   };
   for (const auto& c : cases) {
@@ -302,7 +302,7 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingVariantKey) {
         WebPackageRequestMatcher::FindBestMatchingVariantKey(
             request_headers, c.variants, c.variant_key_list);
     if (variant_key_list_it == c.variant_key_list.end()) {
-      EXPECT_EQ(c.expected_result, base::nullopt) << c.name;
+      EXPECT_EQ(c.expected_result, absl::nullopt) << c.name;
     } else {
       EXPECT_EQ(c.expected_result, *variant_key_list_it) << c.name;
     }
@@ -314,7 +314,7 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingIndex) {
     const char* name;
     std::string variants;
     std::map<std::string, std::string> req_headers;
-    base::Optional<size_t> expected_result;
+    absl::optional<size_t> expected_result;
   } cases[] = {
       {"matching value",
        "Accept;image/png;image/jpg",
@@ -335,18 +335,18 @@ TEST(WebPackageRequestMatcherTest, FindBestMatchingIndex) {
       {"ill-formed variants",
        "Accept",
        {{"accept", "image/webp,image/jpg"}},
-       base::nullopt},
+       absl::nullopt},
       {"unknown field name",
        "Unknown;foo;bar",
        {{"Unknown", "foo"}},
-       base::nullopt},
+       absl::nullopt},
   };
 
   for (const auto& c : cases) {
     net::HttpRequestHeaders request_headers;
     for (auto it = c.req_headers.begin(); it != c.req_headers.end(); ++it)
       request_headers.SetHeader(it->first, it->second);
-    base::Optional<size_t> result =
+    absl::optional<size_t> result =
         WebPackageRequestMatcher::FindBestMatchingIndex(request_headers,
                                                         c.variants);
     EXPECT_EQ(c.expected_result, result) << c.name;
