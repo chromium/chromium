@@ -1,7 +1,6 @@
 # Chromium for arm Macs
 
-Apple is planning on selling Macs with arm chips by the end of 2020.
-This document describes the state of native binaries for these Macs.
+This document describes the state of Chromium on Apple Silicon Macs.
 
 There's a [bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
 that builds for arm. It cross-builds on an Intel machine.
@@ -86,32 +85,18 @@ It's possible to build _on_ an arm Mac, without Rosetta. However, this
 configuration is not yet covered by bots, so it might be broken from time to
 time. If you run into issues, complain on https://crbug.com/1103236
 
-Also, several of the hermetic binaries in depot\_tools aren't available for
-arm yet. Most notably, `vpython` is not yet working ([tracking
-bug](https://crbug.com/1103275)). `vpython` is needed by `git cl`, so things
-like `git cl upload` don't yet work on an arm Mac. The build will also use
-system `python`, `python3`, and `git`, instead of depot\_tools's hermetic
-versions for now.
+Also, some of the hermetic binaries in depot\_tools aren't available for
+arm yet. Most notably, some parts of `vpython` are not yet working ([tracking
+bug](https://crbug.com/1103275)). The main effect of this is that some
+presubmits don't yet work, and **you need to use
+`git cl upload --bypass-hooks`** to upload CLs.
 
-However, enough works to be able to check out and build (with goma too), with
-some setup.
+(The build will also use `git`, instead of depot\_tools's hermetic versions for
+now.)
 
-1. opt in to arm64 binaries from cipd by running
-
-       echo mac-arm64 > $(dirname $(which gclient))/.cipd_client_platform
-
-   and later
-
-       echo mac-arm64 > third_party/depot_tools/.cipd_client_platform 
-       
-   in your chromium checkout.
-
-2. opt out of vpython by running
-
-       export VPYTHON_BYPASS="manually managed python not supported by chrome operations"
-
-With this, you should be able to run `fetch chromium` normally, and then
-build, using `gn`, `ninja` etc like normal.
+Other than that, checking out and building (with goma too) should just work.
+You should be able to run `fetch chromium` normally, and then build, using
+`gn`, `ninja` etc like normal.
 
 gtest-based binaries should build, run, and mostly pass. Web tests probably
 don't work yet due to lack of an arm apache binary
