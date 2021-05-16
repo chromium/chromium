@@ -100,8 +100,8 @@ ChipRanker::ChipRanker(Profile* profile) : profile_(profile) {
 
 ChipRanker::~ChipRanker() = default;
 
-void ChipRanker::Train(const AppLaunchData& app_launch_data) {
-  const auto type = app_launch_data.ranking_item_type;
+void ChipRanker::Train(const LaunchData& launch_data) {
+  const auto type = launch_data.ranking_item_type;
   switch (type) {
     case RankingItemType::kApp:
       type_ranker_->Record(kApp);

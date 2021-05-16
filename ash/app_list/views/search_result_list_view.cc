@@ -179,7 +179,8 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
       view->index_in_container());
 
   view_delegate_->OpenSearchResult(
-      result->id(), event_flags, AppListLaunchedFrom::kLaunchedFromSearchBox,
+      result->id(), result->result_type(), event_flags,
+      AppListLaunchedFrom::kLaunchedFromSearchBox,
       AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
       !by_button_press && view->is_default_result() /* launch_as_default */);
 }

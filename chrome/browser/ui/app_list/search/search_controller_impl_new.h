@@ -16,8 +16,8 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 
 class AppListControllerDelegate;
 class AppListModelUpdater;
@@ -67,7 +67,7 @@ class SearchControllerImplNew : public SearchController {
   ChromeSearchResult* FindSearchResult(const std::string& result_id) override;
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
-  void Train(AppLaunchData&& app_launch_data) override;
+  void Train(LaunchData&& launch_data) override;
   void AppListShown() override;
   void ViewClosing() override;
   int GetLastQueryLength() const override;

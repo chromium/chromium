@@ -13,7 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
 class ChromeSearchResult;
@@ -67,7 +67,7 @@ class Mixer {
   void SetChipRanker(std::unique_ptr<ChipRanker> ranker);
 
   // Handle a training signal.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // Used for sorting and mixing results.
   struct SortData {

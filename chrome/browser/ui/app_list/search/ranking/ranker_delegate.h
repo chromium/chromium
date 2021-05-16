@@ -31,7 +31,7 @@ class RankerDelegate : public Ranker {
   // Ranker:
   void Start() override;
   void Rank(ResultsMap& results, ProviderType provider) override;
-  void Train(const AppLaunchData& launch) override;
+  void Train(const LaunchData& launch) override;
 
  private:
   std::vector<std::unique_ptr<Ranker>> rankers_;

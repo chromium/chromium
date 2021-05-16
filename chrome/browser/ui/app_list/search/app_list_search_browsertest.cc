@@ -187,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   navigation_observer.StartWatchingNewWebContents();
 
   GetClient()->OpenSearchResult(
-      result->id(), /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      result->id(), ash::AppListSearchResultType::kHelpApp,
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
 
@@ -267,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   navigation_observer.StartWatchingNewWebContents();
 
   GetClient()->OpenSearchResult(
-      result->id(), /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      result->id(), ash::AppListSearchResultType::kHelpApp,
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
 
@@ -341,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   base::HistogramTester histogram_tester;
 
   GetClient()->OpenSearchResult(
-      result->id(), /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
+      result->id(), ash::AppListSearchResultType::kHelpApp,
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
   navigation_observer.Wait();

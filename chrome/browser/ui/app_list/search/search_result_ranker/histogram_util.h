@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 
 namespace app_list {

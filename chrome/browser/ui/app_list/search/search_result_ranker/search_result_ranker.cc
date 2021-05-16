@@ -303,36 +303,36 @@ void SearchResultRanker::ScoreZeroStateItem(
   ++(*type_counts)[type];
 }
 
-void SearchResultRanker::Train(const AppLaunchData& app_launch_data) {
-  if (app_launch_data.launched_from ==
+void SearchResultRanker::Train(const LaunchData& launch_data) {
+  if (launch_data.launched_from ==
           ash::AppListLaunchedFrom::kLaunchedFromGrid &&
       app_launch_event_logger_) {
     // Log the AppResult from the grid to the UKM system.
-    app_launch_event_logger_->OnGridClicked(app_launch_data.id);
-  } else if (app_launch_data.launch_type ==
+    app_launch_event_logger_->OnGridClicked(launch_data.id);
+  } else if (launch_data.launch_type ==
                  ash::AppListLaunchType::kAppSearchResult &&
              app_launch_event_logger_) {
     // Log the AppResult (either in the search result page, or in chip form in
     // AppsGridView) to the UKM system.
     app_launch_event_logger_->OnSuggestionChipOrSearchBoxClicked(
-        app_launch_data.id, app_launch_data.suggestion_index,
-        static_cast<int>(app_launch_data.launched_from));
+        launch_data.id, launch_data.suggestion_index,
+        static_cast<int>(launch_data.launched_from));
   }
 
-  auto model = ModelForType(app_launch_data.ranking_item_type);
+  auto model = ModelForType(launch_data.ranking_item_type);
   if (model == Model::MIXED_TYPES) {
     // We currently only have a mixed types model for zero-state, so stop if
     // the launch has a query attached.
-    if (!app_launch_data.query.empty())
+    if (!launch_data.query.empty())
       return;
 
-    LogZeroStateLaunchType(app_launch_data.ranking_item_type);
+    LogZeroStateLaunchType(launch_data.ranking_item_type);
     if (zero_state_group_ranker_) {
       zero_state_group_ranker_->Record(base::NumberToString(
-          static_cast<int>(app_launch_data.ranking_item_type)));
+          static_cast<int>(launch_data.ranking_item_type)));
     }
   } else if (model == Model::APPS && app_ranker_) {
-    app_ranker_->Record(NormalizeAppId(app_launch_data.id));
+    app_ranker_->Record(NormalizeAppId(launch_data.id));
   }
 }
 

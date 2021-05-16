@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_RANKER_H_
 
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 
 namespace app_list {
 
@@ -29,7 +29,7 @@ class Ranker {
   virtual void Rank(ResultsMap& results, ProviderType provider) {}
 
   // Called each time a user launches a result.
-  virtual void Train(const AppLaunchData& launch) {}
+  virtual void Train(const LaunchData& launch) {}
 };
 
 }  // namespace app_list

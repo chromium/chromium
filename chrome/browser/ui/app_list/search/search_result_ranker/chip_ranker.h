@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 
 namespace app_list {
@@ -49,7 +49,7 @@ class ChipRanker {
   ChipRanker& operator=(const ChipRanker&) = delete;
 
   // Train the ranker that compares the different result types.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // Adjusts chip scores to fit in line with app scores using
   // ranking algorithm detailed above.

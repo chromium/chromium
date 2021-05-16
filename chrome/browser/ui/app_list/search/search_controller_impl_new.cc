@@ -243,8 +243,8 @@ int SearchControllerImplNew::GetLastQueryLength() const {
   return last_query_.size();
 }
 
-void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
-  app_launch_data.query = base::UTF16ToUTF8(last_query_);
+void SearchControllerImplNew::Train(LaunchData&& launch_data) {
+  launch_data.query = base::UTF16ToUTF8(last_query_);
 
   // TODO(crbug.com/1199206): This logging code should move elsewhere.
   if (app_list_features::IsAppListLaunchRecordingEnabled()) {
@@ -254,23 +254,23 @@ void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
     now.LocalExplode(&now_exploded);
 
     metrics::structured::events::launcher_usage::LauncherUsage()
-        .SetTarget(NormalizeId(app_launch_data.id))
+        .SetTarget(NormalizeId(launch_data.id))
         .SetApp(last_launched_app_id_)
         .SetSearchQuery(base::UTF16ToUTF8(last_query_))
         .SetSearchQueryLength(last_query_.size())
-        .SetProviderType(static_cast<int>(app_launch_data.ranking_item_type))
+        .SetProviderType(static_cast<int>(launch_data.ranking_item_type))
         .SetHour(now_exploded.hour)
-        .SetScore(app_launch_data.score)
+        .SetScore(launch_data.score)
         .Record();
 
     // Only record the last launched app if the hashed logging feature flag is
     // enabled, because it is only used by hashed logging.
-    if (app_launch_data.ranking_item_type == RankingItemType::kApp) {
-      last_launched_app_id_ = NormalizeId(app_launch_data.id);
-    } else if (app_launch_data.ranking_item_type ==
+    if (launch_data.ranking_item_type == RankingItemType::kApp) {
+      last_launched_app_id_ = NormalizeId(launch_data.id);
+    } else if (launch_data.ranking_item_type ==
                RankingItemType::kArcAppShortcut) {
       last_launched_app_id_ =
-          RemoveAppShortcutLabel(NormalizeId(app_launch_data.id));
+          RemoveAppShortcutLabel(NormalizeId(launch_data.id));
     }
   }
 
@@ -279,14 +279,13 @@ void SearchControllerImplNew::Train(AppLaunchData&& app_launch_data) {
 
   // CrOS action recorder.
   CrOSActionRecorder::GetCrosActionRecorder()->RecordAction(
-      {base::StrCat(
-          {"SearchResultLaunched-", NormalizeId(app_launch_data.id)})},
-      {{"ResultType", static_cast<int>(app_launch_data.ranking_item_type)},
+      {base::StrCat({"SearchResultLaunched-", NormalizeId(launch_data.id)})},
+      {{"ResultType", static_cast<int>(launch_data.ranking_item_type)},
        {"Query", static_cast<int>(
                      base::HashMetricName(base::UTF16ToUTF8(last_query_)))}});
 
   // Train all search result ranking models.
-  ranker_->Train(app_launch_data);
+  ranker_->Train(launch_data);
 }
 
 void SearchControllerImplNew::AppListShown() {

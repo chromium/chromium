@@ -16,7 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class ChromeSearchResult;
 
@@ -82,7 +82,7 @@ class SearchController {
       const std::string& title) = 0;
 
   // Sends training signal to each |providers_|
-  virtual void Train(AppLaunchData&& app_launch_data) = 0;
+  virtual void Train(LaunchData&& launch_data) = 0;
 
   // Invoked when the app list is shown.
   virtual void AppListShown() = 0;

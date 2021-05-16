@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_APP_LAUNCH_DATA_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_APP_LAUNCH_DATA_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_LAUNCH_DATA_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_LAUNCH_DATA_H_
 
 #include <string>
 
@@ -12,17 +12,20 @@
 
 namespace app_list {
 
-// TODO(crbug.com/1199206): We should move this class to app_list/search, as the
-// search_result_ranker/ directory will eventually be deleted.
-
 // Data concerning the app launch. Used for training models.
-struct AppLaunchData {
-  AppLaunchData();
-  ~AppLaunchData();
+struct LaunchData {
+  LaunchData();
+  ~LaunchData();
 
-  AppLaunchData(AppLaunchData&& other);
+  LaunchData(LaunchData&& other);
   // ID of the item launched.
   std::string id;
+  // The type of the result.
+  ash::AppListSearchResultType result_type =
+      ash::AppListSearchResultType::kUnknown;
+  // The type of the result used for ranking.
+  // TODO(crbug.com/1199206): This is no longer needed and can be removed when
+  // the search_result_ranker/ directory is removed.
   RankingItemType ranking_item_type = RankingItemType::kUnknown;
   // Where the app was launched from.
   ash::AppListLaunchedFrom launched_from =
@@ -39,4 +42,4 @@ struct AppLaunchData {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_APP_LAUNCH_DATA_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_LAUNCH_DATA_H_

@@ -14,8 +14,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -77,12 +77,13 @@ void ArcAppShortcutsMenuBuilder::ExecuteCommand(int command_id) {
   AppListClientImpl* app_list_client_impl = AppListClientImpl::GetInstance();
   if (!app_list_client_impl)
     return;
-  app_list::AppLaunchData app_launch_data;
-  app_launch_data.id = ConstructArcAppShortcutUrl(
+  app_list::LaunchData launch_data;
+  // TODO(crbug.com/1199206): This should set launch_data.launched_from.
+  launch_data.id = ConstructArcAppShortcutUrl(
       app_id_, app_shortcut_items_->at(index).shortcut_id),
-  app_launch_data.ranking_item_type =
-      app_list::RankingItemType::kArcAppShortcut;
-  app_list_client_impl->search_controller()->Train(std::move(app_launch_data));
+  launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;
+  launch_data.ranking_item_type = app_list::RankingItemType::kArcAppShortcut;
+  app_list_client_impl->search_controller()->Train(std::move(launch_data));
 }
 
 void ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems(

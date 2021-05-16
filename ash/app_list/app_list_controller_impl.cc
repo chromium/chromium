@@ -1325,12 +1325,14 @@ void AppListControllerImpl::StartSearch(const std::u16string& raw_query) {
   }
 }
 
-void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
-                                             int event_flags,
-                                             AppListLaunchedFrom launched_from,
-                                             AppListLaunchType launch_type,
-                                             int suggestion_index,
-                                             bool launch_as_default) {
+void AppListControllerImpl::OpenSearchResult(
+    const std::string& result_id,
+    AppListSearchResultType result_type,
+    int event_flags,
+    AppListLaunchedFrom launched_from,
+    AppListLaunchType launch_type,
+    int suggestion_index,
+    bool launch_as_default) {
   SearchResult* result = search_model_.FindSearchResult(result_id);
   if (!result)
     return;
@@ -1382,8 +1384,9 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   }
 
   if (client_) {
-    client_->OpenSearchResult(result_id, event_flags, launched_from,
-                              launch_type, suggestion_index, launch_as_default);
+    client_->OpenSearchResult(result_id, result_type, event_flags,
+                              launched_from, launch_type, suggestion_index,
+                              launch_as_default);
   }
 
   ResetHomeLauncherIfShown();

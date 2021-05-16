@@ -197,11 +197,11 @@ void Mixer::FetchResults(const std::u16string& query) {
     group->FetchResults(search_result_ranker_.get());
 }
 
-void Mixer::Train(const AppLaunchData& app_launch_data) {
+void Mixer::Train(const LaunchData& launch_data) {
   if (search_result_ranker_)
-    search_result_ranker_->Train(app_launch_data);
+    search_result_ranker_->Train(launch_data);
   if (chip_ranker_)
-    chip_ranker_->Train(app_launch_data);
+    chip_ranker_->Train(launch_data);
 }
 
 }  // namespace app_list

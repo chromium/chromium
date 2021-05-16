@@ -21,7 +21,7 @@ void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {
     ranker->Rank(results, provider);
 }
 
-void RankerDelegate::Train(const AppLaunchData& launch) {
+void RankerDelegate::Train(const LaunchData& launch) {
   for (auto& ranker : rankers_)
     ranker->Train(launch);
 }

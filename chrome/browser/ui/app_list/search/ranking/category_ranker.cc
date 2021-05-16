@@ -145,9 +145,14 @@ void CategoryRanker::Rank(ResultsMap& results, ProviderType provider) {
   }
 }
 
-void CategoryRanker::Train(const AppLaunchData& launch) {
-  // TODO(crbug.com/1199206): Add the info we need to AppLaunchData and train
-  // |category_ranker_|.
+void CategoryRanker::Train(const LaunchData& launch) {
+  if (launch.launched_from !=
+      ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
+    return;
+  }
+
+  category_ranker_->Record(
+      CategoryToString(ResultTypeToCategory(launch.result_type)));
 }
 
 }  // namespace app_list

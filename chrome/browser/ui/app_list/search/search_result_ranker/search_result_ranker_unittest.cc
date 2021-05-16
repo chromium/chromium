@@ -24,9 +24,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.h"
@@ -213,13 +213,13 @@ TEST_F(SearchResultRankerTest, MixedTypesRankersAreDisabledWithFlag) {
   ranker->InitializeRankers(MakeSearchController());
   Wait();
 
-  AppLaunchData app_launch_data;
-  app_launch_data.id = "unused";
-  app_launch_data.ranking_item_type = RankingItemType::kFile;
-  app_launch_data.query = "query";
+  LaunchData launch_data;
+  launch_data.id = "unused";
+  launch_data.ranking_item_type = RankingItemType::kFile;
+  launch_data.query = "query";
 
   for (int i = 0; i < 20; ++i)
-    ranker->Train(app_launch_data);
+    ranker->Train(launch_data);
   ranker->FetchRankings(std::u16string());
 
   auto results =
@@ -253,11 +253,11 @@ TEST_F(SearchResultRankerTest, AppModelImprovesScores) {
   ranker->InitializeRankers(MakeSearchController());
   Wait();
 
-  AppLaunchData app_A;
+  LaunchData app_A;
   app_A.id = "A";
   app_A.ranking_item_type = RankingItemType::kApp;
 
-  AppLaunchData app_B;
+  LaunchData app_B;
   app_B.id = "B";
   app_B.ranking_item_type = RankingItemType::kApp;
 
@@ -290,13 +290,13 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupModelDisabledWithFlag) {
   // TODO(959679): Update the types used in this test once zero-state-related
   // search providers have been implemented.
 
-  AppLaunchData app_launch_data_a;
-  app_launch_data_a.id = "A";
-  app_launch_data_a.ranking_item_type = RankingItemType::kFile;
-  app_launch_data_a.query = "";
+  LaunchData launch_data_a;
+  launch_data_a.id = "A";
+  launch_data_a.ranking_item_type = RankingItemType::kFile;
+  launch_data_a.query = "";
 
   for (int i = 0; i < 10; ++i) {
-    ranker->Train(app_launch_data_a);
+    ranker->Train(launch_data_a);
   }
   ranker->FetchRankings(std::u16string());
 
@@ -323,7 +323,7 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupTrainingImprovesScores) {
   ranker->InitializeRankers(MakeSearchController());
   Wait();
 
-  AppLaunchData launch;
+  LaunchData launch;
   launch.id = "A";
   launch.ranking_item_type = RankingItemType::kZeroStateFile;
   launch.query = "";
@@ -411,7 +411,7 @@ TEST_F(SearchResultRankerTest, ZeroStateMissingGroupAdded) {
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
-  AppLaunchData launch;
+  LaunchData launch;
   launch.id = "A";
   launch.ranking_item_type = RankingItemType::kZeroStateFile;
   launch.query = "";
@@ -451,7 +451,7 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
-  AppLaunchData launch;
+  LaunchData launch;
   launch.id = "A";
   launch.ranking_item_type = RankingItemType::kZeroStateFile;
   launch.query = "";
@@ -488,7 +488,7 @@ TEST_F(SearchResultRankerTest, ZeroStateStaleResultIgnored) {
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
-  AppLaunchData launch;
+  LaunchData launch;
   launch.id = "A";
   launch.ranking_item_type = RankingItemType::kZeroStateFile;
   launch.query = "";
@@ -540,7 +540,7 @@ TEST_F(SearchResultRankerTest, ZeroStateCacheResetWhenTopResultChanges) {
   Wait();
 
   // Train on files enough that they should dominate the zero state results.
-  AppLaunchData launch;
+  LaunchData launch;
   launch.id = "A";
   launch.ranking_item_type = RankingItemType::kZeroStateFile;
   launch.query = "";
@@ -642,32 +642,32 @@ TEST_F(SearchResultRankerTest, ZeroStateClickedTypeMetrics) {
 
   // Zero state types should be logged during training.
 
-  AppLaunchData app_launch_data_a;
-  app_launch_data_a.id = "A";
-  app_launch_data_a.ranking_item_type = RankingItemType::kFile;
-  app_launch_data_a.query = "";
+  LaunchData launch_data_a;
+  launch_data_a.id = "A";
+  launch_data_a.ranking_item_type = RankingItemType::kFile;
+  launch_data_a.query = "";
 
-  ranker->Train(app_launch_data_a);
+  ranker->Train(launch_data_a);
   histogram_tester_.ExpectBucketCount(
       "Apps.AppList.ZeroStateResults.LaunchedItemType",
       ZeroStateResultType::kUnanticipated, 1);
 
-  AppLaunchData app_launch_data_b;
-  app_launch_data_b.id = "B";
-  app_launch_data_b.ranking_item_type = RankingItemType::kOmniboxGeneric;
-  app_launch_data_b.query = "";
+  LaunchData launch_data_b;
+  launch_data_b.id = "B";
+  launch_data_b.ranking_item_type = RankingItemType::kOmniboxGeneric;
+  launch_data_b.query = "";
 
-  ranker->Train(app_launch_data_b);
+  ranker->Train(launch_data_b);
   histogram_tester_.ExpectBucketCount(
       "Apps.AppList.ZeroStateResults.LaunchedItemType",
       ZeroStateResultType::kOmniboxSearch, 1);
 
-  AppLaunchData app_launch_data_c;
-  app_launch_data_c.id = "D";
-  app_launch_data_c.ranking_item_type = RankingItemType::kDriveQuickAccess;
-  app_launch_data_c.query = "";
+  LaunchData launch_data_c;
+  launch_data_c.id = "D";
+  launch_data_c.ranking_item_type = RankingItemType::kDriveQuickAccess;
+  launch_data_c.query = "";
 
-  ranker->Train(app_launch_data_c);
+  ranker->Train(launch_data_c);
   histogram_tester_.ExpectBucketCount(
       "Apps.AppList.ZeroStateResults.LaunchedItemType",
       ZeroStateResultType::kDriveQuickAccess, 1);
