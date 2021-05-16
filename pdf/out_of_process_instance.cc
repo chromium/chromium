@@ -641,16 +641,22 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
 
 void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
                                             const gfx::Rect& right) {
-  pp::Point l(left.x() + available_area().x(), left.y());
-  pp::Point r(right.x() + available_area().x(), right.y());
+  const gfx::Rect left_with_offset = left + plugin_rect().OffsetFromOrigin();
+  const gfx::Rect right_with_offset = right + plugin_rect().OffsetFromOrigin();
+
+  pp::Point l(left_with_offset.x() + available_area().x(),
+              left_with_offset.y());
+  pp::Point r(right_with_offset.x() + available_area().x(),
+              right_with_offset.y());
 
   float inverse_scale = 1.0f / device_scale();
   ScalePoint(inverse_scale, &l);
   ScalePoint(inverse_scale, &r);
 
-  pp::PDF::SelectionChanged(GetPluginInstance(),
-                            PP_MakeFloatPoint(l.x(), l.y()), left.height(),
-                            PP_MakeFloatPoint(r.x(), r.y()), right.height());
+  pp::PDF::SelectionChanged(
+      GetPluginInstance(), PP_MakeFloatPoint(l.x(), l.y()),
+      left_with_offset.height(), PP_MakeFloatPoint(r.x(), r.y()),
+      right_with_offset.height());
   if (accessibility_state() == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
 }
