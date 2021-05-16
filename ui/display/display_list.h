@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -16,8 +15,6 @@
 
 namespace display {
 
-class Display;
-class DisplayList;
 class DisplayObserver;
 
 // Maintains an ordered list of Displays as well as operations to add, remove
@@ -35,14 +32,24 @@ class DISPLAY_EXPORT DisplayList {
   DisplayList();
   ~DisplayList();
 
+  // WARNING: The copy constructor and assignment operator do not copy nor move
+  // observers; also, the comparison operator does not compare observers.
+  DisplayList(const Displays& displays, int64_t primary_id, int64_t current_id);
+  DisplayList(const DisplayList& other);
+  DisplayList& operator=(const DisplayList& other);
+  bool operator==(const DisplayList& other) const;
+
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
 
   const Displays& displays() const { return displays_; }
+  int64_t primary_id() const { return primary_id_; }
+  int64_t current_id() const { return current_id_; }
 
   Displays::const_iterator FindDisplayById(int64_t id) const;
 
   Displays::const_iterator GetPrimaryDisplayIterator() const;
+  Displays::const_iterator GetCurrentDisplayIterator() const;
 
   void AddOrUpdateDisplay(const Display& display, Type type);
 
@@ -62,6 +69,9 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
+  // Checks expectations around DisplayList validity.
+  bool IsValid() const;
+
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
@@ -69,11 +79,19 @@ class DISPLAY_EXPORT DisplayList {
 
   Displays::iterator FindDisplayByIdInternal(int64_t id);
 
+  // The list of displays tracked by the display::Screen or other client.
   std::vector<Display> displays_;
-  int primary_display_index_ = -1;
+  // The id of the primary Display in `displays_` for the display::Screen.
+  int64_t primary_id_ = kInvalidDisplayId;
+  // The id of the current Display in `displays_`, for some client's context.
+  // This is used when DisplayList needs to track which display a client is on,
+  // typically for a cached DisplayList owned by the client window itself. This
+  // should be kInvalidDisplayId for the DisplayList owned by display::Screen,
+  // which represents the system-wide state and needs to work for all clients.
+  // This member is included in this structure to maintain consistency with some
+  // list of cached displays, perhaps that's not ideal. See crbug.com/1207996.
+  int64_t current_id_ = kInvalidDisplayId;
   base::ObserverList<DisplayObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayList);
 };
 
 }  // namespace display

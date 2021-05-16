@@ -35,7 +35,6 @@ class WindowPlacementTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
 // SetScreenInstance and observers not being notified.
-// TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_OnScreensChangeEvent DISABLED_OnScreensChangeEvent
 #else

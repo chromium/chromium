@@ -8,6 +8,7 @@
 
 namespace mojo {
 
+// static
 bool StructTraits<blink::mojom::ScreenInfosDataView, blink::ScreenInfos>::Read(
     blink::mojom::ScreenInfosDataView data,
     blink::ScreenInfos* out) {

@@ -8,6 +8,9 @@ import "third_party/blink/public/mojom/widget/screen_info.mojom";
 
 // Information about a set of screens that are relevant to a particular widget.
 // This includes an id for the screen currently showing the widget.
+// This structure roughly parallels display.mojom.DisplayList. It may be
+// desirable to deprecate derived counterparts of ui/display types, but doing so
+// is complicated by widespread use and legacy quirks around blink::ScreenInfo.
 struct ScreenInfos {
   // The array of ScreenInfo objects for the set of relevant screens.
   array<ScreenInfo> screen_infos;

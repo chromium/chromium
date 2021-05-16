@@ -41,6 +41,7 @@
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/display/display.h"
+#include "ui/display/display_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -100,10 +101,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   RenderWidgetHostViewBase(const RenderWidgetHostViewBase&) = delete;
   RenderWidgetHostViewBase& operator=(const RenderWidgetHostViewBase&) = delete;
-
-  float current_device_scale_factor() const {
-    return current_display_.device_scale_factor();
-  }
 
   // Returns the focused RenderWidgetHost inside this |view|'s RWH.
   RenderWidgetHostImpl* GetFocusedWidget() const;
@@ -174,11 +171,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual void SendInitialPropertiesIfNeeded() {}
 
-  // Called when screen information or native widget bounds change.
-  void UpdateScreenInfo(gfx::NativeView view);
+  // Get display info known to this view; must be consistent with GetScreenInfo.
+  virtual const std::vector<display::Display>& GetDisplays() const;
 
-  // Updates cached screen information and returns whether it has changed.
-  bool HasDisplayPropertyChanged(gfx::NativeView view);
+  // Called when screen information or native widget bounds change.
+  virtual void UpdateScreenInfo(gfx::NativeView view);
+
+  // Get the device scale factor of the associated display.
+  float GetCurrentDeviceScaleFactor() const;
 
   // Called by the TextInputManager to notify the view about being removed from
   // the list of registered views, i.e., TextInputManager is no longer tracking
@@ -574,16 +574,15 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual bool HasFallbackSurface() const;
 
-  void set_current_device_scale_factor(float scale) {
-    current_display_.set_device_scale_factor(scale);
-  }
-
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
   RenderWidgetHostImpl* host_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;
+
+  // Cached information about the renderer's display environment.
+  display::DisplayList display_list_;
 
   // Indicates whether keyboard lock is active for this view.
   bool keyboard_locked_ = false;
@@ -649,11 +648,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   bool view_stopped_flinging_for_test() const {
     return view_stopped_flinging_for_test_;
   }
-
-  // Cached information about the renderer's display environment.
-  display::Display current_display_;
-  bool current_display_is_extended_ = false;
-  bool current_display_is_primary_ = false;
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 

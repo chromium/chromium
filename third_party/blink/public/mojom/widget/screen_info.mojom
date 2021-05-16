@@ -9,7 +9,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 
 // Information about the screen on which a WidgetBase is being displayed. This
-// is the content counterpart to blink::ScreenInfo.
+// is the content counterpart to blink::ScreenInfo, and it roughly parallels
+// display.mojom.Display. It may be desirable to deprecate derived counterparts
+// of ui/display types, but doing so is complicated by widespread use and legacy
+// quirks around blink::ScreenInfo.
 struct ScreenInfo {
   // Device scale factor. Specifies the ratio between physical and logical
   // pixels.
