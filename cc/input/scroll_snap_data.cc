@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
+#include "base/record_replay.h"
 #include "cc/input/snap_selection_strategy.h"
 
 namespace cc {
@@ -146,6 +147,8 @@ bool SnapContainerData::FindSnapPosition(
       // instead.
       selected_x = GetTargetSnapAreaSearchResult(SearchAxis::kX);
       DCHECK(selected_x.has_value());
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #1 %.2f",
+                           selected_x.has_value() ? selected_x.value().snap_offset() : -1.0);
     } else {
       // Start from current position in the cross axis. The search algorithm
       // expects the cross axis position to be inside scroller bounds. But since
@@ -157,18 +160,24 @@ bool SnapContainerData::FindSnapPosition(
 
       selected_x = FindClosestValidArea(SearchAxis::kX, strategy,
                                         initial_snap_position_y);
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #2 %.2f",
+                           selected_x.has_value() ? selected_x.value().snap_offset() : -1.0);
     }
   }
   if (should_snap_on_y) {
     if (should_prioritize_y_target) {
       selected_y = GetTargetSnapAreaSearchResult(SearchAxis::kY);
       DCHECK(selected_y.has_value());
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #3 %.2f",
+                           selected_y.has_value() ? selected_y.value().snap_offset() : -1.0);
     } else {
       SnapSearchResult initial_snap_position_x = {
           base::ClampToRange(base_position.x(), 0.f, max_position_.x()),
           gfx::RangeF(0, max_position_.y())};
       selected_y = FindClosestValidArea(SearchAxis::kY, strategy,
                                         initial_snap_position_x);
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #4 %.2f",
+                           selected_y.has_value() ? selected_y.value().snap_offset() : -1.0);
     }
   }
 
@@ -193,13 +202,20 @@ bool SnapContainerData::FindSnapPosition(
     if (keep_candidate_on_x) {
       selected_y =
           FindClosestValidArea(SearchAxis::kY, strategy, selected_x.value());
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #5 %.2f",
+                           selected_y.has_value() ? selected_y.value().snap_offset() : -1.0);
     } else {
       selected_x =
           FindClosestValidArea(SearchAxis::kX, strategy, selected_y.value());
+      recordreplay::Assert("SnapContainerData::FindSnapPosition #6 %.2f",
+                           selected_x.has_value() ? selected_x.value().snap_offset() : -1.0);
     }
   }
 
   *snap_position = strategy.current_position();
+  recordreplay::Assert("SnapContainerData::FindSnapPosition #7 %.2f %.2f",
+                       snap_position->x(), snap_position->y());
+
   if (selected_x.has_value()) {
     snap_position->set_x(selected_x.value().snap_offset());
     target_element_ids->x = selected_x.value().element_id();
