@@ -231,17 +231,17 @@ class LockPrinter(Printer):
 pp_set.add_printer('base::Lock', '^base::Lock$', LockPrinter)
 
 
-class BaseOptionalPrinter(Printer):
+class AbslOptionalPrinter(Printer):
 
   def to_string(self):
-    if self.val['storage_']['is_populated_']:
-      return "%s: %s" % (str(self.val.type.tag), self.val['storage_']['value_'])
+    if self.val['engaged_']:
+      return "%s: %s" % (str(self.val.type.tag), self.val['data_'])
     else:
       return "%s: is empty" % str(self.val.type.tag)
 
 
-pp_set.add_printer('base::Optional', '^base::Optional<.*>$',
-                   BaseOptionalPrinter)
+pp_set.add_printer('absl::optional', '^absl::optional<.*>$',
+                   AbslOptionalPrinter)
 
 
 class TimeDeltaPrinter(object):

@@ -34,10 +34,13 @@ class StructGeneratorTest(unittest.TestCase):
                        'contents': {'type': 'int'}}))
 
   def testGenerateClassField(self):
-    self.assertEquals('const base::Optional<bool> bar',
-        GenerateField({'type': 'class',
-                       'field': 'bar',
-                       'ctype': 'base::Optional<bool>'}))
+    self.assertEquals(
+        'const absl::optional<bool> bar',
+        GenerateField({
+            'type': 'class',
+            'field': 'bar',
+            'ctype': 'absl::optional<bool>'
+        }))
 
   def testGenerateStruct(self):
     schema = [

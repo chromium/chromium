@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "base/strings/string_piece.h"
 
 namespace zxcvbn {
@@ -34,7 +34,7 @@ class RankedDicts {
   RankedDicts& operator=(RankedDicts &&) = default;
   RankedDicts& operator=(const RankedDicts &) = delete;
 
-  base::Optional<rank_t> Find(base::StringPiece needle) const;
+  absl::optional<rank_t> Find(base::StringPiece needle) const;
 
  private:
   bool IsRealMarker(size_t offset) const;

@@ -1,6 +1,6 @@
 specific_include_rules = {
   "expected_output.h": [
-      "+base/optional.h",
+      "+third_party/abseil-cpp/absl/types/optional.h",
       "+components/variations/proto/study.pb.h"
   ]
 }

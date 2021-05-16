@@ -1275,23 +1275,23 @@ bool ValidateSize(const PointDistribution& distribution1,
 
 }  // namespace
 
-base::Optional<double> EMD(const PointDistribution& distribution1,
+absl::optional<double> EMD(const PointDistribution& distribution1,
                            const PointDistribution& distribution2) {
   if (!ValidatePointDistribution(distribution1) ||
       !ValidatePointDistribution(distribution2)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (distribution1.dimensions != distribution2.dimensions) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (distribution1.dimensions == 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!ValidateSize(distribution1,distribution2)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return cvCalcEMD2(&distribution1, &distribution2, 0, 0, nullptr, nullptr,

@@ -31,7 +31,7 @@ static std::unique_ptr<base::DictionaryValue> CreateTestTypeDictionary() {
 
 void GetManifestParseError(base::StringPiece manifest_json,
                            std::string* error) {
-  base::Optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  absl::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest) << "Invalid json \n" << manifest_json;
 
   simple_api::ManifestKeys manifest_keys;
@@ -45,7 +45,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
 
 void PopulateManifestKeys(base::StringPiece manifest_json,
                           simple_api::ManifestKeys* manifest_keys) {
-  base::Optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  absl::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest.has_value());
 
   std::u16string error_16;

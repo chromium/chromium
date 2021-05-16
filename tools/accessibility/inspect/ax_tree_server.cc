@@ -56,7 +56,7 @@ void AXTreeServer::Run(BuildTree build_tree,
       AXInspectFactory::CreatePlatformFormatter());
 
   // Set filters.
-  base::Optional<std::vector<ui::AXPropertyFilter>> filters =
+  absl::optional<std::vector<ui::AXPropertyFilter>> filters =
       GetPropertyFilters(filters_path);
   if (!filters) {
     LOG(ERROR) << "Failed to parse filters2";
@@ -76,7 +76,7 @@ void AXTreeServer::Run(BuildTree build_tree,
   printf("%s", formatter->FormatTree(dict).c_str());
 }
 
-base::Optional<std::vector<ui::AXPropertyFilter>>
+absl::optional<std::vector<ui::AXPropertyFilter>>
 AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
   std::vector<ui::AXPropertyFilter> filters;
   if (filters_path.empty()) {
@@ -89,7 +89,7 @@ AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
     LOG(ERROR) << "Failed to open filters file " << filters_path
                << ". Note: path traversal components ('..') are not allowed "
                   "for security reasons";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   for (const std::string& line :
@@ -109,7 +109,7 @@ AXTreeServer::GetPropertyFilters(const base::FilePath& filters_path) {
                            ui::AXPropertyFilter::DENY);
     } else if (!line.empty()) {
       LOG(ERROR) << "Unrecognized filter instruction at line: " << line;
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
   return filters;

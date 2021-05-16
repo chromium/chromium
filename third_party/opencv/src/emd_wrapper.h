@@ -6,7 +6,7 @@
 #define THIRD_PARTY_EMD_WRAPPER_H_
 
 #include <vector>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace opencv {
 
@@ -22,7 +22,7 @@ struct PointDistribution {
   std::vector<std::vector<float>> positions;
 };
 
-base::Optional<double> EMD(const PointDistribution& distribution1,
+absl::optional<double> EMD(const PointDistribution& distribution1,
                            const PointDistribution& distribution2);
 }  // namespace opencv
 

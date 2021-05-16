@@ -69,12 +69,16 @@ class ElementGeneratorTest(unittest.TestCase):
 
   def testGenerateClassFieldContent(self):
     lines = []
-    GenerateFieldContent('', {'type': 'class', 'default': 'base::nullopt'},
-                         None, lines, '  ', {})
-    self.assertEquals(['  base::nullopt,'], lines)
+    GenerateFieldContent('', {
+        'type': 'class',
+        'default': 'absl::nullopt'
+    }, None, lines, '  ', {})
+    self.assertEquals(['  absl::nullopt,'], lines)
     lines = []
-    GenerateFieldContent('', {'type': 'class', 'default': 'base::nullopt'},
-                         'true', lines, '  ', {})
+    GenerateFieldContent('', {
+        'type': 'class',
+        'default': 'absl::nullopt'
+    }, 'true', lines, '  ', {})
     self.assertEquals(['  true,'], lines)
     lines = []
     GenerateFieldContent('', {'type': 'class'}, 'false', lines, '  ', {})

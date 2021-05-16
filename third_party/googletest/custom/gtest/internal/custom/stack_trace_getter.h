@@ -6,7 +6,7 @@
 #define THIRD_PARTY_GOOGLETEST_CUSTOM_GTEST_INTERNAL_CUSTOM_STACK_TRACE_GETTER_H_
 
 #include "base/debug/stack_trace.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/googletest/src/googletest/src/gtest-internal-inl.h"
 
 // An implementation of Google Test's OsStackTraceGetterInterface that uses
@@ -24,7 +24,7 @@ class StackTraceGetter
   void UponLeavingGTest() override;
 
  private:
-  base::Optional<base::debug::StackTrace> stack_trace_upon_leaving_gtest_;
+  absl::optional<base::debug::StackTrace> stack_trace_upon_leaving_gtest_;
 };
 
 #endif  // THIRD_PARTY_GOOGLETEST_CUSTOM_GTEST_INTERNAL_CUSTOM_STACK_TRACE_GETTER_H_

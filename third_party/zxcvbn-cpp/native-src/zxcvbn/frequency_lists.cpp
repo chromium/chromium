@@ -138,10 +138,10 @@ RankedDicts::RankedDicts(
 // To find an element in the middle between two others, we first locate the
 // *byte* in the middle, then seek forward until we hit a marker byte that
 // will only appear at the start of an allocation.
-base::Optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
+absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
   // special case for empty dictionary
   if (data_.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
   CHECK_GE(data_.size(), 3UL);  // 2 bytes header, 1 byte trailing marker
 
   // Create a range whose start and end point to marker bytes.
@@ -167,13 +167,13 @@ base::Optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
       return mid_entry.rank();
     if (cmp_result < 0) {
       if (adjusted_midpoint == range_last)
-        return base::nullopt;
+        return absl::nullopt;
       range_start = adjusted_midpoint + 1;
       while (!IsRealMarker(range_start))
         range_start++;
     } else {
       if (adjusted_midpoint == range_start)
-        return base::nullopt;
+        return absl::nullopt;
       range_last = adjusted_midpoint - 1;
       while (!IsRealMarker(range_last))
         range_last--;

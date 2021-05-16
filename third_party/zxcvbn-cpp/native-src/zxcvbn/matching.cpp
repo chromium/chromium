@@ -162,7 +162,7 @@ std::vector<Match> dictionary_match(const std::string & password,
       util::utf8_decode(password, jdx);
 
       std::string word = password_lower.substr(idx, jdx - idx);
-      base::Optional<rank_t> result = ranked_dictionaries.Find(word);
+      absl::optional<rank_t> result = ranked_dictionaries.Find(word);
       if (result.has_value()) {
         rank_t rank = *result;
         matches.emplace_back(i, j, password.substr(idx, jdx - idx),

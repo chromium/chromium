@@ -106,7 +106,7 @@ index 2f9600abfb2f..3689a5f2504c 100644
  #include "base/files/file_path.h"
  #include "base/files/file_util.h"
  #include "base/files/scoped_temp_dir.h"
-+#include "base/optional.h"
++#include "third_party/abseil-cpp/absl/types/optional.h"
  #include "base/test/task_environment.h"
  #include "base/values.h"
  #include "testing/gmock/include/gmock/gmock.h"
@@ -561,10 +561,10 @@ index 4996f7959be4..332673d93f77 100644
 +// To find an element in the middle between two others, we first locate the
 +// *byte* in the middle, then seek forward until we hit a marker byte that
 +// will only appear at the start of an allocation.
-+base::Optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
++absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
 +  // special case for empty dictionary
 +  if (data_.size() == 0)
-+    return base::nullopt;
++    return absl::nullopt;
 +  CHECK_GE(data_.size(), 3UL);  // 2 bytes header, 1 byte trailing marker
  
 -  for (const auto & item : ranked_dicts) {
@@ -592,13 +592,13 @@ index 4996f7959be4..332673d93f77 100644
 +      return mid_entry.rank();
 +    if (cmp_result < 0) {
 +      if (adjusted_midpoint == range_last)
-+        return base::nullopt;
++        return absl::nullopt;
 +      range_start = adjusted_midpoint + 1;
 +      while (!IsRealMarker(range_start))
 +        range_start++;
 +    } else {
 +      if (adjusted_midpoint == range_start)
-+        return base::nullopt;
++        return absl::nullopt;
 +      range_last = adjusted_midpoint - 1;
 +      while (!IsRealMarker(range_last))
 +        range_last--;
@@ -646,7 +646,7 @@ index 3757483251e5..2b0f00f9cf35 100644
 +#include <memory>
 +#include <vector>
  
-+#include "base/optional.h"
++#include "third_party/abseil-cpp/absl/types/optional.h"
  #include "base/strings/string_piece.h"
 -#include "base/containers/flat_map.h"
  
@@ -684,7 +684,7 @@ index 3757483251e5..2b0f00f9cf35 100644
 +  RankedDicts& operator=(RankedDicts &&) = default;
 +  RankedDicts& operator=(const RankedDicts &) = delete;
 +
-+  base::Optional<rank_t> Find(base::StringPiece needle) const;
++  absl::optional<rank_t> Find(base::StringPiece needle) const;
 +
 + private:
 +  bool IsRealMarker(size_t offset) const;
@@ -801,7 +801,7 @@ index 3d09857fa5fa..1692fe8b4e88 100644
 +      util::utf8_decode(password, jdx);
 +
 +      std::string word = password_lower.substr(idx, jdx - idx);
-+      base::Optional<rank_t> result = ranked_dictionaries.Find(word);
++      absl::optional<rank_t> result = ranked_dictionaries.Find(word);
 +      if (result.has_value()) {
 +        rank_t rank = *result;
 +        matches.emplace_back(i, j, password.substr(idx, jdx - idx),

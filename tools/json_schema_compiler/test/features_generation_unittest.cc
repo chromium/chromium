@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/json_schema_compiler/test/features_compiler_test.h"
 
 namespace extensions {
@@ -24,8 +24,8 @@ void ExpectVectorsEqual(std::vector<T> expected,
 }
 
 template <typename T>
-void ExpectOptionalVectorsEqual(const base::Optional<std::vector<T>>& expected,
-                                const base::Optional<std::vector<T>>& actual,
+void ExpectOptionalVectorsEqual(const absl::optional<std::vector<T>>& expected,
+                                const absl::optional<std::vector<T>>& actual,
                                 const std::string& name) {
   if (expected.has_value() != actual.has_value()) {
     ADD_FAILURE() << "Mismatched optional vectors for " << name << ": "
@@ -54,16 +54,16 @@ struct FeatureComparator {
   std::vector<std::string> allowlist;
   std::vector<std::string> dependencies;
   std::vector<Manifest::Type> extension_types;
-  base::Optional<std::vector<Feature::Context>> contexts;
+  absl::optional<std::vector<Feature::Context>> contexts;
   std::vector<Feature::Platform> platforms;
 
   URLPatternSet matches;
 
-  base::Optional<SimpleFeature::Location> location;
-  base::Optional<int> min_manifest_version;
-  base::Optional<int> max_manifest_version;
-  base::Optional<std::string> command_line_switch;
-  base::Optional<version_info::Channel> channel;
+  absl::optional<SimpleFeature::Location> location;
+  absl::optional<int> min_manifest_version;
+  absl::optional<int> max_manifest_version;
+  absl::optional<std::string> command_line_switch;
+  absl::optional<version_info::Channel> channel;
 
   std::string alias;
   std::string source;

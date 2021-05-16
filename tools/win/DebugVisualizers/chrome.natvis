@@ -21,11 +21,11 @@
       <Item Name="RefCount">((base::subtle::RefCountedBase*)ptr_)-&gt;ref_count_</Item>
     </Expand>
   </Type>
-  <Type Name="base::Optional&lt;*&gt;">
-    <DisplayString Condition="!storage_.is_populated_">(null)</DisplayString>
-    <DisplayString>{storage_.value_}</DisplayString>
+  <Type Name="absl::Optional&lt;*&gt;">
+    <DisplayString Condition="!engaged_">(null)</DisplayString>
+    <DisplayString>{data_}</DisplayString>
     <Expand>
-      <Item Name="Value" Condition="storage_.is_populated_">storage_.value_</Item>
+      <Item Name="Value" Condition="engaged_">data_</Item>
     </Expand>
   </Type>
   <Type Name="base::RefCounted&lt;*&gt;">
