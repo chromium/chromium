@@ -15,7 +15,7 @@ bool StructTraits<display::mojom::DisplayConfigurationParamsDataView,
   if (!data.ReadOrigin(&origin))
     return false;
 
-  base::Optional<std::unique_ptr<display::DisplayMode>> mode;
+  absl::optional<std::unique_ptr<display::DisplayMode>> mode;
   if (!data.ReadMode(&mode))
     return false;
 

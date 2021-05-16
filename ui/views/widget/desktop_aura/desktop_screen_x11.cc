@@ -51,12 +51,12 @@ void DesktopScreenX11::Init() {
 gfx::Point DesktopScreenX11::GetCursorScreenPoint() {
   TRACE_EVENT0("views", "DesktopScreenX11::GetCursorScreenPoint()");
 
-  base::Optional<gfx::Point> point_in_pixels;
+  absl::optional<gfx::Point> point_in_pixels;
   if (const auto* const event_source = ui::X11EventSource::GetInstance())
     point_in_pixels = event_source->GetRootCursorLocationFromCurrentEvent();
   if (!point_in_pixels) {
     // This call is expensive so we explicitly only call it when
-    // |point_in_pixels| is not set. We note that base::Optional::value_or()
+    // |point_in_pixels| is not set. We note that absl::optional::value_or()
     // would cause it to be called regardless.
     point_in_pixels = x11_display_manager_->GetCursorLocation();
   }

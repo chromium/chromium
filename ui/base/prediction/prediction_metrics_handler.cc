@@ -110,7 +110,7 @@ void PredictionMetricsHandler::EvaluatePrediction() {
 void PredictionMetricsHandler::Reset() {
   events_queue_.clear();
   predicted_events_queue_.clear();
-  last_predicted_ = base::nullopt;
+  last_predicted_ = absl::nullopt;
 }
 
 int PredictionMetricsHandler::GetInterpolatedEventForPredictedEvent(

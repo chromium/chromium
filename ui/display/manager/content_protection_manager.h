@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
 
@@ -76,7 +76,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
     native_display_delegate_ = delegate;
   }
 
-  using ClientId = base::Optional<uint64_t>;
+  using ClientId = absl::optional<uint64_t>;
 
   // On display reconfiguration, pending requests are cancelled, i.e. clients
   // receive failure callbacks, and are responsible for renewing requests. If a

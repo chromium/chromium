@@ -5,9 +5,9 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace ui {
@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
   EndpointType type_;
   // The url::Origin of the data endpoint. It always has a value if `type_` ==
   // EndpointType::kUrl, otherwise it's empty.
-  base::Optional<url::Origin> origin_;
+  absl::optional<url::Origin> origin_;
   // This variable should be set to true, if paste is initiated by the user.
   // Otherwise it should be set to false, so the user won't see a notification
   // when the data is restricted by the rules of data leak prevention policy

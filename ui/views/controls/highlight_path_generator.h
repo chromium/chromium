@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -35,7 +35,7 @@ class VIEWS_EXPORT HighlightPathGenerator {
 
   static void Install(View* host,
                       std::unique_ptr<HighlightPathGenerator> generator);
-  static base::Optional<gfx::RRectF> GetRoundRectForView(const View* view);
+  static absl::optional<gfx::RRectF> GetRoundRectForView(const View* view);
 
   // TODO(http://crbug.com/1056490): Deprecate |GetHighlightPath()| in favor of
   // |GetRoundRect()|.
@@ -45,8 +45,8 @@ class VIEWS_EXPORT HighlightPathGenerator {
   // highlight. Note that |rect| is in the coordinate system of the view.
   // TODO(http://crbug.com/1056490): Once |GetHighlightPath()| is deprecated,
   // make this a pure virtual function and make the return not optional.
-  virtual base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect);
-  base::Optional<gfx::RRectF> GetRoundRect(const View* view);
+  virtual absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect);
+  absl::optional<gfx::RRectF> GetRoundRect(const View* view);
 
   void set_use_contents_bounds(bool use_contents_bounds) {
     use_contents_bounds_ = use_contents_bounds;
@@ -83,7 +83,7 @@ class VIEWS_EXPORT EmptyHighlightPathGenerator : public HighlightPathGenerator {
       delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 };
 
 void VIEWS_EXPORT InstallEmptyHighlightPathGenerator(View* view);
@@ -98,7 +98,7 @@ class VIEWS_EXPORT RectHighlightPathGenerator : public HighlightPathGenerator {
       delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 };
 
 void VIEWS_EXPORT InstallRectHighlightPathGenerator(View* view);
@@ -114,7 +114,7 @@ class VIEWS_EXPORT CircleHighlightPathGenerator
       delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 };
 
 void VIEWS_EXPORT InstallCircleHighlightPathGenerator(View* view);
@@ -131,7 +131,7 @@ class VIEWS_EXPORT PillHighlightPathGenerator : public HighlightPathGenerator {
       delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 };
 
 void VIEWS_EXPORT InstallPillHighlightPathGenerator(View* view);
@@ -148,7 +148,7 @@ class VIEWS_EXPORT FixedSizeCircleHighlightPathGenerator
       const FixedSizeCircleHighlightPathGenerator&) = delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 
  private:
   const int radius_;
@@ -169,7 +169,7 @@ class VIEWS_EXPORT RoundRectHighlightPathGenerator
       const RoundRectHighlightPathGenerator&) = delete;
 
   // HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 
  private:
   const int corner_radius_;

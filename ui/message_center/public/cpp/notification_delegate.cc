@@ -21,8 +21,8 @@ void ThunkNotificationDelegate::Close(bool by_user) {
 }
 
 void ThunkNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (impl_)
     impl_->Click(button_index, reply);
 }
@@ -62,7 +62,7 @@ void HandleNotificationClickDelegate::SetCallback(
     // and just runs the provided closure.
     callback_ = base::BindRepeating(
         [](const base::RepeatingClosure& closure,
-           base::Optional<int> button_index) {
+           absl::optional<int> button_index) {
           DCHECK(!button_index);
           closure.Run();
         },
@@ -73,8 +73,8 @@ void HandleNotificationClickDelegate::SetCallback(
 HandleNotificationClickDelegate::~HandleNotificationClickDelegate() {}
 
 void HandleNotificationClickDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!callback_.is_null())
     callback_.Run(button_index);
 }

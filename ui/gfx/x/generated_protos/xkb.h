@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -1203,28 +1203,28 @@ class COMPONENT_EXPORT(X11) Xkb {
     EventType selectAll{};
     MapPart affectMap{};
     MapPart map{};
-    base::Optional<NKNDetail> affectNewKeyboard{};
-    base::Optional<NKNDetail> newKeyboardDetails{};
-    base::Optional<StatePart> affectState{};
-    base::Optional<StatePart> stateDetails{};
-    base::Optional<Control> affectCtrls{};
-    base::Optional<Control> ctrlDetails{};
-    base::Optional<uint32_t> affectIndicatorState{};
-    base::Optional<uint32_t> indicatorStateDetails{};
-    base::Optional<uint32_t> affectIndicatorMap{};
-    base::Optional<uint32_t> indicatorMapDetails{};
-    base::Optional<NameDetail> affectNames{};
-    base::Optional<NameDetail> namesDetails{};
-    base::Optional<CMDetail> affectCompat{};
-    base::Optional<CMDetail> compatDetails{};
-    base::Optional<uint8_t> affectBell{};
-    base::Optional<uint8_t> bellDetails{};
-    base::Optional<uint8_t> affectMsgDetails{};
-    base::Optional<uint8_t> msgDetails{};
-    base::Optional<AXNDetail> affectAccessX{};
-    base::Optional<AXNDetail> accessXDetails{};
-    base::Optional<XIFeature> affectExtDev{};
-    base::Optional<XIFeature> extdevDetails{};
+    absl::optional<NKNDetail> affectNewKeyboard{};
+    absl::optional<NKNDetail> newKeyboardDetails{};
+    absl::optional<StatePart> affectState{};
+    absl::optional<StatePart> stateDetails{};
+    absl::optional<Control> affectCtrls{};
+    absl::optional<Control> ctrlDetails{};
+    absl::optional<uint32_t> affectIndicatorState{};
+    absl::optional<uint32_t> indicatorStateDetails{};
+    absl::optional<uint32_t> affectIndicatorMap{};
+    absl::optional<uint32_t> indicatorMapDetails{};
+    absl::optional<NameDetail> affectNames{};
+    absl::optional<NameDetail> namesDetails{};
+    absl::optional<CMDetail> affectCompat{};
+    absl::optional<CMDetail> compatDetails{};
+    absl::optional<uint8_t> affectBell{};
+    absl::optional<uint8_t> bellDetails{};
+    absl::optional<uint8_t> affectMsgDetails{};
+    absl::optional<uint8_t> msgDetails{};
+    absl::optional<AXNDetail> affectAccessX{};
+    absl::optional<AXNDetail> accessXDetails{};
+    absl::optional<XIFeature> affectExtDev{};
+    absl::optional<XIFeature> extdevDetails{};
   };
 
   using SelectEventsResponse = Response<void>;
@@ -1238,28 +1238,28 @@ class COMPONENT_EXPORT(X11) Xkb {
       const EventType& selectAll = {},
       const MapPart& affectMap = {},
       const MapPart& map = {},
-      const base::Optional<NKNDetail>& affectNewKeyboard = base::nullopt,
-      const base::Optional<NKNDetail>& newKeyboardDetails = base::nullopt,
-      const base::Optional<StatePart>& affectState = base::nullopt,
-      const base::Optional<StatePart>& stateDetails = base::nullopt,
-      const base::Optional<Control>& affectCtrls = base::nullopt,
-      const base::Optional<Control>& ctrlDetails = base::nullopt,
-      const base::Optional<uint32_t>& affectIndicatorState = base::nullopt,
-      const base::Optional<uint32_t>& indicatorStateDetails = base::nullopt,
-      const base::Optional<uint32_t>& affectIndicatorMap = base::nullopt,
-      const base::Optional<uint32_t>& indicatorMapDetails = base::nullopt,
-      const base::Optional<NameDetail>& affectNames = base::nullopt,
-      const base::Optional<NameDetail>& namesDetails = base::nullopt,
-      const base::Optional<CMDetail>& affectCompat = base::nullopt,
-      const base::Optional<CMDetail>& compatDetails = base::nullopt,
-      const base::Optional<uint8_t>& affectBell = base::nullopt,
-      const base::Optional<uint8_t>& bellDetails = base::nullopt,
-      const base::Optional<uint8_t>& affectMsgDetails = base::nullopt,
-      const base::Optional<uint8_t>& msgDetails = base::nullopt,
-      const base::Optional<AXNDetail>& affectAccessX = base::nullopt,
-      const base::Optional<AXNDetail>& accessXDetails = base::nullopt,
-      const base::Optional<XIFeature>& affectExtDev = base::nullopt,
-      const base::Optional<XIFeature>& extdevDetails = base::nullopt);
+      const absl::optional<NKNDetail>& affectNewKeyboard = absl::nullopt,
+      const absl::optional<NKNDetail>& newKeyboardDetails = absl::nullopt,
+      const absl::optional<StatePart>& affectState = absl::nullopt,
+      const absl::optional<StatePart>& stateDetails = absl::nullopt,
+      const absl::optional<Control>& affectCtrls = absl::nullopt,
+      const absl::optional<Control>& ctrlDetails = absl::nullopt,
+      const absl::optional<uint32_t>& affectIndicatorState = absl::nullopt,
+      const absl::optional<uint32_t>& indicatorStateDetails = absl::nullopt,
+      const absl::optional<uint32_t>& affectIndicatorMap = absl::nullopt,
+      const absl::optional<uint32_t>& indicatorMapDetails = absl::nullopt,
+      const absl::optional<NameDetail>& affectNames = absl::nullopt,
+      const absl::optional<NameDetail>& namesDetails = absl::nullopt,
+      const absl::optional<CMDetail>& affectCompat = absl::nullopt,
+      const absl::optional<CMDetail>& compatDetails = absl::nullopt,
+      const absl::optional<uint8_t>& affectBell = absl::nullopt,
+      const absl::optional<uint8_t>& bellDetails = absl::nullopt,
+      const absl::optional<uint8_t>& affectMsgDetails = absl::nullopt,
+      const absl::optional<uint8_t>& msgDetails = absl::nullopt,
+      const absl::optional<AXNDetail>& affectAccessX = absl::nullopt,
+      const absl::optional<AXNDetail>& accessXDetails = absl::nullopt,
+      const absl::optional<XIFeature>& affectExtDev = absl::nullopt,
+      const absl::optional<XIFeature>& extdevDetails = absl::nullopt);
 
   struct BellRequest {
     DeviceSpec deviceSpec{};
@@ -1499,15 +1499,15 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t nVModMapKeys{};
     uint8_t totalVModMapKeys{};
     VMod virtualMods{};
-    base::Optional<std::vector<KeyType>> types_rtrn{};
-    base::Optional<std::vector<KeySymMap>> syms_rtrn{};
-    base::Optional<std::vector<uint8_t>> acts_rtrn_count{};
-    base::Optional<std::vector<Action>> acts_rtrn_acts{};
-    base::Optional<std::vector<SetBehavior>> behaviors_rtrn{};
-    base::Optional<std::vector<ModMask>> vmods_rtrn{};
-    base::Optional<std::vector<SetExplicit>> explicit_rtrn{};
-    base::Optional<std::vector<KeyModMap>> modmap_rtrn{};
-    base::Optional<std::vector<KeyVModMap>> vmodmap_rtrn{};
+    absl::optional<std::vector<KeyType>> types_rtrn{};
+    absl::optional<std::vector<KeySymMap>> syms_rtrn{};
+    absl::optional<std::vector<uint8_t>> acts_rtrn_count{};
+    absl::optional<std::vector<Action>> acts_rtrn_acts{};
+    absl::optional<std::vector<SetBehavior>> behaviors_rtrn{};
+    absl::optional<std::vector<ModMask>> vmods_rtrn{};
+    absl::optional<std::vector<SetExplicit>> explicit_rtrn{};
+    absl::optional<std::vector<KeyModMap>> modmap_rtrn{};
+    absl::optional<std::vector<KeyVModMap>> vmodmap_rtrn{};
   };
 
   using GetMapResponse = Response<GetMapReply>;
@@ -1559,15 +1559,15 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t nVModMapKeys{};
     uint8_t totalVModMapKeys{};
     VMod virtualMods{};
-    base::Optional<std::vector<SetKeyType>> types{};
-    base::Optional<std::vector<KeySymMap>> syms{};
-    base::Optional<std::vector<uint8_t>> actionsCount{};
-    base::Optional<std::vector<Action>> actions{};
-    base::Optional<std::vector<SetBehavior>> behaviors{};
-    base::Optional<std::vector<uint8_t>> vmods{};
-    base::Optional<std::vector<SetExplicit>> c_explicit{};
-    base::Optional<std::vector<KeyModMap>> modmap{};
-    base::Optional<std::vector<KeyVModMap>> vmodmap{};
+    absl::optional<std::vector<SetKeyType>> types{};
+    absl::optional<std::vector<KeySymMap>> syms{};
+    absl::optional<std::vector<uint8_t>> actionsCount{};
+    absl::optional<std::vector<Action>> actions{};
+    absl::optional<std::vector<SetBehavior>> behaviors{};
+    absl::optional<std::vector<uint8_t>> vmods{};
+    absl::optional<std::vector<SetExplicit>> c_explicit{};
+    absl::optional<std::vector<KeyModMap>> modmap{};
+    absl::optional<std::vector<KeyVModMap>> vmodmap{};
   };
 
   using SetMapResponse = Response<void>;
@@ -1600,16 +1600,16 @@ class COMPONENT_EXPORT(X11) Xkb {
       const uint8_t& nVModMapKeys = {},
       const uint8_t& totalVModMapKeys = {},
       const VMod& virtualMods = {},
-      const base::Optional<std::vector<SetKeyType>>& types = base::nullopt,
-      const base::Optional<std::vector<KeySymMap>>& syms = base::nullopt,
-      const base::Optional<std::vector<uint8_t>>& actionsCount = base::nullopt,
-      const base::Optional<std::vector<Action>>& actions = base::nullopt,
-      const base::Optional<std::vector<SetBehavior>>& behaviors = base::nullopt,
-      const base::Optional<std::vector<uint8_t>>& vmods = base::nullopt,
-      const base::Optional<std::vector<SetExplicit>>& c_explicit =
-          base::nullopt,
-      const base::Optional<std::vector<KeyModMap>>& modmap = base::nullopt,
-      const base::Optional<std::vector<KeyVModMap>>& vmodmap = base::nullopt);
+      const absl::optional<std::vector<SetKeyType>>& types = absl::nullopt,
+      const absl::optional<std::vector<KeySymMap>>& syms = absl::nullopt,
+      const absl::optional<std::vector<uint8_t>>& actionsCount = absl::nullopt,
+      const absl::optional<std::vector<Action>>& actions = absl::nullopt,
+      const absl::optional<std::vector<SetBehavior>>& behaviors = absl::nullopt,
+      const absl::optional<std::vector<uint8_t>>& vmods = absl::nullopt,
+      const absl::optional<std::vector<SetExplicit>>& c_explicit =
+          absl::nullopt,
+      const absl::optional<std::vector<KeyModMap>>& modmap = absl::nullopt,
+      const absl::optional<std::vector<KeyVModMap>>& vmodmap = absl::nullopt);
 
   struct GetCompatMapRequest {
     DeviceSpec deviceSpec{};
@@ -1810,21 +1810,21 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t nRadioGroups{};
     uint8_t nKeyAliases{};
     uint16_t nKTLevels{};
-    base::Optional<Atom> keycodesName{};
-    base::Optional<Atom> geometryName{};
-    base::Optional<Atom> symbolsName{};
-    base::Optional<Atom> physSymbolsName{};
-    base::Optional<Atom> typesName{};
-    base::Optional<Atom> compatName{};
-    base::Optional<std::vector<Atom>> typeNames{};
-    base::Optional<std::vector<uint8_t>> nLevelsPerType{};
-    base::Optional<std::vector<Atom>> ktLevelNames{};
-    base::Optional<std::vector<Atom>> indicatorNames{};
-    base::Optional<std::vector<Atom>> virtualModNames{};
-    base::Optional<std::vector<Atom>> groups{};
-    base::Optional<std::vector<KeyName>> keyNames{};
-    base::Optional<std::vector<KeyAlias>> keyAliases{};
-    base::Optional<std::vector<Atom>> radioGroupNames{};
+    absl::optional<Atom> keycodesName{};
+    absl::optional<Atom> geometryName{};
+    absl::optional<Atom> symbolsName{};
+    absl::optional<Atom> physSymbolsName{};
+    absl::optional<Atom> typesName{};
+    absl::optional<Atom> compatName{};
+    absl::optional<std::vector<Atom>> typeNames{};
+    absl::optional<std::vector<uint8_t>> nLevelsPerType{};
+    absl::optional<std::vector<Atom>> ktLevelNames{};
+    absl::optional<std::vector<Atom>> indicatorNames{};
+    absl::optional<std::vector<Atom>> virtualModNames{};
+    absl::optional<std::vector<Atom>> groups{};
+    absl::optional<std::vector<KeyName>> keyNames{};
+    absl::optional<std::vector<KeyAlias>> keyAliases{};
+    absl::optional<std::vector<Atom>> radioGroupNames{};
   };
 
   using GetNamesResponse = Response<GetNamesReply>;
@@ -1848,21 +1848,21 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t nKeys{};
     uint8_t nKeyAliases{};
     uint16_t totalKTLevelNames{};
-    base::Optional<Atom> keycodesName{};
-    base::Optional<Atom> geometryName{};
-    base::Optional<Atom> symbolsName{};
-    base::Optional<Atom> physSymbolsName{};
-    base::Optional<Atom> typesName{};
-    base::Optional<Atom> compatName{};
-    base::Optional<std::vector<Atom>> typeNames{};
-    base::Optional<std::vector<uint8_t>> nLevelsPerType{};
-    base::Optional<std::vector<Atom>> ktLevelNames{};
-    base::Optional<std::vector<Atom>> indicatorNames{};
-    base::Optional<std::vector<Atom>> virtualModNames{};
-    base::Optional<std::vector<Atom>> groups{};
-    base::Optional<std::vector<KeyName>> keyNames{};
-    base::Optional<std::vector<KeyAlias>> keyAliases{};
-    base::Optional<std::vector<Atom>> radioGroupNames{};
+    absl::optional<Atom> keycodesName{};
+    absl::optional<Atom> geometryName{};
+    absl::optional<Atom> symbolsName{};
+    absl::optional<Atom> physSymbolsName{};
+    absl::optional<Atom> typesName{};
+    absl::optional<Atom> compatName{};
+    absl::optional<std::vector<Atom>> typeNames{};
+    absl::optional<std::vector<uint8_t>> nLevelsPerType{};
+    absl::optional<std::vector<Atom>> ktLevelNames{};
+    absl::optional<std::vector<Atom>> indicatorNames{};
+    absl::optional<std::vector<Atom>> virtualModNames{};
+    absl::optional<std::vector<Atom>> groups{};
+    absl::optional<std::vector<KeyName>> keyNames{};
+    absl::optional<std::vector<KeyAlias>> keyAliases{};
+    absl::optional<std::vector<Atom>> radioGroupNames{};
   };
 
   using SetNamesResponse = Response<void>;
@@ -1883,22 +1883,22 @@ class COMPONENT_EXPORT(X11) Xkb {
       const uint8_t& nKeys = {},
       const uint8_t& nKeyAliases = {},
       const uint16_t& totalKTLevelNames = {},
-      const base::Optional<Atom>& keycodesName = base::nullopt,
-      const base::Optional<Atom>& geometryName = base::nullopt,
-      const base::Optional<Atom>& symbolsName = base::nullopt,
-      const base::Optional<Atom>& physSymbolsName = base::nullopt,
-      const base::Optional<Atom>& typesName = base::nullopt,
-      const base::Optional<Atom>& compatName = base::nullopt,
-      const base::Optional<std::vector<Atom>>& typeNames = base::nullopt,
-      const base::Optional<std::vector<uint8_t>>& nLevelsPerType =
-          base::nullopt,
-      const base::Optional<std::vector<Atom>>& ktLevelNames = base::nullopt,
-      const base::Optional<std::vector<Atom>>& indicatorNames = base::nullopt,
-      const base::Optional<std::vector<Atom>>& virtualModNames = base::nullopt,
-      const base::Optional<std::vector<Atom>>& groups = base::nullopt,
-      const base::Optional<std::vector<KeyName>>& keyNames = base::nullopt,
-      const base::Optional<std::vector<KeyAlias>>& keyAliases = base::nullopt,
-      const base::Optional<std::vector<Atom>>& radioGroupNames = base::nullopt);
+      const absl::optional<Atom>& keycodesName = absl::nullopt,
+      const absl::optional<Atom>& geometryName = absl::nullopt,
+      const absl::optional<Atom>& symbolsName = absl::nullopt,
+      const absl::optional<Atom>& physSymbolsName = absl::nullopt,
+      const absl::optional<Atom>& typesName = absl::nullopt,
+      const absl::optional<Atom>& compatName = absl::nullopt,
+      const absl::optional<std::vector<Atom>>& typeNames = absl::nullopt,
+      const absl::optional<std::vector<uint8_t>>& nLevelsPerType =
+          absl::nullopt,
+      const absl::optional<std::vector<Atom>>& ktLevelNames = absl::nullopt,
+      const absl::optional<std::vector<Atom>>& indicatorNames = absl::nullopt,
+      const absl::optional<std::vector<Atom>>& virtualModNames = absl::nullopt,
+      const absl::optional<std::vector<Atom>>& groups = absl::nullopt,
+      const absl::optional<std::vector<KeyName>>& keyNames = absl::nullopt,
+      const absl::optional<std::vector<KeyAlias>>& keyAliases = absl::nullopt,
+      const absl::optional<std::vector<Atom>>& radioGroupNames = absl::nullopt);
 
   struct PerClientFlagsRequest {
     DeviceSpec deviceSpec{};
@@ -2000,15 +2000,15 @@ class COMPONENT_EXPORT(X11) Xkb {
       uint8_t nVModMapKeys{};
       uint8_t totalVModMapKeys{};
       VMod virtualMods{};
-      base::Optional<std::vector<KeyType>> types_rtrn{};
-      base::Optional<std::vector<KeySymMap>> syms_rtrn{};
-      base::Optional<std::vector<uint8_t>> acts_rtrn_count{};
-      base::Optional<std::vector<Action>> acts_rtrn_acts{};
-      base::Optional<std::vector<SetBehavior>> behaviors_rtrn{};
-      base::Optional<std::vector<ModMask>> vmods_rtrn{};
-      base::Optional<std::vector<SetExplicit>> explicit_rtrn{};
-      base::Optional<std::vector<KeyModMap>> modmap_rtrn{};
-      base::Optional<std::vector<KeyVModMap>> vmodmap_rtrn{};
+      absl::optional<std::vector<KeyType>> types_rtrn{};
+      absl::optional<std::vector<KeySymMap>> syms_rtrn{};
+      absl::optional<std::vector<uint8_t>> acts_rtrn_count{};
+      absl::optional<std::vector<Action>> acts_rtrn_acts{};
+      absl::optional<std::vector<SetBehavior>> behaviors_rtrn{};
+      absl::optional<std::vector<ModMask>> vmods_rtrn{};
+      absl::optional<std::vector<SetExplicit>> explicit_rtrn{};
+      absl::optional<std::vector<KeyModMap>> modmap_rtrn{};
+      absl::optional<std::vector<KeyVModMap>> vmodmap_rtrn{};
     };
     struct CompatMap {
       uint8_t compatmap_type{};
@@ -2046,21 +2046,21 @@ class COMPONENT_EXPORT(X11) Xkb {
       uint8_t nRadioGroups{};
       uint8_t nKeyAliases{};
       uint16_t nKTLevels{};
-      base::Optional<Atom> keycodesName{};
-      base::Optional<Atom> geometryName{};
-      base::Optional<Atom> symbolsName{};
-      base::Optional<Atom> physSymbolsName{};
-      base::Optional<Atom> typesName{};
-      base::Optional<Atom> compatName{};
-      base::Optional<std::vector<Atom>> typeNames{};
-      base::Optional<std::vector<uint8_t>> nLevelsPerType{};
-      base::Optional<std::vector<Atom>> ktLevelNames{};
-      base::Optional<std::vector<Atom>> indicatorNames{};
-      base::Optional<std::vector<Atom>> virtualModNames{};
-      base::Optional<std::vector<Atom>> groups{};
-      base::Optional<std::vector<KeyName>> keyNames{};
-      base::Optional<std::vector<KeyAlias>> keyAliases{};
-      base::Optional<std::vector<Atom>> radioGroupNames{};
+      absl::optional<Atom> keycodesName{};
+      absl::optional<Atom> geometryName{};
+      absl::optional<Atom> symbolsName{};
+      absl::optional<Atom> physSymbolsName{};
+      absl::optional<Atom> typesName{};
+      absl::optional<Atom> compatName{};
+      absl::optional<std::vector<Atom>> typeNames{};
+      absl::optional<std::vector<uint8_t>> nLevelsPerType{};
+      absl::optional<std::vector<Atom>> ktLevelNames{};
+      absl::optional<std::vector<Atom>> indicatorNames{};
+      absl::optional<std::vector<Atom>> virtualModNames{};
+      absl::optional<std::vector<Atom>> groups{};
+      absl::optional<std::vector<KeyName>> keyNames{};
+      absl::optional<std::vector<KeyAlias>> keyAliases{};
+      absl::optional<std::vector<Atom>> radioGroupNames{};
     };
     struct Geometry {
       uint8_t geometry_type{};
@@ -2081,11 +2081,11 @@ class COMPONENT_EXPORT(X11) Xkb {
       uint8_t labelColorNdx{};
       CountedString16 labelFont{};
     };
-    base::Optional<Types> types{};
-    base::Optional<CompatMap> compat_map{};
-    base::Optional<IndicatorMaps> indicator_maps{};
-    base::Optional<KeyNames> key_names{};
-    base::Optional<Geometry> geometry{};
+    absl::optional<Types> types{};
+    absl::optional<CompatMap> compat_map{};
+    absl::optional<IndicatorMaps> indicator_maps{};
+    absl::optional<KeyNames> key_names{};
+    absl::optional<Geometry> geometry{};
   };
 
   using GetKbdByNameResponse = Response<GetKbdByNameReply>;

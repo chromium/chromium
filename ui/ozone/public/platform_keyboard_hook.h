@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 

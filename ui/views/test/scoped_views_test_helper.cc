@@ -18,7 +18,7 @@ namespace views {
 
 ScopedViewsTestHelper::ScopedViewsTestHelper(
     std::unique_ptr<TestViewsDelegate> test_views_delegate,
-    base::Optional<ViewsDelegate::NativeWidgetFactory> factory)
+    absl::optional<ViewsDelegate::NativeWidgetFactory> factory)
     : test_views_delegate_(test_views_delegate
                                ? std::move(test_views_delegate)
                                : test_helper_->GetFallbackTestViewsDelegate()) {

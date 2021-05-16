@@ -2421,12 +2421,12 @@ TEST_P(WaylandWindowTest, OnSizeConstraintsChanged) {
   const bool kBooleans[] = {false, true};
   for (bool has_min_size : kBooleans) {
     for (bool has_max_size : kBooleans) {
-      base::Optional<gfx::Size> min_size =
-          has_min_size ? base::Optional<gfx::Size>(gfx::Size(100, 200))
-                       : base::nullopt;
-      base::Optional<gfx::Size> max_size =
-          has_max_size ? base::Optional<gfx::Size>(gfx::Size(300, 400))
-                       : base::nullopt;
+      absl::optional<gfx::Size> min_size =
+          has_min_size ? absl::optional<gfx::Size>(gfx::Size(100, 200))
+                       : absl::nullopt;
+      absl::optional<gfx::Size> max_size =
+          has_max_size ? absl::optional<gfx::Size>(gfx::Size(300, 400))
+                       : absl::nullopt;
       EXPECT_CALL(delegate_, GetMinimumSizeForWindow())
           .WillOnce(Return(min_size));
       EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
@@ -2617,8 +2617,8 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   EXPECT_TRUE(mock_xdg_toplevel->max_size().IsEmpty());
 
   // Now, propagate size constraints and title.
-  base::Optional<gfx::Size> min_size(gfx::Size(1, 1));
-  base::Optional<gfx::Size> max_size(gfx::Size(100, 100));
+  absl::optional<gfx::Size> min_size(gfx::Size(1, 1));
+  absl::optional<gfx::Size> max_size(gfx::Size(100, 100));
   EXPECT_CALL(delegate, GetMinimumSizeForWindow())
       .Times(2)
       .WillRepeatedly(Return(min_size));

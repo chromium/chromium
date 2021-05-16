@@ -51,7 +51,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) const override;
+             const absl::optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const gfx::Size& size,
@@ -126,7 +126,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // Used by the GetSystem to run the switch for MacOS override colors that may
   // use named NS system colors. This is a separate function from GetSystemColor
   // to make sure the NSAppearance can be set in a scoped way.
-  base::Optional<SkColor> GetOSColor(ColorId color_id,
+  absl::optional<SkColor> GetOSColor(ColorId color_id,
                                      ColorScheme color_scheme) const;
 
   enum ScrollbarPart {
@@ -135,7 +135,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
     kTrackOuterBorder,
   };
 
-  base::Optional<SkColor> GetScrollbarColor(
+  absl::optional<SkColor> GetScrollbarColor(
       ScrollbarPart part,
       ColorScheme color_scheme,
       const ScrollbarExtraParams& extra_params) const;

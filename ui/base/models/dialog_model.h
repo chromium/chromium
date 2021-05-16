@@ -284,7 +284,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     host_ = host;
   }
 
-  const base::Optional<bool>& override_show_close_button(
+  const absl::optional<bool>& override_show_close_button(
       base::PassKey<DialogModelHost>) const {
     return override_show_close_button_;
   }
@@ -295,7 +295,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
 
-  base::Optional<int> initially_focused_field(
+  absl::optional<int> initially_focused_field(
       base::PassKey<DialogModelHost>) const {
     return initially_focused_field_;
   }
@@ -338,18 +338,18 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::unique_ptr<DialogModelDelegate> delegate_;
   DialogModelHost* host_ = nullptr;
 
-  base::Optional<bool> override_show_close_button_;
+  absl::optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
   std::u16string title_;
   ImageModel icon_;
 
   std::vector<std::unique_ptr<DialogModelField>> fields_;
-  base::Optional<int> initially_focused_field_;
+  absl::optional<int> initially_focused_field_;
   bool is_alert_dialog_ = false;
 
-  base::Optional<DialogModelButton> ok_button_;
-  base::Optional<DialogModelButton> cancel_button_;
-  base::Optional<DialogModelButton> extra_button_;
+  absl::optional<DialogModelButton> ok_button_;
+  absl::optional<DialogModelButton> cancel_button_;
+  absl::optional<DialogModelButton> extra_button_;
 
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;

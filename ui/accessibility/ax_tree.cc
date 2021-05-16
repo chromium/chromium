@@ -163,8 +163,8 @@ struct PendingStructureChanges {
         create_node_count(0),
         node_exists(!!node),
         parent_node_id((node && node->parent())
-                           ? base::Optional<AXNodeID>{node->parent()->id()}
-                           : base::nullopt),
+                           ? absl::optional<AXNodeID>{node->parent()->id()}
+                           : absl::nullopt),
         last_known_data(node ? &node->data() : nullptr) {}
 
   // Returns true if this node has any changes remaining.
@@ -233,7 +233,7 @@ struct PendingStructureChanges {
 
   // Keep track of the parent id for this node as of the last pending
   // update that was processed.
-  base::Optional<AXNodeID> parent_node_id;
+  absl::optional<AXNodeID> parent_node_id;
 
   // Keep track of the last known node data for this node.
   // This will be null either when a node does not exist in the tree, or
@@ -308,7 +308,7 @@ struct AXTreeUpdateState {
   }
 
   // Returns the parent node id for the pending node.
-  base::Optional<AXNodeID> GetParentIdForPendingNode(AXNodeID node_id) {
+  absl::optional<AXNodeID> GetParentIdForPendingNode(AXNodeID node_id) {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
@@ -417,9 +417,9 @@ struct AXTreeUpdateState {
     ++data->destroy_node_count;
     data->node_exists = false;
     data->last_known_data = nullptr;
-    data->parent_node_id = base::nullopt;
+    data->parent_node_id = absl::nullopt;
     if (pending_root_id == node_id)
-      pending_root_id = base::nullopt;
+      pending_root_id = absl::nullopt;
     return true;
   }
 
@@ -451,7 +451,7 @@ struct AXTreeUpdateState {
   // Returns true on success, false on failure when the node will already exist.
   bool IncrementPendingCreateNodeCount(
       AXNodeID node_id,
-      base::Optional<AXNodeID> parent_node_id) {
+      absl::optional<AXNodeID> parent_node_id) {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
@@ -489,7 +489,7 @@ struct AXTreeUpdateState {
     DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
         << "This method should only be called while computing pending changes, "
            "before updates are made to the tree.";
-    base::Optional<AXNodeID> parent_node_id =
+    absl::optional<AXNodeID> parent_node_id =
         GetParentIdForPendingNode(node_id);
     if (parent_node_id) {
       invalidate_unignored_cached_values_ids.insert(*parent_node_id);
@@ -502,7 +502,7 @@ struct AXTreeUpdateState {
 
   // Keeps track of the root node id when calculating what changes will occur
   // during an update before the update applies changes.
-  base::Optional<AXNodeID> pending_root_id;
+  absl::optional<AXNodeID> pending_root_id;
 
   // Keeps track of whether the root node will need to be created as a new node.
   // This may occur either when the root node does not exist before applying
@@ -543,7 +543,7 @@ struct AXTreeUpdateState {
 
   // Optional copy of the old tree data, only populated when the tree
   // data has changed.
-  base::Optional<AXTreeData> old_tree_data;
+  absl::optional<AXTreeData> old_tree_data;
 
   // Keep track of the pending tree update to help create useful error messages.
   // TODO(crbug.com/1156601) Revert this once we have the crash data we need
@@ -594,7 +594,7 @@ struct AXTree::OrderedSetItemsMap {
   ~OrderedSetItemsMap() = default;
 
   // Check if a particular hierarchical level exists in this map.
-  bool HierarchicalLevelExists(base::Optional<int> level) {
+  bool HierarchicalLevelExists(absl::optional<int> level) {
     if (items_map_.find(level) == items_map_.end())
       return false;
     return true;
@@ -602,7 +602,7 @@ struct AXTree::OrderedSetItemsMap {
 
   // Add the OrderedSetContent to the corresponding hierarchical level in the
   // map.
-  void Add(base::Optional<int> level,
+  void Add(absl::optional<int> level,
            const OrderedSetContent& ordered_set_content) {
     if (!HierarchicalLevelExists(level))
       items_map_[level] = std::vector<OrderedSetContent>();
@@ -617,7 +617,7 @@ struct AXTree::OrderedSetItemsMap {
   //     of being populated.
   //   - All other OrderedSetContent other than the last one on a level
   //     represents a complete ordered set and should not be modified.
-  void AddItemToBack(base::Optional<int> level, const AXNode* item) {
+  void AddItemToBack(absl::optional<int> level, const AXNode* item) {
     if (!HierarchicalLevelExists(level))
       return;
 
@@ -644,7 +644,7 @@ struct AXTree::OrderedSetItemsMap {
   void Clear() { items_map_.clear(); }
 
   // Maps a hierarchical level to a list of OrderedSetContent.
-  std::map<base::Optional<int32_t>, std::vector<OrderedSetContent>> items_map_;
+  std::map<absl::optional<int32_t>, std::vector<OrderedSetContent>> items_map_;
 };
 
 AXTree::AXTree() {
@@ -1266,9 +1266,9 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   update_state->pending_update_status =
       AXTreePendingStructureStatus::kComputing;
 
-  base::AutoReset<base::Optional<AXNodeID>> pending_root_id_resetter(
+  base::AutoReset<absl::optional<AXNodeID>> pending_root_id_resetter(
       &update_state->pending_root_id,
-      root_ ? base::Optional<AXNodeID>{root_->id()} : base::nullopt);
+      root_ ? absl::optional<AXNodeID>{root_->id()} : absl::nullopt);
 
   // We distinguish between updating the root, e.g. changing its children or
   // some of its attributes, or replacing the root completely. If the root is
@@ -1345,7 +1345,7 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
     // Creation is implicit for new root nodes. If |new_data.id| is already
     // pending for creation, then it must be a duplicate entry in the tree.
     if (!update_state->IncrementPendingCreateNodeCount(new_data.id,
-                                                       base::nullopt)) {
+                                                       absl::nullopt)) {
       ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
           AXTreeUnserializeError::kCreationPending);
       RecordError(base::StringPrintf(
@@ -1988,13 +1988,13 @@ void AXTree::PopulateOrderedSetItemsMap(
   // this, the set container (e.g. <tree>) will take on the min of the levels
   // of its direct children(e.g. <treeitem>), if the children's levels are
   // defined.
-  base::Optional<int> ordered_set_min_level =
+  absl::optional<int> ordered_set_min_level =
       ordered_set->GetHierarchicalLevel();
 
   for (AXNode::UnignoredChildIterator child =
            ordered_set->UnignoredChildrenBegin();
        child != ordered_set->UnignoredChildrenEnd(); ++child) {
-    base::Optional<int> child_level = child->GetHierarchicalLevel();
+    absl::optional<int> child_level = child->GetHierarchicalLevel();
     if (child_level) {
       ordered_set_min_level = ordered_set_min_level
                                   ? std::min(child_level, ordered_set_min_level)
@@ -2003,7 +2003,7 @@ void AXTree::PopulateOrderedSetItemsMap(
   }
 
   RecursivelyPopulateOrderedSetItemsMap(original_node, ordered_set, ordered_set,
-                                        ordered_set_min_level, base::nullopt,
+                                        ordered_set_min_level, absl::nullopt,
                                         items_map_to_be_populated);
 
   // If after RecursivelyPopulateOrderedSetItemsMap() call, the corresponding
@@ -2025,8 +2025,8 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
     const AXNode& original_node,
     const AXNode* ordered_set,
     const AXNode* local_parent,
-    base::Optional<int> ordered_set_min_level,
-    base::Optional<int> prev_level,
+    absl::optional<int> ordered_set_min_level,
+    absl::optional<int> prev_level,
     OrderedSetItemsMap* items_map_to_be_populated) const {
   // For optimization purpose, we want to only populate set items that are
   // direct descendants of |ordered_set|, since we will only be calculating
@@ -2061,7 +2061,7 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
       continue;
     }
 
-    base::Optional<int> curr_level = child->GetHierarchicalLevel();
+    absl::optional<int> curr_level = child->GetHierarchicalLevel();
 
     // Add child to |items_map_to_be_populated| if role matches with the role of
     // |ordered_set|. If role of node is kRadioButton, don't add items of other
@@ -2241,7 +2241,7 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
         ordered_set->GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 
     // Cache |ordered_set|'s hierarchical level.
-    base::Optional<int> ordered_set_level = ordered_set->GetHierarchicalLevel();
+    absl::optional<int> ordered_set_level = ordered_set->GetHierarchicalLevel();
     if (node_set_size_pos_in_set_info_map_.find(ordered_set->id()) ==
         node_set_size_pos_in_set_info_map_.end()) {
       node_set_size_pos_in_set_info_map_[ordered_set->id()] =
@@ -2271,7 +2271,7 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
   }  // End of iterating over each item in |ordered_set_content|.
 }
 
-base::Optional<int> AXTree::GetPosInSet(const AXNode& node) {
+absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
   if (node.data().role == ax::mojom::Role::kPopUpButton &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet)) {
@@ -2285,28 +2285,28 @@ base::Optional<int> AXTree::GetPosInSet(const AXNode& node) {
   }
 
   if (GetTreeUpdateInProgressState())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Only allow this to be called on nodes that can hold PosInSet values,
   // which are defined in the ARIA spec.
   if (!node.IsOrderedSetItem() || node.IsIgnored())
-    return base::nullopt;
+    return absl::nullopt;
 
   const AXNode* ordered_set = node.GetOrderedSet();
   if (!ordered_set)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Compute, cache, then return.
   ComputeSetSizePosInSetAndCache(node, ordered_set);
-  base::Optional<int> pos_in_set =
+  absl::optional<int> pos_in_set =
       node_set_size_pos_in_set_info_map_[node.id()].pos_in_set;
   if (pos_in_set.has_value() && pos_in_set.value() < 1)
-    return base::nullopt;
+    return absl::nullopt;
 
   return pos_in_set;
 }
 
-base::Optional<int> AXTree::GetSetSize(const AXNode& node) {
+absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   if (node.data().role == ax::mojom::Role::kPopUpButton &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kSetSize)) {
@@ -2320,14 +2320,14 @@ base::Optional<int> AXTree::GetSetSize(const AXNode& node) {
   }
 
   if (GetTreeUpdateInProgressState())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Only allow this to be called on nodes that can hold SetSize values, which
   // are defined in the ARIA spec. However, we allow set-like items to receive
   // SetSize values for internal purposes.
   if ((!node.IsOrderedSetItem() && !node.IsOrderedSet()) || node.IsIgnored() ||
       node.IsEmbeddedGroup()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // If |node| is item-like, find its outerlying ordered set. Otherwise,
@@ -2336,7 +2336,7 @@ base::Optional<int> AXTree::GetSetSize(const AXNode& node) {
   if (IsItemLike(node.data().role))
     ordered_set = node.GetOrderedSet();
   if (!ordered_set)
-    return base::nullopt;
+    return absl::nullopt;
 
   // For popup buttons that control a single element, inherit the controlled
   // item's SetSize. Skip this block if the popup button controls itself.
@@ -2347,7 +2347,7 @@ base::Optional<int> AXTree::GetSetSize(const AXNode& node) {
         controls_ids[0] != node.id()) {
       const AXNode& controlled_item = *GetFromId(controls_ids[0]);
 
-      base::Optional<int> controlled_item_set_size =
+      absl::optional<int> controlled_item_set_size =
           GetSetSize(controlled_item);
       node_set_size_pos_in_set_info_map_[node.id()].set_size =
           controlled_item_set_size;
@@ -2357,10 +2357,10 @@ base::Optional<int> AXTree::GetSetSize(const AXNode& node) {
 
   // Compute, cache, then return.
   ComputeSetSizePosInSetAndCache(node, ordered_set);
-  base::Optional<int> set_size =
+  absl::optional<int> set_size =
       node_set_size_pos_in_set_info_map_[node.id()].set_size;
   if (set_size.has_value() && set_size.value() < 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return set_size;
 }

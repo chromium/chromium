@@ -35,7 +35,7 @@ void PaintArc(Canvas* canvas,
               SkColor color,
               SkScalar start_angle,
               SkScalar sweep,
-              base::Optional<SkScalar> stroke_width) {
+              absl::optional<SkScalar> stroke_width) {
   if (!stroke_width) {
     // Stroke width depends on size.
     // . For size < 28:          3 - (28 - size) / 16
@@ -91,7 +91,7 @@ void PaintThrobberSpinningWithStartAngle(
     SkColor color,
     const base::TimeDelta& elapsed_time,
     int64_t start_angle,
-    base::Optional<SkScalar> stroke_width) {
+    absl::optional<SkScalar> stroke_width) {
   // The sweep angle ranges from -270 to 270 over 1333ms. CSS
   // animation timing functions apply in between key frames, so we have to
   // break up the 1333ms into two keyframes (-270 to 0, then 0 to 270).
@@ -128,7 +128,7 @@ void PaintThrobberSpinning(Canvas* canvas,
                            const Rect& bounds,
                            SkColor color,
                            const base::TimeDelta& elapsed_time,
-                           base::Optional<SkScalar> stroke_width) {
+                           absl::optional<SkScalar> stroke_width) {
   const int64_t start_angle =
       270 + base::ClampRound<int64_t>(elapsed_time / kRotationTime * 360);
   PaintThrobberSpinningWithStartAngle(canvas, bounds, color, elapsed_time,
@@ -139,7 +139,7 @@ void PaintThrobberWaiting(Canvas* canvas,
                           const Rect& bounds,
                           SkColor color,
                           const base::TimeDelta& elapsed_time,
-                          base::Optional<SkScalar> stroke_width) {
+                          absl::optional<SkScalar> stroke_width) {
   int64_t start_angle = 0, sweep = 0;
   CalculateWaitingAngles(elapsed_time, &start_angle, &sweep);
   PaintArc(canvas, bounds, color, start_angle, sweep, stroke_width);
@@ -150,7 +150,7 @@ void PaintThrobberSpinningAfterWaiting(Canvas* canvas,
                                        SkColor color,
                                        const base::TimeDelta& elapsed_time,
                                        ThrobberWaitingState* waiting_state,
-                                       base::Optional<SkScalar> stroke_width) {
+                                       absl::optional<SkScalar> stroke_width) {
   int64_t waiting_start_angle = 0, waiting_sweep = 0;
   CalculateWaitingAngles(waiting_state->elapsed_time, &waiting_start_angle,
                          &waiting_sweep);

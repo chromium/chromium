@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
 
@@ -75,12 +75,12 @@ class ThreeFingerSwipeView : public View {
     last_swipe_gesture_ = gfx::Point(dx, dy);
   }
 
-  base::Optional<gfx::Point> last_swipe_gesture() const {
+  absl::optional<gfx::Point> last_swipe_gesture() const {
     return last_swipe_gesture_;
   }
 
  private:
-  base::Optional<gfx::Point> last_swipe_gesture_;
+  absl::optional<gfx::Point> last_swipe_gesture_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreeFingerSwipeView);
 };
@@ -91,7 +91,7 @@ class ViewMacTest : public test::WidgetTest {
  public:
   ViewMacTest() = default;
 
-  base::Optional<gfx::Point> SwipeGestureVector(int dx, int dy) {
+  absl::optional<gfx::Point> SwipeGestureVector(int dx, int dy) {
     base::scoped_nsobject<FakeSwipeEvent> swipe_event(
         [[FakeSwipeEvent alloc] init]);
     [swipe_event setDeltaX:dx];

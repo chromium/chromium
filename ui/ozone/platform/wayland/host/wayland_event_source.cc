@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -323,7 +323,7 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
                                       const gfx::Vector2dF& delta,
                                       base::TimeTicks timestamp,
                                       int device_id,
-                                      base::Optional<float> scale) {
+                                      absl::optional<float> scale) {
   GestureEventDetails details(event_type);
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
   if (scale)
@@ -403,7 +403,7 @@ void WaylandEventSource::HandlePointerFocusChange(WaylandWindow* window) {
 
 void WaylandEventSource::HandleTouchFocusChange(WaylandWindow* window,
                                                 bool focused,
-                                                base::Optional<PointerId> id) {
+                                                absl::optional<PointerId> id) {
   DCHECK(window);
   bool actual_focus = id ? !ShouldUnsetTouchFocus(window, id.value()) : focused;
   window->set_touch_focus(actual_focus);

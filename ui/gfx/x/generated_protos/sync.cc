@@ -894,12 +894,12 @@ Future<void> Sync::CreateAlarm(const Sync::CreateAlarmRequest& request) {
 }
 
 Future<void> Sync::CreateAlarm(const Alarm& id,
-                               const base::Optional<Counter>& counter,
-                               const base::Optional<Valuetype>& valueType,
-                               const base::Optional<Int64>& value,
-                               const base::Optional<Testtype>& testType,
-                               const base::Optional<Int64>& delta,
-                               const base::Optional<uint32_t>& events) {
+                               const absl::optional<Counter>& counter,
+                               const absl::optional<Valuetype>& valueType,
+                               const absl::optional<Int64>& value,
+                               const absl::optional<Testtype>& testType,
+                               const absl::optional<Int64>& delta,
+                               const absl::optional<uint32_t>& events) {
   return Sync::CreateAlarm(Sync::CreateAlarmRequest{
       id, counter, valueType, value, testType, delta, events});
 }
@@ -1013,12 +1013,12 @@ Future<void> Sync::ChangeAlarm(const Sync::ChangeAlarmRequest& request) {
 }
 
 Future<void> Sync::ChangeAlarm(const Alarm& id,
-                               const base::Optional<Counter>& counter,
-                               const base::Optional<Valuetype>& valueType,
-                               const base::Optional<Int64>& value,
-                               const base::Optional<Testtype>& testType,
-                               const base::Optional<Int64>& delta,
-                               const base::Optional<uint32_t>& events) {
+                               const absl::optional<Counter>& counter,
+                               const absl::optional<Valuetype>& valueType,
+                               const absl::optional<Int64>& value,
+                               const absl::optional<Testtype>& testType,
+                               const absl::optional<Int64>& delta,
+                               const absl::optional<uint32_t>& events) {
   return Sync::ChangeAlarm(Sync::ChangeAlarmRequest{
       id, counter, valueType, value, testType, delta, events});
 }

@@ -455,9 +455,9 @@ bool NeuralStylusPalmDetectionFilter::
 
   // Check the switch string.
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(ozone_params_switch_string);
-  if (value != base::nullopt && !ozone_params_switch_string.empty()) {
+  if (value != absl::nullopt && !ozone_params_switch_string.empty()) {
     if (!value->is_dict()) {
       return false;
     }

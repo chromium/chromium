@@ -13,7 +13,7 @@ template <>
 struct VIEWS_EXPORT ui::metadata::TypeConverter<GURL>
     : BaseTypeConverter<true> {
   static std::u16string ToString(const GURL& source_value);
-  static base::Optional<GURL> FromString(const std::u16string& source_value);
+  static absl::optional<GURL> FromString(const std::u16string& source_value);
   static ui::metadata::ValidStrings GetValidStrings();
 };
 

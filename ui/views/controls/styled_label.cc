@@ -158,12 +158,12 @@ void StyledLabel::SetLineHeight(int line_height) {
   OnPropertyChanged(&line_height_, kPropertyEffectsPreferredSizeChanged);
 }
 
-base::Optional<SkColor> StyledLabel::GetDisplayedOnBackgroundColor() const {
+absl::optional<SkColor> StyledLabel::GetDisplayedOnBackgroundColor() const {
   return displayed_on_background_color_;
 }
 
 void StyledLabel::SetDisplayedOnBackgroundColor(
-    const base::Optional<SkColor>& color) {
+    const absl::optional<SkColor>& color) {
   if (displayed_on_background_color_ == color)
     return;
 
@@ -579,7 +579,7 @@ ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, DisplayedOnBackgroundColor)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, DisplayedOnBackgroundColor)
 END_METADATA
 
 }  // namespace views

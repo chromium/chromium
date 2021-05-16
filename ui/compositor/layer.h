@@ -592,7 +592,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   cc::Layer* GetCcLayer() const override;
   LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() override;
   LayerAnimatorCollection* GetLayerAnimatorCollection() override;
-  base::Optional<int> GetFrameNumber() const override;
+  absl::optional<int> GetFrameNumber() const override;
   float GetRefreshRate() const override;
 
   // Creates a corresponding composited layer for |type_|.

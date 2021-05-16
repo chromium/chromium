@@ -284,7 +284,7 @@ class WaylandBufferManagerHost::Surface {
     uint32_t buffer_id;
     // The actual presentation feedback. May be missing if the callback from the
     // Wayland server has not arrived yet.
-    base::Optional<gfx::PresentationFeedback> feedback;
+    absl::optional<gfx::PresentationFeedback> feedback;
     // True iff OnSubmission has been called.
     bool submission_completed;
   };
@@ -410,7 +410,7 @@ class WaylandBufferManagerHost::Surface {
     feedback_queue_.push_back(
         {wl::Object<struct wp_presentation_feedback>(wp_presentation_feedback(
              connection_->presentation(), wayland_surface_->surface())),
-         buffer_id, /*feedback=*/base::nullopt,
+         buffer_id, /*feedback=*/absl::nullopt,
          /*submission_completed=*/false});
     wp_presentation_feedback_add_listener(
         feedback_queue_.back().wp_presentation_feedback.get(),

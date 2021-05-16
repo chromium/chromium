@@ -51,7 +51,7 @@ TEST_F(ViewTreeValidatorTest, CorrectnessTest) {
 
   {
     // The original layout is well-formed.
-    base::Optional<ui::ViewTreeProblemDetails> details =
+    absl::optional<ui::ViewTreeProblemDetails> details =
         ui::ValidateViewTree(window.contentView);
     EXPECT_FALSE(details.has_value());
   }
@@ -59,7 +59,7 @@ TEST_F(ViewTreeValidatorTest, CorrectnessTest) {
   {
     // Make view_3 no longer contained within view_1.
     AdjustWidth(view_3, 1);
-    base::Optional<ui::ViewTreeProblemDetails> details =
+    absl::optional<ui::ViewTreeProblemDetails> details =
         ui::ValidateViewTree(window.contentView);
     ASSERT_TRUE(details.has_value());
     EXPECT_EQ(details->type, ui::ViewTreeProblemDetails::VIEW_OUTSIDE_PARENT);
@@ -71,7 +71,7 @@ TEST_F(ViewTreeValidatorTest, CorrectnessTest) {
   {
     // Make view_1 overlap view_2.
     AdjustWidth(view_1, 1);
-    base::Optional<ui::ViewTreeProblemDetails> details =
+    absl::optional<ui::ViewTreeProblemDetails> details =
         ui::ValidateViewTree(window.contentView);
     ASSERT_TRUE(details.has_value());
     EXPECT_EQ(details->type, ui::ViewTreeProblemDetails::VIEWS_OVERLAP);
@@ -89,7 +89,7 @@ TEST_F(ViewTreeValidatorTest, CorrectnessTest) {
     // Make view_4 overlap view_5. Since they're both not localizable, this
     // isn't an error.
     AdjustHeight(view_4, 1);
-    base::Optional<ui::ViewTreeProblemDetails> details =
+    absl::optional<ui::ViewTreeProblemDetails> details =
         ui::ValidateViewTree(window.contentView);
     EXPECT_FALSE(details.has_value());
     AdjustHeight(view_4, -1);

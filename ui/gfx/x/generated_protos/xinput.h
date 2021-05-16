@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xfixes.h"
@@ -430,9 +430,9 @@ class COMPONENT_EXPORT(X11) Input {
       uint32_t motion_size{};
       std::vector<AxisInfo> axes{};
     };
-    base::Optional<Key> key{};
-    base::Optional<Button> button{};
-    base::Optional<Valuator> valuator{};
+    absl::optional<Key> key{};
+    absl::optional<Button> button{};
+    absl::optional<Valuator> valuator{};
   };
 
   struct DeviceName {
@@ -542,12 +542,12 @@ class COMPONENT_EXPORT(X11) Input {
       uint16_t pitch{};
       uint16_t duration{};
     };
-    base::Optional<Keyboard> keyboard{};
-    base::Optional<Pointer> pointer{};
-    base::Optional<String> string{};
-    base::Optional<Integer> integer{};
-    base::Optional<Led> led{};
-    base::Optional<Bell> bell{};
+    absl::optional<Keyboard> keyboard{};
+    absl::optional<Pointer> pointer{};
+    absl::optional<String> string{};
+    absl::optional<Integer> integer{};
+    absl::optional<Led> led{};
+    absl::optional<Bell> bell{};
   };
 
   struct KbdFeedbackCtl {
@@ -637,12 +637,12 @@ class COMPONENT_EXPORT(X11) Input {
       int16_t pitch{};
       int16_t duration{};
     };
-    base::Optional<Keyboard> keyboard{};
-    base::Optional<Pointer> pointer{};
-    base::Optional<String> string{};
-    base::Optional<Integer> integer{};
-    base::Optional<Led> led{};
-    base::Optional<Bell> bell{};
+    absl::optional<Keyboard> keyboard{};
+    absl::optional<Pointer> pointer{};
+    absl::optional<String> string{};
+    absl::optional<Integer> integer{};
+    absl::optional<Led> led{};
+    absl::optional<Bell> bell{};
   };
 
   struct KeyState {
@@ -680,9 +680,9 @@ class COMPONENT_EXPORT(X11) Input {
       ValuatorStateModeMask mode{};
       std::vector<int32_t> valuators{};
     };
-    base::Optional<Key> key{};
-    base::Optional<Button> button{};
-    base::Optional<Valuator> valuator{};
+    absl::optional<Key> key{};
+    absl::optional<Button> button{};
+    absl::optional<Valuator> valuator{};
   };
 
   struct DeviceResolutionState {
@@ -762,11 +762,11 @@ class COMPONENT_EXPORT(X11) Input {
       uint32_t screen{};
       uint32_t following{};
     };
-    base::Optional<Resolution> resolution{};
-    base::Optional<AbsCalib> abs_calib{};
-    base::Optional<Core> core{};
-    base::Optional<Enable> enable{};
-    base::Optional<AbsArea> abs_area{};
+    absl::optional<Resolution> resolution{};
+    absl::optional<AbsCalib> abs_calib{};
+    absl::optional<Core> core{};
+    absl::optional<Enable> enable{};
+    absl::optional<AbsArea> abs_area{};
   };
 
   struct DeviceResolutionCtl {
@@ -842,11 +842,11 @@ class COMPONENT_EXPORT(X11) Input {
       int32_t screen{};
       uint32_t following{};
     };
-    base::Optional<Resolution> resolution{};
-    base::Optional<AbsCalib> abs_calib{};
-    base::Optional<Core> core{};
-    base::Optional<Enable> enable{};
-    base::Optional<AbsArea> abs_area{};
+    absl::optional<Resolution> resolution{};
+    absl::optional<AbsCalib> abs_calib{};
+    absl::optional<Core> core{};
+    absl::optional<Enable> enable{};
+    absl::optional<AbsArea> abs_area{};
   };
 
   struct GroupInfo {
@@ -913,10 +913,10 @@ class COMPONENT_EXPORT(X11) Input {
     struct DetachSlave {
       DeviceId deviceid{};
     };
-    base::Optional<AddMaster> add_master{};
-    base::Optional<RemoveMaster> remove_master{};
-    base::Optional<AttachSlave> attach_slave{};
-    base::Optional<DetachSlave> detach_slave{};
+    absl::optional<AddMaster> add_master{};
+    absl::optional<RemoveMaster> remove_master{};
+    absl::optional<AttachSlave> attach_slave{};
+    absl::optional<DetachSlave> detach_slave{};
   };
 
   struct EventMask {
@@ -999,11 +999,11 @@ class COMPONENT_EXPORT(X11) Input {
       TouchMode mode{};
       uint8_t num_touches{};
     };
-    base::Optional<Key> key{};
-    base::Optional<Button> button{};
-    base::Optional<Valuator> valuator{};
-    base::Optional<Scroll> scroll{};
-    base::Optional<Touch> touch{};
+    absl::optional<Key> key{};
+    absl::optional<Button> button{};
+    absl::optional<Valuator> valuator{};
+    absl::optional<Scroll> scroll{};
+    absl::optional<Touch> touch{};
   };
 
   struct XIDeviceInfo {
@@ -1848,12 +1848,12 @@ class COMPONENT_EXPORT(X11) Input {
                                      const FeedbackCtl& feedback = {
                                          {},
                                          {},
-                                         base::nullopt,
-                                         base::nullopt,
-                                         base::nullopt,
-                                         base::nullopt,
-                                         base::nullopt,
-                                         base::nullopt});
+                                         absl::nullopt,
+                                         absl::nullopt,
+                                         absl::nullopt,
+                                         absl::nullopt,
+                                         absl::nullopt,
+                                         absl::nullopt});
 
   struct GetDeviceKeyMappingRequest {
     uint8_t device_id{};
@@ -2103,11 +2103,11 @@ class COMPONENT_EXPORT(X11) Input {
       const DeviceControl& control_id = {},
       const uint8_t& device_id = {},
       const DeviceCtl& control = {{},
-                                  base::nullopt,
-                                  base::nullopt,
-                                  base::nullopt,
-                                  base::nullopt,
-                                  base::nullopt});
+                                  absl::nullopt,
+                                  absl::nullopt,
+                                  absl::nullopt,
+                                  absl::nullopt,
+                                  absl::nullopt});
 
   struct ListDevicePropertiesRequest {
     uint8_t device_id{};
@@ -2133,9 +2133,9 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t device_id{};
     PropMode mode{};
     uint32_t num_items{};
-    base::Optional<std::vector<uint8_t>> data8{};
-    base::Optional<std::vector<uint16_t>> data16{};
-    base::Optional<std::vector<uint32_t>> data32{};
+    absl::optional<std::vector<uint8_t>> data8{};
+    absl::optional<std::vector<uint16_t>> data16{};
+    absl::optional<std::vector<uint32_t>> data32{};
   };
 
   using ChangeDevicePropertyResponse = Response<void>;
@@ -2148,9 +2148,9 @@ class COMPONENT_EXPORT(X11) Input {
       const uint8_t& device_id = {},
       const PropMode& mode = {},
       const uint32_t& num_items = {},
-      const base::Optional<std::vector<uint8_t>>& data8 = base::nullopt,
-      const base::Optional<std::vector<uint16_t>>& data16 = base::nullopt,
-      const base::Optional<std::vector<uint32_t>>& data32 = base::nullopt);
+      const absl::optional<std::vector<uint8_t>>& data8 = absl::nullopt,
+      const absl::optional<std::vector<uint16_t>>& data16 = absl::nullopt,
+      const absl::optional<std::vector<uint32_t>>& data32 = absl::nullopt);
 
   struct DeleteDevicePropertyRequest {
     Atom property{};
@@ -2180,9 +2180,9 @@ class COMPONENT_EXPORT(X11) Input {
     uint32_t bytes_after{};
     uint32_t num_items{};
     uint8_t device_id{};
-    base::Optional<std::vector<uint8_t>> data8{};
-    base::Optional<std::vector<uint16_t>> data16{};
-    base::Optional<std::vector<uint32_t>> data32{};
+    absl::optional<std::vector<uint8_t>> data8{};
+    absl::optional<std::vector<uint16_t>> data16{};
+    absl::optional<std::vector<uint32_t>> data32{};
   };
 
   using GetDevicePropertyResponse = Response<GetDevicePropertyReply>;
@@ -2520,9 +2520,9 @@ class COMPONENT_EXPORT(X11) Input {
     Atom property{};
     Atom type{};
     uint32_t num_items{};
-    base::Optional<std::vector<uint8_t>> data8{};
-    base::Optional<std::vector<uint16_t>> data16{};
-    base::Optional<std::vector<uint32_t>> data32{};
+    absl::optional<std::vector<uint8_t>> data8{};
+    absl::optional<std::vector<uint16_t>> data16{};
+    absl::optional<std::vector<uint32_t>> data32{};
   };
 
   using XIChangePropertyResponse = Response<void>;
@@ -2535,9 +2535,9 @@ class COMPONENT_EXPORT(X11) Input {
       const Atom& property = {},
       const Atom& type = {},
       const uint32_t& num_items = {},
-      const base::Optional<std::vector<uint8_t>>& data8 = base::nullopt,
-      const base::Optional<std::vector<uint16_t>>& data16 = base::nullopt,
-      const base::Optional<std::vector<uint32_t>>& data32 = base::nullopt);
+      const absl::optional<std::vector<uint8_t>>& data8 = absl::nullopt,
+      const absl::optional<std::vector<uint16_t>>& data16 = absl::nullopt,
+      const absl::optional<std::vector<uint32_t>>& data32 = absl::nullopt);
 
   struct XIDeletePropertyRequest {
     DeviceId deviceid{};
@@ -2565,9 +2565,9 @@ class COMPONENT_EXPORT(X11) Input {
     Atom type{};
     uint32_t bytes_after{};
     uint32_t num_items{};
-    base::Optional<std::vector<uint8_t>> data8{};
-    base::Optional<std::vector<uint16_t>> data16{};
-    base::Optional<std::vector<uint32_t>> data32{};
+    absl::optional<std::vector<uint8_t>> data8{};
+    absl::optional<std::vector<uint16_t>> data16{};
+    absl::optional<std::vector<uint32_t>> data32{};
   };
 
   using XIGetPropertyResponse = Response<XIGetPropertyReply>;

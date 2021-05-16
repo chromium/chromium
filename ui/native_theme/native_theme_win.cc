@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_gdi_object.h"
@@ -27,6 +26,7 @@
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -249,7 +249,7 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
                            ColorScheme color_scheme,
-                           const base::Optional<SkColor>& accent_color) const {
+                           const absl::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 
@@ -332,7 +332,7 @@ bool NativeThemeWin::AllowColorPipelineRedirection(
 SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
                                                  ColorScheme color_scheme,
                                                  bool apply_processing) const {
-  base::Optional<SkColor> color;
+  absl::optional<SkColor> color;
   if (color_scheme == ColorScheme::kPlatformHighContrast &&
       (color = GetPlatformHighContrastColor(color_id))) {
     return color.value();
@@ -609,7 +609,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
   }
 }
 
-base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
+absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     ColorId color_id) const {
   switch (color_id) {
     // Window Background
@@ -711,7 +711,7 @@ base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
       return system_colors_[SystemThemeColor::kHighlightText];
 
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

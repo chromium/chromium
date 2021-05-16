@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -261,7 +261,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Used to override the View's enabled state in case we need to mark the View
   // as enabled or disabled only in the accessibility tree.
-  base::Optional<bool> is_enabled_ = base::nullopt;
+  absl::optional<bool> is_enabled_ = absl::nullopt;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
@@ -269,7 +269,7 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* previous_focus_ = nullptr;
 
   // This view's child tree id.
-  base::Optional<ui::AXTreeID> child_tree_id_;
+  absl::optional<ui::AXTreeID> child_tree_id_;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View

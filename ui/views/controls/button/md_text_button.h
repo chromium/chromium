@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
@@ -29,8 +29,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   bool GetProminent() const;
 
   // See |bg_color_override_|.
-  void SetBgColorOverride(const base::Optional<SkColor>& color);
-  base::Optional<SkColor> GetBgColorOverride() const;
+  void SetBgColorOverride(const absl::optional<SkColor>& color);
+  absl::optional<SkColor> GetBgColorOverride() const;
 
   // Override the default corner radius of the round rect used for the
   // background and ink drop effects.
@@ -38,12 +38,12 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   float GetCornerRadius() const;
 
   // See |custom_padding_|.
-  void SetCustomPadding(const base::Optional<gfx::Insets>& padding);
-  base::Optional<gfx::Insets> GetCustomPadding() const;
+  void SetCustomPadding(const absl::optional<gfx::Insets>& padding);
+  absl::optional<gfx::Insets> GetCustomPadding() const;
 
   // LabelButton:
   void OnThemeChanged() override;
-  void SetEnabledTextColors(base::Optional<SkColor> color) override;
+  void SetEnabledTextColors(absl::optional<SkColor> color) override;
   void SetText(const std::u16string& text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;
@@ -65,21 +65,21 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   bool is_prominent_ = false;
 
   // When set, this provides the background color.
-  base::Optional<SkColor> bg_color_override_;
+  absl::optional<SkColor> bg_color_override_;
 
   float corner_radius_ = 0.0f;
 
   // Used to override default padding.
-  base::Optional<gfx::Insets> custom_padding_;
+  absl::optional<gfx::Insets> custom_padding_;
 
   DISALLOW_COPY_AND_ASSIGN(MdTextButton);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
 VIEW_BUILDER_PROPERTY(bool, Prominent)
-VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BgColorOverride)
+VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(float, CornerRadius)
-VIEW_BUILDER_PROPERTY(base::Optional<gfx::Insets>, CustomPadding)
+VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)
 END_VIEW_BUILDER
 
 }  // namespace views

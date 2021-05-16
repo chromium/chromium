@@ -69,7 +69,7 @@ class TestLayoutManagerBase : public LayoutManagerBase {
 
  private:
   // If specified, will always return this layout.
-  base::Optional<ProposedLayout> forced_layout_;
+  absl::optional<ProposedLayout> forced_layout_;
 
   size_t layout_count_ = 0;
 };

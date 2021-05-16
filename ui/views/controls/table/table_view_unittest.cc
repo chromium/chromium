@@ -186,7 +186,7 @@ class TestTableModel2 : public ui::TableModel {
  private:
   ui::TableModelObserver* observer_ = nullptr;
 
-  base::Optional<std::u16string> tooltip_;
+  absl::optional<std::u16string> tooltip_;
 
   // The data.
   std::vector<std::vector<int>> rows_;

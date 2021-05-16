@@ -5,9 +5,8 @@
 #ifndef UI_EVENTS_X_KEYBOARD_HOOK_X11_H_
 #define UI_EVENTS_X_KEYBOARD_HOOK_X11_H_
 
-
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/x/x11_keyboard_hook.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/gfx/native_widget_types.h"
@@ -18,7 +17,7 @@ namespace ui {
 // A default implementation for the X11 platform.
 class KeyboardHookX11 : public KeyboardHookBase, public XKeyboardHook {
  public:
-  KeyboardHookX11(base::Optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookX11(absl::optional<base::flat_set<DomCode>> dom_codes,
                   gfx::AcceleratedWidget accelerated_widget,
                   KeyboardHookBase::KeyEventCallback callback);
   KeyboardHookX11(const KeyboardHookX11&) = delete;

@@ -8,8 +8,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/native_widget_types.h"
@@ -21,7 +21,7 @@ namespace ui {
 KeyboardHookOzone::KeyboardHookOzone(
     PlatformKeyboardHookTypes type,
     KeyEventCallback callback,
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget widget) {
   platform_keyboard_hook_ =
       ui::OzonePlatform::GetInstance()->CreateKeyboardHook(
@@ -37,7 +37,7 @@ bool KeyboardHookOzone::IsKeyLocked(DomCode dom_code) const {
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 // static
 std::unique_ptr<KeyboardHook> KeyboardHook::CreateModifierKeyboardHook(
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget,
     KeyEventCallback callback) {
   return std::make_unique<KeyboardHookOzone>(

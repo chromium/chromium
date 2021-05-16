@@ -635,7 +635,7 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
 
 std::string ResourceBundle::LoadDataResourceString(int resource_id) const {
   if (delegate_) {
-    base::Optional<std::string> data =
+    absl::optional<std::string> data =
         delegate_->LoadDataResourceString(resource_id);
     if (data)
       return data.value();

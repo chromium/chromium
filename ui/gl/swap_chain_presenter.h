@@ -132,7 +132,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const gfx::Rect& content_rect,
       const gfx::ColorSpace& src_color_space,
       bool content_is_hdr,
-      base::Optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
+      absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
 
   gfx::Size GetMonitorSize();
 
@@ -243,7 +243,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
     gfx::Point offset;
     gfx::Transform transform;
-    base::Optional<gfx::Rect> clip_rect;
+    absl::optional<gfx::Rect> clip_rect;
     int z_order = 0;
   } visual_info_;
 

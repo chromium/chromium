@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::RectF crop_rect;
   // If the quad is clipped, the clip rect in the target content space after
   // composition.
-  base::Optional<gfx::Rect> clip_rect;
+  absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
   // Optionally contains a pointer to the NativePixmap corresponding to this

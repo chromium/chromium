@@ -40,7 +40,7 @@ base::StringPiece NativeThemeColorSchemeName(
 }
 
 // clang-format off
-base::Optional<ColorId>
+absl::optional<ColorId>
 NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
   using NTCID = NativeTheme::ColorId;
   static constexpr const auto map =
@@ -251,7 +251,7 @@ NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
   if (color_it != map.cend()) {
     return color_it->second;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 // clang-format on
 

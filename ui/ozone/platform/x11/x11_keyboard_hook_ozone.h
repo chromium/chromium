@@ -12,7 +12,7 @@ namespace ui {
 
 class X11KeyboardHookOzone : public BaseKeyboardHook, public XKeyboardHook {
  public:
-  X11KeyboardHookOzone(base::Optional<base::flat_set<DomCode>> dom_codes,
+  X11KeyboardHookOzone(absl::optional<base::flat_set<DomCode>> dom_codes,
                        BaseKeyboardHook::KeyEventCallback callback,
                        gfx::AcceleratedWidget accelerated_widget);
   X11KeyboardHookOzone(const X11KeyboardHookOzone&) = delete;

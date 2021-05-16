@@ -451,27 +451,27 @@ bool TestAXNodeWrapper::IsTable() const {
   return node_->IsTable();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableRowCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableRowCount() const {
   return node_->GetTableRowCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableColCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableColCount() const {
   return node_->GetTableColCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableAriaRowCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableAriaRowCount() const {
   return node_->GetTableAriaRowCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableAriaColCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableAriaColCount() const {
   return node_->GetTableAriaColCount();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellCount() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellCount() const {
   return node_->GetTableCellCount();
 }
 
-base::Optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
+absl::optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
     const {
   return node_->GetTableHasColumnOrRowHeaderNode();
 }
@@ -498,7 +498,7 @@ bool TestAXNodeWrapper::IsTableRow() const {
   return node_->IsTableRow();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableRowRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableRowRowIndex() const {
   return node_->GetTableRowRowIndex();
 }
 
@@ -506,39 +506,39 @@ bool TestAXNodeWrapper::IsTableCellOrHeader() const {
   return node_->IsTableCellOrHeader();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellIndex() const {
   return node_->GetTableCellIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellColIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellColIndex() const {
   return node_->GetTableCellColIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellRowIndex() const {
   return node_->GetTableCellRowIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellColSpan() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellColSpan() const {
   return node_->GetTableCellColSpan();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellRowSpan() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellRowSpan() const {
   return node_->GetTableCellRowSpan();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellAriaColIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellAriaColIndex() const {
   return node_->GetTableCellAriaColIndex();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetTableCellAriaRowIndex() const {
+absl::optional<int> TestAXNodeWrapper::GetTableCellAriaRowIndex() const {
   return node_->GetTableCellAriaRowIndex();
 }
 
-base::Optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
+absl::optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
                                                      int col_index) const {
   AXNode* cell = node_->GetTableCellFromCoords(row_index, col_index);
   if (!cell)
-    return base::nullopt;
+    return absl::nullopt;
   return cell->id();
 }
 
@@ -547,10 +547,10 @@ TestAXNodeWrapper::GetTargetForNativeAccessibilityEvent() {
   return native_event_target_;
 }
 
-base::Optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
+absl::optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
   AXNode* cell = node_->GetTableCellFromIndex(cell_index);
   if (!cell)
-    return base::nullopt;
+    return absl::nullopt;
   return cell->id();
 }
 
@@ -913,11 +913,11 @@ bool TestAXNodeWrapper::IsOrderedSet() const {
   return node_->IsOrderedSet();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetPosInSet() const {
+absl::optional<int> TestAXNodeWrapper::GetPosInSet() const {
   return node_->GetPosInSet();
 }
 
-base::Optional<int> TestAXNodeWrapper::GetSetSize() const {
+absl::optional<int> TestAXNodeWrapper::GetSetSize() const {
   return node_->GetSetSize();
 }
 

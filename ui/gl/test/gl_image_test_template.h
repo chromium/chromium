@@ -12,10 +12,10 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
@@ -61,7 +61,7 @@ class GLImageTestDelegateBase {
   virtual void DidSetUp() {}
   virtual void WillTearDown() {}
 
-  virtual base::Optional<GLImplementationParts> GetPreferedGLImplementation()
+  virtual absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const;
   virtual bool SkipTest() const;
 };

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1156,8 +1156,8 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   // should be true.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
-  // Setting a base::nullopt color should make fills opaquely false.
-  scroll_view->SetBackgroundColor(base::nullopt);
+  // Setting a absl::nullopt color should make fills opaquely false.
+  scroll_view->SetBackgroundColor(absl::nullopt);
   EXPECT_FALSE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
 
   child->DestroyLayer();

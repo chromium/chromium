@@ -5242,9 +5242,9 @@ Future<void> Input::ChangeDeviceProperty(
     const uint8_t& device_id,
     const PropMode& mode,
     const uint32_t& num_items,
-    const base::Optional<std::vector<uint8_t>>& data8,
-    const base::Optional<std::vector<uint16_t>>& data16,
-    const base::Optional<std::vector<uint32_t>>& data32) {
+    const absl::optional<std::vector<uint8_t>>& data8,
+    const absl::optional<std::vector<uint16_t>>& data16,
+    const absl::optional<std::vector<uint32_t>>& data32) {
   return Input::ChangeDeviceProperty(Input::ChangeDevicePropertyRequest{
       property, type, device_id, mode, num_items, data8, data16, data32});
 }
@@ -7233,9 +7233,9 @@ Future<void> Input::XIChangeProperty(
     const Atom& property,
     const Atom& type,
     const uint32_t& num_items,
-    const base::Optional<std::vector<uint8_t>>& data8,
-    const base::Optional<std::vector<uint16_t>>& data16,
-    const base::Optional<std::vector<uint32_t>>& data32) {
+    const absl::optional<std::vector<uint8_t>>& data8,
+    const absl::optional<std::vector<uint16_t>>& data16,
+    const absl::optional<std::vector<uint32_t>>& data32) {
   return Input::XIChangeProperty(Input::XIChangePropertyRequest{
       deviceid, mode, property, type, num_items, data8, data16, data32});
 }

@@ -31,7 +31,7 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   // ViewsTestHelper:
   void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
-      base::Optional<ViewsDelegate::NativeWidgetFactory> factory) override;
+      absl::optional<ViewsDelegate::NativeWidgetFactory> factory) override;
 
  private:
   ui::TestContextFactories context_factories_{false};

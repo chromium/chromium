@@ -1103,8 +1103,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // If either |start_offset| or |end_offset| are not provided then the
   // endpoint is treated as the start or end of the node respectively.
   HRESULT GetTextAttributeValue(TEXTATTRIBUTEID attribute_id,
-                                const base::Optional<int>& start_offset,
-                                const base::Optional<int>& end_offset,
+                                const absl::optional<int>& start_offset,
+                                const absl::optional<int>& end_offset,
                                 base::win::VariantVector* result);
 
   // IRawElementProviderSimple support method.
@@ -1145,13 +1145,13 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   AXPlatformNodeWin* GetFirstTextOnlyDescendant();
 
   // Convert a mojo event to an MSAA event. Exposed for testing.
-  static base::Optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
+  static absl::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
 
   // Convert a mojo event to a UIA event. Exposed for testing.
-  static base::Optional<EVENTID> MojoEventToUIAEvent(ax::mojom::Event event);
+  static absl::optional<EVENTID> MojoEventToUIAEvent(ax::mojom::Event event);
 
   // Convert a mojo event to a UIA property id. Exposed for testing.
-  static base::Optional<PROPERTYID> MojoEventToUIAProperty(
+  static absl::optional<PROPERTYID> MojoEventToUIAProperty(
       ax::mojom::Event event);
 
  protected:
@@ -1186,7 +1186,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   bool IsUIAControl() const;
 
-  base::Optional<LONG> ComputeUIALandmarkType() const;
+  absl::optional<LONG> ComputeUIALandmarkType() const;
 
   bool IsInaccessibleDueToAncestor() const;
 
@@ -1392,12 +1392,12 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Computes the AnnotationObjects Attribute for the current node.
   void GetAnnotationObjectsAttribute(base::win::VariantVector* result);
   // Computes the AnnotationTypes Attribute for the current node.
-  HRESULT GetAnnotationTypesAttribute(const base::Optional<int>& start_offset,
-                                      const base::Optional<int>& end_offset,
+  HRESULT GetAnnotationTypesAttribute(const absl::optional<int>& start_offset,
+                                      const absl::optional<int>& end_offset,
                                       base::win::VariantVector* result);
   // Lookup the LCID for the language this node is using.
-  // Returns base::nullopt if there was an error.
-  base::Optional<LCID> GetCultureAttributeAsLCID() const;
+  // Returns absl::nullopt if there was an error.
+  absl::optional<LCID> GetCultureAttributeAsLCID() const;
   // Converts an int attribute to a COLORREF
   COLORREF GetIntAttributeAsCOLORREF(ax::mojom::IntAttribute attribute) const;
   // Converts the ListStyle to UIA BulletStyle
@@ -1405,7 +1405,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Helper to get the UIA StyleId enumeration for this node
   LONG ComputeUIAStyleId() const;
   // Convert mojom TextAlign to UIA HorizontalTextAlignment enumeration
-  static base::Optional<HorizontalTextAlignment>
+  static absl::optional<HorizontalTextAlignment>
   AXTextAlignToUIAHorizontalTextAlignment(ax::mojom::TextAlign text_align);
   // Converts IntAttribute::kHierarchicalLevel to UIA StyleId enumeration
   static LONG AXHierarchicalLevelToUIAStyleId(int32_t hierarchical_level);
@@ -1435,8 +1435,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Determine if a text range overlaps a |marker_type|, and whether
   // the overlap is a partial or or complete match.
   MarkerTypeRangeResult GetMarkerTypeFromRange(
-      const base::Optional<int>& start_offset,
-      const base::Optional<int>& end_offset,
+      const absl::optional<int>& start_offset,
+      const absl::optional<int>& end_offset,
       ax::mojom::MarkerType marker_type);
 
   bool IsAncestorComboBox();

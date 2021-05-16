@@ -9,8 +9,8 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/xlib_support.h"
@@ -323,8 +323,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // the 0'th request is handled internally by XCB when opening the connection.
   SequenceType first_request_id_ = 1;
   // If any request in |requests_| will generate a reply, this is the ID of the
-  // latest one, otherwise this is base::nullopt.
-  base::Optional<SequenceType> last_non_void_request_id_;
+  // latest one, otherwise this is absl::nullopt.
+  absl::optional<SequenceType> last_non_void_request_id_;
 
   using ErrorParser = std::unique_ptr<Error> (*)(RawError error_bytes);
   std::array<ErrorParser, 256> error_parsers_{};

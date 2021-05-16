@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -59,8 +59,8 @@ COMPONENT_EXPORT(COLOR)
 ColorTransform BlendForMinContrast(
     ColorTransform foreground_transform,
     ColorTransform background_transform,
-    base::Optional<ColorTransform> high_contrast_foreground_transform =
-        base::nullopt,
+    absl::optional<ColorTransform> high_contrast_foreground_transform =
+        absl::nullopt,
     float contrast_ratio = color_utils::kMinimumReadableContrastRatio);
 
 // A transform which blends the result of |transform| toward the color with max

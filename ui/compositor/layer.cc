@@ -1569,12 +1569,12 @@ LayerAnimatorCollection* Layer::GetLayerAnimatorCollection() {
   return compositor ? compositor->layer_animator_collection() : nullptr;
 }
 
-base::Optional<int> Layer::GetFrameNumber() const {
+absl::optional<int> Layer::GetFrameNumber() const {
   if (const Compositor* compositor = GetCompositor()) {
     return compositor->activated_frame_count();
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 float Layer::GetRefreshRate() const {

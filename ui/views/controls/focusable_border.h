@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
@@ -33,7 +33,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
 
   // Sets the color id to use for this border. When unsupplied, the color will
   // depend on the focus state.
-  void SetColorId(const base::Optional<ui::NativeTheme::ColorId>& color_id);
+  void SetColorId(const absl::optional<ui::NativeTheme::ColorId>& color_id);
 
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
@@ -46,7 +46,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
  private:
   gfx::Insets insets_;
 
-  base::Optional<ui::NativeTheme::ColorId> override_color_id_;
+  absl::optional<ui::NativeTheme::ColorId> override_color_id_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusableBorder);
 };

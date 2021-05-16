@@ -719,7 +719,7 @@ TEST_F(LabelButtonTest, SetEnabledTextColorsResetsToThemeColors) {
 
   // Removing the enabled text color restore colors from the new theme, not
   // the original colors used before the theme changed.
-  button_->SetEnabledTextColors(base::nullopt);
+  button_->SetEnabledTextColors(absl::nullopt);
   EXPECT_EQ(TestNativeTheme::kSystemColor, button_->label()->GetEnabledColor());
 }
 

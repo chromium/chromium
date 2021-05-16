@@ -338,7 +338,7 @@ void MessageCenterImpl::ClickOnNotification(const std::string& id) {
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, base::nullopt, base::nullopt),
+                     base::Unretained(this), id, absl::nullopt, absl::nullopt),
       base::OnceClosure());
 }
 
@@ -350,7 +350,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, button_index, base::nullopt),
+                     base::Unretained(this), id, button_index, absl::nullopt),
       base::OnceClosure());
 }
 
@@ -370,8 +370,8 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 
 void MessageCenterImpl::ClickOnNotificationUnlocked(
     const std::string& id,
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This method must be called under unlocked screen.

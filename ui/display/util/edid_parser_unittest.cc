@@ -256,7 +256,7 @@ struct TestParams {
 
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
-  base::Optional<EdidParser::Luminance> luminance_;
+  absl::optional<EdidParser::Luminance> luminance_;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -276,7 +276,7 @@ struct TestParams {
      "286C",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kBadDisplayName,
      kBadDisplayNameLength},
     {0x22f0u,
@@ -294,7 +294,7 @@ struct TestParams {
      "286C",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kNormalDisplay,
      kNormalDisplayLength},
     {0x4ca3u,
@@ -312,7 +312,7 @@ struct TestParams {
      "3142",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kInternalDisplay,
      kInternalDisplayLength},
     {0x4c2du,
@@ -330,7 +330,7 @@ struct TestParams {
      "08FE",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kOverscanDisplay,
      kOverscanDisplayLength},
     {0x10ACu,
@@ -348,7 +348,7 @@ struct TestParams {
      "4064",
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
      {},
-     base::nullopt,
+     absl::nullopt,
      kMisdetectedDisplay,
      kMisdetectedDisplayLength},
     {0x22f0u,
@@ -366,7 +366,7 @@ struct TestParams {
      "2676",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kLP2565A,
      kLP2565ALength},
     {0x22f0u,
@@ -384,7 +384,7 @@ struct TestParams {
      "2675",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kLP2565B,
      kLP2565BLength},
     {0x22f0u,
@@ -402,7 +402,7 @@ struct TestParams {
      "3275",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kHPz32x,
      kHPz32xLength},
     {0x30E4u,
@@ -420,7 +420,7 @@ struct TestParams {
      "042E",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kSamus,
      kSamusLength},
     {0x4D10u,
@@ -438,7 +438,7 @@ struct TestParams {
      "148A",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      kEve,
      kEveLength},
     {19501u,
@@ -459,7 +459,7 @@ struct TestParams {
      {gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::TransferID::SMPTEST2084,
       gfx::ColorSpace::TransferID::ARIB_STD_B67},
-     base::Optional<EdidParser::Luminance>({603.666, 530.095, 0.00454}),
+     absl::optional<EdidParser::Luminance>({603.666, 530.095, 0.00454}),
      kHDRMetadata,
      kHDRMetadataLength},
 
@@ -479,7 +479,7 @@ struct TestParams {
      "0000",
      {},
      {},
-     base::nullopt,
+     absl::nullopt,
      nullptr,
      0u},
 };

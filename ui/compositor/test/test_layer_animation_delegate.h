@@ -45,7 +45,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   // advancing of animations. It can also be used to simulate the availability
   // of the frame number when Layer is attached to, or detached from a frame
   // number source, i.e. Compositor.
-  void SetFrameNumber(base::Optional<int> frame_number);
+  void SetFrameNumber(absl::optional<int> frame_number);
 
   // Implementation of LayerAnimationDelegate
   void SetBoundsFromAnimation(const gfx::Rect& bounds,
@@ -82,7 +82,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   ui::Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;
   LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() override;
-  base::Optional<int> GetFrameNumber() const override;
+  absl::optional<int> GetFrameNumber() const override;
   float GetRefreshRate() const override;
 
  private:
@@ -104,7 +104,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   gfx::Rect clip_rect_;
   gfx::RoundedCornersF rounded_corners_;
   scoped_refptr<cc::Layer> cc_layer_;
-  base::Optional<int> frame_number_;
+  absl::optional<int> frame_number_;
 
   // Allow copy and assign.
 };

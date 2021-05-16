@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -598,7 +598,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   ImageView* submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
-  base::Optional<bool> forced_visual_selection_;
+  absl::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.

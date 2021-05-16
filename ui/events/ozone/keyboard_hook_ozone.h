@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keyboard_hook.h"
 
 namespace ui {
@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookOzone : public KeyboardHook {
  public:
   KeyboardHookOzone(PlatformKeyboardHookTypes type,
                     KeyEventCallback callback,
-                    base::Optional<base::flat_set<DomCode>> dom_codes,
+                    absl::optional<base::flat_set<DomCode>> dom_codes,
                     gfx::AcceleratedWidget widget);
   KeyboardHookOzone(const KeyboardHookOzone&) = delete;
   KeyboardHookOzone& operator=(const KeyboardHookOzone&) = delete;

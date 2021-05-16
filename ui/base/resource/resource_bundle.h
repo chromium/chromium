@@ -18,9 +18,9 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
@@ -128,11 +128,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
         ScaleFactor scale_factor) = 0;
 
     // Supports intercepting of ResourceBundle::LoadDataResourceString(): Return
-    // a populated base::Optional instance to override the value that
+    // a populated absl::optional instance to override the value that
     // ResourceBundle::LoadDataResourceString() would return by default, or an
-    // empty base::Optional instance to pass through to the default behavior of
+    // empty absl::optional instance to pass through to the default behavior of
     // ResourceBundle::LoadDataResourceString().
-    virtual base::Optional<std::string> LoadDataResourceString(
+    virtual absl::optional<std::string> LoadDataResourceString(
         int resource_id) = 0;
 
     // Retrieve a raw data resource. Return true if a resource was provided or

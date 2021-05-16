@@ -59,7 +59,7 @@ class DelegateBase : public SimpleMenuModel::Delegate {
   }
 
  private:
-  base::Optional<int> item_with_icon_;
+  absl::optional<int> item_with_icon_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegateBase);
 };

@@ -538,7 +538,7 @@ class GenXproto(FileWriter):
                     self.copy_field(case_field)
 
     def declare_switch(self, field):
-        return [('base::Optional<%s>' % field_type, field_name)
+        return [('absl::optional<%s>' % field_type, field_name)
                 for case in field.type.bitcases
                 for field_type, field_name in self.declare_case(case)]
 
@@ -843,7 +843,7 @@ class GenXproto(FileWriter):
             return []
 
         if field.type.is_switch:
-            return ['base::nullopt'] * len(self.declare_switch(field))
+            return ['absl::nullopt'] * len(self.declare_switch(field))
         if field.type.is_list or not field.type.is_container:
             return ['{}']
 
@@ -1222,7 +1222,7 @@ class GenXproto(FileWriter):
         self.write('#include "base/component_export.h"')
         self.write('#include "base/memory/ref_counted_memory.h"')
         self.write('#include "base/memory/scoped_refptr.h"')
-        self.write('#include "base/optional.h"')
+        self.write('#include "third_party/abseil-cpp/absl/types/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
         self.write('#include "ui/gfx/x/ref_counted_fd.h"')
         self.write('#include "ui/gfx/x/error.h"')

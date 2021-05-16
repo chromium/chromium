@@ -9,10 +9,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/events/base_event_utils.h"
@@ -39,14 +39,14 @@
 namespace ui {
 namespace {
 
-base::Optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
+absl::optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
                                             uint32_t offset) {
   if (offset > text.length())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), offset, &converted))
-    return base::nullopt;
+    return absl::nullopt;
 
   return converted.size();
 }

@@ -110,7 +110,7 @@ void LabelButton::SetTextColor(ButtonState for_state, SkColor color) {
   explicitly_set_colors_[for_state] = true;
 }
 
-void LabelButton::SetEnabledTextColors(base::Optional<SkColor> color) {
+void LabelButton::SetEnabledTextColors(absl::optional<SkColor> color) {
   ButtonState states[] = {STATE_NORMAL, STATE_HOVERED, STATE_PRESSED};
   if (color.has_value()) {
     for (auto state : states)

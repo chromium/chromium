@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -69,7 +69,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void SetTextColor(ButtonState for_state, SkColor color);
 
   // Sets the text colors shown for the non-disabled states to |color|.
-  virtual void SetEnabledTextColors(base::Optional<SkColor> color);
+  virtual void SetEnabledTextColors(absl::optional<SkColor> color);
 
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;

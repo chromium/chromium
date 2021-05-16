@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -26,7 +26,7 @@ namespace views {
 
 namespace {
 
-using base::Optional;
+using absl::optional;
 using gfx::Insets;
 using gfx::Point;
 using gfx::Rect;
@@ -68,7 +68,7 @@ class MockView : public View {
   void ResetCounts() { set_visible_count_ = 0; }
 
  private:
-  Optional<Size> minimum_size_;
+  optional<Size> minimum_size_;
   int set_visible_count_ = 0;
   SizeMode size_mode_ = SizeMode::kUsePreferredSize;
 };
@@ -101,7 +101,7 @@ class FlexLayoutTest : public testing::Test {
   }
 
   MockView* AddChild(const Size& preferred_size,
-                     const Optional<Size>& minimum_size = Optional<Size>(),
+                     const optional<Size>& minimum_size = optional<Size>(),
                      bool visible = true) {
     return AddChild(host_.get(), preferred_size, minimum_size, visible);
   }
@@ -109,7 +109,7 @@ class FlexLayoutTest : public testing::Test {
   static MockView* AddChild(
       View* parent,
       const Size& preferred_size,
-      const Optional<Size>& minimum_size = Optional<Size>(),
+      const optional<Size>& minimum_size = optional<Size>(),
       bool visible = true) {
     MockView* const child = new MockView();
     child->SetPreferredSize(preferred_size);
@@ -316,9 +316,9 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
   // away, we need to create our own for this test.
   std::unique_ptr<views::View> host = std::make_unique<views::View>();
   View* child1 =
-      AddChild(host.get(), Size(10, 10), base::Optional<Size>(), false);
+      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), false);
   View* child2 =
-      AddChild(host.get(), Size(10, 10), base::Optional<Size>(), true);
+      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), true);
   host->SetLayoutManager(std::make_unique<FlexLayout>());
 
   host->Layout();
@@ -336,8 +336,8 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
 TEST_F(FlexLayoutTest, Layout_VisibilitySetAfterInstall) {
   // Unlike the last test, we'll use the built-in host and layout manager since
   // they're already set up.
-  View* child1 = AddChild(Size(10, 10), base::Optional<Size>(), false);
-  View* child2 = AddChild(Size(10, 10), base::Optional<Size>(), true);
+  View* child1 = AddChild(Size(10, 10), absl::optional<Size>(), false);
+  View* child2 = AddChild(Size(10, 10), absl::optional<Size>(), true);
 
   host_->Layout();
   EXPECT_FALSE(child1->GetVisible());
@@ -357,7 +357,7 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeAdd) {
   layout_->SetInteriorMargin(kLayoutInsets);
   layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
   View* child1 = AddChild(kChild1Size);
-  View* child2 = AddChild(kChild2Size, Optional<Size>(), false);
+  View* child2 = AddChild(kChild2Size, optional<Size>(), false);
   View* child3 = AddChild(kChild3Size);
 
   host_->Layout();
@@ -3132,7 +3132,7 @@ class NestedFlexLayoutTest : public FlexLayoutTest {
   View* AddGrandchild(
       size_t child_index,
       const gfx::Size& preferred,
-      const base::Optional<gfx::Size>& minimum = base::nullopt) {
+      const absl::optional<gfx::Size>& minimum = absl::nullopt) {
     return AddChild(children_[child_index - 1], preferred, minimum);
   }
 

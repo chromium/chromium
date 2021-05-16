@@ -335,10 +335,10 @@ class GFX_EXPORT RenderText {
   ElideBehavior elide_behavior() const { return elide_behavior_; }
 
   // When display text is elided, determines how whitespace is handled.
-  // If base::nullopt is specified, the default elision for the current elide
+  // If absl::nullopt is specified, the default elision for the current elide
   // behavior will be applied.
-  void SetWhitespaceElision(base::Optional<bool> elide_whitespace);
-  base::Optional<bool> whitespace_elision() const {
+  void SetWhitespaceElision(absl::optional<bool> elide_whitespace);
+  absl::optional<bool> whitespace_elision() const {
     return whitespace_elision_;
   }
 
@@ -815,7 +815,7 @@ class GFX_EXPORT RenderText {
   void reset_cached_cursor_x() { cached_cursor_x_.reset(); }
 
   void set_cached_cursor_x(int x) { cached_cursor_x_ = x; }
-  base::Optional<int> cached_cursor_x() const { return cached_cursor_x_; }
+  absl::optional<int> cached_cursor_x() const { return cached_cursor_x_; }
 
   // Fixed width of glyphs. This should only be set in test environments.
   float glyph_width_for_test_ = 0;
@@ -982,7 +982,7 @@ class GFX_EXPORT RenderText {
   ElideBehavior elide_behavior_ = NO_ELIDE;
 
   // The behavior for eliding whitespace when eliding or truncating.
-  base::Optional<bool> whitespace_elision_;
+  absl::optional<bool> whitespace_elision_;
 
   // True if the text is elided given the current behavior and display area.
   bool text_elided_ = false;
@@ -1044,7 +1044,7 @@ class GFX_EXPORT RenderText {
   int obscured_glyph_spacing_ = 0;
 
   // The cursor position in view space, used to traverse lines of varied widths.
-  base::Optional<int> cached_cursor_x_;
+  absl::optional<int> cached_cursor_x_;
 
   // Tell whether or not the |layout_text_| needs an update or is up to date.
   mutable bool layout_text_up_to_date_ = false;

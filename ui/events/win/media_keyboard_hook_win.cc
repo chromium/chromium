@@ -52,7 +52,7 @@ MediaKeyboardHookWinImpl::MediaKeyboardHookWinImpl(
     KeyEventCallback callback,
     bool enable_hook_registration)
     : KeyboardHookWinBase(
-          base::Optional<base::flat_set<DomCode>>(
+          absl::optional<base::flat_set<DomCode>>(
               {DomCode::MEDIA_PLAY_PAUSE, DomCode::MEDIA_STOP,
                DomCode::MEDIA_TRACK_NEXT, DomCode::MEDIA_TRACK_PREVIOUS}),
           std::move(callback),

@@ -64,11 +64,11 @@ class ToggleButton::ThumbView : public View {
         .Offset(gfx::Vector2d(kShadowOffsetX, kShadowOffsetY));
   }
 
-  void SetThumbColor(bool is_on, const base::Optional<SkColor>& thumb_color) {
+  void SetThumbColor(bool is_on, const absl::optional<SkColor>& thumb_color) {
     (is_on ? thumb_on_color_ : thumb_off_color_) = thumb_color;
   }
 
-  base::Optional<SkColor> GetThumbColor(bool is_on) const {
+  absl::optional<SkColor> GetThumbColor(bool is_on) const {
     return is_on ? thumb_on_color_ : thumb_off_color_;
   }
 
@@ -111,8 +111,8 @@ class ToggleButton::ThumbView : public View {
   }
 
   // Colors used for the thumb, defaults to NativeTheme if not set explicitly.
-  base::Optional<SkColor> thumb_on_color_;
-  base::Optional<SkColor> thumb_off_color_;
+  absl::optional<SkColor> thumb_on_color_;
+  absl::optional<SkColor> thumb_off_color_;
 
   // Color ratio between 0 and 1 that controls the thumb color.
   float color_ratio_ = 0.0f;
@@ -175,38 +175,38 @@ bool ToggleButton::GetIsOn() const {
 }
 
 void ToggleButton::SetThumbOnColor(
-    const base::Optional<SkColor>& thumb_on_color) {
+    const absl::optional<SkColor>& thumb_on_color) {
   thumb_view_->SetThumbColor(true /* is_on */, thumb_on_color);
 }
 
-base::Optional<SkColor> ToggleButton::GetThumbOnColor() const {
+absl::optional<SkColor> ToggleButton::GetThumbOnColor() const {
   return thumb_view_->GetThumbColor(true);
 }
 
 void ToggleButton::SetThumbOffColor(
-    const base::Optional<SkColor>& thumb_off_color) {
+    const absl::optional<SkColor>& thumb_off_color) {
   thumb_view_->SetThumbColor(false /* is_on */, thumb_off_color);
 }
 
-base::Optional<SkColor> ToggleButton::GetThumbOffColor() const {
+absl::optional<SkColor> ToggleButton::GetThumbOffColor() const {
   return thumb_view_->GetThumbColor(false);
 }
 
 void ToggleButton::SetTrackOnColor(
-    const base::Optional<SkColor>& track_on_color) {
+    const absl::optional<SkColor>& track_on_color) {
   track_on_color_ = track_on_color;
 }
 
-base::Optional<SkColor> ToggleButton::GetTrackOnColor() const {
+absl::optional<SkColor> ToggleButton::GetTrackOnColor() const {
   return track_on_color_;
 }
 
 void ToggleButton::SetTrackOffColor(
-    const base::Optional<SkColor>& track_off_color) {
+    const absl::optional<SkColor>& track_off_color) {
   track_off_color_ = track_off_color;
 }
 
-base::Optional<SkColor> ToggleButton::GetTrackOffColor() const {
+absl::optional<SkColor> ToggleButton::GetTrackOffColor() const {
   return track_off_color_;
 }
 
@@ -262,7 +262,7 @@ void ToggleButton::UpdateThumb() {
 }
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
-  base::Optional<SkColor> color = is_on ? track_on_color_ : track_off_color_;
+  absl::optional<SkColor> color = is_on ? track_on_color_ : track_off_color_;
   return color.value_or(GetNativeTheme()->GetSystemColor(
       is_on ? ui::NativeTheme::kColorId_ToggleButtonTrackColorOn
             : ui::NativeTheme::kColorId_ToggleButtonTrackColorOff));
@@ -349,10 +349,10 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
 BEGIN_METADATA(ToggleButton, Button)
 ADD_PROPERTY_METADATA(bool, IsOn)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOnColor)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOffColor)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOnColor)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOffColor)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, ThumbOnColor)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, ThumbOffColor)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, TrackOnColor)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, TrackOffColor)
 END_METADATA
 
 }  // namespace views

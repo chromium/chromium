@@ -72,7 +72,7 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        MenuItemView* menu,
                                                        int menu_index,
                                                        int item_id) {
-  base::Optional<MenuItemView::Type> type;
+  absl::optional<MenuItemView::Type> type;
   ui::MenuModel::ItemType menu_type = model->GetTypeAt(model_index);
   switch (menu_type) {
     case ui::MenuModel::TYPE_TITLE:

@@ -51,7 +51,7 @@ class AX_BASE_EXPORT AXTreeID {
   std::string ToString() const;
 
   ax::mojom::AXTreeIDType type() const { return type_; }
-  const base::Optional<base::UnguessableToken>& token() const { return token_; }
+  const absl::optional<base::UnguessableToken>& token() const { return token_; }
 
   bool operator==(const AXTreeID& rhs) const;
   bool operator!=(const AXTreeID& rhs) const;
@@ -69,7 +69,7 @@ class AX_BASE_EXPORT AXTreeID {
   friend void swap(AXTreeID& first, AXTreeID& second);
 
   ax::mojom::AXTreeIDType type_;
-  base::Optional<base::UnguessableToken> token_ = base::nullopt;
+  absl::optional<base::UnguessableToken> token_ = absl::nullopt;
 };
 
 // For use in std::unordered_map.

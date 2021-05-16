@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "cc/animation/animation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -131,9 +131,9 @@ class AnimationThroughputReporter::AnimationTracker
 
   LayerAnimator* const animator_;
 
-  base::Optional<ThroughputTracker> throughput_tracker_;
+  absl::optional<ThroughputTracker> throughput_tracker_;
 
-  base::Optional<int> first_animation_group_id_;
+  absl::optional<int> first_animation_group_id_;
   bool started_animations_aborted_ = false;
 
   AnimationThroughputReporter::ReportCallback report_callback_;

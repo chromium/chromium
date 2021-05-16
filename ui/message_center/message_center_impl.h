@@ -104,8 +104,8 @@ class MessageCenterImpl : public MessageCenter,
   THREAD_CHECKER(thread_checker_);
 
   void ClickOnNotificationUnlocked(const std::string& id,
-                                   const base::Optional<int>& button_index,
-                                   const base::Optional<std::u16string>& reply);
+                                   const absl::optional<int>& button_index,
+                                   const absl::optional<std::u16string>& reply);
 
   const std::unique_ptr<LockScreenController> lock_screen_controller_;
 

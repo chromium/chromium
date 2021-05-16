@@ -22,7 +22,7 @@ HDRMetadataHelperWin::HDRMetadataHelperWin(
 
 HDRMetadataHelperWin::~HDRMetadataHelperWin() = default;
 
-base::Optional<DXGI_HDR_METADATA_HDR10>
+absl::optional<DXGI_HDR_METADATA_HDR10>
 HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }

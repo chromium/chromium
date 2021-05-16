@@ -183,7 +183,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // Returns true if |hwnd| is definitely on the current virtual desktop,
     // false if it's definitely not on the current virtual desktop, and nullopt
     // if we we can't tell for sure.
-    base::Optional<bool> IsWindowOnCurrentVirtualDesktop(HWND hwnd);
+    absl::optional<bool> IsWindowOnCurrentVirtualDesktop(HWND hwnd);
 
     static WindowOcclusionCalculator* instance_;
 

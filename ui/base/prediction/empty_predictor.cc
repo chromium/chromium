@@ -18,7 +18,7 @@ const char* EmptyPredictor::GetName() const {
 }
 
 void EmptyPredictor::Reset() {
-  last_input_ = base::nullopt;
+  last_input_ = absl::nullopt;
 }
 
 void EmptyPredictor::Update(const InputData& cur_input) {

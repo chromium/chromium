@@ -22,7 +22,7 @@ TEST(CaptionStyleWinTest, TestWinCaptionStyle) {
     base::win::ScopedCOMInitializer com_initializer;
     ASSERT_TRUE(com_initializer.Succeeded());
 
-    base::Optional<ui::CaptionStyle> caption_style =
+    absl::optional<ui::CaptionStyle> caption_style =
         ui::CaptionStyle::FromSystemSettings();
     // On Windows out of the box, all caption style properties are set to
     // Default. In which case, each of these should be empty.

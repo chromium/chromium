@@ -37,7 +37,7 @@ class VIEWS_EXPORT WidgetOpenTimer : public WidgetObserver {
   Callback callback_;
 
   // Time the bubble has been open. Used for UMA metrics collection.
-  base::Optional<base::ElapsedTimer> open_timer_;
+  absl::optional<base::ElapsedTimer> open_timer_;
 
   base::ScopedObservation<Widget, WidgetObserver> observed_widget_{this};
 };

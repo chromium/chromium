@@ -6,7 +6,7 @@
 
 #include <wayland-server-protocol.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wl {
 

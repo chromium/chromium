@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/native_theme/native_theme_base.h"
@@ -89,7 +89,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
 
   void SetThemeCssOverride(ScopedCssProvider provider);
 
-  mutable base::Optional<SkColor> color_cache_[kColorId_NumColors];
+  mutable absl::optional<SkColor> color_cache_[kColorId_NumColors];
 
   ScopedCssProvider theme_css_override_;
 

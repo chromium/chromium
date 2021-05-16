@@ -5,7 +5,7 @@
 #ifndef UI_NATIVE_THEME_CAPTION_STYLE_H_
 #define UI_NATIVE_THEME_CAPTION_STYLE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/native_theme/native_theme_export.h"
@@ -24,10 +24,10 @@ struct NATIVE_THEME_EXPORT CaptionStyle {
   // variable types. See the body of this method for details. This is used to
   // parse the value of the "--force-caption-style" command-line argument and
   // for testing.
-  static base::Optional<CaptionStyle> FromSpec(const std::string& spec);
+  static absl::optional<CaptionStyle> FromSpec(const std::string& spec);
 
   // Returns a CaptionStyle populated from the System's Settings.
-  static base::Optional<CaptionStyle> FromSystemSettings();
+  static absl::optional<CaptionStyle> FromSystemSettings();
 
   // Some or all of these property strings can be empty.
   // For example, on Win10 in Settings when a property is set to Default, the

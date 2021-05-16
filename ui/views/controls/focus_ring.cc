@@ -91,7 +91,7 @@ void FocusRing::SetHasFocusPredicate(const ViewPredicate& predicate) {
   RefreshLayer();
 }
 
-void FocusRing::SetColor(base::Optional<SkColor> color) {
+void FocusRing::SetColor(absl::optional<SkColor> color) {
   color_ = color;
   SchedulePaint();
 }

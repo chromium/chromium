@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
 
   // The last key event that IME is probably in process in
   // async-mode.
-  base::Optional<ui::KeyEvent> ime_filtered_key_event_;
+  absl::optional<ui::KeyEvent> ime_filtered_key_event_;
 
   std::u16string result_text_;
 

@@ -33,7 +33,7 @@ void AddGtkNativeCoreColorMixer(
   ui::ColorSet::ColorMap color_map;
   for (ui::ColorId id = ui::kUiColorsStart; id < ui::kUiColorsEnd; ++id) {
     // Add GTK color definitions to the map if they exist.
-    base::Optional<SkColor> color = gtk::SkColorFromColorId(id);
+    absl::optional<SkColor> color = gtk::SkColorFromColorId(id);
     if (color)
       color_map[id] = *color;
   }

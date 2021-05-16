@@ -170,7 +170,7 @@ std::string GetCssColorWithAlpha(CC::ClosedCaptionColor caption_color,
   return color_utils::SkColorToRgbaString(SkColorSetA(color, opacity));
 }
 
-base::Optional<CaptionStyle> InitializeFromSystemSettings() {
+absl::optional<CaptionStyle> InitializeFromSystemSettings() {
   DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN10);
   DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
@@ -180,7 +180,7 @@ base::Optional<CaptionStyle> InitializeFromSystemSettings() {
       base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
 
   if (!can_use_scoped_hstring)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::win::ScopedHString closed_caption_properties_string =
       base::win::ScopedHString::Create(
@@ -191,55 +191,55 @@ base::Optional<CaptionStyle> InitializeFromSystemSettings() {
       closed_caption_properties_string.get(),
       IID_PPV_ARGS(&closed_caption_properties_statics));
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionSize font_size = CC::ClosedCaptionSize_Default;
   hr = closed_caption_properties_statics->get_FontSize(&font_size);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionEdgeEffect edge_effect = CC::ClosedCaptionEdgeEffect_Default;
   hr = closed_caption_properties_statics->get_FontEffect(&edge_effect);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionStyle font_family = CC::ClosedCaptionStyle_Default;
   hr = closed_caption_properties_statics->get_FontStyle(&font_family);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionColor font_color = CC::ClosedCaptionColor_Default;
   hr = closed_caption_properties_statics->get_FontColor(&font_color);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionOpacity font_opacity = CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_FontOpacity(&font_opacity);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionColor background_color = CC::ClosedCaptionColor_Default;
   hr =
       closed_caption_properties_statics->get_BackgroundColor(&background_color);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionOpacity background_opacity =
       CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_BackgroundOpacity(
       &background_opacity);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionColor region_color = CC::ClosedCaptionColor_Default;
   hr = closed_caption_properties_statics->get_RegionColor(&region_color);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CC::ClosedCaptionOpacity region_opacity = CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_RegionOpacity(&region_opacity);
   if (FAILED(hr))
-    return base::nullopt;
+    return absl::nullopt;
 
   CaptionStyle caption_style;
   if (font_family != CC::ClosedCaptionStyle_Default) {
@@ -277,14 +277,14 @@ base::Optional<CaptionStyle> InitializeFromSystemSettings() {
 
 }  // namespace
 
-base::Optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
+absl::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
   if (base::win::GetVersion() >= base::win::Version::WIN10 &&
       base::FeatureList::IsEnabled(features::kSystemCaptionStyle)) {
     return InitializeFromSystemSettings();
   }
   // Return default CaptionStyle for pre Win10 versions since system settings
   // don't allow caption styling.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace ui

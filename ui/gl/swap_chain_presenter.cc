@@ -1013,7 +1013,7 @@ bool SwapChainPresenter::PresentToSwapChain(
   if (image_dxgi && image_dxgi->color_space().IsValid())
     src_color_space = image_dxgi->color_space();
 
-  base::Optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
+  absl::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.hdr_metadata.IsValid()) {
     stream_metadata =
         gl::HDRMetadataHelperWin::HDRMetadataToDXGI(params.hdr_metadata);
@@ -1155,7 +1155,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     const gfx::Rect& content_rect,
     const gfx::ColorSpace& src_color_space,
     bool content_is_hdr,
-    base::Optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata) {
+    absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata) {
   TRACE_EVENT2("gpu", "SwapChainPresenter::VideoProcessorBlt", "content_rect",
                content_rect.ToString(), "swap_chain_size",
                swap_chain_size_.ToString());
@@ -1216,7 +1216,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
                                                      &output_d3d11_color_space);
   }
   Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
-  base::Optional<DXGI_HDR_METADATA_HDR10> display_metadata =
+  absl::optional<DXGI_HDR_METADATA_HDR10> display_metadata =
       layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
   if (display_metadata.has_value() && SUCCEEDED(video_context.As(&context2))) {
     if (stream_hdr_metadata.has_value()) {
@@ -1231,7 +1231,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
   }
 
   {
-    base::Optional<ScopedReleaseKeyedMutex> release_keyed_mutex;
+    absl::optional<ScopedReleaseKeyedMutex> release_keyed_mutex;
     if (keyed_mutex) {
       // The producer may still be using this texture for a short period of
       // time, so wait long enough to hopefully avoid glitches. For example,

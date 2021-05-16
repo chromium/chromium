@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
@@ -112,7 +112,7 @@ NativeTheme::NativeTheme(bool should_use_dark_colors)
 
 NativeTheme::~NativeTheme() = default;
 
-base::Optional<SkColor> NativeTheme::GetColorProviderColor(
+absl::optional<SkColor> NativeTheme::GetColorProviderColor(
     ColorId color_id,
     ColorScheme color_scheme,
     std::string theme_name) const {
@@ -131,7 +131,7 @@ base::Optional<SkColor> NativeTheme::GetColorProviderColor(
       return color_provider->GetColor(provider_color_id.value());
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool NativeTheme::ShouldUseDarkColors() const {
@@ -210,7 +210,7 @@ SkColor NativeTheme::GetSystemColorDeprecated(ColorId color_id,
   return GetAuraColor(color_id, this, color_scheme);
 }
 
-base::Optional<CaptionStyle> NativeTheme::GetSystemCaptionStyle() const {
+absl::optional<CaptionStyle> NativeTheme::GetSystemCaptionStyle() const {
   return CaptionStyle::FromSystemSettings();
 }
 
@@ -219,13 +219,13 @@ NativeTheme::GetSystemColors() const {
   return system_colors_;
 }
 
-base::Optional<SkColor> NativeTheme::GetSystemThemeColor(
+absl::optional<SkColor> NativeTheme::GetSystemThemeColor(
     SystemThemeColor theme_color) const {
   auto color = system_colors_.find(theme_color);
   if (color != system_colors_.end())
     return color->second;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool NativeTheme::HasDifferentSystemColors(

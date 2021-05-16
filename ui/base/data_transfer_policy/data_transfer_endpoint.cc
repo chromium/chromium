@@ -5,7 +5,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 #include "base/check_op.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace ui {
@@ -19,7 +19,7 @@ DataTransferEndpoint::DataTransferEndpoint(const url::Origin& origin,
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
                                            bool notify_if_restricted)
     : type_(type),
-      origin_(base::nullopt),
+      origin_(absl::nullopt),
       notify_if_restricted_(notify_if_restricted) {
   DCHECK_NE(type, EndpointType::kUrl);
 }

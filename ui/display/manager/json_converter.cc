@@ -31,7 +31,7 @@ bool AddLegacyValuesFromValue(const base::Value& value, DisplayLayout* layout) {
   if (!value.is_dict())
     return false;
 
-  base::Optional<int> optional_offset = value.FindIntKey(kOffsetKey);
+  absl::optional<int> optional_offset = value.FindIntKey(kOffsetKey);
   if (optional_offset) {
     DisplayPlacement::Position position;
     const std::string* position_str = value.FindStringKey(kPositionKey);
@@ -55,7 +55,7 @@ bool UpdateFromDict(const base::Value& value,
     return true;
   }
 
-  base::Optional<bool> field_value = field->GetIfBool();
+  absl::optional<bool> field_value = field->GetIfBool();
   if (!field_value)
     return false;
 
@@ -75,7 +75,7 @@ bool UpdateFromDict(const base::Value& value,
     return true;
   }
 
-  base::Optional<int> field_value = field->GetIfInt();
+  absl::optional<int> field_value = field->GetIfInt();
   if (!field_value)
     return false;
 

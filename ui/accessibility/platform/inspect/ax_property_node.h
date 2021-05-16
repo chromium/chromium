@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -62,10 +62,10 @@ class AX_EXPORT AXPropertyNode final {
   // Argument conversion methods.
   bool IsArray() const;
   bool IsDict() const;
-  base::Optional<int> AsInt() const;
+  absl::optional<int> AsInt() const;
   const AXPropertyNode* FindKey(const char* refkey) const;
-  base::Optional<std::string> FindStringKey(const char* refkey) const;
-  base::Optional<int> FindIntKey(const char* key) const;
+  absl::optional<std::string> FindStringKey(const char* refkey) const;
+  absl::optional<int> FindIntKey(const char* key) const;
 
   std::string ToString() const;
 

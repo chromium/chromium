@@ -10,9 +10,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -90,7 +90,7 @@ struct GFX_EXPORT NativePixmapHandle {
 #endif
 
 #if defined(OS_FUCHSIA)
-  base::Optional<SysmemBufferCollectionId> buffer_collection_id;
+  absl::optional<SysmemBufferCollectionId> buffer_collection_id;
   uint32_t buffer_index = 0;
 
   // Set to true for sysmem buffers which are initialized with RAM coherency

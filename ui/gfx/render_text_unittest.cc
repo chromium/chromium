@@ -1892,8 +1892,8 @@ struct ElideTextCase {
   // helps test available widths larger than the resulting test; e.g. "a  b"
   // should yield "a…" even if 3 glyph widths are available, when
   // whitespace elision is enabled.
-  const base::Optional<size_t> available_width_as_glyph_count = base::nullopt;
-  const base::Optional<bool> whitespace_elision = base::nullopt;
+  const absl::optional<size_t> available_width_as_glyph_count = absl::nullopt;
+  const absl::optional<bool> whitespace_elision = absl::nullopt;
 };
 
 using ElideTextCaseParam = std::tuple<ElideTextTestOptions, ElideTextCase>;

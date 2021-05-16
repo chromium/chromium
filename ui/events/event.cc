@@ -658,7 +658,7 @@ MouseWheelEvent::MouseWheelEvent(
     base::TimeTicks time_stamp,
     int flags,
     int changed_button_flags,
-    const base::Optional<gfx::Vector2d> tick_120ths)
+    const absl::optional<gfx::Vector2d> tick_120ths)
     : MouseEvent(ET_UNKNOWN,
                  location,
                  root_location,

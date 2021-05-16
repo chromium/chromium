@@ -123,7 +123,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // |shadow_elevation|. This is only used for MD bubbles. A null
   // |shadow_elevation| will yield the default BubbleBorder MD insets.
   static gfx::Insets GetBorderAndShadowInsets(
-      base::Optional<int> shadow_elevation = base::nullopt);
+      absl::optional<int> shadow_elevation = absl::nullopt);
 
   // Draws a border and shadow based on |shadow_elevation| outside the |rect| on
   // |canvas|, using |draw| as the draw function. Templated so as to accept
@@ -135,7 +135,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
       void (cc::PaintCanvas::*draw)(const T&, const cc::PaintFlags&),
       gfx::Canvas* canvas,
       const ui::NativeTheme* theme,
-      base::Optional<int> shadow_elevation = base::nullopt) {
+      absl::optional<int> shadow_elevation = absl::nullopt) {
     // Borders with custom shadow elevations do not draw the 1px border.
     if (!shadow_elevation.has_value()) {
       // Provide a 1 px border outside the bounds.
@@ -217,7 +217,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // calculate the insets.
   static const gfx::ShadowValues& GetShadowValues(
       const ui::NativeTheme* theme,
-      base::Optional<int> shadow_elevation = base::nullopt);
+      absl::optional<int> shadow_elevation = absl::nullopt);
 
   // Returns the paint flags to use for painting the border and shadow based on
   // |shadow_elevation|. This is only used for MD bubbles. A null
@@ -225,7 +225,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Gets the shadow colors from |theme|.
   static const cc::PaintFlags& GetBorderAndShadowFlags(
       const ui::NativeTheme* theme,
-      base::Optional<int> shadow_elevation = base::nullopt);
+      absl::optional<int> shadow_elevation = absl::nullopt);
 
   // The border and arrow stroke size used in image assets, in pixels.
   static constexpr int kStroke = 1;
@@ -253,11 +253,11 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   Shadow shadow_;
   // Elevation for the MD shadow.
-  base::Optional<int> md_shadow_elevation_;
+  absl::optional<int> md_shadow_elevation_;
   SkColor background_color_;
   bool use_theme_background_color_;
   bool avoid_shadow_overlap_ = false;
-  base::Optional<gfx::Insets> insets_;
+  absl::optional<gfx::Insets> insets_;
 
   DISALLOW_COPY_AND_ASSIGN(BubbleBorder);
 };

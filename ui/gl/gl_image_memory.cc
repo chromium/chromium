@@ -120,7 +120,7 @@ std::vector<uint8_t> GLES2RGB565Data(const gfx::Size& size,
   return gles2_rgb_data;
 }
 
-base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
+absl::optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
                                                gfx::BufferFormat format,
                                                size_t stride,
                                                const uint8_t* data,
@@ -132,7 +132,7 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
 
   switch (format) {
     case gfx::BufferFormat::RGBX_8888:
-      return base::make_optional(GLES2RGBData(
+      return absl::make_optional(GLES2RGBData(
           size, stride, data,
           [](const uint8_t* src, uint8_t* dst) {
             dst[0] = src[0];
@@ -141,10 +141,10 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
           },
           data_format, data_type, data_row_length));
     case gfx::BufferFormat::BGR_565:
-      return base::make_optional(GLES2RGB565Data(
+      return absl::make_optional(GLES2RGB565Data(
           size, stride, data, data_format, data_type, data_row_length));
     case gfx::BufferFormat::BGRX_8888:
-      return base::make_optional(GLES2RGBData(
+      return absl::make_optional(GLES2RGBData(
           size, stride, data,
           [](const uint8_t* src, uint8_t* dst) {
             dst[0] = src[2];
@@ -165,7 +165,7 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
           RowSizeForBufferFormat(size.width(), format, 0);
       if (stride == gles2_data_stride ||
           g_current_gl_driver->ext.b_GL_EXT_unpack_subimage)
-        return base::nullopt;  // No data conversion needed
+        return absl::nullopt;  // No data conversion needed
 
       std::vector<uint8_t> gles2_data(gles2_data_stride * size.height());
       for (int y = 0; y < size.height(); ++y) {
@@ -173,17 +173,17 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
                gles2_data_stride);
       }
       *data_row_length = size.width();
-      return base::make_optional(gles2_data);
+      return absl::make_optional(gles2_data);
     }
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void MemcpyTask(const void* src,
@@ -340,7 +340,7 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
   GLenum data_format = GetDataFormat();
   GLenum data_type = GetDataType();
   GLint data_row_length = DataRowLength(stride_, format_);
-  base::Optional<std::vector<uint8_t>> gles2_data;
+  absl::optional<std::vector<uint8_t>> gles2_data;
 
   GLContext* context = GLContext::GetCurrent();
   DCHECK(context);
@@ -430,7 +430,7 @@ bool GLImageMemory::CopyTexSubImage(unsigned target,
   GLenum data_format = GetDataFormat();
   GLenum data_type = GetDataType();
   GLint data_row_length = DataRowLength(stride_, format_);
-  base::Optional<std::vector<uint8_t>> gles2_data;
+  absl::optional<std::vector<uint8_t>> gles2_data;
 
   if (GLContext::GetCurrent()->GetVersionInfo()->is_es) {
     gles2_data = GLES2Data(rect.size(), format_, stride_, data, &data_format,

@@ -8,10 +8,10 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_utils.h"
@@ -28,7 +28,7 @@ namespace ui {
 
 namespace {
 
-base::Optional<SkColor> GetHighContrastColor(
+absl::optional<SkColor> GetHighContrastColor(
     NativeTheme::ColorId color_id,
     NativeTheme::ColorScheme color_scheme) {
   switch (color_id) {
@@ -48,11 +48,11 @@ base::Optional<SkColor> GetHighContrastColor(
                  ? gfx::kGoogleBlue100
                  : gfx::kGoogleBlue900;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
+absl::optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
                                            const NativeTheme* base_theme) {
   switch (color_id) {
     // Alert
@@ -121,7 +121,7 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
       return color_utils::BlendTowardMaxContrast(gfx::kGoogleGrey900, 0x0A);
 
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -625,7 +625,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
   // High contrast overrides the normal colors for certain ColorIds to be much
   // darker or lighter.
   if (base_theme->UserHasContrastPreference()) {
-    base::Optional<SkColor> color =
+    absl::optional<SkColor> color =
         GetHighContrastColor(color_id, color_scheme);
     if (color.has_value()) {
       DVLOG(2) << "GetHighContrastColor: "
@@ -636,7 +636,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
   }
 
   if (color_scheme == NativeTheme::ColorScheme::kDark) {
-    base::Optional<SkColor> color = GetDarkSchemeColor(color_id, base_theme);
+    absl::optional<SkColor> color = GetDarkSchemeColor(color_id, base_theme);
     if (color.has_value()) {
       DVLOG(2) << "GetDarkSchemeColor: "
                << "NativeTheme::ColorId: " << NativeThemeColorIdName(color_id)

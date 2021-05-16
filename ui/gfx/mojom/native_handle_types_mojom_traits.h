@@ -55,7 +55,7 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 #endif
 
 #if defined(OS_FUCHSIA)
-  static const base::Optional<base::UnguessableToken>& buffer_collection_id(
+  static const absl::optional<base::UnguessableToken>& buffer_collection_id(
       const gfx::NativePixmapHandle& pixmap_handle) {
     return pixmap_handle.buffer_collection_id;
   }

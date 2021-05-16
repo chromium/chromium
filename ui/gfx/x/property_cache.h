@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
 
     Future<GetPropertyReply> future;
     // |response| is nullopt if the request hasn't yet finished.
-    base::Optional<GetPropertyResponse> response = base::nullopt;
+    absl::optional<GetPropertyResponse> response = absl::nullopt;
   };
 
   // EventObserver:

@@ -89,7 +89,7 @@ class LazyMinimumSize {
 
  private:
   const View* const view_;
-  mutable base::Optional<gfx::Size> size_;
+  mutable absl::optional<gfx::Size> size_;
 };
 
 gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,

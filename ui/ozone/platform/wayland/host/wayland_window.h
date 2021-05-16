@@ -196,7 +196,7 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
-  virtual base::Optional<std::vector<gfx::Rect>> GetWindowShape() const;
+  virtual absl::optional<std::vector<gfx::Rect>> GetWindowShape() const;
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();

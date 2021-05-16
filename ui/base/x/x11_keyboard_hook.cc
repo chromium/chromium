@@ -68,7 +68,7 @@ XKeyboardHook::~XKeyboardHook() {
 }
 
 bool XKeyboardHook::RegisterHook(
-    const base::Optional<base::flat_set<DomCode>>& dom_codes) {
+    const absl::optional<base::flat_set<DomCode>>& dom_codes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Only one instance of this class can be registered at a time.
@@ -95,7 +95,7 @@ void XKeyboardHook::CaptureAllKeys() {
 }
 
 void XKeyboardHook::CaptureSpecificKeys(
-    const base::Optional<base::flat_set<DomCode>>& dom_codes) {
+    const absl::optional<base::flat_set<DomCode>>& dom_codes) {
   for (DomCode dom_code : dom_codes.value())
     CaptureKeyForDomCode(dom_code);
 }

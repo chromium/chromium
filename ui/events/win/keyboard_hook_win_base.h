@@ -13,8 +13,8 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -28,7 +28,7 @@ namespace ui {
 class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
     : public KeyboardHookBase {
  public:
-  KeyboardHookWinBase(base::Optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookWinBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,
                       bool enable_hook_registration);
   ~KeyboardHookWinBase() override;
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   // low-level hook and captures modifier keys.
   static std::unique_ptr<KeyboardHookWinBase>
   CreateModifierKeyboardHookForTesting(
-      base::Optional<base::flat_set<DomCode>> dom_codes,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
       KeyEventCallback callback);
 
   // Create a KeyboardHookWinBase instance which does not register a

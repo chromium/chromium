@@ -97,7 +97,7 @@ class TestAXTreeObserver : public AXTreeObserver {
     tree_data_changed_ = true;
   }
 
-  base::Optional<AXNodeID> unignored_parent_id_before_node_deleted;
+  absl::optional<AXNodeID> unignored_parent_id_before_node_deleted;
   void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override {
     // When this observer function is called in an update, the actual node
     // deletion has not happened yet. Verify that node still exists in the tree.
@@ -295,7 +295,7 @@ class TestAXTreeObserver : public AXTreeObserver {
 
 }  // namespace
 
-// A macro for testing that a base::Optional has both a value and that its value
+// A macro for testing that a absl::optional has both a value and that its value
 // is set to a particular expectation.
 #define EXPECT_OPTIONAL_EQ(expected, actual) \
   EXPECT_TRUE(actual.has_value());           \

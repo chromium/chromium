@@ -8,8 +8,8 @@
 
 namespace ui {
 
-base::Optional<IdleState>& IdleStateForTesting() {
-  static base::NoDestructor<base::Optional<IdleState>> idle_state;
+absl::optional<IdleState>& IdleStateForTesting() {
+  static base::NoDestructor<absl::optional<IdleState>> idle_state;
   return *idle_state;
 }
 

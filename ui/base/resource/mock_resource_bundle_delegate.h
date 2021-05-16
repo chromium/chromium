@@ -27,7 +27,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
                base::RefCountedMemory*(int resource_id,
                                        ScaleFactor scale_factor));
   MOCK_METHOD1(LoadDataResourceString,
-               base::Optional<std::string>(int resource_id));
+               absl::optional<std::string>(int resource_id));
   MOCK_CONST_METHOD3(GetRawDataResource,
                      bool(int resource_id,
                           ScaleFactor scale_factor,

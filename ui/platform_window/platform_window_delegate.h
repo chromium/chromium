@@ -6,8 +6,8 @@
 #define UI_PLATFORM_WINDOW_PLATFORM_WINDOW_DELEGATE_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -93,8 +93,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnActivationChanged(bool active) = 0;
 
   // Requests size constraints for the PlatformWindow.
-  virtual base::Optional<gfx::Size> GetMinimumSizeForWindow();
-  virtual base::Optional<gfx::Size> GetMaximumSizeForWindow();
+  virtual absl::optional<gfx::Size> GetMinimumSizeForWindow();
+  virtual absl::optional<gfx::Size> GetMaximumSizeForWindow();
 
   // Returns a mask to be used to clip the window for the size of
   // |WindowTreeHost::GetBoundsInPixels|.

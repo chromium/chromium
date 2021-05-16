@@ -14,7 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/font_list.h"
@@ -52,14 +52,14 @@ class VIEWS_EXPORT StyledLabel : public View {
 
     // Allows full customization of the font used in the range. Ignores the
     // StyledLabel's default text context and |text_style|.
-    base::Optional<gfx::FontList> custom_font;
+    absl::optional<gfx::FontList> custom_font;
 
     // The style::TextStyle for this range.
-    base::Optional<int> text_style;
+    absl::optional<int> text_style;
 
     // Overrides the text color given by |text_style| for this range.
     // DEPRECATED: Use TextStyle.
-    base::Optional<SkColor> override_color;
+    absl::optional<SkColor> override_color;
 
     // A callback to be called when this link is clicked. Only used if
     // |text_style| is style::STYLE_LINK.
@@ -137,8 +137,8 @@ class VIEWS_EXPORT StyledLabel : public View {
   // Gets/Sets the color of the background on which the label is drawn. This
   // won't be explicitly drawn, but the label will force the text color to be
   // readable over it.
-  base::Optional<SkColor> GetDisplayedOnBackgroundColor() const;
-  void SetDisplayedOnBackgroundColor(const base::Optional<SkColor>& color);
+  absl::optional<SkColor> GetDisplayedOnBackgroundColor() const;
+  void SetDisplayedOnBackgroundColor(const absl::optional<SkColor>& color);
 
   bool GetAutoColorReadabilityEnabled() const;
   void SetAutoColorReadabilityEnabled(bool auto_color_readability);
@@ -222,7 +222,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   int text_context_ = style::CONTEXT_LABEL;
   int default_text_style_ = style::STYLE_PRIMARY;
 
-  base::Optional<int> line_height_;
+  absl::optional<int> line_height_;
 
   // The ranges that should be linkified, sorted by start position.
   StyleRanges style_ranges_;
@@ -239,7 +239,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   mutable std::unique_ptr<LayoutViews> layout_views_;
 
   // Background color on which the label is drawn, for auto color readability.
-  base::Optional<SkColor> displayed_on_background_color_;
+  absl::optional<SkColor> displayed_on_background_color_;
 
   // Controls whether the text is automatically re-colored to be readable on the
   // background.

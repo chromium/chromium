@@ -25,7 +25,7 @@ base::StringPiece NATIVE_THEME_EXPORT
 NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
 
 // Converts a NativeTheme::ColorId to a ColorPipeline ColorId.
-base::Optional<ColorId> NATIVE_THEME_EXPORT
+absl::optional<ColorId> NATIVE_THEME_EXPORT
 NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id);
 
 }  // namespace ui

@@ -16,7 +16,7 @@ class KeyEvent;
 
 class KeyboardHookBase : public KeyboardHook {
  public:
-  KeyboardHookBase(base::Optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                    KeyEventCallback callback);
   ~KeyboardHookBase() override;
 
@@ -34,7 +34,7 @@ class KeyboardHookBase : public KeyboardHook {
   // returns.
   void ForwardCapturedKeyEvent(KeyEvent* event);
 
-  const base::Optional<base::flat_set<DomCode>>& dom_codes() {
+  const absl::optional<base::flat_set<DomCode>>& dom_codes() {
     return dom_codes_;
   }
 
@@ -43,7 +43,7 @@ class KeyboardHookBase : public KeyboardHook {
   KeyEventCallback key_event_callback_;
 
   // The set of keys which should be intercepted by the keyboard hook.
-  base::Optional<base::flat_set<DomCode>> dom_codes_;
+  absl::optional<base::flat_set<DomCode>> dom_codes_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyboardHookBase);
 };

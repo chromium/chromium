@@ -121,7 +121,7 @@ class VIEWS_EXPORT InkDropHost {
   void SetVisibleOpacity(float visible_opacity);
   float GetVisibleOpacity() const;
 
-  void SetHighlightOpacity(base::Optional<float> opacity);
+  void SetHighlightOpacity(absl::optional<float> opacity);
 
   void SetSmallCornerRadius(int small_radius);
   int GetSmallCornerRadius() const;
@@ -251,11 +251,11 @@ class VIEWS_EXPORT InkDropHost {
   float ink_drop_visible_opacity_ = 0.175f;
 
   // The color of the ripple and hover.
-  base::Optional<SkColor> ink_drop_base_color_;
+  absl::optional<SkColor> ink_drop_base_color_;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
   // always set or using the default value. Then make this a non-optional float.
-  base::Optional<float> ink_drop_highlight_opacity_;
+  absl::optional<float> ink_drop_highlight_opacity_;
 
   // Radii used for the SquareInkDropRipple.
   int ink_drop_small_corner_radius_ = 2;

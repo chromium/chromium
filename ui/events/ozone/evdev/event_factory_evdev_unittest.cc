@@ -4,11 +4,11 @@
 
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"

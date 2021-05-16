@@ -520,7 +520,7 @@ void Connection::ProcessNextResponse() {
   requests_.pop_front();
   if (last_non_void_request_id_.has_value() &&
       last_non_void_request_id_.value() == first_request_id_) {
-    last_non_void_request_id_ = base::nullopt;
+    last_non_void_request_id_ = absl::nullopt;
   }
   first_request_id_++;
   if (request.callback) {

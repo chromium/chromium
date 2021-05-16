@@ -847,14 +847,14 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSNumber*)AXARIAPosInSet {
-  base::Optional<int> posInSet = _node->GetPosInSet();
+  absl::optional<int> posInSet = _node->GetPosInSet();
   if (!posInSet)
     return nil;
   return @(*posInSet);
 }
 
 - (NSNumber*)AXARIASetSize {
-  base::Optional<int> setSize = _node->GetSetSize();
+  absl::optional<int> setSize = _node->GetSetSize();
   if (!setSize)
     return nil;
   return @(*setSize);

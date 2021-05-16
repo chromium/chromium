@@ -824,52 +824,52 @@ bool AXNode::IsTable() const {
   return IsTableLike(data().role);
 }
 
-base::Optional<int> AXNode::GetTableColCount() const {
+absl::optional<int> AXNode::GetTableColCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
   return int{table_info->col_count};
 }
 
-base::Optional<int> AXNode::GetTableRowCount() const {
+absl::optional<int> AXNode::GetTableRowCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
   return int{table_info->row_count};
 }
 
-base::Optional<int> AXNode::GetTableAriaColCount() const {
+absl::optional<int> AXNode::GetTableAriaColCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
-  return base::make_optional(table_info->aria_col_count);
+    return absl::nullopt;
+  return absl::make_optional(table_info->aria_col_count);
 }
 
-base::Optional<int> AXNode::GetTableAriaRowCount() const {
+absl::optional<int> AXNode::GetTableAriaRowCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
-  return base::make_optional(table_info->aria_row_count);
+    return absl::nullopt;
+  return absl::make_optional(table_info->aria_row_count);
 }
 
-base::Optional<int> AXNode::GetTableCellCount() const {
+absl::optional<int> AXNode::GetTableCellCount() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   return static_cast<int>(table_info->unique_cell_ids.size());
 }
 
-base::Optional<bool> AXNode::GetTableHasColumnOrRowHeaderNode() const {
+absl::optional<bool> AXNode::GetTableHasColumnOrRowHeaderNode() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   return !table_info->all_headers.empty();
 }
@@ -980,17 +980,17 @@ bool AXNode::IsTableRow() const {
   return ui::IsTableRow(data().role);
 }
 
-base::Optional<int> AXNode::GetTableRowRowIndex() const {
+absl::optional<int> AXNode::GetTableRowRowIndex() const {
   if (!IsTableRow())
-    return base::nullopt;
+    return absl::nullopt;
 
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto& iter = table_info->row_id_to_index.find(id());
   if (iter == table_info->row_id_to_index.end())
-    return base::nullopt;
+    return absl::nullopt;
   return int{iter->second};
 }
 
@@ -1016,13 +1016,13 @@ bool AXNode::IsTableColumn() const {
   return ui::IsTableColumn(data().role);
 }
 
-base::Optional<int> AXNode::GetTableColColIndex() const {
+absl::optional<int> AXNode::GetTableColColIndex() const {
   if (!IsTableColumn())
-    return base::nullopt;
+    return absl::nullopt;
 
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   int index = 0;
   for (const AXNode* node : table_info->extra_mac_nodes) {
@@ -1043,48 +1043,48 @@ bool AXNode::IsTableCellOrHeader() const {
   return IsCellOrTableHeader(data().role);
 }
 
-base::Optional<int> AXNode::GetTableCellIndex() const {
+absl::optional<int> AXNode::GetTableCellIndex() const {
   if (!IsTableCellOrHeader())
-    return base::nullopt;
+    return absl::nullopt;
 
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
   const auto& iter = table_info->cell_id_to_index.find(id());
   if (iter != table_info->cell_id_to_index.end())
     return int{iter->second};
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<int> AXNode::GetTableCellColIndex() const {
+absl::optional<int> AXNode::GetTableCellColIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> index = GetTableCellIndex();
+  absl::optional<int> index = GetTableCellIndex();
   if (!index)
-    return base::nullopt;
+    return absl::nullopt;
 
   return int{table_info->cell_data_vector[*index].col_index};
 }
 
-base::Optional<int> AXNode::GetTableCellRowIndex() const {
+absl::optional<int> AXNode::GetTableCellRowIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> index = GetTableCellIndex();
+  absl::optional<int> index = GetTableCellIndex();
   if (!index)
-    return base::nullopt;
+    return absl::nullopt;
 
   return int{table_info->cell_data_vector[*index].row_index};
 }
 
-base::Optional<int> AXNode::GetTableCellColSpan() const {
+absl::optional<int> AXNode::GetTableCellColSpan() const {
   // If it's not a table cell, don't return a col span.
   if (!IsTableCellOrHeader())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Otherwise, try to return a colspan, with 1 as the default if it's not
   // specified.
@@ -1094,10 +1094,10 @@ base::Optional<int> AXNode::GetTableCellColSpan() const {
   return 1;
 }
 
-base::Optional<int> AXNode::GetTableCellRowSpan() const {
+absl::optional<int> AXNode::GetTableCellRowSpan() const {
   // If it's not a table cell, don't return a row span.
   if (!IsTableCellOrHeader())
-    return base::nullopt;
+    return absl::nullopt;
 
   // Otherwise, try to return a row span, with 1 as the default if it's not
   // specified.
@@ -1107,26 +1107,26 @@ base::Optional<int> AXNode::GetTableCellRowSpan() const {
   return 1;
 }
 
-base::Optional<int> AXNode::GetTableCellAriaColIndex() const {
+absl::optional<int> AXNode::GetTableCellAriaColIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> index = GetTableCellIndex();
+  absl::optional<int> index = GetTableCellIndex();
   if (!index)
-    return base::nullopt;
+    return absl::nullopt;
 
   return int{table_info->cell_data_vector[*index].aria_col_index};
 }
 
-base::Optional<int> AXNode::GetTableCellAriaRowIndex() const {
+absl::optional<int> AXNode::GetTableCellAriaRowIndex() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return base::nullopt;
+    return absl::nullopt;
 
-  base::Optional<int> index = GetTableCellIndex();
+  absl::optional<int> index = GetTableCellIndex();
   if (!index)
-    return base::nullopt;
+    return absl::nullopt;
 
   return int{table_info->cell_data_vector[*index].aria_row_index};
 }
@@ -1212,7 +1212,7 @@ void AXNode::IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
   }
 }
 
-base::Optional<int> AXNode::GetHierarchicalLevel() const {
+absl::optional<int> AXNode::GetHierarchicalLevel() const {
   int hierarchical_level =
       GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
 
@@ -1222,7 +1222,7 @@ base::Optional<int> AXNode::GetHierarchicalLevel() const {
   if (hierarchical_level > 0)
     return hierarchical_level;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool AXNode::IsOrderedSetItem() const {
@@ -1234,12 +1234,12 @@ bool AXNode::IsOrderedSet() const {
 }
 
 // Uses AXTree's cache to calculate node's PosInSet.
-base::Optional<int> AXNode::GetPosInSet() {
+absl::optional<int> AXNode::GetPosInSet() {
   return tree_->GetPosInSet(*this);
 }
 
 // Uses AXTree's cache to calculate node's SetSize.
-base::Optional<int> AXNode::GetSetSize() {
+absl::optional<int> AXNode::GetSetSize() {
   return tree_->GetSetSize(*this);
 }
 

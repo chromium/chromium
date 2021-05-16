@@ -53,8 +53,8 @@ class NotificationTestDelegate : public NotificationDelegate {
  public:
   NotificationTestDelegate() = default;
 
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (!button_index && !reply && !expecting_click_)
       ADD_FAILURE() << "Click should not be invoked with a button index.";
     if (button_index && !reply && !expecting_button_click_)
@@ -731,7 +731,7 @@ TEST_F(NotificationViewMDTest, TestInlineReplyRemovedByUpdate) {
   EXPECT_TRUE(notification_view()->inline_reply_->GetVisible());
   EXPECT_FALSE(notification_view()->action_buttons_row_->GetVisible());
 
-  buttons[1].placeholder = base::nullopt;
+  buttons[1].placeholder = absl::nullopt;
   notification->set_buttons(buttons);
   UpdateNotificationViews(*notification);
 

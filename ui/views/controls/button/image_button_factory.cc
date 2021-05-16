@@ -46,7 +46,7 @@ class ColorTrackingVectorImageButton : public ImageButton {
 std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    base::Optional<int> dip_size) {
+    absl::optional<int> dip_size) {
   auto button = std::make_unique<ColorTrackingVectorImageButton>(
       std::move(callback), icon,
       dip_size.value_or(GetDefaultSizeOfVectorIcon(icon)));

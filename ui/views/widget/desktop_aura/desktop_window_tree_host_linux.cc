@@ -324,7 +324,7 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   // happening between the XWindow is mapped and the first expose event
   // is completely handled less annoying. If possible, we use the content
   // window's background color, otherwise we fallback to white.
-  base::Optional<int> background_color;
+  absl::optional<int> background_color;
   const views::LinuxUI* linux_ui = views::LinuxUI::instance();
   if (linux_ui && GetContentWindow()) {
     ui::NativeTheme::ColorId target_color;

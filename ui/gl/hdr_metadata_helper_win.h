@@ -11,7 +11,7 @@
 
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"
 
@@ -28,7 +28,7 @@ class GL_EXPORT HDRMetadataHelperWin {
 
   // Return the metadata for the display, if available.  Must call
   // UpdateDisplayMetadata first.
-  base::Optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
+  absl::optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
 
   // Query the display metadata from all monitors. In the event of monitor
   // hot plugging, the metadata should be updated again.
@@ -40,8 +40,7 @@ class GL_EXPORT HDRMetadataHelperWin {
       const gfx::HDRMetadata& hdr_metadata);
 
  private:
-
-  base::Optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
+  absl::optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
 
   DISALLOW_COPY_AND_ASSIGN(HDRMetadataHelperWin);
 };

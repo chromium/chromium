@@ -122,7 +122,7 @@ StringSlicer::StringSlicer(const std::u16string& text,
                            const std::u16string& ellipsis,
                            bool elide_in_middle,
                            bool elide_at_beginning,
-                           base::Optional<bool> elide_whitespace)
+                           absl::optional<bool> elide_whitespace)
     : text_(text),
       ellipsis_(ellipsis),
       elide_in_middle_(elide_in_middle),

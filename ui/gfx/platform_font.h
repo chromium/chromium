@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
@@ -49,7 +49,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   static PlatformFont* CreateFromSkTypeface(
       sk_sp<SkTypeface> typeface,
       int font_size,
-      const base::Optional<FontRenderParams>& params);
+      const absl::optional<FontRenderParams>& params);
 
   // Returns a new Font derived from the existing font.
   // |size_delta| is the size in pixels to add to the current font.

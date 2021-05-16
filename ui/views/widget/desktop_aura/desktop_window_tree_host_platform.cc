@@ -790,13 +790,13 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
   ScheduleRelayout();
 }
 
-base::Optional<gfx::Size>
+absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
   return ToPixelRect(gfx::Rect(native_widget_delegate()->GetMinimumSize()))
       .size();
 }
 
-base::Optional<gfx::Size>
+absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
   return ToPixelRect(gfx::Rect(native_widget_delegate()->GetMaximumSize()))
       .size();

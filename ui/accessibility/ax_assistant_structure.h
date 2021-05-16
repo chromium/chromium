@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -45,7 +45,7 @@ struct AssistantNode {
   bool line_through;
 
   // Selected portion of the text.
-  base::Optional<gfx::Range> selection;
+  absl::optional<gfx::Range> selection;
 
   // Fake Android view class name of the element.  Each node is assigned
   // a closest approximation of Android's views to keep the server happy.
@@ -60,7 +60,7 @@ struct AssistantNode {
 
   // Accessibility functionality of the node inferred from DOM or based on HTML
   // role attribute.
-  base::Optional<std::string> role;
+  absl::optional<std::string> role;
 };
 
 struct AssistantTree {

@@ -443,7 +443,7 @@ Widget* ViewAccessibility::GetPreviousFocus() const {
 
 void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
-    child_tree_id_ = base::nullopt;
+    child_tree_id_ = absl::nullopt;
   else
     child_tree_id_ = tree_id;
 }

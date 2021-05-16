@@ -238,7 +238,7 @@ float GetDeviceScaleFactor();
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
 // Gets the GTK theme color for a given `color_id`.
-base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id);
+absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id);
 
 }  // namespace gtk
 

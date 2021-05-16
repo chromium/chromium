@@ -25,9 +25,9 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
 
   void WillTearDown() override { d3d11_device_ = nullptr; }
 
-  base::Optional<GLImplementationParts> GetPreferedGLImplementation()
+  absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const override {
-    return base::Optional<GLImplementationParts>(
+    return absl::optional<GLImplementationParts>(
         GLImplementationParts(ANGLEImplementation::kD3D11));
   }
 

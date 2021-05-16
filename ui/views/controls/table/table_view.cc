@@ -17,10 +17,10 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -1386,10 +1386,10 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
     cell_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
 
   auto sort_direction = ax::mojom::SortDirection::kUnsorted;
-  const base::Optional<int> primary_sorted_column_id =
+  const absl::optional<int> primary_sorted_column_id =
       sort_descriptors().empty()
-          ? base::nullopt
-          : base::make_optional(sort_descriptors()[0].column_id);
+          ? absl::nullopt
+          : absl::make_optional(sort_descriptors()[0].column_id);
 
   if (column.sortable && primary_sorted_column_id.has_value() &&
       column.id == primary_sorted_column_id.value()) {
@@ -1473,10 +1473,10 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
   DCHECK(header_) << "header_ needs to be instantiated before setting its"
                      "accessibility view.";
 
-  const base::Optional<int> primary_sorted_column_id =
+  const absl::optional<int> primary_sorted_column_id =
       sort_descriptors().empty()
-          ? base::nullopt
-          : base::make_optional(sort_descriptors()[0].column_id);
+          ? absl::nullopt
+          : absl::make_optional(sort_descriptors()[0].column_id);
 
   auto ax_header = std::make_unique<AXVirtualView>();
   ui::AXNodeData& header_data = ax_header->GetCustomData();

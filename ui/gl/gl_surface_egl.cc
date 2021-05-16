@@ -1363,7 +1363,7 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
 #if defined(USE_X11)
     // Unset DISPLAY env, so the vulkan can be initialized successfully, if the
     // X server doesn't support Vulkan surface.
-    base::Optional<ui::ScopedUnsetDisplay> unset_display;
+    absl::optional<ui::ScopedUnsetDisplay> unset_display;
     if (display_type == ANGLE_VULKAN && !ui::IsVulkanSurfaceSupported())
       unset_display.emplace();
 #endif  // defined(USE_X11)

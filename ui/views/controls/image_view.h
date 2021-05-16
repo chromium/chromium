@@ -147,7 +147,7 @@ class VIEWS_EXPORT ImageView : public View {
   void* last_painted_bitmap_pixels_ = nullptr;
 
   // The requested image size.
-  base::Optional<gfx::Size> image_size_;
+  absl::optional<gfx::Size> image_size_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageView);
 };

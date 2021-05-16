@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/keyboard_hook.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -60,7 +60,7 @@ ModifierKeyboardHookWinTest::~ModifierKeyboardHookWinTest() = default;
 
 void ModifierKeyboardHookWinTest::SetUp() {
   keyboard_hook_ = KeyboardHookWinBase::CreateModifierKeyboardHookForTesting(
-      base::Optional<base::flat_set<DomCode>>(),
+      absl::optional<base::flat_set<DomCode>>(),
       base::BindRepeating(&ModifierKeyboardHookWinTest::HandleKeyPress,
                           base::Unretained(this)));
 

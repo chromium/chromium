@@ -37,7 +37,7 @@ void LabelButtonLabel::OnEnabledChanged() {
 }
 
 void LabelButtonLabel::SetColorForEnableState() {
-  const base::Optional<SkColor>& color =
+  const absl::optional<SkColor>& color =
       GetEnabled() ? requested_enabled_color_ : requested_disabled_color_;
   if (color) {
     Label::SetEnabledColor(*color);

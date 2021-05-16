@@ -362,7 +362,7 @@ void NotificationHeaderView::SetExpanded(bool expanded) {
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 }
 
-void NotificationHeaderView::SetAccentColor(base::Optional<SkColor> color) {
+void NotificationHeaderView::SetAccentColor(absl::optional<SkColor> color) {
   accent_color_ = std::move(color);
   UpdateColors();
 }

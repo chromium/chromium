@@ -43,7 +43,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   struct Params {
     Params();
     ~Params();
-    base::Optional<int> default_button = base::nullopt;
+    absl::optional<int> default_button = absl::nullopt;
     bool round_corners = true;
     bool draggable = false;
 

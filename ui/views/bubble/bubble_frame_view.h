@@ -71,10 +71,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   // Updates the current progress value of |progress_indicator_|. If progress is
   // absent, hides |the progress_indicator|.
-  void SetProgress(base::Optional<double> progress);
+  void SetProgress(absl::optional<double> progress);
   // Returns the current progress value of |progress_indicator_| if
   // |progress_indicator_| is visible.
-  base::Optional<double> GetProgress() const;
+  absl::optional<double> GetProgress() const;
 
   // View:
   gfx::Size CalculatePreferredSize() const override;

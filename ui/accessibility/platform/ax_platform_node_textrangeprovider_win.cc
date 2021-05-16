@@ -161,7 +161,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::CompareEndpoints(
           ? other_provider->start()
           : other_provider->end();
 
-  base::Optional<int> comparison =
+  absl::optional<int> comparison =
       this_provider_endpoint->CompareTo(*other_provider_endpoint);
   if (!comparison)
     return UIA_E_INVALIDOPERATION;
@@ -532,13 +532,13 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     const bool at_end_leaf_text_anchor =
         it->anchor_id() == end_leaf_text_position->anchor_id() &&
         it->tree_id() == end_leaf_text_position->tree_id();
-    const base::Optional<int> start_offset =
-        it->IsTextPosition() ? base::make_optional(it->text_offset())
-                             : base::nullopt;
-    const base::Optional<int> end_offset =
+    const absl::optional<int> start_offset =
+        it->IsTextPosition() ? absl::make_optional(it->text_offset())
+                             : absl::nullopt;
+    const absl::optional<int> end_offset =
         at_end_leaf_text_anchor
-            ? base::make_optional(end_leaf_text_position->text_offset())
-            : base::nullopt;
+            ? absl::make_optional(end_leaf_text_position->text_offset())
+            : absl::nullopt;
     HRESULT hr = platform_node->GetTextAttributeValue(
         attribute_id, start_offset, end_offset, &current_value);
     if (FAILED(hr))
@@ -788,7 +788,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitImpl(
 
   // If the start was moved past the end, create a degenerate range with the end
   // equal to the start; do the equivalent if the end moved past the start.
-  base::Optional<int> endpoint_comparison =
+  absl::optional<int> endpoint_comparison =
       AXNodeRange::CompareEndpoints(start().get(), end().get());
   DCHECK(endpoint_comparison.has_value());
 

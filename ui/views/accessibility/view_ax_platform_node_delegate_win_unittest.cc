@@ -473,7 +473,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, GridRowColumnCount) {
   EXPECT_EQ(0, column_count);
   // To do still: When nothing is set, currently
   // AXPlatformNodeDelegateBase::GetTable{Row/Col}Count() returns 0 Should it
-  // return base::nullopt if the attribute is not set? Like
+  // return absl::nullopt if the attribute is not set? Like
   // GetTableAria{Row/Col}Count()
   // EXPECT_EQ(E_UNEXPECTED, grid_provider->get_RowCount(&row_count));
 

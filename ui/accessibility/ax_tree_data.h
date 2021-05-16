@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_split.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"

@@ -7,7 +7,7 @@
 namespace ui {
 
 X11KeyboardHookOzone::X11KeyboardHookOzone(
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     BaseKeyboardHook::KeyEventCallback callback,
     gfx::AcceleratedWidget accelerated_widget)
     : BaseKeyboardHook(std::move(dom_codes), std::move(callback)),

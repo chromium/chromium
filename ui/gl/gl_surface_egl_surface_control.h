@@ -12,7 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -185,7 +185,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
       SwapCompletionCallback completion_callback,
       PresentationCallback presentation_callback,
       ResourceRefs released_resources,
-      base::Optional<PrimaryPlaneFences> primary_plane_fences,
+      absl::optional<PrimaryPlaneFences> primary_plane_fences,
       gfx::SurfaceControl::TransactionStats transaction_stats);
 
   // Called on the |gpu_task_runner_| when a transaction is committed by the
@@ -206,7 +206,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   gfx::Rect window_rect_;
 
   // Holds the surface state changes made since the last call to SwapBuffers.
-  base::Optional<gfx::SurfaceControl::Transaction> pending_transaction_;
+  absl::optional<gfx::SurfaceControl::Transaction> pending_transaction_;
   size_t pending_surfaces_count_ = 0u;
   // Resources in the pending frame, for which updates are being
   // collected in |pending_transaction_|. These are resources for which the
@@ -216,7 +216,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
 
   // The fences associated with the primary plane (renderer by the display
   // compositor) for the pending frame.
-  base::Optional<PrimaryPlaneFences> primary_plane_fences_;
+  absl::optional<PrimaryPlaneFences> primary_plane_fences_;
 
   // Transactions waiting to be applied once the previous transaction is acked.
   std::queue<gfx::SurfaceControl::Transaction> pending_transaction_queue_;

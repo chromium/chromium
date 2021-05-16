@@ -505,7 +505,7 @@ class COMPONENT_EXPORT(UI_BASE_X) ScopedUnsetDisplay {
   ~ScopedUnsetDisplay();
 
  private:
-  base::Optional<std::string> display_;
+  absl::optional<std::string> display_;
   DISALLOW_COPY_AND_ASSIGN(ScopedUnsetDisplay);
 };
 

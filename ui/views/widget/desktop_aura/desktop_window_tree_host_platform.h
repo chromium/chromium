@@ -123,8 +123,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnCloseRequest() override;
   void OnWillDestroyAcceleratedWidget() override;
   void OnActivationChanged(bool active) override;
-  base::Optional<gfx::Size> GetMinimumSizeForWindow() override;
-  base::Optional<gfx::Size> GetMaximumSizeForWindow() override;
+  absl::optional<gfx::Size> GetMinimumSizeForWindow() override;
+  absl::optional<gfx::Size> GetMaximumSizeForWindow() override;
   SkPath GetWindowMaskForWindowShapeInPixels() override;
 
   // ui::WorkspaceExtensionDelegate:

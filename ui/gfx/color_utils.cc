@@ -307,7 +307,7 @@ SkColor PickContrastingColor(SkColor foreground1,
 BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    base::Optional<SkColor> high_contrast_foreground,
+    absl::optional<SkColor> high_contrast_foreground,
     float contrast_ratio) {
   DCHECK_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
   default_foreground = GetResultingPaintColor(default_foreground, background);

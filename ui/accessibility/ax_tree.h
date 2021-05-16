@@ -174,11 +174,11 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Returns the PosInSet of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  base::Optional<int> GetPosInSet(const AXNode& node) override;
+  absl::optional<int> GetPosInSet(const AXNode& node) override;
   // Returns the SetSize of |node|. Looks in node_set_size_pos_in_set_info_map_
   // for cached value. Calls |ComputeSetSizePosInSetAndCache|if no value is
   // present in the cache.
-  base::Optional<int> GetSetSize(const AXNode& node) override;
+  absl::optional<int> GetSetSize(const AXNode& node) override;
 
   Selection GetUnignoredSelection() const override;
 
@@ -362,9 +362,9 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
     NodeSetSizePosInSetInfo();
     ~NodeSetSizePosInSetInfo();
 
-    base::Optional<int> pos_in_set;
-    base::Optional<int> set_size;
-    base::Optional<int> lowest_hierarchical_level;
+    absl::optional<int> pos_in_set;
+    absl::optional<int> set_size;
+    absl::optional<int> lowest_hierarchical_level;
   };
 
   // Represents the content of an ordered set which includes the ordered set
@@ -391,8 +391,8 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
       const AXNode& original_node,
       const AXNode* ordered_set,
       const AXNode* local_parent,
-      base::Optional<int> ordered_set_min_level,
-      base::Optional<int> prev_level,
+      absl::optional<int> ordered_set_min_level,
+      absl::optional<int> prev_level,
       OrderedSetItemsMap* items_map_to_be_populated) const;
 
   // Computes the pos_in_set and set_size values of all items in ordered_set and

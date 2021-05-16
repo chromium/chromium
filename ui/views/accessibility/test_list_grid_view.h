@@ -28,10 +28,10 @@ class TestListGridView : public View {
   void UnsetTableSize();
 
  private:
-  base::Optional<int> aria_row_count = base::nullopt;
-  base::Optional<int> aria_column_count = base::nullopt;
-  base::Optional<int> table_row_count = base::nullopt;
-  base::Optional<int> table_column_count = base::nullopt;
+  absl::optional<int> aria_row_count = absl::nullopt;
+  absl::optional<int> aria_column_count = absl::nullopt;
+  absl::optional<int> table_row_count = absl::nullopt;
+  absl::optional<int> table_column_count = absl::nullopt;
 };
 
 }  // namespace test

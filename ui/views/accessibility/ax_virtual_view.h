@@ -155,10 +155,10 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   bool IsOffscreen() const override;
   const ui::AXUniqueId& GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
-  base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
+  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
-  base::Optional<int32_t> GetCellId(int row_index,
+  absl::optional<int32_t> GetCellId(int row_index,
                                     int col_index) const override;
 
   // Gets the real View that owns our shallowest virtual ancestor,, if any.

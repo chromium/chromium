@@ -254,7 +254,7 @@ VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
   VkImageCreateInfo vk_image_info = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
   VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
   VkDeviceSize vk_device_size = 0;
-  base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+  absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   if (!collection->CreateVkImage(gmb_handle.native_pixmap_handle.buffer_index,
                                  device_queue->GetVulkanDevice(), size,
                                  &vk_image, &vk_image_info, &vk_device_memory,

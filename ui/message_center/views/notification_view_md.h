@@ -11,8 +11,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
@@ -42,28 +42,28 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
 
   NotificationMdTextButton(PressedCallback callback,
                            const std::u16string& label,
-                           const base::Optional<std::u16string>& placeholder);
+                           const absl::optional<std::u16string>& placeholder);
   ~NotificationMdTextButton() override;
 
   // views::MdTextButton:
   void UpdateBackgroundColor() override;
   void OnThemeChanged() override;
 
-  const base::Optional<std::u16string>& placeholder() const {
+  const absl::optional<std::u16string>& placeholder() const {
     return placeholder_;
   }
-  void set_placeholder(base::Optional<std::u16string> placeholder) {
+  void set_placeholder(absl::optional<std::u16string> placeholder) {
     placeholder_ = std::move(placeholder);
   }
   SkColor enabled_color_for_testing() const {
     return label()->GetEnabledColor();
   }
 
-  void OverrideTextColor(base::Optional<SkColor> text_color);
+  void OverrideTextColor(absl::optional<SkColor> text_color);
 
  private:
-  base::Optional<std::u16string> placeholder_;
-  base::Optional<SkColor> text_color_;
+  absl::optional<std::u16string> placeholder_;
+  absl::optional<SkColor> text_color_;
 };
 
 // CompactTitleMessageView shows notification title and message in a single

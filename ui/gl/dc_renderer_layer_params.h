@@ -50,7 +50,7 @@ struct GL_EXPORT DCRendererLayerParams {
   gfx::Transform transform;
 
   // If present, then clip to |clip_rect| in root target space.
-  base::Optional<gfx::Rect> clip_rect;
+  absl::optional<gfx::Rect> clip_rect;
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;

@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -136,14 +136,14 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   //   called the background color comes from the theme (and changes if the
   //   theme changes).
   // . By way of setting an explicit color, i.e. SetBackgroundColor(). Use
-  //   base::nullopt if you don't want any color, but be warned this
+  //   absl::nullopt if you don't want any color, but be warned this
   //   produces awful results when layers are used with subpixel rendering.
-  base::Optional<SkColor> GetBackgroundColor() const;
-  void SetBackgroundColor(const base::Optional<SkColor>& color);
+  absl::optional<SkColor> GetBackgroundColor() const;
+  void SetBackgroundColor(const absl::optional<SkColor>& color);
 
-  base::Optional<ui::NativeTheme::ColorId> GetBackgroundThemeColorId() const;
+  absl::optional<ui::NativeTheme::ColorId> GetBackgroundThemeColorId() const;
   void SetBackgroundThemeColorId(
-      const base::Optional<ui::NativeTheme::ColorId>& color_id);
+      const absl::optional<ui::NativeTheme::ColorId>& color_id);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
@@ -339,8 +339,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int max_height_ = -1;
 
   // See description of SetBackgroundColor() for details.
-  base::Optional<SkColor> background_color_;
-  base::Optional<ui::NativeTheme::ColorId> background_color_id_ =
+  absl::optional<SkColor> background_color_;
+  absl::optional<ui::NativeTheme::ColorId> background_color_id_ =
       ui::NativeTheme::kColorId_DialogBackground;
 
   // How to handle the case when the contents overflow the viewport.
@@ -377,13 +377,13 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
-VIEW_BUILDER_PROPERTY(base::Optional<ui::NativeTheme::ColorId>,
+VIEW_BUILDER_PROPERTY(absl::optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
 VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)
 VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
-VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BackgroundColor)
+VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
 VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)

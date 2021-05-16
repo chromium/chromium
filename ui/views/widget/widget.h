@@ -13,9 +13,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -269,7 +269,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     Activatable activatable = Activatable::kDefault;
 
     // The class of window and its overall z-order.
-    base::Optional<ui::ZOrderLevel> z_order;
+    absl::optional<ui::ZOrderLevel> z_order;
 
     bool visible_on_all_workspaces = false;
 
@@ -282,10 +282,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May
     // be ignored on some platforms. No value indicates no preference.
-    base::Optional<int> shadow_elevation;
+    absl::optional<int> shadow_elevation;
 
     // The window corner radius. May be ignored on some platforms.
-    base::Optional<int> corner_radius;
+    absl::optional<int> corner_radius;
 
     // Specifies that the system default caption and icon should not be
     // rendered, and that the client area should be equivalent to the window

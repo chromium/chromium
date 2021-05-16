@@ -119,7 +119,7 @@ OzonePlatform::GetPlatformGlobalShortcutListener(
 std::unique_ptr<PlatformKeyboardHook> OzonePlatform::CreateKeyboardHook(
     PlatformKeyboardHookTypes type,
     base::RepeatingCallback<void(KeyEvent* event)> callback,
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget) {
   switch (type) {
     case PlatformKeyboardHookTypes::kModifier:

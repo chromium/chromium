@@ -443,7 +443,7 @@ gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
   return gfx::kNullAcceleratedWidget;
 }
 
-base::Optional<bool> AXVirtualView::GetTableHasColumnOrRowHeaderNode() const {
+absl::optional<bool> AXVirtualView::GetTableHasColumnOrRowHeaderNode() const {
   return GetDelegate()->GetTableHasColumnOrRowHeaderNode();
 }
 
@@ -455,7 +455,7 @@ std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds(int col_index) const {
   return GetDelegate()->GetColHeaderNodeIds(col_index);
 }
 
-base::Optional<int32_t> AXVirtualView::GetCellId(int row_index,
+absl::optional<int32_t> AXVirtualView::GetCellId(int row_index,
                                                  int col_index) const {
   return GetDelegate()->GetCellId(row_index, col_index);
 }

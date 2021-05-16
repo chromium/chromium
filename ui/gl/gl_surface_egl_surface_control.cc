@@ -480,7 +480,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,
     ResourceRefs released_resources,
-    base::Optional<PrimaryPlaneFences> primary_plane_fences,
+    absl::optional<PrimaryPlaneFences> primary_plane_fences,
     gfx::SurfaceControl::TransactionStats transaction_stats) {
   TRACE_EVENT0("gpu",
                "GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread");

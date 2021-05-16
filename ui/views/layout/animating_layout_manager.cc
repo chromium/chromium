@@ -792,10 +792,10 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   fade_infos_.clear();
 
   struct ChildInfo {
-    base::Optional<size_t> start;
+    absl::optional<size_t> start;
     NormalizedRect start_bounds;
     bool start_visible = false;
-    base::Optional<size_t> target;
+    absl::optional<size_t> target;
     NormalizedRect target_bounds;
     bool target_visible = false;
   };

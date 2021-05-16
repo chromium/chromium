@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/text_constants.h"
@@ -457,8 +457,8 @@ class GFX_EXPORT Canvas {
   // in which case bitmap_ and owned_canvas_ will be set. Other times we are
   // just borrowing someone else's canvas, in which case canvas_ will point
   // there but bitmap_ and owned_canvas_ will not exist.
-  base::Optional<SkBitmap> bitmap_;
-  base::Optional<cc::SkiaPaintCanvas> owned_canvas_;
+  absl::optional<SkBitmap> bitmap_;
+  absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
   cc::PaintCanvas* canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(Canvas);

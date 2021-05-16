@@ -51,8 +51,8 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "render.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -307,13 +307,13 @@ class COMPONENT_EXPORT(X11) RandR {
       Lease lease{};
       uint8_t created{};
     };
-    base::Optional<Cc> cc{};
-    base::Optional<Oc> oc{};
-    base::Optional<Op> op{};
-    base::Optional<Pc> pc{};
-    base::Optional<Pp> pp{};
-    base::Optional<Rc> rc{};
-    base::Optional<Lc> lc{};
+    absl::optional<Cc> cc{};
+    absl::optional<Oc> oc{};
+    absl::optional<Op> op{};
+    absl::optional<Pc> pc{};
+    absl::optional<Pp> pp{};
+    absl::optional<Rc> rc{};
+    absl::optional<Lc> lc{};
 
     x11::Window* GetWindow() { return nullptr; }
   };

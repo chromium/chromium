@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_INSTALLABLE_INK_DROP_PAINTER_H_
 #define UI_VIEWS_ANIMATION_INSTALLABLE_INK_DROP_PAINTER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/painter.h"
 

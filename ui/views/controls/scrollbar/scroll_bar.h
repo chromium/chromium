@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/context_menu_controller.h"
@@ -234,7 +234,7 @@ class VIEWS_EXPORT ScrollBar : public View,
   ScrollAmount DetermineScrollAmountByKeyCode(
       const ui::KeyboardCode& keycode) const;
 
-  base::Optional<int> GetDesiredScrollOffset(ScrollAmount amount);
+  absl::optional<int> GetDesiredScrollOffset(ScrollAmount amount);
 
   // The size of the scrolled contents, in pixels.
   int contents_size_ = 0;

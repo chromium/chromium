@@ -28,7 +28,7 @@ FocusableBorder::FocusableBorder() : insets_(kInsetSize) {}
 FocusableBorder::~FocusableBorder() = default;
 
 void FocusableBorder::SetColorId(
-    const base::Optional<ui::NativeTheme::ColorId>& color_id) {
+    const absl::optional<ui::NativeTheme::ColorId>& color_id) {
   override_color_id_ = color_id;
 }
 

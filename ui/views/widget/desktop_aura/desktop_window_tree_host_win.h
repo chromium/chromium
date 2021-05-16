@@ -142,7 +142,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void SetCapture() override;
   void ReleaseCapture() override;
   bool CaptureSystemKeyEventsImpl(
-      base::Optional<base::flat_set<ui::DomCode>> dom_codes) override;
+      absl::optional<base::flat_set<ui::DomCode>> dom_codes) override;
   void ReleaseSystemKeyEventCapture() override;
   bool IsKeyLocked(ui::DomCode dom_code) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;

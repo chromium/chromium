@@ -89,7 +89,7 @@ class VIEWS_EXPORT WidgetDelegate {
 
     // The widget's initially focused view, if any. This can only be set before
     // this WidgetDelegate is used to initialize a Widget.
-    base::Optional<View*> initially_focused_view;
+    absl::optional<View*> initially_focused_view;
 
     // The widget's internal name, used to identify it in window-state
     // restoration (if this widget participates in that) and in debugging

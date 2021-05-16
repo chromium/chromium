@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // corresponding Scenic view.
   gfx::Rect bounds_;
 
-  base::Optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
+  absl::optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
 
   bool visible_ = false;
 

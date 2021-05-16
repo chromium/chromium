@@ -310,7 +310,7 @@ void WindowTreeHost::Hide() {
 }
 
 std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
-    base::Optional<base::flat_set<ui::DomCode>> dom_codes) {
+    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
   // TODO(joedow): Remove the simple hook class/logic once this flag is removed.
   if (!base::FeatureList::IsEnabled(features::kSystemKeyboardLock))
     return std::make_unique<ScopedSimpleKeyboardHook>(std::move(dom_codes));

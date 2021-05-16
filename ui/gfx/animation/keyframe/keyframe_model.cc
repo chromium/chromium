@@ -118,7 +118,7 @@ KeyframeModel::Phase KeyframeModel::CalculatePhase(
   return KeyframeModel::Phase::ACTIVE;
 }
 
-base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
+absl::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     base::TimeTicks monotonic_time) const {
   base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
   KeyframeModel::Phase phase = CalculatePhase(local_time);
@@ -127,7 +127,7 @@ base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     case KeyframeModel::Phase::BEFORE:
       if (fill_mode_ == FillMode::BACKWARDS || fill_mode_ == FillMode::BOTH)
         return std::max(local_time + time_offset_, base::TimeDelta());
-      return base::nullopt;
+      return absl::nullopt;
     case KeyframeModel::Phase::ACTIVE:
       return local_time + time_offset_;
     case KeyframeModel::Phase::AFTER:
@@ -138,10 +138,10 @@ base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
         return std::max(std::min(local_time + time_offset_, active_duration),
                         base::TimeDelta());
       }
-      return base::nullopt;
+      return absl::nullopt;
     default:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

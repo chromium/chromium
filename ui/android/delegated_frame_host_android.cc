@@ -374,7 +374,7 @@ void DelegatedFrameHostAndroid::TakeFallbackContentFrom(
     return;
 
   const viz::SurfaceId& other_primary = other->content_layer_->surface_id();
-  const base::Optional<viz::SurfaceId>& other_fallback =
+  const absl::optional<viz::SurfaceId>& other_fallback =
       other->content_layer_->oldest_acceptable_fallback();
   viz::SurfaceId desired_fallback;
   if (!other->HasFallbackSurface() ||

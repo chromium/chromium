@@ -309,7 +309,7 @@ gfx::Size LargeImageView::GetResizedImageSize() {
 NotificationMdTextButton::NotificationMdTextButton(
     PressedCallback callback,
     const std::u16string& label,
-    const base::Optional<std::u16string>& placeholder)
+    const absl::optional<std::u16string>& placeholder)
     : views::MdTextButton(std::move(callback), label),
       placeholder_(placeholder) {
   SetMinSize(kActionButtonMinSize);
@@ -332,7 +332,7 @@ void NotificationMdTextButton::OnThemeChanged() {
 }
 
 void NotificationMdTextButton::OverrideTextColor(
-    base::Optional<SkColor> text_color) {
+    absl::optional<SkColor> text_color) {
   text_color_ = std::move(text_color);
   SetEnabledTextColors(text_color_);
   label()->SetAutoColorReadabilityEnabled(true);
@@ -515,7 +515,7 @@ class NotificationViewMD::NotificationViewMDPathGenerator
       const NotificationViewMDPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds = rect;
     if (!preferred_size_.IsEmpty())
       bounds.set_size(gfx::SizeF(preferred_size_));
@@ -1211,7 +1211,7 @@ void NotificationViewMD::CreateOrUpdateInlineSettingsViews(
       base::BindRepeating(&NotificationViewMD::ToggleInlineSettings,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE),
-      base::nullopt);
+      absl::nullopt);
 
   auto* settings_button_row = new views::View;
   auto settings_button_layout = std::make_unique<views::BoxLayout>(
@@ -1244,7 +1244,7 @@ void NotificationViewMD::HeaderRowPressed() {
 
 void NotificationViewMD::ActionButtonPressed(size_t index,
                                              const ui::Event& event) {
-  const base::Optional<std::u16string>& placeholder =
+  const absl::optional<std::u16string>& placeholder =
       action_buttons_[index]->placeholder();
   if (placeholder) {
     inline_reply_->textfield()->SetProperty(kTextfieldIndexKey, int{index});

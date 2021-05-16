@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
@@ -93,15 +93,15 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsMinimized() const override;
   // Also in |ViewAccessibility|.
   const ui::AXUniqueId& GetUniqueId() const override;
-  base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
+  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
-  base::Optional<int32_t> GetCellId(int row_index,
+  absl::optional<int32_t> GetCellId(int row_index,
                                     int col_index) const override;
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;
-  base::Optional<int> GetPosInSet() const override;
-  base::Optional<int> GetSetSize() const override;
+  absl::optional<int> GetPosInSet() const override;
+  absl::optional<int> GetSetSize() const override;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);

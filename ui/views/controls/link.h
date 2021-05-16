@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"
@@ -94,7 +94,7 @@ class VIEWS_EXPORT Link : public Label {
   bool pressed_ = false;
 
   // The color when the link is neither pressed nor disabled.
-  base::Optional<SkColor> requested_enabled_color_;
+  absl::optional<SkColor> requested_enabled_color_;
 
   base::CallbackListSubscription enabled_changed_subscription_;
 

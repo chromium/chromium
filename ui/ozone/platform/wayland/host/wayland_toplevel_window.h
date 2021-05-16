@@ -60,7 +60,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldUpdateWindowShape() const override;
 
   // WaylandWindow overrides:
-  base::Optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+  absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
 
  private:
   // WaylandWindow overrides:
@@ -158,8 +158,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::u16string window_title_;
 
   // Max and min sizes of the WaylandToplevelWindow window.
-  base::Optional<gfx::Size> min_size_;
-  base::Optional<gfx::Size> max_size_;
+  absl::optional<gfx::Size> min_size_;
+  absl::optional<gfx::Size> max_size_;
 
   wl::Object<zaura_surface> aura_surface_;
   // |gtk_surface1_| is the optional GTK surface that provides better
@@ -172,7 +172,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
-  base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
+  absl::optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 
   // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
   // ack_configure with |serial| will be sent to the Wayland compositor.

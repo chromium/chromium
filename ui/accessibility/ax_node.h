@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/char_traits.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -69,8 +69,8 @@ class AX_EXPORT AXNode final {
     // See AXTree::data.
     virtual const AXTreeData& data() const = 0;
 
-    virtual base::Optional<int> GetPosInSet(const AXNode& node) = 0;
-    virtual base::Optional<int> GetSetSize(const AXNode& node) = 0;
+    virtual absl::optional<int> GetPosInSet(const AXNode& node) = 0;
+    virtual absl::optional<int> GetSetSize(const AXNode& node) = 0;
 
     virtual Selection GetUnignoredSelection() const = 0;
     virtual bool GetTreeUpdateInProgressState() const = 0;
@@ -313,13 +313,13 @@ class AX_EXPORT AXNode final {
   }
 
   // Return the hierarchical level if supported.
-  base::Optional<int> GetHierarchicalLevel() const;
+  absl::optional<int> GetHierarchicalLevel() const;
 
   // PosInSet and SetSize public methods.
   bool IsOrderedSetItem() const;
   bool IsOrderedSet() const;
-  base::Optional<int> GetPosInSet();
-  base::Optional<int> GetSetSize();
+  absl::optional<int> GetPosInSet();
+  absl::optional<int> GetSetSize();
 
   // Helpers for GetPosInSet and GetSetSize.
   // Returns true if the role of ordered set matches the role of item.
@@ -403,15 +403,15 @@ class AX_EXPORT AXNode final {
   // of the table is row 0, column 0, cell index 0 - but that same cell
   // has a minimum ARIA row index of 1 and column index of 1.
   //
-  // The below methods return base::nullopt if the AXNode they are called on is
+  // The below methods return absl::nullopt if the AXNode they are called on is
   // not inside a table.
   bool IsTable() const;
-  base::Optional<int> GetTableColCount() const;
-  base::Optional<int> GetTableRowCount() const;
-  base::Optional<int> GetTableAriaColCount() const;
-  base::Optional<int> GetTableAriaRowCount() const;
-  base::Optional<int> GetTableCellCount() const;
-  base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const;
+  absl::optional<int> GetTableColCount() const;
+  absl::optional<int> GetTableRowCount() const;
+  absl::optional<int> GetTableAriaColCount() const;
+  absl::optional<int> GetTableAriaRowCount() const;
+  absl::optional<int> GetTableCellCount() const;
+  absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const;
   AXNode* GetTableCaption() const;
   AXNode* GetTableCellFromIndex(int index) const;
   AXNode* GetTableCellFromCoords(int row_index, int col_index) const;
@@ -429,25 +429,25 @@ class AX_EXPORT AXNode final {
 
   // Table row-like nodes.
   bool IsTableRow() const;
-  base::Optional<int> GetTableRowRowIndex() const;
+  absl::optional<int> GetTableRowRowIndex() const;
   // Get the node ids that represent rows in a table.
   std::vector<AXNodeID> GetTableRowNodeIds() const;
 
 #if defined(OS_APPLE)
   // Table column-like nodes. These nodes are only present on macOS.
   bool IsTableColumn() const;
-  base::Optional<int> GetTableColColIndex() const;
+  absl::optional<int> GetTableColColIndex() const;
 #endif  // defined(OS_APPLE)
 
   // Table cell-like nodes.
   bool IsTableCellOrHeader() const;
-  base::Optional<int> GetTableCellIndex() const;
-  base::Optional<int> GetTableCellColIndex() const;
-  base::Optional<int> GetTableCellRowIndex() const;
-  base::Optional<int> GetTableCellColSpan() const;
-  base::Optional<int> GetTableCellRowSpan() const;
-  base::Optional<int> GetTableCellAriaColIndex() const;
-  base::Optional<int> GetTableCellAriaRowIndex() const;
+  absl::optional<int> GetTableCellIndex() const;
+  absl::optional<int> GetTableCellColIndex() const;
+  absl::optional<int> GetTableCellRowIndex() const;
+  absl::optional<int> GetTableCellColSpan() const;
+  absl::optional<int> GetTableCellRowSpan() const;
+  absl::optional<int> GetTableCellAriaColIndex() const;
+  absl::optional<int> GetTableCellAriaRowIndex() const;
   std::vector<AXNodeID> GetTableCellColHeaderNodeIds() const;
   std::vector<AXNodeID> GetTableCellRowHeaderNodeIds() const;
   void GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const;

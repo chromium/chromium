@@ -736,7 +736,7 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
 
 // TODO(tluk): Refactor this to make better use of the hierarchical nature of
 // ColorPipeline.
-base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
+absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
   switch (color_id) {
     case ui::kColorWindowBackground:
     case ui::kColorDialogBackground:
@@ -1075,7 +1075,7 @@ base::Optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     default:
       break;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace gtk

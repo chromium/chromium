@@ -166,7 +166,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      base::Optional<base::flat_set<DomCode>> dom_codes,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
     switch (type) {
       case PlatformKeyboardHookTypes::kModifier:

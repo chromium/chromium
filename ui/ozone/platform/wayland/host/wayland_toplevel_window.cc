@@ -245,7 +245,7 @@ bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
   return true;
 }
 
-base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
+absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
     const {
   return window_shape_in_dips_;
 }

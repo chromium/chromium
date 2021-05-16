@@ -114,8 +114,8 @@ class TestDelegate : public NotificationDelegate {
     log_ += "Close_";
     log_ += (by_user ? "by_user_" : "programmatically_");
   }
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
     if (button_index) {
       if (!reply) {
         log_ += "ButtonClick_";
@@ -150,8 +150,8 @@ class DeleteOnCloseDelegate : public NotificationDelegate {
     // Removing the same notification inside Close should be a noop.
     message_center_->RemoveNotification(notification_id_, false /* by_user */);
   }
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override {}
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {}
 
  private:
   ~DeleteOnCloseDelegate() override = default;

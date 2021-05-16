@@ -144,8 +144,8 @@ class X11_WINDOW_EXPORT X11Window
   void OnXWindowLostPointerGrab();
   void OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev);
   void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev);
-  base::Optional<gfx::Size> GetMinimumSizeForXWindow();
-  base::Optional<gfx::Size> GetMaximumSizeForXWindow();
+  absl::optional<gfx::Size> GetMinimumSizeForXWindow();
+  absl::optional<gfx::Size> GetMaximumSizeForXWindow();
   SkPath GetWindowMaskForXWindow();
 
  private:
@@ -376,9 +376,9 @@ class X11_WINDOW_EXPORT X11Window
   // Whether we used an ARGB visual for our window.
   bool visual_has_alpha_ = false;
 
-  // The workspace containing |xwindow_|.  This will be base::nullopt when
+  // The workspace containing |xwindow_|.  This will be absl::nullopt when
   // _NET_WM_DESKTOP is unset.
-  base::Optional<int> workspace_;
+  absl::optional<int> workspace_;
 
   // True if the window should stay on top of most other windows.
   bool is_always_on_top_ = false;

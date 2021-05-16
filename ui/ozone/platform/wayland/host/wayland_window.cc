@@ -444,8 +444,8 @@ void WaylandWindow::OnCloseRequest() {
   delegate_->OnCloseRequest();
 }
 
-base::Optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
-  return base::nullopt;
+absl::optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
+  return absl::nullopt;
 }
 
 void WaylandWindow::UpdateWindowMask() {
@@ -873,7 +873,7 @@ bool WaylandWindow::CommitOverlays(
 
 void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
   DCHECK(cursor);
-  base::Optional<int32_t> shape =
+  absl::optional<int32_t> shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
   if (cursor->type() == CursorType::kNone) {  // Hide the cursor.

@@ -9,7 +9,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
@@ -57,7 +57,7 @@ class WaylandZwpLinuxDmabuf {
   // the |supported_buffer_formats_| container. Modifiers can also be passed to
   // this method to be stored as a map of the format and modifier.
   void AddSupportedFourCCFormatAndModifier(uint32_t fourcc_format,
-                                           base::Optional<uint64_t> modifier);
+                                           absl::optional<uint64_t> modifier);
 
   // Finds the stored callback corresponding to the |params| created in the
   // RequestBufferAsync call, and passes the wl_buffer to the client. The

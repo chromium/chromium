@@ -120,7 +120,7 @@ class ObjectPropertyMetaData
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
     if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
-    if (base::Optional<TValue> result = TConverter::FromString(new_value)) {
+    if (absl::optional<TValue> result = TConverter::FromString(new_value)) {
       (static_cast<TClass*>(obj)->*Set)(std::move(result.value()));
     }
   }
@@ -179,7 +179,7 @@ class ClassPropertyMetaData : public ui::metadata::MemberMetaDataBase {
   }
 
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
-    base::Optional<TValue> value = TConverter::FromString(new_value);
+    absl::optional<TValue> value = TConverter::FromString(new_value);
     if (value)
       static_cast<TClass*>(obj)->SetProperty(key_, *value);
   }

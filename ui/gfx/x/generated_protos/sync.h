@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -290,12 +290,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   struct CreateAlarmRequest {
     Alarm id{};
-    base::Optional<Counter> counter{};
-    base::Optional<Valuetype> valueType{};
-    base::Optional<Int64> value{};
-    base::Optional<Testtype> testType{};
-    base::Optional<Int64> delta{};
-    base::Optional<uint32_t> events{};
+    absl::optional<Counter> counter{};
+    absl::optional<Valuetype> valueType{};
+    absl::optional<Int64> value{};
+    absl::optional<Testtype> testType{};
+    absl::optional<Int64> delta{};
+    absl::optional<uint32_t> events{};
   };
 
   using CreateAlarmResponse = Response<void>;
@@ -304,21 +304,21 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> CreateAlarm(
       const Alarm& id = {},
-      const base::Optional<Counter>& counter = base::nullopt,
-      const base::Optional<Valuetype>& valueType = base::nullopt,
-      const base::Optional<Int64>& value = base::nullopt,
-      const base::Optional<Testtype>& testType = base::nullopt,
-      const base::Optional<Int64>& delta = base::nullopt,
-      const base::Optional<uint32_t>& events = base::nullopt);
+      const absl::optional<Counter>& counter = absl::nullopt,
+      const absl::optional<Valuetype>& valueType = absl::nullopt,
+      const absl::optional<Int64>& value = absl::nullopt,
+      const absl::optional<Testtype>& testType = absl::nullopt,
+      const absl::optional<Int64>& delta = absl::nullopt,
+      const absl::optional<uint32_t>& events = absl::nullopt);
 
   struct ChangeAlarmRequest {
     Alarm id{};
-    base::Optional<Counter> counter{};
-    base::Optional<Valuetype> valueType{};
-    base::Optional<Int64> value{};
-    base::Optional<Testtype> testType{};
-    base::Optional<Int64> delta{};
-    base::Optional<uint32_t> events{};
+    absl::optional<Counter> counter{};
+    absl::optional<Valuetype> valueType{};
+    absl::optional<Int64> value{};
+    absl::optional<Testtype> testType{};
+    absl::optional<Int64> delta{};
+    absl::optional<uint32_t> events{};
   };
 
   using ChangeAlarmResponse = Response<void>;
@@ -327,12 +327,12 @@ class COMPONENT_EXPORT(X11) Sync {
 
   Future<void> ChangeAlarm(
       const Alarm& id = {},
-      const base::Optional<Counter>& counter = base::nullopt,
-      const base::Optional<Valuetype>& valueType = base::nullopt,
-      const base::Optional<Int64>& value = base::nullopt,
-      const base::Optional<Testtype>& testType = base::nullopt,
-      const base::Optional<Int64>& delta = base::nullopt,
-      const base::Optional<uint32_t>& events = base::nullopt);
+      const absl::optional<Counter>& counter = absl::nullopt,
+      const absl::optional<Valuetype>& valueType = absl::nullopt,
+      const absl::optional<Int64>& value = absl::nullopt,
+      const absl::optional<Testtype>& testType = absl::nullopt,
+      const absl::optional<Int64>& delta = absl::nullopt,
+      const absl::optional<uint32_t>& events = absl::nullopt);
 
   struct DestroyAlarmRequest {
     Alarm alarm{};

@@ -469,7 +469,7 @@ void InputMethodChromeOS::ResetContext(bool reset_engine) {
 
   const bool was_composing = composing_text_;
 
-  pending_composition_ = base::nullopt;
+  pending_composition_ = absl::nullopt;
   result_text_.clear();
   result_text_cursor_ = 0;
   composing_text_ = false;
@@ -645,7 +645,7 @@ void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
       client->ClearCompositionText();
     }
 
-    pending_composition_ = base::nullopt;
+    pending_composition_ = absl::nullopt;
     pending_composition_range_.reset();
   }
 
@@ -747,7 +747,7 @@ void InputMethodChromeOS::UpdateCompositionText(const CompositionText& text,
     }
     SendFakeProcessKeyEvent(false);
     composition_changed_ = false;
-    pending_composition_ = base::nullopt;
+    pending_composition_ = absl::nullopt;
   }
 }
 
@@ -757,7 +757,7 @@ void InputMethodChromeOS::HidePreeditText() {
 
   // Intentionally leaves |composing_text_| unchanged.
   composition_changed_ = true;
-  pending_composition_ = base::nullopt;
+  pending_composition_ = absl::nullopt;
 
   if (!handling_key_event_) {
     TextInputClient* client = GetTextInputClient();

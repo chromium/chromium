@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 
 namespace ui {

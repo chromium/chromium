@@ -7,7 +7,7 @@
 
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -37,7 +37,7 @@ class VIEWS_EXPORT Separator : public View {
 
  private:
   int preferred_height_ = kThickness;
-  base::Optional<SkColor> overridden_color_;
+  absl::optional<SkColor> overridden_color_;
 
   DISALLOW_COPY_AND_ASSIGN(Separator);
 };

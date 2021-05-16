@@ -51,7 +51,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -174,21 +174,21 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
     WindowClass c_class{};
     uint8_t depth{};
     VisualId visual{};
-    base::Optional<Pixmap> background_pixmap{};
-    base::Optional<uint32_t> background_pixel{};
-    base::Optional<Pixmap> border_pixmap{};
-    base::Optional<uint32_t> border_pixel{};
-    base::Optional<Gravity> bit_gravity{};
-    base::Optional<Gravity> win_gravity{};
-    base::Optional<BackingStore> backing_store{};
-    base::Optional<uint32_t> backing_planes{};
-    base::Optional<uint32_t> backing_pixel{};
-    base::Optional<Bool32> override_redirect{};
-    base::Optional<Bool32> save_under{};
-    base::Optional<EventMask> event_mask{};
-    base::Optional<EventMask> do_not_propogate_mask{};
-    base::Optional<ColorMap> colormap{};
-    base::Optional<Cursor> cursor{};
+    absl::optional<Pixmap> background_pixmap{};
+    absl::optional<uint32_t> background_pixel{};
+    absl::optional<Pixmap> border_pixmap{};
+    absl::optional<uint32_t> border_pixel{};
+    absl::optional<Gravity> bit_gravity{};
+    absl::optional<Gravity> win_gravity{};
+    absl::optional<BackingStore> backing_store{};
+    absl::optional<uint32_t> backing_planes{};
+    absl::optional<uint32_t> backing_pixel{};
+    absl::optional<Bool32> override_redirect{};
+    absl::optional<Bool32> save_under{};
+    absl::optional<EventMask> event_mask{};
+    absl::optional<EventMask> do_not_propogate_mask{};
+    absl::optional<ColorMap> colormap{};
+    absl::optional<Cursor> cursor{};
   };
 
   using SetAttributesResponse = Response<void>;
@@ -205,21 +205,21 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
       const WindowClass& c_class = {},
       const uint8_t& depth = {},
       const VisualId& visual = {},
-      const base::Optional<Pixmap>& background_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& background_pixel = base::nullopt,
-      const base::Optional<Pixmap>& border_pixmap = base::nullopt,
-      const base::Optional<uint32_t>& border_pixel = base::nullopt,
-      const base::Optional<Gravity>& bit_gravity = base::nullopt,
-      const base::Optional<Gravity>& win_gravity = base::nullopt,
-      const base::Optional<BackingStore>& backing_store = base::nullopt,
-      const base::Optional<uint32_t>& backing_planes = base::nullopt,
-      const base::Optional<uint32_t>& backing_pixel = base::nullopt,
-      const base::Optional<Bool32>& override_redirect = base::nullopt,
-      const base::Optional<Bool32>& save_under = base::nullopt,
-      const base::Optional<EventMask>& event_mask = base::nullopt,
-      const base::Optional<EventMask>& do_not_propogate_mask = base::nullopt,
-      const base::Optional<ColorMap>& colormap = base::nullopt,
-      const base::Optional<Cursor>& cursor = base::nullopt);
+      const absl::optional<Pixmap>& background_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& background_pixel = absl::nullopt,
+      const absl::optional<Pixmap>& border_pixmap = absl::nullopt,
+      const absl::optional<uint32_t>& border_pixel = absl::nullopt,
+      const absl::optional<Gravity>& bit_gravity = absl::nullopt,
+      const absl::optional<Gravity>& win_gravity = absl::nullopt,
+      const absl::optional<BackingStore>& backing_store = absl::nullopt,
+      const absl::optional<uint32_t>& backing_planes = absl::nullopt,
+      const absl::optional<uint32_t>& backing_pixel = absl::nullopt,
+      const absl::optional<Bool32>& override_redirect = absl::nullopt,
+      const absl::optional<Bool32>& save_under = absl::nullopt,
+      const absl::optional<EventMask>& event_mask = absl::nullopt,
+      const absl::optional<EventMask>& do_not_propogate_mask = absl::nullopt,
+      const absl::optional<ColorMap>& colormap = absl::nullopt,
+      const absl::optional<Cursor>& cursor = absl::nullopt);
 
   struct UnsetAttributesRequest {
     Drawable drawable{};

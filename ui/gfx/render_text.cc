@@ -614,7 +614,7 @@ void RenderText::SetElideBehavior(ElideBehavior elide_behavior) {
   }
 }
 
-void RenderText::SetWhitespaceElision(base::Optional<bool> whitespace_elision) {
+void RenderText::SetWhitespaceElision(absl::optional<bool> whitespace_elision) {
   if (whitespace_elision_ != whitespace_elision) {
     whitespace_elision_ = whitespace_elision;
     OnDisplayTextAttributeChanged();

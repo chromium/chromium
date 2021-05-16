@@ -20,12 +20,12 @@ PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;
 
-base::Optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
-  return base::nullopt;
+absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
+  return absl::nullopt;
 }
 
-base::Optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
-  return base::nullopt;
+absl::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
+  return absl::nullopt;
 }
 
 SkPath PlatformWindowDelegate::GetWindowMaskForWindowShapeInPixels() {

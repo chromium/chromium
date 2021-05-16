@@ -609,7 +609,7 @@ class EVENTS_EXPORT MouseWheelEvent : public MouseEvent {
       base::TimeTicks time_stamp,
       int flags,
       int changed_button_flags,
-      const base::Optional<gfx::Vector2d> tick_120ths = base::nullopt);
+      const absl::optional<gfx::Vector2d> tick_120ths = absl::nullopt);
 
   // DEPRECATED: Prefer the constructor that takes gfx::PointF.
   MouseWheelEvent(const gfx::Vector2d& offset,

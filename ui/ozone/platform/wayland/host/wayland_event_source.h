@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -126,7 +126,7 @@ class WaylandEventSource : public PlatformEventSource,
                     const gfx::Vector2dF& delta,
                     base::TimeTicks timestamp,
                     int device_id,
-                    base::Optional<float> scale) override;
+                    absl::optional<float> scale) override;
 
  private:
   struct PointerFrame {
@@ -149,7 +149,7 @@ class WaylandEventSource : public PlatformEventSource,
   void HandlePointerFocusChange(WaylandWindow* window);
   void HandleTouchFocusChange(WaylandWindow* window,
                               bool focused,
-                              base::Optional<PointerId> id = base::nullopt);
+                              absl::optional<PointerId> id = absl::nullopt);
   bool ShouldUnsetTouchFocus(WaylandWindow* window, PointerId id);
 
   // Computes initial velocity of fling scroll based on recent frames.

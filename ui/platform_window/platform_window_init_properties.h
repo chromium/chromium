@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -96,7 +96,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool prefer_dark_theme = false;
   gfx::ImageSkia* icon = nullptr;
-  base::Optional<int> background_color;
+  absl::optional<int> background_color;
 
   // Specifies the res_name and res_class fields,
   // respectively, of the WM_CLASS window property. Controls window grouping

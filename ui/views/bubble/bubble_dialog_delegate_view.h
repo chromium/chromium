@@ -77,7 +77,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // TODO(ellyjones): Remove overrides of GetAnchorRect() and make this not
   // virtual.
   virtual gfx::Rect GetAnchorRect() const;
-  const base::Optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
+  const absl::optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
   void SetAnchorRect(const gfx::Rect& rect);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -334,7 +334,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // provided) should be highlighted when this bubble is shown.
   bool highlight_button_when_shown_ = true;
 
-  mutable base::Optional<gfx::Rect> anchor_rect_;
+  mutable absl::optional<gfx::Rect> anchor_rect_;
 
   bool accept_events_ = true;
   gfx::NativeView parent_window_ = nullptr;

@@ -176,7 +176,7 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());
   for (auto& color : color_cache_)
-    color = base::nullopt;
+    color = absl::nullopt;
 
   // Hack to workaround a bug on GNOME standard themes which would
   // cause black patches to be rendered on GtkFileChooser dialogs.
@@ -226,7 +226,7 @@ bool NativeThemeGtk::AllowColorPipelineRedirection(
 SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
                                                  ColorScheme color_scheme,
                                                  bool apply_processing) const {
-  base::Optional<SkColor> color = color_cache_[color_id];
+  absl::optional<SkColor> color = color_cache_[color_id];
   if (!color) {
     if (auto provider_color_id = ui::NativeThemeColorIdToColorId(color_id))
       color = SkColorFromColorId(provider_color_id.value());

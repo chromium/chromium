@@ -140,7 +140,7 @@ class ImageRepPNG : public ImageRep {
   std::vector<ImagePNGRep> image_png_reps_;
 
   // Cached to avoid having to parse the raw data multiple times.
-  mutable base::Optional<gfx::Size> size_cache_;
+  mutable absl::optional<gfx::Size> size_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageRepPNG);
 };

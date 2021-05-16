@@ -649,7 +649,7 @@ const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
   return ViewAccessibility::GetUniqueId();
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ViewAXPlatformNodeDelegate::GetTableHasColumnOrRowHeaderNode() const {
   if (!GetAncestorTableView())
     return false;
@@ -679,22 +679,22 @@ std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds(
   return {columns[col_index]};
 }
 
-base::Optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
+absl::optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
     int row_index,
     int col_index) const {
   if (virtual_children().empty() || !GetAncestorTableView())
-    return base::nullopt;
+    return absl::nullopt;
 
   AXVirtualView* ax_cell =
       GetAncestorTableView()->GetVirtualAccessibilityCell(row_index, col_index);
   if (!ax_cell)
-    return base::nullopt;
+    return absl::nullopt;
 
   const ui::AXNodeData& cell_data = ax_cell->GetData();
   if (cell_data.role == ax::mojom::Role::kCell)
     return cell_data.id;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 TableView* ViewAXPlatformNodeDelegate::GetAncestorTableView() const {
@@ -719,7 +719,7 @@ bool ViewAXPlatformNodeDelegate::IsOrderedSet() const {
          GetData().HasIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
-base::Optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
+absl::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   // Consider overridable attributes first.
   const ui::AXNodeData& data = GetData();
   if (data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet))
@@ -728,19 +728,19 @@ base::Optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   std::vector<View*> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty())
-    return base::nullopt;
+    return absl::nullopt;
   // Check this is in views_in_group; it may be removed if it is ignored.
   auto found_view =
       std::find(views_in_group.begin(), views_in_group.end(), view());
   if (found_view == views_in_group.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   int posInSet = std::distance(views_in_group.begin(), found_view);
   // posInSet is zero-based; users expect one-based, so increment.
   return ++posInSet;
 }
 
-base::Optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
+absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   // Consider overridable attributes first.
   const ui::AXNodeData& data = GetData();
   if (data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize))
@@ -749,12 +749,12 @@ base::Optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   std::vector<View*> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
   if (views_in_group.empty())
-    return base::nullopt;
+    return absl::nullopt;
   // Check this is in views_in_group; it may be removed if it is ignored.
   auto found_view =
       std::find(views_in_group.begin(), views_in_group.end(), view());
   if (found_view == views_in_group.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return views_in_group.size();
 }

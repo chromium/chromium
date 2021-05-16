@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -67,7 +67,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // The placeholder string that should be displayed in the input field for
   // text input type buttons until the user has entered a response themselves.
   // If the value is null, there is no input field associated with the button.
-  base::Optional<std::u16string> placeholder;
+  absl::optional<std::u16string> placeholder;
 };
 
 enum class FullscreenVisibility {
@@ -178,7 +178,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Usually, it should not be set directly.
   // For system notification, ash::CreateSystemNotification with
   // SystemNotificationWarningLevel should be used.
-  base::Optional<SkColor> accent_color;
+  absl::optional<SkColor> accent_color;
 
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
@@ -418,7 +418,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
     return optional_fields_.accessible_name;
   }
 
-  base::Optional<SkColor> accent_color() const {
+  absl::optional<SkColor> accent_color() const {
     return optional_fields_.accent_color;
   }
   void set_accent_color(SkColor accent_color) {

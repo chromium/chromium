@@ -463,7 +463,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           if (length_of_data_block <= 3)
             break;
           const uint8_t desired_content_max_luminance = edid[data_offset + 4];
-          luminance_ = base::make_optional<Luminance>({});
+          luminance_ = absl::make_optional<Luminance>({});
           luminance_->max = 50.0 * pow(2, desired_content_max_luminance / 32.0);
 
           if (length_of_data_block <= 4)

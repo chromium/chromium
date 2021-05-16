@@ -7,7 +7,7 @@
 namespace ui {
 
 KeyboardHookX11::KeyboardHookX11(
-    base::Optional<base::flat_set<DomCode>> dom_codes,
+    absl::optional<base::flat_set<DomCode>> dom_codes,
     gfx::AcceleratedWidget accelerated_widget,
     KeyboardHookBase::KeyEventCallback callback)
     : KeyboardHookBase(std::move(dom_codes), std::move(callback)),

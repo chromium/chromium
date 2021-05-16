@@ -158,7 +158,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
                 int target_property_id);
 
   void ForceRunState(RunState run_state) { run_state_ = run_state; }
-  base::Optional<base::TimeDelta> CalculateActiveTime(
+  absl::optional<base::TimeDelta> CalculateActiveTime(
       base::TimeTicks monotonic_time) const;
 
  private:

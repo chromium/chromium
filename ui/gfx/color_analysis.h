@@ -178,7 +178,7 @@ GFX_EXPORT std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
-    base::Optional<ColorSwatchFilter> filter);
+    absl::optional<ColorSwatchFilter> filter);
 
 // Returns a vector of RGB colors that represents the bitmap based on the
 // |color_profiles| provided. For each value, if a value is succesfully

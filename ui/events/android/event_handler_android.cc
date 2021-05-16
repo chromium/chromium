@@ -52,7 +52,7 @@ bool EventHandlerAndroid::ScrollTo(float x, float y) {
 void EventHandlerAndroid::OnSizeChanged() {}
 
 void EventHandlerAndroid::OnPhysicalBackingSizeChanged(
-    base::Optional<base::TimeDelta> deadline_override) {}
+    absl::optional<base::TimeDelta> deadline_override) {}
 
 void EventHandlerAndroid::OnBrowserControlsHeightChanged() {}
 

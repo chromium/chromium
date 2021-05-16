@@ -26,7 +26,7 @@ VIEWS_EXPORT std::unique_ptr<ImageButton>
 CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    base::Optional<int> dip_size = base::nullopt);
+    absl::optional<int> dip_size = absl::nullopt);
 
 // Creates an ImageButton with an ink drop and a centered image in preparation
 // for applying a vector icon with SetImageFromVectorIcon below.

@@ -45,7 +45,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   // to ensure the map is complete.
   connection->Sync();
 
-  GLImageTestSupport::InitializeGL(base::nullopt);
+  GLImageTestSupport::InitializeGL(absl::nullopt);
   auto surface = gl::InitializeGLSurface(base::MakeRefCounted<GLSurfaceGLXX11>(
       static_cast<gfx::AcceleratedWidget>(xwindow)));
   scoped_refptr<GLContext> context =

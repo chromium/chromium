@@ -80,7 +80,7 @@ bool MdTextButton::GetProminent() const {
   return is_prominent_;
 }
 
-void MdTextButton::SetBgColorOverride(const base::Optional<SkColor>& color) {
+void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
   if (color == bg_color_override_)
     return;
   bg_color_override_ = color;
@@ -88,7 +88,7 @@ void MdTextButton::SetBgColorOverride(const base::Optional<SkColor>& color) {
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
 }
 
-base::Optional<SkColor> MdTextButton::GetBgColorOverride() const {
+absl::optional<SkColor> MdTextButton::GetBgColorOverride() const {
   return bg_color_override_;
 }
 
@@ -125,18 +125,18 @@ void MdTextButton::OnBlur() {
   UpdateColors();
 }
 
-void MdTextButton::SetEnabledTextColors(base::Optional<SkColor> color) {
+void MdTextButton::SetEnabledTextColors(absl::optional<SkColor> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
 }
 
 void MdTextButton::SetCustomPadding(
-    const base::Optional<gfx::Insets>& padding) {
+    const absl::optional<gfx::Insets>& padding) {
   custom_padding_ = padding;
   UpdatePadding();
 }
 
-base::Optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
+absl::optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
@@ -267,8 +267,8 @@ void MdTextButton::UpdateColors() {
 BEGIN_METADATA(MdTextButton, LabelButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(float, CornerRadius)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, BgColorOverride)
-ADD_PROPERTY_METADATA(base::Optional<gfx::Insets>, CustomPadding)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)
 END_METADATA
 
 }  // namespace views

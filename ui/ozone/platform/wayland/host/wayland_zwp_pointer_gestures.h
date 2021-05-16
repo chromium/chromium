@@ -70,7 +70,7 @@ class WaylandZwpPointerGestures::Delegate {
                             const gfx::Vector2dF& delta,
                             base::TimeTicks timestamp,
                             int device_id,
-                            base::Optional<float> scale = base::nullopt) = 0;
+                            absl::optional<float> scale = absl::nullopt) = 0;
 };
 
 }  // namespace ui

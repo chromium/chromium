@@ -7,8 +7,8 @@
 
 #include <dwrite.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -24,13 +24,13 @@ GFX_EXPORT IDWriteFactory* GetDirectWriteFactory();
 
 // Retrieves the localized string for a given locale. If locale is empty,
 // retrieves the first element of |names|.
-GFX_EXPORT base::Optional<std::string> RetrieveLocalizedString(
+GFX_EXPORT absl::optional<std::string> RetrieveLocalizedString(
     IDWriteLocalizedStrings* names,
     const std::string& locale);
 
 // Retrieves the localized font name for a given locale. If locale is empty,
 // retrieves the default native font name.
-GFX_EXPORT base::Optional<std::string> RetrieveLocalizedFontName(
+GFX_EXPORT absl::optional<std::string> RetrieveLocalizedFontName(
     base::StringPiece font_name,
     const std::string& locale);
 

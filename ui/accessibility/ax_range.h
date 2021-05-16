@@ -113,9 +113,9 @@ class AXRange {
   //        <0 - If the first position would come BEFORE the second.
   //        >0 - If the first position would come AFTER the second.
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
-  static base::Optional<int> CompareEndpoints(const AXPositionType* first,
+  static absl::optional<int> CompareEndpoints(const AXPositionType* first,
                                               const AXPositionType* second) {
-    base::Optional<int> tree_position_comparison =
+    absl::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 
     // When the tree comparison is nullopt, using value_or(1) forces a default
@@ -282,7 +282,7 @@ class AXRange {
     if (max_count == 0 || IsNull())
       return std::u16string();
 
-    base::Optional<int> endpoint_comparison =
+    absl::optional<int> endpoint_comparison =
         CompareEndpoints(anchor(), focus());
     if (!endpoint_comparison)
       return std::u16string();

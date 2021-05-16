@@ -14,8 +14,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -158,7 +158,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // timeout for this resize.
   void OnPhysicalBackingSizeChanged(
       const gfx::Size& size,
-      base::Optional<base::TimeDelta> deadline_override = base::nullopt);
+      absl::optional<base::TimeDelta> deadline_override = absl::nullopt);
   void OnCursorChanged(const Cursor& cursor);
   void OnBackgroundColorChanged(unsigned int color);
   void OnTopControlsChanged(float top_controls_offset,
@@ -209,7 +209,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   ViewAndroid* parent() const { return parent_; }
 
-  base::Optional<gfx::Rect> GetDisplayFeature();
+  absl::optional<gfx::Rect> GetDisplayFeature();
 
   bool OnTouchEventForTesting(const MotionEventAndroid& event) {
     return OnTouchEvent(event);

@@ -636,7 +636,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // The aspect ratio for the window. This is only used for sizing operations
   // for the non-client area.
-  base::Optional<float> aspect_ratio_;
+  absl::optional<float> aspect_ratio_;
 
   // The current DPI.
   int dpi_;
@@ -817,7 +817,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   gfx::Size exposed_pixels_;
 
   // Populated if the cursor position is being mocked for testing purposes.
-  base::Optional<gfx::Point> mock_cursor_position_;
+  absl::optional<gfx::Point> mock_cursor_position_;
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};

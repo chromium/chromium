@@ -217,11 +217,11 @@ x11::Time X11EventSource::GetTimestamp() {
   return GetCurrentServerTime();
 }
 
-base::Optional<gfx::Point>
+absl::optional<gfx::Point>
 X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
   auto* event = connection_->dispatching_event();
   if (!event)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto* device = event->As<x11::Input::DeviceEvent>();
   auto* crossing = event->As<x11::Input::CrossingEvent>();
@@ -244,7 +244,7 @@ X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
 
   if (is_valid_event)
     return ui::EventSystemLocationFromXEvent(*event);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

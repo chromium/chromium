@@ -185,8 +185,8 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 
 #if defined(OS_WIN)
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
-    base::Optional<gfx::Rect>* control_bounds,
-    base::Optional<gfx::Rect>* selection_bounds) {}
+    absl::optional<gfx::Rect>* control_bounds,
+    absl::optional<gfx::Rect>* selection_bounds) {}
 
 void FakeTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,

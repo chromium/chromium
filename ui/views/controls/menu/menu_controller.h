@@ -751,7 +751,7 @@ class VIEWS_EXPORT MenuController
   // location. Otherwise it will be null. This is used to ignore mouse move
   // events triggered by the menu opening, to avoid selecting the menu item
   // over the mouse.
-  base::Optional<gfx::Point> menu_open_mouse_loc_;
+  absl::optional<gfx::Point> menu_open_mouse_loc_;
 
   // Controls behavior differences between a combobox and other types of menu
   // (like a context menu).

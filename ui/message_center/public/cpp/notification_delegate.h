@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 
 namespace message_center {
@@ -28,8 +28,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationObserver {
   // if a button was clicked (as opposed to the body of the notification) while
   // |reply| is filled in if there was an input field associated with the
   // button.
-  virtual void Click(const base::Optional<int>& button_index,
-                     const base::Optional<std::u16string>& reply) {}
+  virtual void Click(const absl::optional<int>& button_index,
+                     const absl::optional<std::u16string>& reply) {}
 
   // Called when the user clicks the settings button in a notification which has
   // a DELEGATE settings button action.
@@ -62,8 +62,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
 
   // NotificationDelegate:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
   void SettingsClick() override;
   void DisableNotification() override;
 
@@ -84,7 +84,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT HandleNotificationClickDelegate
   // The parameter is the index of the button that was clicked, or nullopt if
   // the body was clicked.
   using ButtonClickCallback =
-      base::RepeatingCallback<void(base::Optional<int>)>;
+      base::RepeatingCallback<void(absl::optional<int>)>;
 
   // Creates a delegate that handles clicks on a button or on the body.
   explicit HandleNotificationClickDelegate(const ButtonClickCallback& callback);
@@ -103,8 +103,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT HandleNotificationClickDelegate
   void SetCallback(const base::RepeatingClosure& closure);
 
   // NotificationDelegate overrides:
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  protected:
   ~HandleNotificationClickDelegate() override;

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 namespace debug {
@@ -39,7 +39,7 @@ class ViewDebugWrapper {
   virtual bool GetEnabled() = 0;
   virtual std::vector<ViewDebugWrapper*> GetChildren() = 0;
   virtual void ForAllProperties(PropCallback callback) {}
-  virtual base::Optional<intptr_t> GetAddress();
+  virtual absl::optional<intptr_t> GetAddress();
 };
 
 void PrintViewHierarchy(std::ostream* out,

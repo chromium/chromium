@@ -67,7 +67,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
     // more times until the posted task is executed, but no more than a single
     // call to UpdateDragWidget() is scheduled at any time; this optional is set
     // means that the task is scheduled.
-    base::Optional<gfx::Point> last_screen_location_px;
+    absl::optional<gfx::Point> last_screen_location_px;
   };
 
   // aura::client::DragDropClient

@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "ui/ozone/public/platform_keyboard_hook.h"
 
@@ -29,7 +29,7 @@ class BaseKeyboardHook : public PlatformKeyboardHook {
  public:
   using KeyEventCallback = base::RepeatingCallback<void(KeyEvent* event)>;
 
-  BaseKeyboardHook(base::Optional<base::flat_set<DomCode>> dom_codes,
+  BaseKeyboardHook(absl::optional<base::flat_set<DomCode>> dom_codes,
                    KeyEventCallback callback);
   BaseKeyboardHook(const BaseKeyboardHook&) = delete;
   BaseKeyboardHook& operator=(const BaseKeyboardHook&) = delete;
@@ -45,7 +45,7 @@ class BaseKeyboardHook : public PlatformKeyboardHook {
   // |event| is owned by the calling method and will live until this method
   // returns.
   void ForwardCapturedKeyEvent(KeyEvent* event);
-  const base::Optional<base::flat_set<DomCode>>& dom_codes() {
+  const absl::optional<base::flat_set<DomCode>>& dom_codes() {
     return dom_codes_;
   }
 
@@ -53,7 +53,7 @@ class BaseKeyboardHook : public PlatformKeyboardHook {
   // Used to forward key events.
   KeyEventCallback key_event_callback_;
   // The set of keys which should be intercepted by the keyboard hook.
-  base::Optional<base::flat_set<DomCode>> dom_codes_;
+  absl::optional<base::flat_set<DomCode>> dom_codes_;
 };
 
 }  // namespace ui

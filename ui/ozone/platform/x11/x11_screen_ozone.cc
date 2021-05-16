@@ -57,14 +57,14 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
 }
 
 gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
-  base::Optional<gfx::Point> point_in_pixels;
+  absl::optional<gfx::Point> point_in_pixels;
   if (ui::X11EventSource::HasInstance()) {
     point_in_pixels = ui::X11EventSource::GetInstance()
                           ->GetRootCursorLocationFromCurrentEvent();
   }
   if (!point_in_pixels) {
     // This call is expensive so we explicitly only call it when
-    // |point_in_pixels| is not set. We note that base::Optional::value_or()
+    // |point_in_pixels| is not set. We note that absl::optional::value_or()
     // would cause it to be called regardless.
     point_in_pixels = GetCursorLocation();
   }

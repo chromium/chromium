@@ -104,7 +104,7 @@ BubbleBorder::~BubbleBorder() = default;
 
 // static
 gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
-    base::Optional<int> elevation) {
+    absl::optional<int> elevation) {
   // Borders with custom shadow elevations do not draw the 1px border.
   if (elevation.has_value())
     return -gfx::ShadowValue::GetMargin(GetShadowValues(nullptr, elevation));
@@ -272,7 +272,7 @@ gfx::Size BubbleBorder::GetMinimumSize() const {
 // static
 const gfx::ShadowValues& BubbleBorder::GetShadowValues(
     const ui::NativeTheme* theme,
-    base::Optional<int> elevation) {
+    absl::optional<int> elevation) {
   // If the theme does not exist the shadow values are being created in
   // order to calculate Insets. In that case the color plays no role so always
   // set those colors to gfx::kPlaceholderColor.
@@ -330,7 +330,7 @@ const gfx::ShadowValues& BubbleBorder::GetShadowValues(
 // static
 const cc::PaintFlags& BubbleBorder::GetBorderAndShadowFlags(
     const ui::NativeTheme* theme,
-    base::Optional<int> elevation) {
+    absl::optional<int> elevation) {
   // The flags are always the same for any elevation and color combination, so
   // construct them once and cache.
   static base::NoDestructor<std::map<ShadowCacheKey, cc::PaintFlags>> flag_map;

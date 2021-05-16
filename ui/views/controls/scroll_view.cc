@@ -303,21 +303,21 @@ void ScrollView::SetHeader(std::nullptr_t) {
   SetHeaderImpl(nullptr);
 }
 
-void ScrollView::SetBackgroundColor(const base::Optional<SkColor>& color) {
+void ScrollView::SetBackgroundColor(const absl::optional<SkColor>& color) {
   if (background_color_ == color && !background_color_id_)
     return;
   background_color_ = color;
-  background_color_id_ = base::nullopt;
+  background_color_id_ = absl::nullopt;
   UpdateBackground();
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
 void ScrollView::SetBackgroundThemeColorId(
-    const base::Optional<ui::NativeTheme::ColorId>& color_id) {
+    const absl::optional<ui::NativeTheme::ColorId>& color_id) {
   if (background_color_id_ == color_id && !background_color_)
     return;
   background_color_id_ = color_id;
-  background_color_ = base::nullopt;
+  background_color_ = absl::nullopt;
   UpdateBackground();
   OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
@@ -1117,7 +1117,7 @@ void ScrollView::UpdateBackground() {
   if (!GetWidget())
     return;
 
-  const base::Optional<SkColor> background_color = GetBackgroundColor();
+  const absl::optional<SkColor> background_color = GetBackgroundColor();
 
   auto create_background = [background_color]() {
     return background_color ? CreateSolidBackground(background_color.value())
@@ -1136,13 +1136,13 @@ void ScrollView::UpdateBackground() {
   }
 }
 
-base::Optional<SkColor> ScrollView::GetBackgroundColor() const {
+absl::optional<SkColor> ScrollView::GetBackgroundColor() const {
   return background_color_id_
              ? GetNativeTheme()->GetSystemColor(background_color_id_.value())
              : background_color_;
 }
 
-base::Optional<ui::NativeTheme::ColorId> ScrollView::GetBackgroundThemeColorId()
+absl::optional<ui::NativeTheme::ColorId> ScrollView::GetBackgroundThemeColorId()
     const {
   return background_color_id_;
 }
@@ -1191,8 +1191,8 @@ void ScrollView::UpdateOverflowIndicatorVisibility(
 BEGIN_METADATA(ScrollView, View)
 ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
-ADD_PROPERTY_METADATA(base::Optional<SkColor>, BackgroundColor)
-ADD_PROPERTY_METADATA(base::Optional<ui::NativeTheme::ColorId>,
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, BackgroundColor)
+ADD_PROPERTY_METADATA(absl::optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)

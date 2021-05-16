@@ -15,8 +15,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/win/registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/sys_color_change_listener.h"
@@ -65,7 +65,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
-             const base::Optional<SkColor>& accent_color) const override;
+             const absl::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
@@ -201,7 +201,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // Returns the platform provided high contrast color for the given
   // |color_id|.
-  base::Optional<SkColor> GetPlatformHighContrastColor(ColorId color_id) const;
+  absl::optional<SkColor> GetPlatformHighContrastColor(ColorId color_id) const;
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;

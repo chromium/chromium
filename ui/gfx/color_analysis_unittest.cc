@@ -566,7 +566,7 @@ TEST_F(ColorAnalysisTest, ComputeColorSwatches) {
 
   {
     std::vector<Swatch> colors =
-        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), base::nullopt);
+        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), absl::nullopt);
     EXPECT_EQ(3u, colors.size());
     EXPECT_EQ(kGreenSwatch, colors[0]);
     EXPECT_EQ(kMagentaSwatch, colors[1]);
@@ -575,7 +575,7 @@ TEST_F(ColorAnalysisTest, ComputeColorSwatches) {
 
   {
     std::vector<Swatch> colors = CalculateColorSwatches(
-        bitmap, 10, gfx::Rect(10, 10, 80, 80), base::nullopt);
+        bitmap, 10, gfx::Rect(10, 10, 80, 80), absl::nullopt);
     EXPECT_EQ(2u, colors.size());
     EXPECT_EQ(kGreenSwatch, colors[0]);
     EXPECT_EQ(kYellowSwatch, colors[1]);
@@ -609,7 +609,7 @@ TEST_F(ColorAnalysisTest, ComputeColorSwatches_Filter) {
 
   {
     std::vector<Swatch> colors =
-        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), base::nullopt);
+        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), absl::nullopt);
     EXPECT_EQ(3u, colors.size());
     EXPECT_EQ(kBlackSwatch, colors[0]);
     EXPECT_EQ(kMagentaSwatch, colors[1]);

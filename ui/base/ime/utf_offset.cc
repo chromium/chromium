@@ -11,29 +11,29 @@
 
 namespace ui {
 
-base::Optional<size_t> Utf16OffsetFromUtf8Offset(base::StringPiece text,
+absl::optional<size_t> Utf16OffsetFromUtf8Offset(base::StringPiece text,
                                                  size_t utf8_offset) {
   if (utf8_offset > text.length())
-    return base::nullopt;
+    return absl::nullopt;
 
   // TODO(hidehiko): Update not to depend on UTF8ToUTF16 to avoid
   // unnecessary memory allocation.
   std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), utf8_offset, &converted))
-    return base::nullopt;
+    return absl::nullopt;
   return converted.length();
 }
 
-base::Optional<size_t> Utf8OffsetFromUtf16Offset(base::StringPiece16 text,
+absl::optional<size_t> Utf8OffsetFromUtf16Offset(base::StringPiece16 text,
                                                  size_t utf16_offset) {
   if (utf16_offset > text.length())
-    return base::nullopt;
+    return absl::nullopt;
 
   // TODO(hidehiko): Update not to depend on UTF16ToUTF8 to avoid
   // unnecessary memory allocation.
   std::string converted;
   if (!base::UTF16ToUTF8(text.data(), utf16_offset, &converted))
-    return base::nullopt;
+    return absl::nullopt;
   return converted.length();
 }
 

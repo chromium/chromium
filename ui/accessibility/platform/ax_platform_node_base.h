@@ -73,7 +73,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // This returns nullopt if there's no parent, it's unable to find the child in
   // the list of its parent's children, or its parent doesn't have children.
-  virtual base::Optional<int> GetIndexInParent();
+  virtual absl::optional<int> GetIndexInParent();
 
   // Returns a stack of ancestors of this node. The node at the top of the stack
   // is the top most ancestor.
@@ -85,7 +85,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   //    0: if this position is logically equivalent to the other node
   //   <0: if this position is logically less than (before) the other node
   //   >0: if this position is logically greater than (after) the other node
-  base::Optional<int> CompareTo(AXPlatformNodeBase& other);
+  absl::optional<int> CompareTo(AXPlatformNodeBase& other);
 
   // AXPlatformNode.
   void Destroy() override;
@@ -178,51 +178,51 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // If inside a table or ARIA grid, returns the zero-based index of the cell.
   // Indices are in row major order and each cell is counted once regardless of
-  // its span. Returns base::nullopt if not a cell or if not inside a table.
-  base::Optional<int> GetTableCellIndex() const;
+  // its span. Returns absl::nullopt if not a cell or if not inside a table.
+  absl::optional<int> GetTableCellIndex() const;
 
   // If inside a table or ARIA grid, returns the physical column number for the
   // current cell. In contrast to logical columns, physical columns always start
   // from 0 and have no gaps in their numbering. Logical columns can be set
-  // using aria-colindex. Returns base::nullopt if not a cell or if not inside a
+  // using aria-colindex. Returns absl::nullopt if not a cell or if not inside a
   // table.
-  base::Optional<int> GetTableColumn() const;
+  absl::optional<int> GetTableColumn() const;
 
   // If inside a table or ARIA grid, returns the number of physical columns.
-  // Returns base::nullopt if not inside a table.
-  base::Optional<int> GetTableColumnCount() const;
+  // Returns absl::nullopt if not inside a table.
+  absl::optional<int> GetTableColumnCount() const;
 
   // If inside a table or ARIA grid, returns the number of ARIA columns.
-  // Returns base::nullopt if not inside a table.
-  base::Optional<int> GetTableAriaColumnCount() const;
+  // Returns absl::nullopt if not inside a table.
+  absl::optional<int> GetTableAriaColumnCount() const;
 
   // If inside a table or ARIA grid, returns the number of physical columns that
-  // this cell spans. Returns base::nullopt if not a cell or if not inside a
+  // this cell spans. Returns absl::nullopt if not a cell or if not inside a
   // table.
-  base::Optional<int> GetTableColumnSpan() const;
+  absl::optional<int> GetTableColumnSpan() const;
 
   // If inside a table or ARIA grid, returns the physical row number for the
   // current cell. In contrast to logical rows, physical rows always start from
   // 0 and have no gaps in their numbering. Logical rows can be set using
-  // aria-rowindex. Returns base::nullopt if not a cell or if not inside a
+  // aria-rowindex. Returns absl::nullopt if not a cell or if not inside a
   // table.
-  base::Optional<int> GetTableRow() const;
+  absl::optional<int> GetTableRow() const;
 
   // If inside a table or ARIA grid, returns the number of physical rows.
-  // Returns base::nullopt if not inside a table.
-  base::Optional<int> GetTableRowCount() const;
+  // Returns absl::nullopt if not inside a table.
+  absl::optional<int> GetTableRowCount() const;
 
   // If inside a table or ARIA grid, returns the number of ARIA rows.
-  // Returns base::nullopt if not inside a table.
-  base::Optional<int> GetTableAriaRowCount() const;
+  // Returns absl::nullopt if not inside a table.
+  absl::optional<int> GetTableAriaRowCount() const;
 
   // If inside a table or ARIA grid, returns the number of physical rows that
-  // this cell spans. Returns base::nullopt if not a cell or if not inside a
+  // this cell spans. Returns absl::nullopt if not a cell or if not inside a
   // table.
-  base::Optional<int> GetTableRowSpan() const;
+  absl::optional<int> GetTableRowSpan() const;
 
   // Returns the font size converted to points, if available.
-  base::Optional<float> GetFontSizeInPoints() const;
+  absl::optional<float> GetFontSizeInPoints() const;
 
   // Returns true if either a descendant has selection (sel_focus_object_id) or
   // if this node is a simple text element and has text selection attributes.
@@ -371,10 +371,10 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeDelegate* delegate_ = nullptr;
 
   // Uses the delegate to calculate this node's PosInSet.
-  base::Optional<int> GetPosInSet() const;
+  absl::optional<int> GetPosInSet() const;
 
   // Uses the delegate to calculate this node's SetSize.
-  base::Optional<int> GetSetSize() const;
+  absl::optional<int> GetSetSize() const;
 
   // Returns true if this object is at the root of what most accessibility APIs
   // consider to be a document, such as the root of a webpage, an iframe, or a

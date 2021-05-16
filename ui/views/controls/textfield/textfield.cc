@@ -1813,8 +1813,8 @@ bool Textfield::SetAutocorrectRange(const gfx::Range& range) {
 
 #if defined(OS_WIN)
 void Textfield::GetActiveTextInputControlLayoutBounds(
-    base::Optional<gfx::Rect>* control_bounds,
-    base::Optional<gfx::Rect>* selection_bounds) {
+    absl::optional<gfx::Rect>* control_bounds,
+    absl::optional<gfx::Rect>* selection_bounds) {
   gfx::Rect origin = GetContentsBounds();
   ConvertRectToScreen(this, &origin);
   *control_bounds = origin;
@@ -2406,7 +2406,7 @@ void Textfield::UpdateSelectionBackgroundColor() {
 void Textfield::UpdateAfterChange(
     TextChangeType text_change_type,
     bool cursor_changed,
-    base::Optional<bool> notify_caret_bounds_changed) {
+    absl::optional<bool> notify_caret_bounds_changed) {
   if (text_change_type != TextChangeType::kNone) {
     if ((text_change_type == TextChangeType::kUserTriggered) && controller_)
       controller_->ContentsChanged(this, GetText());

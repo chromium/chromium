@@ -1352,7 +1352,7 @@ bool DisplayManager::ShouldSetMirrorModeOn(
 
 void DisplayManager::SetMirrorMode(
     MirrorMode mode,
-    const base::Optional<MixedMirrorModeParams>& mixed_params) {
+    const absl::optional<MixedMirrorModeParams>& mixed_params) {
   if (num_connected_displays() < 2)
     return;
 
@@ -1363,10 +1363,10 @@ void DisplayManager::SetMirrorMode(
     // 2. Restore the mixed mirror mode when display configuration changes.
     mixed_mirror_mode_params_ = mixed_params;
   } else {
-    DCHECK(mixed_params == base::nullopt);
+    DCHECK(mixed_params == absl::nullopt);
     // Clear mixed mirror mode parameters here to avoid restoring the mode after
     // display configuration changes.
-    mixed_mirror_mode_params_ = base::nullopt;
+    mixed_mirror_mode_params_ = absl::nullopt;
   }
 
   const bool enabled = mode != MirrorMode::kOff;
@@ -1546,7 +1546,7 @@ void DisplayManager::SetTouchCalibrationData(
 
 void DisplayManager::ClearTouchCalibrationData(
     int64_t display_id,
-    base::Optional<ui::TouchscreenDevice> touchdevice) {
+    absl::optional<ui::TouchscreenDevice> touchdevice) {
   if (touchdevice) {
     touch_device_manager_->ClearTouchCalibrationData(*touchdevice, display_id);
   } else {

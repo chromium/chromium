@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/platform_font.h"
 
@@ -43,7 +43,7 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   // font; use the |SystemFontType| constructor for that.
   PlatformFontMac(sk_sp<SkTypeface> typeface,
                   int font_size_pixels,
-                  const base::Optional<FontRenderParams>& params);
+                  const absl::optional<FontRenderParams>& params);
 
   // Overridden from PlatformFont:
   Font DeriveFont(int size_delta,
@@ -74,10 +74,10 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   };
 
   PlatformFontMac(NativeFont font,
-                  base::Optional<SystemFontType> system_font_type);
+                  absl::optional<SystemFontType> system_font_type);
 
   PlatformFontMac(NativeFont font,
-                  base::Optional<SystemFontType> system_font_type,
+                  absl::optional<SystemFontType> system_font_type,
                   FontSpec spec);
 
   ~PlatformFontMac() override;
@@ -95,7 +95,7 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   base::scoped_nsobject<NSFont> native_font_;
 
   // If the font is a system font, and if so, what kind.
-  const base::Optional<SystemFontType> system_font_type_;
+  const absl::optional<SystemFontType> system_font_type_;
 
   // The name/size/style/weight quartet that specify the font. Initialized in
   // the constructors.

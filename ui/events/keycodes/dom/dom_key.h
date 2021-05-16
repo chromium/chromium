@@ -10,8 +10,8 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -105,9 +105,9 @@ class DomKey {
 
   // Factory that returns a DomKey for the specified value. Returns nullopt if
   // |value| is not a valid value (or NONE).
-  static base::Optional<DomKey> FromBase(Base value) {
+  static absl::optional<DomKey> FromBase(Base value) {
     if (value != 0 && !IsValidValue(value))
-      return base::nullopt;
+      return absl::nullopt;
     return Base(value);
   }
 

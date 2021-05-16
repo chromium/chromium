@@ -60,11 +60,11 @@ std::string NSAXTreeProblemDetails::ToString() {
   return base::SysNSStringToUTF8(s);
 }
 
-base::Optional<NSAXTreeProblemDetails> ValidateNSAXTree(
+absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
     id<NSAccessibility> root,
     size_t* nodes_visited) {
   if (!ToNSAccessibility(root)) {
-    return base::make_optional<NSAXTreeProblemDetails>(
+    return absl::make_optional<NSAXTreeProblemDetails>(
         NSAXTreeProblemDetails::NSAX_NOT_NSACCESSIBILITY, root, nil, nil);
   }
   (*nodes_visited)++;
@@ -72,7 +72,7 @@ base::Optional<NSAXTreeProblemDetails> ValidateNSAXTree(
   if (root.accessibilityParent) {
     id<NSAccessibility> parent = ToNSAccessibility(root.accessibilityParent);
     if (!parent) {
-      return base::make_optional<NSAXTreeProblemDetails>(
+      return absl::make_optional<NSAXTreeProblemDetails>(
           NSAXTreeProblemDetails::NSAX_PARENT_NOT_NSACCESSIBILITY, root, parent,
           nil);
     }
@@ -81,20 +81,20 @@ base::Optional<NSAXTreeProblemDetails> ValidateNSAXTree(
         parent.accessibilityChildren;
 
     if ([parent_children indexOfObjectIdenticalTo:root] == NSNotFound) {
-      return base::make_optional<NSAXTreeProblemDetails>(
+      return absl::make_optional<NSAXTreeProblemDetails>(
           NSAXTreeProblemDetails::NSAX_NOT_CHILD_OF_PARENT, root, parent, nil);
     }
   }
 
   NSArray<id<NSAccessibility>>* children = root.accessibilityChildren;
   for (id<NSAccessibility> child in children) {
-    base::Optional<NSAXTreeProblemDetails> details =
+    absl::optional<NSAXTreeProblemDetails> details =
         ValidateNSAXTree(child, nodes_visited);
     if (details.has_value())
       return details;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void PrintNSAXTree(id<NSAccessibility> root) {

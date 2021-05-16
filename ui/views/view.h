@@ -18,9 +18,9 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -1984,7 +1984,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Size and disposition ------------------------------------------------------
 
-  base::Optional<gfx::Size> preferred_size_;
+  absl::optional<gfx::Size> preferred_size_;
 
   // This View's bounds in the parent coordinate system.
   gfx::Rect bounds_;
@@ -2034,7 +2034,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // The default "fill" layout manager. This is set only if |layout_manager_|
   // isn't set and SetUseDefaultFillLayout(true) is called or
   // |kUseDefaultFillLayout| is true.
-  base::Optional<DefaultFillLayout> default_fill_layout_;
+  absl::optional<DefaultFillLayout> default_fill_layout_;
 
   // Whether this View's layer should be snapped to the pixel boundary.
   bool snap_layer_to_pixel_boundary_ = false;
@@ -2072,7 +2072,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // positioned onscreen. The default behavior should be correct in most cases,
   // but can be overridden if a particular view must always be laid out in some
   // direction regardless of the application's default UI direction.
-  base::Optional<bool> is_mirrored_;
+  absl::optional<bool> is_mirrored_;
 
   // Accelerated painting ------------------------------------------------------
 

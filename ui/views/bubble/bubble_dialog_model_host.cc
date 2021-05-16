@@ -284,7 +284,7 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   if (!model_)
     return BubbleDialogDelegateView::GetInitiallyFocusedView();
 
-  base::Optional<int> unique_id = model_->initially_focused_field(GetPassKey());
+  absl::optional<int> unique_id = model_->initially_focused_field(GetPassKey());
 
   if (!unique_id)
     return BubbleDialogDelegateView::GetInitiallyFocusedView();
@@ -493,7 +493,7 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
 
   // If this textfield is initially focused the text should be initially
   // selected as well.
-  base::Optional<int> initially_focused_field_id =
+  absl::optional<int> initially_focused_field_id =
       model_->initially_focused_field(GetPassKey());
   if (initially_focused_field_id &&
       model_field->unique_id(GetPassKey()) == initially_focused_field_id) {

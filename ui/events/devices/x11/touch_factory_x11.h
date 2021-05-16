@@ -148,7 +148,7 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   std::set<std::pair<int, int>> touchscreen_ids_;
 
   // Device ID of the virtual core keyboard.
-  base::Optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
+  absl::optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
 
   SequentialIDGenerator id_generator_;
 

@@ -108,7 +108,7 @@ IDWriteFactory* GetDirectWriteFactory() {
   return g_direct_write_factory;
 }
 
-base::Optional<std::string> RetrieveLocalizedString(
+absl::optional<std::string> RetrieveLocalizedString(
     IDWriteLocalizedStrings* names,
     const std::string& locale) {
   std::wstring locale_wide = base::UTF8ToWide(locale);
@@ -120,20 +120,20 @@ base::Optional<std::string> RetrieveLocalizedString(
   if (!locale.empty() &&
       (FAILED(names->FindLocaleName(locale_wide.c_str(), &index, &exists)) ||
        !exists)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Get the string length.
   UINT32 length = 0;
   if (FAILED(names->GetStringLength(index, &length)))
-    return base::nullopt;
+    return absl::nullopt;
 
   // The output buffer length needs to be one larger to receive the NUL
   // character.
   std::wstring buffer;
   buffer.resize(length + 1);
   if (FAILED(names->GetString(index, &buffer[0], buffer.size())))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Shrink the string to fit the actual length.
   buffer.resize(length);
@@ -141,7 +141,7 @@ base::Optional<std::string> RetrieveLocalizedString(
   return base::WideToUTF8(buffer);
 }
 
-base::Optional<std::string> RetrieveLocalizedFontName(
+absl::optional<std::string> RetrieveLocalizedFontName(
     base::StringPiece font_name,
     const std::string& locale) {
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
@@ -149,7 +149,7 @@ base::Optional<std::string> RetrieveLocalizedFontName(
 
   Microsoft::WRL::ComPtr<IDWriteFontCollection> font_collection;
   if (FAILED(factory->GetSystemFontCollection(&font_collection))) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   UINT32 index = 0;
@@ -158,14 +158,14 @@ base::Optional<std::string> RetrieveLocalizedFontName(
   if (FAILED(font_collection->FindFamilyName(font_name_wide.c_str(), &index,
                                              &exists)) ||
       !exists) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   Microsoft::WRL::ComPtr<IDWriteFontFamily> font_family;
   Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names;
   if (FAILED(font_collection->GetFontFamily(index, &font_family)) ||
       FAILED(font_family->GetFamilyNames(&family_names))) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return RetrieveLocalizedString(family_names.Get(), locale);

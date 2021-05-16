@@ -15,10 +15,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -43,9 +43,9 @@ namespace {
 ScreenWin* g_instance = nullptr;
 
 // Gets the DPI for a particular monitor.
-base::Optional<int> GetPerMonitorDPI(HMONITOR monitor) {
+absl::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
   if (!base::win::IsProcessPerMonitorDpiAware())
-    return base::nullopt;
+    return absl::nullopt;
 
   static auto get_dpi_for_monitor_func = []() {
     const HMODULE shcore_dll = ::LoadLibrary(L"shcore.dll");
@@ -57,7 +57,7 @@ base::Optional<int> GetPerMonitorDPI(HMONITOR monitor) {
   if (!get_dpi_for_monitor_func ||
       !SUCCEEDED(
           get_dpi_for_monitor_func(monitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y)))
-    return base::nullopt;
+    return absl::nullopt;
 
   DCHECK_EQ(dpi_x, dpi_y);
   return int{dpi_x};
@@ -106,12 +106,12 @@ std::vector<DISPLAYCONFIG_PATH_INFO> GetPathInfos() {
   return {};
 }
 
-base::Optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
+absl::optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
   // Get the monitor name.
   MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
   if (!GetMonitorInfo(monitor, &monitor_info))
-    return base::nullopt;
+    return absl::nullopt;
 
   // Look for a path info with a matching name.
   std::vector<DISPLAYCONFIG_PATH_INFO> path_infos = GetPathInfos();
@@ -125,10 +125,10 @@ base::Optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
         (wcscmp(monitor_info.szDevice, device_name.viewGdiDeviceName) == 0))
       return info;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-float GetSDRWhiteLevel(const base::Optional<DISPLAYCONFIG_PATH_INFO>& path) {
+float GetSDRWhiteLevel(const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path) {
     DISPLAYCONFIG_SDR_WHITE_LEVEL white_level = {};
     white_level.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
@@ -142,7 +142,7 @@ float GetSDRWhiteLevel(const base::Optional<DISPLAYCONFIG_PATH_INFO>& path) {
 }
 
 DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY GetOutputTechnology(
-    const base::Optional<DISPLAYCONFIG_PATH_INFO>& path) {
+    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path)
     return path->targetInfo.outputTechnology;
   return DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER;
@@ -380,7 +380,7 @@ MONITORINFOEX MonitorInfoFromHMONITOR(HMONITOR monitor) {
   return monitor_info;
 }
 
-base::Optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
+absl::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
     HANDLE source_device) {
   static const auto get_pointer_device_rects =
       reinterpret_cast<decltype(&::GetPointerDeviceRects)>(
@@ -388,7 +388,7 @@ base::Optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
   RECT device_rect, screen_rect;
   if (!get_pointer_device_rects ||
       !get_pointer_device_rects(source_device, &device_rect, &screen_rect))
-    return base::nullopt;
+    return absl::nullopt;
 
   const gfx::RectF device{gfx::Rect(device_rect)};
   const gfx::RectF screen{gfx::Rect(screen_rect)};
@@ -407,7 +407,7 @@ gfx::Vector2dF GetDefaultMonitorPhysicalPixelsPerInch() {
 
 // Retrieves PPI for |monitor| based on touch pointer device handles.  Returns
 // nullopt if a pointer device for |monitor| can't be found.
-base::Optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
+absl::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   static const auto get_pointer_devices =
       reinterpret_cast<decltype(&::GetPointerDevices)>(
           base::win::GetUser32FunctionPointer("GetPointerDevices"));
@@ -415,18 +415,18 @@ base::Optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   if (!get_pointer_devices ||
       !get_pointer_devices(&pointer_device_count, nullptr) ||
       (pointer_device_count == 0))
-    return base::nullopt;
+    return absl::nullopt;
 
   std::vector<POINTER_DEVICE_INFO> pointer_devices(pointer_device_count);
   if (!get_pointer_devices(&pointer_device_count, pointer_devices.data()))
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const auto& device : pointer_devices) {
     if (device.pointerDeviceType == POINTER_DEVICE_TYPE_TOUCH &&
         device.monitor == monitor)
       return GetPixelsPerInchForPointerDevice(device.device);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,

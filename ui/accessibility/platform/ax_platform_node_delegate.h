@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
@@ -360,7 +360,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // that the delegate does not have all the information required to calculate
   // this value and it is the responsibility of the AXPlatformNode itself to
   // to calculate it.
-  virtual base::Optional<int> FindTextBoundary(
+  virtual absl::optional<int> FindTextBoundary(
       ax::mojom::TextBoundary boundary,
       int offset,
       ax::mojom::MoveDirection direction,
@@ -387,12 +387,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // role, otherwise they return nullopt.
   //
   virtual bool IsTable() const = 0;
-  virtual base::Optional<int> GetTableColCount() const = 0;
-  virtual base::Optional<int> GetTableRowCount() const = 0;
-  virtual base::Optional<int> GetTableAriaColCount() const = 0;
-  virtual base::Optional<int> GetTableAriaRowCount() const = 0;
-  virtual base::Optional<int> GetTableCellCount() const = 0;
-  virtual base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const = 0;
+  virtual absl::optional<int> GetTableColCount() const = 0;
+  virtual absl::optional<int> GetTableRowCount() const = 0;
+  virtual absl::optional<int> GetTableAriaColCount() const = 0;
+  virtual absl::optional<int> GetTableAriaRowCount() const = 0;
+  virtual absl::optional<int> GetTableCellCount() const = 0;
+  virtual absl::optional<bool> GetTableHasColumnOrRowHeaderNode() const = 0;
   virtual std::vector<int32_t> GetColHeaderNodeIds() const = 0;
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const = 0;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const = 0;
@@ -401,20 +401,20 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Table row-like nodes.
   virtual bool IsTableRow() const = 0;
-  virtual base::Optional<int> GetTableRowRowIndex() const = 0;
+  virtual absl::optional<int> GetTableRowRowIndex() const = 0;
 
   // Table cell-like nodes.
   virtual bool IsTableCellOrHeader() const = 0;
-  virtual base::Optional<int> GetTableCellIndex() const = 0;
-  virtual base::Optional<int> GetTableCellColIndex() const = 0;
-  virtual base::Optional<int> GetTableCellRowIndex() const = 0;
-  virtual base::Optional<int> GetTableCellColSpan() const = 0;
-  virtual base::Optional<int> GetTableCellRowSpan() const = 0;
-  virtual base::Optional<int> GetTableCellAriaColIndex() const = 0;
-  virtual base::Optional<int> GetTableCellAriaRowIndex() const = 0;
-  virtual base::Optional<int32_t> GetCellId(int row_index,
+  virtual absl::optional<int> GetTableCellIndex() const = 0;
+  virtual absl::optional<int> GetTableCellColIndex() const = 0;
+  virtual absl::optional<int> GetTableCellRowIndex() const = 0;
+  virtual absl::optional<int> GetTableCellColSpan() const = 0;
+  virtual absl::optional<int> GetTableCellRowSpan() const = 0;
+  virtual absl::optional<int> GetTableCellAriaColIndex() const = 0;
+  virtual absl::optional<int> GetTableCellAriaRowIndex() const = 0;
+  virtual absl::optional<int32_t> GetCellId(int row_index,
                                             int col_index) const = 0;
-  virtual base::Optional<int32_t> CellIndexToId(int cell_index) const = 0;
+  virtual absl::optional<int32_t> CellIndexToId(int cell_index) const = 0;
 
   // Helper methods to check if a cell is an ARIA-1.1+ 'cell' or 'gridcell'
   virtual bool IsCellOrHeaderOfARIATable() const = 0;
@@ -423,8 +423,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const = 0;
   virtual bool IsOrderedSet() const = 0;
-  virtual base::Optional<int> GetPosInSet() const = 0;
-  virtual base::Optional<int> GetSetSize() const = 0;
+  virtual absl::optional<int> GetPosInSet() const = 0;
+  virtual absl::optional<int> GetSetSize() const = 0;
 
   // Computed colors, taking blending into account.
   virtual SkColor GetColor() const = 0;

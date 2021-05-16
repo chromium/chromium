@@ -325,7 +325,7 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   if (is_always_on_top_)
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_ABOVE"));
 
-  workspace_ = base::nullopt;
+  workspace_ = absl::nullopt;
   if (properties.visible_on_all_workspaces) {
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_STICKY"));
     x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
@@ -987,7 +987,7 @@ void X11Window::SetOpacity(float opacity) {
 }
 
 std::string X11Window::GetWorkspace() const {
-  base::Optional<int> workspace_id = workspace_;
+  absl::optional<int> workspace_id = workspace_;
   return workspace_id.has_value() ? base::NumberToString(workspace_id.value())
                                   : std::string();
 }
@@ -1291,11 +1291,11 @@ void X11Window::OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) {
   drag_drop_client_->HandleXdndEvent(xev);
 }
 
-base::Optional<gfx::Size> X11Window::GetMinimumSizeForXWindow() {
+absl::optional<gfx::Size> X11Window::GetMinimumSizeForXWindow() {
   return platform_window_delegate_->GetMinimumSizeForWindow();
 }
 
-base::Optional<gfx::Size> X11Window::GetMaximumSizeForXWindow() {
+absl::optional<gfx::Size> X11Window::GetMaximumSizeForXWindow() {
   return platform_window_delegate_->GetMaximumSizeForWindow();
 }
 
@@ -1737,7 +1737,7 @@ void X11Window::OnWorkspaceUpdated() {
   if (GetWindowDesktop(xwindow_, &workspace))
     workspace_ = workspace;
   else
-    workspace_ = base::nullopt;
+    workspace_ = absl::nullopt;
 
   if (workspace_ != old_workspace)
     OnXWindowWorkspaceChanged();
@@ -1762,8 +1762,8 @@ void X11Window::SetFlashFrameHint(bool flash_frame) {
 }
 
 void X11Window::UpdateMinAndMaxSize() {
-  base::Optional<gfx::Size> minimum_in_pixels = GetMinimumSizeForXWindow();
-  base::Optional<gfx::Size> maximum_in_pixels = GetMaximumSizeForXWindow();
+  absl::optional<gfx::Size> minimum_in_pixels = GetMinimumSizeForXWindow();
+  absl::optional<gfx::Size> maximum_in_pixels = GetMaximumSizeForXWindow();
   if ((!minimum_in_pixels ||
        min_size_in_pixels_ == minimum_in_pixels.value()) &&
       (!maximum_in_pixels || max_size_in_pixels_ == maximum_in_pixels.value()))

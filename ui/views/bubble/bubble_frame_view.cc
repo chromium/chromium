@@ -317,7 +317,7 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   AddChildViewAt(title_view.release(), GetIndexOf(title_icon_) + 1);
 }
 
-void BubbleFrameView::SetProgress(base::Optional<double> progress) {
+void BubbleFrameView::SetProgress(absl::optional<double> progress) {
   bool visible = progress.has_value();
   progress_indicator_->SetVisible(visible);
   progress_indicator_->GetViewAccessibility().OverrideIsIgnored(!visible);
@@ -325,10 +325,10 @@ void BubbleFrameView::SetProgress(base::Optional<double> progress) {
     progress_indicator_->SetValue(progress.value());
 }
 
-base::Optional<double> BubbleFrameView::GetProgress() const {
+absl::optional<double> BubbleFrameView::GetProgress() const {
   if (progress_indicator_->GetVisible())
     return progress_indicator_->GetValue();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 gfx::Size BubbleFrameView::CalculatePreferredSize() const {
@@ -929,7 +929,7 @@ void BubbleFrameView::UpdateClientLayerCornerRadius() {
 }
 
 BEGIN_METADATA(BubbleFrameView, NonClientFrameView)
-ADD_PROPERTY_METADATA(base::Optional<double>, Progress)
+ADD_PROPERTY_METADATA(absl::optional<double>, Progress)
 ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
 ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)
 ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,

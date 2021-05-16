@@ -207,7 +207,7 @@ bool SysmemBufferCollection::CreateVkImage(
     VkImageCreateInfo* vk_image_info,
     VkDeviceMemory* vk_device_memory,
     VkDeviceSize* mem_allocation_size,
-    base::Optional<gpu::VulkanYCbCrInfo>* ycbcr_info) {
+    absl::optional<gpu::VulkanYCbCrInfo>* ycbcr_info) {
   DCHECK_CALLED_ON_VALID_THREAD(vulkan_thread_checker_);
 
   if (vk_device_ != vk_device) {
@@ -286,7 +286,7 @@ bool SysmemBufferCollection::CreateVkImage(
       buffers_info_.settings.image_format_constraints.color_space[0].type;
   switch (color_space) {
     case fuchsia::sysmem::ColorSpaceType::SRGB:
-      *ycbcr_info = base::nullopt;
+      *ycbcr_info = absl::nullopt;
       break;
 
     case fuchsia::sysmem::ColorSpaceType::REC709: {

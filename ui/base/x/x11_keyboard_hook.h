@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 
@@ -29,13 +29,13 @@ class COMPONENT_EXPORT(UI_BASE_X) XKeyboardHook {
   virtual ~XKeyboardHook();
 
  protected:
-  bool RegisterHook(const base::Optional<base::flat_set<DomCode>>& dom_codes);
+  bool RegisterHook(const absl::optional<base::flat_set<DomCode>>& dom_codes);
 
  private:
   // Helper methods for setting up key event capture.
   void CaptureAllKeys();
   void CaptureSpecificKeys(
-      const base::Optional<base::flat_set<DomCode>>& dom_codes);
+      const absl::optional<base::flat_set<DomCode>>& dom_codes);
   void CaptureKeyForDomCode(DomCode dom_code);
 
   THREAD_CHECKER(thread_checker_);
