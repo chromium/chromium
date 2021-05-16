@@ -1383,7 +1383,9 @@ int64_t Database::GetLastInsertRowId() const {
     DCHECK(poisoned_) << "Illegal use of Database without a db";
     return 0;
   }
-  return sqlite3_last_insert_rowid(db_);
+  int64_t last_rowid = sqlite3_last_insert_rowid(db_);
+  DCHECK(last_rowid != 0) << "No successful INSERT in a table with ROWID";
+  return last_rowid;
 }
 
 int Database::GetLastChangeCount() const {
