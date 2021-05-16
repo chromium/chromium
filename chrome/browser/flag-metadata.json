@@ -4881,7 +4881,7 @@
   {
     "name": "stylus-battery-status",
     "owners": ["amehfooz"],
-    "expiry_milestone": 91
+    "expiry_milestone": 93
   },
   {
     "name": "subframe-shutdown-delay",
