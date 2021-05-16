@@ -5,8 +5,6 @@
 #ifndef PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_
 #define PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_
 
-#include <string>
-
 #include "printing/page_range.h"
 
 typedef struct HDC__* HDC;

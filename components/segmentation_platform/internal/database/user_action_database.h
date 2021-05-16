@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_USER_ACTION_DATABASE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_USER_ACTION_DATABASE_H_
 
-#include <string>
-
 #include "base/time/time.h"
 
 namespace segmentation_platform {

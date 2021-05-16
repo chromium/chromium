@@ -5,8 +5,6 @@
 #ifndef PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 #define PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"

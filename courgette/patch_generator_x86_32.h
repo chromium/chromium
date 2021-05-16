@@ -5,8 +5,6 @@
 #ifndef COURGETTE_PATCH_GENERATOR_X86_32_H_
 #define COURGETTE_PATCH_GENERATOR_X86_32_H_
 
-#include <memory>
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "courgette/courgette_flow.h"

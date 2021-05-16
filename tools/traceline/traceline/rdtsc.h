@@ -8,8 +8,6 @@
 #include <windows.h>
 #include <powrprof.h>
 
-#include <map>
-
 #include "logging.h"
 
 class RDTSCNormalizer {

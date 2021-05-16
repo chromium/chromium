@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 
-#include <vector>
-
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
 

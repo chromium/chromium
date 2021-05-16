@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HOST_H_
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HOST_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 

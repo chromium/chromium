@@ -5,8 +5,6 @@
 #ifndef PPAPI_SHARED_IMPL_PPB_URL_UTIL_SHARED_H_
 #define PPAPI_SHARED_IMPL_PPB_URL_UTIL_SHARED_H_
 
-#include <string>
-
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"

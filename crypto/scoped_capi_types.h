@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/win/wincrypt_shim.h"

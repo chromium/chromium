@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "third_party/skia/include/core/SkColor.h"

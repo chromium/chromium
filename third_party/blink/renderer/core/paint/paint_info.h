@@ -46,8 +46,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
-#include <limits>
-
 namespace blink {
 
 class LayoutBoxModelObject;

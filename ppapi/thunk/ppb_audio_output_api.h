@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
 

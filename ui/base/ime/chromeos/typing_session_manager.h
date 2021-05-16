@@ -7,10 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <set>
-#include <string>
-
 #include "base/macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"

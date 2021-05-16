@@ -8,9 +8,6 @@
 #include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_handle.h>
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

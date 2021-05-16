@@ -5,8 +5,6 @@
 #ifndef GIN_V8_SHARED_MEMORY_DUMP_PROVIDER_H_
 #define GIN_V8_SHARED_MEMORY_DUMP_PROVIDER_H_
 
-#include <string>
-
 #include "base/trace_event/memory_dump_provider.h"
 #include "gin/gin_export.h"
 

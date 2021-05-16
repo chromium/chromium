@@ -5,8 +5,6 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_MAIN_H_
 #define FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_MAIN_H_
 
-#include <memory>
-
 namespace content {
 struct MainFunctionParams;
 }  // namespace content

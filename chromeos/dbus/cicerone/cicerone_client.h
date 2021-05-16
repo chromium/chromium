@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_
 #define CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"

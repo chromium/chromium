@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/private/ppb_net_address_private.h"

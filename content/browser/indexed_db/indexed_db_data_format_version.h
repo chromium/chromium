@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_DATA_FORMAT_VERSION_H_
 
 #include <cstdint>
-#include <limits>
 
 #include "base/check_op.h"
 #include "content/common/content_export.h"

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "ppapi/c/private/ppb_camera_device_private.h"
 #include "ppapi/thunk/ppapi_thunk_export.h"
 

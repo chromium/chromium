@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_BIOMETRIC_AUTHENTICATOR_H_
 
-#include <memory>
-
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 
 namespace content {

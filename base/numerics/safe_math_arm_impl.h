@@ -6,7 +6,6 @@
 #define BASE_NUMERICS_SAFE_MATH_ARM_IMPL_H_
 
 #include <cassert>
-#include <limits>
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"

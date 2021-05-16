@@ -8,8 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_var.h"
 
-#include <string>
-
 namespace ppapi {
 namespace proxy {
 

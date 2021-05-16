@@ -5,8 +5,6 @@
 #ifndef PPAPI_CPP_VPN_PROVIDER_H_
 #define PPAPI_CPP_VPN_PROVIDER_H_
 
-#include <string>
-
 #include "ppapi/c/ppb_vpn_provider.h"
 #include "ppapi/cpp/completion_callback.h"
 

@@ -7,7 +7,6 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
-#include <memory>
 
 #include "fuchsia/base/test/test_navigation_listener.h"
 

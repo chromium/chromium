@@ -5,8 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_H_
 
-#include <memory>
-
 #include "headless/lib/browser/headless_browser_impl.h"
 
 namespace headless {

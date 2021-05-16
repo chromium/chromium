@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <utility>
-
 #include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"

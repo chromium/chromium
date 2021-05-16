@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_RESULT_H_
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_RESULT_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/viz_common_export.h"

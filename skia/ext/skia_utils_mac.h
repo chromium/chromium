@@ -6,7 +6,6 @@
 #define SKIA_EXT_SKIA_UTILS_MAC_H_
 
 #include <ApplicationServices/ApplicationServices.h>
-#include <vector>
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

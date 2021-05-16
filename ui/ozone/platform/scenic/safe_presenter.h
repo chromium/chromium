@@ -7,8 +7,6 @@
 
 #include <lib/ui/scenic/cpp/session.h>
 
-#include <queue>
-
 namespace ui {
 
 using QueuePresentCallback = fit::function<void()>;

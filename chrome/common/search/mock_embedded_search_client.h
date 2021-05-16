@@ -5,8 +5,6 @@
 #ifndef CHROME_COMMON_SEARCH_MOCK_EMBEDDED_SEARCH_CLIENT_H_
 #define CHROME_COMMON_SEARCH_MOCK_EMBEDDED_SEARCH_CLIENT_H_
 
-#include <string>
-
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_ACTION_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_ACTION_BUTTON_H_
 
-#include <string>
-
 #include "base/bind.h"
 #include "chrome/browser/ui/views/hover_button.h"
 

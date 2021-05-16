@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_OMNIBOX_UTILS_H_
 #define CHROME_BROWSER_UI_SEARCH_OMNIBOX_UTILS_H_
 
-#include <string>
-
-
 namespace content {
 class WebContents;
 }  // namespace content

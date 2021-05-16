@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
 #define CHROMEOS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"

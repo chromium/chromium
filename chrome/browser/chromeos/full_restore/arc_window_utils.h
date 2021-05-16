@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_UTILS_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_UTILS_H_
 
-#include <utility>
-
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_
 
-#include <string>
-
 namespace send_tab_to_self {
 
 enum class ShareEntryPoint {
