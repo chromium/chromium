@@ -281,10 +281,7 @@ class XMLHttpRequest final : public XMLHttpRequestEventTarget,
   // Handles didFail() call for timeout.
   void HandleDidTimeout();
 
-  void HandleRequestError(DOMExceptionCode,
-                          const AtomicString&,
-                          int64_t,
-                          int64_t);
+  void HandleRequestError(DOMExceptionCode, const AtomicString&);
 
   void UpdateContentTypeAndCharset(const AtomicString& content_type,
                                    const String& charset);

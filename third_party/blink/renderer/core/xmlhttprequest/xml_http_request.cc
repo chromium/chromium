@@ -1207,11 +1207,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
 void XMLHttpRequest::abort() {
   DVLOG(1) << this << " abort()";
 
-  // internalAbort() clears the response. Save the data needed for
-  // dispatching ProgressEvents.
-  int64_t expected_length = response_.ExpectedContentLength();
-  int64_t received_length = received_length_;
-
   InternalAbort();
 
   // The script never gets any chance to call abort() on a sync XHR between
@@ -1227,8 +1222,7 @@ void XMLHttpRequest::abort() {
     if ((state_ == kOpened && send_flag_) || state_ == kHeadersReceived ||
         state_ == kLoading) {
       DCHECK(!loader_);
-      HandleRequestError(DOMExceptionCode::kNoError, event_type_names::kAbort,
-                         received_length, expected_length);
+      HandleRequestError(DOMExceptionCode::kNoError, event_type_names::kAbort);
     }
   }
   if (state_ == kDone)
@@ -1345,36 +1339,24 @@ void XMLHttpRequest::DispatchProgressEventFromSnapshot(
 void XMLHttpRequest::HandleNetworkError() {
   DVLOG(1) << this << " handleNetworkError()";
 
-  // Response is cleared next, save needed progress event data.
-  int64_t expected_length = response_.ExpectedContentLength();
-  int64_t received_length = received_length_;
-
   InternalAbort();
 
-  HandleRequestError(DOMExceptionCode::kNetworkError, event_type_names::kError,
-                     received_length, expected_length);
+  HandleRequestError(DOMExceptionCode::kNetworkError, event_type_names::kError);
 }
 
 void XMLHttpRequest::HandleDidCancel() {
   DVLOG(1) << this << " handleDidCancel()";
-
-  // Response is cleared next, save needed progress event data.
-  int64_t expected_length = response_.ExpectedContentLength();
-  int64_t received_length = received_length_;
 
   InternalAbort();
 
   pending_abort_event_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kNetworking), FROM_HERE,
       WTF::Bind(&XMLHttpRequest::HandleRequestError, WrapPersistent(this),
-                DOMExceptionCode::kAbortError, event_type_names::kAbort,
-                received_length, expected_length));
+                DOMExceptionCode::kAbortError, event_type_names::kAbort));
 }
 
 void XMLHttpRequest::HandleRequestError(DOMExceptionCode exception_code,
-                                        const AtomicString& type,
-                                        int64_t received_length,
-                                        int64_t expected_length) {
+                                        const AtomicString& type) {
   DVLOG(1) << this << " handleRequestError()";
 
   probe::DidFinishXHR(GetExecutionContext(), this);
@@ -1400,13 +1382,9 @@ void XMLHttpRequest::HandleRequestError(DOMExceptionCode exception_code,
       upload_->HandleRequestError(type);
   }
 
-  // Note: The below event dispatch may be called while |hasPendingActivity() ==
-  // false|, when |handleRequestError| is called after |internalAbort()|.  This
-  // is safe, however, as |this| will be kept alive from a strong ref
-  // |Event::m_target|.
-  DispatchProgressEvent(type, received_length, expected_length);
-  DispatchProgressEvent(event_type_names::kLoadend, received_length,
-                        expected_length);
+  DispatchProgressEvent(type, /*received_length=*/0, /*expected_length=*/0);
+  DispatchProgressEvent(event_type_names::kLoadend, /*received_length=*/0,
+                        /*expected_length=*/0);
 }
 
 // https://xhr.spec.whatwg.org/#the-overridemimetype()-method
@@ -2074,15 +2052,10 @@ void XMLHttpRequest::DidDownloadToBlob(scoped_refptr<BlobDataHandle> blob) {
 void XMLHttpRequest::HandleDidTimeout() {
   DVLOG(1) << this << " handleDidTimeout()";
 
-  // Response is cleared next, save needed progress event data.
-  int64_t expected_length = response_.ExpectedContentLength();
-  int64_t received_length = received_length_;
-
   InternalAbort();
 
   HandleRequestError(DOMExceptionCode::kTimeoutError,
-                     event_type_names::kTimeout, received_length,
-                     expected_length);
+                     event_type_names::kTimeout);
 }
 
 void XMLHttpRequest::ContextDestroyed() {
