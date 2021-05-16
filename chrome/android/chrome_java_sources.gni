@@ -739,8 +739,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
   "java/src/org/chromium/chrome/browser/lens/LensDebugBridge.java",
   "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
-  "java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
-  "java/src/org/chromium/chrome/browser/locale/LocaleTemplateUrlLoader.java",
   "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
   "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
   "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",

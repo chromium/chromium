@@ -5,12 +5,12 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
 
   "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
 
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/feature_engagement",
   "+chrome/browser/flags",
   "+chrome/browser/lens",
+  "+chrome/browser/locale",
   "+chrome/browser/privacy/settings",
   "+chrome/browser/profiles/android",
   "+chrome/browser/search_engines/android",

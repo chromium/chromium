@@ -20,7 +20,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -50,11 +49,6 @@ import java.util.List;
 public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     private static final String SPECIAL_LOCALE_ID = "US";
 
-    // TODO(crbug.com/1022108): Remove this when downstream uses the replacement:
-    // {@link ChromePreferenceKeys#LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE}.
-    protected static final String KEY_SEARCH_ENGINE_PROMO_SHOW_STATE =
-            "com.android.chrome.SEARCH_ENGINE_PROMO_SHOWN";
-
     private static final int SNACKBAR_DURATION_MS = 6000;
 
     private static LocaleManager sInstance;
@@ -72,7 +66,7 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
 
     private SnackbarController mSnackbarController = new SnackbarController() {
         @Override
-        public void onDismissNoAction(Object actionData) { }
+        public void onDismissNoAction(Object actionData) {}
 
         @Override
         public void onAction(Object actionData) {
@@ -424,7 +418,7 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     public boolean needToCheckForSearchEnginePromo() {
         if (ChromeFeatureList.isInitialized()
                 && !ChromeFeatureList.isEnabled(
-                           ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE)) {
+                        ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE)) {
             return false;
         }
         @SearchEnginePromoState
