@@ -6,9 +6,9 @@
 #define URL_MOJO_ORIGIN_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/mojom/origin.mojom-shared.h"
 #include "url/origin.h"
 
@@ -26,7 +26,7 @@ struct COMPONENT_EXPORT(URL_MOJOM_TRAITS)
   static uint16_t port(const url::Origin& r) {
     return r.GetTupleOrPrecursorTupleIfOpaque().port();
   }
-  static const base::Optional<base::UnguessableToken> nonce_if_opaque(
+  static const absl::optional<base::UnguessableToken> nonce_if_opaque(
       const url::Origin& r) {
     // TODO(nasko): Consider returning a const reference here.
     return r.GetNonceForSerialization();

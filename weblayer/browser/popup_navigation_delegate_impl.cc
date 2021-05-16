@@ -40,7 +40,7 @@ const GURL& PopupNavigationDelegateImpl::GetURL() {
 blocked_content::PopupNavigationDelegate::NavigateResult
 PopupNavigationDelegateImpl::NavigateWithGesture(
     const blink::mojom::WindowFeatures& window_features,
-    base::Optional<WindowOpenDisposition> updated_disposition) {
+    absl::optional<WindowOpenDisposition> updated_disposition) {
   // It's safe to mutate |params_| here because NavigateWithGesture() will only
   // be called once, and the user gesture value has already been saved in
   // |original_user_gesture_|.

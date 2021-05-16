@@ -6,8 +6,8 @@
 #define WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -44,7 +44,7 @@ class TestNavigationObserver : public NavigationObserver {
   void CheckNavigationCompleted();
 
   const GURL url_;
-  base::Optional<NavigationEvent> observed_event_;
+  absl::optional<NavigationEvent> observed_event_;
   NavigationEvent target_event_;
   Tab* tab_;
   bool done_loading_ = false;

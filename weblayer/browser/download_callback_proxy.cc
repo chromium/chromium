@@ -55,7 +55,7 @@ void DownloadCallbackProxy::AllowDownload(
     Tab* tab,
     const GURL& url,
     const std::string& request_method,
-    base::Optional<url::Origin> request_initiator,
+    absl::optional<url::Origin> request_initiator,
     AllowDownloadCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jstring_url(

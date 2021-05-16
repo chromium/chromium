@@ -114,7 +114,7 @@ class GoogleAccountsBrowserTest : public WebLayerBrowserTest,
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::Optional<signin::ManageAccountsParams> params_;
+  absl::optional<signin::ManageAccountsParams> params_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

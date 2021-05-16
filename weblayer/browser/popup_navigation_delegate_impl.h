@@ -24,7 +24,7 @@ class PopupNavigationDelegateImpl
   const GURL& GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      base::Optional<WindowOpenDisposition> updated_disposition) override;
+      absl::optional<WindowOpenDisposition> updated_disposition) override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 

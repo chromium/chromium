@@ -9,9 +9,9 @@
 #include <type_traits>
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"

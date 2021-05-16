@@ -38,8 +38,8 @@ class BackgroundFetchDelegateImpl
   // BackgroundFetchDelegate:
   void MarkJobComplete(const std::string& job_id) override;
   void UpdateUI(const std::string& job_id,
-                const base::Optional<std::string>& title,
-                const base::Optional<SkBitmap>& icon) override;
+                const absl::optional<std::string>& title,
+                const absl::optional<SkBitmap>& icon) override;
 
  protected:
   // BackgroundFetchDelegateBase:

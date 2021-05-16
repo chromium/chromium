@@ -152,7 +152,7 @@ bool CookieManagerImpl::SetCookieInternal(const GURL& url,
                                           const std::string& value,
                                           SetCookieCallback callback) {
   auto cc = net::CanonicalCookie::Create(url, value, base::Time::Now(),
-                                         base::nullopt);
+                                         absl::nullopt);
   if (!cc) {
     return false;
   }
@@ -176,7 +176,7 @@ int CookieManagerImpl::AddCookieChangedCallbackInternal(
   browser_context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->AddCookieChangeListener(
-          url, name ? base::make_optional(*name) : base::nullopt,
+          url, name ? absl::make_optional(*name) : absl::nullopt,
           std::move(listener_remote));
 
   auto listener =

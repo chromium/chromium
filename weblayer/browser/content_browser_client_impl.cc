@@ -320,7 +320,7 @@ std::string ContentBrowserClientImpl::GetAcceptLangs(
 bool ContentBrowserClientImpl::AllowAppCache(
     const GURL& manifest_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     content::BrowserContext* context) {
   return embedder_support::AllowAppCache(
       manifest_url, site_for_cookies, top_frame_origin,
@@ -330,7 +330,7 @@ bool ContentBrowserClientImpl::AllowAppCache(
 content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
     const GURL& scope,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
   return embedder_support::AllowServiceWorker(
@@ -342,7 +342,7 @@ content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
 bool ContentBrowserClientImpl::AllowSharedWorker(
     const GURL& worker_url,
     const GURL& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin,
+    const absl::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const storage::StorageKey& storage_key,
     content::BrowserContext* context,
@@ -1056,7 +1056,7 @@ bool ContentBrowserClientImpl::WillCreateURLLoaderFactory(
     int render_process_id,
     URLLoaderFactoryType type,
     const url::Origin& request_initiator,
-    base::Optional<int64_t> navigation_id,
+    absl::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*

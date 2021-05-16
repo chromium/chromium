@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   GURL test_url(embedded_test_server()->GetURL("/simple_page.html"));
 
   subresource_filter::TestSubresourceFilterObserver observer(web_contents);
-  base::Optional<subresource_filter::mojom::ActivationLevel> page_activation =
+  absl::optional<subresource_filter::mojom::ActivationLevel> page_activation =
       observer.GetPageActivation(test_url);
   EXPECT_FALSE(page_activation);
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       "/subresource_filter/frame_with_included_script.html"));
 
   subresource_filter::TestSubresourceFilterObserver observer(web_contents);
-  base::Optional<subresource_filter::mojom::ActivationLevel> page_activation =
+  absl::optional<subresource_filter::mojom::ActivationLevel> page_activation =
       observer.GetPageActivation(test_url);
   EXPECT_FALSE(page_activation);
 

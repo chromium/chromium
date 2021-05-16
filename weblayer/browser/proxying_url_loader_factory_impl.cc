@@ -234,7 +234,7 @@ void ProxyingURLLoaderFactoryImpl::CreateLoaderAndStart(
           std::make_unique<CachingResponseDelegate>(
               std::move(response_), frame_tree_node_id_,
               navigation_entry_unique_id_),
-          base::nullopt);
+          absl::nullopt);
       stream_loader->Start();
       return;
     }

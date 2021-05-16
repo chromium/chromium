@@ -67,7 +67,7 @@ void HttpAuthHandlerImpl::Proceed(
 void HttpAuthHandlerImpl::Cancel(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (callback_)
-    std::move(callback_).Run(base::nullopt);
+    std::move(callback_).Run(absl::nullopt);
 
   CloseDialog();
 }

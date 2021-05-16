@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/public/navigation.h"
 
 #if defined(OS_ANDROID)

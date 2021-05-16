@@ -113,7 +113,7 @@ class Shell : public TabObserver,
   void AllowDownload(Tab* tab,
                      const GURL& url,
                      const std::string& request_method,
-                     base::Optional<url::Origin> request_initiator,
+                     absl::optional<url::Origin> request_initiator,
                      AllowDownloadCallback callback) override;
 
   // Helper to create a new Shell.

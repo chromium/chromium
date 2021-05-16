@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_observer.h"
 

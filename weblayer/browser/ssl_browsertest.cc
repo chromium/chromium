@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -17,6 +16,7 @@
 #include "components/security_interstitials/core/features.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/weblayer_security_blocking_page_factory.h"
 #include "weblayer/public/browser.h"
@@ -191,7 +191,7 @@ class SSLBrowserTest : public WebLayerBrowserTest {
 
   void SendInterstitialNavigationCommandAndWait(
       bool proceed,
-      base::Optional<GURL> previous_url = base::nullopt) {
+      absl::optional<GURL> previous_url = absl::nullopt) {
     GURL expected_url =
         proceed ? mismatched_cert_url() : previous_url.value_or(ok_url());
     ASSERT_TRUE(IsShowingSSLInterstitial(shell()->tab()));

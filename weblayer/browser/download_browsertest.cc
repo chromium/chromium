@@ -90,7 +90,7 @@ class DownloadBrowserTest : public WebLayerBrowserTest,
   void AllowDownload(Tab* tab,
                      const GURL& url,
                      const std::string& request_method,
-                     base::Optional<url::Origin> request_initiator,
+                     absl::optional<url::Origin> request_initiator,
                      AllowDownloadCallback callback) override {
     std::move(callback).Run(allow_);
     allow_run_loop_->Quit();

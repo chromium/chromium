@@ -31,7 +31,7 @@ class DownloadCallbackProxy : public DownloadDelegate {
   void AllowDownload(Tab* tab,
                      const GURL& url,
                      const std::string& request_method,
-                     base::Optional<url::Origin> request_initiator,
+                     absl::optional<url::Origin> request_initiator,
                      AllowDownloadCallback callback) override;
   void DownloadStarted(Download* download) override;
   void DownloadProgressChanged(Download* download) override;

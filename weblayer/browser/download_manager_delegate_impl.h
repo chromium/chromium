@@ -51,7 +51,7 @@ class DownloadManagerDelegateImpl : public content::DownloadManagerDelegate,
       const content::WebContents::Getter& web_contents_getter,
       const GURL& url,
       const std::string& request_method,
-      base::Optional<url::Origin> request_initiator,
+      absl::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;

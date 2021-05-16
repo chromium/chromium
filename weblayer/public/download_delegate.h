@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -30,7 +30,7 @@ class DownloadDelegate {
   virtual void AllowDownload(Tab* tab,
                              const GURL& url,
                              const std::string& request_method,
-                             base::Optional<url::Origin> request_initiator,
+                             absl::optional<url::Origin> request_initiator,
                              AllowDownloadCallback callback) = 0;
 
   // A download of |url| has been requested with the specified details. If

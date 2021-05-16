@@ -146,7 +146,7 @@ void SigninURLLoaderThrottle::ProcessRequest(
   // be sent in the Mirror request header from WebLayer.
   signin::AppendOrRemoveMirrorRequestHeader(
       &request_adapter, new_url, delegate->GetGaiaId(),
-      base::nullopt /* is_child_account */,
+      absl::nullopt /* is_child_account */,
       signin::AccountConsistencyMethod::kMirror,
       CookieSettingsFactory::GetForBrowserContext(browser_context_).get(),
       signin::PROFILE_MODE_INCOGNITO_DISABLED |

@@ -84,15 +84,15 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
 
   // Returns the time-delay of the currently scheduled auto-reload task, if one
   // is scheduled. If no auto-reload is scheduled, this returns null.
-  base::Optional<base::TimeDelta> GetCurrentAutoReloadDelay() {
+  absl::optional<base::TimeDelta> GetCurrentAutoReloadDelay() {
     auto* auto_reloader =
         error_page::NetErrorAutoReloader::FromWebContents(web_contents());
     if (!auto_reloader)
-      return base::nullopt;
-    const base::Optional<base::OneShotTimer>& timer =
+      return absl::nullopt;
+    const absl::optional<base::OneShotTimer>& timer =
         auto_reloader->next_reload_timer_for_testing();
     if (!timer)
-      return base::nullopt;
+      return absl::nullopt;
     return timer->GetCurrentDelay();
   }
 
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageReloadBrowserTest, AutoReloadDisabled) {
       }));
 
   EXPECT_FALSE(Navigate(url, true));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  EXPECT_EQ(absl::nullopt, GetCurrentAutoReloadDelay());
 }
 
 }  // namespace weblayer

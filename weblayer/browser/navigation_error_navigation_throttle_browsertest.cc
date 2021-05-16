@@ -4,11 +4,11 @@
 
 #include "weblayer/test/weblayer_browser_test.h"
 
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/error_page.h"
 #include "weblayer/public/error_page_delegate.h"
@@ -37,7 +37,7 @@ class TestErrorPageDelegate : public ErrorPageDelegate {
   }
 
  private:
-  base::Optional<std::string> content_;
+  absl::optional<std::string> content_;
 };
 
 }  // namespace

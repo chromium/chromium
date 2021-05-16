@@ -172,7 +172,7 @@ void ContentViewRenderView::OnPhysicalBackingSizeChanged(
   // is interacting with the page, in which case the timeout is too long.
   // For now, use the default long timeout only for rotation (ie config change)
   // and just use a zero timeout for all other cases.
-  base::Optional<base::TimeDelta> override_deadline;
+  absl::optional<base::TimeDelta> override_deadline;
   if (!for_config_change)
     override_deadline = base::TimeDelta();
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(

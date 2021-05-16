@@ -5,10 +5,10 @@
 #ifndef WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_H_
 #define WEBLAYER_BROWSER_BROWSER_CONTROLS_NAVIGATION_STATE_HANDLER_H_
 
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace weblayer {
 
