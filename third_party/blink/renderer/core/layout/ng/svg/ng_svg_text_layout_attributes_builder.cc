@@ -203,6 +203,7 @@ void NGSVGTextLayoutAttributesBuilder::Build(
     const Vector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
   unsigned addressable_index = 0;
+  bool is_first_char = true;
   bool in_text_path = false;
   absl::optional<unsigned> text_path_start;
   bool first_char_in_text_path = false;
@@ -289,6 +290,14 @@ void NGSVGTextLayoutAttributesBuilder::Build(
         data.y = 0.0f;
 
       first_char_in_text_path = false;
+
+      if (is_first_char) {
+        is_first_char = false;
+        if (!data.HasX())
+          data.x = 0.0f;
+        if (!data.HasY())
+          data.y = 0.0f;
+      }
 
       // 1.6.1.6. If i < length of dx, then set resolve_dx[index + j] to dx[i].
       data.dx = attr_stack.Dx();
