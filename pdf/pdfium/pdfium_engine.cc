@@ -585,6 +585,7 @@ void PDFiumEngine::PluginSizeUpdated(const gfx::Size& size) {
 
   plugin_size_ = size;
   CalculateVisiblePages();
+  OnSelectionPositionChanged();
 }
 
 void PDFiumEngine::ScrolledToXPosition(int position) {
