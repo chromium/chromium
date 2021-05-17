@@ -5195,6 +5195,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Eche.Connection.Duration" units="ms"
+    expires_after="2022-05-30">
+  <owner>samchiu@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time the phone is in the state connected to eche signaling
+    service, and becomes disconnected.
+  </summary>
+</histogram>
+
+<histogram name="Eche.Connection.Result" enum="BooleanSuccess"
+    expires_after="2022-05-30">
+  <owner>samchiu@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures Eche connection success rate, considering attempts where the phone
+    is not nearby as failures.
+  </summary>
+</histogram>
+
+<histogram name="Eche.Connectivity.Latency" units="ms"
+    expires_after="2022-05-30">
+  <owner>samchiu@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time the phone is in the state connecting to eche signaling
+    service, and becomes connected.
+  </summary>
+</histogram>
+
 <histogram name="EphemeralTab.BottomSheet.CloseReason"
     enum="BottomSheet.StateChangeReason" expires_after="M92">
   <obsolete>
