@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -551,6 +552,11 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
     view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
     return view->GetPaintRecord();
   }
+
+  // TODO(crbug.com/1203406): This works around the bug. We may want to find
+  // and fix the root cause, or do nothing until pre-CAP code is removed.
+  if (!view->GetLayoutView() || !view->GetLayoutView()->Compositor())
+    return nullptr;
 
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
   PaintRecordBuilder builder(*paint_controller_);
