@@ -118,7 +118,7 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/js/audio_player.m.js",
     "audio_player/js/metadata_worker.m.js",
     "audio_player/elements/audio_player.m.js",
-    "audio_player/elements/track_info_panel.m.js",
+    "audio_player/elements/track_info_panel.js",
     "audio_player/elements/track_list.m.js",
     "audio_player/elements/control_panel.m.js",
     "audio_player/elements/repeat_button.m.js",
@@ -374,6 +374,7 @@ preprocess_if_expr("preprocess_generated") {
 
   deps = [
     "//ui/file_manager/audio_player/elements:elements",
+    "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/audio_player/js:modulize",
     "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",

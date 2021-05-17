@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-/* #ignore */ 'use strict';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'track-info-panel',
 
   properties: {
@@ -41,4 +45,3 @@ Polymer({
     this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
   },
 });
-})();  // Anonymous closure

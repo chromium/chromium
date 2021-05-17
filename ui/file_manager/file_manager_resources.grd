@@ -133,8 +133,6 @@
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_CONTROL_PANEL_JS" file="audio_player/elements/control_panel.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_REPEAT_BUTTON_HTML" file="audio_player/elements/repeat_button.html" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_REPEAT_BUTTON_JS" file="audio_player/elements/repeat_button.js" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_INFO_PANEL_HTML" file="audio_player/elements/track_info_panel.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_INFO_PANEL_JS" file="audio_player/elements/track_info_panel.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_LIST_HTML" file="audio_player/elements/track_list.html" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_ELEMENTS_TRACK_LIST_JS" file="audio_player/elements/track_list.js" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_METADATA_WORKER_JS" file="audio_player/js/metadata_worker.js" type="BINDATA" />

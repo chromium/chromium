@@ -4,13 +4,19 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [
+    "track_info_panel.js",
+  ]
+}
 
 group("elements") {
   public_deps = [
     "//ui/file_manager/audio_player/elements:audio_player_module",
     "//ui/file_manager/audio_player/elements:control_panel_module",
     "//ui/file_manager/audio_player/elements:repeat_button_module",
-    "//ui/file_manager/audio_player/elements:track_info_panel_module",
     "//ui/file_manager/audio_player/elements:track_list_module",
   ]
 }
@@ -28,7 +34,6 @@ js_type_check("closure_compile_internal") {
     ":audio_player",
     ":control_panel",
     ":repeat_button",
-    ":track_info_panel",
     ":track_list",
   ]
 }
@@ -36,7 +41,6 @@ js_type_check("closure_compile_internal") {
 js_library("audio_player") {
   deps = [
     ":control_panel",
-    ":track_info_panel",
     ":track_list",
   ]
 }
@@ -46,6 +50,9 @@ polymer_modulizer("audio_player") {
   html_file = "audio_player.html"
   html_type = "dom-module"
   preserve_url_scheme = true
+  migrated_imports = [
+    "ui/file_manager/audio_player/elements/track_info_panel.html",
+  ]
 
   auto_imports = [
     "ui/file_manager/audio_player/elements/control_panel.html|AriaLabels",
@@ -60,7 +67,7 @@ js_library("audio_player.m") {
   ]
   deps = [
     ":control_panel.m",
-    ":track_info_panel.m",
+    ":track_info_panel",
     ":track_list.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -106,24 +113,10 @@ js_library("repeat_button") {
 }
 
 js_library("track_info_panel") {
-}
-
-polymer_modulizer("track_info_panel") {
-  js_file = "track_info_panel.js"
-  html_file = "track_info_panel.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("track_info_panel.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/audio_player/elements/track_info_panel.m.js",
-  ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
-  extra_deps = [ ":track_info_panel_module" ]
 }
 
 js_library("track_list") {
@@ -183,7 +176,7 @@ js_type_check("closure_compile_jsmodules") {
     ":audio_player.m",
     ":control_panel.m",
     ":repeat_button.m",
-    ":track_info_panel.m",
+    ":track_info_panel",
     ":track_list.m",
   ]
 }
