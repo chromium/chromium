@@ -113,8 +113,8 @@ for message parameters.
 
 Every Mojom file may optionally specify a single **module** to which it belongs.
 
-This is used strictly for aggregaging all defined symbols therein within a
-common Mojom namespace. The specific impact this has on generated binidngs code
+This is used strictly for aggregating all defined symbols therein within a
+common Mojom namespace. The specific impact this has on generated bindings code
 varies for each target language. For example, if the following Mojom is used to
 generate bindings:
 
@@ -132,7 +132,7 @@ Generated C++ bindings will define a class interface `MoneyGenerator` in the
 bindings at this time are unaffected by module declarations.
 
 **NOTE:** By convention in the Chromium codebase, **all** Mojom files should
-declare a module name with at least (and preferrably exactly) one top-level name
+declare a module name with at least (and preferably exactly) one top-level name
 as well as an inner `mojom` module suffix. *e.g.*, `chrome.mojom`,
 `business.mojom`, *etc.*
 
@@ -271,7 +271,7 @@ code, see
 ### Unions
 
 Mojom supports tagged unions using the **union** keyword. A union is a
-collection of fields which may taken the value of any single one of those fields
+collection of fields which may take the value of any single one of those fields
 at a time. Thus they provide a way to represent a variant value type while
 minimizing storage requirements.
 
@@ -454,7 +454,7 @@ interesting attributes supported today.
 
 When the bindings generator successfully processes an input Mojom file, it emits
 corresponding code for each supported target language. For more details on how
-Mojom concepts translate to a given target langauge, please refer to the
+Mojom concepts translate to a given target language, please refer to the
 bindings API documentation for that language:
 
 * [C++ Bindings](/mojo/public/cpp/bindings/README.md)
@@ -465,7 +465,7 @@ bindings API documentation for that language:
 
 Regardless of target language, all interface messages are validated during
 deserialization before they are dispatched to a receiving implementation of the
-interface. This helps to ensure consitent validation across interfaces without
+interface. This helps to ensure consistent validation across interfaces without
 leaving the burden to developers and security reviewers every time a new message
 is added.
 
