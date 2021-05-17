@@ -10,10 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,7 +31,11 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -40,6 +46,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,8 +62,10 @@ using autofill::AccessoryTabType;
 using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
+using base::test::RunOnceCallback;
 using password_manager::CreateEntry;
 using password_manager::CredentialCache;
+using password_manager::MockBiometricAuthenticator;
 using password_manager::MockPasswordStore;
 using password_manager::OriginCredentialStore;
 using password_manager::PasswordForm;
@@ -121,12 +130,26 @@ class MockPasswordManagerClient
               (const GURL&),
               (const, override));
 
+  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+              GetBiometricAuthenticator,
+              (),
+              (override));
+
   password_manager::PasswordStore* GetProfilePasswordStore() const override {
     return password_store_;
   }
 
  private:
   PasswordStore* password_store_;
+};
+
+class MockPasswordManagerDriver
+    : public password_manager::StubPasswordManagerDriver {
+ public:
+  MOCK_METHOD(void,
+              FillIntoFocusedField,
+              (bool, const std::u16string&),
+              (override));
 };
 
 std::u16string password_for_str(const std::u16string& user) {
@@ -208,7 +231,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     MockPasswordGenerationController::CreateForWebContents(web_contents());
     mock_pwd_manager_client_ = std::make_unique<MockPasswordManagerClient>(
         CreateInternalPasswordStore());
-
     NavigateAndCommit(GURL(kExampleSite));
   }
 
@@ -222,7 +244,10 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       security_state::SecurityLevel security_level = security_state::SECURE) {
     PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), cache(), mock_manual_filling_controller_.AsWeakPtr(),
-        mock_pwd_manager_client_.get());
+        mock_pwd_manager_client_.get(),
+        base::BindRepeating(&PasswordAccessoryControllerTest::GetBaseDriver,
+                            base::Unretained(this)));
+
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     controller()->SetSecurityLevelForTesting(security_level);
   }
@@ -237,6 +262,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return mock_pwd_manager_client_.get();
   }
 
+  MockPasswordManagerDriver* driver() { return &mock_driver_; }
+
  protected:
   virtual PasswordStore* CreateInternalPasswordStore() {
     mock_password_store_ = base::MakeRefCounted<MockPasswordStore>();
@@ -248,10 +275,18 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
   scoped_refptr<MockPasswordStore> mock_password_store_;
+  scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
+      base::MakeRefCounted<MockBiometricAuthenticator>();
 
  private:
+  password_manager::PasswordManagerDriver* GetBaseDriver(
+      content::WebContents*) {
+    return driver();
+  }
+
   password_manager::CredentialCache credential_cache_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_;
+  MockPasswordManagerDriver mock_driver_;
 };
 
 TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
@@ -270,7 +305,6 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
       CredentialCache::IsOriginBlocklisted(false),
-
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(
       mock_manual_filling_controller_,
@@ -844,6 +878,159 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsDisabledUpdatesStore) {
   EXPECT_CALL(*mock_password_store_, AddLogin(Eq(expected_form)));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
+}
+
+TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  UserInfo::Field selected_field(u"Ben", u"Ben", false, true);
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())));
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  CreateSheetController();
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  EXPECT_CALL(*password_client(), GetBiometricAuthenticator)
+      .WillOnce(Return(mock_authenticator_));
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+      .WillOnce(Return(password_manager::BiometricsAvailability::kNotEnrolled));
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())));
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  CreateSheetController();
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  ON_CALL(*password_client(), GetBiometricAuthenticator)
+      .WillByDefault(Return(mock_authenticator_));
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(
+      *mock_authenticator_.get(),
+      Authenticate(password_manager::BiometricAuthRequester::kFallbackSheet, _))
+      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())));
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  CreateSheetController();
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  ON_CALL(*password_client(), GetBiometricAuthenticator)
+      .WillByDefault(Return(mock_authenticator_));
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(
+      *mock_authenticator_.get(),
+      Authenticate(password_manager::BiometricAuthRequester::kFallbackSheet, _))
+      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())))
+      .Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  CreateSheetController();
+
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
+      CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  ON_CALL(*password_client(), GetBiometricAuthenticator)
+      .WillByDefault(Return(mock_authenticator_));
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+      .WillOnce(Return(password_manager::BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*mock_authenticator_.get(),
+              Authenticate(
+                  password_manager::BiometricAuthRequester::kFallbackSheet, _));
+
+  EXPECT_CALL(*driver(),
+              FillIntoFocusedField(selected_field.is_obfuscated(),
+                                   Eq(selected_field.display_text())))
+      .Times(0);
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  EXPECT_CALL(*mock_authenticator_.get(),
+              Cancel(password_manager::BiometricAuthRequester::kFallbackSheet));
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

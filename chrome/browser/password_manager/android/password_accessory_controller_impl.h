@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
@@ -21,6 +22,8 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -39,6 +42,9 @@ class PasswordAccessoryControllerImpl
     : public PasswordAccessoryController,
       public content::WebContentsUserData<PasswordAccessoryControllerImpl> {
  public:
+  using PasswordDriverSupplierForFocusedFrame =
+      base::RepeatingCallback<password_manager::PasswordManagerDriver*(
+          content::WebContents*)>;
   ~PasswordAccessoryControllerImpl() override;
 
   // AccessoryController:
@@ -71,7 +77,8 @@ class PasswordAccessoryControllerImpl
       content::WebContents* web_contents,
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client);
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
   // True if the focus event was sent for the current focused frame or if it is
   // a blur event and no frame is focused. This check avoids reacting to
@@ -125,7 +132,8 @@ class PasswordAccessoryControllerImpl
       content::WebContents* web_contents,
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client);
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.
@@ -149,6 +157,20 @@ class PasswordAccessoryControllerImpl
 
   url::Origin GetFocusedFrameOrigin() const;
 
+  // Returns true if authentication should be triggered before filling
+  // |selection| in to the field.
+  bool ShouldTriggerBiometricReauth(
+      const autofill::UserInfo::Field& selection) const;
+
+  // Called when the biometric authentication completes. If |auth_succeeded| is
+  // true, |selection| will be passed on to be filled.
+  void OnReauthCompleted(autofill::UserInfo::Field selection,
+                         bool auth_succeeded);
+
+  // Sends |selection| to the renderer to be filled, if it's a valid
+  // entry for the origin of the frame that is currently focused.
+  void FillSelection(const autofill::UserInfo::Field& selection);
+
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
@@ -166,6 +188,10 @@ class PasswordAccessoryControllerImpl
   // for the currently focused origin.
   password_manager::PasswordManagerClient* password_client_ = nullptr;
 
+  // The authenticator used to trigger a biometric re-auth before filling.
+  // null, if there is no ongoing authentication.
+  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
+
   // Information about the currently focused field. This is the only place
   // allowed to store frame-specific data. If a new field is focused or focus is
   // lost, this data needs to be reset to absl::nullopt to make sure that data
@@ -174,6 +200,10 @@ class PasswordAccessoryControllerImpl
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
+
+  // Callback that returns a |PasswordManagerDriver| corresponding to the
+  // currently-focused frame of the passed-in |WebContents|.
+  PasswordDriverSupplierForFocusedFrame driver_supplier_;
 
   // Controller for the all passwords bottom sheet. Created on demand during the
   // first call to |ShowAllPasswords()|.

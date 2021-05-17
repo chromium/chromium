@@ -30,6 +30,9 @@ enum class BiometricAuthRequester {
 
   // The suggestion presented in the keyboard accessory or autofill popup.
   kAutofillSuggestion = 1,
+
+  // The keyboard accessory sheet displaying suggestions for manual filling.
+  kFallbackSheet = 2,
 };
 
 // This interface encapsulates operations related to biometric authentication.
