@@ -552,42 +552,42 @@
   'CROS_CORAL_TOT': {
     'skylab': {
       'cros_board': 'coral',
-      'cros_img': 'coral-release/R92-13966.0.0',
+      'cros_img': 'coral-release/R92-13970.0.0',
     },
     'identifier': 'CORAL_TOT',
   },
   'CROS_EVE_TOT': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R92-13965.0.0',
+      'cros_img': 'eve-release/R92-13970.0.0',
     },
     'identifier': 'EVE_TOT',
   },
   'CROS_KEFKA_TOT': {
     'skylab': {
       'cros_board': 'kefka',
-      'cros_img': 'kefka-release/R92-13965.0.0',
+      'cros_img': 'kefka-release/R92-13970.0.0',
     },
     'identifier': 'KEFKA_TOT',
   },
   'CROS_KIP_TOT': {
     'skylab': {
       'cros_board': 'kip',
-      'cros_img': 'kip-release/R92-13966.0.0',
+      'cros_img': 'kip-release/R92-13970.0.0',
     },
     'identifier': 'KIP_TOT',
   },
   'CROS_OCTOPUS_TOT': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R92-13966.0.0',
+      'cros_img': 'octopus-release/R92-13970.0.0',
     },
     'identifier': 'OCTOPUS_TOT',
   },
   'CROS_SNAPPY_TOT': {
     'skylab': {
       'cros_board': 'snappy',
-      'cros_img': 'snappy-release/R92-13964.0.0',
+      'cros_img': 'snappy-release/R92-13970.0.0',
     },
     'identifier': 'SNAPPY_TOT',
   },
