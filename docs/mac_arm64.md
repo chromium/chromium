@@ -91,8 +91,8 @@ bug](https://crbug.com/1103275)). The main effect of this is that some
 presubmits don't yet work, and **you need to use
 `git cl upload --bypass-hooks`** to upload CLs.
 
-(The build will also use `git`, instead of depot\_tools's hermetic versions for
-now.)
+(The build will also use `git` from `PATH`, instead of depot\_tools's
+hermetic versions for now.)
 
 Other than that, checking out and building (with goma too) should just work.
 You should be able to run `fetch chromium` normally, and then build, using
