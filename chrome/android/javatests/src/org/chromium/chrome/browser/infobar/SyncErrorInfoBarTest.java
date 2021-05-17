@@ -13,32 +13,66 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarContainerObserver;
 import org.chromium.chrome.browser.sync.FakeProfileSyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Test suite for the SyncErrorInfoBar.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags
-        .Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-        public class SyncErrorInfoBarTest {
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+public class SyncErrorInfoBarTest {
+    private static class SyncErrorInfoBarContainerObserver implements InfoBarContainerObserver {
+        private CallbackHelper mOnAddInfoBarCallbackHelper = new CallbackHelper();
+        private CallbackHelper mOnRemoveInfoBarCallbackHelper = new CallbackHelper();
+
+        @Override
+        public void onAddInfoBar(InfoBarContainer container, InfoBar infoBar, boolean isFirst) {
+            if (infoBar instanceof SyncErrorInfoBar) mOnAddInfoBarCallbackHelper.notifyCalled();
+        }
+
+        @Override
+        public void onRemoveInfoBar(InfoBarContainer container, InfoBar infoBar, boolean isLast) {
+            if (infoBar instanceof SyncErrorInfoBar) mOnRemoveInfoBarCallbackHelper.notifyCalled();
+        }
+
+        @Override
+        public void onInfoBarContainerAttachedToWindow(boolean hasInfoBars) {}
+
+        @Override
+        public void onInfoBarContainerShownRatioChanged(
+                InfoBarContainer container, float shownRatio) {}
+
+        public void waitUntilInfoBarAppears(boolean alreadyShown) throws Exception {
+            mOnAddInfoBarCallbackHelper.waitForCallback(alreadyShown ? 1 : 0);
+        }
+
+        public void waitUntilInfoBarDisappears() throws Exception {
+            mOnRemoveInfoBarCallbackHelper.waitForCallback(0);
+        }
+    }
+
     private FakeProfileSyncService mFakeProfileSyncService;
+    private InfoBarContainer mInfoBarContainer;
+    private SyncErrorInfoBarContainerObserver mInfoBarObserver;
 
     @Rule
     public final SyncTestRule mSyncTestRule = new SyncTestRule() {
@@ -56,69 +90,62 @@ import java.io.IOException;
     public void setUp() {
         deleteSyncErrorInfoBarShowTimePref();
         mFakeProfileSyncService = (FakeProfileSyncService) mSyncTestRule.getProfileSyncService();
+        mInfoBarObserver = new SyncErrorInfoBarContainerObserver();
+        mInfoBarContainer = mSyncTestRule.getInfoBarContainer();
+        mSyncTestRule.getInfoBarContainer().addObserver(mInfoBarObserver);
     }
 
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForAuthError() throws Exception {
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
         showSyncErrorInfoBarForAuthError();
-        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
         deleteSyncErrorInfoBarShowTimePref();
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.NONE);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mSyncTestRule.getInfoBars());
+        mInfoBarObserver.waitUntilInfoBarDisappears();
     }
 
     @Test
     @LargeTest
-    public void testSyncErrorInfoBarShownForSyncSetupIncomplete() {
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
+    public void testSyncErrorInfoBarShownForSyncSetupIncomplete() throws Exception {
         showSyncErrorInfoBarForSyncSetupIncomplete();
-        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
         deleteSyncErrorInfoBarShowTimePref();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeProfileSyncService.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         });
-        InfoBarUtil.waitUntilNoInfoBarsExist(mSyncTestRule.getInfoBars());
+        mInfoBarObserver.waitUntilInfoBarDisappears();
     }
 
     @Test
     @LargeTest
-    public void testSyncErrorInfoBarShownForPassphraseRequired() {
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
+    public void testSyncErrorInfoBarShownForPassphraseRequired() throws Exception {
         showSyncErrorInfoBarForPassphraseRequired();
-        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
         deleteSyncErrorInfoBarShowTimePref();
         mFakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(false);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mSyncTestRule.getInfoBars());
+        mInfoBarObserver.waitUntilInfoBarDisappears();
     }
 
     @Test
     @LargeTest
-    public void testSyncErrorInfoBarShownForClientOutOfDate() {
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
+    public void testSyncErrorInfoBarShownForClientOutOfDate() throws Exception {
         showSyncErrorInfoBarForClientOutOfDate();
-        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Not possible to resolve this error from within chrome unlike the other SyncErrorInfoBar
         // types.
     }
 
-    @Test
+    @Test(expected = TimeoutException.class)
     @LargeTest
-    public void testSyncErrorInfoBarNotShownWhenNoError() {
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
+    public void testSyncErrorInfoBarNotShownWhenNoError() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
         mFakeProfileSyncService.setEngineInitialized(true);
@@ -137,23 +164,21 @@ import java.io.IOException;
         Assert.assertTrue(syncError != SyncError.SYNC_SETUP_INCOMPLETE);
         Assert.assertTrue(syncError != SyncError.CLIENT_OUT_OF_DATE);
 
-        Assert.assertEquals("InfoBar should not be shown when there is no error", 0,
-                mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
     }
 
     @Test
     @LargeTest
-    public void testSyncErrorInfoBarIsNotShownBeforeMinimalIntervalPassed() {
-        // Initiate auth error to show the infobar.
-        Assert.assertEquals("InfoBar should not be shown before signing in", 0,
-                mSyncTestRule.getInfoBars().size());
+    public void testSyncErrorInfoBarIsNotShownBeforeMinimalIntervalPassed() throws Exception {
         showSyncErrorInfoBarForAuthError();
-        Assert.assertEquals("InfoBar should be shown", 1, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Create another new tab.
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
-        Assert.assertEquals("InfoBar should not be shown again before minimum interval passed", 0,
-                mSyncTestRule.getInfoBars().size());
+        // Close the SyncErrorInfoBar and reload the page again.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSyncTestRule.getInfoBars().get(0).onCloseButtonClicked());
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+        Assert.assertEquals(0, mSyncTestRule.getInfoBars().size());
+        mInfoBarObserver.waitUntilInfoBarDisappears();
 
         // Override the time of last seen infobar to minimum required time before current time.
         ContextUtils.getAppSharedPreferences()
@@ -162,9 +187,8 @@ import java.io.IOException;
                         System.currentTimeMillis()
                                 - SyncErrorInfoBar.MINIMAL_DURATION_BETWEEN_INFOBARS_MS)
                 .apply();
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
-        Assert.assertEquals("InfoBar should be shown again after minimum interval passed", 1,
-                mSyncTestRule.getInfoBars().size());
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+        mInfoBarObserver.waitUntilInfoBarAppears(true);
     }
 
     @Test
@@ -206,25 +230,25 @@ import java.io.IOException;
     private void showSyncErrorInfoBarForAuthError() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
     }
 
     private void showSyncErrorInfoBarForPassphraseRequired() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
     }
 
     private void showSyncErrorInfoBarForSyncSetupIncomplete() {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
     }
 
     private void showSyncErrorInfoBarForClientOutOfDate() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeProfileSyncService.setRequiresClientUpgrade(true);
-        mSyncTestRule.loadUrlInNewTab(UrlConstants.CHROME_BLANK_URL);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
     }
 
     private void deleteSyncErrorInfoBarShowTimePref() {

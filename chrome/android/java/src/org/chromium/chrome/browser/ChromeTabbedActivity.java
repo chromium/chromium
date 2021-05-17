@@ -612,7 +612,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                      Toast.LENGTH_SHORT)
                                 .show();
                     }
-                    SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
                 }
 
                 @Override
@@ -1757,6 +1756,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(ChromeTabbedActivity.this,
                             tab.getWebContents(), navigation.getUrl(), tab.isShowingErrorPage(),
                             navigation.isFragmentNavigation(), navigation.httpStatusCode());
+                    SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
                 }
             }
         };

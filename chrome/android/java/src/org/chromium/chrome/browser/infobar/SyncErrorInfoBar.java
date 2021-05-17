@@ -146,6 +146,20 @@ public class SyncErrorInfoBar
         }
     }
 
+    @Override
+    protected void onStartedHiding() {
+        super.onStartedHiding();
+        if (!isFrontInfoBar()) {
+            // SyncErrorInfoBar was not visible to the user, so we need to reset this pref that is
+            // used to block SyncErrorInfoBars from appearing within
+            // |MINIMAL_DURATION_BETWEEN_INFOBARS_MS|
+            ContextUtils.getAppSharedPreferences()
+                    .edit()
+                    .remove(SyncErrorInfoBar.PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME)
+                    .apply();
+        }
+    }
+
     /**
      * Calls native side code to create an infobar.
      */
