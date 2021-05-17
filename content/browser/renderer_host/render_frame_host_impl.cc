@@ -3551,9 +3551,11 @@ void RenderFrameHostImpl::DidCommitProvisionalLoad(
   DidCommitNavigation(nullptr, std::move(params), std::move(interface_params));
 }
 
-void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
+void RenderFrameHostImpl::DidCommitPageActivation(
     NavigationRequest* committing_navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params) {
+  DCHECK(committing_navigation_request->IsPageActivation());
+
   auto request = navigation_requests_.find(committing_navigation_request);
   CHECK(request != navigation_requests_.end());
 

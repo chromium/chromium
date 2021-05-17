@@ -1678,11 +1678,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return commit_navigation_sent_counter_;
   }
 
-  // This function mimics DidCommitProvisionalLoad for navigations served from
-  // the back-forward cache.
-  void DidCommitBackForwardCacheNavigation(
-      NavigationRequest* committing_navigation_request,
-      mojom::DidCommitProvisionalLoadParamsPtr params);
+  // This function mimics DidCommitProvisionalLoad for page activation
+  // (back-forward cache restore or prerender activation).
+  void DidCommitPageActivation(NavigationRequest* committing_navigation_request,
+                               mojom::DidCommitProvisionalLoadParamsPtr params);
 
   // Whether there's any "unload" event handlers registered on this
   // RenderFrameHost or subframes that share the same SiteInstance as this

@@ -3981,10 +3981,10 @@ void NavigationRequest::CommitPageActivation() {
         std::move(activated_entry));
   }
 
-  // Commit the restored BackForwardCache Entry. This includes committing the
-  // RenderFrameHost and restoring extra state, such as proxies, etc.
+  // Commit the page activation. This includes committing the RenderFrameHost
+  // and restoring extra state, such as proxies, etc.
   // Note that this will delete the NavigationRequest.
-  GetRenderFrameHost()->DidCommitBackForwardCacheNavigation(
+  GetRenderFrameHost()->DidCommitPageActivation(
       this, IsPrerenderedPageActivation()
                 ? MakeDidCommitProvisionalLoadParamsForPrerenderActivation()
                 : MakeDidCommitProvisionalLoadParamsForBFCacheRestore());
