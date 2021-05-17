@@ -32,6 +32,7 @@ import sys
 import tempfile
 
 from blinkpy.common.host import Host
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (
@@ -43,7 +44,10 @@ CSV_HEADING = ('Test name, Test Result, Baseline Result, '
 YES = 'Yes'
 NO = 'No'
 _log = logging.getLogger(os.path.basename(__file__))
-
+STEP_NAME_VARIANTS = {
+    'chrome_public_wpt': ['chrome_public_wpt on Ubuntu-16.04 or Ubuntu-18.04'],
+    'weblayer_shell_wpt': ['weblayer_shell_wpt on Ubuntu-16.04 or Ubuntu-18.04']
+}
 
 def map_tests_to_results(output_mp, input_mp, path=''):
     if 'actual' in input_mp:
@@ -139,8 +143,27 @@ class WPTResultsDiffer(object):
         self._csv_output.write(file_output)
 
 
+def _get_build_test_results(host, product, build):
+    step_name = PRODUCTS_TO_STEPNAMES[product]
+    for step_name_var in STEP_NAME_VARIANTS[step_name] + [step_name]:
+        try:
+            build_results = host.bb_agent.get_build_test_results(
+                build, step_name_var)
+            return build_results
+        except ScriptError:
+            _log.debug(('%s is not a step name that ran on %s:%d. '
+                        'Re-attempting with a different step name.'),
+                       step_name_var, build.builder_name, build.build_number)
+        except Exception as ex:
+            _log.exception(('Exception was raised when attempting to get '
+                            'test results for step %s on build %s:%d'),
+                           step_name_var, build.builder_name,
+                           build.build_number)
+            raise ex
+
+
 @contextlib.contextmanager
-def _get_test_results(host, product, results_path=None):
+def _get_product_test_results(host, product, results_path=None):
     if results_path:
         json_results_obj = open(results_path, 'r')
     else:
@@ -157,8 +180,7 @@ def _get_test_results(host, product, results_path=None):
         _log.debug('The latest build for %s is %d',
                    builder_name, latest_build.build_number)
 
-        build_results = host.bb_agent.get_build_test_results(
-            latest_build, PRODUCTS_TO_STEPNAMES[product])
+        build_results = _get_build_test_results(host, product, latest_build)
         json_results_obj = tempfile.TemporaryFile()
         json_results_obj.write(json.dumps(build_results))
         json_results_obj.seek(0)
@@ -192,9 +214,9 @@ def main(args):
         'Product to compare and the baseline product cannot be the same')
 
     host = Host()
-    actual_results_getter = _get_test_results(
+    actual_results_getter = _get_product_test_results(
         host, args.product_to_compare, args.test_results_to_compare)
-    baseline_results_getter = _get_test_results(
+    baseline_results_getter = _get_product_test_results(
         host, args.baseline_product, args.baseline_test_results)
 
     with actual_results_getter as actual_results_content,            \
