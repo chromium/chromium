@@ -6849,9 +6849,6 @@ crbug.com/1206734 [ Mac10.13 ] external/wpt/websockets/Send-binary-blob.any.work
 crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Pass ]
 
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
-crbug.com/1207843 virtual/plz-service-worker/external/wpt/service-workers/service-worker/xhr-content-length.https.window.html [ Pass Failure Crash ]
-crbug.com/1207843 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/xhr-content-length.https.window.html [ Pass Failure Crash Timeout ]
-
 crbug.com/1207849 virtual/plz-service-worker/external/wpt/service-workers/service-worker/no-dynamic-import-in-module.any.serviceworker-module.html [ Pass Failure Crash ]
 
 crbug.com/1207851 virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Pass Failure Timeout ]
