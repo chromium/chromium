@@ -52,6 +52,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   void TearDown() override {
     controller_.reset();
     delegate_.reset();
+    SetMicrophoneMuteSwitchState(/*muted=*/false);
     AshTestBase::TearDown();
   }
 
@@ -68,6 +69,33 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
     return nullptr;
   }
 
+  message_center::Notification* GetPopupNotification() {
+    const message_center::NotificationList::PopupNotifications& notifications =
+        message_center::MessageCenter::Get()->GetPopupNotifications();
+    for (auto* notification : notifications) {
+      if (notification->id() ==
+          MicrophoneMuteNotificationController::kNotificationId) {
+        return notification;
+      }
+    }
+    return nullptr;
+  }
+
+  void MarkPopupAsShown() {
+    message_center::MessageCenter::Get()->MarkSinglePopupAsShown(
+        MicrophoneMuteNotificationController::kNotificationId, true);
+  }
+
+  void ClickOnNotificationButton() {
+    message_center::MessageCenter::Get()->ClickOnNotificationButton(
+        MicrophoneMuteNotificationController::kNotificationId,
+        /*button_index=*/0);
+  }
+
+  void SetMicrophoneMuteSwitchState(bool muted) {
+    ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(muted);
+  }
+
   void MuteMicrophone() { CrasAudioHandler::Get()->SetInputMute(true); }
 
   void UnMuteMicrophone() { CrasAudioHandler::Get()->SetInputMute(false); }
@@ -79,7 +107,6 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
     delegate_->SetAppAccessingMicrophone(app_name);
-    controller_->OnNumberOfInputStreamsWithPermissionChanged();
   }
 
  private:
@@ -131,14 +158,214 @@ TEST_F(MicrophoneMuteNotificationControllerTest, LaunchAppUsingMicrophone) {
   MuteMicrophone();
   EXPECT_FALSE(GetNotification());
 
-  // Launch an app that's using the mic, should now be a notification.
+  // Launch an app that's using the mic. The microphone mute notification should
+  // show as a popup
   LaunchApp(u"junior");
   SetNumberOfActiveInputStreams(1);
   EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
 
   // Unmute again, notification goes down.
   UnMuteMicrophone();
   EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       SilentNotificationOnMuteWhileMicInUse) {
+  // No notification initially.
+  EXPECT_FALSE(GetNotification());
+
+  // Launch an app that's using the mic, no notification because the microphone
+  // is not muted.
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+  EXPECT_FALSE(GetNotification());
+
+  // Mute the mic, a notification should be shown, but not as a popup.
+  MuteMicrophone();
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       ShowPopupNotificationOnStreamAddition) {
+  // Launch an app while microphone is muted.
+  MuteMicrophone();
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  ASSERT_TRUE(GetNotification());
+  ASSERT_TRUE(GetPopupNotification());
+
+  // Mark the notification as read.
+  MarkPopupAsShown();
+  ASSERT_FALSE(GetPopupNotification());
+
+  // Add an app, and verify the notification popup gets shown.
+  LaunchApp(u"rose");
+  SetNumberOfActiveInputStreams(2);
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       RemovingStreamDoesNotShowPopup) {
+  // Launch 2 apps while microphone is muted.
+  MuteMicrophone();
+  LaunchApp(u"junior");
+  LaunchApp(u"rose");
+  SetNumberOfActiveInputStreams(2);
+
+  ASSERT_TRUE(GetNotification());
+  ASSERT_TRUE(GetPopupNotification());
+
+  // Mark the notification as read.
+  MarkPopupAsShown();
+  ASSERT_FALSE(GetPopupNotification());
+
+  // Remove an active stream, and verify that the notification popup is not
+  // reshown.
+  SetNumberOfActiveInputStreams(1);
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  // The notification should be removed if all input streams are removed.
+  LaunchApp(base::nullopt);
+  SetNumberOfActiveInputStreams(0);
+
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionButton) {
+  MuteMicrophone();
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  // The mute notification should have an action button.
+  message_center::Notification* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(1u, notification->buttons().size());
+
+  // Clicking the action button should unmute device.
+  ClickOnNotificationButton();
+  EXPECT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       NoNotificationActionButtonIfMutedByHwSwitch) {
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  // The mute notification should not have an action button if device is muted
+  // by a mute switch.
+  message_center::Notification* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(0u, notification->buttons().size());
+
+  SetMicrophoneMuteSwitchState(/*muted=*/false);
+  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       TogglingMuteSwitchRemovesNotificationActionButton) {
+  // Mute microphone, and activate an audio input stream.
+  MuteMicrophone();
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  // The mute notification should have an action button.
+  message_center::Notification* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(1u, notification->buttons().size());
+
+  // Toggle microphone mute switch and verify the action button disappears.
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+  notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(0u, notification->buttons().size());
+
+  SetMicrophoneMuteSwitchState(/*muted=*/false);
+  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       TogglingMuteSwitchDoesNotHideNotificationPopup) {
+  // Mute microphone, and activate an audio input stream.
+  MuteMicrophone();
+
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  // Verify the notification popup is shown.
+  ASSERT_TRUE(GetNotification());
+  ASSERT_TRUE(GetPopupNotification());
+
+  // Toggle microphone mute switch and verify that toggling mute switch alone
+  // does not hide the notification popup.
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  SetMicrophoneMuteSwitchState(/*muted=*/false);
+  ASSERT_FALSE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       RemovingAllInputStreamsWhileHwSwitchToggled) {
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(2);
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  SetNumberOfActiveInputStreams(0);
+
+  EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest,
+       ToggleMicrophoneMuteSwitchWhileInputStreamActive) {
+  // Launch an app using microphone, and toggle mute switch.
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+  SetMicrophoneMuteSwitchState(/*muted=*/true);
+
+  // Notification should be shown, but not as a popup.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  // Add another audio input stream, and verify the notification popup shows.
+  LaunchApp(u"junior1");
+  SetNumberOfActiveInputStreams(2);
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  // Mark notification as read, and then remove an audio input stream.
+  MarkPopupAsShown();
+  ASSERT_FALSE(GetPopupNotification());
+  SetNumberOfActiveInputStreams(1);
+
+  // Verify that notification popup is not reshown.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  // Adding another stream shows a popup again.
+  LaunchApp(u"rose");
+  SetNumberOfActiveInputStreams(2);
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
 }
 
 }  // namespace ash

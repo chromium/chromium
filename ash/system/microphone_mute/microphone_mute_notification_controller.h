@@ -12,6 +12,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+
+namespace message_center {
+class Notification;
+}
 
 namespace ash {
 
@@ -29,40 +34,56 @@ class ASH_EXPORT MicrophoneMuteNotificationController
   ~MicrophoneMuteNotificationController() override;
 
   // Shows the microphone muted notification if it needs to be shown.
-  void MaybeShowNotification();
+  // |priority| - The priority with which the notification should be shown.
+  // |recreate| - Whether the notification should be recreated if it's already
+  // shown.
+  void MaybeShowNotification(message_center::NotificationPriority priority,
+                             bool recreate);
 
   // ash::CrasAudioHandler::AudioObserver:
   void OnInputMuteChanged(bool mute_on) override;
+  void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNumberOfInputStreamsWithPermissionChanged() override;
 
  private:
   friend class MicrophoneMuteNotificationControllerTest;
 
   // Creates a notification for telling the user they're attempting to use the
-  // mic while the mis is muted.
-  void GenerateMicrophoneMuteNotification(
-      const absl::optional<std::u16string>& app_name);
+  // mic while the mic is muted.
+  std::unique_ptr<message_center::Notification>
+  GenerateMicrophoneMuteNotification(
+      const absl::optional<std::u16string>& app_name,
+      message_center::NotificationPriority priority);
 
   // Mic mute notification title.
-  std::u16string GetNotificationTitle() const;
+  std::u16string GetNotificationTitle(
+      const absl::optional<std::u16string>& app_name) const;
 
   // Mic mute notification body.
-  std::u16string GetNotificationMessage(
-      const absl::optional<std::u16string>& app_name) const;
+  std::u16string GetNotificationMessage() const;
 
   // Takes down the mic mute notification.
   void RemoveMicrophoneMuteNotification();
 
-  // Returns true if we have any active input stream with permission, of any
+  // Returns number if we have any active input stream with permission, of any
   // client type.  See
   // ash::CrasAudioClient::NumberOfInputStreamsWithPermissionChanged() for more
   // details.
-  bool HaveActiveInputStreams();
+  int CountActiveInputStreams();
 
   static const char kNotificationId[];
 
-  // A value of true means the mic is muted.
+  // Whether the microphone is muted.
   bool mic_mute_on_ = false;
+  // Whether the microphone is muted using a microphone mute switch.
+  bool mic_muted_by_mute_switch_ = false;
+  // The number of currently active audio input steams.
+  int input_stream_count_ = 0;
+
+  // Set when a microphone mute notification is shown. Contains the notification
+  // priority used for the notification.
+  absl::optional<message_center::NotificationPriority>
+      current_notification_priority_;
 
   base::ScopedObservation<ash::CrasAudioHandler,
                           AudioObserver,

@@ -3077,14 +3077,20 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Strings for microphone mute switch notification -->
-      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
-        Microphone is off
+      <message name="IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone is muted.i Similar to IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE_WITH_APP_NAME, except this message contains a generic app name string. Used when the name of the app that's using the microphone cannot be determined.">
+          An app wants to use the microphone
       </message>
-      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
-        An app is trying to access the microphone. Turn off the microphone mute switch to allow access.
+      <message name="IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE_WITH_APP_NAME" desc="Title for a notification shown to the users when an app tries to use the microphone while the microphone is muted. Similar to IDS_MICROPHONE_MUTED_NOTIFICATION_TITLE, except this message has a placeholder for the app name.">
+        <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> wants to use the microphone
       </message>
-      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on">
-        <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is trying to access the microphone. Turn off the microphone mute switch to allow access.
+      <message name="IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone is muted.">
+        Your microphone is currently turned off
+      </message>
+      <message name="IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON" desc="Label for an action button in a notification shown to the users when an app tries to use the microphone while the microphone is muted. The button, when tapped unmutes the microphone.">
+        TURN ON MICROPHONE
+      </message>
+      <message name="IDS_MICROPHONE_MUTE_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the microphone while the microphone mute switch, which disables microphone input, is turned on.">
+        Your microphone is off. Turn on your device’s microphone button.
       </message>
 
       <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION" desc="The short message to encourage user to unlock the device so that Chrome OS can perform the notification action selected by user after unlocking.">
