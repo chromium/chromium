@@ -63,6 +63,13 @@ enum class SystemAppType {
   // Contact: jacksontadie@google.com, drcrash@chromium.org
   DEMO_MODE = 18,
 
+  // OS FEEDBACK is a SWA that provides step by step guides to submit a
+  // feedback report on Chrome OS.
+  //
+  // Source: //ash/components/os_feedback_ui
+  // contact: cros-telemetry@google.com
+  OS_FEEDBACK = 19,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName

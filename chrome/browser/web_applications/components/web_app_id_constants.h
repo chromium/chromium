@@ -26,6 +26,7 @@ extern const char kHelpAppId[];
 extern const char kMediaAppId[];
 extern const char kMessagesAppId[];
 extern const char kMockSystemAppId[];
+extern const char kOsFeedbackAppId[];
 extern const char kOsSettingsAppId[];
 extern const char kPlayBooksAppId[];
 extern const char kPrintManagementAppId[];

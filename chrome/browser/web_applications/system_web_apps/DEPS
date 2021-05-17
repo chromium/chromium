@@ -4,3 +4,6 @@ specific_include_rules = {
     "+components/services/app_service/public/cpp",
   ],
 }
+include_rules = [
+  "+ash/components/os_feedback_ui",
+]

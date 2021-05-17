@@ -85,6 +85,10 @@ const char kMessagesAppId[] = "hpfldicfbfomlpcikngkocigghgafkph";
 const char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "chrome://os-feedback/"))
+const char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "chrome://os-settings/"))
 const char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 

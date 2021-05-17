@@ -65,10 +65,11 @@ enum class DefaultAppName {
   kPrintManagementApp = 43,
   kShortcutCustomizationApp = 44,
   kShimlessRMAApp = 45,
+  kOsFeedbackApp = 46,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kShimlessRMAApp,
+  kMaxValue = kOsFeedbackApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -309,6 +310,8 @@ void RecordAppLaunch(const std::string& app_id,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == web_app::kMockSystemAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMockSystemApp, launch_source);
+  } else if (app_id == web_app::kOsFeedbackAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kOsFeedbackApp, launch_source);
   }
 }
 

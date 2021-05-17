@@ -55,6 +55,7 @@
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/os_feedback_ui/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/content/shimless_rma/url_constants.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_web_app_info.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
+#include "chrome/browser/ash/web_applications/os_feedback_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/ash/web_applications/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
@@ -293,6 +295,23 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         base::BindRepeating(&GetDefaultBoundsForEche);
   }
 
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::OS_FEEDBACK)) {
+    infos.emplace(
+        SystemAppType::OS_FEEDBACK,
+        SystemAppInfo(
+            "OSFeedback", GURL(ash::kChromeUIOSFeedbackUrl),
+            base::BindRepeating(&CreateWebAppInfoForOSFeedbackSystemWebApp)));
+    auto& config = infos.at(SystemAppType::OS_FEEDBACK);
+
+    config.allow_scripts_to_close_windows = true;
+    config.capture_navigations = true;
+    // Only allow users to minimize or close the App.
+    config.is_maximizable = false;
+    config.is_resizeable = false;
+    config.get_default_bounds =
+        base::BindRepeating(&GetDefaultBoundsForOSFeedbackApp);
+  }
+
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::PERSONALIZATION)) {
     infos.emplace(
         SystemAppType::PERSONALIZATION,
@@ -470,6 +489,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return features::IsShortcutCustomizationAppEnabled();
     case SystemAppType::DEMO_MODE:
       return chromeos::features::IsDemoModeSWAEnabled();
+    case SystemAppType::OS_FEEDBACK:
+      return base::FeatureList::IsEnabled(ash::features::kOsFeedback);
   }
 #else
   return false;
