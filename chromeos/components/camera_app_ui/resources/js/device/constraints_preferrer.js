@@ -181,6 +181,11 @@ export class ConstraintsPreferrer {
    *   2. All |Rp| < |Rs|, and the larger, the better.
    *   3. All |Rp| > |Rc|, and the smaller, the better.
    *
+   * Note that generally we compare resolutions by their width. But since the
+   * aspect ratio of |Rs| might be different from the |Rc| and |Rp|, we also
+   * consider |screenHeight * captureAspectRatio| as a possible |Rs| and prefer
+   * using the smaller one.
+   *
    * @param {!ResolutionList} previewResolutions
    * @param {!Resolution} captureResolution
    * @return {!ResolutionList}
@@ -191,7 +196,12 @@ export class ConstraintsPreferrer {
       return [];
     }
 
-    const Rs = Math.floor(window.screen.width * window.devicePixelRatio);
+    const screenWidth =
+        Math.floor(window.screen.width * window.devicePixelRatio);
+    const screenHeight =
+        Math.floor(window.screen.height * window.devicePixelRatio);
+    const aspectRatio = captureResolution.width / captureResolution.height;
+    const Rs = Math.min(screenWidth, Math.floor(screenHeight * aspectRatio));
     const Rc = captureResolution.width;
     const cmpDescending = (r1, r2) => r2.width - r1.width;
     const cmpAscending = (r1, r2) => r1.width - r2.width;
