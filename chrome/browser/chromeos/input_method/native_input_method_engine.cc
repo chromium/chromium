@@ -564,19 +564,28 @@ void NativeInputMethodEngine::ImeObserver::SetComposition(
     const std::string& text) {
   ui::CompositionText composition;
   composition.text = ConvertToUtf16AndNormalize(text);
+  // TODO(b/151884011): Turn on underlining for composition-based languages.
+  composition.ime_text_spans = {ui::ImeTextSpan(
+      ui::ImeTextSpan::Type::kComposition, 0, composition.text.length(),
+      ui::ImeTextSpan::Thickness::kNone,
+      ui::ImeTextSpan::UnderlineStyle::kNone)};
   GetInputContext()->UpdateCompositionText(
-      composition, /*cursor_pos=*/composition.text.length(), /*visible=*/true);
+      std::move(composition), /*cursor_pos=*/composition.text.length(),
+      /*visible=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
     uint32_t start_byte_index,
     uint32_t end_byte_index) {
   const auto ordered_range = std::minmax(start_byte_index, end_byte_index);
+  // TODO(b/151884011): Turn on underlining for composition-based languages.
   GetInputContext()->SetComposingRange(
       ordered_range.first, ordered_range.second,
       {ui::ImeTextSpan(
           ui::ImeTextSpan::Type::kComposition, /*start_offset=*/0,
-          /*end_offset=*/ordered_range.second - ordered_range.first)});
+          /*end_offset=*/ordered_range.second - ordered_range.first,
+          ui::ImeTextSpan::Thickness::kNone,
+          ui::ImeTextSpan::UnderlineStyle::kNone)});
 }
 
 void NativeInputMethodEngine::ImeObserver::FinishComposition() {
