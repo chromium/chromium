@@ -87,17 +87,17 @@ String HTMLOutputElement::value() const {
   return textContent();
 }
 
-void HTMLOutputElement::setValue(const String& newValue) {
-  String oldValue = value();
+void HTMLOutputElement::setValue(const String& new_value) {
+  String old_value = value();
 
   if (is_default_value_mode_)
-    default_value_ = oldValue;
+    default_value_ = old_value;
 
   // The value mode flag set to "value" when the value attribute is set.
   is_default_value_mode_ = false;
 
-  if (newValue != oldValue)
-    setTextContent(newValue);
+  if (new_value != old_value)
+    setTextContent(new_value);
 }
 
 String HTMLOutputElement::defaultValue() const {
