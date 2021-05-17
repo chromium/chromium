@@ -6,6 +6,7 @@
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 
@@ -27,12 +28,12 @@ ProfileImportProcess::ProfileImportProcess(
     const std::vector<AutofillProfile*>& existing_profiles,
     const std::string& app_locale,
     const GURL& form_source_url,
-    bool new_profiles_suppressed_for_domain)
+    const PersonalDataManager* personal_data_manager)
     : import_id_(GetImportId()),
       observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
-      new_profiles_suppressed_for_domain_(new_profiles_suppressed_for_domain) {
+      personal_data_manager_(personal_data_manager) {
   DetermineProfileImportType(existing_profiles, app_locale);
 }
 
@@ -48,23 +49,17 @@ bool ProfileImportProcess::prompt_shown() const {
   return prompt_shown_;
 }
 
-bool ProfileImportProcess::ImportIsNewProfile() const {
-  return import_type_ == AutofillProfileImportType::kNewProfile;
-}
-
-bool ProfileImportProcess::ImportIsSilentUpdate() const {
-  return import_type_ == AutofillProfileImportType::kSilentUpdate;
-}
-
-bool ProfileImportProcess::ImportIsMerge() const {
-  return import_type_ == AutofillProfileImportType::kConfirmableMerge;
-}
-
 void ProfileImportProcess::DetermineProfileImportType(
     const std::vector<AutofillProfile*>& existing_profiles,
     const std::string& app_locale) {
   AutofillProfileComparator comparator(app_locale);
   bool is_mergeable_with_existing_profile = false;
+
+  new_profiles_suppressed_for_domain_ =
+      personal_data_manager_
+          ? personal_data_manager_->IsNewProfileImportBlockedForDomain(
+                form_source_url_)
+          : false;
 
   for (const auto* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
@@ -95,12 +90,24 @@ void ProfileImportProcess::DetermineProfileImportType(
     // user confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile)) {
+      // Determine if the existing profile is blocked for updates.
+      // If the personal data manager is not available the profile is considered
+      // as not blocked.
+      bool is_blocked_for_update =
+          personal_data_manager_
+              ? personal_data_manager_->IsProfileUpdateBlocked(
+                    existing_profile->guid())
+              : false;
+      if (is_blocked_for_update) {
+        ++number_of_blocked_profile_updates_;
+      }
+
       // If a settings-visible value changed, the existing profile is the merge
-      // candidate if no other merge candidate has already been found.
-      if (!merge_candidate_.has_value()) {
+      // candidate if no other merge candidate has already been found and if the
+      // existing profile is not blocked for updates.
+      if (!merge_candidate_.has_value() && !is_blocked_for_update) {
         merge_candidate_ = *existing_profile;
         import_candidate_ = merged_profile;
-        import_type_ = AutofillProfileImportType::kConfirmableMerge;
       } else {
         // If there is already a merge candidate, the existing profile is not
         // supposed to be changed.
@@ -124,13 +131,25 @@ void ProfileImportProcess::DetermineProfileImportType(
       import_type_ = AutofillProfileImportType::kNewProfile;
       import_candidate_ = observed_profile();
     }
-  } else if (!merge_candidate_.has_value()) {
-    // When the observed profile is mergeable with an existing profile but there
-    // is no merge candidate this means that either the import was a duplicate
-    // of an existing profile or that there are only silent updates.
-    import_type_ = updated_profiles_.size() > 0
-                       ? AutofillProfileImportType::kSilentUpdate
-                       : AutofillProfileImportType::kDuplicateImport;
+  } else {
+    bool silent_updates_present = updated_profiles_.size() > 0;
+
+    if (merge_candidate_.has_value()) {
+      import_type_ =
+          silent_updates_present
+              ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
+              : AutofillProfileImportType::kConfirmableMerge;
+    } else if (number_of_blocked_profile_updates_ > 0) {
+      import_type_ =
+          silent_updates_present
+              ? AutofillProfileImportType::
+                    kSuppressedConfirmableMergeAndSilentUpdate
+              : AutofillProfileImportType::kSuppressedConfirmableMerge;
+    } else {
+      import_type_ = silent_updates_present
+                         ? AutofillProfileImportType::kSilentUpdate
+                         : AutofillProfileImportType::kDuplicateImport;
+    }
   }
 
   // At this point, all existing profiles are either unchanged, updated and/or
@@ -263,9 +282,11 @@ void ProfileImportProcess::CollectMetrics() const {
 
   // For an import process that involves prompting the user, record the
   // decision.
-  if (ImportIsNewProfile()) {
+  if (import_type_ == AutofillProfileImportType::kNewProfile) {
     AutofillMetrics::LogNewProfileImportDecision(user_decision_);
-  } else if (ImportIsMerge()) {
+  } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
+             import_type_ ==
+                 AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
     AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
   }
 
@@ -275,7 +296,7 @@ void ProfileImportProcess::CollectMetrics() const {
          AutofillProfileComparator::GetSettingsVisibleProfileDifference(
              import_candidate_.value(), confirmed_import_candidate_.value(),
              app_locale_)) {
-      if (ImportIsNewProfile()) {
+      if (import_type_ == AutofillProfileImportType::kNewProfile) {
         AutofillMetrics::LogNewProfileEditedType(difference.type);
       } else {
         AutofillMetrics::LogProfileUpdateEditedType(difference.type);

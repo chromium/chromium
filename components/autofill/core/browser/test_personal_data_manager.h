@@ -27,6 +27,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   ~TestPersonalDataManager() override;
 
   using PersonalDataManager::GetProfileSaveStrikeDatabase;
+  using PersonalDataManager::GetProfileUpdateStrikeDatabase;
   using PersonalDataManager::SetPrefService;
 
   // PersonalDataManager overrides.  These functions are overridden as needed
@@ -67,6 +68,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsSyncFeatureEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
   const AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase()
+      const override;
+  const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
       const override;
 
   // Unique to TestPersonalDataManager:
@@ -167,7 +170,9 @@ class TestPersonalDataManager : public PersonalDataManager {
   CoreAccountInfo account_info_;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;
-  AutofillProfileSaveStrikeDatabase in_memory_profile_save_strike_database_{
+  AutofillProfileSaveStrikeDatabase inmemory_profile_save_strike_database_{
+      &inmemory_strike_database_};
+  AutofillProfileUpdateStrikeDatabase inmemory_profile_update_strike_database_{
       &inmemory_strike_database_};
 
   DISALLOW_COPY_AND_ASSIGN(TestPersonalDataManager);

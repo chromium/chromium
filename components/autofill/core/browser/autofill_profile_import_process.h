@@ -36,7 +36,16 @@ enum class AutofillProfileImportType {
   // mergeable or updateable profiles but imports are suppressed for this
   // domain.
   kSuppressedNewProfile,
-  kMaxValue = kSuppressedNewProfile
+  // The observed profile resulted both in a confirmable merge and in a silent
+  // update.
+  kConfirmableMergeAndSilentUpdate,
+  // The observed profile resulted in one or more confirmable merges that are
+  // all suppressed with no additional silent updates.
+  kSuppressedConfirmableMerge,
+  // The observed profile resulted in one or more suppressed confirmable merges
+  // but with additional silent updates.
+  kSuppressedConfirmableMergeAndSilentUpdate,
+  kMaxValue = kSuppressedConfirmableMergeAndSilentUpdate
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -61,7 +70,7 @@ class ProfileImportProcess {
                        const std::vector<AutofillProfile*>& existing_profiles,
                        const std::string& app_locale,
                        const GURL& form_source_url,
-                       bool new_profiles_suppressed_for_domain);
+                       const PersonalDataManager* personal_data_manager);
 
   ProfileImportProcess(const ProfileImportProcess&);
   ProfileImportProcess& operator=(const ProfileImportProcess& other);
@@ -70,18 +79,6 @@ class ProfileImportProcess {
 
   // Returns true if showing the prompt was initiated for this import process.
   bool prompt_shown() const;
-
-  // The observed profile is a new profile if and only if it is neither
-  // mergeable with an existing profile nor an existing profile can be updated.
-  bool ImportIsNewProfile() const;
-
-  // An import is a silent update if there is no merge candidate and at least
-  // one profile is silently updated.
-  bool ImportIsSilentUpdate() const;
-
-  // The observed profile is mergeable with an existing profile if and only if
-  // a merge candidate exists.
-  bool ImportIsMerge() const;
 
   const absl::optional<AutofillProfile>& import_candidate() const {
     return import_candidate_;
@@ -201,6 +198,13 @@ class ProfileImportProcess {
   // Indicates if saving a new profile is blocked for the domain the profile
   // was observed on.
   bool new_profiles_suppressed_for_domain_;
+
+  // A pointer to the persona data manager that is used to retrieve additional
+  // information about existing profiles.
+  const PersonalDataManager* personal_data_manager_;
+
+  // Counts the number of blocked profile updates.
+  int number_of_blocked_profile_updates_{0};
 };
 
 }  // namespace autofill

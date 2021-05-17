@@ -49,7 +49,7 @@ void AddressProfileSaveManager::ImportProfileFromForm(
   // process, it is only overwritten if the UI request was not initialized yet.
   pending_import_ = ProfileImportProcess(
       observed_profile, personal_data_manager_->GetProfiles(), app_locale, url,
-      personal_data_manager_->IsNewProfileImportBlockedForDomain(url));
+      personal_data_manager_);
 
   MaybeOfferSavePrompt();
 }
@@ -59,11 +59,13 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt() {
 
   switch (pending_import_->import_type()) {
     // If the import was a duplicate, only results in silent updates or if the
-    // import of a new profile is blocked on the used domain, finish the process
-    // without initiating a user prompt
+    // import of a new profile or a profile update is blocked, finish the
+    // process without initiating a user prompt
     case AutofillProfileImportType::kDuplicateImport:
     case AutofillProfileImportType::kSilentUpdate:
     case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
       pending_import_->AcceptWithoutPrompt();
       FinalizeProfileImport();
       break;
@@ -73,6 +75,7 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt() {
     // user prompt.
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
       OfferSavePrompt();
       break;
 
@@ -126,18 +129,38 @@ void AddressProfileSaveManager::FinalizeProfileImport() {
     personal_data_manager_->SetProfiles(&resulting_profiles);
   }
 
+  AutofillProfileImportType import_type = pending_import()->import_type();
+
+  bool accepted_or_edited =
+      pending_import()->user_decision() ==
+          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted ||
+      pending_import()->user_decision() ==
+          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited;
+
+  bool declined =
+      pending_import()->user_decision() ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined;
+
   // If the import of a new profile was declined, add a strike for this source
   // url. If it was accepted, reset the potentially existing strikes.
-  if (pending_import_->import_type() ==
-      AutofillProfileImportType::kNewProfile) {
-    if (pending_import_->user_decision() ==
-        AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined) {
+  if (import_type == AutofillProfileImportType::kNewProfile) {
+    if (declined) {
       personal_data_manager_->AddStrikeToBlockNewProfileImportForDomain(
           pending_import()->form_source_url());
-    } else if (pending_import_->user_decision() ==
-               AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted) {
+    } else if (accepted_or_edited) {
       personal_data_manager_->RemoveStrikesToBlockNewProfileImportForDomain(
           pending_import()->form_source_url());
+    }
+  } else if (import_type == AutofillProfileImportType::kConfirmableMerge ||
+             import_type ==
+                 AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
+    DCHECK(pending_import_->merge_candidate().has_value());
+    if (declined) {
+      personal_data_manager_->AddStrikeToBlockProfileUpdate(
+          pending_import()->merge_candidate()->guid());
+    } else if (accepted_or_edited) {
+      personal_data_manager_->RemoveStrikesToBlockProfileUpdate(
+          pending_import()->merge_candidate()->guid());
     }
   }
 

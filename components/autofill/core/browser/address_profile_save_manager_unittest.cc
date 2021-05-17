@@ -108,6 +108,7 @@ struct ImportScenarioTestCase {
   std::vector<AutofillMetrics::EditedFieldTypeForMetrics>
       expected_edited_types_for_metrics;
   bool new_profiles_suppresssed_for_domain;
+  std::vector<std::string> blocked_guids_for_updates;
 };
 
 class AddressProfileSaveManagerTest : public testing::Test {
@@ -119,6 +120,12 @@ class AddressProfileSaveManagerTest : public testing::Test {
         {features::kAutofillAddressProfileSavePrompt,
          features::kAutofillEnableSupportForMoreStructureInNames},
         {});
+  }
+
+  void BlockProfileForUpdates(const std::string& guid) {
+    while (!mock_personal_data_manager_.IsProfileUpdateBlocked(guid)) {
+      mock_personal_data_manager_.AddStrikeToBlockProfileUpdate(guid);
+    }
   }
 
   // Tests the |test_scenario|.
@@ -154,6 +161,15 @@ void AddressProfileSaveManagerTest::TestImportScenario(
       initial_strikes, url.host());
   ASSERT_EQ(mock_personal_data_manager_.IsNewProfileImportBlockedForDomain(url),
             test_scenario.new_profiles_suppresssed_for_domain);
+
+  // Add one strike for each existing profile and the maximum number of strikes
+  // for blocked profiles.
+  for (const AutofillProfile& profile : test_scenario.existing_profiles) {
+    mock_personal_data_manager_.AddStrikeToBlockProfileUpdate(profile.guid());
+  }
+  for (const std::string& guid : test_scenario.blocked_guids_for_updates) {
+    BlockProfileForUpdates(guid);
+  }
 
   // Set up the expectation and response for if a prompt should be shown.
   if (test_scenario.is_prompt_expected) {
@@ -201,7 +217,9 @@ void AddressProfileSaveManagerTest::TestImportScenario(
                               AutofillProfileImportType::kNewProfile;
   const bool is_confirmable_merge =
       test_scenario.expected_import_type ==
-      AutofillProfileImportType::kConfirmableMerge;
+          AutofillProfileImportType::kConfirmableMerge ||
+      test_scenario.expected_import_type ==
+          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
 
   // If the import was neither a new profile or a confirmable merge, test that
   // the corresponding updates are unchanged.
@@ -248,7 +266,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     EXPECT_EQ(2, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
                      ->GetStrikes(url.host()));
   } else if (is_new_profile &&
-             last_import->user_decision() == UserDecision::kAccepted) {
+             (last_import->user_decision() == UserDecision::kAccepted ||
+              last_import->user_decision() == UserDecision::kEdited)) {
     // If the import of a new profile was accepted, the count should have been
     // reset.
     EXPECT_EQ(0, mock_personal_data_manager_.GetProfileSaveStrikeDatabase()
@@ -259,6 +278,24 @@ void AddressProfileSaveManagerTest::TestImportScenario(
         initial_strikes,
         mock_personal_data_manager_.GetProfileSaveStrikeDatabase()->GetStrikes(
             url.host()));
+  }
+
+  // Check that the strike count for profile updates is reset if a profile was
+  // updated.
+  if (is_confirmable_merge &&
+      (test_scenario.user_decision == UserDecision::kAccepted ||
+       test_scenario.user_decision == UserDecision::kEdited)) {
+    EXPECT_EQ(0, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
+                     ->GetStrikes(test_scenario.merge_candidate->guid()));
+  } else if (is_confirmable_merge &&
+             test_scenario.user_decision == UserDecision::kDeclined) {
+    // Or that it is incremented if the update was declined.
+    EXPECT_EQ(2, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
+                     ->GetStrikes(test_scenario.merge_candidate->guid()));
+  } else if (test_scenario.merge_candidate.has_value()) {
+    // In all other cases, the number of strikes should be unaltered.
+    EXPECT_EQ(1, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
+                     ->GetStrikes(test_scenario.merge_candidate->guid()));
   }
 }
 
@@ -501,6 +538,28 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge) {
 }
 
 // Test the observation of a profile that can only be merged with a
+// settings-visible change but the mergeable profile is blocked for updates.
+TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_BlockedProfile) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+  AutofillProfile final_profile = observed_profile;
+  test::CopyGUID(mergeable_profile, &final_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {mergeable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type =
+          AutofillProfileImportType::kSuppressedConfirmableMerge,
+      .is_profile_change_expected = false,
+      .expected_final_profiles = {mergeable_profile},
+      .blocked_guids_for_updates = {mergeable_profile.guid()}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Test the observation of a profile that can only be merged with a
 // settings-visible change. The existing profile has the legacy property of
 // being verified.
 TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_VerifiedProfile) {
@@ -656,12 +715,45 @@ TEST_F(AddressProfileSaveManagerTest,
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
       .user_decision = UserDecision::kAccepted,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
+      .expected_import_type =
+          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, updated_profile,
                                   merged_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Same as above, but the merge candidate is blocked for updates.
+TEST_F(AddressProfileSaveManagerTest,
+       UserConfirmableMergeAndUpdateAndDuplicate_Blocked) {
+  AutofillProfile observed_profile = test::StandardProfile();
+  AutofillProfile existing_duplicate = test::StandardProfile();
+  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
+  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
+
+  // Both the mergeable and updateable profile should have the same values as
+  // the observed profile.
+  AutofillProfile merged_profile = observed_profile;
+  AutofillProfile updated_profile = observed_profile;
+  // However, the GUIDs must be maintained.
+  test::CopyGUID(updateable_profile, &updated_profile);
+  test::CopyGUID(mergeable_profile, &merged_profile);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {existing_duplicate, mergeable_profile,
+                            updateable_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
+      .expected_import_type =
+          AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate,
+      .is_profile_change_expected = true,
+      .expected_final_profiles = {existing_duplicate, mergeable_profile,
+                                  updated_profile},
+      .blocked_guids_for_updates = {mergeable_profile.guid()}};
 
   TestImportScenario(test_scenario);
 }
@@ -690,7 +782,8 @@ TEST_F(AddressProfileSaveManagerTest,
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
       .user_decision = UserDecision::kDeclined,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
+      .expected_import_type =
+          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
@@ -727,7 +820,8 @@ TEST_F(AddressProfileSaveManagerTest,
       .is_prompt_expected = true,
       .user_decision = UserDecision::kEdited,
       .edited_profile = edited_profile,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
+      .expected_import_type =
+          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,

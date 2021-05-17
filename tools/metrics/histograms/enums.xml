@@ -6107,6 +6107,9 @@ others/histograms.xml -->
   <int value="3" label="SilentUpdate"/>
   <int value="4" label="ConfirmableMerge"/>
   <int value="5" label="SuppressedNewProfile"/>
+  <int value="6" label="ConfirmableMergeAndSilentUpdate"/>
+  <int value="7" label="SuppressedConfirmableMerge"/>
+  <int value="8" label="SuppressedConfirmableMergeAndSilentUpdate"/>
 </enum>
 
 <enum name="AutofillProfileSyncChangeOrigin">

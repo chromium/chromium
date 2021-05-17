@@ -293,7 +293,12 @@ CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
 
 const AutofillProfileSaveStrikeDatabase*
 TestPersonalDataManager::GetProfileSaveStrikeDatabase() const {
-  return &in_memory_profile_save_strike_database_;
+  return &inmemory_profile_save_strike_database_;
+}
+
+const AutofillProfileUpdateStrikeDatabase*
+TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
+  return &inmemory_profile_update_strike_database_;
 }
 
 void TestPersonalDataManager::ClearProfiles() {
