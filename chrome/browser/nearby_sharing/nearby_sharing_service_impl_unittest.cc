@@ -3275,6 +3275,22 @@ TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileSending) {
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
+TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceAlreadyReceiving) {
+  NiceMock<MockTransferUpdateCallback> callback;
+  ShareTarget share_target = SetUpIncomingConnection(callback);
+  EXPECT_FALSE(connection_.IsClosed());
+
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kTransferAlreadyInProgress,
+      service_->RegisterReceiveSurface(
+          &callback, NearbySharingService::ReceiveSurfaceState::kForeground));
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+
+  // To avoid UAF in OnIncomingTransferUpdate().
+  service_->UnregisterReceiveSurface(&callback);
+}
+
 TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileDiscovering) {
   MockTransferUpdateCallback transfer_callback;
   MockShareTargetDiscoveredCallback discovery_callback;

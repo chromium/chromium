@@ -535,12 +535,12 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
 
   // Only check these errors cases for foreground receivers.
   if (state == ReceiveSurfaceState::kForeground) {
-    if (is_scanning_ || is_sending_files_) {
+    if (is_scanning_ || is_transferring_) {
       UnregisterReceiveSurface(transfer_callback);
       NS_LOG(VERBOSE)
           << __func__
           << ": Ignore registering (and unregistering if registered) receive "
-             "surface, because we're currently sending files.";
+             "surface, because we're currently sending or receiving files.";
       return StatusCodes::kTransferAlreadyInProgress;
     }
 
