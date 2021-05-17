@@ -13,7 +13,7 @@ using content::BrowserThread;
 
 namespace extensions {
 
-ExternalLoader::ExternalLoader() : owner_(nullptr) {}
+ExternalLoader::ExternalLoader() = default;
 
 void ExternalLoader::Init(ExternalProviderImpl* owner) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -33,14 +33,13 @@ void ExternalLoader::OwnerShutdown() {
   owner_ = nullptr;
 }
 
-ExternalLoader::~ExternalLoader() {}
+ExternalLoader::~ExternalLoader() = default;
 
 void ExternalLoader::LoadFinished(
     std::unique_ptr<base::DictionaryValue> prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (owner_) {
+  if (owner_)
     owner_->SetPrefs(std::move(prefs));
-  }
 }
 
 void ExternalLoader::OnUpdated(
