@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -131,8 +133,8 @@ class PartialData {
   // Returns the length to use when scanning the cache.
   int GetNextRangeLen();
 
-  // Completion routine for our callback.  Deletes |start|.
-  void GetAvailableRangeCompleted(int64_t* start, int result);
+  // Completion routine for our callback.
+  void GetAvailableRangeCompleted(int result);
 
   // The portion we're trying to get, either from cache or network.
   int64_t current_range_start_;
@@ -146,6 +148,10 @@ class PartialData {
   // |cached_min_len_| the data not yet read (possibly overestimated).
   int64_t cached_start_;
   int cached_min_len_;
+  // Allocated to call disk_cache::Entry::GetAvailableRange().
+  // TODO(crbug.com/586174): Change GetAvailableRange() not to take an out
+  // parameter to improve memory management.
+  std::unique_ptr<int64_t> pending_cached_start_;
 
   // The size of the whole file.
   int64_t resource_size_;
