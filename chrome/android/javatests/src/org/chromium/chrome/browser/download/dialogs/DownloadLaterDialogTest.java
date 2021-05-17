@@ -233,7 +233,7 @@ public class DownloadLaterDialogTest {
     @Test
     @MediumTest
     public void testHideDateTimePicker() {
-        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_LATER,
+        mModel = createModel(DownloadLaterDialogChoice.DOWNLOAD_NOW,
                 DownloadLaterPromptStatus.SHOW_INITIAL, null, false);
         showDialog();
         onView(withId(R.id.choose_date_time)).check(matches(not(isDisplayed())));
