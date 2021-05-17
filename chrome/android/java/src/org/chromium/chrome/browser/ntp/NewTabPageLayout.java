@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.video_tutorials.NewTabPageVideoIPHManager;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
@@ -339,8 +339,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         TraceEvent.begin(TAG + ".initializeLensButton()");
         // TODO(b/181067692): Report user action for this click.
         mSearchBoxCoordinator.addLensButtonClickListener(v -> {
+            LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
             mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
-            RecordUserAction.record("NewTabPage.SearchBox.Lens");
         });
         updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeLensButton()");
@@ -738,8 +738,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     /** Update the visibility of the action buttons. */
     void updateActionButtonVisibility() {
         mSearchBoxCoordinator.setVoiceSearchButtonVisibility(mManager.isVoiceSearchEnabled());
-        mSearchBoxCoordinator.setLensButtonVisibility(
-                mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE));
+        boolean shouldShowLensButton =
+                mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
+        LensMetrics.recordShown(LensEntryPoint.NEW_TAB_PAGE, shouldShowLensButton);
+        mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
     }
 
     @Override

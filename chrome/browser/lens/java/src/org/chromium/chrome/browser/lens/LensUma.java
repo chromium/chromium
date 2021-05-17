@@ -15,8 +15,9 @@ import java.lang.annotation.RetentionPolicy;
  * Static utility methods to support UMA logging for Lens entry points.
  */
 public class LensUma {
-    // Note: these values must match the LensSupportStatus enum in enums.xml.
-    // Only add new values at the end, right before NUM_ENTRIES.
+    // TODO(b/188430840): Switch to use LensMetric.LensSupportStatus and remove this enum
+    // duplication. Note: these values must match the LensSupportStatus enum in enums.xml. Only add
+    // new values at the end, right before NUM_ENTRIES.
     @IntDef({LensSupportStatus.LENS_SEARCH_SUPPORTED, LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE,
             LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE, LensSupportStatus.OUT_OF_DATE,
             LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE, LensSupportStatus.LEGACY_OS,
@@ -45,37 +46,27 @@ public class LensUma {
         int NUM_ENTRIES = 15;
     }
 
+    /**
+     * Record Lens support status for a Lens entry point.
+     */
     public static void recordLensSupportStatus(
             String histogramName, @LensSupportStatus int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName, reason, LensSupportStatus.NUM_ENTRIES);
     }
 
+    /**
+     * @return The histogram name for a Lens entry point.
+     */
     public static String getSupportStatusHistogramNameByEntryPoint(
             @LensEntryPoint int lensEntryPoint) {
-        String histogramName = null;
-        switch (lensEntryPoint) {
-            case LensEntryPoint.NEW_TAB_PAGE:
-                histogramName = "NewTabPage.LensSupportStatus";
-                break;
-            case LensEntryPoint.OMNIBOX:
-                histogramName = "Omnibox.LensSupportStatus";
-                break;
-            case LensEntryPoint.TASKS_SURFACE:
-                histogramName = "NewTabPage.TasksSurface.LensSupportStatus";
-                break;
-            case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
-            case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
-                histogramName = "ContextMenu.LensSupportStatus";
-                break;
-            case LensEntryPoint.CONTEXT_MENU_CHIP:
-            default:
-                assert false : "Method not implemented.";
-        }
-        return histogramName;
+        return LensMetrics.getSupportStatusHistogramNameByEntryPoint(lensEntryPoint);
     }
 
+    /**
+     * Record the time spent between Lens started and Lens dismissed.
+     */
     public static void recordTimeSpentInLens(String histogramName, long timeSpentInLensMs) {
-        RecordHistogram.recordLongTimesHistogram(histogramName, timeSpentInLensMs);
+        LensMetrics.recordTimeSpentInLens(histogramName, timeSpentInLensMs);
     }
 }

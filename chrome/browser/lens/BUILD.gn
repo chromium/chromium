@@ -64,6 +64,7 @@ android_library("util_java") {
     "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
     "java/src/org/chromium/chrome/browser/lens/LensFeature.java",
     "java/src/org/chromium/chrome/browser/lens/LensIntentParams.java",
+    "java/src/org/chromium/chrome/browser/lens/LensMetrics.java",
     "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
     "java/src/org/chromium/chrome/browser/lens/LensQueryResult.java",
     "java/src/org/chromium/chrome/browser/lens/LensUma.java",

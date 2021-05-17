@@ -476,6 +476,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Omnibox.LensSupportStatus" enum="LensSupportStatus"
     expires_after="2021-11-18">
+  <obsolete>
+    Removed 2021-05. Switch to use Lens.Omnibox.LensSupportStatus.
+  </obsolete>
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
