@@ -2,17 +2,21 @@
 <AutoVisualizer
     xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="blink::MemberBase&lt;*&gt;">
+    <SmartPointer Usage="Minimal">raw_</SmartPointer>
     <DisplayString Condition="raw_ == 0">null</DisplayString>
     <DisplayString>{*raw_}</DisplayString>
     <Expand>
       <Item Name="Raw">raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="blink::PersistentBase&lt;*&gt;">
+    <SmartPointer Usage="Minimal">raw_</SmartPointer>
     <DisplayString Condition="raw_ == 0">null</DisplayString>
     <DisplayString>{*raw_}</DisplayString>
     <Expand>
       <Item Name="Raw">raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="WTF::String">
@@ -21,6 +25,7 @@
     <DisplayString>{*impl_.ptr_}</DisplayString>
     <Expand>
       <Item Name="Impl">impl_.ptr_</Item>
+      <ExpandedItem Condition="impl_.ptr_ != 0">impl_.ptr_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="WTF::StringImpl">
