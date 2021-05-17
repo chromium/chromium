@@ -80,6 +80,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     Options();
     Options(MessagePumpType type, size_t size);
     Options(Options&& other);
+    Options& operator=(const Options&& other) = delete;
     ~Options();
 
     // Specifies the type of message pump that will be allocated on the thread.
@@ -120,6 +121,13 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // TODO(gab): allow non-joinable instances to be deleted without causing
     // user-after-frees (proposal @ https://crbug.com/629139#c14)
     bool joinable = true;
+
+    bool IsValid() const { return !moved_from_; }
+
+   private:
+    // Set to true when the object is moved into another. Use to prevent reuse
+    // of a moved-from object.
+    bool moved_from_ = false;
   };
 
   // Constructor.
