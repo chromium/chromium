@@ -1,14 +1,14 @@
-# Creating a new builder
+# Setting up a new builder
 
 This doc describes how to set up a new builder on LUCI. It's focused
-on chromium builders, but parts may be applicable to other projects.
+on Chromium builders, but parts may be applicable to other projects.
 
 [TOC]
 
 ## TL;DR
 
-For a typical chromium builder using the chromium recipe,
-you'll need to acquire a host and then land **three** CLs:
+For a typical chromium builder using the chromium recipe, you'll need to file a
+bug for tracking purposes, acquire a host, and then land **three** CLs:
 
 1. in [infradata/config][16], modifying `chromium.star`.
 2. in [chromium/tools/build][17], modifying the chromium\_tests
@@ -18,16 +18,61 @@ you'll need to acquire a host and then land **three** CLs:
     2. Compile configuration in `//tools/mb`
     3. Test configuration in `//testing/buildbot`
 
-## Pick a name and a master
+## Background
+
+There are two kinds of builders: "try builders" (also known as pre-submit
+builders, which test patches before they land) and "CI builders" (also
+known as post-submit builders, which test configurations on the committed
+code). "CQ builders" are try builders that the
+[CQ (Commit Queue)](cq.md) will run on every CL when it is being submitted;
+non-CQ try builders are called "optional" try builders.
+
+Try builders normally pick up their configuration from a "mirrored" (i.e.,
+matching) CI builder (the mapping is set in [trybots.py][25] in the
+chromium\_tests recipe configuration) and run the exact same things.  However,
+they can be configured to use slightly different GN args (usually to enable
+DCHECKs on release builders) and (rarely) to run different tests or run them
+with different flags. [ We enable dchecks on the release builders as a
+compromise between the speed of a release builder and the coverage of a
+debug builder]. Note that differences between the try builders and the CI
+builders can cause changes to land that break the CI builders, which is
+unfortunate, but a known tradeoff we make.
+
+Every try builder should mirror a CI builder, to help identify when failures
+are specific to a given patch, or happening more generally, and, if the latter,
+that some sheriff is looking at the failures.e
+
+[ Sometimes it's okay to have an "optional" try builder that doesn't have a
+matching CI builder, but make sure to discuss that on the bug you're using
+for this work. ]
+
+Every CI builder should normally also have a mirrored try builder, so that you
+can test changes that will affect the CI builder before landing. The only time
+you would set up a CI builder that didn't have a matching try builder should be
+if you couldn't set one up for some reason (e.g., we don't have enough capacity
+for both, or some other limitation of the infrastructure).
+
+> **Note:** not every CI builder that should have a matching try builder
+> currently does, unfortunately (see
+> [crbug.com/709214](https://crbug.com/709214)).  Also, figuring out what the
+> corresponding builders are is harder than it should be, you have to look at
+> [trybots.py][25] for the mapping (embedded in the code).
+
+All CQ builders *must* have mirrored CI builders.
+
+## Pick a name and a builder group
 
 Your new builder's name should follow the [chromium builder naming scheme][3].
 
-We still use master names to group builders in a variety of places (even
-though buildbot itself is largely deprecated). FYI builders should use
-`chromium.fyi`, while other builders should mostly use `chromium.$OS`.
+"builder groups" are used to group builders in the various Milo UI pages
+and in various config files. Examples of builder group names include
+"chromium.linux" and "chromium.webrtc.fyi".
+Builders that will be sheriffed should mostly use `chromium.$OS`, and
+builders that won't be sheriffed should mostly use `chromium.fyi`.
 
 > **Note:** If you're creating a try builder, its name should match the
-> name of the CI builder it mirrors.
+> name of the CI builder it mirrors. However, not every existing builder
+> does this ([crbug.com/905879](https://crbug.com/905879)).
 
 ## Obtain a host
 
@@ -86,8 +131,8 @@ chromium\_trybot recipes should be sufficient.
 
 To configure a chromium CI builder, you'll want to add a config block
 to the file in [recipe\_modules/chromium\_tests][5] corresponding
-to your new builder's master name. The format is somewhat in flux
-and is not very consistent among the different masters, but something
+to your new builder's builder group. The format is somewhat in flux
+and is not very consistent among the different builder groups, but something
 like this should suffice:
 
 ``` py
@@ -129,21 +174,21 @@ TRYBOTS = freeze({
       # If you want to build and test the same targets as one
       # CI builder, you can just do this:
       'your-new-builder': simple_bot({
-        'mastername': 'chromium.example',
+        'builder_group': 'chromium.example',
         'buildername': 'your-new-builder'
       }),
 
       # If you want to build the same targets as one CI builder
       # but not test anything, you can do this:
       'your-new-compile-builder': simple_bot({
-        'mastername': 'chromium.example',
+        'builder_group': 'chromium.example',
         'buildername': 'your-new-builder',
       }, analyze_mode='compile'),
 
       # If you want to build and test the same targets as a builder/tester
       # CI pair, you can do this:
       'your-new-tester': simple_bot({
-        'mastername': 'chromium.example',
+        'builder_group': 'chromium.example',
         'buildername': 'your-new-builder',
         'tester': 'your-new-tester',
       }),
@@ -197,10 +242,10 @@ module-level defaults.
 A typical chromium builder won't need to configure much; module-level defaults
 apply values that are widely used for the bucket (e.g. bucket and executable).
 
-Each master has a function (sometimes multiple) defined that can be used to
-define a builder that runs with that mastername and sets master-specific
-defaults. Find the block of builders defined using the appropriate function and
-add a new definition, which may be as simple as:
+Each builder group has a function (sometimes multiple) defined that can be used
+to define a builder that runs with that builder group name and sets
+group-specific defaults. Find the block of builders defined using the
+appropriate function and add a new definition, which may be as simple as:
 
 ```starlark
 ci.linux_builder(
@@ -226,7 +271,7 @@ Milo's configuration schema is [here][9].
 Each console has a corresponding `.star` file that defines the console.
 
 A typical chromium builder should be added to one or two consoles
-at most: one corresponding to its master, and possibly the main
+at most: one corresponding to its builder group, and possibly the main
 console.
 
 ##### CI builders
@@ -238,7 +283,7 @@ console.
 
 ```starlark
 luci.console_view(
-    name = '$MASTER_NAME',
+    name = '$BUILDER_GROUP_NAME',
     ...
     entries = [
         ...
@@ -271,7 +316,7 @@ as is the method of defining the console.
 
 ```starlark
 luci.list_view(
-    name = '$MASTER_NAME',
+    name = '$BUILDER_GROUP_NAME',
     entries = [
         ...
         '$BUCKET_NAME/$BUILDER_NAME',
@@ -377,3 +422,5 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [22]: /infra/config/main.star
 [23]: /infra/config/subprojects/chromium
 [24]: /infra/config/lib/builders.star
+[25]: https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipe_modules/chromium_tests_builder_config/trybots.py
+[26]: /infra/config/generated/cq-builders.md

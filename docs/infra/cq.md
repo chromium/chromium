@@ -115,6 +115,8 @@ In both cases, when filing bugs, please include links to the build and/or CL
 
 There are several requirements for a builder to be added to the Commit Queue.
 
+* There must be a "mirrored" (aka matching) CI builder that is sheriffed, to
+  ensure that someone is actively keeping the configuration green.
 * All the code for this configuration must be in Chromium's public repository or
   brought in through [src/DEPS](../../DEPS).
 * Setting up the build should be straightforward for a Chromium developer
@@ -130,7 +132,7 @@ There are several requirements for a builder to be added to the Commit Queue.
   If a configuration only fails once every couple of weeks on the waterfalls,
   then it's probably not worth adding it to the commit queue.
 
-Please email dpranke@chromium.org, who will approve new build configurations.
+Please email estaab@chromium.org, who will approve new build configurations.
 
 ### How do I ensure a trybot runs on all changes to a specific directory?
 
