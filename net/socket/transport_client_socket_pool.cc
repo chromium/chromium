@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"

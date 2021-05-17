@@ -4,6 +4,7 @@
 
 #include "net/base/scheme_host_port_matcher.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 

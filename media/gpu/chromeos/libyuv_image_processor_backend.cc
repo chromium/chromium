@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"

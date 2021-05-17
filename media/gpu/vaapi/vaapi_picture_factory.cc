@@ -4,6 +4,7 @@
 
 #include "media/gpu/vaapi/vaapi_picture_factory.h"
 
+#include "base/containers/contains.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/picture.h"
 #include "ui/base/ui_base_features.h"

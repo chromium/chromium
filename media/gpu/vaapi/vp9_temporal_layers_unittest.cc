@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"

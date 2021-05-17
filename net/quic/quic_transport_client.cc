@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_transport_client.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/abseil_string_conversions.h"

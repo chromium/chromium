@@ -48,6 +48,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
