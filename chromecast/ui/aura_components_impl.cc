@@ -17,7 +17,7 @@ AuraComponentsImpl::AuraComponentsImpl(CastWindowManager* cast_window_manager)
 #endif
 }
 
-AuraComponentsImpl::~AuraComponentsImpl(){};
+AuraComponentsImpl::~AuraComponentsImpl() = default;
 
 // static
 std::unique_ptr<AuraComponents> AuraComponents::Create(
