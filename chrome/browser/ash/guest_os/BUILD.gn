@@ -7,5 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("guest_os_diagnostics_mojom") {
   sources = [ "guest_os_diagnostics.mojom" ]
 
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
 }

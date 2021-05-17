@@ -55,7 +55,7 @@
     <template is="dom-if" if="[[diagnostics_.topError]]">
       <div id="top-error">
         [[formatTopErrorMessage(diagnostics_.topError.message)]]
-        <a href$="[[diagnostics_.topError.learnMoreLink]]"
+        <a href$="[[diagnostics_.topError.learnMoreLink.url]]"
             hidden$="[[!diagnostics_.topError.learnMoreLink]]">
           $i18n{learnMoreLabel}
         </a>
@@ -79,7 +79,7 @@
             <td>
               <template is="dom-if" if="[[item.explanation]]">
                 [[item.explanation.message]]
-                <a href$="[[item.explanation.learnMoreLink]]"
+                <a href$="[[item.explanation.learnMoreLink.url]]"
                    hidden$="[[!item.explanation.learnMoreLink]]">
                   $i18n{learnMoreLabel}
                 </a>

@@ -4,9 +4,11 @@
 
 module guest_os.mojom;
 
+import "url/mojom/url.mojom";
+
 struct DiagnosticMessage {
   string message;
-  string? learn_more_link;
+  url.mojom.Url? learn_more_link;
 };
 
 struct DiagnosticEntry {

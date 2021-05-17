@@ -105,10 +105,9 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           break;
         case ProfileSupported::kErrorEphemeral:
           entry.SetFail(
-
               IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION,
               /*learn_more_link=*/
-              "https://support.google.com/chromebook?p=ephemeral_mode");
+              GURL("https://support.google.com/chromebook?p=ephemeral_mode"));
           break;
         case ProfileSupported::kErrorNotSupported:
           entry.SetFail(IDS_VM_STATUS_PAGE_UNSUPPORTED_PROFILE_EXPLANATION);
@@ -146,8 +145,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           entry.SetFail(IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION)
               .OverrideTopError(
                   IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR,
-                  /*learn_more_link=*/
-                  "https://support.google.com/chromebook?p=enroll_device");
+                  /*learn_more_link=*/GURL(
+                      "https://support.google.com/chromebook?p=enroll_device"));
           set_standard_top_error = false;
           break;
         case PolicyConfigured::kErrorUserNotAffiliated:
@@ -212,7 +211,8 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
                     IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
                     l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)),
                 /*learn_more_link=*/
-                "https://support.google.com/chromebook?p=parallels_setup");
+                GURL(
+                    "https://support.google.com/chromebook?p=parallels_setup"));
       } else {
         // Everything is good. Do nothing.
       }

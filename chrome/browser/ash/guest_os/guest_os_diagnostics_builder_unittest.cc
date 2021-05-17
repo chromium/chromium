@@ -20,7 +20,7 @@ class GuestOsDiagnosticsBuilderTest : public testing::Test {
 
 void CheckMessage(const mojom::DiagnosticMessagePtr& message_with_link,
                   const std::string& message,
-                  const std::string& link) {
+                  const GURL& link) {
   ASSERT_FALSE(message_with_link.is_null());
   EXPECT_EQ(message_with_link->message, message);
   EXPECT_EQ(message_with_link->learn_more_link, link);
@@ -30,7 +30,7 @@ void CheckDiagnosticEntry(const mojom::DiagnosticEntryPtr& entry,
                           const std::string& requirement,
                           Status status,
                           const std::string& explanation,
-                          const std::string& learn_more_link) {
+                          const GURL& learn_more_link) {
   ASSERT_FALSE(entry.is_null());
   EXPECT_EQ(entry->requirement, requirement);
   EXPECT_EQ(entry->status, status);
@@ -43,12 +43,12 @@ TEST_F(GuestOsDiagnosticsBuilderTest, TopError) {
   DiagnosticsBuilder builder;
   {
     EntryBuilder entry("foo");
-    entry.SetFail("foo is wrong", "http://foo-is-wrong");
+    entry.SetFail("foo is wrong", GURL("http://foo-is-wrong"));
     builder.AddEntry(std::move(entry));
   }
   {
     EntryBuilder entry("bar");
-    entry.SetFail("bar is wrong", "http://bar-is-wrong");
+    entry.SetFail("bar is wrong", GURL("http://bar-is-wrong"));
     builder.AddEntry(std::move(entry));
   }
   auto diagnostics = builder.Build();
@@ -56,11 +56,12 @@ TEST_F(GuestOsDiagnosticsBuilderTest, TopError) {
   ASSERT_EQ(entries.size(), 2);
 
   CheckDiagnosticEntry(entries[0], "foo", Status::kFail, "foo is wrong",
-                       "http://foo-is-wrong");
+                       GURL("http://foo-is-wrong"));
   CheckDiagnosticEntry(entries[1], "bar", Status::kFail, "bar is wrong",
-                       "http://bar-is-wrong");
+                       GURL("http://bar-is-wrong"));
 
-  CheckMessage(diagnostics->top_error, "foo is wrong", "http://foo-is-wrong");
+  CheckMessage(diagnostics->top_error, "foo is wrong",
+               GURL("http://foo-is-wrong"));
 }
 
 // Test override top error.
@@ -68,8 +69,8 @@ TEST_F(GuestOsDiagnosticsBuilderTest, OverrideTopError) {
   DiagnosticsBuilder builder;
   {
     EntryBuilder entry("foo");
-    entry.SetFail("foo is wrong", "http://foo-is-wrong")
-        .OverrideTopError("foo is so wrong", "http://foo-is-so-wrong");
+    entry.SetFail("foo is wrong", GURL("http://foo-is-wrong"))
+        .OverrideTopError("foo is so wrong", GURL("http://foo-is-so-wrong"));
     builder.AddEntry(std::move(entry));
   }
   auto diagnostics = builder.Build();
@@ -77,10 +78,10 @@ TEST_F(GuestOsDiagnosticsBuilderTest, OverrideTopError) {
   ASSERT_EQ(entries.size(), 1);
 
   CheckDiagnosticEntry(entries[0], "foo", Status::kFail, "foo is wrong",
-                       "http://foo-is-wrong");
+                       GURL("http://foo-is-wrong"));
 
   CheckMessage(diagnostics->top_error, "foo is so wrong",
-               "http://foo-is-so-wrong");
+               GURL("http://foo-is-so-wrong"));
 }
 
 }  // namespace guest_os

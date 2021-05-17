@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace guest_os {
 
@@ -38,18 +39,18 @@ class DiagnosticsBuilder {
     // error is applied.
     EntryBuilder& SetFail(
         const std::string& explanation,
-        const absl::optional<std::string>& learn_more_link = absl::nullopt);
+        const absl::optional<GURL>& learn_more_link = absl::nullopt);
     void OverrideTopError(
         const std::string& error,
-        const absl::optional<std::string>& learn_more_link = absl::nullopt);
+        const absl::optional<GURL>& learn_more_link = absl::nullopt);
 
     // Version that accepting a message id.
     EntryBuilder& SetFail(
         int explanation_message_id,
-        const absl::optional<std::string>& learn_more_link = base::nullopt);
+        const absl::optional<GURL>& learn_more_link = absl::nullopt);
     void OverrideTopError(
         int error_message_id,
-        const absl::optional<std::string>& learn_more_link = base::nullopt);
+        const absl::optional<GURL>& learn_more_link = absl::nullopt);
 
    private:
     mojom::DiagnosticEntryPtr entry_;
