@@ -304,7 +304,7 @@
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
 <translation id="4112644173421521737">खोज्नुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
-<translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको अनुप्रयोगमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
+<translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको एपमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
 <translation id="4124987746317609294">समय दायरा</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
@@ -321,7 +321,7 @@
 <translation id="430967081421617822">सर्वकालीन</translation>
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
 <translation id="4338650699862464074">यसले Google मा तपाईं जाने पृष्ठका URL हरू पठाउँछ।</translation>
-<translation id="4359125752503270327">यो पृष्ठ अर्को अनुप्रयोगमा खुल्नेछ।</translation>
+<translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
@@ -496,7 +496,7 @@
 <translation id="6196207969502475924">आवाज खोज</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} वटा ट्याब बन्द गर्नुहोस्}other{{COUNT} वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="6219688215832490856">कहिल्यै पनि अनुवाद नगर्नुहोस्</translation>
-<translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो अनुप्रयोगमा खोल्नुहोस्।</translation>
+<translation id="6254066287920239840">लिंंकहरूलाई ब्राउजरको सट्टा यो एपमा खोल्नुहोस्।</translation>
 <translation id="6255097610484507482">क्रेडिट कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषा अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="6293101329759844770">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् र Safe Browsing मा ट्याप गर्नुहोस्।</translation>

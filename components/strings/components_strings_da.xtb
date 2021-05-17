@@ -838,7 +838,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4152318981910038897">{COUNT,plural, =1{Side 1}one{Side {COUNT}}other{Side {COUNT}}}</translation>
 <translation id="4154664944169082762">Fingeraftryk</translation>
 <translation id="4159784952369912983">Lilla</translation>
-<translation id="4165986682804962316">Indstillinger for websites</translation>
+<translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4171400957073367226">Ugyldig verifikationssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Vis altid</translation>

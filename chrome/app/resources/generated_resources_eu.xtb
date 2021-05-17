@@ -3714,7 +3714,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5133483819862530305">Iluntzetik egunsentira</translation>
 <translation id="5135085122826131075">Laguntzailea atzitzeko, esan "Ok Google".</translation>
 <translation id="5135533361271311778">Ezin izan da sortu laster-markaren elementua.</translation>
-<translation id="5136343472380336530">Egiaztatu bi gailuak desblokeatuta daudela, elkarrengandik hurbil daudela eta Bluetooth-a aktibatuta daukatela. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="5136343472380336530">Egiaztatu bi gailuak desblokeatuta daudela, elkarrengandik hurbil daudela, eta Bluetooth-a aktibatuta daukatela. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Ezabatu elementua</translation>
 <translation id="5139112070765735680">Bilatu "<ph name="QUERY_NAME" />" <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> erabilita</translation>
 <translation id="5139823398361067371">Idatzi segurtasun-giltzaren PIN kodea. PIN kodea ez badakizu, segurtasun-giltza berrezarri egin beharko duzu.</translation>
@@ -4572,7 +4572,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6100736666660498114">Hasierako menua</translation>
 <translation id="6101226222197207147">Aplikazio berria gaitu da (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Babes aurreratuak blokeatu du fitxategi hau.</translation>
-<translation id="6103681770816982672">Abisua: garatzaileen kanalera aldatzen ari zara</translation>
+<translation id="6103681770816982672">Abisua: garatzaileentzako kanalera aldatzen ari zara</translation>
 <translation id="6104068876731806426">Google Kontuak</translation>
 <translation id="6104311680260824317">Ezin da gehitu gailua domeinuan. Zerbitzariak ez ditu onartzen zehaztutako Kerberos enkriptatze motak. Joan "Aukera gehiago" atalera enkriptatze-ezarpenak ikusteko.</translation>
 <translation id="6104796831253957966">Beteta dago inprimagailuaren ilara</translation>
