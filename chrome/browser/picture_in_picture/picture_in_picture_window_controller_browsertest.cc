@@ -2052,6 +2052,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
+  // Make sure the action handler is set before trying to invoke the action.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, true));
+
   // Simulates user clicking "Skip Ad" and check the handler function is called.
   window_controller()->SkipAd();
   std::u16string expected_title = u"skipad";
@@ -2068,13 +2072,32 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Move the second player out of the way to simplify the "active/inactive"
+  // media session state handling.
+  ASSERT_TRUE(
+      content::ExecuteScript(active_web_contents, "secondVideo.src = '';"));
+
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('play');"));
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('pause');"));
+
+  // Make sure the action handlers are set before trying to invoke the actions.
+  // In the case of MediaStream, the play/pause button is only visible if the
+  // action handlers are set.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "ensureVideoIsPlaying();", &result));
+      active_web_contents, "changeVideoSrcToMediaStream();", &result));
+  ASSERT_TRUE(result);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
+  // Now we can switch back to regular src=, which is needed to be able to
+  // unpause the video later (the MediaStream player leaves the media session
+  // when paused, so no more Media Session action handling there).
+  result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      active_web_contents, "changeVideoSrc();", &result));
   ASSERT_TRUE(result);
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
@@ -2117,6 +2140,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
 
+  // Make sure the action handler is set before trying to invoke the action.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, true));
+
   // Simulates user clicking "Next Track" and check the handler function is
   // called.
   window_controller()->NextTrack();
@@ -2142,6 +2169,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(result);
   WaitForPlaybackState(active_web_contents,
                        OverlayWindowViews::PlaybackState::kPlaying);
+
+  // Make sure the action handler is set before trying to invoke the action.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, true));
 
   // Simulates user clicking "Previous Track" and check the handler function is
   // called.
