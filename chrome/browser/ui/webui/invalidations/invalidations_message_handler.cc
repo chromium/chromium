@@ -33,7 +33,12 @@ invalidation::ProfileInvalidationProvider* GetInvalidationProvider(
 
 InvalidationsMessageHandler::InvalidationsMessageHandler() : logger_(nullptr) {}
 
-InvalidationsMessageHandler::~InvalidationsMessageHandler() = default;
+InvalidationsMessageHandler::~InvalidationsMessageHandler() {
+  // This handler can be destroyed without OnJavascriptDisallowed() ever being
+  // called (https://crbug.com/1199198). Call it to ensure that `this` is
+  // removed as an observer.
+  OnJavascriptDisallowed();
+}
 
 void InvalidationsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
