@@ -9,9 +9,9 @@
 #include <atomic>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -128,7 +128,7 @@ class BASE_EXPORT MetadataRecorder {
   MetadataRecorder& operator=(const MetadataRecorder&) = delete;
 
   struct BASE_EXPORT Item {
-    Item(uint64_t name_hash, Optional<int64_t> key, int64_t value);
+    Item(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
     Item();
 
     Item(const Item& other);
@@ -137,7 +137,7 @@ class BASE_EXPORT MetadataRecorder {
     // The hash of the metadata name, as produced by HashMetricName().
     uint64_t name_hash;
     // The key if specified when setting the item.
-    Optional<int64_t> key;
+    absl::optional<int64_t> key;
     // The value of the metadata item.
     int64_t value;
   };
@@ -147,11 +147,11 @@ class BASE_EXPORT MetadataRecorder {
   // Sets a value for a (|name_hash|, |key|) pair, overwriting any value
   // previously set for the pair. Nullopt keys are treated as just another key
   // state for the purpose of associating values.
-  void Set(uint64_t name_hash, Optional<int64_t> key, int64_t value);
+  void Set(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
 
   // Removes the item with the specified name hash and optional key. Has no
   // effect if such an item does not exist.
-  void Remove(uint64_t name_hash, Optional<int64_t> key);
+  void Remove(uint64_t name_hash, absl::optional<int64_t> key);
 
   // An object that provides access to a MetadataRecorder's items and holds the
   // necessary exclusive read lock until the object is destroyed. Reclaiming of
@@ -218,7 +218,7 @@ class BASE_EXPORT MetadataRecorder {
     // |name_hash| and |key| will be finished writing before |is_active| is set
     // to true.
     uint64_t name_hash;
-    Optional<int64_t> key;
+    absl::optional<int64_t> key;
 
     // Requires atomic reads and writes to avoid word tearing when updating an
     // existing item unsynchronized. Does not require acquire/release semantics

@@ -6,8 +6,8 @@
 #define BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -34,7 +34,7 @@ class BASE_EXPORT LazyNow {
 
  private:
   const TickClock* tick_clock_;  // Not owned.
-  Optional<TimeTicks> now_;
+  absl::optional<TimeTicks> now_;
 };
 
 }  // namespace sequence_manager

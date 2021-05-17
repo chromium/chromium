@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -77,7 +77,7 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
  private:
 #if defined(OS_WIN)
   // The original priority when invoking entering the scope().
-  base::Optional<ThreadPriority> original_thread_priority_;
+  absl::optional<ThreadPriority> original_thread_priority_;
   std::atomic_bool* const already_loaded_;
 #endif
 

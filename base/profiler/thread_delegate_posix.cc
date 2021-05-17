@@ -7,11 +7,11 @@
 #include <stdio.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/files/file_util.h"
@@ -23,12 +23,12 @@ namespace base {
 namespace {
 
 #if defined(OS_ANDROID)
-base::Optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
+absl::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
   char line[1024];
   base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
   uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
   if (!fp)
-    return base::nullopt;
+    return absl::nullopt;
   while (fgets(line, sizeof(line), fp.get()) != nullptr) {
     uintptr_t start, end;
     if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
@@ -36,7 +36,7 @@ base::Optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
         return end;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 #endif
 
@@ -53,7 +53,7 @@ uintptr_t GetThreadStackBaseAddressImpl(
   return base_address;
 }
 
-base::Optional<uintptr_t> GetThreadStackBaseAddress(
+absl::optional<uintptr_t> GetThreadStackBaseAddress(
     SamplingProfilerThreadToken thread_token) {
 #if defined(OS_ANDROID)
   // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps
@@ -63,7 +63,7 @@ base::Optional<uintptr_t> GetThreadStackBaseAddress(
   // from pthread state so are cheap to get.
   const bool is_main_thread = thread_token.id == GetCurrentProcId();
   if (is_main_thread) {
-    static const base::Optional<uintptr_t> main_thread_base_address =
+    static const absl::optional<uintptr_t> main_thread_base_address =
         GetAndroidMainThreadStackBaseAddressImpl();
     return main_thread_base_address;
   }
@@ -76,7 +76,7 @@ base::Optional<uintptr_t> GetThreadStackBaseAddress(
 // static
 std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
     SamplingProfilerThreadToken thread_token) {
-  base::Optional<uintptr_t> base_address =
+  absl::optional<uintptr_t> base_address =
       GetThreadStackBaseAddress(thread_token);
   if (!base_address)
     return nullptr;

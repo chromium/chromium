@@ -147,8 +147,9 @@ using is_trivially_copyable = std::is_trivially_copyable<T>;
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ <= 7
 // Workaround for g++7 and earlier family.
 // Due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80654, without this
-// Optional<std::vector<T>> where T is non-copyable causes a compile error.
-// As we know it is not trivially copy constructible, explicitly declare so.
+// absl::optional<std::vector<T>> where T is non-copyable causes a compile
+// error.  As we know it is not trivially copy constructible, explicitly declare
+// so.
 template <typename T>
 struct is_trivially_copy_constructible
     : std::is_trivially_copy_constructible<T> {};

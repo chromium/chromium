@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -50,8 +51,8 @@ class TestTimeDomain : public TimeDomain {
   LazyNow CreateLazyNow() const override { return LazyNow(now_); }
   TimeTicks Now() const override { return now_; }
 
-  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    return Optional<TimeDelta>();
+  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
+    return absl::optional<TimeDelta>();
   }
 
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override {
@@ -293,7 +294,7 @@ TEST_F(TimeDomainTest, CancelDelayedWork) {
   EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()));
-  task_queue_->SetDelayedWakeUpForTesting(nullopt);
+  task_queue_->SetDelayedWakeUpForTesting(absl::nullopt);
   EXPECT_FALSE(time_domain_->NextScheduledTaskQueue());
 }
 
@@ -321,7 +322,7 @@ TEST_F(TimeDomainTest, CancelDelayedWork_TwoQueues) {
   EXPECT_EQ(run_time1, time_domain_->NextScheduledRunTime());
 
   EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time2));
-  task_queue_->SetDelayedWakeUpForTesting(nullopt);
+  task_queue_->SetDelayedWakeUpForTesting(absl::nullopt);
   EXPECT_EQ(task_queue2.get(), time_domain_->NextScheduledTaskQueue());
 
   EXPECT_EQ(run_time2, time_domain_->NextScheduledRunTime());
@@ -356,11 +357,11 @@ TEST_F(TimeDomainTest, HighResolutionWakeUps) {
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Remove one of the wake-ups.
-  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Remove the second one too.
-  time_domain_->SetNextWakeUpForQueue(&q2, nullopt, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q2, absl::nullopt, &lazy_now);
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
 
   // Change a low resolution wake-up to a high resolution one.
@@ -383,8 +384,8 @@ TEST_F(TimeDomainTest, HighResolutionWakeUps) {
   EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
 
   // Cancel the wake-up twice.
-  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
-  time_domain_->SetNextWakeUpForQueue(&q1, nullopt, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
+  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
   EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
 
   // Tidy up.

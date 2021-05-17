@@ -9,6 +9,7 @@
 #include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -31,14 +32,14 @@ void WriteTokenToPickle(Pickle* pickle, const Token& token) {
   pickle->WriteUInt64(token.low());
 }
 
-Optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
+absl::optional<Token> ReadTokenFromPickle(PickleIterator* pickle_iterator) {
   uint64_t high;
   if (!pickle_iterator->ReadUInt64(&high))
-    return nullopt;
+    return absl::nullopt;
 
   uint64_t low;
   if (!pickle_iterator->ReadUInt64(&low))
-    return nullopt;
+    return absl::nullopt;
 
   return Token(high, low);
 }

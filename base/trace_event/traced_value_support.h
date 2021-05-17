@@ -7,10 +7,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 // This file contains specialisations for trace serialisation for key
@@ -50,16 +50,16 @@ struct TraceFormatTraits<::base::WeakPtr<T>,
   }
 };
 
-// If T is serialisable into a trace, base::Optional<T> is serialisable as well.
-// Note that we need definitions for both base::Optional<T>& and
-// const base::Optional<T>& (unlike scoped_refptr and WeakPtr above), as
+// If T is serialisable into a trace, absl::optional<T> is serialisable as well.
+// Note that we need definitions for both absl::optional<T>& and
+// const absl::optional<T>& (unlike scoped_refptr and WeakPtr above), as
 // dereferencing const scoped_refptr<T>& gives you T, while dereferencing const
-// base::Optional<T>& gives you const T&.
+// absl::optional<T>& gives you const T&.
 template <class T>
-struct TraceFormatTraits<::base::Optional<T>,
+struct TraceFormatTraits<::absl::optional<T>,
                          perfetto::check_traced_value_support_t<T>> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::base::Optional<T>& value) {
+                             const ::absl::optional<T>& value) {
     if (!value) {
       std::move(context).WritePointer(nullptr);
       return;
@@ -68,7 +68,7 @@ struct TraceFormatTraits<::base::Optional<T>,
   }
 
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             ::base::Optional<T>& value) {
+                             ::absl::optional<T>& value) {
     if (!value) {
       std::move(context).WritePointer(nullptr);
       return;

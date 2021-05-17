@@ -6,6 +6,7 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -25,10 +26,10 @@ TimeTicks RealTimeDomain::Now() const {
   return tick_clock_->NowTicks();
 }
 
-Optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  Optional<TimeTicks> next_run_time = NextScheduledRunTime();
+absl::optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
+  absl::optional<TimeTicks> next_run_time = NextScheduledRunTime();
   if (!next_run_time)
-    return nullopt;
+    return absl::nullopt;
 
   TimeTicks now = lazy_now->Now();
   if (now >= next_run_time) {

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 extern char __executable_start;
 
@@ -127,8 +128,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryName) {
                            .AddSoName("mysoname")
                            .Build();
 
-  Optional<StringPiece> library_name = ReadElfLibraryName(image.elf_start());
-  ASSERT_NE(nullopt, library_name);
+  absl::optional<StringPiece> library_name =
+      ReadElfLibraryName(image.elf_start());
+  ASSERT_NE(absl::nullopt, library_name);
   EXPECT_EQ("mysoname", *library_name);
 }
 
@@ -137,8 +139,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryNameNoSoName) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
-  Optional<StringPiece> library_name = ReadElfLibraryName(image.elf_start());
-  EXPECT_EQ(nullopt, library_name);
+  absl::optional<StringPiece> library_name =
+      ReadElfLibraryName(image.elf_start());
+  EXPECT_EQ(absl::nullopt, library_name);
 }
 
 TEST_P(ElfReaderTest, GetRelocationOffset) {

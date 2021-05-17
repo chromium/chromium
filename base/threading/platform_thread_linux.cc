@@ -25,6 +25,7 @@
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_NACL) && !defined(OS_AIX)
 #include <pthread.h>
@@ -297,7 +298,7 @@ const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4] = {
     {ThreadPriority::REALTIME_AUDIO, -10},
 };
 
-Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
+absl::optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
     ThreadPriority priority) {
 #if !defined(OS_NACL)
   // A non-zero soft-limit on RLIMIT_RTPRIO is required to be allowed to invoke
@@ -305,10 +306,10 @@ Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
   struct rlimit rlim;
   if (priority == ThreadPriority::REALTIME_AUDIO &&
       getrlimit(RLIMIT_RTPRIO, &rlim) != 0 && rlim.rlim_cur != 0) {
-    return base::make_optional(true);
+    return absl::make_optional(true);
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
@@ -329,7 +330,7 @@ bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
 #endif
 }
 
-Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
+absl::optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
 #if !defined(OS_NACL)
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
@@ -337,10 +338,10 @@ Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
                             &maybe_realtime_prio) == 0 &&
       maybe_sched_rr == SCHED_RR &&
       maybe_realtime_prio.sched_priority == kRealTimePrio.sched_priority) {
-    return base::make_optional(ThreadPriority::REALTIME_AUDIO);
+    return absl::make_optional(ThreadPriority::REALTIME_AUDIO);
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace internal

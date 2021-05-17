@@ -11,12 +11,12 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -61,7 +61,7 @@ struct ParsedDecimal {
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=807&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-constexpr Optional<ParsedDecimal> ConsumeDurationNumber(
+constexpr absl::optional<ParsedDecimal> ConsumeDurationNumber(
     StringPiece& number_string) {
   ParsedDecimal res;
   StringPiece::const_iterator orig_start = number_string.begin();
@@ -72,15 +72,15 @@ constexpr Optional<ParsedDecimal> ConsumeDurationNumber(
       break;
 
     if (res.int_part > std::numeric_limits<int64_t>::max() / 10)
-      return nullopt;
+      return absl::nullopt;
     res.int_part *= 10;
     if (res.int_part > std::numeric_limits<int64_t>::max() - d)
-      return nullopt;
+      return absl::nullopt;
     res.int_part += d;
   }
   const bool int_part_empty = number_string.begin() == orig_start;
   if (number_string.empty() || number_string.front() != '.')
-    return int_part_empty ? nullopt : make_optional(res);
+    return int_part_empty ? absl::nullopt : absl::make_optional(res);
 
   number_string.remove_prefix(1);  // consume '.'
   // Parse contiguous digits.
@@ -97,7 +97,8 @@ constexpr Optional<ParsedDecimal> ConsumeDurationNumber(
     }
   }
 
-  return int_part_empty && res.frac_scale == 1 ? nullopt : make_optional(res);
+  return int_part_empty && res.frac_scale == 1 ? absl::nullopt
+                                               : absl::make_optional(res);
 }
 
 // A helper for FromString() that tries to parse a leading unit designator
@@ -106,7 +107,7 @@ constexpr Optional<ParsedDecimal> ConsumeDurationNumber(
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=841&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-Optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
+absl::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
   for (const auto& str_delta : {
            std::make_pair("ns", TimeDelta::FromNanoseconds(1)),
            std::make_pair("us", TimeDelta::FromMicroseconds(1)),
@@ -121,7 +122,7 @@ Optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
       return str_delta.second;
   }
 
-  return nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -144,14 +145,14 @@ ThreadTicksNowFunction g_thread_ticks_now_function =
 // TimeDelta ------------------------------------------------------------------
 
 // static
-Optional<TimeDelta> TimeDelta::FromString(StringPiece duration_string) {
+absl::optional<TimeDelta> TimeDelta::FromString(StringPiece duration_string) {
   int sign = 1;
   if (ConsumePrefix(duration_string, "-"))
     sign = -1;
   else
     ConsumePrefix(duration_string, "+");
   if (duration_string.empty())
-    return nullopt;
+    return absl::nullopt;
 
   // Handle special-case values that don't require units.
   if (duration_string == "0")
@@ -161,12 +162,13 @@ Optional<TimeDelta> TimeDelta::FromString(StringPiece duration_string) {
 
   TimeDelta delta;
   while (!duration_string.empty()) {
-    Optional<ParsedDecimal> number_opt = ConsumeDurationNumber(duration_string);
+    absl::optional<ParsedDecimal> number_opt =
+        ConsumeDurationNumber(duration_string);
     if (!number_opt.has_value())
-      return nullopt;
-    Optional<TimeDelta> unit_opt = ConsumeDurationUnit(duration_string);
+      return absl::nullopt;
+    absl::optional<TimeDelta> unit_opt = ConsumeDurationUnit(duration_string);
     if (!unit_opt.has_value())
-      return nullopt;
+      return absl::nullopt;
 
     ParsedDecimal number = number_opt.value();
     TimeDelta unit = unit_opt.value();

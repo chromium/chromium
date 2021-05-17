@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/optional.h"
 #include "base/sequence_token.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"

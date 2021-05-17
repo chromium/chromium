@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/win/windows_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -66,36 +66,38 @@ class BASE_EXPORT Sid {
  public:
   // Create a Sid from an AppContainer capability name. The name can be
   // completely arbitrary. Only available on Windows 10 and above.
-  static Optional<Sid> FromNamedCapability(const wchar_t* capability_name);
+  static absl::optional<Sid> FromNamedCapability(
+      const wchar_t* capability_name);
 
   // Create a Sid from a known capability enumeration value. The Sids
   // match with the list defined in Windows 8.
-  static Optional<Sid> FromKnownCapability(WellKnownCapability capability);
+  static absl::optional<Sid> FromKnownCapability(
+      WellKnownCapability capability);
 
   // Create a SID from a well-known type.
-  static Optional<Sid> FromKnownSid(WellKnownSid type);
+  static absl::optional<Sid> FromKnownSid(WellKnownSid type);
 
   // Create a Sid from a SDDL format string, such as S-1-1-0.
-  static Optional<Sid> FromSddlString(const wchar_t* sddl_sid);
+  static absl::optional<Sid> FromSddlString(const wchar_t* sddl_sid);
 
   // Create a Sid from a PSID pointer.
-  static Optional<Sid> FromPSID(const PSID sid);
+  static absl::optional<Sid> FromPSID(const PSID sid);
 
   // Generate a random SID value.
-  static Optional<Sid> GenerateRandomSid();
+  static absl::optional<Sid> GenerateRandomSid();
 
   // Create a SID for the current user.
-  static Optional<Sid> CurrentUser();
+  static absl::optional<Sid> CurrentUser();
 
   // Create a SID for an integrity level RID.
-  static Optional<Sid> FromIntegrityLevel(DWORD integrity_level);
+  static absl::optional<Sid> FromIntegrityLevel(DWORD integrity_level);
 
   // Create a vector of SIDs from a vector of SDDL format strings.
-  static Optional<std::vector<Sid>> FromSddlStringVector(
+  static absl::optional<std::vector<Sid>> FromSddlStringVector(
       const std::vector<const wchar_t*>& sddl_sids);
 
   // Create a vector of SIDs from a vector of capability names.
-  static Optional<std::vector<Sid>> FromNamedCapabilityVector(
+  static absl::optional<std::vector<Sid>> FromNamedCapabilityVector(
       const std::vector<const wchar_t*>& capability_names);
 
   Sid(const Sid&) = delete;
@@ -108,7 +110,7 @@ class BASE_EXPORT Sid {
   PSID GetPSID() const;
 
   // Converts the SID to a SDDL format string.
-  Optional<std::wstring> ToSddlString() const;
+  absl::optional<std::wstring> ToSddlString() const;
 
  private:
   Sid(const void* sid, size_t length);

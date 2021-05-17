@@ -139,7 +139,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsOnNoResponseFromConcierge) {
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             // Concierge will return an empty ListVmDisksResponse.
             fake_concierge_client_->set_list_vm_disks_response(
-                base::Optional<vm_tools::concierge::ListVmDisksResponse>());
+                absl::optional<vm_tools::concierge::ListVmDisksResponse>());
             std::move(callback).Run(1 * kGiB);
           }));
 

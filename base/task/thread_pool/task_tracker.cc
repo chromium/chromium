@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
@@ -31,6 +30,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -418,7 +418,7 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
 
   // Run the next task in |task_source|.
-  Optional<Task> task;
+  absl::optional<Task> task;
   TaskTraits traits;
   {
     auto transaction = task_source->BeginTransaction();
@@ -473,7 +473,7 @@ void TaskTracker::RunTask(Task task,
         scoped_set_task_priority_for_current_thread(traits.priority());
 
     // Local storage map used if none is provided by |environment|.
-    Optional<SequenceLocalStorageMap> local_storage_map;
+    absl::optional<SequenceLocalStorageMap> local_storage_map;
     if (!environment.sequence_local_storage)
       local_storage_map.emplace();
 
@@ -484,9 +484,9 @@ void TaskTracker::RunTask(Task task,
                 : &local_storage_map.value());
 
     // Set up TaskRunnerHandle as expected for the scope of the task.
-    Optional<SequencedTaskRunnerHandle> sequenced_task_runner_handle;
-    Optional<ThreadTaskRunnerHandle> single_thread_task_runner_handle;
-    Optional<EphemeralTaskExecutor> ephemeral_task_executor;
+    absl::optional<SequencedTaskRunnerHandle> sequenced_task_runner_handle;
+    absl::optional<ThreadTaskRunnerHandle> single_thread_task_runner_handle;
+    absl::optional<EphemeralTaskExecutor> ephemeral_task_executor;
     switch (task_source->execution_mode()) {
       case TaskSourceExecutionMode::kJob:
       case TaskSourceExecutionMode::kParallel:

@@ -16,6 +16,7 @@
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/tracked_ref.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_windows_thread_environment.h"
@@ -160,7 +161,8 @@ class BASE_EXPORT ThreadGroup {
    private:
     // A TransactionWithRegisteredTaskSource and the thread group in which it
     // should be enqueued.
-    Optional<TransactionWithRegisteredTaskSource> transaction_with_task_source_;
+    absl::optional<TransactionWithRegisteredTaskSource>
+        transaction_with_task_source_;
     ThreadGroup* destination_thread_group_ = nullptr;
   };
 

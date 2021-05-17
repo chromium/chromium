@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/message_loop/message_pump.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 

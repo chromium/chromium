@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/lazy_now.h"
 
 #include "base/time/tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -19,7 +20,7 @@ LazyNow::LazyNow(const TickClock* tick_clock)
 LazyNow::LazyNow(LazyNow&& move_from) noexcept
     : tick_clock_(move_from.tick_clock_), now_(move_from.now_) {
   move_from.tick_clock_ = nullptr;
-  move_from.now_ = nullopt;
+  move_from.now_ = absl::nullopt;
 }
 
 TimeTicks LazyNow::Now() {

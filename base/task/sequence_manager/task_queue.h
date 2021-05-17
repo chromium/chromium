@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequence_manager/lazy_now.h"
@@ -17,6 +16,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -57,7 +57,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // All methods but SetObserver, SetTimeDomain and GetTimeDomain can be
     // called on |queue|.
     //
-    // TODO(altimin): Make it Optional<TimeTicks> to tell
+    // TODO(altimin): Make it absl::optional<TimeTicks> to tell
     // observer about cancellations.
     virtual void OnQueueNextWakeUpChanged(TimeTicks next_wake_up) = 0;
   };
@@ -248,7 +248,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // which is not ready to run. If there are no such tasks (immediate tasks
   // don't count) or the queue is disabled it returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  Optional<TimeTicks> GetNextScheduledWakeUp();
+  absl::optional<TimeTicks> GetNextScheduledWakeUp();
 
   // Can be called on any thread.
   virtual const char* GetName() const;

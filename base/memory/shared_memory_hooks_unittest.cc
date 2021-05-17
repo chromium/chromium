@@ -4,8 +4,8 @@
 
 #include "base/memory/shared_memory_hooks.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -22,9 +22,9 @@ class SharedMemoryHooksTest : public ::testing::Test {
   }
 };
 
-Optional<size_t> requested_read_only_shmem_size;
-Optional<size_t> requested_unsafe_shmem_size;
-Optional<size_t> requested_writable_shmem_size;
+absl::optional<size_t> requested_read_only_shmem_size;
+absl::optional<size_t> requested_unsafe_shmem_size;
+absl::optional<size_t> requested_writable_shmem_size;
 
 MappedReadOnlyRegion ReadOnlyShmemCreateHook(size_t size) {
   requested_read_only_shmem_size = size;

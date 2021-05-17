@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -34,11 +35,11 @@ const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4] = {
     {ThreadPriority::REALTIME_AUDIO, -16},
 };
 
-Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
+absl::optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
     ThreadPriority priority) {
   if (priority == ThreadPriority::REALTIME_AUDIO)
-    return base::make_optional(true);
-  return base::nullopt;
+    return absl::make_optional(true);
+  return absl::nullopt;
 }
 
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
@@ -52,13 +53,13 @@ bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
   return false;
 }
 
-Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
+absl::optional<ThreadPriority> GetCurrentThreadPriorityForPlatform() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_ThreadUtils_isThreadPriorityAudio(
       env, PlatformThread::CurrentId())) {
-    return base::make_optional(ThreadPriority::REALTIME_AUDIO);
+    return absl::make_optional(ThreadPriority::REALTIME_AUDIO);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace internal

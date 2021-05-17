@@ -13,6 +13,7 @@
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -225,11 +226,11 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
 
-Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
-    SelectTaskOption option) const {
+absl::optional<TaskQueue::QueuePriority>
+TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!active_priority_tracker_.HasActivePriority())
-    return nullopt;
+    return absl::nullopt;
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
@@ -244,7 +245,7 @@ Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
     }
   }
 
-  return nullopt;
+  return absl::nullopt;
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(

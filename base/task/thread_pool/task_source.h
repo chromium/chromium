@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_token.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/intrusive_heap.h"

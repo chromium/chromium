@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/template_util.h"
 #include "base/trace_event/traced_value.h"
@@ -214,7 +213,7 @@ std::unique_ptr<TracedValue> ToTracedValue(T* value) {
 // there is |TracedValue::SetT| natively.
 //
 // TODO(crbug.com/1111787): Add support for:
-//   base::Optional
+//   absl::optional
 //   AsValueInto (T& and T*)
 //   array and map types
 //   fallback to ValueToString

@@ -204,7 +204,7 @@ TEST(PopulateApmConfigTest, SystemNsDeactivatesBrowserNs) {
   properties_without_system_ns.system_noise_suppression_activated = false;
   webrtc::AudioProcessing::Config apm_config_without_system_ns;
   PopulateApmConfig(&apm_config_without_system_ns, properties_without_system_ns,
-                    /*audio_processing_platform_config_json=*/base::nullopt,
+                    /*audio_processing_platform_config_json=*/absl::nullopt,
                     &gain_control_compression_gain_db);
   EXPECT_TRUE(apm_config_without_system_ns.noise_suppression.enabled);
 
@@ -214,7 +214,7 @@ TEST(PopulateApmConfigTest, SystemNsDeactivatesBrowserNs) {
   properties_with_system_ns.system_noise_suppression_activated = true;
   webrtc::AudioProcessing::Config apm_config_with_system_ns;
   PopulateApmConfig(&apm_config_with_system_ns, properties_with_system_ns,
-                    /*audio_processing_platform_config_json=*/base::nullopt,
+                    /*audio_processing_platform_config_json=*/absl::nullopt,
                     &gain_control_compression_gain_db);
   EXPECT_FALSE(apm_config_with_system_ns.noise_suppression.enabled);
 }

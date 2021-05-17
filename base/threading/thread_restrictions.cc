@@ -13,10 +13,10 @@
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -54,7 +54,7 @@ struct BooleanWithStack {
 // NaCL doesn't support stack sampling and Android is slow at stack
 // sampling and this causes timeouts (crbug.com/959139).
 #if !defined(OS_NACL) && !defined(OS_ANDROID)
-  const Optional<debug::StackTrace> stack_;
+  const absl::optional<debug::StackTrace> stack_;
 #endif
 };
 

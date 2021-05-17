@@ -5,10 +5,10 @@
 #include "base/power_monitor/power_monitor.h"
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace test {
@@ -25,7 +25,7 @@ class PowerMonitorTest : public testing::Test {
 
  private:
   TaskEnvironment task_environment_;
-  base::Optional<ScopedPowerMonitorTestSource> power_monitor_source_;
+  absl::optional<ScopedPowerMonitorTestSource> power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };

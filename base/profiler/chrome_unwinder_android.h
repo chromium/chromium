@@ -8,7 +8,6 @@
 #include "base/profiler/unwinder.h"
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/profiler/arm_cfi_table.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/register_context.h"

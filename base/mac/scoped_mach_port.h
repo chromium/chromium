@@ -8,8 +8,8 @@
 #include <mach/mach.h>
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/scoped_generic.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace mac {
@@ -69,7 +69,7 @@ using ScopedMachPortSet = ScopedGeneric<mach_port_t, internal::PortSetTraits>;
 BASE_EXPORT bool CreateMachPort(
     ScopedMachReceiveRight* receive,
     ScopedMachSendRight* send,
-    Optional<mach_port_msgcount_t> queue_limit = nullopt);
+    absl::optional<mach_port_msgcount_t> queue_limit = absl::nullopt);
 
 // Increases the user reference count for MACH_PORT_RIGHT_SEND by 1 and returns
 // a new scoper to manage the additional right.

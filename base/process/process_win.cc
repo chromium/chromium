@@ -8,10 +8,10 @@
 #include "base/debug/activity_tracker.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <windows.h>
 
@@ -216,7 +216,7 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
 
   // Record the event that this thread is blocking upon (for hang diagnosis).
-  Optional<debug::ScopedProcessWaitActivity> process_activity;
+  absl::optional<debug::ScopedProcessWaitActivity> process_activity;
   if (!timeout.is_zero()) {
     process_activity.emplace(this);
     // Assert that this thread is allowed to wait below. This intentionally

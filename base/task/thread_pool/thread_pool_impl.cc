@@ -30,6 +30,7 @@
 #include "base/task/thread_pool/worker_thread.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "base/task/thread_pool/thread_group_native_win.h"
@@ -309,7 +310,8 @@ ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
   return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
 }
 
-Optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting() const {
+absl::optional<TimeTicks> ThreadPoolImpl::NextScheduledRunTimeForTesting()
+    const {
   if (task_tracker_->HasIncompleteTaskSourcesForTesting())
     return TimeTicks::Now();
   return delayed_task_manager_.NextScheduledRunTime();
