@@ -2326,7 +2326,7 @@
                    'halliwell+watch@chromium.org',
                    'lcwu+watch@chromium.org'],
     'chromecast_public': ['gfhuang+watch@chromium.org'],
-    'chromedriver': [],
+    'chromedriver': ['mathias@chromium.org'],
     'chromeos': ['oshima+watch@chromium.org'],
     'chromeos_attestation': ['dkrahn+watch@chromium.org'],
     'chromeos_bluetooth': ['hansberry+watch-bluetooth@chromium.org',
