@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -70,6 +71,7 @@ import java.util.Map;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
 
     @Rule

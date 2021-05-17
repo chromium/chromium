@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -43,6 +44,7 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {BackgroundShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class WebappRegistryTest {
     // These were copied from WebappRegistry for backward compatibility checking.
     private static final String REGISTRY_FILE_NAME = "webapp_registry";
