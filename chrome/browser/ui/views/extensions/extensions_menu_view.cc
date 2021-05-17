@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -295,7 +296,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   // be added to the view hierarchy, which takes ownership.
   auto* item = new ExtensionsMenuItemView(browser_, std::move(controller),
                                           allow_pinning_);
-  extensions_menu_items_.push_back(item);
+  extensions_menu_items_.insert(item);
   InsertMenuItem(item);
   // Sanity check that the item was added.
   DCHECK(Contains(item));
@@ -440,11 +441,10 @@ void ExtensionsMenuView::OnToolbarActionAdded(
 
 void ExtensionsMenuView::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto iter =
-      std::find_if(extensions_menu_items_.begin(), extensions_menu_items_.end(),
-                   [action_id](const ExtensionsMenuItemView* item) {
-                     return item->view_controller()->GetId() == action_id;
-                   });
+  auto iter = base::ranges::find_if(
+      extensions_menu_items_, [action_id](const ExtensionsMenuItemView* item) {
+        return item->view_controller()->GetId() == action_id;
+      });
   DCHECK(iter != extensions_menu_items_.end());
   ExtensionsMenuItemView* const view = *iter;
   DCHECK(Contains(view));

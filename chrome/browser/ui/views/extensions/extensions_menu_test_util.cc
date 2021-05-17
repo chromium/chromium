@@ -240,7 +240,7 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
 
 ExtensionsMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     const extensions::ExtensionId& id) {
-  std::vector<ExtensionsMenuItemView*> menu_items =
+  base::flat_set<ExtensionsMenuItemView*> menu_items =
       menu_view_->extensions_menu_items_for_testing();
   auto iter =
       base::ranges::find_if(menu_items, [id](ExtensionsMenuItemView* view) {

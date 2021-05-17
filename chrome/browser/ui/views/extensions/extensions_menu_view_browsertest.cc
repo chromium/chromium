@@ -58,7 +58,7 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
     kTerminate,
   };
 
-  static std::vector<ExtensionsMenuItemView*> GetExtensionsMenuItemViews() {
+  static base::flat_set<ExtensionsMenuItemView*> GetExtensionsMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
         ->extensions_menu_items_for_testing();
   }
@@ -210,7 +210,7 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
   void TriggerSingleExtensionButton() {
     auto menu_items = GetExtensionsMenuItemViews();
     ASSERT_EQ(1u, menu_items.size());
-    TriggerExtensionButton(menu_items[0]->view_controller()->GetId());
+    TriggerExtensionButton((*menu_items.begin())->view_controller()->GetId());
   }
 
   void TriggerExtensionButton(const std::string& id) {
@@ -589,10 +589,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 
   ASSERT_TRUE(VerifyUi());
   ASSERT_EQ(1u, GetExtensionsMenuItemViews().size());
-  EXPECT_EQ(views::Button::STATE_DISABLED, GetExtensionsMenuItemViews()
-                                               .front()
-                                               ->pin_button_for_testing()
-                                               ->GetState());
+  EXPECT_EQ(views::Button::STATE_DISABLED,
+            (*GetExtensionsMenuItemViews().begin())
+                ->pin_button_for_testing()
+                ->GetState());
 
   DismissUi();
 }
@@ -614,14 +614,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ui::MouseEvent click_released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
                                       gfx::Point(), base::TimeTicks(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0);
-  GetExtensionsMenuItemViews()
-      .front()
-      ->pin_button_for_testing()
-      ->OnMousePressed(click_pressed_event);
-  GetExtensionsMenuItemViews()
-      .front()
-      ->pin_button_for_testing()
-      ->OnMouseReleased(click_released_event);
+  ExtensionsMenuItemView* const menu_item_view =
+      *GetExtensionsMenuItemViews().begin();
+  menu_item_view->pin_button_for_testing()->OnMousePressed(click_pressed_event);
+  menu_item_view->pin_button_for_testing()->OnMouseReleased(
+      click_released_event);
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
@@ -717,11 +714,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 
   auto menu_items = GetExtensionsMenuItemViews();
   ASSERT_EQ(1u, menu_items.size());
-  ExtensionsMenuItemView* item_view = menu_items[0];
+  ExtensionsMenuItemView* const item_view = *menu_items.begin();
   EXPECT_FALSE(item_view->IsContextMenuRunningForTesting());
 
   HoverButton* context_menu_button =
-      menu_items[0]->context_menu_button_for_testing();
+      item_view->context_menu_button_for_testing();
   ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   context_menu_button->OnMousePressed(press_event);

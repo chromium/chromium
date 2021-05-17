@@ -111,6 +111,8 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
 
   ToolbarActionView* GetPinnedExtensionView(const std::string& name);
 
+  ExtensionsMenuItemView* GetExtensionsMenuItemView(const std::string& name);
+
   // Returns a list of the names of the currently pinned extensions, in order
   // from left to right.
   std::vector<std::string> GetPinnedExtensionNames();
@@ -163,13 +165,13 @@ ExtensionsMenuViewUnitTest::AddSimpleExtension(const std::string& name) {
 }
 
 ExtensionsMenuItemView* ExtensionsMenuViewUnitTest::GetOnlyMenuItem() {
-  std::vector<ExtensionsMenuItemView*> menu_items =
+  base::flat_set<ExtensionsMenuItemView*> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   if (menu_items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << menu_items.size();
     return nullptr;
   }
-  return menu_items[0];
+  return *menu_items.begin();
 }
 
 void ExtensionsMenuViewUnitTest::ClickPinButton(
@@ -229,6 +231,18 @@ ToolbarActionView* ExtensionsMenuViewUnitTest::GetPinnedExtensionView(
   return *it;
 }
 
+ExtensionsMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionsMenuItemView(
+    const std::string& name) {
+  base::flat_set<ExtensionsMenuItemView*> menu_items =
+      extensions_menu()->extensions_menu_items_for_testing();
+  auto iter =
+      base::ranges::find_if(menu_items, [name](ExtensionsMenuItemView* item) {
+        return base::UTF16ToUTF8(item->view_controller()->GetActionName()) ==
+               name;
+      });
+  return iter == menu_items.end() ? nullptr : *iter;
+}
+
 std::vector<std::string> ExtensionsMenuViewUnitTest::GetPinnedExtensionNames() {
   std::vector<ToolbarActionView*> views = GetPinnedExtensionViews();
   std::vector<std::string> result;
@@ -262,11 +276,11 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
   AddSimpleExtension(kExtensionName);
 
   {
-    std::vector<ExtensionsMenuItemView*> menu_items =
+    base::flat_set<ExtensionsMenuItemView*> menu_items =
         extensions_menu()->extensions_menu_items_for_testing();
     ASSERT_EQ(1u, menu_items.size());
     EXPECT_EQ(kExtensionName,
-              base::UTF16ToUTF8(menu_items[0]
+              base::UTF16ToUTF8((*menu_items.begin())
                                     ->primary_action_button_for_testing()
                                     ->label_text_for_testing()));
   }
@@ -380,14 +394,16 @@ TEST_F(ExtensionsMenuViewUnitTest, ReorderPinnedExtensions) {
   constexpr char kName3[] = "Test 3";
   AddSimpleExtension(kName3);
 
-  std::vector<ExtensionsMenuItemView*> menu_items =
-      extensions_menu()->extensions_menu_items_for_testing();
-  ASSERT_EQ(3u, menu_items.size());
-  for (auto* menu_item : menu_items) {
-    ClickPinButton(menu_item);
+  EXPECT_EQ(3u, extensions_menu()->extensions_menu_items_for_testing().size());
+
+  for (const char* name : {kName1, kName2, kName3}) {
+    ExtensionsMenuItemView* item = GetExtensionsMenuItemView(name);
+    ASSERT_TRUE(item) << name;
+    ClickPinButton(item);
     EXPECT_TRUE(extensions_container()->IsActionVisibleOnToolbar(
-        menu_item->view_controller()));
+        item->view_controller()));
   }
+
   WaitForAnimation();
 
   EXPECT_THAT(GetPinnedExtensionNames(),
@@ -416,9 +432,11 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
   const extensions::ExtensionId id2 = AddSimpleExtension(kName2)->id();
   constexpr char kName3[] = "Test 3";
   const extensions::ExtensionId id3 = AddSimpleExtension(kName3)->id();
-  for (auto* menu_item :
-       extensions_menu()->extensions_menu_items_for_testing()) {
-    ClickPinButton(menu_item);
+
+  for (const char* name : {kName1, kName2, kName3}) {
+    ExtensionsMenuItemView* item = GetExtensionsMenuItemView(name);
+    ASSERT_TRUE(item) << name;
+    ClickPinButton(item);
   }
   WaitForAnimation();
 
