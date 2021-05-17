@@ -151,7 +151,11 @@ void TaskManagerView::SetSortDescriptor(const TableSortDescriptor& descriptor) {
 }
 
 gfx::Size TaskManagerView::CalculatePreferredSize() const {
-  return gfx::Size(460, 270);
+  // The TaskManagerView's preferred size is used to size the hosting Widget
+  // when the Widget does not have `initial_restored_bounds_` set. The minimum
+  // width below ensures that there is sufficient space for the task manager's
+  // columns when the above restored bounds have not been set.
+  return gfx::Size(640, 270);
 }
 
 bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
