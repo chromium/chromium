@@ -347,17 +347,26 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   bool need_to_update_draw_constraints =
       !child_frame_.get() || draw_constraints.NeedUpdate(*child_frame_);
 
-  if (!child_frame_)
-    return;
-
-  viz::SurfaceId child_surface_id = child_frame_->GetSurfaceId();
-  if (child_surface_id.is_valid() && child_surface_id != surface_id_) {
-    surface_id_ = child_surface_id;
-    device_scale_factor_ = child_frame_->device_scale_factor;
+  if (child_frame_) {
+    viz::SurfaceId child_surface_id = child_frame_->GetSurfaceId();
+    if (child_surface_id.is_valid() && child_surface_id != surface_id_) {
+      surface_id_ = child_surface_id;
+      device_scale_factor_ = child_frame_->device_scale_factor;
+    }
   }
 
-  if (!surface_id_.is_valid())
+  if (!surface_id_.is_valid()) {
+    if (need_to_update_draw_constraints) {
+      // FrameSinkId is used only for FrameTimingDetails and we want to update
+      // only draw constraints here.
+      // TODO(vasilyt): Move frame timing details delivery over to
+      // RootFrameSink.
+      render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
+          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(),
+          0);
+    }
     return;
+  }
 
   gfx::Rect clip(params.clip_left, params.clip_top,
                  params.clip_right - params.clip_left,
