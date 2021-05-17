@@ -216,6 +216,9 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
 #if defined(OS_MAC)
 const base::Feature kViewsFirstRunDialog{"ViewsFirstRunDialog",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kViewsTaskManager{"ViewsTaskManager",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace features

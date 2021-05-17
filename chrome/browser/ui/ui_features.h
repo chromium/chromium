@@ -147,6 +147,7 @@ extern const base::Feature kHiddenNetworkWarning;
 // Cocoa to views migration.
 #if defined(OS_MAC)
 extern const base::Feature kViewsFirstRunDialog;
+extern const base::Feature kViewsTaskManager;
 #endif
 
 }  // namespace features

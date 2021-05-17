@@ -4470,13 +4470,6 @@ static_library("ui") {
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
       ]
-
-      # The Views task manager is not used on Mac - a native Cocoa
-      # implementation is used instead.
-      sources -= [
-        "views/task_manager_view.cc",
-        "views/task_manager_view.h",
-      ]
     } else {
       sources += [
         "views/create_application_shortcut_view.cc",
