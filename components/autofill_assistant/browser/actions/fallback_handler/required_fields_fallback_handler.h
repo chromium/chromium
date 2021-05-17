@@ -88,7 +88,8 @@ class RequiredFieldsFallbackHandler {
                             base::OnceCallback<void()> set_next_field);
 
   // Called after clicking a fallback element.
-  void OnClickOrTapFallbackElement(const std::string& value,
+  void OnClickOrTapFallbackElement(const std::string& re2_value,
+                                   bool case_sensitive,
                                    const RequiredField& required_field,
                                    base::OnceCallback<void()> set_next_field,
                                    const ClientStatus& element_click_status);

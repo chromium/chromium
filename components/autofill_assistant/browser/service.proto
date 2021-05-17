@@ -1524,8 +1524,21 @@ message RequiredFieldProto {
   // This is only considered for text fields and ignored for dropdowns.
   optional int32 delay_in_millisecond = 4 [default = 20];
 
-  // The strategy used to select a value option.
+  // The strategy used to select a value option. If no
+  // |option_comparison_value_expression_re2| is set, this is used to
+  // differentiate between "starts with" and "match".
   optional DropdownSelectStrategy select_strategy = 8;
+
+  // The attribute to compare for selecting an option.
+  // This is only considered for dropdowns and ignored for text fields. If set,
+  // takes precedence over |select_strategy|.
+  optional SelectOptionProto.OptionComparisonAttribute
+      option_comparison_attribute = 13;
+
+  // In case of a dropdown, this should be used instead of the
+  // |value_expression_proto|. If it's empty, |value_expression_proto| will be
+  // used. This is only considered for dropdowns and ignored for text fields.
+  optional ValueExpressionRegexp option_comparison_value_expression_re2 = 14;
 
   // Fill in the value even if it's non-empty. This is useful to work around
   // cases where the way Autofill sets the field doesn't work on the website.
