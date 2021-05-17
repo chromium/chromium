@@ -218,7 +218,7 @@ std::u16string GetDescriptionForProfileToUpdate(
   return base::JoinString(description_components, u" — ");
 }
 
-std::vector<ProfileValueDifference> GetProfileDifferenceForUI(
+std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {

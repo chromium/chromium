@@ -127,10 +127,10 @@ TEST_F(GetEnvelopeStyleAddressTest,
 
 TEST_F(GetEnvelopeStyleAddressTest, NoDifferencesBetweenIdenticalProfiles) {
   AutofillProfile profile = test::GetFullProfile();
-  EXPECT_TRUE(GetProfileDifferenceForUI(profile, profile, "en-US").empty());
+  EXPECT_TRUE(GetProfileDifferenceForUi(profile, profile, "en-US").empty());
 }
 
-TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUIWhenFullnameDiffers) {
+TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUiWhenFullnameDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.SetInfo(NAME_FULL, u"John H. Doe", "en-US");
 
@@ -138,19 +138,19 @@ TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUIWhenFullnameDiffers) {
   profile2.SetInfo(NAME_FULL, u"John Doe", "en-US");
 
   EXPECT_THAT(
-      GetProfileDifferenceForUI(profile1, profile2, "en-US"),
+      GetProfileDifferenceForUi(profile1, profile2, "en-US"),
       ElementsAre(ProfileValueDifference{NAME_FULL_WITH_HONORIFIC_PREFIX,
                                          u"John H. Doe", u"John Doe"}));
 }
 
-TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUIWhenZipcodeDiffers) {
+TEST_F(GetEnvelopeStyleAddressTest, DiffereceInUiWhenZipcodeDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.SetInfo(ADDRESS_HOME_ZIP, u"91111", "en-US");
 
   AutofillProfile profile2 = profile1;
   profile2.SetInfo(ADDRESS_HOME_ZIP, u"90000", "en-US");
 
-  EXPECT_THAT(GetProfileDifferenceForUI(profile1, profile2, "en-US"),
+  EXPECT_THAT(GetProfileDifferenceForUi(profile1, profile2, "en-US"),
               ElementsAre(ProfileValueDifference{
                   ADDRESS_HOME_ADDRESS,
                   GetEnvelopeStyleAddress(profile1, "en-US",

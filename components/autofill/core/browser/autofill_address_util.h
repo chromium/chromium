@@ -80,7 +80,7 @@ static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
 // PHONE_HOME_WHOLE_NUMBER respectively. Address differences are computed by
 // difference in the envelope style address of both profile, and keyed by
 // ADDRESS_HOME_ADDRESS. All computations are done against `app_locale`.
-std::vector<ProfileValueDifference> GetProfileDifferenceForUI(
+std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale);
