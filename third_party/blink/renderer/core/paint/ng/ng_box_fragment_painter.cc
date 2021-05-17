@@ -1025,18 +1025,32 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   }
 
   bool needs_end_layer = false;
-  if (!box_decoration_data.IsPaintingScrollingBackground() &&
-      BleedAvoidanceIsClipping(
-          box_decoration_data.GetBackgroundBleedAvoidance())) {
-    state_saver.Save();
-    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
-        style, paint_rect, box_fragment_.SidesToInclude());
-    paint_info.context.ClipRoundedRect(border);
+  if (!box_decoration_data.IsPaintingScrollingBackground()) {
+    if (box_fragment_.HasSelfPaintingLayer() && layout_box.IsTableCell() &&
+        ToInterface<LayoutNGTableCellInterface>(layout_box)
+            .TableInterface()
+            ->ShouldCollapseBorders()) {
+      // TODO(crbug.com/1081425) This branch is only used by Legacy
+      // tables. Remove when Legacy tables are removed.
+      // We have to clip here because the background would paint on top of the
+      // collapsed table borders otherwise, since this is a self-painting layer.
+      PhysicalRect clip_rect = paint_rect;
+      clip_rect.Expand(layout_box.BorderInsets());
+      state_saver.Save();
+      paint_info.context.Clip(PixelSnappedIntRect(clip_rect));
+    } else if (BleedAvoidanceIsClipping(
+                   box_decoration_data.GetBackgroundBleedAvoidance())) {
+      state_saver.Save();
+      FloatRoundedRect border =
+          RoundedBorderGeometry::PixelSnappedRoundedBorder(
+              style, paint_rect, box_fragment_.SidesToInclude());
+      paint_info.context.ClipRoundedRect(border);
 
-    if (box_decoration_data.GetBackgroundBleedAvoidance() ==
-        kBackgroundBleedClipLayer) {
-      paint_info.context.BeginLayer();
-      needs_end_layer = true;
+      if (box_decoration_data.GetBackgroundBleedAvoidance() ==
+          kBackgroundBleedClipLayer) {
+        paint_info.context.BeginLayer();
+        needs_end_layer = true;
+      }
     }
   }
 
