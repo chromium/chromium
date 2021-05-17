@@ -4187,6 +4187,116 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   ExpectRestored(FROM_HERE);
 }
 
+// Eviction is triggered when a normal fetch request gets redirected while the
+// page is in back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+                       FetchRedirectedWhileStoring) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  net::test_server::ControllableHttpResponse fetch2_response(
+      embedded_test_server(), "/fetch2");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Trigger a fetch.
+  ExecuteScriptAsync(rfh_a, "my_fetch = fetch('/fetch');");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Page A is initially stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond the fetch with a redirect.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(
+      "HTTP/1.1 302 Moved Temporarily\r\n"
+      "Location: /fetch2");
+  fetch_response.Done();
+
+  // Ensure that the request to /fetch2 was never sent (because the page is
+  // immediately evicted) by checking after 3 seconds.
+  base::RunLoop loop;
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(3), loop.QuitClosure());
+  loop.Run();
+  EXPECT_EQ(nullptr, fetch2_response.http_request());
+
+  // Page A should be evicted from the back-forward cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 3) Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
+      {}, {}, {}, FROM_HERE);
+}
+
+// Eviction is triggered when a keepalive fetch request gets redirected while
+// the page is in back-forward cache.
+// TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
+// of keepalive fetches.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+                       KeepAliveFetchRedirectedWhileStoring) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  net::test_server::ControllableHttpResponse fetch2_response(
+      embedded_test_server(), "/fetch2");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Trigger a keepalive fetch.
+  ExecuteScriptAsync(rfh_a, "my_fetch = fetch('/fetch', { keepalive: true });");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Page A is initially stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond the fetch with a redirect.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(
+      "HTTP/1.1 302 Moved Temporarily\r\n"
+      "Location: /fetch2");
+  fetch_response.Done();
+
+  // Ensure that the request to /fetch2 was never sent (because the page is
+  // immediately evicted) by checking after 3 seconds.
+  // TODO(https://crbug.com/1137682): We should not trigger eviction on
+  // redirects of keepalive fetches and the redirect request should be sent.
+  base::RunLoop loop;
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(3), loop.QuitClosure());
+  loop.Run();
+  EXPECT_EQ(nullptr, fetch2_response.http_request());
+
+  // Page A should be evicted from the back-forward cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 3) Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
+      {}, {}, {}, FROM_HERE);
+}
+
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
