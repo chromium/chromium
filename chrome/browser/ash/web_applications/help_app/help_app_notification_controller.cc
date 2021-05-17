@@ -11,9 +11,11 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -26,6 +28,15 @@ int CurrentMilestone() {
 // whether we should show the Discover tab notification to the user.
 bool ShouldShowDiscoverTabNotification(Profile* profile) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppDiscoverTab)) {
+    return false;
+  }
+
+  bool shouldShowForCurrentChannel =
+      chrome::GetChannel() == version_info::Channel::STABLE ||
+      base::FeatureList::IsEnabled(
+          ash::features::kHelpAppDiscoverTabNotificationAllChannels);
+
+  if (!shouldShowForCurrentChannel) {
     return false;
   }
 

@@ -76,10 +76,11 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         &HelpAppNotificationControllerTest::OnNotificationAdded,
         base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kHelpAppDiscoverTab,
-                              chromeos::features::kReleaseNotesNotification,
-                              chromeos::features::
-                                  kReleaseNotesNotificationAllChannels},
+        /*enabled_features=*/
+        {chromeos::features::kHelpAppDiscoverTab,
+         chromeos::features::kHelpAppDiscoverTabNotificationAllChannels,
+         chromeos::features::kReleaseNotesNotification,
+         chromeos::features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
   }
 

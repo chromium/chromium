@@ -422,6 +422,12 @@ const base::Feature kHandwritingGestureEditing{
 const base::Feature kHelpAppDiscoverTab{"HelpAppDiscoverTab",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the Help App Discover tab notifications on non-stable
+// Chrome OS channels. Used for testing.
+const base::Feature kHelpAppDiscoverTabNotificationAllChannels{
+    "HelpAppDiscoverTabNotificationAllChannels",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable showing search results from the help app in the launcher.
 const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
