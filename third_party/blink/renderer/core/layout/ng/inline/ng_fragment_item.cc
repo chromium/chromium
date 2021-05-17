@@ -560,15 +560,18 @@ AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
     // https://svgwg.org/svg2-draft/text.html#TextpathLayoutRules
     // The rotation should be about the center of the baseline.
     const auto font_baseline = Style().GetFontBaseline();
-    float ascent =
-        font_data
-            ? font_data->GetFontMetrics().FixedAscent(font_baseline).ToFloat()
-            : 0.0f;
-    // |x| points the center of the baseline.  See |NGSVGTextLayoutAlgorithm::
+    // |x| in the horizontal writing-mode and |y| in the vertical writing-mode
+    // point the center of the baseline.  See |NGSVGTextLayoutAlgorithm::
     // PositionOnPath()|.
     float x = svg_data.rect.X();
-    float y = svg_data.rect.Y() + ascent;
-    transform.Translate(-svg_data.rect.Width() / 2, svg_data.baseline_shift);
+    float y = svg_data.rect.Y();
+    if (IsHorizontal()) {
+      y += font_data->GetFontMetrics().FixedAscent(font_baseline);
+      transform.Translate(-svg_data.rect.Width() / 2, svg_data.baseline_shift);
+    } else {
+      x += font_data->GetFontMetrics().FixedDescent(font_baseline);
+      transform.Translate(svg_data.baseline_shift, -svg_data.rect.Height() / 2);
+    }
     transform.SetE(transform.E() + x);
     transform.SetF(transform.F() + y);
     transform.Translate(-x, -y);

@@ -132,18 +132,27 @@ void NGSVGTextLayoutAlgorithm::Layout(
     NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
     const auto* layout_object =
         To<LayoutSVGInlineText>(item->GetLayoutObject());
-    // TODO(crbug.com/1179585): Supports vertical flow.
-    LayoutUnit ascent = layout_object->ScaledFont()
-                            .PrimaryFont()
-                            ->GetFontMetrics()
-                            .FixedAscent();
-    const float width = horizontal_ ? info.inline_size : item->Size().width;
-    const float height = horizontal_ ? item->Size().height : info.inline_size;
-    FloatRect scaled_rect(*info.x, *info.y - ascent, width, height);
+    const auto font_baseline = item->Style().GetFontBaseline();
+    const auto& font_metrics =
+        layout_object->ScaledFont().PrimaryFont()->GetFontMetrics();
+    float x = *info.x;
+    float y = *info.y;
+    float width;
+    float height;
+    if (horizontal_) {
+      y -= font_metrics.FixedAscent(font_baseline);
+      width = info.inline_size;
+      height = item->Size().height;
+    } else {
+      x -= font_metrics.FixedDescent(font_baseline);
+      width = item->Size().width;
+      height = info.inline_size;
+    }
+    FloatRect scaled_rect(x, y, width, height);
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
-    PhysicalRect unscaled_rect(LayoutUnit(*info.x / scaling_factor),
-                               LayoutUnit((*info.y - ascent) / scaling_factor),
+    PhysicalRect unscaled_rect(LayoutUnit(x / scaling_factor),
+                               LayoutUnit(y / scaling_factor),
                                LayoutUnit(width / scaling_factor),
                                LayoutUnit(height / scaling_factor));
     auto data = std::make_unique<NGSVGFragmentData>();
@@ -217,12 +226,17 @@ void NGSVGTextLayoutAlgorithm::SetFlags(
     PhysicalOffset offset = item.OffsetInContainerFragment();
     const auto* layout_svg_inline =
         To<LayoutSVGInlineText>(item.GetLayoutObject());
-    LayoutUnit ascent = layout_svg_inline->ScaledFont()
-                            .PrimaryFont()
-                            ->GetFontMetrics()
-                            .FixedAscent();
-    // TODO(crbug.com/1179585): Supports vertical flow.
-    css_positions_.push_back(FloatPoint(offset.left, offset.top + ascent));
+    const auto font_baseline = item.Style().GetFontBaseline();
+    const auto& font_metrics =
+        layout_svg_inline->ScaledFont().PrimaryFont()->GetFontMetrics();
+    float x = offset.left;
+    float y = offset.top;
+    if (horizontal_) {
+      y += font_metrics.FixedAscent(font_baseline);
+    } else {
+      x += font_metrics.FixedDescent(font_baseline);
+    }
+    css_positions_.push_back(FloatPoint(x, y));
 
     info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
     result_.push_back(info);
@@ -764,6 +778,8 @@ void NGSVGTextLayoutAlgorithm::PositionOnPath(
             if (position_type != PathPositionMapper::kOnPath)
               info.hidden = true;
             point_tangent.tangent_in_degrees += info.rotate.value_or(0.0f);
+            if (!horizontal_)
+              point_tangent.tangent_in_degrees -= 90;
             info.rotate = point_tangent.tangent_in_degrees;
             if (*info.rotate == 0.0f) {
               if (horizontal_) {
