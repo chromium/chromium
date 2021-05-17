@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/containers/span.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace content {
@@ -15,6 +14,8 @@ class RenderFrameHost;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // The browser process often chooses to terminate a renderer if it receives
 // a bad IPC message. The reasons are tracked for metrics.
@@ -38,8 +39,6 @@ enum class BadMessageReason {
   CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP = 11,
   CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP = 12,
   CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM = 13,
-  CPMD_BAD_ORIGIN_PASSWORD_FORM_CLEARED = 14,
-  CPMD_BAD_ORIGIN_CHECK_SAFE_BROWSING_REPUTATION = 15,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ContentPasswordManagerDriver becomes CPMD) plus a unique
@@ -58,9 +57,23 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
                                            const GURL& form_url,
                                            BadMessageReason reason);
 
+// Returns true if the renderer for |frame| is allowed to perform an operation
+// on |password_form|. If the origin mismatches, the process for |frame| is
+// terminated and the function returns false.
+// TODO: Delete this signature after transferring all driver calls to FormData
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const PasswordForm& password_form,
+                                     BadMessageReason reason);
+
+// Same as above but checks every form in |forms|.
+// TODO: Delete this signature after transferring all driver calls to FormData
+bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
+                                     const std::vector<PasswordForm>& forms,
+                                     BadMessageReason reason);
+
 bool CheckChildProcessSecurityPolicy(
     content::RenderFrameHost* frame,
-    base::span<const autofill::FormData> forms_data,
+    const std::vector<autofill::FormData>& forms_data,
     BadMessageReason reason);
 
 }  // namespace bad_message
