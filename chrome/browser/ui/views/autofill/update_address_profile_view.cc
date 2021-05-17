@@ -126,9 +126,8 @@ void AddValuesRow(
                     /*v_align=*/views::GridLayout::LEADING);
   }
   ui::NativeTheme::ColorId icon_color =
-      show_row_label && are_new_values
-          ? ui::NativeTheme::kColorId_ProminentButtonColor
-          : ui::NativeTheme::kColorId_SecondaryIconColor;
+      are_new_values ? ui::NativeTheme::kColorId_ProminentButtonColor
+                     : ui::NativeTheme::kColorId_SecondaryIconColor;
   layout->AddView(CreateValuesView(diff_map, are_new_values, icon_color),
                   /*col_span=*/1,
                   /*row_span=*/1,
