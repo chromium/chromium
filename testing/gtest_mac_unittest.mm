@@ -43,8 +43,8 @@ TEST(GTestMac, NSStringComparators) {
 }
 
 TEST(GTestMac, NSNumberComparators) {
-  EXPECT_NSNE([NSNumber numberWithInt:2], [NSNumber numberWithInt:42]);
-  EXPECT_NSEQ([NSNumber numberWithInt:42], [NSNumber numberWithInt:42]);
+  EXPECT_NSNE(@2, @42);
+  EXPECT_NSEQ(@42, @42);
 }
 
 #if !defined(GTEST_OS_IOS)
