@@ -2773,7 +2773,7 @@
           "dimension_sets": [
             {
               "device_type": "eve",
-              "os": "Ubuntu-18.04",
+              "os": "ChromeOS",
               "pool": "chrome.tests"
             }
           ],

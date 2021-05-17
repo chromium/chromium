@@ -138,7 +138,6 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'lacros_smoke_tast_tests_eve',
