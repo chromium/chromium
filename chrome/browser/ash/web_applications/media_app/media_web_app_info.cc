@@ -54,6 +54,9 @@ constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
     {"image/webp", ".webp"},
     {"image/svg+xml", ".svg,.svgz"},
     {"image/avif", ".avif"},
+
+    // PDF.
+    {"application/pdf", ".pdf"},
 };
 
 using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
@@ -61,17 +64,9 @@ using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
 // Converts the kFileHandlers constexpr into the std::map needed to populate the
 // web app manifest's `accept` property.
 AcceptMap MakeHandlerAccept() {
-  // Add PDF to |kFileHandlers| conditionally on flag.
-  std::vector<std::tuple<const char*, const char*>> fileHandlers;
-  fileHandlers.insert(fileHandlers.end(), std::begin(kFileHandlers),
-                      std::end(kFileHandlers));
-  if (base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf)) {
-    fileHandlers.push_back({"application/pdf", ".pdf"});
-  }
-
   AcceptMap result;
   const std::u16string separator = u",";
-  for (const auto& handler : fileHandlers) {
+  for (const auto& handler : kFileHandlers) {
     result[base::ASCIIToUTF16(std::get<0>(handler))] =
         base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);

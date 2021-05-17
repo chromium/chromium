@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -39,16 +40,20 @@ void FindWebTasks(Profile* profile,
   DCHECK(!entries.empty());
   DCHECK(result_list);
 
-  // WebApps only have full support files backed by inodes, so tasks provided by
-  // most Web Apps will be skipped if any non-native files are present. "System"
-  // Web Apps are an exception: we have more control over what they can do, so
-  // tasks provided by System Web Apps are the only ones permitted at present.
-  // See https://crbug.com/1079065.
-  bool has_special_file = false;
+  // WebApps only have full support for files backed by inodes, so tasks
+  // provided by most Web Apps will be skipped if any non-native files are
+  // present. "System" Web Apps are an exception: we have more control over what
+  // they can do, so tasks provided by System Web Apps are the only ones
+  // permitted at present. See https://crbug.com/1079065.
+  bool has_non_native_file = false;
+  bool has_pdf_file = false;
   for (const auto& entry : entries) {
-    if (util::IsUnderNonNativeLocalPath(profile, entry.path)) {
-      has_special_file = true;
-      break;
+    if (!has_non_native_file &&
+        util::IsUnderNonNativeLocalPath(profile, entry.path)) {
+      has_non_native_file = true;
+    }
+    if (!has_pdf_file && entry.path.Extension() == ".pdf") {
+      has_pdf_file = true;
     }
   }
 
@@ -60,7 +65,7 @@ void FindWebTasks(Profile* profile,
 
   std::vector<web_app::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
-    if (has_special_file && app_id != web_app::kMediaAppId)
+    if (has_non_native_file && app_id != web_app::kMediaAppId)
       continue;
 
     if (!os_integration_manager.IsFileHandlingAPIAvailable(app_id))
@@ -78,6 +83,14 @@ void FindWebTasks(Profile* profile,
 
     if (matches.empty())
       continue;
+
+    // "Hide" the media app task (i.e. skip the rest of this loop which would
+    // add it as a handler) when the flag to handle PDF is off.
+    if (app_id == web_app::kMediaAppId &&
+        !base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
+        has_pdf_file) {
+      continue;
+    }
 
     // WebApps only support "open with", so find the first good file handler
     // match (or the first match, if there is no good match).
