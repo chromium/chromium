@@ -32,8 +32,8 @@ bool MediaRouterActionController::IsActionShownByPolicy(Profile* profile) {
   const PrefService::Preference* pref =
       profile->GetPrefs()->FindPreference(prefs::kShowCastIconInToolbar);
   bool show = false;
-  if (pref->IsManaged())
-    pref->GetValue()->GetAsBoolean(&show);
+  if (pref->IsManaged() && pref->GetValue()->is_bool())
+    show = pref->GetValue()->GetBool();
   return show;
 }
 
