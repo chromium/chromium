@@ -40,21 +40,22 @@ def parse_args():
 def read_to_proto_escaped_string(filename):
   """Reads a file and converts it to hex escape sequences."""
   with open(filename, 'rb') as f:
-    # Note that string_escape escapes all non-ASCII printable characters
+    # Note that unicode-escape escapes all non-ASCII printable characters
     # excluding ", which needs to be manually escaped.
-    return f.read().encode('string_escape').replace('"', '\\"')
+    return f.read().decode('latin1').encode('unicode-escape').replace(
+               b'"', b'\\"')
 
 
 def main():
   args = parse_args()
   # Create an ASCII string representing a protobuf.
-  content = [b'old_file: "{}"'.format(read_to_proto_escaped_string(
-                                      args.old_file)),
-             b'new_or_patch_file: "{}"'.format(read_to_proto_escaped_string(
-                                               args.new_or_patch_file))]
+  content = [b'old_file: "%s"' % read_to_proto_escaped_string(args.old_file),
+             b'new_or_patch_file: "%s"' % read_to_proto_escaped_string(
+                                               args.new_or_patch_file)]
 
   if args.imposed_matches:
-    content.append('imposed_matches: "{}"'.format(args.imposed_matches))
+    content.append(b'imposed_matches: "%s"' %
+                       args.imposed_matches.encode('unicode-escape'))
 
   # Encode the ASCII protobuf as a binary protobuf.
   ps = subprocess.Popen([args.protoc_path, '--proto_path=%s' % ABS_PATH,
