@@ -437,7 +437,6 @@ public class FeedSurfaceMediator
         mStreamScrollListener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
                 for (ScrollListener listener : mScrollListeners) {
                     listener.onScrollStateChanged(newState);
                 }
