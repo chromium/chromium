@@ -21,5 +21,6 @@
   "bound_webapk": {
     "runtime_host": "com.google.android.apps.chrome",
     "runtime_host_application_name": "Chromium"
-  }
+  },
+  "enable_site_settings_shortcut": true
 }
