@@ -8,11 +8,12 @@
 #include "base/callback.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
-#include "components/permissions/notification_permission_ui_selector.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace permissions {
 class PermissionRequest;
+enum class RequestType;
 }
 
 namespace url {
@@ -29,7 +30,7 @@ class Origin;
 // Each instance of this class is long-lived and can support multiple requests,
 // but only one at a time.
 class ContextualNotificationPermissionUiSelector
-    : public permissions::NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
   ContextualNotificationPermissionUiSelector();
   ~ContextualNotificationPermissionUiSelector() override;
@@ -39,6 +40,9 @@ class ContextualNotificationPermissionUiSelector
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override;
 
  private:
   ContextualNotificationPermissionUiSelector(

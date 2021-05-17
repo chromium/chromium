@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "components/permissions/features.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -192,8 +192,8 @@ PermissionPromptImpl::GetPromptDisposition() const {
     case PermissionPromptStyle::kQuiet: {
       permissions::PermissionRequestManager* manager =
           permissions::PermissionRequestManager::FromWebContents(web_contents_);
-      return permissions::NotificationPermissionUiSelector::
-                     ShouldSuppressAnimation(manager->ReasonForUsingQuietUi())
+      return permissions::PermissionUiSelector::ShouldSuppressAnimation(
+                 manager->ReasonForUsingQuietUi())
                  ? permissions::PermissionPromptDisposition::
                        LOCATION_BAR_RIGHT_STATIC_ICON
                  : permissions::PermissionPromptDisposition::

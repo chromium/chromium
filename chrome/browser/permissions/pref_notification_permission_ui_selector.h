@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PREF_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 #define CHROME_BROWSER_PERMISSIONS_PREF_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 
-#include "components/permissions/notification_permission_ui_selector.h"
+#include "components/permissions/permission_ui_selector.h"
 
 class Profile;
 
 namespace permissions {
 class PermissionRequest;
+enum class RequestType;
 }
 
 // Determines if the quiet prompt UI should be used to display a notification
@@ -20,7 +21,7 @@ class PermissionRequest;
 //
 // Each instance of this class is long-lived and can support multiple requests.
 class PrefNotificationPermissionUiSelector
-    : public permissions::NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
   // Constructs an instance in the context of the given |profile|.
   explicit PrefNotificationPermissionUiSelector(Profile* profile);
@@ -37,6 +38,9 @@ class PrefNotificationPermissionUiSelector
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override;
 
  private:
   Profile* profile_;

@@ -13,9 +13,9 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/android/permission_prompt_android.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -26,8 +26,7 @@
 
 namespace {
 
-using QuietUiReason =
-    permissions::NotificationPermissionUiSelector::QuietUiReason;
+using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
 
 // The URL for when the user clicks the "Learn more" link.
 constexpr char kNotificationsHelpUrl[] =

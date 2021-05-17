@@ -205,11 +205,10 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
   return PermissionsClient::GetOverrideIconId(request_type);
 }
 
-std::vector<std::unique_ptr<permissions::NotificationPermissionUiSelector>>
-ChromePermissionsClient::CreateNotificationPermissionUiSelectors(
+std::vector<std::unique_ptr<permissions::PermissionUiSelector>>
+ChromePermissionsClient::CreatePermissionUiSelectors(
     content::BrowserContext* browser_context) {
-  std::vector<std::unique_ptr<permissions::NotificationPermissionUiSelector>>
-      selectors;
+  std::vector<std::unique_ptr<permissions::PermissionUiSelector>> selectors;
   selectors.emplace_back(
       std::make_unique<ContextualNotificationPermissionUiSelector>());
   selectors.emplace_back(std::make_unique<PrefNotificationPermissionUiSelector>(

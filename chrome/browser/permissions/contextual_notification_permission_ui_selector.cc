@@ -20,6 +20,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 
 namespace {
@@ -153,6 +154,11 @@ void ContextualNotificationPermissionUiSelector::Cancel() {
   // The computation either finishes synchronously above, or is waiting on the
   // Safe Browsing check.
   safe_browsing_request_.reset();
+}
+
+bool ContextualNotificationPermissionUiSelector::IsPermissionRequestSupported(
+    permissions::RequestType request_type) {
+  return request_type == permissions::RequestType::kNotifications;
 }
 
 ContextualNotificationPermissionUiSelector::

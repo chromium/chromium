@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "build/chromeos_buildflags.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 
 #if !defined(OS_ANDROID)
 #include "ui/gfx/paint_vector_icon.h"
@@ -68,10 +67,10 @@ IconId PermissionsClient::GetOverrideIconId(RequestType request_type) {
 #endif
 }
 
-std::vector<std::unique_ptr<NotificationPermissionUiSelector>>
-PermissionsClient::CreateNotificationPermissionUiSelectors(
+std::vector<std::unique_ptr<PermissionUiSelector>>
+PermissionsClient::CreatePermissionUiSelectors(
     content::BrowserContext* browser_context) {
-  return std::vector<std::unique_ptr<NotificationPermissionUiSelector>>();
+  return std::vector<std::unique_ptr<PermissionUiSelector>>();
 }
 
 void PermissionsClient::OnPromptResolved(

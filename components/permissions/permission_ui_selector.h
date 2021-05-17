@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
-#define COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
+#ifndef COMPONENTS_PERMISSIONS_PERMISSION_UI_SELECTOR_H_
+#define COMPONENTS_PERMISSIONS_PERMISSION_UI_SELECTOR_H_
 
 #include "base/callback_forward.h"
 #include "components/permissions/permission_request.h"
@@ -13,12 +13,12 @@
 namespace permissions {
 
 // The interface for implementations that decide if the quiet prompt UI should
-// be used to display a notification permission |request|, whether a warning
-// should be printed to the Dev Tools console, and the reasons for both.
+// be used to display a permission |request|, whether a warning should be
+// printed to the Dev Tools console, and the reasons for both.
 //
 // Implementations of interface are expected to have long-lived instances that
 // can support multiple requests, but only one at a time.
-class NotificationPermissionUiSelector {
+class PermissionUiSelector {
  public:
   enum class QuietUiReason {
     kEnabledInPrefs,
@@ -62,7 +62,7 @@ class NotificationPermissionUiSelector {
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;
 
-  virtual ~NotificationPermissionUiSelector() {}
+  virtual ~PermissionUiSelector() {}
 
   // Determines whether animations should be suppressed because we're very
   // confident the user does not want notifications (e.g. they're abusive).
@@ -81,6 +81,8 @@ class NotificationPermissionUiSelector {
   // simply be a no-op.
   virtual void Cancel() {}
 
+  virtual bool IsPermissionRequestSupported(RequestType request_type) = 0;
+
   // Will return the selector's discretized prediction value, if any is
   // applicable to be recorded in UKMs. This is specific only to a selector that
   // makes use of the Web Permission Predictions Service to make decisions.
@@ -90,4 +92,4 @@ class NotificationPermissionUiSelector {
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
+#endif  // COMPONENTS_PERMISSIONS_PERMISSION_UI_SELECTOR_H_

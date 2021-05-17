@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -125,16 +125,15 @@ class PermissionsClient {
   virtual IconId GetOverrideIconId(RequestType request_type);
 
   // Allows the embedder to provide a list of selectors for choosing the UI to
-  // use for notification permission requests. If the embedder returns an empty
-  // list, the normal UI will be used always. Then for each request, if none of
-  // the returned selectors prescribe the quiet UI, the normal UI will be used.
+  // use for permission requests. If the embedder returns an empty list, the
+  // normal UI will be used always. Then for each request, if none of the
+  // returned selectors prescribe the quiet UI, the normal UI will be used.
   // Otherwise the quiet UI will be used. Selectors at lower indices have higher
   // priority when determining the quiet UI flavor.
-  virtual std::vector<std::unique_ptr<NotificationPermissionUiSelector>>
-  CreateNotificationPermissionUiSelectors(
-      content::BrowserContext* browser_context);
+  virtual std::vector<std::unique_ptr<PermissionUiSelector>>
+  CreatePermissionUiSelectors(content::BrowserContext* browser_context);
 
-  using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
+  using QuietUiReason = PermissionUiSelector::QuietUiReason;
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(content::BrowserContext* browser_context,
                                 RequestType request_type,

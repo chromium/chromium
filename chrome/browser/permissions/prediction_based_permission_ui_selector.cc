@@ -140,6 +140,11 @@ void PredictionBasedPermissionUiSelector::Cancel() {
   callback_.Reset();
 }
 
+bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
+    permissions::RequestType request_type) {
+  return request_type == permissions::RequestType::kNotifications;
+}
+
 absl::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
 PredictionBasedPermissionUiSelector::PredictedGrantLikelihoodForUKM() {
   return last_request_grant_likelihood_;

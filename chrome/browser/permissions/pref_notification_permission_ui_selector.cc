@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 
 PrefNotificationPermissionUiSelector::PrefNotificationPermissionUiSelector(
@@ -34,3 +35,8 @@ void PrefNotificationPermissionUiSelector::SelectUiToUse(
 }
 
 void PrefNotificationPermissionUiSelector::Cancel() {}
+
+bool PrefNotificationPermissionUiSelector::IsPermissionRequestSupported(
+    permissions::RequestType request_type) {
+  return request_type == permissions::RequestType::kNotifications;
+}

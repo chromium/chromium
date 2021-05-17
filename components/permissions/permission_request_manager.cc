@@ -454,8 +454,8 @@ PermissionRequestManager::PermissionRequestManager(
       tab_is_hidden_(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN),
       auto_response_for_test_(NONE),
-      notification_permission_ui_selectors_(
-          PermissionsClient::Get()->CreateNotificationPermissionUiSelectors(
+      permission_ui_selectors_(
+          PermissionsClient::Get()->CreatePermissionUiSelectors(
               web_contents->GetBrowserContext())) {}
 
 void PermissionRequestManager::ScheduleShowBubble() {
@@ -510,21 +510,27 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
     }
   }
 
-  if (!notification_permission_ui_selectors_.empty() &&
-      requests_.front()->GetRequestType() == RequestType::kNotifications) {
+  if (!permission_ui_selectors_.empty()) {
     DCHECK(!current_request_ui_to_use_.has_value());
     // Initialize the selector decisions vector.
     DCHECK(selector_decisions_.empty());
-    selector_decisions_.resize(notification_permission_ui_selectors_.size());
+    selector_decisions_.resize(permission_ui_selectors_.size());
 
     for (size_t selector_index = 0;
-         selector_index < notification_permission_ui_selectors_.size();
-         ++selector_index) {
-      notification_permission_ui_selectors_[selector_index]->SelectUiToUse(
-          requests_.front(),
-          base::BindOnce(
-              &PermissionRequestManager::OnNotificationPermissionUiSelectorDone,
-              weak_factory_.GetWeakPtr(), selector_index));
+         selector_index < permission_ui_selectors_.size(); ++selector_index) {
+      if (permission_ui_selectors_[selector_index]
+              ->IsPermissionRequestSupported(
+                  requests_.front()->GetRequestType())) {
+        permission_ui_selectors_[selector_index]->SelectUiToUse(
+            requests_.front(),
+            base::BindOnce(
+                &PermissionRequestManager::OnPermissionUiSelectorDone,
+                weak_factory_.GetWeakPtr(), selector_index));
+      } else {
+        OnPermissionUiSelectorDone(
+            selector_index,
+            PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
+      }
     }
   } else {
     current_request_ui_to_use_ =
@@ -599,7 +605,7 @@ void PermissionRequestManager::DeleteBubble() {
 }
 
 void PermissionRequestManager::ResetViewStateForCurrentRequest() {
-  for (const auto& selector : notification_permission_ui_selectors_)
+  for (const auto& selector : permission_ui_selectors_)
     selector->Cancel();
 
   current_request_already_displayed_ = false;
@@ -796,7 +802,7 @@ void PermissionRequestManager::NotifyBubbleRemoved() {
     observer.OnBubbleRemoved();
 }
 
-void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
+void PermissionRequestManager::OnPermissionUiSelectorDone(
     size_t selector_index,
     const UiDecision& decision) {
   if (decision.warning_reason) {
@@ -825,9 +831,8 @@ void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
         selector_decisions_[decision_index].value();
 
     if (!prediction_grant_likelihood_.has_value()) {
-      prediction_grant_likelihood_ =
-          notification_permission_ui_selectors_[decision_index]
-              ->PredictedGrantLikelihoodForUKM();
+      prediction_grant_likelihood_ = permission_ui_selectors_[decision_index]
+                                         ->PredictedGrantLikelihoodForUKM();
     }
 
     if (current_decision.quiet_ui_reason.has_value()) {

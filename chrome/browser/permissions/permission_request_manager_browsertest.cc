@@ -29,9 +29,9 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_impl.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -61,10 +61,10 @@ const char* kPermissionsKillSwitchBlockedValue =
     permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
 
-// Test implementation of NotificationPermissionUiSelector that always
-// returns a canned decision.
+// Test implementation of PermissionUiSelector that always returns a canned
+// decision.
 class TestQuietNotificationPermissionUiSelector
-    : public permissions::NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
   explicit TestQuietNotificationPermissionUiSelector(
       const Decision& canned_decision)
@@ -72,10 +72,15 @@ class TestQuietNotificationPermissionUiSelector
   ~TestQuietNotificationPermissionUiSelector() override = default;
 
  protected:
-  // permissions::NotificationPermissionUiSelector:
+  // permissions::PermissionUiSelector:
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(canned_decision_);
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return request_type == permissions::RequestType::kNotifications;
   }
 
  private:
@@ -645,18 +650,15 @@ class PermissionRequestManagerQuietUiBrowserTest
   }
 
  protected:
-  using UiDecision = permissions::NotificationPermissionUiSelector::Decision;
-  using QuietUiReason =
-      permissions::NotificationPermissionUiSelector::QuietUiReason;
-  using WarningReason =
-      permissions::NotificationPermissionUiSelector::WarningReason;
+  using UiDecision = permissions::PermissionUiSelector::Decision;
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
   void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
                            absl::optional<WarningReason> warning_reason) {
-    GetPermissionRequestManager()
-        ->set_notification_permission_ui_selector_for_testing(
-            std::make_unique<TestQuietNotificationPermissionUiSelector>(
-                UiDecision(quiet_ui_reason, warning_reason)));
+    GetPermissionRequestManager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            UiDecision(quiet_ui_reason, warning_reason)));
   }
 
  private:

@@ -30,9 +30,9 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/features.h"
-#include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -60,7 +60,7 @@ using content_settings::PageSpecificContentSettings;
 namespace {
 
 class TestQuietNotificationPermissionUiSelector
-    : public permissions::NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
   explicit TestQuietNotificationPermissionUiSelector(
       QuietUiReason simulated_reason_for_quiet_ui)
@@ -68,11 +68,16 @@ class TestQuietNotificationPermissionUiSelector
   ~TestQuietNotificationPermissionUiSelector() override = default;
 
  protected:
-  // permissions::NotificationPermissionUiSelector:
+  // permissions::PermissionUiSelector:
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
         Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return request_type == permissions::RequestType::kNotifications;
   }
 
  private:
@@ -627,9 +632,9 @@ TEST_F(ContentSettingImageModelTest, NotificationsPromptCrowdDeny) {
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
   EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_notification_permission_ui_selector_for_testing(
+  manager_->set_permission_ui_selector_for_testing(
       std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::NotificationPermissionUiSelector::QuietUiReason::
+          permissions::PermissionUiSelector::QuietUiReason::
               kTriggeredByCrowdDeny));
   manager_->AddRequest(web_contents()->GetMainFrame(), &request_);
   WaitForBubbleToBeShown();
@@ -648,9 +653,9 @@ TEST_F(ContentSettingImageModelTest, NotificationsPromptAbusive) {
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
   EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_notification_permission_ui_selector_for_testing(
+  manager_->set_permission_ui_selector_for_testing(
       std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::NotificationPermissionUiSelector::QuietUiReason::
+          permissions::PermissionUiSelector::QuietUiReason::
               kTriggeredDueToAbusiveRequests));
   manager_->AddRequest(web_contents()->GetMainFrame(), &request_);
   WaitForBubbleToBeShown();
@@ -669,9 +674,9 @@ TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
   EXPECT_FALSE(content_setting_image_model->is_visible());
-  manager_->set_notification_permission_ui_selector_for_testing(
+  manager_->set_permission_ui_selector_for_testing(
       std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          permissions::NotificationPermissionUiSelector::QuietUiReason::
+          permissions::PermissionUiSelector::QuietUiReason::
               kTriggeredDueToAbusiveContent));
   manager_->AddRequest(web_contents()->GetMainFrame(), &request_);
   WaitForBubbleToBeShown();
