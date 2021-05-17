@@ -16,7 +16,11 @@ namespace {
 // Both have layout initially performed on them, however the "src" will have a
 // different |NGConstraintSpace| which is then used to test either a cache hit
 // or miss.
-class NGLayoutResultCachingTest : public NGLayoutTest {};
+class NGLayoutResultCachingTest : public NGLayoutTest,
+                                  private ScopedLayoutNGGridForTest {
+ protected:
+  NGLayoutResultCachingTest() : ScopedLayoutNGGridForTest(true) {}
+};
 
 TEST_F(NGLayoutResultCachingTest, HitDifferentExclusionSpace) {
   // Same BFC offset, different exclusion space.
@@ -2209,6 +2213,36 @@ TEST_F(NGLayoutResultCachingTest, MissMonolithicChangeInFragmentainer) {
   EXPECT_NE(src->GetCachedLayoutResult(), nullptr);
   // Block-fragmented nodes aren't cached at all.
   EXPECT_EQ(test->GetCachedLayoutResult(), nullptr);
+}
+
+TEST_F(NGLayoutResultCachingTest, MissGridIncorrectIntrinsicSize) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div style="display: flex; width: 100px; height: 200px; align-items: stretch;">
+      <div id="test" style="flex-grow: 1; min-height: 100px; display: grid;">
+        <div></div>
+      </div>
+    </div>
+    <div style="display: flex; width: 100px; height: 200px; align-items: start;">
+      <div id="src" style="flex-grow: 1; min-height: 100px; display: grid;">
+        <div></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
+  auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
+
+  NGLayoutCacheStatus cache_status;
+  base::Optional<NGFragmentGeometry> fragment_geometry;
+
+  NGConstraintSpace space =
+      src->GetCachedLayoutResult()->GetConstraintSpaceForCaching();
+  scoped_refptr<const NGLayoutResult> result = test->CachedLayoutResult(
+      space, nullptr, nullptr, &fragment_geometry, &cache_status);
+
+  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(result.get(), nullptr);
 }
 
 }  // namespace

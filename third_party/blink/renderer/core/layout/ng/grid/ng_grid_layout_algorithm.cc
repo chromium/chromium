@@ -246,10 +246,12 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   }
   container_builder_.SetMayHaveDescendantAboveBlockStart(false);
 
-  // Grid is slightly different to other layout modes in that we don't care if
-  // individual children depend on %-block-size rather if the tracks do.
-  container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(
-      depends_on_block_constraints);
+  // Grid is slightly different to other layout modes in that the contents of
+  // the grid won't change if the initial block-size changes definiteness (for
+  // example). We can safely mark ourselves as not having any children
+  // dependent on the block constraints.
+  container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(false);
+
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 

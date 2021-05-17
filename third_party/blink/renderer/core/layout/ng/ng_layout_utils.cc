@@ -213,49 +213,54 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (is_initial_block_size_indefinite) {
     LayoutUnit intrinsic_block_size = layout_result.IntrinsicBlockSize();
 
-    if (node.IsFlexibleBox()) {
-      // Flex-boxes can have their children calculate their size based in their
-      // parent's final block-size. E.g.
-      // <div style="display: flex;">
-      //   <div style="display: flex;">
-      //     <!-- Child will stretch to the parent's fixed block-size -->
-      //     <div></div>
-      //   </div>
-      // </div>
-      // <div style="display: flex;">
-      //   <div style="display: flex; flex-direction: column;">
-      //     <!-- Child will grow to the parent's fixed block-size -->
-      //     <div style="flex: 1;"></div>
-      //   </div>
-      // </div>
-      //
-      // If the previous |layout_result| was produced by a space which had a
-      // fixed block-size we can't use |intrinsic_block_size| for determining
-      // the new block-size.
-      //
-      // TODO(ikilpatrick): Similar to %-block-size descendants we could store
-      // a bit on the |NGLayoutResult| which indicates if it had a child which
-      // sized itself based on the parent's block-size.
-      // We should consider this optimization if we are missing this cache
-      // often within this branch (and could have re-used the result).
-      // TODO(ikilaptrick): This may occur for other layout modes, e.g.
-      // grid/custom-layout/etc.
-      if (old_space.IsFixedBlockSize())
+    // Grid/flex can have their children calculate their size based on their
+    // parent's final block-size. E.g.
+    // <div style="display: flex;">
+    //   <div style="display: flex;"> <!-- or "display: grid;" -->
+    //     <!-- Child will stretch to the parent's block-size -->
+    //     <div></div>
+    //   </div>
+    // </div>
+    // <div style="display: flex;">
+    //   <div style="display: flex; flex-direction: column;">
+    //     <!-- Child will grow to the parent's fixed block-size -->
+    //     <div style="flex: 1;"></div>
+    //   </div>
+    // </div>
+    //
+    // If the previous |layout_result| was produced by a space which had a
+    // fixed block-size we can't use |intrinsic_block_size| for determining
+    // the new block-size.
+    //
+    // TODO(ikilpatrick): Similar to %-block-size descendants we could store a
+    // bit on the |NGLayoutResult| which indicates if it had a child which
+    // sized itself based on the parent's block-size.
+    // We should consider this optimization if we are missing this cache often
+    // within this branch (and could have re-used the result).
+    // TODO(ikilaptrick): This may occur for other layout modes, e.g.
+    // custom-layout.
+    if (old_space.IsFixedBlockSize() || (old_space.StretchBlockSizeIfAuto() &&
+                                         style.LogicalHeight().IsAuto())) {
+      if (node.IsFlexibleBox() || node.IsGrid())
         intrinsic_block_size = kIndefiniteSize;
+    }
 
-      // The intrinsic size of flex-boxes can depend on the %-block-size. This
-      // occurs when:
-      //  - A column flex-box has "max-height: 100%" (or similar) on itself.
-      //  - A row flex-box has "height: 100%" (or similar) and children which
-      //    stretch to this size.
-      //
-      // Due to this we can't use the |intrinsic_block_size| value, as the
-      // following |block_size| calculation would be incorrect.
-      // TODO(dgrogan): We can hit the cache here for row flexboxes when they
-      // don't have stretchy children.
-      if (physical_fragment.DependsOnPercentageBlockSize() &&
-          new_space.PercentageResolutionBlockSize() !=
-              old_space.PercentageResolutionBlockSize())
+    // Grid/flex can have their intrinsic block-size depend on the
+    // %-block-size. This occurs when:
+    //  - A column flex-box has "max-height: 100%" (or similar) on itself.
+    //  - A row flex-box has "height: 100%" (or similar) and children which
+    //    stretch to this size.
+    //  - A grid with "grid-template-rows: repeat(auto-fill, 50px)" or similar.
+    //
+    // Similar to above we can't use the |intrinsic_block_size| for determining
+    // the new block-size.
+    //
+    // TODO(dgrogan): We can hit the cache here for row flexboxes when they
+    // don't have stretchy children.
+    if (physical_fragment.DependsOnPercentageBlockSize() &&
+        new_space.PercentageResolutionBlockSize() !=
+            old_space.PercentageResolutionBlockSize()) {
+      if (node.IsFlexibleBox() || node.IsGrid())
         intrinsic_block_size = kIndefiniteSize;
     }
 
@@ -299,21 +304,26 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       return NGLayoutCacheStatus::kNeedsLayout;
   }
 
-  // TODO(ikilpatrick): Grid needs special logic here, as the behaviour is
-  // slightly different to other layout types.
-  if (layout_result.HasDescendantThatDependsOnPercentageBlockSize()) {
-    // %-block-size children of flex-items sometimes don't resolve their
-    // percentages against a fixed block-size.
-    // We miss the cache if the %-resolution block-size changes from indefinite
-    // to definite (or visa-versa).
+  const bool has_descendant_that_depends_on_percentage_block_size =
+      layout_result.HasDescendantThatDependsOnPercentageBlockSize();
+  const bool is_old_initial_block_size_indefinite =
+      layout_result.IsInitialBlockSizeIndefinite();
 
-    bool is_old_initial_block_size_indefinite =
-        layout_result.IsInitialBlockSizeIndefinite();
-
-    if (is_old_initial_block_size_indefinite !=
-        is_initial_block_size_indefinite)
+  // Miss the cache if the initial block-size change from indefinite to
+  // definite (or visa-versa), and:
+  //  - We have a descendant which depends on the %-block-size.
+  //  - We are a grid.
+  //
+  // TODO(ikilpatrick): There is an "optimization" for grid which would involve
+  // *always* setting the initial block-size for grid as indefinite, then
+  // re-running computing the grid if we have any "auto" tracks etc.
+  if (is_old_initial_block_size_indefinite !=
+      is_initial_block_size_indefinite) {
+    if (node.IsGrid() || has_descendant_that_depends_on_percentage_block_size)
       return NGLayoutCacheStatus::kNeedsLayout;
+  }
 
+  if (has_descendant_that_depends_on_percentage_block_size) {
     // %-block-size children of table-cells have different behaviour if they
     // are in the "measure" or "layout" phase.
     // Instead of trying to capture that logic here, we always miss the cache.
