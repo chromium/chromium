@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/common/content_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "weblayer/public/js_communication/web_message.h"

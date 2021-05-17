@@ -117,8 +117,6 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
    private:
     NavigationController* controller_;
   };
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ErrorPageReloadBrowserTest, ReloadOnNetworkChanged) {

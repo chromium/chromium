@@ -6,7 +6,6 @@
 #define WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_H_
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
@@ -41,8 +40,6 @@ class WebLayerBrowserTest : public content::BrowserTestBase {
  private:
   Shell* shell_ = nullptr;
   bool start_in_incognito_mode_ = false;
-
-  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(WebLayerBrowserTest);
 };

@@ -5,6 +5,7 @@
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/features.h"
