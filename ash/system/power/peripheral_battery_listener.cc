@@ -24,10 +24,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
@@ -40,8 +43,25 @@ constexpr char kBluetoothDeviceIdPrefix[] = "battery_bluetooth-";
 constexpr char kStylusChargerFilename[] = "/PCHG0";
 constexpr char kStylusChargerID[] = "PCHG0";
 
+// TODO(b/187298772,b/187299765): if we have docked stylus chargers that have
+// significantly different parameters, we will need to provide a way to
+// dynamically configure these parameters, or else have the EC provide a PCHG0
+// device directly to model the charger, and modify this logic to disable the
+// synthetic charger when both a switch and a PCHG0 device are present.
+
+// Millisecond period to update charge level when stylus is in garage
+constexpr int kGarageChargeUpdatePeriod = 1000;
+
+// Estimated maximum time to charge garaged stylus to 100%, in ms, plus margin
+constexpr int kGaragedStylusChargeTime = 17 * 1000;
+
+constexpr char kStylusGarageKey[] = "garaged-stylus-charger";
+constexpr char16_t kStylusGarageName[] = u"Stylus Charger";
+
 // Checks if the device is an external stylus.
-bool IsStylusDevice(const std::string& path, const std::string& model_name) {
+bool IsStylusDevice(const std::string& path,
+                    const std::string& model_name,
+                    bool* has_garage) {
   std::string identifier = ExtractHIDBatteryIdentifier(path);
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
@@ -49,6 +69,7 @@ bool IsStylusDevice(const std::string& path, const std::string& model_name) {
         (device.name == model_name ||
          device.name.find(model_name) != std::string::npos) &&
         device.sys_path.value().find(identifier) != std::string::npos) {
+      *has_garage = device.has_stylus_garage_switch;
       return true;
     }
   }
@@ -133,15 +154,60 @@ PeripheralBatteryListener::BatteryInfo::BatteryInfo(const BatteryInfo& info) =
 
 PeripheralBatteryListener::PeripheralBatteryListener() {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&PeripheralBatteryListener::InitializeOnBluetoothReady,
                      weak_factory_.GetWeakPtr()));
+
+  // When we are constructed, and device lists are ready, we want to get
+  // the backlog of any peripheral devices from the pmc; otherwise we only
+  // receive updates. If they aren't complete now, we'll catch it in the
+  // callback when they are.
+
+  if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete())
+    chromeos::PowerManagerClient::Get()->RequestAllPeripheralBatteryUpdate();
 }
 
 PeripheralBatteryListener::~PeripheralBatteryListener() {
+  garage_charge_timer_.Stop();
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  if (chromeos::PowerManagerClient::Get())
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+}
+
+bool PeripheralBatteryListener::HasSyntheticStylusGarargePeripheral() {
+  return synthetic_stylus_garage_peripheral_;
+}
+
+void PeripheralBatteryListener::UpdateSyntheticStylusGarargePeripheral() {
+  if (synthetic_stylus_garage_peripheral_)
+    return;
+
+  // When we start up, retrieve the current garage state. When we get
+  // it, if the stylus is in the garage, assume it has been there for a
+  // while and has a full charge. If not present, we cannot provide any
+  // information.
+  ui::OzonePlatform::GetInstance()->GetInputController()->GetStylusSwitchState(
+      base::BindOnce(&PeripheralBatteryListener::GetSwitchStateCallback,
+                     weak_factory_.GetWeakPtr()));
+  synthetic_stylus_garage_peripheral_ = true;
+}
+
+void PeripheralBatteryListener::GetSwitchStateCallback(ui::StylusState state) {
+  BatteryInfo battery{kStylusGarageKey,
+                      kStylusGarageName,
+                      (state == ui::StylusState::REMOVED)
+                          ? absl::optional<uint8_t>(absl::nullopt)
+                          : 100,
+                      base::TimeTicks::Now(),
+                      BatteryInfo::PeripheralType::kStylusViaCharger,
+                      (state == ui::StylusState::REMOVED)
+                          ? BatteryInfo::ChargeStatus::kUnknown
+                          : BatteryInfo::ChargeStatus::kFull,
+                      ""};
+
+  UpdateBattery(battery, true);
 }
 
 // Observing chromeos::PowerManagerClient
@@ -174,12 +240,21 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
   }
 
   BatteryInfo::PeripheralType type;
-  if (IsPeripheralCharger(path))
+  bool has_garage = false;
+  if (IsPeripheralCharger(path)) {
     type = BatteryInfo::PeripheralType::kStylusViaCharger;
-  else if (IsStylusDevice(path, name))
+    // TODO(b/187299765): Devices currently do not both real peripheral chargers
+    // and a stylus dock switch. Once that changes, this logic needs to be
+    // updated to ensure the synthetic peripheral is not created.
+    CHECK(!HasSyntheticStylusGarargePeripheral());
+  } else if (IsStylusDevice(path, name, &has_garage)) {
     type = BatteryInfo::PeripheralType::kStylusViaScreen;
-  else
+    if (has_garage) {
+      UpdateSyntheticStylusGarargePeripheral();
+    }
+  } else {
     type = BatteryInfo::PeripheralType::kOther;
+  }
 
   std::string map_key = GetBatteryMapKey(path);
   absl::optional<uint8_t> opt_level;
@@ -260,6 +335,144 @@ void PeripheralBatteryListener::RemoveBluetoothBattery(
     NotifyRemovingBattery(it->second);
     batteries_.erase(it);
   }
+}
+
+// Observing ui::DeviceDataManager:
+void PeripheralBatteryListener::OnDeviceListsComplete() {
+  chromeos::PowerManagerClient::Get()->RequestAllPeripheralBatteryUpdate();
+}
+
+// Present a charge level and charging/full state based on the prior value. We
+// don't try to make an accurate estimate of charge level, as it could be
+// completely wrong. We instead assume that charging will always take the
+// maxmium amount of time, hold the charge level unchanged, at a max of 99% (not
+// fully charged), until the maximum charge time expires. Then it is reported at
+// 100% and full. This ensures it will not report full until it is _definitely_
+// full, and we don't provide a worse estimate than we were already showing.
+void PeripheralBatteryListener::GarageTimerAction(
+    base::TimeTicks charge_start_time,
+    absl::optional<uint8_t> start_level) {
+  if (!synthetic_stylus_garage_peripheral_)
+    return;
+
+  auto it = batteries_.find(kStylusGarageKey);
+  if (it == batteries_.end()) {
+    return;
+  }
+
+  BatteryInfo info = it->second;
+  info.last_update_timestamp = base::TimeTicks::Now();
+
+  base::TimeDelta charge_period = base::TimeTicks::Now() - charge_start_time;
+  int new_level = start_level.has_value() ? *start_level : 1;
+
+  if (new_level < 1)
+    new_level = 1;
+  if (new_level >= 99)
+    new_level = 99;
+
+  // Consider it fully charged only after the max time has passed.
+  if (charge_period.InMilliseconds() >= kGaragedStylusChargeTime) {
+    info.level = 100;
+    info.charge_status = BatteryInfo::ChargeStatus::kFull;
+    garage_charge_timer_.Stop();
+  } else {
+    info.level = new_level;
+    info.charge_status = BatteryInfo::ChargeStatus::kCharging;
+  }
+  UpdateBattery(info, true);
+}
+
+absl::optional<uint8_t> PeripheralBatteryListener::DerateLastChargeLevel() {
+  BatteryInfo latest_battery;
+
+  // Find the battery info with most recent data about the stylus
+  for (auto it : batteries_) {
+    if (it.second.type != BatteryInfo::PeripheralType::kStylusViaScreen &&
+        it.second.type != BatteryInfo::PeripheralType::kStylusViaCharger) {
+      continue;
+    }
+
+    if (!it.second.last_active_update_timestamp.has_value())
+      continue;
+
+    if (latest_battery.last_active_update_timestamp <
+        it.second.last_active_update_timestamp) {
+      latest_battery = it.second;
+    }
+  }
+
+  // No information available.
+  if (!latest_battery.level.has_value())
+    return base::nullopt;
+
+  int level = *latest_battery.level;
+
+  // We could do an estimate on charge level assuming a known discharge rate,
+  // however we cannot prove it is the same stylus, and the operation would be
+  // clearly incorrect if someone is swapping between two styluses to keep them
+  // charged. Instead we simply report the last known level, or 99 at max, just
+  // below full. This is not a correct estimate, but it is a useful value for
+  // the UX. (99 max means we will never immediately say the stylus is full, and
+  // using the last reading as minimum means we will never show 'low battery'
+  // unless it was already the case).
+
+  if (!level)
+    level = 1;
+  if (level >= 99)
+    level = 99;
+
+  return level;
+}
+
+void PeripheralBatteryListener::OnStylusStateChanged(
+    ui::StylusState stylus_state) {
+  if (!synthetic_stylus_garage_peripheral_)
+    return;
+
+  if (stylus_state == current_stylus_state_)
+    return;
+
+  auto it = batteries_.find(kStylusGarageKey);
+  if (it == batteries_.end())
+    return;
+
+  BatteryInfo info = it->second;
+
+  if (stylus_state == ui::StylusState::INSERTED) {
+    // Set charger level from last prior reading, minus the estimated discharge
+    // amount since the time of that last reading.
+
+    info.level = DerateLastChargeLevel();
+    info.charge_status = info.level >= 100
+                             ? BatteryInfo::ChargeStatus::kFull
+                             : BatteryInfo::ChargeStatus::kCharging;
+
+    UpdateBattery(info, true);
+
+    if (info.charge_status == BatteryInfo::ChargeStatus::kCharging) {
+      base::TimeTicks charge_start_time = base::TimeTicks::Now();
+      garage_charge_timer_.Start(
+          FROM_HERE,
+          base::TimeDelta::FromMilliseconds(kGarageChargeUpdatePeriod),
+          base::BindRepeating(&PeripheralBatteryListener::GarageTimerAction,
+                              base::Unretained(this), charge_start_time,
+                              info.level));
+    } else {
+      garage_charge_timer_.Stop();
+    }
+  } else if (stylus_state == ui::StylusState::REMOVED) {
+    garage_charge_timer_.Stop();
+    // We leave the charge level unchanged, it may not be accurate, but
+    // it will be corrected once the stylus is used on the screen; any
+    // alternative (revising the estimate, or reverting to the value at
+    // the beginning of charge, if it wasn't fully charged) would lead to the
+    // level jumping when the stylus is removed from the garage.
+    info.charge_status = BatteryInfo::ChargeStatus::kUnknown;
+    UpdateBattery(info, true);
+  }
+
+  current_stylus_state_ = stylus_state;
 }
 
 void PeripheralBatteryListener::UpdateBattery(const BatteryInfo& battery_info,

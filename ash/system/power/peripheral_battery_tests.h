@@ -48,6 +48,89 @@ constexpr char kBluetoothDeviceId2[] = "battery_bluetooth-11:22:33:44:55:66";
 constexpr char kBluetoothDeviceNotificationId2[] =
     "battery_notification-battery_bluetooth-11:22:33:44:55:66";
 
+// Stylus devices.
+const std::string kTestStylusBatteryPath =
+    "/sys/class/power_supply/hid-AAAA:BBBB:CCCC.DDDD-battery";
+const std::string kTestStylusName = "test_stylus";
+const auto kTestStylusBatteryStatusDischargingIn = power_manager::
+    PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
+const auto kTestStylusBatteryStatusDischargingOut =
+    ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kDischarging;
+// A period of time less than full garage charge, in seconds
+const int kPartialGarageChargeTime = 3;
+// A period of time greater than full garage charge, in seconds
+const int kFullGarageChargeTime = 30;
+
+constexpr char kStylusChargerDeviceName[] = "garaged-stylus-charger";
+
 }  // namespace
+
+// Provide pretty-printers in aid of EXPECT_CALL() diagnostics.
+namespace absl {
+
+inline void PrintTo(const absl::optional<uint8_t>& optional, std::ostream* os) {
+  if (!optional.has_value()) {
+    *os << "absl::nullopt";
+  } else {
+    *os << (int)*optional;
+  }
+}
+
+}  // namespace absl
+
+namespace ash {
+
+inline void PrintTo(
+    const ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus& status,
+    std::ostream* os) {
+  switch (status) {
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kUnknown:
+      *os << "Unknown";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::
+        kDischarging:
+      *os << "Discharging";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kCharging:
+      *os << "Charging";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kFull:
+      *os << "Full";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::
+        kNotCharging:
+      *os << "NotCharging";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kError:
+      *os << "Error";
+      break;
+    default:
+      *os << "unknown-enum-value";
+  }
+  *os << "(" << (int)status << ")";
+}
+
+inline void PrintTo(
+    const ash::PeripheralBatteryListener::BatteryInfo::PeripheralType& type,
+    std::ostream* os) {
+  switch (type) {
+    case ash::PeripheralBatteryListener::BatteryInfo::PeripheralType::kOther:
+      *os << "Other";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::PeripheralType::
+        kStylusViaScreen:
+      *os << "StylusViaScreen";
+      break;
+    case ash::PeripheralBatteryListener::BatteryInfo::PeripheralType::
+        kStylusViaCharger:
+      *os << "StylusViaCharger";
+      break;
+    default:
+      *os << "unknown-enum-value";
+  }
+  *os << "(" << (int)type << ")";
+}
+
+}  // namespace ash
 
 #endif  // ASH_SYSTEM_POWER_PERIPHERAL_BATTERY_TESTS_H_

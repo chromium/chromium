@@ -130,6 +130,11 @@ void PeripheralBatteryNotifier::OnUpdatedBatteryLevel(
       !ash::features::IsStylusBatteryStatusEnabled()) {
     return;
   }
+
+  // TODO(b/187703348): it is worth listening to charger events if they
+  // might remove the notification: we want to clear it as soon as
+  // we believe the battery to have been charged, or at least starting
+  // charging.
   if (battery_info.type == PeripheralBatteryListener::BatteryInfo::
                                PeripheralType::kStylusViaCharger) {
     return;

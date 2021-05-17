@@ -14,9 +14,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/devices/stylus_state.h"
 
 namespace ash {
 
@@ -27,7 +30,8 @@ class PeripheralBatteryListenerTest;
 // several sources, allowing simpler unified observation.
 class ASH_EXPORT PeripheralBatteryListener
     : public chromeos::PowerManagerClient::Observer,
-      public device::BluetoothAdapter::Observer {
+      public device::BluetoothAdapter::Observer,
+      public ui::InputDeviceEventObserver {
  public:
   struct BatteryInfo {
     enum class PeripheralType {
@@ -171,6 +175,9 @@ class ASH_EXPORT PeripheralBatteryListener
   void DeviceRemoved(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
 
+  //  ui::InputDeviceEventObserver:
+  void OnDeviceListsComplete() override;
+
  private:
   friend class PeripheralBatteryNotifierListenerTest;
   FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryNotifierListenerTest, Basic);
@@ -193,6 +200,36 @@ class ASH_EXPORT PeripheralBatteryListener
                            PartialObserverationLifetimeCatchUp);
   FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerTest,
                            MultipleObserverationLifetimeObeyed);
+
+  friend class PeripheralBatteryListenerIncompleteDevicesTest;
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerIncompleteDevicesTest,
+                           GarageCharging);
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerIncompleteDevicesTest,
+                           GarageChargesFully);
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerIncompleteDevicesTest,
+                           GarageChargesFullyFromFiftyPercent);
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerIncompleteDevicesTest,
+                           GarageChargingResumed);
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryListenerIncompleteDevicesTest,
+                           GarageChargingInterrupted);
+
+  // Report whether we are producing a 'battery peripheral' based on
+  // stylus dock/garage switch
+  bool HasSyntheticStylusGarargePeripheral();
+
+  void UpdateSyntheticStylusGarargePeripheral();
+  void GetSwitchStateCallback(ui::StylusState state);
+
+  // Compute the estimated charge level for the docked stylus based on
+  // prior knowledge of stylus charge levels. Returns nullopt if there
+  // was no prior information.
+  absl::optional<uint8_t> DerateLastChargeLevel();
+
+  // Periodic callback used when docked stylus is charging; it will
+  // be provided with the time that charging started, and the derated
+  // charge level at that time.
+  void GarageTimerAction(base::TimeTicks charge_start_time,
+                         absl::optional<uint8_t> start_level);
 
   void NotifyAddingBattery(const BatteryInfo& battery);
   void NotifyRemovingBattery(const BatteryInfo& battery);
@@ -217,6 +254,14 @@ class ASH_EXPORT PeripheralBatteryListener
   // PeripheralBatteryListener is an observer of |bluetooth_adapter_| for
   // bluetooth device change/remove events.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+
+  // PeripheralBatteryListener is an observer of InputDeviceEventObserver for
+  // stylus garage insertion/removal messages.
+  void OnStylusStateChanged(ui::StylusState state) override;
+
+  bool synthetic_stylus_garage_peripheral_ = false;
+  absl::optional<ui::StylusState> current_stylus_state_;
+  base::RepeatingTimer garage_charge_timer_;
 
   base::ObserverList<Observer> observers_;
 
