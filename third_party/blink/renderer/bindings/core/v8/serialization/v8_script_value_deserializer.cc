@@ -440,7 +440,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       ImageData* image_data = ImageData::ValidateAndCreate(
           width, height, absl::nullopt, settings.GetImageDataSettings(),
-          exception_state);
+          ImageData::ValidateAndCreateParams(), exception_state);
       if (!image_data)
         return nullptr;
       SkPixmap image_data_pixmap = image_data->GetSkPixmap();

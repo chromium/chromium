@@ -65,15 +65,15 @@ ImageData* ImageData::ValidateAndCreate(
     absl::optional<unsigned> height,
     absl::optional<NotShared<DOMArrayBufferView>> data,
     const ImageDataSettings* settings,
-    ExceptionState& exception_state,
-    uint32_t flags) {
+    ValidateAndCreateParams params,
+    ExceptionState& exception_state) {
   IntSize size;
-  if ((flags & RequireCanvasColorManagement &&
-       !RuntimeEnabledFeatures::CanvasColorManagementEnabled())) {
+  if (params.require_canvas_color_management &&
+      !RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
     exception_state.ThrowTypeError("Overload resolution failed.");
     return nullptr;
   }
-  if (settings) {
+  if (settings && settings->hasColorSpace()) {
     if (!ColorSpaceNameIsValid(settings->colorSpace(), exception_state))
       return nullptr;
   }
@@ -103,7 +103,7 @@ ImageData* ImageData::ValidateAndCreate(
     base::CheckedNumeric<unsigned> size_in_elements_checked = 4;
     size_in_elements_checked *= size.Width();
     size_in_elements_checked *= size.Height();
-    if (!(flags & ValidateAndCreateFlags::Context2DErrorMode)) {
+    if (!params.context_2d_error_mode) {
       if (!size_in_elements_checked.IsValid()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
@@ -120,10 +120,11 @@ ImageData* ImageData::ValidateAndCreate(
   }
 
   // Query the color space and storage format from |settings|.
-  CanvasColorSpace color_space = CanvasColorSpace::kSRGB;
+  CanvasColorSpace color_space = params.default_color_space;
   ImageDataStorageFormat storage_format = kUint8ClampedArrayStorageFormat;
   if (settings) {
-    color_space = CanvasColorSpaceFromName(settings->colorSpace());
+    if (settings->hasColorSpace())
+      color_space = CanvasColorSpaceFromName(settings->colorSpace());
     storage_format = ImageDataStorageFormatFromName(settings->storageFormat());
   }
 
@@ -199,8 +200,9 @@ ImageData* ImageData::ValidateAndCreate(
 
   NotShared<DOMArrayBufferView> allocated_data;
   if (!data) {
-    allocated_data = AllocateAndValidateDataArray(
-        size_in_elements, storage_format, &exception_state);
+    allocated_data =
+        AllocateAndValidateDataArray(size_in_elements, storage_format,
+                                     params.zero_initialize, exception_state);
     if (!allocated_data)
       return nullptr;
   }
@@ -212,7 +214,8 @@ ImageData* ImageData::ValidateAndCreate(
 NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
     const unsigned& length,
     ImageDataStorageFormat storage_format,
-    ExceptionState* exception_state) {
+    bool zero_initialize,
+    ExceptionState& exception_state) {
   if (!length)
     return NotShared<DOMArrayBufferView>();
 
@@ -220,15 +223,19 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
       data_array = NotShared<DOMArrayBufferView>(
-          DOMUint8ClampedArray::CreateOrNull(length));
+          zero_initialize
+              ? DOMUint8ClampedArray::CreateOrNull(length)
+              : DOMUint8ClampedArray::CreateUninitializedOrNull(length));
       break;
     case kUint16ArrayStorageFormat:
-      data_array =
-          NotShared<DOMArrayBufferView>(DOMUint16Array::CreateOrNull(length));
+      data_array = NotShared<DOMArrayBufferView>(
+          zero_initialize ? DOMUint16Array::CreateOrNull(length)
+                          : DOMUint16Array::CreateUninitializedOrNull(length));
       break;
     case kFloat32ArrayStorageFormat:
-      data_array =
-          NotShared<DOMArrayBufferView>(DOMFloat32Array::CreateOrNull(length));
+      data_array = NotShared<DOMArrayBufferView>(
+          zero_initialize ? DOMFloat32Array::CreateOrNull(length)
+                          : DOMFloat32Array::CreateUninitializedOrNull(length));
       break;
     default:
       NOTREACHED();
@@ -238,8 +245,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
   if (!data_array || (!base::CheckMul(length, data_array->TypeSize())
                            .AssignIfValid(&expected_size) &&
                       expected_size != data_array->byteLength())) {
-    if (exception_state)
-      exception_state->ThrowRangeError("Out of memory at ImageData creation");
+    exception_state.ThrowRangeError("Out of memory at ImageData creation");
     return NotShared<DOMArrayBufferView>();
   }
 

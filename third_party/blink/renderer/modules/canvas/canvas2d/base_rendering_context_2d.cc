@@ -2032,10 +2032,11 @@ bool BaseRenderingContext2D::ComputeDirtyRect(
 ImageData* BaseRenderingContext2D::createImageData(
     ImageData* image_data,
     ExceptionState& exception_state) const {
+  ImageData::ValidateAndCreateParams params;
+  params.context_2d_error_mode = true;
   return ImageData::ValidateAndCreate(
       image_data->Size().Width(), image_data->Size().Height(), absl::nullopt,
-      image_data->getSettings(), exception_state,
-      ImageData::Context2DErrorMode);
+      image_data->getSettings(), params, exception_state);
 }
 
 ImageData* BaseRenderingContext2D::createImageData(
@@ -2043,9 +2044,11 @@ ImageData* BaseRenderingContext2D::createImageData(
     int sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
+  ImageData::ValidateAndCreateParams params;
+  params.context_2d_error_mode = true;
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
-                                      image_data_settings, exception_state,
-                                      ImageData::Context2DErrorMode);
+                                      image_data_settings, params,
+                                      exception_state);
 }
 
 ImageData* BaseRenderingContext2D::getImageData(
@@ -2110,19 +2113,13 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   const IntRect image_data_rect(sx, sy, sw, sh);
 
-  if (!image_data_settings) {
-    image_data_settings = ImageDataSettings::Create();
-    image_data_settings->setColorSpace(kSRGBCanvasColorSpaceName);
-    image_data_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-  }
+  ImageData::ValidateAndCreateParams validate_and_create_params;
+  validate_and_create_params.context_2d_error_mode = true;
 
-  const ImageDataStorageFormat storage_format =
-      ImageData::GetImageDataStorageFormat(
-          image_data_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
-    return ImageData::ValidateAndCreate(sw, sh, absl::nullopt,
-                                        image_data_settings, exception_state,
-                                        ImageData::Context2DErrorMode);
+    return ImageData::ValidateAndCreate(
+        sw, sh, absl::nullopt, image_data_settings, validate_and_create_params,
+        exception_state);
   }
 
   // Deferred offscreen canvases might have recorded commands, make sure
@@ -2147,105 +2144,40 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   scoped_refptr<StaticBitmapImage> snapshot = GetImage();
 
-  // Compute the ImageData's SkImageInfo;
-  SkImageInfo image_info;
-  {
-    SkColorType color_type = kRGBA_8888_SkColorType;
-    switch (storage_format) {
-      case kUint8ClampedArrayStorageFormat:
-        color_type = kRGBA_8888_SkColorType;
-        break;
-      case kUint16ArrayStorageFormat:
-        color_type = kR16G16B16A16_unorm_SkColorType;
-        break;
-      case kFloat32ArrayStorageFormat:
-        color_type = kRGBA_F32_SkColorType;
-        break;
-      default:
-        NOTREACHED();
-    }
-    sk_sp<SkColorSpace> color_space = CanvasColorSpaceToSkColorSpace(
-        CanvasColorSpaceFromName(image_data_settings->colorSpace()));
-    image_info = SkImageInfo::Make(sw, sh, color_type, kUnpremul_SkAlphaType,
-                                   color_space);
-  }
-
-  // Compute the size of and allocate |contents|, the ArrayContentsBuffer.
-  ArrayBufferContents contents;
-  const size_t data_size_bytes = image_info.computeMinByteSize();
-  {
-    if (data_size_bytes > std::numeric_limits<unsigned int>::max()) {
-      exception_state.ThrowRangeError(
-          "Buffer size exceeds maximum heap object size.");
-      return nullptr;
-    }
-    if (SkImageInfo::ByteSizeOverflowed(data_size_bytes) ||
-        data_size_bytes > v8::TypedArray::kMaxLength) {
-      exception_state.ThrowRangeError("Out of memory at ImageData creation");
-      return nullptr;
-    }
-    ArrayBufferContents::InitializationPolicy initialization_policy =
-        ArrayBufferContents::kDontInitialize;
-    if (IsAccelerated()) {
-      // GPU readback may fail silently.
-      initialization_policy = ArrayBufferContents::kZeroInitialize;
-    } else if (snapshot) {
-      // Zero-initialize if some of the readback area is out of bounds.
-      if (image_data_rect.X() < 0 || image_data_rect.Y() < 0 ||
-          image_data_rect.MaxX() > snapshot->Size().Width() ||
-          image_data_rect.MaxY() > snapshot->Size().Height()) {
-        initialization_policy = ArrayBufferContents::kZeroInitialize;
-      }
-    }
-    contents =
-        ArrayBufferContents(data_size_bytes, 1, ArrayBufferContents::kNotShared,
-                            initialization_policy);
-    if (contents.DataLength() != data_size_bytes) {
-      exception_state.ThrowRangeError("Out of memory at ImageData creation");
-      return nullptr;
+  // Determine if the array should be zero initialized, or if it will be
+  // completely overwritten.
+  validate_and_create_params.zero_initialize = false;
+  if (IsAccelerated()) {
+    // GPU readback may fail silently.
+    validate_and_create_params.zero_initialize = true;
+  } else if (snapshot) {
+    // Zero-initialize if some of the readback area is out of bounds.
+    if (image_data_rect.X() < 0 || image_data_rect.Y() < 0 ||
+        image_data_rect.MaxX() > snapshot->Size().Width() ||
+        image_data_rect.MaxY() > snapshot->Size().Height()) {
+      validate_and_create_params.zero_initialize = true;
     }
   }
 
-  // Read pixels into |contents|.
+  ImageData* image_data =
+      ImageData::ValidateAndCreate(sw, sh, absl::nullopt, image_data_settings,
+                                   validate_and_create_params, exception_state);
+  if (!image_data)
+    return nullptr;
+
+  // Read pixels into |image_data|.
   if (snapshot) {
+    SkPixmap image_data_pixmap = image_data->GetSkPixmap();
     const bool read_pixels_successful =
         snapshot->PaintImageForCurrentFrame().readPixels(
-            image_info, contents.Data(), image_info.minRowBytes(), sx, sy);
+            image_data_pixmap.info(), image_data_pixmap.writable_addr(),
+            image_data_pixmap.rowBytes(), sx, sy);
     if (!read_pixels_successful) {
       SkIRect bounds =
           snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
       DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
     }
   }
-
-  // Wrap |contents| in an ImageData.
-  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(std::move(contents));
-  NotShared<DOMArrayBufferView> data_array;
-  switch (storage_format) {
-    case kUint8ClampedArrayStorageFormat: {
-      size_t num_elements = data_size_bytes;
-      data_array = NotShared<DOMArrayBufferView>(
-          DOMUint8ClampedArray::Create(array_buffer, 0, num_elements));
-      break;
-    }
-    case kUint16ArrayStorageFormat: {
-      size_t num_elements = data_size_bytes / 2;
-      data_array = NotShared<DOMArrayBufferView>(
-          DOMUint16Array::Create(array_buffer, 0, num_elements));
-      break;
-    }
-    case kFloat32ArrayStorageFormat: {
-      size_t num_elements = data_size_bytes / 4;
-      data_array = NotShared<DOMArrayBufferView>(
-          DOMFloat32Array::Create(array_buffer, 0, num_elements));
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-  ImageData* image_data = ImageData::ValidateAndCreate(
-      sw, sh, data_array, image_data_settings, exception_state,
-      ImageData::Context2DErrorMode);
 
   if (!IsPaint2D()) {
     int scaled_time = getScaledElapsedTime(

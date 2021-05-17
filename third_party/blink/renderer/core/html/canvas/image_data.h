@@ -76,7 +76,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
     return ValidateAndCreate(width, height, absl::nullopt, settings,
-                             exception_state);
+                             ValidateAndCreateParams(), exception_state);
   }
 
   // Constructor that takes Uint8ClampedArray, width, optional height, and
@@ -85,14 +85,15 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned width,
                            ExceptionState& exception_state) {
     return ValidateAndCreate(width, absl::nullopt, data, nullptr,
-                             exception_state);
+                             ValidateAndCreateParams(), exception_state);
   }
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state);
+    return ValidateAndCreate(width, height, data, settings,
+                             ValidateAndCreateParams(), exception_state);
   }
 
   // Constructor that takes DOMUint16Array, width, optional height, and optional
@@ -100,16 +101,20 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMUint16Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
-                             exception_state, RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management = true;
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
+                             exception_state);
   }
   static ImageData* Create(NotShared<DOMUint16Array> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management = true;
+    return ValidateAndCreate(width, height, data, settings, params,
+                             exception_state);
   }
 
   // Constructor that takes DOMFloat32Array, width, optional height, and
@@ -117,40 +122,50 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMFloat32Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
-                             exception_state, RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management = true;
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
+                             exception_state);
   }
   static ImageData* Create(NotShared<DOMFloat32Array> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management = true;
+    return ValidateAndCreate(width, height, data, settings, params,
+                             exception_state);
   }
 
   // ValidateAndCreate is the common path that all ImageData creation code
   // should call directly. The other Create functions are to be called only by
   // generated code.
-  enum ValidateAndCreateFlags {
-    None = 0x0,
+  struct ValidateAndCreateParams {
     // When a too-large ImageData is created using a constructor, it has
     // historically thrown an IndexSizeError. When created through a 2D
     // canvas, it has historically thrown a RangeError. This flag will
     // trigger the RangeError path.
-    Context2DErrorMode = 0x1,
+    bool context_2d_error_mode = false;
     // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
     // This argument is passed by Create functions that should require that the
     // CanvasColorManagement feature be enabled.
-    RequireCanvasColorManagement = 0x2,
+    bool require_canvas_color_management = false;
+    // If the caller is guaranteed to write over the result in its entirety,
+    // then this flag may be used to skip initialization of the result's
+    // data.
+    bool zero_initialize = true;
+    // If no color space is specified, then use this value for the resulting
+    // ImageData.
+    CanvasColorSpace default_color_space = CanvasColorSpace::kSRGB;
   };
   static ImageData* ValidateAndCreate(
       unsigned width,
       absl::optional<unsigned> height,
       absl::optional<NotShared<DOMArrayBufferView>> data,
       const ImageDataSettings* settings,
-      ExceptionState& exception_state,
-      uint32_t flags = 0);
+      ValidateAndCreateParams params,
+      ExceptionState& exception_state);
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() { return settings_; }
 
@@ -226,7 +241,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
       ImageDataStorageFormat,
-      ExceptionState* = nullptr);
+      bool initialize,
+      ExceptionState&);
 };
 
 }  // namespace blink
