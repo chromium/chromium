@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -39,6 +40,10 @@ const char kSetRestorePrefNotificationId[] = "set_restore_pref_notification";
 // set restore pref notification.
 const int kMaxConsecutiveRestoreSelectionCount = 3;
 
+const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
+const char kRestoreForCrashNotificationHistogramName[] =
+    "Apps.RestoreForCrashNotification";
+
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
   return static_cast<FullRestoreService*>(
@@ -59,6 +64,62 @@ FullRestoreService::~FullRestoreService() = default;
 
 void FullRestoreService::LaunchBrowserWhenReady() {
   app_launch_handler_->LaunchBrowserWhenReady();
+}
+
+void FullRestoreService::Close(bool by_user) {
+  if (!skip_notification_histogram_ &&
+      (notification_->id() == kRestoreNotificationId ||
+       notification_->id() == kRestoreForCrashNotificationId)) {
+    RecordRestoreAction(
+        notification_->id(),
+        by_user ? RestoreAction::kCloseByUser : RestoreAction::kCloseNotByUser);
+  }
+}
+void FullRestoreService::Click(const absl::optional<int>& button_index,
+                               const absl::optional<std::u16string>& reply) {
+  skip_notification_histogram_ = true;
+  DCHECK(notification_);
+  if (!is_shut_down_) {
+    NotificationDisplayService::GetForProfile(profile_)->Close(
+        NotificationHandler::Type::TRANSIENT, notification_->id());
+  }
+
+  if (!button_index.has_value())
+    return;
+
+  if (notification_->id() == kRestoreNotificationId ||
+      notification_->id() == kRestoreForCrashNotificationId) {
+    RecordRestoreAction(
+        notification_->id(),
+        button_index.value() ==
+                static_cast<int>(RestoreNotificationButtonIndex::kRestore)
+            ? RestoreAction::kRestore
+            : RestoreAction::kCancel);
+  }
+
+  if (button_index.value() !=
+      static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
+    return;
+  }
+
+  if (notification_->id() == kSetRestorePrefNotificationId) {
+    // Show the 'On Startup' OS setting page.
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chromeos::settings::mojom::kOnStartupSubpagePath);
+    return;
+  }
+
+  int count = GetRestoreSelectedCountPref(profile_->GetPrefs());
+
+  if (count < kMaxConsecutiveRestoreSelectionCount)
+    SetRestoreSelectedCountPref(profile_->GetPrefs(), ++count);
+
+  // If the user selects the 'restore' button for more than 3 times, show the
+  // set restore pref notification.
+  if (count >= kMaxConsecutiveRestoreSelectionCount)
+    ShowRestoreNotification(kSetRestorePrefNotificationId);
+
+  Restore();
 }
 
 void FullRestoreService::RestoreForTesting() {
@@ -146,10 +207,8 @@ void FullRestoreService::ShowRestoreNotification(const std::string& id) {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  id),
       notification_data,
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              &FullRestoreService::HandleRestoreNotificationClicked,
-              weak_ptr_factory_.GetWeakPtr())),
+      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+          weak_ptr_factory_.GetWeakPtr()),
       kFullRestoreNotificationIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification_->set_priority(message_center::SYSTEM_PRIORITY);
@@ -162,40 +221,6 @@ void FullRestoreService::ShowRestoreNotification(const std::string& id) {
                                         /*metadata=*/nullptr);
 }
 
-void FullRestoreService::HandleRestoreNotificationClicked(
-    absl::optional<int> button_index) {
-  DCHECK(notification_);
-  if (!is_shut_down_) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
-        NotificationHandler::Type::TRANSIENT, notification_->id());
-  }
-
-  if (!button_index.has_value() ||
-      button_index.value() !=
-          static_cast<int>(RestoreNotificationButtonIndex::kRestore)) {
-    return;
-  }
-
-  if (notification_->id() == kSetRestorePrefNotificationId) {
-    // Show the 'On Startup' OS setting page.
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        profile_, chromeos::settings::mojom::kOnStartupSubpagePath);
-    return;
-  }
-
-  int count = GetRestoreSelectedCountPref(profile_->GetPrefs());
-
-  if (count < kMaxConsecutiveRestoreSelectionCount)
-    SetRestoreSelectedCountPref(profile_->GetPrefs(), ++count);
-
-  // If the user selects the 'restore' button for more than 3 times, show the
-  // set restore pref notification.
-  if (count >= kMaxConsecutiveRestoreSelectionCount)
-    ShowRestoreNotification(kSetRestorePrefNotificationId);
-
-  Restore();
-}
-
 void FullRestoreService::Restore() {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
@@ -205,6 +230,14 @@ void FullRestoreService::Restore() {
   }
 
   app_launch_handler_->SetShouldRestore();
+}
+
+void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
+                                             RestoreAction restore_action) {
+  base::UmaHistogramEnumeration(notification_id == kRestoreNotificationId
+                                    ? kRestoreNotificationHistogramName
+                                    : kRestoreForCrashNotificationHistogramName,
+                                restore_action);
 }
 
 }  // namespace full_restore

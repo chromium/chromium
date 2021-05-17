@@ -68588,6 +68588,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="Mock"/>
 </enum>
 
+<enum name="RestoreAction">
+  <int value="0" label="Restore is clicked"/>
+  <int value="1" label="Cancel is clicked"/>
+  <int value="2" label="Notification is closed by the user"/>
+  <int value="3" label="Notification is closed not by the user"/>
+</enum>
+
 <enum name="RestoredCachedStyleSheet">
   <int value="0" label="No usable cache found"/>
   <int value="1" label="Cached StyleSheetContents was reused"/>
