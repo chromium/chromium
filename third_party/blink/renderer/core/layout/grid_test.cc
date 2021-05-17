@@ -20,6 +20,9 @@ class GridTest : public RenderingTest {
 };
 
 TEST_F(GridTest, EmptyGrid) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -46,6 +49,9 @@ TEST_F(GridTest, EmptyGrid) {
 }
 
 TEST_F(GridTest, SingleChild) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -76,6 +82,9 @@ TEST_F(GridTest, SingleChild) {
 }
 
 TEST_F(GridTest, OverlappingChildren) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template: repeat(3, 20px) / repeat(3, 20px); }
@@ -111,6 +120,9 @@ TEST_F(GridTest, OverlappingChildren) {
 }
 
 TEST_F(GridTest, PartiallyOverlappingChildren) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template: repeat(1, 20px) / repeat(3, 20px); }
@@ -142,6 +154,9 @@ TEST_F(GridTest, PartiallyOverlappingChildren) {
 }
 
 TEST_F(GridTest, IntrinsicGrid) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template-rows: repeat(2, 10px); }
@@ -183,6 +198,9 @@ TEST_F(GridTest, IntrinsicGrid) {
 }
 
 TEST_F(GridTest, AutoFit) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; width: 100px; grid-template-columns: repeat(auto-fit, 10px); }
@@ -220,6 +238,9 @@ TEST_F(GridTest, AutoFit) {
 }
 
 TEST_F(GridTest, AutoFill) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; width: 100px; grid-template-columns: repeat(auto-fill, 10px); }
@@ -247,6 +268,9 @@ TEST_F(GridTest, AutoFill) {
 }
 
 TEST_F(GridTest, AutoPositionedItems) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template-rows: repeat(3, 10px); grid-auto-flow: column }
@@ -271,6 +295,9 @@ TEST_F(GridTest, AutoPositionedItems) {
 }
 
 TEST_F(GridTest, ExplicitlyPositionedChild) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -309,6 +336,9 @@ TEST_F(GridTest, ExplicitlyPositionedChild) {
 }
 
 TEST_F(GridTest, CellInsert) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   auto track = base::WrapUnique(new ListGrid::GridTrack(0, kForColumns));
   auto* cell = new ListGrid::GridCell(0, 0);
 
