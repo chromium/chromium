@@ -2440,20 +2440,20 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING" desc="Settings > Internet > Network details > Rename profile dialog | Remove profile dialog: The Label for the dialog warning message informing the user they may disconnect from their current cellular network connection if they proceed.">
     This may cause your mobile network to briefly disconnect
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being installed">
-    Installing profile. This may take up to 30 seconds.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being installed and notifying the user why mobile settings are temporarily disabled.">
+    Adding profile. This may take a few minutes.
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being removed">
-    Removing profile. This may take up to 30 seconds.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being uninstalled and notifying the user why mobile settings are temporarily disabled.">
+    Removing profile. This may take a few minutes.
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being renamed">
-    Renaming profile. This may take up to 30 seconds.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile is being renamed and notifying the user why mobile settings are temporarily disabled.">
+    Renaming profile. This may take a few minutes.
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating chromeOS device is connecting to selected cellular network profile">
-    Connecting to profile. This may take up to 30 seconds.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE" desc="Settings > Internet > Mobile data: Message indicating that an eSIM profile connection is currently in progress and notifying the user why mobile settings are temporarily disabled.">
+    Connecting to profile. This may take a few minutes.
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile list is being refreshed.">
-    Refreshing profile list. This may take up to 30 seconds.
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST" desc="Settings > Internet > Mobile data: Message indicating that the list of eSIM profiles is being refreshed and notifying the user why mobile settings are temporarily disabled.">
+    Refreshing profile list. This may take a few minutes.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: Error message shown when remove fails">
     Profile could not be removed. Please try again or contact your carrier for technical support.
