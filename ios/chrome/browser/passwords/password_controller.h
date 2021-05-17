@@ -19,7 +19,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @protocol ApplicationCommands;
-class Browser;
+@class CommandDispatcher;
 @class NotifyUserAutoSigninViewController;
 @protocol PasswordBreachCommands;
 @protocol PasswordsUiDelegate;
@@ -68,8 +68,8 @@ class PasswordManagerClient;
 // Delegate used by this PasswordController to show UI on BVC.
 @property(weak, nonatomic) id<PasswordControllerDelegate> delegate;
 
-// The browser.
-@property(nonatomic, assign) Browser* browser;
+// CommandDispatcher for dispatching commands.
+@property(nonatomic) CommandDispatcher* dispatcher;
 
 // The shared password controller that handles all non //ios/chrome specific
 // business logic.

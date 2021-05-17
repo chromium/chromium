@@ -2735,12 +2735,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(self);
 
-  // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
     passwordTabHelper->SetBaseViewController(self);
     passwordTabHelper->SetPasswordControllerDelegate(self);
-    passwordTabHelper->SetBrowser(self.browser);
+    passwordTabHelper->SetDispatcher(self.browser->GetCommandDispatcher());
   }
 
   if (!IsIPadIdiom()) {
@@ -2790,7 +2789,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBrowser(self.browser);
+    passwordTabHelper->SetBaseViewController(nil);
+    passwordTabHelper->SetPasswordControllerDelegate(nil);
+    passwordTabHelper->SetDispatcher(nil);
   }
 
   if (!IsIPadIdiom()) {

@@ -360,26 +360,20 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 // The dispatcher used for ApplicationCommands.
 - (id<ApplicationCommands>)applicationCommandsHandler {
-  DCHECK(self.browser);
-  DCHECK(self.browser->GetCommandDispatcher());
-  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            ApplicationCommands);
+  DCHECK(self.dispatcher);
+  return HandlerForProtocol(self.dispatcher, ApplicationCommands);
 }
 
 // The dispatcher used for PasswordBreachCommands.
 - (id<PasswordBreachCommands>)passwordBreachDispatcher {
-  DCHECK(self.browser);
-  DCHECK(self.browser->GetCommandDispatcher());
-  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            PasswordBreachCommands);
+  DCHECK(self.dispatcher);
+  return HandlerForProtocol(self.dispatcher, PasswordBreachCommands);
 }
 
 // The dispatcher used for PasswordProtectionCommands.
 - (id<PasswordProtectionCommands>)passwordProtectionDispatcher {
-  DCHECK(self.browser);
-  DCHECK(self.browser->GetCommandDispatcher());
-  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            PasswordProtectionCommands);
+  DCHECK(self.dispatcher);
+  return HandlerForProtocol(self.dispatcher, PasswordProtectionCommands);
 }
 
 - (InfoBarIOS*)findInfobarOfType:(InfobarType)infobarType manual:(BOOL)manual {
@@ -556,7 +550,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   // TODO(crbug.com/886583): add eg tests
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser
+                         browser:nullptr
                            title:@""
                          message:@""
                             rect:self.baseViewController.view.frame

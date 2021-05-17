@@ -9,7 +9,7 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-class Browser;
+@class CommandDispatcher;
 @protocol FormSuggestionProvider;
 @class PasswordController;
 @protocol PasswordControllerDelegate;
@@ -38,8 +38,8 @@ class PasswordTabHelper : public web::WebStateObserver,
   // Sets the PasswordController delegate.
   void SetPasswordControllerDelegate(id<PasswordControllerDelegate> delegate);
 
-  // Sets the Browser.
-  void SetBrowser(Browser* browser);
+  // Sets the CommandDispatcher.
+  void SetDispatcher(CommandDispatcher* dispatcher);
 
   // Returns an object that can provide suggestions from the PasswordController.
   // May return nil.
