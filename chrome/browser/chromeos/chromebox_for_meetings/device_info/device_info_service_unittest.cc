@@ -214,7 +214,8 @@ TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
   mojo_loop.Run();
 }
 
-TEST_F(CfmDeviceInfoServiceTest, TestMachineStatisticsInfo) {
+// Crashes on linux-cfm-rel. crbug.com/1209841
+TEST_F(CfmDeviceInfoServiceTest, DISABLED_TestMachineStatisticsInfo) {
   const std::string kExpectedHwid = "kExpectedHwid";
 
   fake_statistics_provider_.SetMachineStatistic(
