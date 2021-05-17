@@ -604,6 +604,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('    "com/google/protobuf/Wrappers*",\n')
                 sb.append('  ]')
                 break
+            case 'androidx_startup_startup_runtime':
+                sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
+                sb.append('  ignore_proguard_configs = true\n')
+                break
             case 'androidx_webkit_webkit':
                 sb.append('  visibility = [\n')
                 sb.append('    "//android_webview/tools/system_webview_shell:*",\n')

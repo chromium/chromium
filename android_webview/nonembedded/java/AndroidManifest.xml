@@ -89,6 +89,12 @@
                       android:authorities="{{ manifest_package }}.DeveloperModeContentProvider"
                       android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                       tools:ignore="ExportedContentProvider" />
+            <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+            <provider
+                android:name="androidx.startup.InitializationProvider"
+                android:exported="false"
+                tools:node="remove">
+            </provider>
             {% if donor_package is not defined %}
                 <!-- If you change the variations services, also see
                      android_webview/test/shell/AndroidManifest.xml. -->

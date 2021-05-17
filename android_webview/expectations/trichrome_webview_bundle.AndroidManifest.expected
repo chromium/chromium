@@ -66,12 +66,6 @@
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="0"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
-    <provider  # DIFF-ANCHOR: 0e75b297
-        android:name="androidx.startup.InitializationProvider"
-        android:authorities="$PACKAGE.androidx-startup"
-        android:exported="false">
-      <meta-data android:name="androidx.emoji2.text.EmojiCompatInitializer" android:value="androidx.startup"/>
-    </provider>  # DIFF-ANCHOR: 0e75b297
     <provider  # DIFF-ANCHOR: a5e78e63
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:authorities="$PACKAGE.LicenseContentProvider"

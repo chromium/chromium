@@ -1256,6 +1256,13 @@ by a child template that "extends" this file.
               android:resource="@xml/file_paths" />
       </provider>
 
+      <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+      <provider
+          android:name="androidx.startup.InitializationProvider"
+          android:exported="false"
+          tools:node="remove">
+      </provider>
+
       <!-- Provider for chrome data. -->
       <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
           android:authorities="{{ manifest_package }}.ChromeBrowserProvider;{{ manifest_package }}.browser;{{ manifest_package }}"
