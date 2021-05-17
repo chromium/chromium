@@ -471,7 +471,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
 
     base::ListValue* fingerprints_list = nullptr;
     if (!related_application->GetList(kFingerprints, &fingerprints_list) ||
-        fingerprints_list->empty() ||
+        fingerprints_list->GetList().empty() ||
         fingerprints_list->GetSize() > kMaximumNumberOfItems) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a non-empty list of at most %zu items.",
@@ -574,7 +574,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   if (dict->GetDictionary(kPayment, &payment_dict)) {
     const base::ListValue* delegation_list = nullptr;
     if (payment_dict->GetList(kSupportedDelegations, &delegation_list)) {
-      if (delegation_list->empty() ||
+      if (delegation_list->GetList().empty() ||
           delegation_list->GetSize() > kMaximumNumberOfSupportedDelegations) {
         log.Error(base::StringPrintf(
             "\"%s.%s\" must be a non-empty list of at most %zu entries.",
