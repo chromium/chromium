@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/signin/constants.h"
 #include "ios/chrome/browser/signin/signin_util.h"
@@ -43,9 +44,11 @@ DeviceAccountsProvider::AccountInfo GetAccountInfo(
 }
 }
 
-DeviceAccountsProviderImpl::DeviceAccountsProviderImpl() {}
+DeviceAccountsProviderImpl::DeviceAccountsProviderImpl(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {}
 
-DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() {}
+DeviceAccountsProviderImpl::~DeviceAccountsProviderImpl() = default;
 
 void DeviceAccountsProviderImpl::GetAccessToken(
     const std::string& gaia_id,
@@ -73,7 +76,7 @@ DeviceAccountsProviderImpl::GetAllAccounts() const {
   std::vector<AccountInfo> accounts;
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  NSArray* identities = identity_service->GetAllIdentities();
+  NSArray* identities = identity_service->GetAllIdentities(pref_service_);
   for (ChromeIdentity* identity in identities) {
     accounts.push_back(GetAccountInfo(identity, identity_service));
   }

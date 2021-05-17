@@ -32,11 +32,11 @@ namespace {
 //
 // Note: Forgetting an identity is a asynchronous operation. This function does
 // not wait for the forget identity operation to finish.
-void StartForgetAllIdentities() {
+void StartForgetAllIdentities(PrefService* pref_service) {
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   NSArray* identities_to_remove =
-      [NSArray arrayWithArray:identity_service->GetAllIdentities()];
+      [NSArray arrayWithArray:identity_service->GetAllIdentities(pref_service)];
   for (ChromeIdentity* identity in identities_to_remove) {
     identity_service->ForgetIdentity(identity, ^(NSError* error) {
       if (error) {
@@ -94,7 +94,7 @@ void SignOutAndClearIdentities() {
 
     // Once the browser was signed out, start clearing all identities from the
     // ChromeIdentityService.
-    StartForgetAllIdentities();
+    StartForgetAllIdentities(browser_state->GetPrefs());
   }
 }
 

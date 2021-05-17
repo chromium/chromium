@@ -73,7 +73,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   signin::IdentityManagerBuildParams params;
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =
-      std::make_unique<DeviceAccountsProviderImpl>();
+      std::make_unique<DeviceAccountsProviderImpl>(browser_state->GetPrefs());
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();
   params.local_state = GetApplicationContext()->GetLocalState();
   params.pref_service = browser_state->GetPrefs();

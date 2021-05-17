@@ -16,8 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() =
-    default;
+WebViewDeviceAccountsProviderImpl::WebViewDeviceAccountsProviderImpl() {}
 
 WebViewDeviceAccountsProviderImpl::~WebViewDeviceAccountsProviderImpl() =
     default;

@@ -12,10 +12,12 @@
 #include "base/macros.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
+class PrefService;
+
 // Implementation of DeviceAccountsProvider.
 class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
  public:
-  DeviceAccountsProviderImpl();
+  DeviceAccountsProviderImpl(PrefService* pref_service);
   ~DeviceAccountsProviderImpl() override;
 
   // ios::DeviceAccountsProvider
@@ -29,6 +31,8 @@ class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
       NSError* error) const override;
 
  private:
+  PrefService* pref_service_;
+
   DISALLOW_COPY_AND_ASSIGN(DeviceAccountsProviderImpl);
 };
 

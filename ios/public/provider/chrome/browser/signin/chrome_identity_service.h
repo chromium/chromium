@@ -166,10 +166,6 @@ class ChromeIdentityService {
   // Returns true if there is at least one identity.
   virtual bool HasIdentities();
 
-  // Returns all ChromeIdentity objects in an array.
-  // Deprecated. See GetAllIdentities(prefService).
-  virtual NSArray* GetAllIdentities();
-
   // Returns all ChromeIdentity objects in an array.It uses PrefService to
   // filter ChromeIdentities according to enterprise policies.
   virtual NSArray* GetAllIdentities(PrefService* pref_service);

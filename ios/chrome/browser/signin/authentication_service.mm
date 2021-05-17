@@ -148,7 +148,7 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   UMA_HISTOGRAM_COUNTS_100("Signin.IOSNumberOfDeviceAccounts",
                            [ios::GetChromeBrowserProvider()
                                    ->GetChromeIdentityService()
-                                   ->GetAllIdentities() count]);
+                                   ->GetAllIdentities(pref_service_) count]);
 
   // Clear signin errors on the accounts that had a specific MDM device status.
   // This will trigger services to fetch data for these accounts again.
