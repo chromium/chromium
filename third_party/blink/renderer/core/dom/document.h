@@ -1330,17 +1330,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void CheckLoadEventSoon();
   bool IsDelayingLoadEvent();
   void LoadPluginsSoon();
-  // This calls CheckCompleted() sync and thus can cause JavaScript execution.
+  // This calls checkCompleted() sync and thus can cause JavaScript execution.
   void DecrementLoadEventDelayCountAndCheckLoadEvent();
-  // Objects and embeds depend on "being rendered" for delaying the load event.
-  // This method makes sure we run a layout tree update before unblocking the
-  // load event after such elements have been inserted.
-  //
-  // Spec:
-  //
-  // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
-  // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
-  void DelayLoadEventUntilLayoutTreeUpdate();
 
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
@@ -1775,11 +1766,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void NotifyLayoutTreeOfSubtreeChanges();
   bool ChildrenCanHaveStyle() const final;
 
-  // Objects and embeds depend on "being rendered" for delaying the load event.
-  // This method unblocks the load event after the first layout tree update
-  // after parsing finished.
-  void UnblockLoadEventAfterLayoutTreeUpdate();
-
   // ImplicitClose() actually does the work of closing the input stream.
   void ImplicitClose();
   bool ShouldComplete();
@@ -2091,16 +2077,6 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<HTMLPopupElement>> popup_element_stack_;
 
   int load_event_delay_count_;
-
-  // Objects and embeds depend on "being rendered" for delaying the load event.
-  // This is a document-wide flag saying that we have incremented the
-  // load_event_delay_count_ to wait for the next layout tree update. On the
-  // next layout tree update, the counter will be decremented and this flag will
-  // be set to false. If any of the objects/embeds started to fetch a blocking
-  // resource, they would have incremented the delay count during the layout
-  // tree update and further blocked the load event.
-  bool delay_load_event_until_layout_tree_update_ = false;
-
   HeapTaskRunnerTimer<Document> load_event_delay_timer_;
   HeapTaskRunnerTimer<Document> plugin_loading_timer_;
 
