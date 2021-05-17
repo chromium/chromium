@@ -33,7 +33,7 @@ class PluginRequest(object):
     return dict((v.split('=') for v in self.proto.parameter.split(',')))
 
   def GetAllFiles(self):
-    files = map(ProtoFile, self.proto.proto_file)
+    files = [ProtoFile(x) for x in self.proto.proto_file]
     for f in files:
       assert f.Filename() in self.proto.file_to_generate
     return files
@@ -120,7 +120,7 @@ class ProtoFile(object):
   def GetDependencies(self):
     # import is not supported
     assert [] == self.proto.dependency
-    return map(types.GetProtoFileForFilename, self.proto.dependency)
+    return [types.GetProtoFileForFilename(x) for x in self.proto.dependency]
 
   def JavaFilename(self):
     return '/'.join(self.JavaQualifiedOuterClass().split('.')) + '.java'
@@ -164,7 +164,7 @@ class ProtoMessage(object):
     return types.TitleCase(self.proto.name)
 
   def GetFields(self):
-    return map(ProtoField, self.proto.field)
+    return [ProtoField(x) for x in self.proto.field]
 
   def GetMessages(self):
     return [ProtoMessage(n, self.qualified_types)
@@ -273,7 +273,7 @@ class ProtoEnum(object):
     return types.TitleCase(self.proto.name)
 
   def Values(self):
-    return map(ProtoEnumValue, self.proto.value)
+    return [ProtoEnumValue(x) for x in self.proto.value]
 
 
 class ProtoEnumValue(object):
