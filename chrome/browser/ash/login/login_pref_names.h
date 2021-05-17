@@ -25,6 +25,7 @@ extern const char kSamlInSessionPasswordChangeEnabled[];
 extern const char kSamlPasswordExpirationAdvanceWarningDays[];
 extern const char kLockScreenReauthenticationEnabled[];
 extern const char kSamlPasswordSyncToken[];
+extern const char kActivityTimeAfterOnboarding[];
 
 }  // namespace prefs
 

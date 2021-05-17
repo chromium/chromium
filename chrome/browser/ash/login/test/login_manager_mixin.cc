@@ -190,6 +190,7 @@ void LoginManagerMixin::LoginAsNewChildUser() {
       user_manager::USER_TYPE_CHILD);
   UserContext user_context = CreateDefaultUserContext(test_child_user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
+  ASSERT_TRUE(fake_gaia_mixin_) << "Pass FakeGaiaMixin into constructor";
   fake_gaia_mixin_->SetupFakeGaiaForChildUser(
       test_child_user_.account_id.GetUserEmail(),
       test_child_user_.account_id.GetGaiaId(), FakeGaiaMixin::kFakeRefreshToken,

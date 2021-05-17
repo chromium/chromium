@@ -67,6 +67,9 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+
+class OnboardingUserActivityCounter;
+
 namespace test {
 class UserSessionManagerTestApi;
 }  // namespace test
@@ -527,6 +530,8 @@ class UserSessionManager
 
   bool IsFullRestoreEnabled(Profile* profile);
 
+  void OnUserEligibleForOnboardingSurvey(Profile* profile);
+
   UserSessionManagerDelegate* delegate_;
 
   // Used to listen to network changes.
@@ -638,6 +643,9 @@ class UserSessionManager
   std::unique_ptr<TurnSyncOnHelper> turn_sync_on_helper_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
+
+  std::unique_ptr<OnboardingUserActivityCounter>
+      onboarding_user_activity_counter_;
 
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
 

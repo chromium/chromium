@@ -95,6 +95,9 @@ const char kLockScreenReauthenticationEnabled[] =
 // SAML password sync token fetched from the external API.
 const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
 
+const char kActivityTimeAfterOnboarding[] =
+    "oobe.activity_time_after_onboarding";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).

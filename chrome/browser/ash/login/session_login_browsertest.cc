@@ -3,14 +3,25 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -22,18 +33,11 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kTestUser[] = "test-user@gmail.com";
-constexpr char kTestUserGaiaId[] = "1234567890";
-
-}  // namespace
-
 class BrowserLoginTest : public chromeos::LoginManagerTest {
  public:
-  BrowserLoginTest() : LoginManagerTest() { set_should_launch_browser(true); }
+  BrowserLoginTest() { set_should_launch_browser(true); }
 
-  ~BrowserLoginTest() override {}
+  ~BrowserLoginTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LoginManagerTest::SetUpCommandLine(command_line);
@@ -42,7 +46,8 @@ class BrowserLoginTest : public chromeos::LoginManagerTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest, PRE_BrowserActive) {
-  RegisterUser(AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
   chromeos::StartupUtils::MarkOobeCompleted();
@@ -52,7 +57,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
   base::HistogramTester histograms;
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
-  LoginUser(AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
+  LoginUser(
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             session_manager::SessionManager::Get()->session_state());
   histograms.ExpectTotalCount("OOBE.BootToSignInCompleted", 1);
@@ -74,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
                        PRE_VirtualKeyboardFeaturesEnabledByDefault) {
-  RegisterUser(AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
+  RegisterUser(
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
   chromeos::StartupUtils::MarkOobeCompleted();
@@ -85,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
   base::HistogramTester histograms;
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
-  LoginUser(AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
+  LoginUser(
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId));
   EXPECT_TRUE(
       user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount());
 
@@ -97,6 +105,50 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
   EXPECT_TRUE(config.handwriting);
   EXPECT_TRUE(config.spell_check);
   EXPECT_TRUE(config.voice_input);
+}
+
+class OnboardingUserActivityTest : public LoginManagerTest {
+ protected:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_, embedded_test_server()};
+  LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
+                                 &gaia_mixin_};
+  AccountId regular_user_{
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+};
+
+IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, PRE_RegularUser) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  LoginManagerMixin::TestUserInfo test_user(regular_user_);
+  login_mixin_.LoginWithDefaultContext(test_user);
+  OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
+
+  ash::test::UserSessionManagerTestApi test_api(
+      ash::UserSessionManager::GetInstance());
+  ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
+}
+
+IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, RegularUser) {
+  login_mixin_.LoginAsNewRegularUser();
+  ash::LoginScreenTestApi::SubmitPassword(regular_user_, "password",
+                                          /*check_if_submittable=*/false);
+  login_mixin_.WaitForActiveSession();
+
+  ash::test::UserSessionManagerTestApi test_api(
+      ash::UserSessionManager::GetInstance());
+  ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
+}
+
+// Verifies that counter is not started for child user.
+IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, ChildUser) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  login_mixin_.LoginAsNewChildUser();
+  OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
+
+  ash::test::UserSessionManagerTestApi test_api(
+      ash::UserSessionManager::GetInstance());
+  ASSERT_FALSE(test_api.get_onboarding_user_activity_counter());
 }
 
 }  // namespace chromeos

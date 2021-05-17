@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/chrome_paths.h"
@@ -107,6 +108,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kOobeMarketingOptInChoice, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  ash::OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 
 // static

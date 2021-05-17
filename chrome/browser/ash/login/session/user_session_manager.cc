@@ -35,7 +35,6 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -55,6 +54,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
@@ -142,6 +142,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -210,6 +211,9 @@ constexpr char kEventHandleProfileLoad[] = "HandleProfileLoad";
 // browser and dismiss the login screen. Note full restore is asynchronous and
 // is not included.
 constexpr char kEventInitUserDesktop[] = "InitUserDesktop";
+
+constexpr base::TimeDelta kActivityTimeBeforeOnboardingSurvey =
+    base::TimeDelta::FromHours(1);
 
 void InitLocaleAndInputMethodsForNewUser(
     UserSessionManager* session_manager,
@@ -1694,6 +1698,15 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   // resolved.
   if (delegate_)
     delegate_->OnProfilePrepared(profile, browser_launched);
+
+  if (OnboardingUserActivityCounter::ShouldStart(profile->GetPrefs())) {
+    onboarding_user_activity_counter_ =
+        std::make_unique<OnboardingUserActivityCounter>(
+            profile->GetPrefs(), kActivityTimeBeforeOnboardingSurvey,
+            base::BindOnce(
+                &UserSessionManager::OnUserEligibleForOnboardingSurvey,
+                weak_factory_.GetWeakPtr(), profile));
+  }
 }
 
 void UserSessionManager::ActivateWizard(OobeScreenId screen) {
@@ -1761,6 +1774,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
         StartupUtils::MarkDeviceRegistered(base::OnceClosure());
 
       LoginDisplayHost::default_host()->GetSigninUI()->StartUserOnboarding();
+
+      OnboardingUserActivityCounter::MaybeMarkForStart(profile);
+
       return false;
     } else if (!user_manager->IsCurrentUserNew() &&
                arc::GetSupervisionTransition(profile) !=
@@ -2373,6 +2389,26 @@ bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
   auto* full_restore_service =
       full_restore::FullRestoreService::GetForProfile(profile);
   return full_restore_service != nullptr;
+}
+
+void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
+  onboarding_user_activity_counter_.reset();
+
+  if (profile != ProfileManager::GetActiveUserProfile())
+    return;
+
+  DCHECK(!session_manager::SessionManager::Get()->IsUserSessionBlocked());
+
+  // Do not run more than one HATS survey.
+  if (hats_notification_controller_)
+    return;
+
+  if (!HatsNotificationController::ShouldShowSurveyToProfile(
+          profile, ash::kHatsOnboardingSurvey))
+    return;
+
+  hats_notification_controller_ =
+      new HatsNotificationController(profile, ash::kHatsOnboardingSurvey);
 }
 
 }  // namespace ash

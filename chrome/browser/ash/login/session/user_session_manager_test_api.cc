@@ -39,5 +39,10 @@ void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(
   session_manager_->SetAttemptRestartClosureInTests(attempt_restart_closure);
 }
 
+OnboardingUserActivityCounter*
+UserSessionManagerTestApi::get_onboarding_user_activity_counter() {
+  return session_manager_->onboarding_user_activity_counter_.get();
+}
+
 }  // namespace test
 }  // namespace ash
