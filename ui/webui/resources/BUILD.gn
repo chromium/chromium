@@ -133,6 +133,31 @@ generate_grd("build_ts_grdp") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
+checked_in_dts_files = [
+  "cr_components/managed_footnote/managed_footnote.d.ts",
+  "cr_elements/cr_action_menu/cr_action_menu.m.d.ts",
+  "cr_elements/cr_button/cr_button.m.d.ts",
+  "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
+  "cr_elements/cr_container_shadow_behavior.m.d.ts",
+  "cr_elements/cr_dialog/cr_dialog.m.d.ts",
+  "cr_elements/cr_drawer/cr_drawer.d.ts",
+  "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
+  "cr_elements/cr_input/cr_input.m.d.ts",
+  "cr_elements/cr_toast/cr_toast.m.d.ts",
+  "cr_elements/cr_view_manager/cr_view_manager.d.ts",
+  "cr_elements/find_shortcut_behavior.d.ts",
+  "js/cr/ui/focus_row_behavior.m.d.ts",
+  "js/i18n_behavior.m.d.ts",
+  "js/web_ui_listener_behavior.m.d.ts",
+]
+
+# Copies checked-in .d.ts files to the preprocess folder so that they are
+# discovered by TSC the same way generated .d.ts files are.
+copy("copy_checked_in_dts_files") {
+  sources = checked_in_dts_files
+  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+}
+
 ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
@@ -141,24 +166,15 @@ ts_library("library") {
     "js/cr/world.ts",
     "js/hello_world.ts",
   ]
-  definitions = [
-    # Checked-in .d.ts files.
-    "cr_components/managed_footnote/managed_footnote.d.ts",
-    "cr_elements/cr_action_menu/cr_action_menu.m.d.ts",
-    "cr_elements/cr_button/cr_button.m.d.ts",
-    "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
-    "cr_elements/cr_container_shadow_behavior.m.d.ts",
-    "cr_elements/cr_dialog/cr_dialog.m.d.ts",
-    "cr_elements/cr_drawer/cr_drawer.d.ts",
-    "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
-    "cr_elements/cr_input/cr_input.m.d.ts",
-    "cr_elements/cr_toast/cr_toast.m.d.ts",
-    "cr_elements/cr_view_manager/cr_view_manager.d.ts",
-    "cr_elements/find_shortcut_behavior.d.ts",
-    "js/cr/ui/focus_row_behavior.m.d.ts",
-    "js/i18n_behavior.m.d.ts",
-    "js/web_ui_listener_behavior.m.d.ts",
 
+  definitions = []
+
+  # Checked-in .d.ts files.
+  foreach(_file, checked_in_dts_files) {
+    definitions += [ "$root_dir/$_file" ]
+  }
+
+  definitions += [
     # Auto-generated .d.ts files.
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
     "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
@@ -189,6 +205,7 @@ ts_library("library") {
 
   deps = [ "//third_party/polymer/v3_0:library" ]
   extra_deps = [
+    ":copy_checked_in_dts_files",
     ":generate_definitions",
     "js:preprocess_src_ts",
   ]
@@ -225,5 +242,10 @@ ts_definitions("generate_definitions") {
     js_files += [ "js/cr/ui/focus_without_ink.m.js" ]
   }
 
-  extra_deps = [ ":preprocess" ]
+  extra_deps = [
+    # Copy checked-in d.ts files first, so that |generate_definitions| leverages
+    # these files, instead of accidentally auto-generating them.
+    ":copy_checked_in_dts_files",
+    ":preprocess",
+  ]
 }

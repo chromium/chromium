@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
+import {FocusRow} from './focus_row.m.js';
 
 export interface FocusRowBehaviorInterface {
   id: string|null|undefined;
