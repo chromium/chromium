@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 #if !defined(OS_NACL)

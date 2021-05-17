@@ -9,13 +9,14 @@
 #include "base/component_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/lib/validation_context.h"
 
 namespace mojo {
 
 class Message;
 
 namespace internal {
+
+class ValidationContext;
 
 enum ValidationError {
   // There is no validation error.
