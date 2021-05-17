@@ -10,10 +10,11 @@
     <meta charset="utf-8">
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
-    <link rel="stylesheet" href="/css/ripple.css">
     <link rel="stylesheet" href="/css/ptz_toast.css">
+    <link rel="stylesheet" href="/css/ripple.css">
     <script src="/js/mojo/mojo_bindings_lite.js"></script>
     <script src="/js/mojo/time.mojom-lite.js"></script>
     <script src="/js/mojo/camera_metadata_tags.mojom-lite.js"></script>
@@ -491,6 +492,7 @@
       </div>
     </div>
     <div id="toast" class="centered-overlay" aria-live="polite"></div>
+    <div id="focus-ring"></div>
     <div id="tooltip" aria-hidden="true"></div>
     <audio id="sound-tick-final" src="/sounds/tick_final.ogg">
     <audio id="sound-tick-inc" src="/sounds/tick_inc.ogg">

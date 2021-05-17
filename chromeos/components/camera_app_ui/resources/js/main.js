@@ -14,6 +14,7 @@ import {
 import {DeviceInfoUpdater} from './device/device_info_updater.js';
 import * as dom from './dom.js';
 import * as error from './error.js';
+import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
 import {Intent} from './intent.js';
 import * as metrics from './metrics.js';
@@ -132,6 +133,7 @@ export class App {
     util.setupI18nElements(document.body);
     this.setupToggles_();
     this.setupEffect_();
+    focusRing.initialize();
 
     const resolutionSettings = new ResolutionSettings(
         this.infoUpdater_, this.photoPreferrer_, this.videoPreferrer_);

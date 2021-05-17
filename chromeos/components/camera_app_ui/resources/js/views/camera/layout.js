@@ -2,37 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  assert,
-  assertInstanceof,
-} from '../../chrome_util.js';
+import {cssStyle} from '../../css.js';
 import * as dom from '../../dom.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
 import {windowController} from '../../window_controller.js';
-
-/**
- * CSS rules.
- * @type {!Array<!CSSStyleRule>}
- */
-const cssRules = (() => {
-  const sheet = assertInstanceof(document.styleSheets[0], CSSStyleSheet);
-  const ruleList = /** @type {!Iterable} */ (sheet.cssRules);
-  return [...ruleList];
-})();
-
-/**
- * Gets the CSS style by the given selector.
- * @param {string} selector Selector text.
- * @return {!CSSStyleDeclaration}
- * @private
- */
-function cssStyle(selector) {
-  const rule = cssRules.find((rule) => rule.selectorText === selector);
-  assert(rule !== undefined);
-  assert(rule.style !== null);
-  return rule.style;
-}
 
 /**
  * Creates a controller to handle layouts of Camera view.

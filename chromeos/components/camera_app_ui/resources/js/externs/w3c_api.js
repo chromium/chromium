@@ -106,3 +106,29 @@ OverconstrainedError.prototype.name;
 
 /** @type {string} */
 OverconstrainedError.prototype.message;
+
+/**
+ * @constructor
+ */
+function CSSStyleValue() {}
+
+/**
+ * @type {number}
+ */
+CSSStyleValue.prototype.value;
+
+/**
+ * @constructor
+ */
+function StylePropertyMapReadOnly() {}
+
+/**
+ * @param {string} property
+ * @return {?CSSStyleValue}
+ */
+StylePropertyMapReadOnly.prototype.get = function(property) {};
+
+/**
+ * @return {!StylePropertyMapReadOnly}
+ */
+Element.prototype.computedStyleMap = function() {};

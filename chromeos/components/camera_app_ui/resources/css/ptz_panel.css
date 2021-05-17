@@ -20,6 +20,11 @@ body.taking.video #panel-container {
 }
 
 #panel-container button {
+  --svg-width: 20px;
+  --svg-height: 20px;
+  --focus-ring-size: 8px;
+  --focus-ring-style: circle;
+
   height: 48px;
   position: absolute;
   width: 48px;
@@ -37,36 +42,6 @@ body:not(.has-pan-support) :is(#pan-left, #pan-right),
 body:not(.has-tilt-support) :is(#tilt-up, #tilt-down),
 body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
   display: none;
-}
-
-#pan-left {
-  --svg-width: 20px;
-  --svg-height: 20px;
-}
-
-#pan-right {
-  --svg-width: 20px;
-  --svg-height: 20px;
-}
-
-#tilt-up {
-  --svg-width: 20px;
-  --svg-height: 20px;
-}
-
-#tilt-down {
-  --svg-width: 20px;
-  --svg-height: 20px;
-}
-
-#zoom-in {
-  --svg-width: 20px;
-  --svg-height: 20px;
-}
-
-#zoom-out {
-  --svg-width: 20px;
-  --svg-height: 20px;
 }
 
 /* Icons. */
@@ -285,24 +260,6 @@ body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
   border-radius: var(--radius) 0 0 var(--radius);
   left: calc(50% - var(--radius));
   top: calc(50% - var(--radius));
-}
-
-/* Focus ring. */
-
-#panel-container button:focus::after {
-  --ring-radius: calc(max(var(--svg-width), var(--svg-height)) / 2 + 8px);
-
-  border-radius: 50%;
-  height: calc(var(--ring-radius) * 2);
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(var(--ring-radius) * 2);
-}
-
-body.has-pan-support.has-tilt-support.has-zoom-support #panel-container :is(#tilt-down, #tilt-up, #pan-left, #pan-right):focus::after {
-  left: calc(var(--x) + var(--svg-width) / 2);
-  top: calc(var(--y) + var(--svg-height) / 2);
 }
 
 /* Divider lines. */

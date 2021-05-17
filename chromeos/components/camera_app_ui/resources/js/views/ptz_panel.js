@@ -4,6 +4,7 @@
 
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
+import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
@@ -146,6 +147,30 @@ export class PTZPanel extends View {
      * @private
      */
     this.mirrorObserver_ = null;
+
+    [this.panLeft_, this.panRight_, this.tiltUp_, this.tiltDown_, this.zoomIn_,
+     this.zoomOut_]
+        .forEach((el) => {
+          el.addEventListener(
+              focusRing.FOCUS_RING_UI_RECT_EVENT_NAME, (evt) => {
+                if (!(state.get(state.State.HAS_PAN_SUPPORT) &&
+                      state.get(state.State.HAS_TILT_SUPPORT) &&
+                      state.get(state.State.HAS_ZOOM_SUPPORT))) {
+                  return;
+                }
+                const style = getComputedStyle(el, '::before');
+                const getStyleValue = (attr) => {
+                  const px = style.getPropertyValue(attr);
+                  return Number(px.replace(/^([\d.]+)px$/, '$1'));
+                };
+                const pRect = el.getBoundingClientRect();
+                focusRing.setUIRect(new DOMRectReadOnly(
+                    /* x */ pRect.left + getStyleValue('left'),
+                    /* y */ pRect.top + getStyleValue('top'),
+                    getStyleValue('width'), getStyleValue('height')));
+                evt.preventDefault();
+              });
+        });
 
     state.addObserver(state.State.STREAMING, (streaming) => {
       if (!streaming && state.get(this.name)) {
