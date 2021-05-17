@@ -24,6 +24,8 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
 #include "net/base/upload_data_stream.h"
+#include "net/cookies/cookie_store.h"
+#include "net/cookies/cookie_util.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
@@ -547,6 +549,8 @@ URLRequest::URLRequest(const GURL& url,
       net_log_(NetLogWithSource::Make(context->net_log(),
                                       NetLogSourceType::URL_REQUEST)),
       url_chain_(1, url),
+      same_party_cookie_context_type_(
+          CookieOptions::SamePartyCookieContextType::kCrossParty),
       force_ignore_site_for_cookies_(false),
       force_ignore_top_frame_party_for_cookies_(false),
       method_("GET"),
@@ -615,6 +619,13 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(!is_pending_);
   DCHECK(!job_);
 
+  set_same_party_cookie_context_type(
+      context()->cookie_store()
+          ? cookie_util::ComputeSamePartyContext(
+                SchemefulSite(url()), isolation_info(),
+                context()->cookie_store()->cookie_access_delegate(),
+                force_ignore_top_frame_party_for_cookies())
+          : CookieOptions::SamePartyCookieContextType::kCrossParty);
   privacy_mode_ = DeterminePrivacyMode();
 
   net_log_.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB, [&] {

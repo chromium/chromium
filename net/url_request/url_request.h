@@ -260,6 +260,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
   const IsolationInfo& isolation_info() const { return isolation_info_; }
 
+  // The party_context_ of this leg of the request. This gets updated on
+  // redirects.
+  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type() {
+    return same_party_cookie_context_type_;
+  }
+  void set_same_party_cookie_context_type(
+      CookieOptions::SamePartyCookieContextType context_type) {
+    same_party_cookie_context_type_ = context_type;
+  }
+
   // Indicate whether SameSite cookies should be attached even though the
   // request is cross-site.
   bool force_ignore_site_for_cookies() const {
@@ -889,6 +899,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   SiteForCookies site_for_cookies_;
 
   IsolationInfo isolation_info_;
+
+  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type_;
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;

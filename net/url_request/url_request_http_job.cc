@@ -577,19 +577,14 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             is_main_frame_navigation, force_ignore_site_for_cookies);
 
     net::SchemefulSite request_site(request_->url());
-
     const CookieAccessDelegate* delegate =
         cookie_store->cookie_access_delegate();
 
-    CookieOptions::SamePartyCookieContextType same_party_context =
-        net::cookie_util::ComputeSamePartyContext(
-            request_site, request_->isolation_info(), delegate,
-            request_->force_ignore_top_frame_party_for_cookies());
     bool is_in_nontrivial_first_party_set =
         delegate && delegate->IsInNontrivialFirstPartySet(request_site);
     CookieOptions options = CreateCookieOptions(
-        same_site_context, same_party_context, request_->isolation_info(),
-        is_in_nontrivial_first_party_set);
+        same_site_context, request_->same_party_cookie_context_type(),
+        request_->isolation_info(), is_in_nontrivial_first_party_set);
 
     UMA_HISTOGRAM_ENUMERATION(
         "Cookie.FirstPartySetsContextType.HTTP.Read",
@@ -751,15 +746,11 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   const CookieAccessDelegate* delegate = cookie_store->cookie_access_delegate();
   net::SchemefulSite request_site(request_->url());
 
-  CookieOptions::SamePartyCookieContextType same_party_context =
-      net::cookie_util::ComputeSamePartyContext(
-          request_site, request_->isolation_info(), delegate,
-          request_->force_ignore_top_frame_party_for_cookies());
   bool is_in_nontrivial_first_party_set =
       delegate && delegate->IsInNontrivialFirstPartySet(request_site);
   CookieOptions options = CreateCookieOptions(
-      same_site_context, same_party_context, request_->isolation_info(),
-      is_in_nontrivial_first_party_set);
+      same_site_context, request_->same_party_cookie_context_type(),
+      request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Cookie.FirstPartySetsContextType.HTTP.Write",
