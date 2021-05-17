@@ -94,6 +94,11 @@ void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCleared() {
   // Clear existing issued weak pointers from the factory, so that
   // pending ScheduleVideoFrameCallbacksExecution are cancelled.
   weak_factory_.InvalidateWeakPtrs();
+
+  // If the HTMLVideoElement changes sources, we need to reset this flag.
+  // This allows the first frame of the new media player (requested in
+  // OnWebMediaPlayerCreated()) to restart the rVFC loop.
+  pending_execution_ = false;
 }
 
 void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
