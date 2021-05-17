@@ -173,6 +173,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//services/device/public/mojom:generic_sensor_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
