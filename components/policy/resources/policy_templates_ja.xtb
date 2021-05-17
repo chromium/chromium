@@ -2909,6 +2909,11 @@
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証に使用しない。</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> のサービス分析を許可する</translation>
 <translation id="500149597848135831">すべてのバリエーションを有効にします</translation>
+<translation id="5016942794885590681">このポリシーを有効に設定するか未設定のままにした場合、レンダラコードの整合性チェックが有効になります。
+
+      このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のレンダラ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のレンダラ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
+
+      注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="5017369989680827157">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
 <translation id="5021550478471824215">このポリシーでは、事前設定のネットワーク ファイル共有のリストを指定できます。個々の項目は、<ph name="SHARE_URL_FIELD_NAME" /> と <ph name="MODE_FIELD_NAME" /> の 2 つのプロパティで構成されるオブジェクトとなります。
 

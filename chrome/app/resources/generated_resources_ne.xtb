@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1001033507375626788">यो इन्टरनेट तपाईंसँग सेयर गरिएको छ</translation>
 <translation id="1001307489511021749">तपाईंका एप, सेटिङ र रोजाइअनुसारका अन्य कुराहरू तपाईंले आफ्नो Google खातामार्फत साइन गर्नुभएका Chrome OS चल्ने सबै यन्त्रहरूमा सिंक गरिने छन्।</translation>
 <translation id="1003088604756913841">लिंकलाई नयाँ <ph name="APP" /> विन्डोमा खोल्नुहोस्</translation>
 <translation id="100323615638474026">USB डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -945,6 +946,7 @@
 <translation id="1992924914582925289">यन्त्रबाट हटाउनुहोस्</translation>
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">साइटहरूले के कस्ता जानकारी (स्थान, क्यामेरा, पप-अप र अन्य कुरा) प्रयोग गर्न र देखाउन पाउँछन् भन्ने कुरा नियन्त्रण गर्छ</translation>
+<translation id="1997437640397887843">डिभाइसको क्यामेरा अन गरिएको छ। कृपया तपाईंको eSIM QR कोड क्यामेराको अगाडि राख्नुहोस्।</translation>
 <translation id="1997616988432401742">तपाईंका प्रमाणपत्रहरू</translation>
 <translation id="1999115740519098545">सुरूवातमा</translation>
 <translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको डिफल्ट खोज इन्जिनमा पठाउँछ</translation>
@@ -1000,6 +1002,7 @@
 <translation id="2055585478631012616">तपाईं खुला ट्याबहरूका साथै यी साइटहरूबाट साइन आउट हुनु हुने छ</translation>
 <translation id="205560151218727633">Google सहायकको लोगो</translation>
 <translation id="2058456167109518507">यन्त्र पत्ता लाग्यो</translation>
+<translation id="2058581283817163201">यो फोनमार्फत पुष्टि गर्नुहोस्</translation>
 <translation id="2059913712424898428">समय क्षेत्र</translation>
 <translation id="2060375639911876205">eSIM प्रोफाइल हटाउनुहोस्</translation>
 <translation id="2062354623176996748">इन्कोग्निटो विन्डोको सहायताले आफ्नो ब्राउजिङ इतिहास सुरक्षित नगरिकनै वेब प्रयोग गर्नुहोस्</translation>
@@ -2598,6 +2601,7 @@
 <translation id="3785308913036335955">एप्स शर्टकट देखाउनुहोस्</translation>
 <translation id="3785727820640310185">यस साइटका लागि सुरक्षित गरिएका पासवर्डहरू</translation>
 <translation id="3788301286821743879">kiosk एप सुरु गर्न सकिएन।</translation>
+<translation id="3788331399335602504">यी फाइलहरू</translation>
 <translation id="3788401245189148511">यसले सक्छ:</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="379082410132524484">तपाईंको कार्डको म्याद सकियो</translation>
@@ -3172,6 +3176,7 @@
 <translation id="4438043733494739848">पारदर्शी</translation>
 <translation id="4438639467177774583"><ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> तपाईंको Google Account <ph name="ACCOUNT" /> मा सुरक्षित गरिने छ</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
+<translation id="4440097423000553826"><ph name="WEBSITE" /> ले तपाईंको फोनमा एउटा सूचना पठाएको छ। साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न “<ph name="NOTIFICATIONTITLE" />” सूचनामा ट्याप गर्नुहोस् र त्यहाँ दिइएका निर्देशनहरू पालना गर्नुहोस्।</translation>
 <translation id="4441124369922430666">के तपाईं मेसिन खुला हुँदा यो एप्लिकेसन स्वत: सुरु गर्न चाहनुहुन्छ?</translation>
 <translation id="4441147046941420429">जारी राख्न, आफ्नो यन्त्रबाट सुरक्षा साँचो हटाउनुहोस्, त्यसपछि उक्त साँचो पुनः छिराउनुहोस् र त्यसमा छुनुहोस्</translation>
 <translation id="444134486829715816">विस्तृत गर्नुहोस्</translation>
@@ -3473,6 +3478,7 @@
 <translation id="4773112038801431077">Linux अपग्रेड गर्नुहोस्</translation>
 <translation id="477647109558161443">एउटा डेस्कटप सर्टकट सिर्जना गर्नुहोस्</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
+<translation id="4777458362738635055">यस डिभाइसका अन्य प्रयोगकर्ताहरू यो इन्टरनेट प्रयोग गर्न सक्छन्</translation>
 <translation id="4777825441726637019">Play स्टोर</translation>
 <translation id="4777943778632837590">नेटवर्कका नेम सर्भरहरू कन्फिगर गर्नुहोस्</translation>
 <translation id="4778644898150334464">अर्को पासवर्ड प्रयोग गर्नुहोस्</translation>
@@ -4308,6 +4314,7 @@
 <translation id="5712153969432126546">साइटहरूले कहिलेकाहीँ कागजात, करार तथा फाराम जस्ता PDF फाइलहरू प्रकाशित गर्छन्</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">डिफल्ट खोज इन्जिनहरू</translation>
+<translation id="5719637365829998022">QR कोड स्क्यान गरिएको छ।</translation>
 <translation id="5719854774000914513">साइटहरूले HID यन्त्रमा कनेक्ट गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="572155275267014074">Android सम्बन्धी सेटिङहरू</translation>
 <translation id="5722086096420375088">हरियो र सेतो</translation>
@@ -4518,6 +4525,7 @@
 <translation id="5955721306465922729">कुनै वेबसाइटले यो एप खोल्न चाहन्छ।</translation>
 <translation id="5955809630138889698">यो डिभाइस अनलाइन डेमो मोडका लागि मात्र योग्य हुन सक्छ। थप विवरणका लागि कृपया सहायता प्रतिनिधिलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5956585768868398362">के तपाइँले अपेक्षा गर्नुभएको खोज पृष्ठ यो हो?</translation>
+<translation id="5957918771633727933">कुनै पनि eSIM प्रोफाइल उपलब्ध छैन। नयाँ <ph name="BEGIN_LINK" />प्रोफाइल<ph name="END_LINK" /> डाउनलोड गर्नुहोस्।</translation>
 <translation id="5957987129450536192">आफ्नो प्रोफाइल तस्बिरको नजिकै रहेको सेलेक्ट टु स्पिक आइकनमा ट्याप गर्नुहोस्, त्यसपछि आफूले सुन्न चाहेको कुरा चयन गर्नुहोस्।</translation>
 <translation id="5959471481388474538">नेटवर्क उपलब्ध छैन</translation>
 <translation id="595959584676692139">यो विस्तार प्रयोग गर्न पृष्ठ पुनः लोड गर्नुहोस्</translation>
@@ -6023,6 +6031,7 @@
 <translation id="7638605456503525968">सिरियल पोर्टहरू</translation>
 <translation id="7639914187072011620">सर्भरबाट SAML रिडिरेक्ट URL प्राप्त गर्न सकिएन</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ले योग्य साइटहरूमा तपाईँले सुरक्षित गर्नुभएका पासवर्डहरूको सहायताले तपाईँलाई स्वचालित रूपमा साइन इन गराउँछ।</translation>
+<translation id="7641513591566880111">प्रोफाइलको नयाँ नाम</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री लुकाउनुहोस्</translation>
 <translation id="7643842463591647490">{0,plural, =1{# विन्डो खुलेको छ}other{# विन्डोहरू खुलेका छन्}}</translation>
 <translation id="7643932971554933646">साइटलाई फाइलहरू हेर्न दिने हो?</translation>
@@ -6183,6 +6192,7 @@
 <translation id="7800518121066352902">वा&amp;मावर्त घुमाउनुहोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7804072833593604762">ट्याब बन्द गरियो</translation>
+<translation id="7805759469263222011">डिभाइसको क्यामेरा प्रयोग गरी QR कोड स्क्यान गर्नुहोस् वा आफ्नो मोबाइल सेवा प्रदायकले उपलब्ध गराएको सक्रिय गर्ने कोड हाल्नुहोस्</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> लाई तपाईंको क्यामेराको पहुँच गर्ने अनुमति सँधै दिनुहोस्</translation>
@@ -6661,6 +6671,7 @@
 <translation id="8300849813060516376">OTASP असफल</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{ठेगाना}other{# वटा ठेगाना}}</translation>
 <translation id="8304383784961451596">तपाईंलाई यो डिभाइस प्रयोग गर्नेे अधिकार दिइएको छैन। कृपया साइन इन गर्ने अनुमति प्राप्त गर्न एड्मिनसँग सम्पर्क गर्नुहोस् वा Family Link मार्फत सुपरिवेक्षण गरिएको Google खाता प्रयोग गरी साइन इन गर्नुहोस्।</translation>
+<translation id="8308016398665340540">तपाईं यस डिभाइसका अन्य प्रयोगकर्ताहरूसँग यो इन्टरनेट सेयर गरिरहनुभएको छ</translation>
 <translation id="8308179586020895837">Ask if <ph name="HOST" /> wants to access your camera</translation>
 <translation id="830868413617744215">बेटा</translation>
 <translation id="8309458809024885768">सर्टिफिकेट पहिले नै विद्यमान छ</translation>

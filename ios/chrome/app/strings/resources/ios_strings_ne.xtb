@@ -109,6 +109,7 @@
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
+<translation id="2022352537516230970">तपाईंको iPhone का लागि बनाइएको</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिनअघि सक्रिय</translation>
 <translation id="2074131957428911366">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
@@ -314,6 +315,7 @@
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
 <translation id="418156467088430727">नयाँ ट्याबमा अफलाइन संस्करण हेर्नुहोस्</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
+<translation id="4184011057600693970">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="424315890655130736">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="4263576668337963058">पृष्ठमा गर्न सकिने उपलब्ध कारबाहीहरू देखाउनुहोस्</translation>
 <translation id="4267380167363222949">अर्को ट्याब</translation>
@@ -492,6 +494,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
+<translation id="60829778314739003">स्वीकार गर्नुहोस् र जारी राख्नुहोस्</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
@@ -587,6 +590,7 @@
 <translation id="6801927553864092214">गोप्य रूपमा ब्राउज गर्न इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
+<translation id="6830804042318138535">थप पढ्नुहोस्</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6851516051005285358">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>
 <translation id="6858855187367714033">स्क्यान गरियो</translation>
@@ -635,6 +639,7 @@
 <translation id="7291368939935408496">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="7293171162284876153">सिंक गर्ने कार्य सुरु गर्न "Chrome को आफ्नो डेटा सिंक गर्नुहोस्"।</translation>
 <translation id="7313347584264171202">तपाईंका इन्कोग्निटो ट्याबहरू यहाँ देखिने छन्</translation>
+<translation id="7319242366286515846">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> प्रतिशत डाउनलोड भयो</translation>
 <translation id="7340958967809483333">Discover का विकल्पहरू</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
@@ -781,6 +786,7 @@
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>
+<translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> मा यो छवि खोज्नुहोस्</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>

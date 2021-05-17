@@ -295,6 +295,7 @@
 <translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2905036901251765993">वरपर रहेका मान्छेहरूसँग आदान प्रदान गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
+<translation id="2912296070571964914">आफूलाई रुचि भएका विषयहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> को भण्डारण</translation>
 <translation id="2932222164150889403">तपाईंको किबोर्ड परिवर्तन हुने छैन</translation>
@@ -339,6 +340,8 @@
 <translation id="3254409185687681395">यो पृष्ठलाई बुकमार्क गर्नुहोस्</translation>
 <translation id="3259831549858767975">पृष्ठमा रहेको सबै कुरालाई अझ सानो बनाउनुहोस्</translation>
 <translation id="3264124641674805320">पछि हेर्ने वा पढ्ने प्रयोजनका लागि सामग्री डाउनलोड गर्ने तरिका</translation>
+<translation id="3264259168916048410">तपाईंको कम्प्युटर कुनै साइटमा साइन इन गर्ने प्रयोजनका लागि यो डिभाइस प्रयोग गर्न चाहन्छ</translation>
+<translation id="3265534588625245297">आफूले फलो गर्ने साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3269093882174072735">छवि लोड गर्नुहोस्</translation>
 <translation id="3269956123044984603">तपाईंका अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न, Android खाताको सेटिङहरूमा गई "डेटालाई स्वतः सिंक गर्नुहोस्" लाई सक्रिय गर्नुहोस्।</translation>
 <translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
@@ -497,6 +500,7 @@
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
+<translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड गरिँदै छ…</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
@@ -582,6 +586,7 @@
 <translation id="488187801263602086">फाइलको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="4882831918239250449">खोज, विज्ञापन र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="4885273946141277891">असमर्थित संख्याका Chrome दृष्टान्तहरू।</translation>
+<translation id="4905269543817054577">इन्कोग्निटो मोडमा ब्राउज गर्दा इतिहास सेभ गरिँदैन</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4913161338056004800">तथ्याङ्कहरू रिसेट गर्नुहोस्</translation>
@@ -950,6 +955,7 @@
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
 <translation id="7233236755231902816">आफ्नो भाषामा वेब हेर्न Chrome को नवीनतम संस्करण प्राप्त गर्नुहोस्</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>
 <translation id="7274013316676448362">रोक लगाइएका साइटहरू</translation>
 <translation id="7286572596625053347"><ph name="LANGUAGE" /> परिवर्तन गर्ने हो?</translation>
 <translation id="7290209999329137901">नाम बदल्ने सुविधा उपलब्ध छैन</translation>
@@ -1016,6 +1022,7 @@
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
+<translation id="764170292089748542">तपाईंले गोप्य रूपमा ब्राउज गर्दा Chrome ले तपाईंको ब्राउजिङ इतिहास सेभ गर्दैन। तपाईं बुकमार्क प्रयोग गरी आफ्ना मन पर्ने साइटहरूमा जान भने सक्नुहुन्छ।</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
@@ -1041,6 +1048,7 @@
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
 <translation id="7821588508402923572">तपाईंले बचत गर्नुभएको डेटा यहाँ देखिने छ</translation>
+<translation id="78270725016672455">तपाईंको कम्प्युटर कुनै साइटमा साइन इन गर्ने प्रयोजनका लागि यो डिभाइस दर्ता गर्न चाहन्छ</translation>
 <translation id="7844171778363018843">सिंक गर्नका लागि कुनै पनि डेटा चयन गरिएको छैन</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
 <translation id="784934925303690534">समयको दायरा</translation>
@@ -1137,6 +1145,7 @@
 <translation id="8427875596167638501">पूर्वावलोकन ट्याब आधा खुला छ</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8438566539970814960">खोज तथा ब्राउजिङलाई अझ राम्रो बनाउनुहोस्</translation>
+<translation id="8439974325294139057"><ph name="LANG" /> - भाषा तयार छ, <ph name="APP_NAME" /> रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="8442258441309440798">कुनै पनि समाचार उपलब्ध छैन</translation>
 <translation id="8443209985646068659">Chrome अद्यावधिक गर्न सकिँदैन</translation>
 <translation id="8445448999790540984">पासवर्डहरू निर्यात गर्न सकिएन</translation>
@@ -1209,6 +1218,7 @@
 <translation id="8937267401510745927">तपाईंलाई काम सम्पन्न गर्न मद्दत गर्न Google ले तपाईंले सहायक प्रयोग गर्ने साइटका URL र सामग्रीहरूका साथै तपाईंले सहायकमार्फत पेस गर्न जानकारी प्राप्त गर्ने छ। यो जानकारी तपाईंको Google खातामा भण्डारण गरिन सक्छ। तपाईं Chrome का सेटिङमा गई सहायक अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="8937772741022875483">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउने हो?</translation>
 <translation id="8942627711005830162">अर्को विन्डोमा खोल्नुहोस्</translation>
+<translation id="8945143127965743188"><ph name="LANG" /> - यो भाषा डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8951232171465285730">Chrome ले तपाईंको <ph name="MEGABYTES" /> एम.बि. बचाएको छ</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8970887620466824814">केही चिज गडबड भयो।</translation>
