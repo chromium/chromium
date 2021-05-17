@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
   TestSystemTrayIsVisible();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, DISABLED_BackButtonTest) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
 
   ConfigurePolicy(domain);
@@ -342,6 +342,9 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, DISABLED_BackButtonTest) {
                                              LoginManagerTest::kPassword);
 
   test::OobeJS().ClickOnPath(kOfflineLoginBackButton);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  // Send network state update once again.
+  offline_login_test_mixin_.GoOffline();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
