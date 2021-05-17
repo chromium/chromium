@@ -30,9 +30,7 @@ class SkiaGoldProperties(object):
     self._no_luci_auth = None
     self._bypass_skia_gold_functionality = None
     self._code_review_system = None
-    # Could in theory be configurable, but hard-coded for now since there's
-    # no plan to support anything else.
-    self._continuous_integration_system = 'buildbucket'
+    self._continuous_integration_system = None
 
     self._InitializeProperties(args)
 
@@ -41,7 +39,7 @@ class SkiaGoldProperties(object):
 
   @property
   def continuous_integration_system(self):
-    return self._continuous_integration_system
+    return self._continuous_integration_system or 'buildbucket'
 
   @property
   def code_review_system(self):
@@ -121,6 +119,9 @@ class SkiaGoldProperties(object):
 
     if hasattr(args, 'code_review_system'):
       self._code_review_system = args.code_review_system
+
+    if hasattr(args, 'continuous_integration_system'):
+      self._continuous_integration_system = args.continuous_integration_system
 
     # Will be automatically determined later if needed.
     if not hasattr(args, 'git_revision') or not args.git_revision:

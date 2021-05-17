@@ -591,6 +591,10 @@ def AddSkiaGoldTestOptions(parser):
       help='A non-default code review system to pass to pass to Gold, if '
       'applicable')
   parser.add_argument(
+      '--continuous-integration-system',
+      help='A non-default continuous integration system to pass to Gold, if '
+      'applicable')
+  parser.add_argument(
       '--git-revision', help='The git commit currently being tested.')
   parser.add_argument(
       '--gerrit-issue',
