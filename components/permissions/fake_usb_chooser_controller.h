@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_USB_CHOOSER_CONTROLLER_H_
-#define CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_USB_CHOOSER_CONTROLLER_H_
+#ifndef COMPONENTS_PERMISSIONS_FAKE_USB_CHOOSER_CONTROLLER_H_
+#define COMPONENTS_PERMISSIONS_FAKE_USB_CHOOSER_CONTROLLER_H_
 
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 
-// A subclass of ChooserController that pretends to be a USB device chooser for
-// testing. The result should be visually similar to the real version of the
-// dialog for interactive tests.
-class FakeUsbChooserController : public ChooserController {
+// A subclass of permissions::ChooserController that pretends to be a USB device
+// chooser for testing. The result should be visually similar to the real
+// version of the dialog for interactive tests.
+class FakeUsbChooserController : public permissions::ChooserController {
  public:
   explicit FakeUsbChooserController(int device_count);
 
-  // ChooserController:
+  // permissions::ChooserController:
   std::u16string GetNoOptionsText() const override;
   std::u16string GetOkButtonLabel() const override;
   std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
@@ -39,4 +39,4 @@ class FakeUsbChooserController : public ChooserController {
   DISALLOW_COPY_AND_ASSIGN(FakeUsbChooserController);
 };
 
-#endif  // CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_USB_CHOOSER_CONTROLLER_H_
+#endif  // COMPONENTS_PERMISSIONS_FAKE_USB_CHOOSER_CONTROLLER_H_

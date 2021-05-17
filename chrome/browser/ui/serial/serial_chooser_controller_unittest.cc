@@ -13,13 +13,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -121,7 +121,7 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -196,7 +196,7 @@ TEST_F(SerialChooserControllerTest, PortSelected) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), callback.Get());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -247,7 +247,7 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {
@@ -303,7 +303,7 @@ TEST_F(SerialChooserControllerTest, Blocklist) {
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters), base::DoNothing());
 
-  MockChooserControllerView view;
+  permissions::MockChooserControllerView view;
   controller->set_view(&view);
 
   {

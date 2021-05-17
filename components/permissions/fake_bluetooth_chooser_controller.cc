@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chooser_controller/fake_bluetooth_chooser_controller.h"
+#include "components/permissions/fake_bluetooth_chooser_controller.h"
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace permissions {
 
 FakeBluetoothChooserController::FakeBluetoothChooserController(
     std::vector<FakeDevice> devices)
@@ -99,3 +101,5 @@ void FakeBluetoothChooserController::UpdateDevice(size_t index,
   devices_[index] = new_device;
   view()->OnOptionUpdated(index);
 }
+
+}  // namespace permissions

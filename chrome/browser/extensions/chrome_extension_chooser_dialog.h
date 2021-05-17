@@ -7,10 +7,12 @@
 
 #include "base/macros.h"
 
-class ChooserController;
-
 namespace content {
 class WebContents;
+}
+
+namespace permissions {
+class ChooserController;
 }
 
 class ChromeExtensionChooserDialog {
@@ -19,11 +21,12 @@ class ChromeExtensionChooserDialog {
       : web_contents_(web_contents) {}
   ~ChromeExtensionChooserDialog() {}
 
-  void ShowDialog(std::unique_ptr<ChooserController> chooser_controller) const;
+  void ShowDialog(
+      std::unique_ptr<permissions::ChooserController> chooser_controller) const;
 
  private:
   void ShowDialogImpl(
-      std::unique_ptr<ChooserController> chooser_controller) const;
+      std::unique_ptr<permissions::ChooserController> chooser_controller) const;
 
   content::WebContents* web_contents_;
 

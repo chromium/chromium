@@ -19,6 +19,7 @@
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/usb/usb_utils.h"

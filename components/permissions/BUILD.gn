@@ -17,6 +17,8 @@ source_set("permissions_common") {
 
 source_set("permissions") {
   sources = [
+    "chooser_controller.cc",
+    "chooser_controller.h",
     "contexts/clipboard_read_write_permission_context.cc",
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
@@ -145,10 +147,22 @@ source_set("test_support") {
     "test/test_permissions_client.cc",
     "test/test_permissions_client.h",
   ]
+  if (!is_android) {
+    sources += [
+      "fake_bluetooth_chooser_controller.cc",
+      "fake_bluetooth_chooser_controller.h",
+      "fake_usb_chooser_controller.cc",
+      "fake_usb_chooser_controller.h",
+      "mock_chooser_controller_view.cc",
+      "mock_chooser_controller_view.h",
+    ]
+  }
+
   deps = [
     ":permissions",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//components/ukm/content",
     "//components/vector_icons",

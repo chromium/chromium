@@ -28,7 +28,7 @@
 // static
 std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<ChooserController> controller,
+    std::unique_ptr<permissions::ChooserController> controller,
     base::OnceClosure on_close) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -64,7 +64,7 @@ std::unique_ptr<UsbChooserDialogAndroid> UsbChooserDialogAndroid::Create(
 }
 
 UsbChooserDialogAndroid::UsbChooserDialogAndroid(
-    std::unique_ptr<ChooserController> controller,
+    std::unique_ptr<permissions::ChooserController> controller,
     base::OnceClosure on_close)
     : controller_(std::move(controller)), on_close_(std::move(on_close)) {
   controller_->set_view(this);

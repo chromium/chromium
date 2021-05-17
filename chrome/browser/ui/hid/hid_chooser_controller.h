@@ -11,8 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
+#include "components/permissions/chooser_controller.h"
 #include "content/public/browser/hid_chooser.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
@@ -25,7 +25,7 @@ class RenderFrameHost;
 class HidChooserContext;
 
 // HidChooserController provides data for the WebHID API permission prompt.
-class HidChooserController : public ChooserController,
+class HidChooserController : public permissions::ChooserController,
                              public HidChooserContext::DeviceObserver {
  public:
   // Construct a chooser controller for Human Interface Devices (HID).
@@ -41,7 +41,7 @@ class HidChooserController : public ChooserController,
   HidChooserController& operator=(HidChooserController&) = delete;
   ~HidChooserController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
   std::u16string GetOkButtonLabel() const override;

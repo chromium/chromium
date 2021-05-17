@@ -10,12 +10,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
@@ -51,7 +51,8 @@ class UsbChooserControllerTest : public ChromeRenderViewHostTestHarness {
 
     usb_chooser_controller_ = std::make_unique<UsbChooserController>(
         main_rfh(), std::move(device_filters), std::move(callback));
-    mock_usb_chooser_view_ = std::make_unique<MockChooserControllerView>();
+    mock_usb_chooser_view_ =
+        std::make_unique<permissions::MockChooserControllerView>();
     usb_chooser_controller_->set_view(mock_usb_chooser_view_.get());
     // Make sure the device::mojom::UsbDeviceManager::SetClient() call has
     // been received.
@@ -68,7 +69,8 @@ class UsbChooserControllerTest : public ChromeRenderViewHostTestHarness {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<UsbChooserController> usb_chooser_controller_;
-  std::unique_ptr<MockChooserControllerView> mock_usb_chooser_view_;
+  std::unique_ptr<permissions::MockChooserControllerView>
+      mock_usb_chooser_view_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(UsbChooserControllerTest);

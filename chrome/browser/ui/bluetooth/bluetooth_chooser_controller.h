@@ -14,7 +14,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 namespace content {
@@ -25,14 +25,14 @@ class RenderFrameHost;
 // Bluetooth device names, which come from |bluetooth_chooser_desktop_|.
 // It can be used by WebBluetooth API to get the user's permission to
 // access a Bluetooth device.
-class BluetoothChooserController : public ChooserController {
+class BluetoothChooserController : public permissions::ChooserController {
  public:
   BluetoothChooserController(
       content::RenderFrameHost* owner,
       const content::BluetoothChooser::EventHandler& event_handler);
   ~BluetoothChooserController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowIconBeforeText() const override;
   bool ShouldShowReScanButton() const override;
   std::u16string GetNoOptionsText() const override;

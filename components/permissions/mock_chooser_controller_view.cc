@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
+#include "components/permissions/mock_chooser_controller_view.h"
+
+namespace permissions {
 
 MockChooserControllerView::MockChooserControllerView() = default;
 
 MockChooserControllerView::~MockChooserControllerView() = default;
+
+}  // namespace permissions

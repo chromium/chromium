@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_chooser_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,7 +33,7 @@ class BluetoothChooserControllerTest : public testing::Test {
   }
 
   BluetoothChooserController bluetooth_chooser_controller_;
-  MockChooserControllerView mock_bluetooth_chooser_view_;
+  permissions::MockChooserControllerView mock_bluetooth_chooser_view_;
   content::BluetoothChooserEvent last_event_;
   std::string last_device_id_;
 

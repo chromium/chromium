@@ -10324,14 +10324,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <if expr="not is_android">
       <!-- Device Chooser Prompt -->
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup when it is from a website.">
-        <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to pair
-      </message>
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup when it is from a Chrome extension.">
         "<ph name="CHROME_EXTENSION_NAME">$1<ex>Chrome Extension Name</ex></ph>" wants to pair
-      </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no Bluetooth devices were found matching the requirements that the application provided.">
-        No compatible devices found.
       </message>
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF" desc="Text of a link the user can click to get help information when Bluetooth adapter is turned off.">
         <ph name="TURN_ON_BLUETOOTH_LINK">$1<ex>Turn on Bluetooth</ex></ph> to allow pairing
@@ -10348,15 +10342,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN_TOOLTIP" desc="Tooltip for the button that lets the user start a new scan for Bluetooth devices.">
         Re-scan Bluetooth devices
       </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL" desc="Text on label that indicates a scan for Bluetooth devices is in progress.">
-        Scanning...
-      </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP" desc="Tooltip for the label that shows while scanning for Bluetooth devices.">
-        Scanning for Bluetooth devices...
-      </message>
-      <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT" desc="Label on the button that closes the Bluetooth chooser popup and pairs the selected device.">
-        Pair
-      </message>
       <message name="IDS_DEVICE_CHOOSER_GET_HELP_LINK_WITH_SCANNING_STATUS" desc="This text is shown at the bottom of the chooser popup with a link to 'Get help'.">
         Get help<ph name="SCANNING_STATUS">$1<ex> while scanning for devices...</ex></ph>
       </message>
@@ -10370,32 +10355,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="DEVICE_NAME">$1<ex>device name</ex></ph> - Paired
       </message>
     </if>
-    <message name="IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce USB chooser details to the user in a popup when it is from a website.">
-      <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to connect
-    </message>
     <message name="IDS_USB_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME" desc="The label that is used to introduce USB chooser details to the user in a popup when it is from a Chrome extension.">
       "<ph name="CHROME_EXTENSION_NAME">$1<ex>Chrome Extension Name</ex></ph>" wants to connect
     </message>
     <message name="IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID" desc="To distinguish devices with the same name, the device chooser shows the device name with id.">
       <ph name="DEVICE_NAME">$1<ex>device name</ex></ph> (<ph name="DEVICE_ID">$2<ex>device id</ex></ph>)
     </message>
-    <message name="IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no USB devices were found matching the requirements that the application provided.">
-      No compatible devices found.
-    </message>
     <message name="IDS_DEVICE_CHOOSER_ACCNAME_COMPATIBLE_DEVICES_LIST" desc="The accessible name for the list of compatible devices, read to screen reader users when navigating to the container.">
       Compatible devices
-    </message>
-    <message name="IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the USB chooser popup and connects the selected device.">
-      Connect
-    </message>
-    <message name="IDS_USB_DEVICE_CHOOSER_LOADING_LABEL" desc="Text on label that the browser is loading the list of USB devices.">
-      Finding devices...
-    </message>
-    <message name="IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of USB devices.">
-      Finding USB devices...
-    </message>
-    <message name="IDS_DEVICE_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
-      Cancel
     </message>
 
     <!-- Device Chooser Device Name Unknown -->

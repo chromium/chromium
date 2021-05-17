@@ -140,6 +140,43 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME" desc="The label that is used to introduce permission request details to the user in a popup.">
     Allow <ph name="SITE_NAME">$1<ex>google.com</ex></ph> to:
   </message>
+  <!-- Device Chooser -->
+  <if expr="not is_android">
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth chooser details to the user in a popup when it is from a website.">
+      <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to pair
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no Bluetooth devices were found matching the requirements that the application provided.">
+      No compatible devices found.
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT" desc="Label on the button that closes the Bluetooth chooser popup and pairs the selected device.">
+      Pair
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL" desc="Text on label that indicates a scan for Bluetooth devices is in progress.">
+      Scanning...
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP" desc="Tooltip for the label that shows while scanning for Bluetooth devices.">
+      Scanning for Bluetooth devices...
+    </message>
+  </if>
+  <message name="IDS_DEVICE_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
+    Cancel
+  </message>
+  <message name="IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT" desc="The label shown to the user to inform them that no USB devices were found matching the requirements that the application provided.">
+    No compatible devices found.
+  </message>
+  <message name="IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN" desc="The label that is used to introduce USB chooser details to the user in a popup when it is from a website.">
+    <ph name="Origin">$1<ex>www.google.com</ex></ph> wants to connect
+  </message>
+  <message name="IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT" desc="Label on the button that closes the USB chooser popup and connects the selected device.">
+    Connect
+  </message>
+  <message name="IDS_USB_DEVICE_CHOOSER_LOADING_LABEL" desc="Text on label that the browser is loading the list of USB devices.">
+    Finding devices...
+  </message>
+  <message name="IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP" desc="Tooltip for the label that the browser is loading the list of USB devices.">
+    Finding USB devices...
+  </message>
+
   <if expr="not is_android">
     <message name="IDS_GEOLOCATION_PERMISSION_CHIP" desc="Button text representing a request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
       Use your location?

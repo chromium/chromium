@@ -6,8 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,12 +21,14 @@ class FontAccessChooserControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    mock_font_chooser_view_ = std::make_unique<MockChooserControllerView>();
+    mock_font_chooser_view_ =
+        std::make_unique<permissions::MockChooserControllerView>();
     content::ResetFontEnumerationCache();
   }
 
  protected:
-  std::unique_ptr<MockChooserControllerView> mock_font_chooser_view_;
+  std::unique_ptr<permissions::MockChooserControllerView>
+      mock_font_chooser_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

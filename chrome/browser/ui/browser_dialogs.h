@@ -23,7 +23,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
-class ChooserController;
 class GURL;
 class LoginHandler;
 class Profile;
@@ -51,6 +50,7 @@ class AuthChallengeInfo;
 }
 
 namespace permissions {
+class ChooserController;
 enum class PermissionAction;
 }
 
@@ -402,7 +402,7 @@ void ShowExtensionInstallFrictionDialog(
 #if defined(TOOLKIT_VIEWS)
 base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
-    std::unique_ptr<ChooserController> controller);
+    std::unique_ptr<permissions::ChooserController> controller);
 bool IsDeviceChooserShowingForTesting(Browser* browser);
 #endif
 

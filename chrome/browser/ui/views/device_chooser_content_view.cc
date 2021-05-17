@@ -40,7 +40,7 @@
 
 DeviceChooserContentView::DeviceChooserContentView(
     views::TableViewObserver* table_view_observer,
-    std::unique_ptr<ChooserController> chooser_controller)
+    std::unique_ptr<permissions::ChooserController> chooser_controller)
     : chooser_controller_(std::move(chooser_controller)) {
   chooser_controller_->set_view(this);
 
@@ -113,9 +113,9 @@ DeviceChooserContentView::DeviceChooserContentView(
   adapter_off_help->SetText(text);
   adapter_off_help->AddStyleRange(
       gfx::Range(offset, offset + link_text.size()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&ChooserController::OpenAdapterOffHelpUrl,
-                              base::Unretained(chooser_controller_.get()))));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &permissions::ChooserController::OpenAdapterOffHelpUrl,
+          base::Unretained(chooser_controller_.get()))));
   adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
 
   // Link that explains that OS Bluetooth permission must be granted.
@@ -130,9 +130,9 @@ DeviceChooserContentView::DeviceChooserContentView(
   adapter_unauthorized_help->SetText(text);
   adapter_unauthorized_help->AddStyleRange(
       gfx::Range(text_end - link_text.size(), text_end),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&ChooserController::OpenPermissionPreferences,
-                              base::Unretained(chooser_controller_.get()))));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &permissions::ChooserController::OpenPermissionPreferences,
+          base::Unretained(chooser_controller_.get()))));
   adapter_unauthorized_view_ =
       add_centering_view(std::move(adapter_unauthorized_help));
 
@@ -268,7 +268,7 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
 
   if (chooser_controller_->ShouldShowHelpButton()) {
     auto help_button = views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&ChooserController::OpenHelpCenterUrl,
+        base::BindRepeating(&permissions::ChooserController::OpenHelpCenterUrl,
                             base::Unretained(chooser_controller_.get())),
         vector_icons::kHelpOutlineIcon);
     help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
@@ -309,7 +309,8 @@ std::unique_ptr<views::View> DeviceChooserContentView::CreateExtraView() {
         views::Button::PressedCallback(),
         l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_RE_SCAN));
     re_scan_button->SetCallback(base::BindRepeating(
-        [](views::MdTextButton* button, ChooserController* chooser_controller) {
+        [](views::MdTextButton* button,
+           permissions::ChooserController* chooser_controller) {
           // Refreshing will cause the table view to yield focus, which will
           // land on the help button. Instead, briefly let the rescan button
           // take focus. When it hides itself, focus will advance to the

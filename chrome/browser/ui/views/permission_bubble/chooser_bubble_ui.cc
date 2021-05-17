@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
+#include "components/permissions/chooser_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -47,7 +47,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   ChooserBubbleUiViewDelegate(
       Browser* browser,
       content::WebContents* web_contents,
-      std::unique_ptr<ChooserController> chooser_controller);
+      std::unique_ptr<permissions::ChooserController> chooser_controller);
   ~ChooserBubbleUiViewDelegate() override;
 
   // views::View:
@@ -83,7 +83,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
 ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
     Browser* browser,
     content::WebContents* contents,
-    std::unique_ptr<ChooserController> chooser_controller)
+    std::unique_ptr<permissions::ChooserController> chooser_controller)
     : LocationBarBubbleDelegateView(
           GetChooserAnchorConfiguration(browser).anchor_view,
           contents) {
@@ -179,7 +179,7 @@ namespace chrome {
 
 base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
-    std::unique_ptr<ChooserController> controller) {
+    std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
   auto* browser = chrome::FindBrowserWithWebContents(contents);
   if (!browser)

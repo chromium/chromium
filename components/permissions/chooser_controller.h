@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
-#define CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
+#ifndef COMPONENTS_PERMISSIONS_CHOOSER_CONTROLLER_H_
+#define COMPONENTS_PERMISSIONS_CHOOSER_CONTROLLER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/macros.h"
+
+namespace permissions {
 
 // Subclass ChooserController to implement a chooser, which has some
 // introductory text and a list of options that users can pick one of.
@@ -176,4 +178,6 @@ class ChooserController {
   DISALLOW_COPY_AND_ASSIGN(ChooserController);
 };
 
-#endif  // CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CHOOSER_CONTROLLER_H_

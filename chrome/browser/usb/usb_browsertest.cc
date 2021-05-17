@@ -47,9 +47,10 @@ using device::mojom::UsbDeviceManager;
 
 namespace {
 
-class FakeChooserView : public ChooserController::View {
+class FakeChooserView : public permissions::ChooserController::View {
  public:
-  explicit FakeChooserView(std::unique_ptr<ChooserController> controller)
+  explicit FakeChooserView(
+      std::unique_ptr<permissions::ChooserController> controller)
       : controller_(std::move(controller)) {
     controller_->set_view(this);
   }
@@ -71,7 +72,7 @@ class FakeChooserView : public ChooserController::View {
   void OnRefreshStateChanged(bool refreshing) override { NOTREACHED(); }
 
  private:
-  std::unique_ptr<ChooserController> controller_;
+  std::unique_ptr<permissions::ChooserController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeChooserView);
 };

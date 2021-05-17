@@ -15,7 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
 namespace content {
@@ -25,14 +25,15 @@ class RenderFrameHost;
 // BluetoothScanningPromptController is a prompt that presents a list of
 // Bluetooth device names. It can be used by Bluetooth Scanning API to
 // show example nearby Bluetooth devices to user.
-class BluetoothScanningPromptController : public ChooserController {
+class BluetoothScanningPromptController
+    : public permissions::ChooserController {
  public:
   BluetoothScanningPromptController(
       content::RenderFrameHost* owner,
       const content::BluetoothScanningPrompt::EventHandler& event_handler);
   ~BluetoothScanningPromptController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
   std::u16string GetOkButtonLabel() const override;

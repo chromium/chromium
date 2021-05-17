@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
-#define CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
+#ifndef COMPONENTS_PERMISSIONS_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
+#define COMPONENTS_PERMISSIONS_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
 
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace permissions {
 
 // A subclass of ChooserController that pretends to be a Bluetooth device
 // chooser for testing. The result should be visually similar to the real
@@ -85,4 +87,6 @@ class FakeBluetoothChooserController : public ChooserController {
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothChooserController);
 };
 
-#endif  // CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_

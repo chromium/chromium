@@ -279,8 +279,6 @@ static_library("browser") {
     "browsing_data/third_party_data_remover.h",
     "cache_stats_recorder.cc",
     "cache_stats_recorder.h",
-    "chooser_controller/chooser_controller.cc",
-    "chooser_controller/chooser_controller.h",
     "chooser_controller/title_util.cc",
     "chooser_controller/title_util.h",
     "chrome_browser_field_trials.cc",
@@ -6916,10 +6914,6 @@ static_library("test_support") {
     deps += [ "//chrome/android:test_support_jni_headers" ]
   } else {
     sources += [
-      "chooser_controller/fake_bluetooth_chooser_controller.cc",
-      "chooser_controller/fake_bluetooth_chooser_controller.h",
-      "chooser_controller/fake_usb_chooser_controller.cc",
-      "chooser_controller/fake_usb_chooser_controller.h",
       "download/test_download_shelf.cc",
       "download/test_download_shelf.h",
       "hid/mock_hid_device_observer.cc",

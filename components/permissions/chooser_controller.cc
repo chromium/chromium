@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace permissions {
 
 ChooserController::ChooserController(std::u16string title) : title_(title) {}
 
-ChooserController::~ChooserController() {}
+ChooserController::~ChooserController() = default;
 
 std::u16string ChooserController::GetTitle() const {
   return title_;
@@ -80,3 +82,5 @@ void ChooserController::OpenAdapterOffHelpUrl() const {
 void ChooserController::OpenPermissionPreferences() const {
   NOTREACHED();
 }
+
+}  // namespace permissions

@@ -13,7 +13,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
@@ -21,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
@@ -50,7 +50,9 @@ class HidChooserControllerTest : public ChromeRenderViewHostTestHarness {
   HidChooserControllerTest& operator=(HidChooserControllerTest&) = delete;
   ~HidChooserControllerTest() override = default;
 
-  MockChooserControllerView& view() { return mock_chooser_controller_view_; }
+  permissions::MockChooserControllerView& view() {
+    return mock_chooser_controller_view_;
+  }
   MockHidDeviceObserver& device_observer() { return mock_device_observer_; }
 
   void SetUp() override {
@@ -141,7 +143,7 @@ class HidChooserControllerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   device::FakeHidManager hid_manager_;
-  MockChooserControllerView mock_chooser_controller_view_;
+  permissions::MockChooserControllerView mock_chooser_controller_view_;
   MockHidDeviceObserver mock_device_observer_;
 };
 

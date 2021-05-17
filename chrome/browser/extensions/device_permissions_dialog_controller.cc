@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
@@ -27,12 +27,12 @@ class Throbber;
 // Used for WebUSB/WebBluetooth device selection for Chrome and extensions.
 class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
-                                 public ChooserController::View {
+                                 public permissions::ChooserController::View {
  public:
   METADATA_HEADER(DeviceChooserContentView);
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
-      std::unique_ptr<ChooserController> chooser_controller);
+      std::unique_ptr<permissions::ChooserController> chooser_controller);
   DeviceChooserContentView(const DeviceChooserContentView&) = delete;
   DeviceChooserContentView& operator=(const DeviceChooserContentView&) = delete;
   ~DeviceChooserContentView() override;
@@ -46,7 +46,7 @@ class DeviceChooserContentView : public views::View,
   void SetObserver(ui::TableModelObserver* observer) override;
   gfx::ImageSkia GetIcon(int row) override;
 
-  // ChooserController::View:
+  // permissions::ChooserController::View:
   void OnOptionsInitialized() override;
   void OnOptionAdded(size_t index) override;
   void OnOptionRemoved(size_t index) override;
@@ -80,7 +80,7 @@ class DeviceChooserContentView : public views::View,
  private:
   friend class DeviceChooserContentViewTest;
 
-  std::unique_ptr<ChooserController> chooser_controller_;
+  std::unique_ptr<permissions::ChooserController> chooser_controller_;
 
   // Boolean reflecting the status of the device adapter. For example if the
   // user has bluetooth turned on or off on their device. This is used to

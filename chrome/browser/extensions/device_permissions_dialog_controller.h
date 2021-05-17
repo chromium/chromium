@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 
 namespace content {
@@ -17,7 +17,7 @@ class RenderFrameHost;
 }
 
 class DevicePermissionsDialogController
-    : public ChooserController,
+    : public permissions::ChooserController,
       public extensions::DevicePermissionsPrompt::Prompt::Observer {
  public:
   DevicePermissionsDialogController(
@@ -25,7 +25,7 @@ class DevicePermissionsDialogController
       scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt);
   ~DevicePermissionsDialogController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   bool AllowMultipleSelection() const override;
   std::u16string GetNoOptionsText() const override;

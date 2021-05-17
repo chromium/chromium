@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
+#include "components/permissions/chooser_controller.h"
 #include "content/public/browser/serial_chooser.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
@@ -24,7 +24,7 @@ class RenderFrameHost;
 
 // SerialChooserController provides data for the Serial API permission prompt.
 class SerialChooserController final
-    : public ChooserController,
+    : public permissions::ChooserController,
       public SerialChooserContext::PortObserver {
  public:
   SerialChooserController(
@@ -33,7 +33,7 @@ class SerialChooserController final
       content::SerialChooser::Callback callback);
   ~SerialChooserController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
   std::u16string GetOkButtonLabel() const override;
