@@ -1151,6 +1151,15 @@ void UserSessionManager::VoteForSavingLoginPassword(
     bool save_password) {
   DCHECK_LT(service, PasswordConsumingService::kCount);
 
+  // VoteForSavingLoginPassword should only be called for the primary user
+  // session. It also should not be called when restarting the browser after a
+  // crash, because in that case a password is not available to chrome anymore.
+  if (start_session_type_ != StartSessionType::kPrimary) {
+    DLOG(WARNING)
+        << "VoteForSavingPassword called for non-primary user session.";
+    return;
+  }
+
   VLOG(1) << "Password consuming service " << static_cast<size_t>(service)
           << " votes " << save_password;
 

@@ -164,6 +164,8 @@ class KerberosCredentialsManagerTest : public testing::Test {
     UserContext* user_context =
         UserSessionManager::GetInstance()->mutable_user_context_for_testing();
     user_context->SetPasswordKey(Key(kPassword));
+    UserSessionManager::GetInstance()->set_start_session_type_for_testing(
+        UserSessionManager::StartSessionType::kPrimary);
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(kProfileEmail);
