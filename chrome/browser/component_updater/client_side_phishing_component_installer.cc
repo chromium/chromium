@@ -22,6 +22,8 @@ namespace {
 
 const base::FilePath::CharType kClientModelBinaryPbFileName[] =
     FILE_PATH_LITERAL("client_model.pb");
+const base::FilePath::CharType kVisualTfLiteModelFileName[] =
+    FILE_PATH_LITERAL("visual_model.tflite");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: imefjhfbkmcmebodilednhmaccmincoa
@@ -32,16 +34,30 @@ const uint8_t kClientSidePhishingPublicKeySHA256[32] = {
 
 const char kClientSidePhishingManifestName[] = "Client Side Phishing Detection";
 
-void LoadFromDisk(const base::FilePath& pb_path) {
+void LoadFromDisk(const base::FilePath& pb_path,
+                  const base::FilePath& visual_tflite_model_path) {
   if (pb_path.empty())
     return;
 
   std::string binary_pb;
   if (!base::ReadFileToString(pb_path, &binary_pb))
-    return;
+    binary_pb.clear();
 
+  base::File visual_tflite_model(visual_tflite_model_path,
+                                 base::File::FLAG_OPEN | base::File::FLAG_READ);
+
+  // The ClientSidePhishingModel singleton will react appropriately if the
+  // |binary_pb| is empty or |visual_tflite_model| is invalid.
   safe_browsing::ClientSidePhishingModel::GetInstance()
-      ->PopulateFromDynamicUpdate(binary_pb);
+      ->PopulateFromDynamicUpdate(binary_pb, std::move(visual_tflite_model));
+}
+
+base::FilePath GetInstalledProtoPath(const base::FilePath& base) {
+  return base.Append(kClientModelBinaryPbFileName);
+}
+
+base::FilePath GetInstalledTfLitePath(const base::FilePath& base) {
+  return base.Append(kVisualTfLiteModelFileName);
 }
 
 }  // namespace
@@ -67,18 +83,14 @@ ClientSidePhishingComponentInstallerPolicy::OnCustomInstall(
 
 void ClientSidePhishingComponentInstallerPolicy::OnCustomUninstall() {}
 
-base::FilePath ClientSidePhishingComponentInstallerPolicy::GetInstalledPath(
-    const base::FilePath& base) {
-  return base.Append(kClientModelBinaryPbFileName);
-}
-
 void ClientSidePhishingComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadFromDisk, GetInstalledPath(install_dir)));
+      base::BindOnce(&LoadFromDisk, GetInstalledProtoPath(install_dir),
+                     GetInstalledTfLitePath(install_dir)));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -87,7 +99,8 @@ bool ClientSidePhishingComponentInstallerPolicy::VerifyInstallation(
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().
-  return base::PathExists(GetInstalledPath(install_dir));
+  return base::PathExists(GetInstalledProtoPath(install_dir)) ||
+         base::PathExists(GetInstalledTfLitePath(install_dir));
 }
 
 base::FilePath

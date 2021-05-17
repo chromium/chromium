@@ -127,6 +127,10 @@ class ClientSideDetectionService : public KeyedService {
   // it.
   virtual std::string GetModelStr();
 
+  // Returns the TfLite model file. Virtual so that mock implementation can
+  // override it.
+  virtual const base::File& GetVisualTfLiteModel();
+
   // Overrides the SharedURLLoaderFactory
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

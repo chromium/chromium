@@ -5,6 +5,7 @@
 module safe_browsing.mojom;
 
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "url/mojom/url.mojom";
@@ -122,8 +123,10 @@ enum PhishingDetectorResult {
 interface PhishingDetector {
   // A classification model for client-side phishing detection.
   // The string is an encoded safe_browsing::ClientSideModel protocol buffer, or
-  // empty to disable client-side phishing detection for this renderer.
-  SetPhishingModel(string model);
+  // empty to disable client-side phishing detection for this renderer. The
+  // |tflite_model| is a file handle with contents a TfLite model, which is used
+  // to classify the appearance of pages.
+  SetPhishingModel(string model, mojo_base.mojom.ReadOnlyFile? tflite_model);
 
   // Tells the renderer to begin phishing detection for the given toplevel URL
   // which it has started loading. Returns the serialized request proto and a

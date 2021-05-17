@@ -435,6 +435,10 @@ std::string ClientSideDetectionService::GetModelStr() {
   return ClientSidePhishingModel::GetInstance()->GetModelStr();
 }
 
+const base::File& ClientSideDetectionService::GetVisualTfLiteModel() {
+  return ClientSidePhishingModel::GetInstance()->GetVisualTfLiteModel();
+}
+
 void ClientSideDetectionService::SetURLLoaderFactoryForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = url_loader_factory;

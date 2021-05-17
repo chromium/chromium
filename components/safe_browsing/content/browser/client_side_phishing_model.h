@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/files/file.h"
 #include "base/synchronization/lock.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 
@@ -42,10 +43,14 @@ class ClientSidePhishingModel {
 
   // Updates the internal model string, when one is received from a component
   // update.
-  void PopulateFromDynamicUpdate(const std::string& model_str);
+  void PopulateFromDynamicUpdate(const std::string& model_str,
+                                 base::File visual_tflite_model);
+
+  const base::File& GetVisualTfLiteModel() const;
 
   // Overrides the model string for use in tests.
   void SetModelStrForTesting(const std::string& model_str);
+  void SetVisualTfLiteModelForTesting(base::File file);
 
  private:
   static const int kInitialClientModelFetchDelayMs;
@@ -60,6 +65,9 @@ class ClientSidePhishingModel {
 
   // Model string. Protected by lock_.
   std::string model_str_;
+
+  // Visual TFLite model file. Protected by lock_.
+  base::File visual_tflite_model_;
 
   mutable base::Lock lock_;
 

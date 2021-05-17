@@ -79,7 +79,9 @@ PhishingClassifierDelegate::~PhishingClassifierDelegate() {
   PhishingClassifierDelegates().erase(this);
 }
 
-void PhishingClassifierDelegate::SetPhishingModel(const std::string& model) {
+void PhishingClassifierDelegate::SetPhishingModel(
+    const std::string& model,
+    base::File tflite_visual_model) {
   safe_browsing::Scorer* scorer = nullptr;
   // An empty model string means we should disable client-side phishing
   // detection.

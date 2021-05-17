@@ -191,7 +191,9 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   }
 
   // mojom::PhishingDetector
-  void SetPhishingModel(const std::string& model) override { model_ = model; }
+  void SetPhishingModel(const std::string& model, base::File file) override {
+    model_ = model;
+  }
 
   // mojom::PhishingDetector
   void StartPhishingDetection(

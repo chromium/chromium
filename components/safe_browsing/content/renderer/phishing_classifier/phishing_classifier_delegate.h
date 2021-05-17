@@ -49,7 +49,8 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   ~PhishingClassifierDelegate() override;
 
   // mojom::PhishingDetector
-  void SetPhishingModel(const std::string& model) override;
+  void SetPhishingModel(const std::string& model,
+                        base::File tflite_visual_model) override;
 
   // Called by the RenderFrame once there is a phishing scorer available.
   // The scorer is passed on to the classifier.

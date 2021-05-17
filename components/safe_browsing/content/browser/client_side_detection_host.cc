@@ -380,7 +380,9 @@ void ClientSideDetectionHost::SendModelToRenderFrame() {
       phishing_detector_.reset();
     frame->GetRemoteInterfaces()->GetInterface(
         phishing_detector_.BindNewPipeAndPassReceiver());
-    phishing_detector_->SetPhishingModel(csd_service_->GetModelStr());
+    phishing_detector_->SetPhishingModel(
+        csd_service_->GetModelStr(),
+        csd_service_->GetVisualTfLiteModel().Duplicate());
   }
 }
 
@@ -399,7 +401,9 @@ void ClientSideDetectionHost::RenderFrameCreated(
     phishing_detector_.reset();
   render_frame_host->GetRemoteInterfaces()->GetInterface(
       phishing_detector_.BindNewPipeAndPassReceiver());
-  phishing_detector_->SetPhishingModel(csd_service_->GetModelStr());
+  phishing_detector_->SetPhishingModel(
+      csd_service_->GetModelStr(),
+      csd_service_->GetVisualTfLiteModel().Duplicate());
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(

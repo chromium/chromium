@@ -45,29 +45,46 @@ base::CallbackListSubscription ClientSidePhishingModel::RegisterCallback(
 }
 
 bool ClientSidePhishingModel::IsEnabled() const {
-  return !model_str_.empty();
+  return !model_str_.empty() || visual_tflite_model_.IsValid();
 }
 
 std::string ClientSidePhishingModel::GetModelStr() const {
   return model_str_;
 }
 
+const base::File& ClientSidePhishingModel::GetVisualTfLiteModel() const {
+  return visual_tflite_model_;
+}
+
 void ClientSidePhishingModel::PopulateFromDynamicUpdate(
-    const std::string& model_str) {
+    const std::string& model_str,
+    base::File visual_tflite_model) {
   AutoLock lock(lock_);
 
-  ClientSideModel model_proto;
-  bool can_parse = model_proto.ParseFromString(model_str);
-  base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
-                            can_parse);
+  bool proto_valid = false;
+  if (!model_str.empty()) {
+    ClientSideModel model_proto;
+    proto_valid = model_proto.ParseFromString(model_str);
+    base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
+                              proto_valid);
 
-  if (can_parse) {
-    // At time of writing, versions go up to 25. We set a max version of 100 to
-    // give some room.
-    const int kMaxVersion = 100;
-    base::UmaHistogramExactLinear("SBClientPhishing.ModelDynamicUpdateVersion",
-                                  model_proto.version(), kMaxVersion + 1);
-    model_str_ = model_str;
+    if (proto_valid) {
+      // At time of writing, versions go up to 25. We set a max version of 100
+      // to give some room.
+      const int kMaxVersion = 100;
+      base::UmaHistogramExactLinear(
+          "SBClientPhishing.ModelDynamicUpdateVersion", model_proto.version(),
+          kMaxVersion + 1);
+      model_str_ = model_str;
+    }
+  }
+
+  bool tflite_valid = visual_tflite_model.IsValid();
+  if (tflite_valid) {
+    visual_tflite_model_ = std::move(visual_tflite_model);
+  }
+
+  if (proto_valid || tflite_valid) {
     // Unretained is safe because this is a singleton.
     base::PostTask(FROM_HERE, {content::BrowserThread::UI},
                    base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
@@ -84,6 +101,11 @@ void ClientSidePhishingModel::SetModelStrForTesting(
     const std::string& model_str) {
   AutoLock lock(lock_);
   model_str_ = model_str;
+}
+
+void ClientSidePhishingModel::SetVisualTfLiteModelForTesting(base::File file) {
+  AutoLock lock(lock_);
+  visual_tflite_model_ = std::move(file);
 }
 
 }  // namespace safe_browsing
