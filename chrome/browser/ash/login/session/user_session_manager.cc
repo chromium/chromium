@@ -1749,7 +1749,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
   ProfileHelper::Get()->ProfileStartup(profile);
 
-  if (start_session_type_ == PRIMARY_USER_SESSION) {
+  if (start_session_type_ == StartSessionType::kPrimary) {
     WizardController* oobe_controller = WizardController::default_controller();
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
     bool skip_post_login_screens =
@@ -1975,7 +1975,7 @@ void UserSessionManager::RestorePendingUserSessions() {
     // Will call OnProfilePrepared() once profile has been loaded.
     // Only handling secondary users here since primary user profile
     // (and session) has been loaded on Chrome startup.
-    StartSession(user_context, SECONDARY_USER_SESSION_AFTER_CRASH,
+    StartSession(user_context, StartSessionType::kSecondaryAfterCrash,
                  false,  // has_auth_cookies
                  true,   // has_active_session, this is restart after crash
                  this);

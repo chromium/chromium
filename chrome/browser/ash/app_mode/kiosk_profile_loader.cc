@@ -198,7 +198,7 @@ void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
   if (context.GetAccountId() == user_manager::GuestAccountId())
     context.SetAccountId(user_manager::DemoAccountId());
   UserSessionManager::GetInstance()->StartSession(
-      context, UserSessionManager::PRIMARY_USER_SESSION,
+      context, UserSessionManager::StartSessionType::kPrimary,
       false,  // has_auth_cookies
       false,  // Start session for user.
       this);
