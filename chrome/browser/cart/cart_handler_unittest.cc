@@ -403,7 +403,8 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
     // if a feature is enabled.
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+         {"partner-merchant-pattern", "(foo.com)"}});
   }
 
   void SetUp() override {
@@ -419,33 +420,63 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
 
 // Test discount consent card visibility aligns with CartService.
 TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
-  base::RunLoop run_loop[2];
-  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
-  handler_->GetDiscountConsentCardVisible(
+  CartDB* cart_db = service_->GetDB();
+  base::RunLoop run_loop[5];
+  service_->ShouldShowDiscountConsent(
       base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
-                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+                     base::Unretained(this), run_loop[0].QuitClosure(), false));
   run_loop[0].Run();
-
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
-
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
   handler_->GetDiscountConsentCardVisible(
       base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
                      base::Unretained(this), run_loop[1].QuitClosure(), false));
   run_loop[1].Run();
+
+  // Add a partner cart.
+  cart_db->AddCart(
+      kFakeMerchant, kFakeProto,
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[3].QuitClosure(), true));
+  run_loop[3].Run();
+  handler_->GetDiscountConsentCardVisible(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
 }
 
 // Test OnDiscountConsentAcknowledged can update status in CartService.
 TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
-  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
+  CartDB* cart_db = service_->GetDB();
+  base::RunLoop run_loop[4];
+  // Add a partner cart.
+  cart_db->AddCart(
+      kFakeMerchant, kFakeProto,
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
   ASSERT_FALSE(service_->IsCartDiscountEnabled());
 
   handler_->OnDiscountConsentAcknowledged(true);
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[2].QuitClosure(), false));
+  run_loop[2].Run();
   ASSERT_TRUE(service_->IsCartDiscountEnabled());
 
   handler_->OnDiscountConsentAcknowledged(false);
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[3].QuitClosure(), false));
+  run_loop[3].Run();
   ASSERT_FALSE(service_->IsCartDiscountEnabled());
 }
 

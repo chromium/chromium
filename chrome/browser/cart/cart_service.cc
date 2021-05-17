@@ -6,7 +6,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -15,9 +17,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -25,18 +29,25 @@ namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
 const int kDelayStartMs = 10;
 
+constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
+    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-std::string GetKeyForURL(const GURL& url) {
-  std::string domain = eTLDPlusOne(url);
+bool IsFakeDataEnabled() {
   return base::GetFieldTrialParamValueByFeature(
              ntp_features::kNtpChromeCartModule,
-             ntp_features::kNtpChromeCartModuleDataParam) == "fake"
-             ? std::string(kFakeDataPrefix) + domain
-             : domain;
+             ntp_features::kNtpChromeCartModuleDataParam) == "fake";
+}
+
+std::string GetKeyForURL(const GURL& url) {
+  std::string domain = eTLDPlusOne(url);
+  return IsFakeDataEnabled() ? std::string(kFakeDataPrefix) + domain : domain;
 }
 
 bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
@@ -55,6 +66,21 @@ absl::optional<base::Value> JSONToDictionary(int resource_id) {
 bool IsExpired(const cart_db::ChromeCartContentProto& proto) {
   return (base::Time::Now() - base::Time::FromDoubleT(proto.timestamp()))
              .InDays() > 14;
+}
+
+const re2::RE2& GetPartnerMerchantPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
+                                               options);
+  return *instance;
+}
+
+bool IsPartnerMerchant(const GURL& url) {
+  const std::string& url_string = url.spec();
+  return RE2::PartialMatch(
+      re2::StringPiece(url_string.data(), url_string.size()),
+      GetPartnerMerchantPattern());
 }
 }  // namespace
 
@@ -177,9 +203,7 @@ bool CartService::ShouldShowWelcomeSurface() {
 }
 
 void CartService::AcknowledgeDiscountConsent(bool should_enable) {
-  if (base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpChromeCartModule,
-          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+  if (IsFakeDataEnabled()) {
     return;
   }
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
@@ -194,20 +218,50 @@ void CartService::AcknowledgeDiscountConsent(bool should_enable) {
   }
 }
 
-bool CartService::ShouldShowDiscountConsent() {
-  if (ShouldShowWelcomeSurface() ||
+void CartService::ShouldShowDiscountConsent(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  if (IsFakeDataEnabled()) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE, base::BindOnce(
+                                  [](base::OnceCallback<void(bool)> callback) {
+                                    std::move(callback).Run(true);
+                                  },
+                                  std::move(callback)));
+    return;
+  }
+  bool should_not_show =
+      ShouldShowWelcomeSurface() ||
       base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) !=
-          "true") {
-    return false;
+          "true" ||
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged);
+  if (should_not_show) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE, base::BindOnce(
+                                  [](base::OnceCallback<void(bool)> callback) {
+                                    std::move(callback).Run(false);
+                                  },
+                                  std::move(callback)));
+  } else {
+    LoadAllActiveCarts(base::BindOnce(&CartService::HasPartnerCarts,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback)));
   }
-  if (base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpChromeCartModule,
-          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
-    return true;
+}
+
+void CartService::HasPartnerCarts(
+    base::OnceCallback<void(bool)> callback,
+    bool success,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  for (auto proto_pair : proto_pairs) {
+    if (IsPartnerMerchant(GURL(proto_pair.second.merchant_cart_url()))) {
+      std::move(callback).Run(true);
+      return;
+    }
   }
-  return !profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged);
+  std::move(callback).Run(false);
 }
 
 bool CartService::IsCartDiscountEnabled() {
@@ -395,10 +449,7 @@ void CartService::DeleteRemovedCartsContent(
 void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
-  if (IsHidden() &&
-      base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpChromeCartModule,
-          ntp_features::kNtpChromeCartModuleDataParam) != "fake") {
+  if (IsHidden() && !IsFakeDataEnabled()) {
     std::move(callback).Run(success, {});
     return;
   }

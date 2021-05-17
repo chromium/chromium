@@ -101,7 +101,7 @@ void CartHandler::GetDiscountURL(const GURL& cart_url,
 
 void CartHandler::GetDiscountConsentCardVisible(
     GetDiscountConsentCardVisibleCallback callback) {
-  std::move(callback).Run(cart_service_->ShouldShowDiscountConsent());
+  cart_service_->ShouldShowDiscountConsent(std::move(callback));
 }
 
 void CartHandler::OnDiscountConsentAcknowledged(bool accept) {

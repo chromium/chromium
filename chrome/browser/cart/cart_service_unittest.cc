@@ -113,7 +113,14 @@ class CartServiceTest : public testing::Test {
   void OperationEvaluation(base::OnceClosure closure,
                            bool expected_success,
                            bool actual_success) {
-    EXPECT_EQ(expected_success, actual_success);
+    GetEvaluationBoolResult(std::move(closure), expected_success,
+                            actual_success);
+  }
+
+  void GetEvaluationBoolResult(base::OnceClosure closure,
+                               bool expected,
+                               bool actual) {
+    EXPECT_EQ(expected, actual);
     std::move(closure).Run();
   }
 
@@ -1029,11 +1036,15 @@ TEST_F(CartServiceTest, TestHiddenFlipedByCartAction) {
 
 // Tests discount consent will never show in module without feature param.
 TEST_F(CartServiceTest, TestNoShowConsentWithoutFeature) {
+  base::RunLoop run_loop;
   for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
     service_->IncreaseWelcomeSurfaceCounter();
   }
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop.QuitClosure(), false));
+  run_loop.Run();
 }
 
 // Tests discount is disabled without feature param.
@@ -1067,34 +1078,75 @@ class CartServiceDiscountTest : public CartServiceTest {
   CartServiceDiscountTest() {
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
+         {"partner-merchant-pattern", "(foo.com)"}});
+  }
+
+  void SetUp() override {
+    CartServiceTest::SetUp();
+
+    // Add a partner merchant cart.
+    service_->AddCart(kMockMerchantA, base::nullopt, kMockProtoA);
+    task_environment_.RunUntilIdle();
   }
 };
 
 // Tests discount consent should not show when welcome surface is still showing.
 TEST_F(CartServiceDiscountTest, TestNoConsentWhenWelcomeSurface) {
+  base::RunLoop run_loop;
   profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
 
   ASSERT_TRUE(service_->ShouldShowWelcomeSurface());
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop.QuitClosure(), false));
+  run_loop.Run();
 }
 
 // Tests discount consent visibility aligns with profile prefs.
 TEST_F(CartServiceDiscountTest, TestReadConsentFromPrefs) {
+  base::RunLoop run_loop[2];
   for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
     service_->IncreaseWelcomeSurfaceCounter();
   }
   ASSERT_FALSE(
       profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
-  ASSERT_TRUE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
 
   profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
 
   ASSERT_TRUE(
       profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
-  ASSERT_FALSE(service_->ShouldShowDiscountConsent());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+}
+
+// Tests discount consent doesn't show when there is no partner merchant cart.
+TEST_F(CartServiceDiscountTest, TestNoConsentWithoutPartnerCart) {
+  base::RunLoop run_loop[2];
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->DeleteCart(kMockMerchantA);
+  task_environment_.RunUntilIdle();
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
 }
 
 // Tests updating whether rule-based discount is enabled in profile prefs.

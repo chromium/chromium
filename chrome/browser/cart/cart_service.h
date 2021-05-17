@@ -79,8 +79,9 @@ class CartService : public history::HistoryServiceObserver,
   // shouldEnable indicates whether user has chosen to opt-in or opt-out the
   // feature.
   void AcknowledgeDiscountConsent(bool should_enable);
-  // Returns whether to show the consent card in module for rule-based discount.
-  bool ShouldShowDiscountConsent();
+  // Decides whether to show the consent card in module for rule-based discount,
+  // and returns it in the callback.
+  void ShouldShowDiscountConsent(base::OnceCallback<void(bool)> callback);
   // Returns whether the rule-based discount feature in cart module is enabled,
   // and user has chosen to opt-in the feature.
   bool IsCartDiscountEnabled();
@@ -139,6 +140,7 @@ class CartService : public history::HistoryServiceObserver,
                  cart_db::ChromeCartContentProto proto,
                  bool success,
                  std::vector<CartDB::KeyAndValue> proto_pairs);
+
   // A callback to handle updating discount for a cart.
   void OnUpdateDiscount(
       const std::string& domain,
@@ -148,6 +150,11 @@ class CartService : public history::HistoryServiceObserver,
       std::vector<CartDB::KeyAndValue> proto_pairs);
   // Gets called when users has enabled the rule-based discount feature.
   void StartGettingDiscount();
+
+  // A callback to decide if there are partner carts.
+  void HasPartnerCarts(base::OnceCallback<void(bool)> callback,
+                       bool success,
+                       std::vector<CartDB::KeyAndValue> proto_pairs);
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
