@@ -228,6 +228,17 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
   replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize(), BorderScrollbarPadding(),
       BorderPadding());
+
+  // If |this| is a list item, keep track of the unpositioned list marker in
+  // |container_builder_|.
+  if (const NGBlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
+    if (ShouldPlaceUnpositionedListMarker() &&
+        !marker_node.ListMarkerOccupiesWholeLine() &&
+        (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
+      container_builder_.SetUnpositionedListMarker(
+          NGUnpositionedListMarker(marker_node));
+    }
+  }
 }
 
 // Define the destructor here, so that we can forward-declare more in the
@@ -622,8 +633,9 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       HandleFloat(previous_inflow_position, To<NGBlockNode>(child),
                   To<NGBlockBreakToken>(child_break_token));
     } else if (child.IsListMarker() && !child.ListMarkerOccupiesWholeLine()) {
-      container_builder_.SetUnpositionedListMarker(
-          NGUnpositionedListMarker(To<NGBlockNode>(child)));
+      // Ignore outside list markers because they are already set to
+      // |container_builder_.UnpositionedListMarker| in the constructor, unless
+      // |ListMarkerOccupiesWholeLine|, which is handled like a regular child.
     } else if (child.IsColumnSpanAll() && ConstraintSpace().IsInColumnBfc()) {
       // The child is a column spanner. We now need to finish this
       // fragmentainer, then abort and let the column layout algorithm handle
@@ -901,7 +913,10 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   // that have line boxes. If there were no line boxes, position without line
   // boxes.
   if (container_builder_.UnpositionedListMarker() &&
-      ShouldPlaceUnpositionedListMarker()) {
+      ShouldPlaceUnpositionedListMarker() &&
+      // If the list-item is block-fragmented, leave it unpositioned and expect
+      // following fragments have a line box.
+      !container_builder_.HasInflowChildBreakInside()) {
     if (!PositionListMarkerWithoutLineBoxes(previous_inflow_position))
       return container_builder_.Abort(NGLayoutResult::kBfcBlockOffsetResolved);
   }
@@ -2818,23 +2833,15 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
     NGPreviousInflowPosition* previous_inflow_position) {
   // If this is not a list-item, propagate unpositioned list markers to
   // ancestors.
-  if (!ShouldPlaceUnpositionedListMarker()) {
-    if (layout_result.UnpositionedListMarker()) {
-      DCHECK(!container_builder_.UnpositionedListMarker());
-      container_builder_.SetUnpositionedListMarker(
-          layout_result.UnpositionedListMarker());
-    }
+  if (!ShouldPlaceUnpositionedListMarker())
     return true;
-  }
 
   // If this is a list item, add the unpositioned list marker as a child.
-  NGUnpositionedListMarker list_marker = layout_result.UnpositionedListMarker();
-  if (!list_marker) {
-    list_marker = container_builder_.UnpositionedListMarker();
-    if (!list_marker)
-      return true;
-    container_builder_.ClearUnpositionedListMarker();
-  }
+  NGUnpositionedListMarker list_marker =
+      container_builder_.UnpositionedListMarker();
+  if (!list_marker)
+    return true;
+  container_builder_.ClearUnpositionedListMarker();
 
   const NGConstraintSpace& space = ConstraintSpace();
   const NGPhysicalFragment& content = layout_result.PhysicalFragment();

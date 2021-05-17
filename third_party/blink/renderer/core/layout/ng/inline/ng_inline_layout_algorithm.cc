@@ -774,9 +774,6 @@ void NGInlineLayoutAlgorithm::PlaceListMarker(const NGInlineItem& item,
     box_states_->LineBoxState().EnsureTextMetrics(
         *item.Style(), item.Style()->GetFont(), baseline_type_);
   }
-
-  container_builder_.SetUnpositionedListMarker(NGUnpositionedListMarker(
-      To<LayoutNGOutsideListMarker>(item.GetLayoutObject())));
 }
 
 // Justify the line. This changes the size of items by adding spacing.

@@ -107,6 +107,9 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->ShouldBeConsideredAsReplaced();
   }
   bool IsListItem() const { return IsBlock() && box_->IsLayoutNGListItem(); }
+  // Returns the list marker if |this.IsListItem()| with an outside list marker.
+  // Otherwise |nullptr|.
+  NGBlockNode ListMarkerBlockNodeIfListItem() const;
   bool IsListMarker() const {
     return IsBlock() && box_->IsLayoutNGOutsideListMarker();
   }

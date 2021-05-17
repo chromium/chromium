@@ -220,7 +220,18 @@ void MulticolPartWalker::MoveToNext() {
 
 NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {}
+    : NGLayoutAlgorithm(params) {
+  // When a list item has multicol, |NGColumnLayoutAlgorithm| needs to keep
+  // track of the list marker instead of the child layout algorithm. See
+  // |NGBlockLayoutAlgorithm|.
+  if (const NGBlockNode marker_node = Node().ListMarkerBlockNodeIfListItem()) {
+    if (!marker_node.ListMarkerOccupiesWholeLine() &&
+        (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
+      container_builder_.SetUnpositionedListMarker(
+          NGUnpositionedListMarker(marker_node));
+    }
+  }
+}
 
 scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
@@ -672,9 +683,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
 
       has_violating_break |= result->HasViolatingBreak();
       column_inline_offset += column_inline_progression_;
-
-      if (const auto marker = result->UnpositionedListMarker())
-        container_builder_.SetUnpositionedListMarker(marker);
 
       if (result->ColumnSpanner())
         break;

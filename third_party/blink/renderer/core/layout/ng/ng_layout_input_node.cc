@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
@@ -101,6 +102,12 @@ wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
 
 bool NGLayoutInputNode::IsTextControlPlaceholder() const {
   return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
+}
+
+NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {
+  if (auto* list_item = DynamicTo<LayoutNGListItem>(box_))
+    return NGBlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
+  return NGBlockNode(nullptr);
 }
 
 void NGLayoutInputNode::IntrinsicSize(

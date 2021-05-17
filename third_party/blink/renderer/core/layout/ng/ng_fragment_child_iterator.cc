@@ -98,7 +98,9 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
     if (layout_object &&
         layout_object !=
             current_.block_break_token_->InputNode().GetLayoutBox()) {
-      DCHECK(current_.link_.fragment->IsColumnSpanAll());
+      DCHECK(current_.link_.fragment->IsColumnSpanAll() ||
+             // List markers are |IsMonolithic| that the flag doesn't matter.
+             current_.link_.fragment->IsListMarker());
       current_.break_token_for_fragmentainer_only_ = true;
     } else {
       current_.break_token_for_fragmentainer_only_ = false;

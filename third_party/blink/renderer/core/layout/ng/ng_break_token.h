@@ -114,6 +114,9 @@ class CORE_EXPORT NGBreakToken : public RefCounted<NGBreakToken> {
   // that all children have been fully laid out, or have break tokens. No more
   // children left to discover.
   unsigned has_seen_all_children_ : 1;
+
+  // See |NGBlockBreakToken::HasUnpositionedListMarker|.
+  unsigned has_unpositioned_list_marker_ : 1;
 };
 
 typedef Vector<scoped_refptr<const NGBreakToken>> NGBreakTokenVector;

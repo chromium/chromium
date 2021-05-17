@@ -44,6 +44,8 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key,
   has_seen_all_children_ = builder.has_seen_all_children_;
   is_caused_by_column_spanner_ = builder.FoundColumnSpanner();
   is_at_block_end_ = builder.is_at_block_end_;
+  has_unpositioned_list_marker_ =
+      static_cast<bool>(builder.UnpositionedListMarker());
   for (wtf_size_t i = 0; i < builder.child_break_tokens_.size(); ++i) {
     child_break_tokens_[i] = builder.child_break_tokens_[i].get();
     child_break_tokens_[i]->AddRef();

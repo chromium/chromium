@@ -63,8 +63,6 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (result.IsPushedByFloats())
       container_builder_.SetIsPushedByFloats();
     container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
-    container_builder_.SetUnpositionedListMarker(
-        result.UnpositionedListMarker());
 
     if (physical_fragment.LastBaseline())
       container_builder_.SetLastBaseline(*physical_fragment.LastBaseline());
@@ -100,7 +98,6 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     DCHECK(!result.IsSelfCollapsing());
     DCHECK(!result.IsPushedByFloats());
     DCHECK_EQ(result.AdjoiningObjectTypes(), kAdjoiningNone);
-    DCHECK(!result.UnpositionedListMarker());
 
     DCHECK(!physical_fragment.LastBaseline());
 

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
-#include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_early_break.h"
@@ -106,11 +105,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   bool CanUseOutOfFlowPositionedFirstTierCache() const {
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());
     return bitfields_.can_use_out_of_flow_positioned_first_tier_cache;
-  }
-
-  const NGUnpositionedListMarker UnpositionedListMarker() const {
-    return HasRareData() ? rare_data_->unpositioned_list_marker
-                         : NGUnpositionedListMarker();
   }
 
   // Get the column spanner (if any) that interrupted column layout.
@@ -421,7 +415,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           early_break_appeal(rare_data.early_break_appeal),
           oof_positioned_offset(rare_data.oof_positioned_offset),
           end_margin_strut(rare_data.end_margin_strut),
-          unpositioned_list_marker(rare_data.unpositioned_list_marker),
           // This will initialize "both" members of the union.
           tallest_unbreakable_block_size(
               rare_data.tallest_unbreakable_block_size),
@@ -446,7 +439,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     NGBreakAppeal early_break_appeal = kBreakAppealLastResort;
     LogicalOffset oof_positioned_offset;
     NGMarginStrut end_margin_strut;
-    NGUnpositionedListMarker unpositioned_list_marker;
     NGBlockNode column_spanner = nullptr;
     union {
       // Only set in the initial column balancing layout pass, when we have no

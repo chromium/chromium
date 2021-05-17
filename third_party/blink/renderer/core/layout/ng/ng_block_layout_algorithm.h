@@ -342,7 +342,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
     // container then, not the individual columns).
     if (!ConstraintSpace().IsAnonymous())
       return true;
-    DCHECK_EQ(container_builder_.BoxType(), NGPhysicalFragment::kColumnBox);
+    // Ensure we're really a column box. We can't use |BoxType| to call this
+    // from the constructor.
+    DCHECK(node_.GetLayoutBox()->SlowFirstChild()->IsLayoutFlowThread());
     return false;
   }
 

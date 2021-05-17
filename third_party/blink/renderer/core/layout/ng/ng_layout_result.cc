@@ -224,10 +224,6 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->block_end_annotation_space =
         builder->block_end_annotation_space_;
   }
-  if (builder->unpositioned_list_marker_) {
-    EnsureRareData()->unpositioned_list_marker =
-        builder->unpositioned_list_marker_;
-  }
   if (builder->exclusion_space_ != space_.ExclusionSpace()) {
     bitfields_.has_rare_data_exclusion_space = true;
     EnsureRareData()->exclusion_space = std::move(builder->exclusion_space_);
@@ -305,7 +301,6 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
           check_same_block_size);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
-  DCHECK(UnpositionedListMarker() == other.UnpositionedListMarker());
   ExclusionSpace().CheckSameForSimplifiedLayout(other.ExclusionSpace());
 
   // We ignore |BfcBlockOffset|, and |BfcLineOffset| as "simplified" layout

@@ -37,6 +37,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     auto* token = new NGBlockBreakToken(PassKey(), node);
     token->is_break_before_ = true;
     token->is_forced_break_ = is_forced_break;
+    token->has_unpositioned_list_marker_ = node.IsListItem();
     return base::AdoptRef(token);
   }
 
@@ -104,6 +105,11 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // bottom of a column (either because it actually has 0 height, or e.g. a
   // negative top margin) will be put into that column, not the next.
   bool IsAtBlockEnd() const { return is_at_block_end_; }
+
+  // True if earlier fragments could not position the list marker.
+  bool HasUnpositionedListMarker() const {
+    return has_unpositioned_list_marker_;
+  }
 
   // The break tokens for children of the layout node.
   //
