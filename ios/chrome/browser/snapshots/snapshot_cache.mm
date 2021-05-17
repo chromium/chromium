@@ -198,6 +198,133 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
                                          image_scale, cache_directory));
 }
 
+void MigrateSnapshotsWithIDs(const base::FilePath& old_cache_directory,
+                             const base::FilePath& new_cache_directory,
+                             NSSet<NSString*>* snapshot_ids,
+                             ImageScale snapshot_scale) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (old_cache_directory.empty() ||
+      old_cache_directory == new_cache_directory ||
+      !base::DirectoryExists(old_cache_directory)) {
+    return;
+  }
+
+  DCHECK(base::DirectoryExists(new_cache_directory));
+  for (NSString* snapshot_id in snapshot_ids) {
+    for (const ImageType image_type : kImageTypes) {
+      const base::FilePath old_image_path = ImagePath(
+          snapshot_id, image_type, snapshot_scale, old_cache_directory);
+      const base::FilePath new_image_path = ImagePath(
+          snapshot_id, image_type, snapshot_scale, new_cache_directory);
+
+      // Only migrate snapshots which are needed.
+      if (!base::PathExists(old_image_path) || base::PathExists(new_image_path))
+        continue;
+
+      if (!base::Move(old_image_path, new_image_path)) {
+        DLOG(ERROR) << "Error migrating file: "
+                    << old_image_path.AsUTF8Unsafe();
+      }
+    }
+  }
+
+  // Remove the old source folder.
+  if (!base::DeletePathRecursively(old_cache_directory)) {
+    DLOG(ERROR) << "Error deleting snapshots folder during migration: "
+                << old_cache_directory.AsUTF8Unsafe();
+  }
+}
+
+void DeleteImageWithSnapshotID(const base::FilePath& cache_directory,
+                               NSString* snapshot_id,
+                               ImageScale snapshot_scale) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  for (const ImageType image_type : kImageTypes) {
+    base::DeleteFile(
+        ImagePath(snapshot_id, image_type, snapshot_scale, cache_directory));
+  }
+}
+
+void RemoveAllImages(const base::FilePath& cache_directory) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (cache_directory.empty() || !base::DirectoryExists(cache_directory))
+    return;
+
+  if (!base::DeletePathRecursively(cache_directory)) {
+    DLOG(ERROR) << "Error deleting snapshots storage. "
+                << cache_directory.AsUTF8Unsafe();
+  }
+  if (!base::CreateDirectory(cache_directory)) {
+    DLOG(ERROR) << "Error creating snapshot storage "
+                << cache_directory.AsUTF8Unsafe();
+  }
+}
+
+void PurgeCacheOlderThan(const base::FilePath& cache_directory,
+                         const base::Time& threshold_date,
+                         NSSet<NSString*>* keep_alive_snapshot_ids,
+                         ImageScale snapshot_scale) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (!base::DirectoryExists(cache_directory))
+    return;
+
+  std::set<base::FilePath> files_to_keep;
+  for (NSString* snapshot_id in keep_alive_snapshot_ids) {
+    for (const ImageType image_type : kImageTypes) {
+      files_to_keep.insert(
+          ImagePath(snapshot_id, image_type, snapshot_scale, cache_directory));
+    }
+  }
+  base::FileEnumerator enumerator(cache_directory, false,
+                                  base::FileEnumerator::FILES);
+
+  for (base::FilePath current_file = enumerator.Next(); !current_file.empty();
+       current_file = enumerator.Next()) {
+    if (current_file.Extension() != ".jpg")
+      continue;
+    if (base::Contains(files_to_keep, current_file))
+      continue;
+    base::FileEnumerator::FileInfo file_info = enumerator.GetInfo();
+    if (file_info.GetLastModifiedTime() > threshold_date)
+      continue;
+
+    base::DeleteFile(current_file);
+  }
+}
+
+void CreateCacheDirectory(const base::FilePath& cache_directory) {
+  // This is a NO-OP if the directory already exists.
+  if (!base::CreateDirectory(cache_directory)) {
+    DLOG(ERROR) << "Error creating snapshot storage: "
+                << cache_directory.AsUTF8Unsafe();
+  }
+}
+
+UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
+                                  NSString* snapshot_id,
+                                  ImageScale snapshot_scale,
+                                  UIImage* cached_image) {
+  // If the image is not in the cache, load it from disk.
+  UIImage* image = cached_image;
+  if (!image) {
+    image = ReadImageForSnapshotIDFromDisk(snapshot_id, IMAGE_TYPE_COLOR,
+                                           snapshot_scale, cache_directory);
+  }
+
+  if (!image)
+    return nil;
+
+  return GreyImage(image);
+}
+
 }  // anonymous namespace
 
 @implementation SnapshotCache {
@@ -308,17 +435,11 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
     return;
   }
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   __weak SnapshotLRUCache* weakLRUCache = _lruCache;
   base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE, base::BindOnce(^UIImage*() {
-        // Retrieve the image on a high priority thread.
-        return ReadImageForSnapshotIDFromDisk(snapshotID, IMAGE_TYPE_COLOR,
-                                              snapshotsScale, cacheDirectory);
-      }),
+      _taskRunner.get(), FROM_HERE,
+      base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
+                     IMAGE_TYPE_COLOR, _snapshotsScale, _cacheDirectory),
       base::BindOnce(^(UIImage* image) {
         if (image)
           [weakLRUCache setObject:image forKey:snapshotID];
@@ -340,16 +461,11 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
 
   [self.observers snapshotCache:self didUpdateSnapshotForIdentifier:snapshotID];
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   // Save the image to disk.
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          WriteImageToDisk(
-                              image, ImagePath(snapshotID, IMAGE_TYPE_COLOR,
-                                               snapshotsScale, cacheDirectory));
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(&WriteImageToDisk, image,
+                                ImagePath(snapshotID, IMAGE_TYPE_COLOR,
+                                          _snapshotsScale, _cacheDirectory)));
 }
 
 - (void)removeImageWithSnapshotID:(NSString*)snapshotID {
@@ -362,17 +478,9 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   if (!_taskRunner)
     return;
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        for (size_t index = 0; index < base::size(kImageTypes); ++index) {
-          base::DeleteFile(ImagePath(snapshotID, kImageTypes[index],
-                                     snapshotsScale, cacheDirectory));
-        }
-      }));
+      FROM_HERE, base::BindOnce(&DeleteImageWithSnapshotID, _cacheDirectory,
+                                snapshotID, _snapshotsScale));
 }
 
 - (void)removeAllImages {
@@ -382,22 +490,9 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
 
   if (!_taskRunner)
     return;
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        if (cacheDirectory.empty() || !base::DirectoryExists(cacheDirectory)) {
-          return;
-        }
-        if (!base::DeletePathRecursively(cacheDirectory)) {
-          DLOG(ERROR) << "Error deleting snapshots storage. "
-                      << cacheDirectory.AsUTF8Unsafe();
-        }
-        if (!base::CreateDirectory(cacheDirectory)) {
-          DLOG(ERROR) << "Error creating snapshot storage "
-                      << cacheDirectory.AsUTF8Unsafe();
-        }
-      }));
+
+  _taskRunner->PostTask(FROM_HERE,
+                        base::BindOnce(&RemoveAllImages, _cacheDirectory));
 }
 
 - (base::FilePath)imagePathForSnapshotID:(NSString*)snapshotID {
@@ -415,39 +510,10 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_taskRunner)
     return;
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath destinationPath = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
+
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        if (sourcePath.empty() || !base::DirectoryExists(sourcePath) ||
-            sourcePath == destinationPath) {
-          return;
-        }
-        DCHECK(base::DirectoryExists(destinationPath));
-        for (NSString* snapshotID : snapshotIDs) {
-          for (size_t index = 0; index < base::size(kImageTypes); ++index) {
-            base::FilePath sourceFilePath = ImagePath(
-                snapshotID, kImageTypes[index], snapshotsScale, sourcePath);
-            base::FilePath destinationFilePath =
-                ImagePath(snapshotID, kImageTypes[index], snapshotsScale,
-                          destinationPath);
-            // Only migrate snapshots which are still needed.
-            if (base::PathExists(sourceFilePath) &&
-                !base::PathExists(destinationFilePath)) {
-              if (!base::Move(sourceFilePath, destinationFilePath)) {
-                DLOG(ERROR)
-                    << "Error migrating file " << sourceFilePath.AsUTF8Unsafe();
-              }
-            }
-          }
-        }
-        // Remove the old source folder.
-        if (!base::DeletePathRecursively(sourcePath)) {
-          DLOG(ERROR) << "Error deleting snapshots folder during migration. "
-                      << sourcePath.AsUTF8Unsafe();
-        }
-      }));
+      FROM_HERE, base::BindOnce(&MigrateSnapshotsWithIDs, sourcePath,
+                                _cacheDirectory, snapshotIDs, _snapshotsScale));
 }
 
 - (void)purgeCacheOlderThan:(const base::Time&)date
@@ -457,39 +523,9 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   if (!_taskRunner)
     return;
 
-  // Copying the date, as the block must copy the value, not the reference.
-  const base::Time dateCopy = date;
-
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        if (!base::DirectoryExists(cacheDirectory))
-          return;
-
-        std::set<base::FilePath> filesToKeep;
-        for (NSString* snapshotID : liveSnapshotIDs) {
-          for (size_t index = 0; index < base::size(kImageTypes); ++index) {
-            filesToKeep.insert(ImagePath(snapshotID, kImageTypes[index],
-                                         snapshotsScale, cacheDirectory));
-          }
-        }
-        base::FileEnumerator enumerator(cacheDirectory, false,
-                                        base::FileEnumerator::FILES);
-        base::FilePath current_file = enumerator.Next();
-        for (; !current_file.empty(); current_file = enumerator.Next()) {
-          if (current_file.Extension() != ".jpg")
-            continue;
-          if (filesToKeep.find(current_file) != filesToKeep.end())
-            continue;
-          base::FileEnumerator::FileInfo fileInfo = enumerator.GetInfo();
-          if (fileInfo.GetLastModifiedTime() > dateCopy)
-            continue;
-          base::DeleteFile(current_file);
-        }
-      }));
+      FROM_HERE, base::BindOnce(&PurgeCacheOlderThan, _cacheDirectory, date,
+                                liveSnapshotIDs, _snapshotsScale));
 }
 
 - (void)willBeSavedGreyWhenBackgrounding:(NSString*)snapshotID {
@@ -554,23 +590,11 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   if (!_taskRunner)
     return;
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   __weak SnapshotCache* weakSelf = self;
   base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE, base::BindOnce(^UIImage*() {
-        // If the image is not in the cache, load it from disk.
-        UIImage* localImage = image;
-        if (!localImage) {
-          localImage = ReadImageForSnapshotIDFromDisk(
-              snapshotID, IMAGE_TYPE_COLOR, snapshotsScale, cacheDirectory);
-        }
-        if (localImage)
-          localImage = GreyImage(localImage);
-        return localImage;
-      }),
+      _taskRunner.get(), FROM_HERE,
+      base::BindOnce(&GreyImageFromCachedImage, _cacheDirectory, snapshotID,
+                     _snapshotsScale, image),
       base::BindOnce(^(UIImage* greyImage) {
         [weakSelf saveGreyImage:greyImage forSnapshotID:snapshotID];
       }));
@@ -631,27 +655,21 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
     return;
   }
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
   __weak SnapshotCache* weakSelf = self;
   base::PostTaskAndReplyWithResult(
-      _taskRunner.get(), FROM_HERE, base::BindOnce(^UIImage*() {
-        // Retrieve the image on a high priority thread.
-        return ReadImageForSnapshotIDFromDisk(snapshotID, IMAGE_TYPE_GREYSCALE,
-                                              snapshotsScale, cacheDirectory);
-      }),
+      _taskRunner.get(), FROM_HERE,
+      base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
+                     IMAGE_TYPE_GREYSCALE, _snapshotsScale, _cacheDirectory),
       base::BindOnce(^(UIImage* image) {
         if (image) {
           callback(image);
           return;
         }
         [weakSelf retrieveImageForSnapshotID:snapshotID
-                                    callback:^(UIImage* localImage) {
-                                      if (localImage)
-                                        localImage = GreyImage(localImage);
-                                      callback(localImage);
+                                    callback:^(UIImage* image) {
+                                      if (image)
+                                        image = GreyImage(image);
+                                      callback(image);
                                     }];
       }));
 }
@@ -672,16 +690,10 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   if (!_taskRunner)
     return;
 
-  // Copy ivars used by the block so that it does not reference |self|.
-  UIImage* backgroundingColorImage = _backgroundingColorImage;
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  const ImageScale snapshotsScale = _snapshotsScale;
-
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          ConvertAndSaveGreyImage(snapshotID, snapshotsScale,
-                                                  backgroundingColorImage,
-                                                  cacheDirectory);
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ConvertAndSaveGreyImage, snapshotID, _snapshotsScale,
+                     _backgroundingColorImage, _cacheDirectory));
 }
 
 - (void)addObserver:(id<SnapshotCacheObserver>)observer {
@@ -702,15 +714,9 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_taskRunner)
     return;
-  // Copy ivars used by the block so that it does not reference |self|.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          // This is a NO-OP if the directory already exists.
-                          if (!base::CreateDirectory(cacheDirectory)) {
-                            DLOG(ERROR) << "Error creating snapshot storage "
-                                        << cacheDirectory.AsUTF8Unsafe();
-                          }
-                        }));
+
+  _taskRunner->PostTask(FROM_HERE,
+                        base::BindOnce(CreateCacheDirectory, _cacheDirectory));
 }
 
 @end
