@@ -153,8 +153,6 @@ static_library("protocol") {
     "secure_channel_factory.cc",
     "secure_channel_factory.h",
     "session.h",
-    "session_config.cc",
-    "session_config.h",
     "session_manager.h",
     "session_options_provider.h",
     "session_plugin.h",
@@ -220,6 +218,7 @@ static_library("protocol") {
   ]
 
   public_deps = [
+    ":session_config",
     "//remoting/proto",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -282,6 +281,15 @@ static_library("protocol") {
 
     deps += [ "//remoting/codec:encoder" ]
   }
+}
+
+static_library("session_config") {
+  sources = [
+    "session_config.cc",
+    "session_config.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 static_library("test_support") {

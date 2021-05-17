@@ -85,7 +85,6 @@ no_check_targets = [
   "//ppapi/proxy:*",  # 31 errors
   "//ppapi/thunk:*",  # 1071 errors
   "//ppapi:*",  # 3 errors
-  "//remoting/codec:*",  # 32 errors
   "//remoting/host/file_transfer:*",  # 43 errors
   "//remoting/host/installer/mac:*",  # 1 error
   "//remoting/host/it2me:*",  # 18 errors
