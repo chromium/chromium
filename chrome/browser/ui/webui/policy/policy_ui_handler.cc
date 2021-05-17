@@ -610,6 +610,10 @@ PolicyUIHandler::~PolicyUIHandler() {
   extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
       ->RemoveObserver(this);
 #endif
+
+  if (export_policies_select_file_dialog_) {
+    export_policies_select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
