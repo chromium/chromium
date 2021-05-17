@@ -73,18 +73,20 @@ class SessionDataServiceTest : public BrowserWithTestWindowTest {
         std::make_unique<SessionDataService>(profile(), std::move(deleter));
   }
 
+  StrictMock<TestSessionDataDeleter>* deleter() {
+    return session_data_deleter_;
+  }
   SessionDataService* service() { return session_data_service_.get(); }
-  TestSessionDataDeleter* deleter() { return session_data_deleter_; }
 
  private:
-  TestSessionDataDeleter* session_data_deleter_;
+  StrictMock<TestSessionDataDeleter>* session_data_deleter_;
   std::unique_ptr<SessionDataService> session_data_service_;
 };
 
 TEST_F(SessionDataServiceTest, StartCleanup) {
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
@@ -98,13 +100,13 @@ TEST_F(SessionDataServiceTest, CleanupOnWindowClosed) {
 
   new_browser.reset();
   EXPECT_EQ(1U, browser_list->size());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
-  if (!browser_defaults::kBrowserAliveWithNoWindows)
-    EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
+  bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
+  EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
   set_browser(nullptr);
   EXPECT_EQ(0U, browser_list->size());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, CleanupOnWindowClosedWithOtherProfileOpen) {
@@ -117,46 +119,47 @@ TEST_F(SessionDataServiceTest, CleanupOnWindowClosedWithOtherProfileOpen) {
       CreateBrowser(new_profile, Browser::TYPE_NORMAL, false, new_window.get());
   EXPECT_EQ(2U, browser_list->size());
 
-  if (!browser_defaults::kBrowserAliveWithNoWindows)
-    EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
+  bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
+  EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
   set_browser(nullptr);
   EXPECT_EQ(1U, browser_list->size());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, RepeatCleanupAfterNewWindowOpened) {
   // Close browser and expect cleanup.
-  EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
+  bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
+  EXPECT_CALL(*deleter(), DeleteSessionOnlyData(skip_session_cookies, _));
   set_browser(nullptr);
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // Additional requests for cleanup will be ignored.
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // Unless a new browser is opened.
   auto new_window = CreateBrowserWindow();
   auto new_browser =
       CreateBrowser(profile(), Browser::TYPE_NORMAL, false, new_window.get());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // And another cleanup is started.
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, SkipOnShutdown) {
   browser_shutdown::SetTryingToQuit(true);
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // No deletion during shutdown but the deletion will continue on startup.
   browser_shutdown::SetTryingToQuit(false);
   auto new_deleter = CreateDeleter();
   EXPECT_CALL(*new_deleter, DeleteSessionOnlyData(true, _));
   RestartService(std::move(new_deleter));
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, NoContinuedDeletionWithoutSettings) {
@@ -165,36 +168,36 @@ TEST_F(SessionDataServiceTest, NoContinuedDeletionWithoutSettings) {
       CONTENT_SETTING_ALLOW);
 
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // No deletion during shutdown and no deletion on startup without SESSION_ONLY
   // setting.
   browser_shutdown::SetTryingToQuit(false);
   RestartService(CreateDeleter());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletions) {
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // Deletion is not marked as finished, so it will continue on restart.
   auto new_deleter = CreateDeleter();
   EXPECT_CALL(*new_deleter, DeleteSessionOnlyData(true, _))
       .WillOnce(Invoke(&RunCallback));
   RestartService(std::move(new_deleter));
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // At shutdown, another deletion is started. This time it finishes.
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _))
       .WillOnce(Invoke(&RunCallback));
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // A finished deletion does not continue after restart.
   RestartService(CreateDeleter());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletionsFeatureDisabled) {
@@ -203,22 +206,22 @@ TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletionsFeatureDisabled) {
 
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _));
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // Deletion is not marked as finished, but it will not continue on startup
   // because the feature is disabled.
   auto new_deleter = CreateDeleter();
   RestartService(std::move(new_deleter));
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }
 
 TEST_F(SessionDataServiceTest, SkipOnForceSessionState) {
   // No deletion when state should be kept.
   service()->SetForceKeepSessionState();
   service()->StartCleanup();
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 
   // Also deletion on restart after state was kept.
   RestartService(CreateDeleter());
-  Mock::VerifyAndClearExpectations(service());
+  Mock::VerifyAndClearExpectations(deleter());
 }

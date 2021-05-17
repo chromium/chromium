@@ -43,7 +43,8 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Starts a deletion of session only cookies and storage unless the deletion
-  // is already running or the browser is already shutting down.
+  // is already running or the browser is already shutting down. Called at
+  // shutdown.
   void StartCleanup();
   // Instructs this class not to delete session state on shutdown.
   void SetForceKeepSessionState();
@@ -52,6 +53,12 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
+
+  // Starts a deletion of session only cookies and storage unless the deletion
+  // is already running or the browser is already shutting down.
+  // If |skip_session_cookies| is set to true, only cookies with session-only
+  // content setting are removed.
+  void StartCleanupInternal(bool skip_session_cookies);
 
   // Records the Status of the last session.
   void RecordHistogramForLastSession(Status last_status);

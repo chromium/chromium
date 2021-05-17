@@ -37,11 +37,6 @@
     </message>
   </if>
 
-  <!-- Cookie Settings Page -->
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DATA_POST_SESSION" desc="Label for the checkbox that allows the user to automatically delete their cookies and site data at the end of the browser session.">
-    Clear cookies and site data when you quit Chromium
-  </message>
-
   <!-- Autofill Page -->
   <message name="IDS_SETTINGS_GOOGLE_PAYMENTS_CACHED" desc="Label that will be used to show that a credit card comes from Google Pay and is saved locally. This should follow the casing of the 'Google Pay' and 'Chrome' brands. 'Copied to Chromium' is short for 'The credit card is copied to Chromium'. 'Google Pay' should not be translated as it is the product name.">
     Google Pay (copied to Chromium)

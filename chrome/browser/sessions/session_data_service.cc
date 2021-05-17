@@ -106,6 +106,12 @@ void SessionDataService::MaybeContinueDeletionFromLastSesssion(
                      base::Unretained(this), base::TimeTicks::Now()));
 }
 
+void SessionDataService::OnCleanupAtStartupFinished(
+    base::TimeTicks time_started) {
+  base::UmaHistogramMediumTimes("Session.SessionData.StartupCleanupTime",
+                                base::TimeTicks::Now() - time_started);
+}
+
 void SessionDataService::SetStatusPref(Status status) {
   profile_->GetPrefs()->SetInteger(kSessionDataStatusPref,
                                    static_cast<int>(status));
@@ -125,20 +131,25 @@ void SessionDataService::OnBrowserRemoved(Browser* browser) {
   if (browser->profile() != profile_)
     return;
 
-  // Clear session data if the last window for a profile has been closed and
-  // closing the last window would normally close Chrome.
-  if (browser_defaults::kBrowserAliveWithNoWindows)
-    return;
-
-  // Check for any open windows for the current profile that we aren't tracking.
+  // Check for any open windows for the current profile.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile_)
       return;
   }
-  StartCleanup();
+
+  // Session cookies should stay alive on platforms where the browser stays
+  // alive without windows.
+  bool skip_session_cookies = browser_defaults::kBrowserAliveWithNoWindows;
+
+  // Clear session data if the last window for a profile has been closed.
+  StartCleanupInternal(skip_session_cookies);
 }
 
 void SessionDataService::StartCleanup() {
+  StartCleanupInternal(false);
+}
+
+void SessionDataService::StartCleanupInternal(bool skip_session_cookies) {
   if (cleanup_started_)
     return;
 
@@ -156,15 +167,9 @@ void SessionDataService::StartCleanup() {
   // Using base::Unretained is safe as DeleteSessionOnlyData() uses a
   // ScopedProfileKeepAlive.
   deleter_->DeleteSessionOnlyData(
-      /*skip_session_cookies=*/false,
+      skip_session_cookies,
       base::BindOnce(&SessionDataService::OnCleanupAtSessionEndFinished,
                      base::Unretained(this), base::TimeTicks::Now()));
-}
-
-void SessionDataService::OnCleanupAtStartupFinished(
-    base::TimeTicks time_started) {
-  base::UmaHistogramMediumTimes("Session.SessionData.StartupCleanupTime",
-                                base::TimeTicks::Now() - time_started);
 }
 
 void SessionDataService::OnCleanupAtSessionEndFinished(

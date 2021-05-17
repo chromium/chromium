@@ -137,7 +137,7 @@ function getCategoryItemMap() {
       icon: 'settings:cookie',
       enabledLabel: 'siteSettingsCookiesAllowed',
       disabledLabel: 'siteSettingsBlocked',
-      otherLabel: 'deleteDataPostSession',
+      otherLabel: 'cookiePageClearOnExit',
     },
     {
       route: routes.SITE_SETTINGS_LOCATION,

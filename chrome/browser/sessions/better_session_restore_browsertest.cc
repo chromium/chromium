@@ -520,16 +520,10 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 
   EnableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  if (browser_defaults::kBrowserAliveWithNoWindows)
-    CheckReloadedPageRestored(new_browser);
-  else
     CheckReloadedPageNotRestored(new_browser);
 
   DisableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  if (browser_defaults::kBrowserAliveWithNoWindows)
-    CheckReloadedPageRestored(new_browser);
-  else
     CheckReloadedPageNotRestored(new_browser);
 }
 
@@ -875,15 +869,9 @@ IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, CookiesClearedOnBrowserClose) {
 
   EnableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  if (browser_defaults::kBrowserAliveWithNoWindows)
-    NavigateAndCheckStoredData(new_browser, "cookies.html");
-  else
     StoreDataWithPage(new_browser, "cookies.html");
   DisableBackgroundMode();
   new_browser = QuitBrowserAndRestore(new_browser, false);
-  if (browser_defaults::kBrowserAliveWithNoWindows)
-    NavigateAndCheckStoredData(new_browser, "cookies.html");
-  else
     StoreDataWithPage(new_browser, "cookies.html");
 }
 
