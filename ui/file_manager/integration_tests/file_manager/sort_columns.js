@@ -73,13 +73,10 @@ testcase.sortColumns = async () => {
 
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  const isFilesNgEnabled = await isFilesNg(appId);
-  const iconSortedAsc = isFilesNgEnabled ?
-      '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]' :
-      '.table-header-sort-image-asc';
-  const iconSortedDesc = isFilesNgEnabled ?
-      '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]' :
-      '.table-header-sort-image-desc';
+  const iconSortedAsc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]';
+  const iconSortedDesc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]';
 
   let a11yMessages;
 

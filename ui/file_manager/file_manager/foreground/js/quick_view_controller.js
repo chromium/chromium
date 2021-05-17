@@ -158,9 +158,7 @@
     this.quickView_ = quickView;
     this.quickView_.isModal = DialogType.isModal(this.dialogType_);
 
-    if (util.isFilesNg()) {
-      this.quickView_.setAttribute('files-ng', '');
-    }
+    this.quickView_.setAttribute('files-ng', '');
 
     this.metadataBoxController_.init(quickView);
 

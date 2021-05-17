@@ -80,9 +80,8 @@ class TextSearchState {
      * @type {!HTMLElement}
      * @const
      */
-    this.spinner = util.isFilesNg() ?
-        queryRequiredElement('files-spinner.loading-indicator', element) :
-        queryRequiredElement('paper-progress.loading-indicator', element);
+    this.spinner =
+        queryRequiredElement('files-spinner.loading-indicator', element);
 
     /**
      * @type {FileListModel}

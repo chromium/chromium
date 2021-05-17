@@ -15,9 +15,7 @@
   constructor(parentElement) {
     super(parentElement);
 
-    if (util.isFilesNg()) {
-      this.container.classList.add('files-ng');
-    }
+    this.container.classList.add('files-ng');
 
     /**
      * @type {?function()} showModalElement Optional call to show the

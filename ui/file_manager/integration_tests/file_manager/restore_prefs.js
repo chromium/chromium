@@ -24,9 +24,8 @@ testcase.restoreSortColumn = async () => {
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(1)']);
 
   // Check the sorted style of the header.
-  const iconSortedAsc = (await isFilesNg(appId)) ?
-      '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]' :
-      '.table-header-sort-image-asc';
+  const iconSortedAsc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]';
   await remoteCall.waitForElement(appId, iconSortedAsc);
 
   // Sort by size (in descending order).
@@ -34,9 +33,8 @@ testcase.restoreSortColumn = async () => {
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(2)']);
 
   // Check the sorted style of the header.
-  const iconSortedDesc = (await isFilesNg(appId)) ?
-      '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]' :
-      '.table-header-sort-image-desc';
+  const iconSortedDesc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]';
   await remoteCall.waitForElement(appId, iconSortedDesc);
 
   // Check the sorted files.

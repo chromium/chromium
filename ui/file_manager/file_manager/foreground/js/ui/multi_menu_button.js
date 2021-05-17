@@ -405,10 +405,7 @@ cr.define('cr.ui', () => {
     positionMenu_() {
       const style = this.menu.style;
 
-      if (util.isFilesNg()) {
-        style.marginTop = '8px';  // crbug.com/1066727
-      }
-
+      style.marginTop = '8px';  // crbug.com/1066727
       // Clear any maxHeight we've set from previous calls into here.
       style.maxHeight = 'none';
       const invertLeftRight = false;

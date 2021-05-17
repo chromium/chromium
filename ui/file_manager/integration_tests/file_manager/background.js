@@ -642,16 +642,6 @@ async function mountCrostini(appId, initialEntries = BASIC_CROSTINI_ENTRY_SET) {
 }
 
 /**
- * Returns true if the Files app is running with the flag FilesNg.
- * @param {string} appId Files app windowId.
- */
-async function isFilesNg(appId) {
-  const body = await remoteCall.waitForElement(appId, 'body');
-  const cssClass = body.attributes['class'] || '';
-  return cssClass.includes('files-ng');
-}
-
-/**
  * Returns true if the SinglePartitionFormat flag is on.
  * @param {string} appId Files app windowId.
  */

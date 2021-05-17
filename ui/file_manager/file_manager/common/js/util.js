@@ -1465,14 +1465,6 @@ util.timeoutPromise = (promise, ms, opt_message) => {
 };
 
 /**
- * Returns true when FilesNG is enabled.
- * @return {boolean}
- */
-util.isFilesNg = () => {
-  return true;
-};
-
-/**
  * Returns true when copy image to clipboard is enabled.
  * @return {boolean}
  */

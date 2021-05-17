@@ -66,14 +66,6 @@ const bodyContent = `
 const windowEdgePadding = 6;
 
 export function setUp() {
-  /** @const {boolean} Assume files-ng in unittest. */
-  const enableFilesNg = true;
-
-  /** @return {boolean} */
-  window.isFilesNg = () => {
-    return enableFilesNg;
-  };
-
   document.body.innerHTML = bodyContent;
   chocolateButton = document.querySelector('#chocolate');
   cherriesButton = document.querySelector('#cherries');
@@ -83,7 +75,6 @@ export function setUp() {
   tooltip = document.querySelector('files-tooltip');
   assertNotEquals('none', window.getComputedStyle(tooltip).display);
   assertEquals('0', window.getComputedStyle(tooltip).opacity);
-  assertEquals(enableFilesNg, tooltip.hasAttribute('files-ng'));
 
   tooltip.addTargets([chocolateButton, cherriesButton, cheeseButton]);
 }
@@ -107,14 +98,8 @@ export function testFocus(callback) {
             const label = tooltip.shadowRoot.querySelector('#label');
             assertEquals('Chocolate!', label.textContent.trim());
             assertTrue(tooltip.hasAttribute('visible'));
-
             assertEquals('6px', tooltip.style.left);
-
-            if (window.isFilesNg()) {
-              assertEquals('78px', tooltip.style.top);
-            } else {
-              assertEquals('70px', tooltip.style.top);
-            }
+            assertEquals('78px', tooltip.style.top);
 
             cherriesButton.focus();
             return waitForMutation(tooltip);
@@ -127,12 +112,7 @@ export function testFocus(callback) {
             const expectedLeft = document.body.offsetWidth -
                 tooltip.offsetWidth - windowEdgePadding + 'px';
             assertEquals(expectedLeft, tooltip.style.left);
-
-            if (window.isFilesNg()) {
-              assertEquals('78px', tooltip.style.top);
-            } else {
-              assertEquals('70px', tooltip.style.top);
-            }
+            assertEquals('78px', tooltip.style.top);
 
             otherButton.focus();
             return waitForMutation(tooltip);
@@ -155,11 +135,7 @@ export function testHover(callback) {
             assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
             assertEquals('6px', tooltip.style.left);
-            if (window.isFilesNg()) {
-              assertEquals('78px', tooltip.style.top);
-            } else {
-              assertEquals('70px', tooltip.style.top);
-            }
+            assertEquals('78px', tooltip.style.top);
 
             chocolateButton.dispatchEvent(new MouseEvent('mouseout'));
             cherriesButton.dispatchEvent(new MouseEvent('mouseover'));
@@ -173,12 +149,7 @@ export function testHover(callback) {
             const expectedLeft = document.body.offsetWidth -
                 tooltip.offsetWidth - windowEdgePadding + 'px';
             assertEquals(expectedLeft, tooltip.style.left);
-
-            if (window.isFilesNg()) {
-              assertEquals('78px', tooltip.style.top);
-            } else {
-              assertEquals('70px', tooltip.style.top);
-            }
+            assertEquals('78px', tooltip.style.top);
 
             cherriesButton.dispatchEvent(new MouseEvent('mouseout'));
             return waitForMutation(tooltip);

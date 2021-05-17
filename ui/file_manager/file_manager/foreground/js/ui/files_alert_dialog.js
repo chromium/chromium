@@ -15,9 +15,7 @@
   constructor(parentNode) {
     super(parentNode);
 
-    if (util.isFilesNg()) {
-      this.container.classList.add('files-ng');
-    }
+    this.container.classList.add('files-ng');
   }
 
   /**

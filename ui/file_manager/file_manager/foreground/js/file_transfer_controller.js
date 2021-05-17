@@ -842,17 +842,9 @@ let FileAsyncData;
 
     const thumbnail = {element: null, x: 0, y: 0};
 
-    if (util.isFilesNg()) {
-      thumbnail.element = this.renderThumbnailFilesNg_();
-      if (this.document_.querySelector(':root[dir=rtl]')) {
-        thumbnail.x = thumbnail.element.clientWidth * window.devicePixelRatio;
-      }
-    } else {
-      thumbnail.element = this.renderThumbnail_();
-      // Move drag image above the start point for touch initiated drags.
-      if (this.touching_) {
-        thumbnail.y = thumbnail.element.getBoundingClientRect().height;
-      }
+    thumbnail.element = this.renderThumbnailFilesNg_();
+    if (this.document_.querySelector(':root[dir=rtl]')) {
+      thumbnail.x = thumbnail.element.clientWidth * window.devicePixelRatio;
     }
 
     dataTransfer.setDragImage(thumbnail.element, thumbnail.x, thumbnail.y);
@@ -897,26 +889,6 @@ let FileAsyncData;
         this.selectDropEffect_(event, this.getDragAndDropGlobalData_(), entry);
     event.dataTransfer.dropEffect = effectAndLabel.getDropEffect();
     event.preventDefault();
-
-    if (util.isFilesNg()) {
-      return;
-    }
-
-    // TODO(files-ng): the #drop-label is not used in files-ng, remove this
-    // code and update the effectAndLabel class to remove its label code.
-    if (!this.dropLabel_) {
-      this.dropLabel_ = document.querySelector('div#drop-label');
-    }
-    const label = effectAndLabel.getLabel();
-    if (label) {
-      this.dropLabel_.innerText = label;
-      this.dropLabel_.style.left = event.pageX + 'px';
-      this.dropLabel_.style.top =
-          (event.pageY + FileTransferController.DRAG_LABEL_Y_OFFSET_) + 'px';
-      this.dropLabel_.style.display = 'block';
-    } else {
-      this.dropLabel_.style.display = 'none';
-    }
   }
 
   /**

@@ -51,7 +51,7 @@ const FILE_MANAGER_WINDOW_CREATE_OPTIONS = {
     width: Math.min(Math.round(window.screen.availWidth * 0.8), 1000),
     height: Math.min(Math.round(window.screen.availHeight * 0.8), 600)
   },
-  frame: {color: '#254fae'},
+  frame: {color: '#ffffff'},
   minWidth: 480,
   minHeight: 300
 };
@@ -167,11 +167,6 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
   const id = opt_id || nextFileManagerWindowID;
   nextFileManagerWindowID = Math.max(nextFileManagerWindowID, id + 1);
   const appId = FILES_ID_PREFIX + id;
-
-  // Make the files-ng frame color white.
-  if (util.isFilesNg()) {
-    FILE_MANAGER_WINDOW_CREATE_OPTIONS.frame.color = '#ffffff';
-  }
 
   const htmlFile = 'main_modules.html';
   const appWindow =

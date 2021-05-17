@@ -264,26 +264,17 @@
     this.emptyTrashButton_.addEventListener(
         'click', this.onEmptyTrashButtonClicked_.bind(this));
 
-    if (util.isFilesNg()) {
-      this.togglePinnedCommand_.addEventListener(
-          'checkedChange', this.updatePinnedToggle_.bind(this));
+    this.togglePinnedCommand_.addEventListener(
+        'checkedChange', this.updatePinnedToggle_.bind(this));
 
-      this.togglePinnedCommand_.addEventListener(
-          'disabledChange', this.updatePinnedToggle_.bind(this));
+    this.togglePinnedCommand_.addEventListener(
+        'disabledChange', this.updatePinnedToggle_.bind(this));
 
-      this.togglePinnedCommand_.addEventListener(
-          'hiddenChange', this.updatePinnedToggle_.bind(this));
+    this.togglePinnedCommand_.addEventListener(
+        'hiddenChange', this.updatePinnedToggle_.bind(this));
 
-      this.pinnedToggle_.addEventListener(
-          'change', this.onPinnedToggleChanged_.bind(this));
-    }
-
-    // The old layout needed the cancel selection button to resize every
-    // time the splitter was moved. Not needed for files-ng.
-    if (!util.isFilesNg()) {
-      this.navigationList_.addEventListener(
-          'relayout', this.onNavigationListRelayout_.bind(this));
-    }
+    this.pinnedToggle_.addEventListener(
+        'change', this.onPinnedToggleChanged_.bind(this));
 
     this.directoryModel_.addEventListener(
         'directory-changed', this.updateCurrentDirectoryButtons_.bind(this));
@@ -386,10 +377,7 @@
         this.directoryModel_.getCurrentRootType() !==
         VolumeManagerCommon.RootType.TRASH;
 
-    if (util.isFilesNg()) {
-      this.togglePinnedCommand_.canExecuteChange(
-          this.listContainer_.currentList);
-    }
+    this.togglePinnedCommand_.canExecuteChange(this.listContainer_.currentList);
 
     // Set .selecting class to containing element to change the view
     // accordingly.
@@ -456,20 +444,6 @@
   onEmptyTrashButtonClicked_() {
     this.emptyTrashCommand_.canExecuteChange(this.listContainer_.currentList);
     this.emptyTrashCommand_.execute(this.listContainer_.currentList);
-  }
-
-  /**
-   * Handles the relayout event occurred on the navigation list.
-   * @private
-   */
-  onNavigationListRelayout_() {
-    // Not needed for files-ng, see comment above where this function is used.
-    if (!util.isFilesNg()) {
-      // Make the width of spacer same as the width of navigation list.
-      const navWidth =
-          parseFloat(window.getComputedStyle(this.navigationList_).width);
-      this.cancelSelectionButtonWrapper_.style.width = navWidth + 'px';
-    }
   }
 
   /**

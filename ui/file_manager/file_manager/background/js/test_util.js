@@ -479,17 +479,11 @@ test.util.sync.getBreadcrumbPath = contentWindow => {
 
   let path = '';
 
-  if (util.isFilesNg()) {
-    const crumbs = breadcrumb.querySelector('bread-crumb');
-    if (crumbs) {
-      path = '/' + crumbs.path;
-    }
-  } else {
-    const paths = breadcrumb.querySelectorAll('.breadcrumb-path');
-    for (let i = 0; i < paths.length; i++) {
-      path += '/' + paths[i].textContent;
-    }
+  const crumbs = breadcrumb.querySelector('bread-crumb');
+  if (crumbs) {
+    path = '/' + crumbs.path;
   }
+
   return path;
 };
 

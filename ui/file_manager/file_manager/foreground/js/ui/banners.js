@@ -442,43 +442,28 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
     const wrapper = util.createChild(container, 'drive-welcome-wrapper');
     util.createChild(wrapper, 'drive-welcome-icon');
 
-    let close, links;
-    if (util.isFilesNg()) {
-      const message = util.createChild(wrapper, 'drive-welcome-message');
-      util.setClampLine(message, '2');
+    const message = util.createChild(wrapper, 'drive-welcome-message');
+    util.setClampLine(message, '2');
 
-      const title = util.createChild(message, 'drive-welcome-title headline2');
-      title.textContent = str('DRIVE_WELCOME_TITLE');
+    const title = util.createChild(message, 'drive-welcome-title headline2');
+    title.textContent = str('DRIVE_WELCOME_TITLE');
 
-      const body = util.createChild(message, 'body2-primary');
+    const body = util.createChild(message, 'body2-primary');
 
-      const text = util.createChild(body, 'drive-welcome-text');
-      text.innerHTML = str(messageId);
+    const text = util.createChild(body, 'drive-welcome-text');
+    text.innerHTML = str(messageId);
 
-      links = util.createChild(body, 'drive-welcome-links');
+    const links = util.createChild(body, 'drive-welcome-links');
 
-      // Hide link if it's trimmed by line-clamp so it does not get focus
-      // and break ellipsis render.
-      this.hideOverflowedElement(links, body);
+    // Hide link if it's trimmed by line-clamp so it does not get focus
+    // and break ellipsis render.
+    this.hideOverflowedElement(links, body);
 
-      const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
+    const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
 
-      close = util.createChild(
-          buttonGroup, 'banner-close text-button', 'cr-button');
-      close.innerHTML = str('DRIVE_WELCOME_DISMISS');
-    } else {
-      close = util.createChild(wrapper, 'banner-close', 'button');
-
-      const message = util.createChild(wrapper, 'drive-welcome-message');
-
-      const title = util.createChild(message, 'drive-welcome-title');
-      title.textContent = str('DRIVE_WELCOME_TITLE');
-
-      const text = util.createChild(message, 'drive-welcome-text');
-      text.innerHTML = str(messageId);
-
-      links = util.createChild(message, 'drive-welcome-links');
-    }
+    const close =
+        util.createChild(buttonGroup, 'banner-close text-button', 'cr-button');
+    close.innerHTML = str('DRIVE_WELCOME_DISMISS');
 
     close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
     close.id = 'welcome-dismiss';
@@ -532,84 +517,47 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
 
     box.textContent = '';
     if (show && opt_sizeStats) {
-      if (util.isFilesNg()) {
-        const icon = this.document_.createElement('div');
-        icon.className = 'drive-icon';
-        box.appendChild(icon);
+      const icon = this.document_.createElement('div');
+      icon.className = 'drive-icon';
+      box.appendChild(icon);
 
-        const text = this.document_.createElement('div');
-        text.className = 'body2-primary';
-        text.textContent = strf(
-            'DRIVE_SPACE_AVAILABLE_LONG',
-            util.bytesToString(opt_sizeStats.remainingSize));
-        util.setClampLine(text, '2');
-        box.appendChild(text);
+      const text = this.document_.createElement('div');
+      text.className = 'body2-primary';
+      text.textContent = strf(
+          'DRIVE_SPACE_AVAILABLE_LONG',
+          util.bytesToString(opt_sizeStats.remainingSize));
+      util.setClampLine(text, '2');
+      box.appendChild(text);
 
-        const buttonGroup = this.document_.createElement('div');
-        buttonGroup.className = 'button-group';
-        box.appendChild(buttonGroup);
+      const buttonGroup = this.document_.createElement('div');
+      buttonGroup.className = 'button-group';
+      box.appendChild(buttonGroup);
 
-        const close = this.document_.createElement('cr-button');
-        close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
-        close.id = 'drive-space-warning-dismiss';
-        close.innerHTML = str('DRIVE_WELCOME_DISMISS');
-        close.className = 'banner-close text-button';
-        buttonGroup.appendChild(close);
+      const close = this.document_.createElement('cr-button');
+      close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
+      close.id = 'drive-space-warning-dismiss';
+      close.innerHTML = str('DRIVE_WELCOME_DISMISS');
+      close.className = 'banner-close text-button';
+      buttonGroup.appendChild(close);
 
-        const link = this.document_.createElement('a');
-        link.href = str('GOOGLE_DRIVE_BUY_STORAGE_URL');
-        link.rel = 'opener';
-        link.target = '_blank';
-        const buyMore = this.document_.createElement('cr-button');
-        buyMore.className = 'banner-button text-button';
-        buyMore.textContent = str('DRIVE_BUY_MORE_SPACE_LINK');
-        link.appendChild(buyMore);
-        buttonGroup.appendChild(link);
+      const link = this.document_.createElement('a');
+      link.href = str('GOOGLE_DRIVE_BUY_STORAGE_URL');
+      link.rel = 'opener';
+      link.target = '_blank';
+      const buyMore = this.document_.createElement('cr-button');
+      buyMore.className = 'banner-button text-button';
+      buyMore.textContent = str('DRIVE_BUY_MORE_SPACE_LINK');
+      link.appendChild(buyMore);
+      buttonGroup.appendChild(link);
 
-        const totalSize = opt_sizeStats.totalSize;
-        close.addEventListener('click', () => {
-          const values = {};
-          values[DRIVE_WARNING_DISMISSED_KEY] = totalSize;
-          xfm.storage.local.set(values);
-          box.hidden = true;
-          this.requestRelayout_(100);
-        });
-      } else {
-        const icon = this.document_.createElement('div');
-        icon.className = 'drive-icon';
-        box.appendChild(icon);
-
-        const text = this.document_.createElement('div');
-        text.className = 'drive-text';
-        text.textContent = strf(
-            'DRIVE_SPACE_AVAILABLE_LONG',
-            util.bytesToString(opt_sizeStats.remainingSize));
-        box.appendChild(text);
-
-        const link = this.document_.createElement('a');
-        link.href = str('GOOGLE_DRIVE_BUY_STORAGE_URL');
-        link.rel = 'opener';
-        link.target = '_blank';
-        const button = this.document_.createElement('button');
-        button.className = 'imitate-paper-button';
-        button.textContent = str('DRIVE_BUY_MORE_SPACE_LINK');
-        link.appendChild(button);
-        box.appendChild(link);
-
-        const close = this.document_.createElement('button');
-        close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
-        close.id = 'drive-space-warning-dismiss';
-        close.className = 'banner-close';
-        box.appendChild(close);
-        const totalSize = opt_sizeStats.totalSize;
-        close.addEventListener('click', () => {
-          const values = {};
-          values[DRIVE_WARNING_DISMISSED_KEY] = totalSize;
-          xfm.storage.local.set(values);
-          box.hidden = true;
-          this.requestRelayout_(100);
-        });
-      }
+      const totalSize = opt_sizeStats.totalSize;
+      close.addEventListener('click', () => {
+        const values = {};
+        values[DRIVE_WARNING_DISMISSED_KEY] = totalSize;
+        xfm.storage.local.set(values);
+        box.hidden = true;
+        this.requestRelayout_(100);
+      });
     }
 
     if (box.hidden != !show) {
@@ -666,7 +614,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
         this.maybeShowWelcomeBanner_();
       }
 
-      if (util.isFilesNg() && util.isDriveDssPinEnabled() &&
+      if (util.isDriveDssPinEnabled() &&
           (this.offlineInfoBannerCounter_ < OFFLINE_INFO_BANNER_COUNTER_LIMIT ||
            this.hasShownOfflineInfoBanner_)) {
         this.offlineInfoBanner_.hidden = false;
@@ -735,38 +683,13 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    */
   maybeShowWelcomeBanner_() {
     this.ready_.then(() => {
-      if (util.isFilesNg()) {
-        // We do not want to increment the counter when the user navigates
-        // between different directories on Drive, but we increment the counter
-        // once anyway to prevent the full page banner from showing.
-        if (!this.previousDirWasOnDrive_ || this.welcomeHeaderCounter_ == 0) {
-          this.setWelcomeHeaderCounter_(this.welcomeHeaderCounter_ + 1);
-          this.prepareAndShowWelcomeBanner_(
-              'header', 'DRIVE_WELCOME_TEXT_SHORT_FILESNG');
-        }
-      } else if (
-          this.directoryModel_.getFileList().length == 0 &&
-          this.welcomeHeaderCounter_ == 0) {
-        // Only show the full page banner if the header banner was never shown.
-        // Do not increment the counter.
-        // The timeout below is required because sometimes another
-        // 'rescan-completed' event arrives shortly with non-empty file list.
-        setTimeout(() => {
-          if (this.isOnCurrentProfileDrive() &&
-              this.welcomeHeaderCounter_ == 0) {
-            this.prepareAndShowWelcomeBanner_(
-                'page', 'DRIVE_WELCOME_TEXT_LONG');
-          }
-        }, 2000);
-      } else {
-        // We do not want to increment the counter when the user navigates
-        // between different directories on Drive, but we increment the counter
-        // once anyway to prevent the full page banner from showing.
-        if (!this.previousDirWasOnDrive_ || this.welcomeHeaderCounter_ == 0) {
-          this.setWelcomeHeaderCounter_(this.welcomeHeaderCounter_ + 1);
-          this.prepareAndShowWelcomeBanner_(
-              'header', 'DRIVE_WELCOME_TEXT_SHORT');
-        }
+      // We do not want to increment the counter when the user navigates
+      // between different directories on Drive, but we increment the counter
+      // once anyway to prevent the full page banner from showing.
+      if (!this.previousDirWasOnDrive_ || this.welcomeHeaderCounter_ == 0) {
+        this.setWelcomeHeaderCounter_(this.welcomeHeaderCounter_ + 1);
+        this.prepareAndShowWelcomeBanner_(
+            'header', 'DRIVE_WELCOME_TEXT_SHORT_FILESNG');
       }
       this.previousDirWasOnDrive_ = true;
     });
@@ -1139,26 +1062,22 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
       icon.className = 'warning-icon';
       const message = this.document_.createElement('div');
       message.className = 'warning-message';
-      if (util.isFilesNg()) {
-        message.className += ' body2-primary';
-        message.innerHTML =
-            util.htmlUnescape(str('DOWNLOADS_DIRECTORY_WARNING_FILESNG'));
-        util.setClampLine(message, '2');
+      message.className += ' body2-primary';
+      message.innerHTML =
+          util.htmlUnescape(str('DOWNLOADS_DIRECTORY_WARNING_FILESNG'));
+      util.setClampLine(message, '2');
 
-        // Wrap a div around link.
-        const link = message.querySelector('a');
-        const linkWrapper = this.document_.createElement('div');
-        linkWrapper.className = 'link-wrapper';
-        message.appendChild(linkWrapper);
-        linkWrapper.appendChild(link);
+      // Wrap a div around link.
+      const link = message.querySelector('a');
+      const linkWrapper = this.document_.createElement('div');
+      linkWrapper.className = 'link-wrapper';
+      message.appendChild(linkWrapper);
+      linkWrapper.appendChild(link);
 
-        // Hide the link if it's trimmed by line-clamp so it does not get focus
-        // and break ellipsis render.
-        this.hideOverflowedElement(linkWrapper, message);
-      } else {
-        message.innerHTML =
-            util.htmlUnescape(str('DOWNLOADS_DIRECTORY_WARNING'));
-      }
+      // Hide the link if it's trimmed by line-clamp so it does not get focus
+      // and break ellipsis render.
+      this.hideOverflowedElement(linkWrapper, message);
+
       box.appendChild(icon);
       box.appendChild(message);
       box.querySelector('a').addEventListener('click', e => {
@@ -1170,15 +1089,13 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
       buttonGroup.className = 'button-group';
       box.appendChild(buttonGroup);
 
-      const closeType = util.isFilesNg() ? 'cr-button' : 'button';
+      const closeType = 'cr-button';
       const close = this.document_.createElement(closeType);
       close.className = 'banner-close';
       close.setAttribute('aria-label', str('DRIVE_WELCOME_DISMISS'));
       close.id = 'downloads-space-warning-dismiss';
-      if (util.isFilesNg()) {
-        close.innerHTML = str('DRIVE_WELCOME_DISMISS');
-        close.className = 'banner-close text-button';
-      }
+      close.innerHTML = str('DRIVE_WELCOME_DISMISS');
+      close.className = 'banner-close text-button';
       buttonGroup.appendChild(close);
       close.addEventListener('click', () => {
         const values = {};

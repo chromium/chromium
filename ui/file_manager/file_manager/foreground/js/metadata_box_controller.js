@@ -104,9 +104,7 @@
     this.metadataBox_ = this.quickView_.getFilesMetadataBox();
     this.metadataBox_.clear(false);
 
-    if (util.isFilesNg()) {
-      this.metadataBox_.setAttribute('files-ng', '');
-    }
+    this.metadataBox_.setAttribute('files-ng', '');
   }
 
   /**

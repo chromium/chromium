@@ -287,32 +287,23 @@
     isSorted = true;
     // Here we have to flip, because clicking will perform the opposite sorting.
     sortOrder = dm.sortStatus.direction === 'desc' ? 'asc' : 'desc';
-
-    if (!util.isFilesNg()) {
-      textElement.classList.toggle(
-          'table-header-sort-image-desc', dm.sortStatus.direction === 'desc');
-      textElement.classList.toggle(
-          'table-header-sort-image-asc', dm.sortStatus.direction !== 'desc');
-    }
   }
 
   textElement.setAttribute('aria-describedby', 'sort-column-' + sortOrder);
   textElement.setAttribute('role', 'button');
   container.appendChild(textElement);
 
-  if (util.isFilesNg()) {
-    const icon = document.createElement('cr-icon-button');
-    const iconName = sortOrder === 'desc' ? 'up' : 'down';
-    icon.setAttribute('iron-icon', `files16:arrow_${iconName}_small`);
-    icon.setAttribute('tabindex', '-1');
-    icon.setAttribute('aria-hidden', 'true');
-    icon.classList.add('sort-icon', 'no-overlap');
+  const icon = document.createElement('cr-icon-button');
+  const iconName = sortOrder === 'desc' ? 'up' : 'down';
+  icon.setAttribute('iron-icon', `files16:arrow_${iconName}_small`);
+  icon.setAttribute('tabindex', '-1');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.classList.add('sort-icon', 'no-overlap');
 
-    container.classList.toggle('not-sorted', !isSorted);
-    container.classList.toggle('sorted', isSorted);
+  container.classList.toggle('not-sorted', !isSorted);
+  container.classList.toggle('sorted', isSorted);
 
-    container.appendChild(icon);
-  }
+  container.appendChild(icon);
 
   return container;
 }
