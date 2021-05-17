@@ -321,7 +321,11 @@ public class MultiInstanceManager
             Tab currentTab = tabModelSelector.getCurrentTab();
             if (currentTab != null) moveTabToOtherWindow(currentTab);
             return true;
+        } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
+            openNewWindow();
+            return true;
         }
+
         return false;
     }
 
@@ -422,6 +426,20 @@ public class MultiInstanceManager
         onMultiInstanceModeStarted();
         ReparentingTask.from(tab).begin(mActivity, intent,
                 mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+    }
+
+    private void openNewWindow() {
+        assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
+
+        Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
+        if (intent == null) return;
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+
+        onMultiInstanceModeStarted();
+        mActivity.startActivity(intent);
     }
 
     /**

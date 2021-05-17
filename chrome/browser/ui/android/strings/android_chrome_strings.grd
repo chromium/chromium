@@ -2995,6 +2995,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_INLINE_UPDATE_READY_SUMMARY" desc="Summary text that is shown when Chrome has downloaded an update for itself and is ready to be restarted, which will apply the update.  This lets the user know the update will restart. [CHAR_LIMIT=24]">
         Restart Chrome
       </message>
+      <message name="IDS_MENU_NEW_WINDOW" desc="Menu item for opening a new window. [CHAR_LIMIT=27]">
+        New window
+      </message>
       <message name="IDS_MENU_MOVE_TO_OTHER_WINDOW" desc="Menu item for moving the current tab into the other window. [CHAR_LIMIT=27]">
         Move to other window
       </message>

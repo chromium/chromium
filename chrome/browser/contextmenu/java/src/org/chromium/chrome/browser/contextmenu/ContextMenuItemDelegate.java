@@ -59,6 +59,11 @@ public interface ContextMenuItemDelegate {
     boolean isOpenInOtherWindowSupported();
 
     /**
+     * @return Whether Chrome can get itself into multi-window mode.
+     */
+    boolean canEnterMultiWindowMode();
+
+    /**
      * Called when the context menu is trying to start a download.
      * @param url Url of the download item.
      * @param isLink Whether or not the download is a link (as opposed to an image/video).

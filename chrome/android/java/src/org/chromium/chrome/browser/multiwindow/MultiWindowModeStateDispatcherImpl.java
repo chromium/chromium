@@ -57,8 +57,18 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     }
 
     @Override
+    public boolean isMultiInstanceRunning() {
+        return MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(mActivity);
+    }
+
+    @Override
     public boolean isOpenInOtherWindowSupported() {
         return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity);
+    }
+
+    @Override
+    public boolean canEnterMultiWindowMode() {
+        return MultiWindowUtils.getInstance().canEnterMultiWindowMode(mActivity);
     }
 
     @Override

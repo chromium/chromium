@@ -3120,6 +3120,11 @@ const char kMessagesForAndroidUpdatePasswordName[] =
 const char kMessagesForAndroidUpdatePasswordDescription[] =
     "When enabled, update password prompt will use the new Messages UI.";
 
+const char kNewWindowAppMenuName[] = "Show a menu item 'New Window'";
+const char kNewWindowAppMenuDescription[] =
+    "Show a new menu item 'New Window' on tablet-sized screen when Chrome "
+    "can open a new window and create a new instance in it.";
+
 const char kOfflineIndicatorChoiceName[] = "Offline indicator choices";
 const char kOfflineIndicatorChoiceDescription[] =
     "Show an offline indicator while offline.";

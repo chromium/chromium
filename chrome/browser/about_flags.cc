@@ -5226,6 +5226,12 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::assistant::features::kAssistantBetterOnboarding)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+    {"new-window-app-menu", flag_descriptions::kNewWindowAppMenuName,
+     flag_descriptions::kNewWindowAppMenuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNewWindowAppMenu)},
+#endif  // defined(OS_ANDROID)
+
     {"restrict-gamepad-access", flag_descriptions::kRestrictGamepadAccessName,
      flag_descriptions::kRestrictGamepadAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRestrictGamepadAccess)},

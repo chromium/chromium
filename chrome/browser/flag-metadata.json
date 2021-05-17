@@ -3718,6 +3718,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "new-window-app-menu",
+    "owners": [ "jinsukkim" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
     "expiry_milestone": 94

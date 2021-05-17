@@ -112,6 +112,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
+    public boolean canEnterMultiWindowMode() {
+        return MultiWindowUtils.getInstance().canEnterMultiWindowMode(TabUtils.getActivity(mTab));
+    }
+
+    @Override
     public boolean startDownload(GURL url, boolean isLink) {
         return !isLink
                 || !ChromeDownloadDelegate.from(mTab).shouldInterceptContextMenuDownload(url);

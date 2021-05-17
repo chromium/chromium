@@ -208,6 +208,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
+    &kNewWindowAppMenu,
     &kNotificationSuspender,
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
@@ -574,6 +575,9 @@ const base::Feature kSearchEnginePromoExistingDevice{
 
 const base::Feature kSearchEnginePromoNewDevice{
     "SearchEnginePromo.NewDevice", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(knollr): This is a temporary kill switch, it can be removed once we feel
 // okay about leaving it on.

@@ -51,11 +51,22 @@ public interface MultiWindowModeStateDispatcher {
     boolean isInMultiDisplayMode();
 
     /**
+     * @return Whether more than one instance of Chrome activity is running.
+     */
+    boolean isMultiInstanceRunning();
+
+    /**
      * See {@link MultiWindowUtils#isOpenInOtherWindowSupported(Activity)}.
      * @return Whether open in other window is supported for the activity associated with this
      *         state dispatcher.
      */
     boolean isOpenInOtherWindowSupported();
+
+    /**
+     * See {@link MultiWindowUtils#canEnterMultiWindowMode(Activity)}.
+     * @return Whether Chrome can get itself into multi-window mode.
+     */
+    boolean canEnterMultiWindowMode();
 
     /**
      * Returns the activity to use when handling "open in other window" or "move to other window".

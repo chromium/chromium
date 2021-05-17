@@ -85,6 +85,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.INSTANT_START,
                 ChromeFeatureList.INTEREST_FEED_V2,
                 ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
+                ChromeFeatureList.NEW_WINDOW_APP_MENU,
                 ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK,
                 ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS,
                 ChromeFeatureList.PAINT_PREVIEW_DEMO,

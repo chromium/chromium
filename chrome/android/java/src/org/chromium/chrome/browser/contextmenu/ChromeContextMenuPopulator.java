@@ -358,7 +358,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
-                    if (mItemDelegate.isOpenInOtherWindowSupported()) {
+                    if (mItemDelegate.isOpenInOtherWindowSupported()
+                            || mItemDelegate.canEnterMultiWindowMode()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_OTHER_WINDOW));
                     }
                 }

@@ -44637,6 +44637,7 @@ from previous Chrome versions.
   <int value="-1956231275" label="ForceSpectreVariant2Mitigation:enabled"/>
   <int value="-1955923385" label="EnableGamepadButtonAxisEvents:enabled"/>
   <int value="-1954918413" label="AccountManagementFlowsV2:disabled"/>
+  <int value="-1954369543" label="NewWindowAppMenu:enabled"/>
   <int value="-1954246274"
       label="enable-experimental-accessibility-switch-access"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
@@ -49109,6 +49110,7 @@ from previous Chrome versions.
   <int value="1899248188" label="MediaApp:disabled"/>
   <int value="1900529524" label="disable-touch-drag-drop"/>
   <int value="1901640438" label="EnableLauncherSearchNormalization:disabled"/>
+  <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
   <int value="1906942630" label="enable-easy-unlock"/>
   <int value="1907273605" label="NtpZeroSuggest:disabled"/>

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -299,7 +300,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             UpdateMenuItemHelper.getInstance().registerObserver(mAppMenuInvalidator);
         }
 
-        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
+        boolean shouldShowMoveToOtherWindow = shouldShowMoveToOtherWindow();
+        menu.findItem(R.id.new_window_menu_id)
+                .setVisible(shouldShowNewWindow(shouldShowMoveToOtherWindow));
+        menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow);
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
@@ -472,7 +476,35 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected boolean shouldShowMoveToOtherWindow() {
         boolean hasMoreThanOneTab = mTabModelSelector.getTotalTabCount() > 1;
-        return mMultiWindowModeStateDispatcher.isOpenInOtherWindowSupported() && hasMoreThanOneTab;
+        boolean showAlsoForSingleTab = !isPartnerHomepageEnabled();
+        return mMultiWindowModeStateDispatcher.isOpenInOtherWindowSupported()
+                && (showAlsoForSingleTab || hasMoreThanOneTab);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isTabletSizeScreen() {
+        return mIsTablet;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isPartnerHomepageEnabled() {
+        return PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isNewWindowMenuFeatureEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.NEW_WINDOW_APP_MENU);
+    }
+
+    /**
+     * @return Whether the "New window" menu item should be displayed.
+     */
+    protected boolean shouldShowNewWindow(boolean showMoveToOtherWindow) {
+        if (!isNewWindowMenuFeatureEnabled()) return false;
+        if (showMoveToOtherWindow || !isTabletSizeScreen()) return false;
+        return mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
+                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
+                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
     }
 
     /**
