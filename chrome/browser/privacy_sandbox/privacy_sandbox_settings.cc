@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/federated_learning/features/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -211,6 +212,15 @@ std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
     return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
 
   return base::NumberToString16(floc_id.ToUint64());
+}
+
+std::u16string PrivacySandboxSettings::GetFlocResetExplanationForDisplay()
+    const {
+  const int floc_compute_days =
+      federated_learning::kFlocIdScheduledUpdateInterval.Get().InDays();
+
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, floc_compute_days);
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(

@@ -82,6 +82,10 @@ class PrivacySandboxSettings : public KeyedService,
   // not valid, the appropriate descriptive string is returned instead.
   std::u16string GetFlocIdForDisplay() const;
 
+  // Returns the display ready string explanaing what happens when the user
+  // resets the FLoC cohort identifier.
+  std::u16string GetFlocResetExplanationForDisplay() const;
+
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
   // points |top_frame_origin| is the same as either the impression origin or

@@ -3,4 +3,10 @@
   <message name="IDS_PRIVACY_SANDBOX_FLOC_INVALID" desc="A message shown in place of the user's FLoC ID if the ID is invalid for any reason, such as not enough data to compute it">
     ID currently invalid
   </message>
+  <message name="IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION" desc="Description of what happens when a user chooses to reset their Federated Learning of Cohorts (FLoC) identifier">
+    {NUM_DAYS, plural,
+     =0 {When you reset ID, your current ID will become invalid and a new one will be issued in less than 1 day}
+     =1 {When you reset ID, your current ID will become invalid and a new one will be issued in 1 day}
+     other {When you reset ID, your current ID will become invalid and a new one will be issued in {NUM_DAYS} days}}
+  </message>
 </grit-part>

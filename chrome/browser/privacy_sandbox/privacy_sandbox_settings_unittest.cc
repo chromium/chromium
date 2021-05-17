@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/federated_learning/features/features.h"
 #include "components/federated_learning/floc_id.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -891,6 +892,29 @@ TEST_F(PrivacySandboxSettingsTest, GetFlocIdForDisplay) {
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID),
             privacy_sandbox_settings()->GetFlocIdForDisplay());
+}
+
+TEST_F(PrivacySandboxSettingsTest, GetFlocResetExplanationForDisplay) {
+  // Check that the string description indicating what happens when the user
+  // resets the FLoC ID updates appropriately based on the feature parameter.
+  std::map<std::string, std::u16string> param_to_expected_string = {
+      {"1h", l10n_util::GetPluralStringFUTF16(
+                 IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 0)},
+      {"24h", l10n_util::GetPluralStringFUTF16(
+                  IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 1)},
+      {"167h", l10n_util::GetPluralStringFUTF16(
+                   IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 6)},
+      {"168h", l10n_util::GetPluralStringFUTF16(
+                   IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7)}};
+
+  for (const auto& param_expected : param_to_expected_string) {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        federated_learning::kFederatedLearningOfCohorts,
+        {{"update_interval", param_expected.first}});
+    EXPECT_EQ(param_expected.second,
+              privacy_sandbox_settings()->GetFlocResetExplanationForDisplay());
+    feature_list()->Reset();
+  }
 }
 
 TEST_F(PrivacySandboxSettingsTest, ReconciliationOutcome) {
