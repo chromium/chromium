@@ -2910,7 +2910,7 @@ def make_named_property_getter_callback(cg_context, function_name):
     elif type.is_interface:
         not_found_expr = "!${return_value}"
     elif type.is_union:
-        not_found_expr = "${return_value}.IsNull()"
+        not_found_expr = "!${return_value}"
     else:
         assert False
 

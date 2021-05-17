@@ -247,11 +247,8 @@ class CodeGenContext(object):
 
     @property
     def is_return_by_argument(self):
-        if self.does_override_idl_return_type:
-            return False
-        if self.return_type is None:
-            return False
-        return self.return_type.unwrap().is_union
+        # TODO(yukishiino): Remove `is_return_by_argument`.
+        return False
 
     @property
     def is_return_type_promise_type(self):

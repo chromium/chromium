@@ -157,6 +157,7 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
 
         for idl_type in self._idl_types:
             idl_type.set_new_union_definition_object(self)
+            idl_type.set_union_definition_object(self)
 
     @property
     def idl_types(self):
@@ -406,4 +407,4 @@ class BackwardCompatibleUnion(WithIdentifier, WithCodeGeneratorInfo,
         return self._typedef_backrefs
 
 
-Union = BackwardCompatibleUnion
+Union = NewUnion

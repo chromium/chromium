@@ -121,7 +121,6 @@ class IdlCompiler(object):
 
         # Build union API objects.
         self._create_public_unions()
-        self._create_backward_compatible_public_unions()
 
         return Database(self._db)
 
@@ -788,7 +787,7 @@ class IdlCompiler(object):
                     ir_i.sub_union_irs.append(ir_j)
 
         for ir in sorted(irs.values()):
-            self._db.register(DatabaseBody.Kind.NEW_UNION, NewUnion(ir))
+            self._db.register(DatabaseBody.Kind.UNION, NewUnion(ir))
 
     def _create_backward_compatible_public_unions(self):
         all_union_types = []  # all instances of UnionType

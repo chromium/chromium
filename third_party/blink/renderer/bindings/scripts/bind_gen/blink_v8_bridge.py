@@ -56,7 +56,7 @@ def v8_bridge_class_name(idl_definition):
     return "V8{}".format(idl_definition.identifier)
 
 
-def blink_type_info(idl_type, use_new_union=False):
+def blink_type_info(idl_type, use_new_union=True):
     """
     Returns an object that represents the types of Blink implementation
     corresponding to the given IDL type, such as reference type, value type,
@@ -382,10 +382,7 @@ def _native_value_tag_impl(idl_type):
         return "IDLPromise"
 
     if real_type.is_union:
-        class_name = blink_class_name(real_type.union_definition_object)
-        if real_type.does_include_nullable_type:
-            return "IDLUnionINT<{}>".format(class_name)
-        return "IDLUnionNotINT<{}>".format(class_name)
+        return blink_class_name(real_type.union_definition_object)
 
     if real_type.is_nullable:
         return "IDLNullable<{}>".format(
@@ -434,7 +431,7 @@ def make_blink_to_v8_value(
     return SymbolNode(v8_var_name, definition_constructor=create_definition)
 
 
-def make_default_value_expr(idl_type, default_value, use_new_union=False):
+def make_default_value_expr(idl_type, default_value, use_new_union=True):
     """
     Returns a set of C++ expressions to be used for initialization with default
     values.  The returned object has the following attributes.

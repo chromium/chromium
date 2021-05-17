@@ -163,7 +163,7 @@ class Database(object):
 
     @property
     def new_union_types(self):
-        return self._view_by_kind(Database._Kind.NEW_UNION)
+        return self.union_types
 
     def _view_by_kind(self, kind):
         return list(self._impl.find_by_kind(kind).values())

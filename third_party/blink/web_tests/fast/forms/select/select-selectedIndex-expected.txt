@@ -72,7 +72,7 @@ PASS mySelect.selectedIndex is -1
 PASS mySelect.options.length is 10
 PASS mySelect.selectedIndex is -1
 23) trying to add a non-option element
-PASS mySelect.options.add({}) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS mySelect.options.add({}) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS mySelect.options.length is 10
 PASS mySelect.selectedIndex is -1
 24) setting length to a value greater than 2,147,483,647
