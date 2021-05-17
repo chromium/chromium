@@ -170,6 +170,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   views::Label* GetMessageForTesting() const;
 
  private:
+  // Friend the unit test class for this so it can call the private dtor.
+  friend class ContentAnalysisDialogPlainTest;
+
   ~ContentAnalysisDialog() override;
 
   // Update the UI depending on |dialog_status_|.
@@ -214,9 +217,6 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::u16string GetCustomMessage() const;
 
-  // Show the dialog. Sets |shown_| to true.
-  void Show();
-
   void AcceptButtonCallback();
   void CancelButtonCallback();
   void LearnMoreLinkClickedCallback(const ui::Event& event);
@@ -236,8 +236,6 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
   DeepScanningMessageView* message_ = nullptr;
   views::Link* learn_more_link_ = nullptr;
-
-  bool shown_ = false;
 
   base::TimeTicks first_shown_timestamp_;
 

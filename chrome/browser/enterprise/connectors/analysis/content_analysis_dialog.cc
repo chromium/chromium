@@ -218,7 +218,14 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   if (observer_for_testing)
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
 
-  Show();
+  SetupButtons();
+
+  first_shown_timestamp_ = base::TimeTicks::Now();
+
+  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+
+  if (observer_for_testing)
+    observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
 }
 
 std::u16string ContentAnalysisDialog::GetWindowTitle() const {
@@ -381,15 +388,6 @@ void ContentAnalysisDialog::ShowResult(
       break;
   }
 
-  // Do nothing if the pending dialog wasn't shown, the delayed |Show| callback
-  // will show the negative result later if that's the verdict.
-  if (!shown_) {
-    // Cleanup if the pending dialog wasn't shown and the verdict is safe.
-    if (is_success())
-      delete this;
-    return;
-  }
-
   // Update the pending dialog only after it has been shown for a minimum amount
   // of time.
   base::TimeDelta time_shown = base::TimeTicks::Now() - first_shown_timestamp_;
@@ -410,7 +408,6 @@ ContentAnalysisDialog::~ContentAnalysisDialog() {
 }
 
 void ContentAnalysisDialog::UpdateDialog() {
-  DCHECK(shown_);
   views::Widget* widget = GetWidget();
   DCHECK(widget);
   DCHECK(is_result());
@@ -582,29 +579,6 @@ std::u16string ContentAnalysisDialog::GetCancelButtonText() const {
 std::u16string ContentAnalysisDialog::GetBypassWarningButtonText() const {
   DCHECK(is_warning());
   return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_PROCEED_BUTTON);
-}
-
-void ContentAnalysisDialog::Show() {
-  DCHECK(!shown_);
-
-  // The only state that cannot be shown immediately is SUCCESS, the dialog
-  // doesn't appear in that case.
-  DCHECK(!is_success());
-
-  shown_ = true;
-  first_shown_timestamp_ = base::TimeTicks::Now();
-
-  SetupButtons();
-
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
-
-  if (observer_for_testing)
-    observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
-
-  // Cancel the dialog as it is shown in tests if the failure dialog is shown
-  // immediately.
-  if (observer_for_testing && is_failure())
-    CancelDialog();
 }
 
 std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {

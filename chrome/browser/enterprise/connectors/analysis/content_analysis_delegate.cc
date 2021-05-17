@@ -320,6 +320,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
 
     int files_count = delegate_ptr->data_.paths.size();
 
+    // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ =
         new ContentAnalysisDialog(std::move(delegate), web_contents,
                                   std::move(access_point), files_count);

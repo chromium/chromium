@@ -741,4 +741,36 @@ INSTANTIATE_TEST_SUITE_P(
                         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
                         safe_browsing::DeepScanAccessPoint::PASTE)));
 
+class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
+ protected:
+  ContentAnalysisDialog* dialog() { return dialog_; }
+
+  ContentAnalysisDialog* CreateContentAnalysisDialog() {
+    // This ctor ends up calling into constrained_window to show itself, in a
+    // way that relinquishes its ownership. Because of this, new it here and
+    // let it be deleted by the constrained_window code.
+    dialog_ = new ContentAnalysisDialog(
+        nullptr, browser()->tab_strip_model()->GetActiveWebContents(),
+        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 0);
+
+    return dialog_;
+  }
+
+ private:
+  ContentAnalysisDialog* dialog_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
+  enterprise_connectors::ContentAnalysisDialog::
+      SetMinimumPendingDialogTimeForTesting(
+          base::TimeDelta::FromMilliseconds(0));
+
+  ContentAnalysisDialog* dialog = CreateContentAnalysisDialog();
+  dialog->ShowResult(ContentAnalysisDelegate::FinalResult::WARNING, u"Test",
+                     GURL("http://www.example.com"));
+
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
+            u"Your administrator says \"Test\".");
+}
+
 }  // namespace enterprise_connectors
