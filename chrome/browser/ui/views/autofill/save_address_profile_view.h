@@ -13,6 +13,8 @@ class WebContents;
 }
 
 namespace views {
+class ImageButton;
+class ImageView;
 class View;
 }  // namespace views
 
@@ -30,6 +32,7 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
   SaveAddressProfileView(const SaveAddressProfileView&) = delete;
   SaveAddressProfileView& operator=(const SaveAddressProfileView&) = delete;
+  ~SaveAddressProfileView() override;
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
@@ -43,9 +46,19 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
   // View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
  private:
+  // Sets the proper margins for icons (and other views) in the UI to make sure
+  // all icons are vertically centered with corresponding text.
+  void AlignIcons();
+
   SaveUpdateAddressProfileBubbleController* controller_;
+
+  // The following are used for UI elements alignment upon changes in theme.
+  views::View* address_components_view_;
+  std::vector<views::ImageView*> address_section_icons_;
+  views::ImageButton* edit_button_;
 };
 
 }  // namespace autofill

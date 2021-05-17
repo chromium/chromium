@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 
+#include <memory>
+
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -24,19 +26,13 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
 namespace {
 
 constexpr int kIconSize = 16;
-
-int AddressDetailsIconSize() {
-  // Use the line height of the body small text. This allows the icons to adapt
-  // if the user changes the font size.
-  return views::style::GetLineHeight(views::style::CONTEXT_LABEL,
-                                     views::style::STYLE_PRIMARY);
-}
 
 // Maps an AddressField to a ServerFieldType making sure
 // NAME_FULL_WITH_HONORIFIC_PREFIX is returned instead of NAME_FULL for
@@ -54,8 +50,16 @@ int ComboboxIconSize() {
                                      views::style::STYLE_PRIMARY);
 }
 
+std::unique_ptr<views::ImageView> CreateAddressSectionIcon(
+    const gfx::VectorIcon& icon) {
+  auto icon_view = std::make_unique<views::ImageView>();
+  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      icon, ui::NativeTheme::kColorId_SecondaryIconColor, kIconSize));
+  return icon_view;
+}
+
 void AddAddressSection(views::View* parent_view,
-                       const gfx::VectorIcon& icon,
+                       std::unique_ptr<views::ImageView> icon_view,
                        std::unique_ptr<views::View> view) {
   views::View* row = parent_view->AddChildView(std::make_unique<views::View>());
   views::FlexLayout* row_layout =
@@ -70,24 +74,19 @@ void AddAddressSection(views::View* parent_view,
               /*vertical=*/0,
               /*horizontal=*/ChromeLayoutProvider::Get()->GetDistanceMetric(
                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
-
-  auto icon_view = std::make_unique<views::ImageView>();
-  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_SecondaryIconColor,
-      AddressDetailsIconSize()));
-
   row->AddChildView(std::move(icon_view));
   row->AddChildView(std::move(view));
 }
 
 void AddAddressSection(views::View* parent_view,
-                       const gfx::VectorIcon& icon,
+                       std::unique_ptr<views::ImageView> icon_view,
                        const std::u16string& text) {
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  AddAddressSection(parent_view, icon, std::move(text_label));
+  return AddAddressSection(parent_view, std::move(icon_view),
+                           std::move(text_label));
 }
 
 std::unique_ptr<views::View> CreateAddressLineView() {
@@ -229,26 +228,23 @@ SaveAddressProfileView::SaveAddressProfileView(
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true);
 
-  views::View* address_components_view =
-      AddChildView(std::make_unique<views::View>());
-  address_components_view->SetProperty(
+  address_components_view_ = AddChildView(std::make_unique<views::View>());
+  address_components_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
           views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
           views::MaximumFlexSizeRule::kUnbounded));
 
   // TODO(crbug.com/1167060): Update icons upon having final mocks
-  std::unique_ptr<views::ImageButton> edit_button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
-              base::Unretained(controller_)),
-          vector_icons::kEditIcon, kIconSize);
+  edit_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(
+          &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
+          base::Unretained(controller_)),
+      vector_icons::kEditIcon, kIconSize));
   // TODO(crbug.com/1167060): Use internationalized string.
-  edit_button->SetAccessibleName(u"Edit Address");
-  AddChildView(std::move(edit_button));
+  edit_button_->SetAccessibleName(u"Edit Address");
 
-  address_components_view
+  address_components_view_
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
@@ -267,30 +263,43 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::unique_ptr<views::View> street_address_view =
       CreateStreetAddressView(profile, locale);
   if (street_address_view) {
-    AddAddressSection(/*parent_view=*/address_components_view,
-                      vector_icons::kLocationOnIcon,
-                      std::move(street_address_view));
+    std::unique_ptr<views::ImageView> icon =
+        CreateAddressSectionIcon(vector_icons::kLocationOnIcon);
+    address_section_icons_.push_back(icon.get());
+    AddAddressSection(
+        /*parent_view=*/address_components_view_, std::move(icon),
+        std::move(street_address_view));
   }
 
   std::u16string phone = profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale);
-  if (!phone.empty())
-    AddAddressSection(/*parent_view=*/address_components_view,
-                      vector_icons::kCallIcon, phone);
+  if (!phone.empty()) {
+    std::unique_ptr<views::ImageView> icon =
+        CreateAddressSectionIcon(vector_icons::kCallIcon);
+    address_section_icons_.push_back(icon.get());
+    AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
+                      phone);
+  }
 
   std::u16string email = profile.GetInfo(EMAIL_ADDRESS, locale);
-  if (!email.empty())
-    AddAddressSection(/*parent_view=*/address_components_view,
-                      vector_icons::kEmailIcon, email);
+  if (!email.empty()) {
+    std::unique_ptr<views::ImageView> icon =
+        CreateAddressSectionIcon(vector_icons::kEmailIcon);
+    address_section_icons_.push_back(icon.get());
+    AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
+                      email);
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAddressProfileSavePromptNicknameSupport)) {
     // TODO(crbug.com/1167060): Make sure the icon is vertically centered with
     // the editable combobox.
-    AddAddressSection(/*parent_view=*/address_components_view,
-                      vector_icons::kExtensionIcon,
+    AddAddressSection(/*parent_view=*/address_components_view_,
+                      CreateAddressSectionIcon(vector_icons::kExtensionIcon),
                       CreateNicknameEditableCombobox());
   }
 }
+
+SaveAddressProfileView::~SaveAddressProfileView() = default;
 
 bool SaveAddressProfileView::ShouldShowCloseButton() const {
   return true;
@@ -334,6 +343,42 @@ void SaveAddressProfileView::AddedToWidget() {
       base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
                           base::Unretained(GetBubbleFrameView())));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+}
+
+void SaveAddressProfileView::OnThemeChanged() {
+  LocationBarBubbleDelegateView::OnThemeChanged();
+  AlignIcons();
+}
+
+void SaveAddressProfileView::AlignIcons() {
+  DCHECK(edit_button_);
+  DCHECK(address_components_view_);
+  // Adjust margins to make sure the edit button is vertically centered with the
+  // first line in the address components view.
+  int label_line_height = views::style::GetLineHeight(
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+  for (views::ImageView* icon_view : address_section_icons_) {
+    DCHECK(icon_view);
+    // Set views::kMarginsKey for flex layout to center the icon vertically with
+    // the text in front of it. Label line height are guaranteed to be bigger
+    // than kIconSize.
+    icon_view->SetProperty(views::kMarginsKey,
+                           gfx::Insets((label_line_height - kIconSize) / 2, 0));
+  }
+
+  int edit_button_height = edit_button_->GetPreferredSize().height();
+  int height_difference = (edit_button_height - label_line_height) / 2;
+  if (height_difference > 0) {
+    // We need to push the `address_components_view` down.
+    address_components_view_->SetProperty(views::kMarginsKey,
+                                          gfx::Insets(height_difference, 0));
+    edit_button_->SetProperty(views::kMarginsKey, gfx::Insets());
+  } else {
+    // We need to push the `edit_button` down.
+    address_components_view_->SetProperty(views::kMarginsKey, gfx::Insets());
+    edit_button_->SetProperty(views::kMarginsKey,
+                              gfx::Insets(-height_difference, 0));
+  }
 }
 
 }  // namespace autofill
