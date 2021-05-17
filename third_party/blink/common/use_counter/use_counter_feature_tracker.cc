@@ -45,6 +45,10 @@ std::vector<UseCounterFeature> UseCounterFeatureTracker::GetRecordedFeatures()
       ret.push_back({FeatureType::kAnimatedCssProperty, i});
   }
 
+  for (uint32_t i = 0; i < violated_permissions_policy_features_.size(); i++) {
+    if (violated_permissions_policy_features_.test(i))
+      ret.push_back({FeatureType::kPermissionsPolicyViolationEnforce, i});
+  }
   return ret;
 }
 
