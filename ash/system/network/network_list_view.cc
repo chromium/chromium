@@ -698,8 +698,7 @@ void NetworkListView::UpdateNetworkChild(int index, const NetworkInfo* info) {
       UpdateViewForNetwork(network_view, *info);
   }
   PlaceViewAtIndex(network_view, index);
-  if (info->disable)
-    network_view->SetEnabled(false);
+  network_view->SetEnabled(!info->disable);
   network_map_[network_view] = info->guid;
   network_guid_map_[info->guid] = network_view;
 }
