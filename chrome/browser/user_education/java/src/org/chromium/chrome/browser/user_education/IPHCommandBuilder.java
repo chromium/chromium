@@ -38,6 +38,8 @@ public class IPHCommandBuilder {
     private ViewRectProvider mViewRectProvider;
     @Nullable
     private HighlightParams mHighlightParams;
+    private Rect mAnchorRect;
+    private boolean mRemoveArrow;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -96,13 +98,14 @@ public class IPHCommandBuilder {
         return this;
     }
 
-
     /**
      *
      * @param insetRect The inset rectangle to use when shrinking the anchor view to show the IPH
-     * bubble.
+     *         bubble. Note that the inset rectangle can only be applied when the AnchorRect is set
+     *         to null.
      */
     public IPHCommandBuilder setInsetRect(Rect insetRect) {
+        assert mAnchorRect == null;
         mInsetRect = insetRect;
         return this;
     }
@@ -129,11 +132,36 @@ public class IPHCommandBuilder {
     /**
      *
      * @param viewRectProvider Custom ViewRectProvider to replace the default one. Note that the
-     *                         provided insets will still be applied on the rectangle from the
-     *                         custom provider.
+     *         provided insets will still be applied on the rectangle from the custom provider. In
+     *         addition, the custom ViewRectProvider can only be set when the AnchorRect is set to
+     *         null.
      */
     public IPHCommandBuilder setViewRectProvider(ViewRectProvider viewRectProvider) {
+        assert mAnchorRect == null;
         mViewRectProvider = viewRectProvider;
+        return this;
+    }
+
+    /**
+     *
+     * @param anchorRect The rectangle that the IPH bubble should be anchored to. Note that the
+     *         anchor rectangle can only be set when the ViewRectProvider and the InsetRect are set
+     *         to null.
+     *
+     */
+    public IPHCommandBuilder setAnchorRect(Rect anchorRect) {
+        assert mViewRectProvider == null;
+        assert mInsetRect == null;
+        mAnchorRect = anchorRect;
+        return this;
+    }
+
+    /**
+     *
+     * @param removeArrow Whether the IPH arrow should be removed.
+     */
+    public IPHCommandBuilder setRemoveArrow(boolean removeArrow) {
+        mRemoveArrow = removeArrow;
         return this;
     }
 
@@ -170,7 +198,7 @@ public class IPHCommandBuilder {
             mAccessibilityText = mResources.getString(mAccessibilityStringId);
         }
 
-        if (mInsetRect == null) {
+        if (mInsetRect == null && mAnchorRect == null) {
             int yInsetPx =
                     mResources.getDimensionPixelOffset(R.dimen.iph_text_bubble_menu_anchor_y_inset);
             mInsetRect = new Rect(0, 0, 0, yInsetPx);
@@ -178,6 +206,6 @@ public class IPHCommandBuilder {
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
                 mAnchorView, mOnDismissCallback, mOnShowCallback, mInsetRect, mAutoDismissTimeout,
-                mViewRectProvider, mHighlightParams);
+                mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow);
     }
 }

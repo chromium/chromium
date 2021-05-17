@@ -15,6 +15,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -75,14 +76,19 @@ public class UserEducationHelper {
         String accessibilityString = iphCommand.accessibilityText;
         assert (!contentString.isEmpty());
         assert (!accessibilityString.isEmpty());
-        ViewRectProvider rectProvider = iphCommand.viewRectProvider != null
-                ? iphCommand.viewRectProvider
-                : new ViewRectProvider(anchorView);
+
+        ViewRectProvider viewRectProvider = iphCommand.viewRectProvider;
+        RectProvider rectProvider =
+                iphCommand.anchorRect != null ? new RectProvider(iphCommand.anchorRect) : null;
+        if (viewRectProvider == null && rectProvider == null) {
+            viewRectProvider = new ViewRectProvider(anchorView);
+        }
 
         HighlightParams highlightParams = iphCommand.highlightParams;
-        TextBubble textBubble =
-                new TextBubble(mActivity, anchorView, contentString, accessibilityString, true,
-                        rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        TextBubble textBubble = new TextBubble(mActivity, anchorView, contentString,
+                accessibilityString, iphCommand.removeArrow ? false : true,
+                viewRectProvider != null ? viewRectProvider : rectProvider,
+                ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
             if (featureName != null) tracker.dismissed(featureName);
@@ -97,7 +103,9 @@ public class UserEducationHelper {
             ViewHighlighter.turnOnHighlight(anchorView, highlightParams);
         }
 
-        rectProvider.setInsetPx(iphCommand.insetRect);
+        if (viewRectProvider != null) {
+            viewRectProvider.setInsetPx(iphCommand.insetRect);
+        }
         textBubble.show();
         iphCommand.onShowCallback.run();
     }
