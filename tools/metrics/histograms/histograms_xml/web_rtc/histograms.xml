@@ -374,17 +374,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebRTC.Audio.AudioMixer.NumIncomingActiveStreams"
     units="count" expires_after="M77">
+  <obsolete>
+    Removed as of 2021-05-10.
+  </obsolete>
   <owner>aleloi@chromium.org</owner>
   <summary>
     Reports the number of active incoming streams in the WebRTC audio mixer. An
-    incoming stream is active if it is not muted. When multiple sterams are
-    active, adding them can result in saturation and limiting is needed.
+    incoming stream is active if it is not muted. When multiple streams are
+    active, adding them can result in saturation and limiting is needed. Logged
+    every second during a WebRTC call.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.AudioMixer.NumIncomingStreams" units="count"
-    expires_after="M77">
-  <owner>aleloi@chromium.org</owner>
+<histogram name="WebRTC.Audio.AudioMixer.NumIncomingActiveStreams2"
+    units="streams" expires_after="2022-04-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>webrtc-audio@google.com</owner>
+  <summary>
+    Reports the number of active incoming streams in the WebRTC audio mixer. An
+    incoming stream is active if it is not muted. When multiple streams are
+    active, adding them can result in saturation and limiting is needed. Logged
+    every second during a WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.AudioMixer.NumIncomingStreams" units="streams"
+    expires_after="2022-04-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>webrtc-audio@google.com</owner>
   <summary>
     Reports the number of streams in the WebRTC audio mixer. The mixer queries
     all streams for audio and preferred sampling rate. The number of streams
