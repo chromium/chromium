@@ -17271,7 +17271,7 @@
       'owners': ['vecore@google.com', 'hansberry@chromium.org', 'better-together-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
