@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
+#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -70,7 +72,9 @@ using l10n_util::GetNSStringF;
   switch (self.signinPromoViewMode) {
     case SigninPromoViewModeNoAccounts: {
       NSString* signInString =
-          GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+          base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)
+              ? GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
+              : GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
       signinPromoView.accessibilityLabel = signInString;
       [signinPromoView.primaryButton setTitle:signInString
                                      forState:UIControlStateNormal];

@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
@@ -438,12 +436,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
   BOOL hasCloseButton =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
   if (_defaultIdentity) {
-    SigninPromoViewMode viewMode =
-        base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)
-            ? SigninPromoViewModeSyncWithPrimaryAccount
-            : SigninPromoViewModeSigninWithAccount;
     return [[SigninPromoViewConfigurator alloc]
-        initWithSigninPromoViewMode:viewMode
+        initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
                           userEmail:_defaultIdentity.userEmail
                       userGivenName:_defaultIdentity.userGivenName
                           userImage:self.identityAvatar

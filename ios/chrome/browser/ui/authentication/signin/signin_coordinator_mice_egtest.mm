@@ -165,8 +165,8 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSyncWithPrimaryAccount];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
 
 // Tests that no sign-in promo for Sync is displayed when the user is signed in
@@ -179,8 +179,8 @@ using chrome_test_util::WebStateScrollViewMatcher;
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        SigninPromoViewModeSyncWithPrimaryAccount];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   // Tap on dismiss button.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(

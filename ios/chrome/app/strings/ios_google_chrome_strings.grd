@@ -165,9 +165,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
         Copyright <ph name="YEAR">$1</ph> Google LLC. All rights reserved.
       </message>
-      <message name="IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_TITLE" desc="Title of the screen where users select an account to use. [Length: 20em] [iOS only]">
-        Sign in to Chrome
-      </message>
       <message name="IDS_IOS_AUTOFILL_DESCRIBE_LOCAL_COPY" desc="Text label that describes a Wallet credit card which has been copied to the local Chrome instance. Title case. [Length: 20em] [iOS only]">
         Copied to Chrome
       </message>
@@ -185,10 +182,10 @@ locale.  The strings in this file are specific to iOS.
         Cleared Chrome data
       </message>
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL" desc="Dialog label to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
-        Sign in to this site, your Google Account, and Chrome. You may turn on sync later.
+        Sign in to this site, your Google Account, and Chrome. You can turn on sync later.
       </message>
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL.">
-        Sign in to Chrome
+        Sign In to Chrome
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE" desc="Title of the default browser promotion modal. [iOS only]">
         Make Chrome Your Default
