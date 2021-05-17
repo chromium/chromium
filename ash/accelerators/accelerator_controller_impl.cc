@@ -2679,10 +2679,8 @@ bool AcceleratorControllerImpl::IsValidSideVolumeButtonLocation() const {
 
 bool AcceleratorControllerImpl::ShouldSwapSideVolumeButtons(
     int source_device_id) const {
-  if (!features::IsSwapSideVolumeButtonsForOrientationEnabled() ||
-      !IsInternalKeyboardOrUncategorizedDevice(source_device_id)) {
+  if (!IsInternalKeyboardOrUncategorizedDevice(source_device_id))
     return false;
-  }
 
   if (!IsValidSideVolumeButtonLocation())
     return false;
@@ -2708,19 +2706,15 @@ bool AcceleratorControllerImpl::ShouldSwapSideVolumeButtons(
 
 void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {
   const int volume_percent = CrasAudioHandler::Get()->GetOutputVolumePercent();
-  const bool swapped = features::IsSwapSideVolumeButtonsForOrientationEnabled();
   if ((volume_adjust_starts_with_up_ &&
        volume_percent >= initial_volume_percent_) ||
       (!volume_adjust_starts_with_up_ &&
        volume_percent <= initial_volume_percent_)) {
     RecordTabletVolumeAdjustTypeHistogram(
-        swapped ? TabletModeVolumeAdjustType::kNormalAdjustWithSwapEnabled
-                : TabletModeVolumeAdjustType::kNormalAdjustWithSwapDisabled);
+        TabletModeVolumeAdjustType::kNormalAdjustWithSwapEnabled);
   } else {
     RecordTabletVolumeAdjustTypeHistogram(
-        swapped
-            ? TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapEnabled
-            : TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapDisabled);
+        TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapEnabled);
   }
 }
 

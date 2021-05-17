@@ -127,12 +127,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kTrilinearFiltering;
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 ASH_PUBLIC_EXPORT extern const base::Feature kUseBluetoothSystemInAsh;
 
-// Enables side volume button control based on screen orientation feature.
-// TODO(https://crbug.com/937907): Remove this after the feature is fully
-// launched.
-ASH_PUBLIC_EXPORT extern const base::Feature
-    kSwapSideVolumeButtonsForOrientation;
-
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -230,8 +224,6 @@ ASH_PUBLIC_EXPORT bool IsPipRoundedCornersEnabled();
 ASH_PUBLIC_EXPORT bool IsSeparateNetworkIconsEnabled();
 
 ASH_PUBLIC_EXPORT bool IsTrilinearFilteringEnabled();
-
-ASH_PUBLIC_EXPORT bool IsSwapSideVolumeButtonsForOrientationEnabled();
 
 ASH_PUBLIC_EXPORT bool IsBackgroundBlurEnabled();
 

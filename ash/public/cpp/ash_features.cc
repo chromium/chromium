@@ -99,9 +99,6 @@ const base::Feature kTrilinearFiltering{"TrilinearFiltering",
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSwapSideVolumeButtonsForOrientation{
-    "SwapSideVolumeButtonsForOrientation", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -233,10 +230,6 @@ bool IsTrilinearFilteringEnabled() {
   static bool use_trilinear_filtering =
       base::FeatureList::IsEnabled(kTrilinearFiltering);
   return use_trilinear_filtering;
-}
-
-bool IsSwapSideVolumeButtonsForOrientationEnabled() {
-  return base::FeatureList::IsEnabled(kSwapSideVolumeButtonsForOrientation);
 }
 
 bool IsBackgroundBlurEnabled() {

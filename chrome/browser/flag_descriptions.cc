@@ -3926,13 +3926,6 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
-const char kAshSwapSideVolumeButtonsForOrientationName[] =
-    "Swap side volume buttons to match screen orientation.";
-const char kAshSwapSideVolumeButtonsForOrientationDescription[] =
-    "Make the side volume button that's closer to the top/right always "
-    "increase the volume and the button that's closer to the bottom/left "
-    "always decrease the volume.";
-
 const char kAshSwipingFromLeftEdgeToGoBackName[] =
     "Swping from the left edge of the display to go back to the previous page.";
 const char kAshSwipingFromLeftEdgeToGoBackDescription[] =

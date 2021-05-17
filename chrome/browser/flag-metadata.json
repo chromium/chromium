@@ -256,11 +256,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "ash-swap-side-volume-buttons-for-orientation",
-    "owners": [ "minch" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "ash-window-follow-cursor-multi-display",
     "owners": [ "shidi", "tclaiborne" ],
     "expiry_milestone": 96
