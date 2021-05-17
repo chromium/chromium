@@ -97,9 +97,9 @@ android_library("javatests") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
-    "javatests/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
-    "javatests/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroControllerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
   ]
 
   deps = [
