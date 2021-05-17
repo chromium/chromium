@@ -27,7 +27,7 @@ class SSLPlatformKeyTaskRunner {
   SSLPlatformKeyTaskRunner() : worker_thread_("Platform Key Thread") {
     base::Thread::Options options;
     options.joinable = false;
-    worker_thread_.StartWithOptions(options);
+    worker_thread_.StartWithOptions(std::move(options));
   }
 
   ~SSLPlatformKeyTaskRunner() = default;
