@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/compute_pressure/compute_pressure_test_support.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
@@ -17,17 +16,13 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom.h"
 
 namespace content {
 
 class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
  public:
-  ComputePressureManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kComputePressure);
-  }
+  ComputePressureManagerTest() = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -72,8 +67,6 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
   const blink::mojom::ComputePressureQuantization kQuantization = {
       {0.2, 0.5, 0.8},
       {0.5}};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   GlobalFrameRoutingId main_frame_id_;
   // This member is a std::unique_ptr instead of a plain ComputePressureManager
@@ -217,21 +210,6 @@ TEST_F(ComputePressureManagerTest, AddObserver_NoProbe) {
   EXPECT_EQ(main_host_sync_->AddObserver(kQuantization,
                                          observer.BindNewPipeAndPassRemote()),
             blink::mojom::ComputePressureStatus::kNotSupported);
-}
-
-TEST_F(ComputePressureManagerTest, AddObserver_NoFeature) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(blink::features::kComputePressure);
-
-  {
-    FakeMojoMessageDispatchContext fake_dispatch_context;
-    mojo::test::BadMessageObserver bad_message_observer;
-    mojo::Remote<blink::mojom::ComputePressureHost> insecure_host;
-    manager_->BindReceiver(kInsecureOrigin, main_frame_id_,
-                           insecure_host.BindNewPipeAndPassReceiver());
-    EXPECT_EQ("Compute Pressure not enabled",
-              bad_message_observer.WaitForBadMessage());
-  }
 }
 
 }  // namespace content

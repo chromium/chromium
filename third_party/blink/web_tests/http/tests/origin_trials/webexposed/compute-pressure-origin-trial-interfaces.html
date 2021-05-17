@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 ComputePressure --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A/ijBvNMU7/C+St5uZUkD/FosB1Q2iRiNhdXDcXxO0DsGQqsNxGOGR1ZFC1qmM9u1rq8F/OJkTPHLD/ei+WfvQ0AAABXeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQ29tcHV0ZVByZXNzdXJlIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>Compute Pressure API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+'use strict'
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'ComputePressureObserver': ['observe', 'stop'],
+  });
+}, 'Compute Pressure API interfaces and properties in Origin-Trial enabled document.');
+test(t => {
+  assert_true('ComputePressureObserver' in window, 'ComputePressureObserver object exists on window scope');
+  assert_not_equals(window.ComputePressureObserver, undefined, 'ComputePressureObserver can be accessed on window');
+}, 'Compute Pressure API entry point in Origin-Trial enabled document.');
+</script>
+

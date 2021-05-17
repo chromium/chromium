@@ -233,9 +233,6 @@ extern const char kChromeLabsDescription[];
 extern const char kCompositeAfterPaintName[];
 extern const char kCompositeAfterPaintDescription[];
 
-extern const char kComputePressureAPIName[];
-extern const char kComputePressureAPIDescription[];
-
 extern const char kContextMenuGoogleLensChipName[];
 extern const char kContextMenuGoogleLensChipDescription[];
 

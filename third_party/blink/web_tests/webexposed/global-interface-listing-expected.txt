@@ -1225,6 +1225,11 @@ interface CompressionStream
     getter readable
     getter writable
     method constructor
+interface ComputePressureObserver
+    attribute @@toStringTag
+    method constructor
+    method observe
+    method stop
 interface ComputedAccessibleNode
     attribute @@toStringTag
     getter atomic

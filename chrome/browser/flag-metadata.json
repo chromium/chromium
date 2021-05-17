@@ -627,11 +627,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "compute-pressure",
-    "owners": [ "pwnall", "oyiptong" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "content-languages-in-language-picker",
     "owners": [
       "basiaz",

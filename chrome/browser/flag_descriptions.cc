@@ -390,11 +390,6 @@ const char kCompositeAfterPaintDescription[] =
     "A new algorithm to create compositing layers. "
     "See http://bit.ly/composite-after-paint.";
 
-const char kComputePressureAPIName[] = "Compute Pressure API";
-const char kComputePressureAPIDescription[] =
-    "Enables the experimental Compute Pressure API, giving websites access "
-    "to device compute performance data.";
-
 const char kContextMenuGoogleLensChipName[] =
     "Google Lens powered image search for surfaced as a chip below the context "
     "menu.";
