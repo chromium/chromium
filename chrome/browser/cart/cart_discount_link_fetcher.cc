@@ -108,8 +108,10 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
     rule_discount.SetStringKey("merchantRuleId",
                                discount_info_proto.merchant_rule_id());
     // rawMerchantOfferId
-    rule_discount.SetStringKey("rawMerchantOfferId",
-                               discount_info_proto.raw_merchant_offer_id());
+    if (!discount_info_proto.raw_merchant_offer_id().empty()) {
+      rule_discount.SetStringKey("rawMerchantOfferId",
+                                 discount_info_proto.raw_merchant_offer_id());
+    }
     // discount
     base::Value discount(base::Value::Type::DICTIONARY);
     if (discount_info_proto.has_amount_off()) {
@@ -137,7 +139,7 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
 
   std::string request_json;
   base::JSONWriter::Write(request_dict, &request_json);
-
+  VLOG(2) << "Request body: " << request_json;
   return request_json;
 }
 
@@ -146,6 +148,7 @@ void CartDiscountLinkFetcher::OnLinkFetched(
     CartDiscountLinkFetcherCallback callback,
     std::string default_url,
     std::unique_ptr<EndpointResponse> responses) {
+  VLOG(2) << "Response: " << responses->response;
   DCHECK(responses) << "responses should not be null";
   if (!responses) {
     std::move(callback).Run(std::move(default_url));

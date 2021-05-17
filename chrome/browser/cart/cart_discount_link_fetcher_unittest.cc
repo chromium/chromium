@@ -134,3 +134,26 @@ TEST(CartDiscountLinkFetcherTest, TestGeneratePostData_AmountOff) {
           std::move(cart_content_proto));
   EXPECT_EQ(expected, generated_post_data);
 }
+
+TEST(CartDiscountLinkFetcherTest,
+     TestGeneratePostData_OptionalRawMerchantOfferId) {
+  cart_db::ChromeCartContentProto cart_content_proto = BuildProtoWithAmountOff(
+      kMockMerchantA, kMockMerchantACartURL, kMockMerchantAId,
+      kMockMerchantALastTimestamp, kMockMerchantARuleId, kMockMerchantARuleId,
+      "", kMockMerchantAMoneyOffCurrency, kMockMerchantAMonneyOffUnits,
+      kMockMerchantAMonneyOffNanos);
+
+  std::string expected =
+      "{\"baseUrl\":\"https://www.foo.com/"
+      "cart\",\"discount\":{\"merchantIdentifier\":{\"cartUrl\":\"https://"
+      "www.foo.com/"
+      "cart\",\"merchantId\":\"123\"},\"ruleDiscounts\":[{\"discount\":{"
+      "\"amountOff\":{\"currencyCode\":\"USD\",\"nanos\":0,\"units\":\"10\"}},"
+      "\"merchantRuleId\":\"456\",\"ruleId\":"
+      "\"456\"}]},\"merchantId\":\"123\"}";
+
+  std::string generated_post_data =
+      CartDiscountLinkFetcherTest::generatePostData(
+          std::move(cart_content_proto));
+  EXPECT_EQ(expected, generated_post_data);
+}

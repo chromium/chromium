@@ -21,12 +21,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-const char POST_METHOD[] = "POST";
-const char CONTENT_TYPE[] = "application/json; charset=UTF-8";
+const char kPostMethod[] = "POST";
+const char kContentType[] = "application/json; charset=UTF-8";
 
-const char FETCH_DISCOUNTS_ENDPOINT[] =
+const char kFetchDiscountsEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounts";
-const int64_t TIMEOUT_MS = 1000;
+const int64_t kTimeoutMs = 30000;
 
 struct DiscountInfo {
   std::vector<cart_db::DiscountInfoProto> discount_list;
@@ -108,14 +108,15 @@ DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
     // Parse rawMerchantOfferId
     const base::Value* raw_merchant_offer_id_value =
         rule_discount.FindKey("rawMerchantOfferId");
-    if (!raw_merchant_offer_id_value ||
-        !raw_merchant_offer_id_value->is_string()) {
-      NOTREACHED()
-          << "Missing raw_merchant_offer_id or rule_id is not a string";
+    if (!raw_merchant_offer_id_value) {
+      VLOG(1) << "raw_merchant_offer_id is empty";
+    } else if (!raw_merchant_offer_id_value->is_string()) {
+      NOTREACHED() << "raw_merchant_offer_id is not a string";
       continue;
+    } else {
+      discount_proto.set_raw_merchant_offer_id(
+          raw_merchant_offer_id_value->GetString());
     }
-    discount_proto.set_raw_merchant_offer_id(
-        raw_merchant_offer_id_value->GetString());
 
     // Parse discount
     const base::Value* discount_value = rule_discount.FindKey("discount");
@@ -179,6 +180,27 @@ DiscountInfo CovertToDiscountInfo(const base::Value* rule_discount_list) {
 
   return DiscountInfo(std::move(cart_discounts), highest_amount_off,
                       highest_percent_off);
+}
+
+bool ValidateResponse(const base::Optional<base::Value>& response) {
+  if (!response) {
+    NOTREACHED() << "Response is not valid";
+    return false;
+  }
+
+  if (!response->is_dict()) {
+    NOTREACHED()
+        << "Wrong response format, response is not a dictionary. Response: "
+        << response->DebugString();
+    return false;
+  }
+
+  if (response->DictEmpty()) {
+    VLOG(1) << "Response does not have value. Response: "
+            << response->DebugString();
+    return false;
+  }
+  return true;
 }
 }  // namespace
 
@@ -268,7 +290,7 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
         })");
 
   return std::make_unique<EndpointFetcher>(
-      GURL(FETCH_DISCOUNTS_ENDPOINT), POST_METHOD, CONTENT_TYPE, TIMEOUT_MS,
+      GURL(kFetchDiscountsEndpoint), kPostMethod, kContentType, kTimeoutMs,
       generatePostData(proto_pairs, base::Time::Now()), traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
 }
@@ -310,6 +332,7 @@ std::string CartDiscountFetcher::generatePostData(
 
   std::string request_json;
   base::JSONWriter::Write(request_dic, &request_json);
+  VLOG(2) << "Request body: " << request_json;
   return request_json;
 }
 
@@ -317,12 +340,11 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     CartDiscountFetcherCallback callback,
     std::unique_ptr<EndpointResponse> responses) {
+  VLOG(2) << "Response: " << responses->response;
   CartDiscountMap cart_discount_map;
   absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
-  if (!value || !value.has_value() || !value->is_dict()) {
-    NOTREACHED() << "Response is not valid or does not have value or it is "
-                    "not a dictionary";
+  if (!ValidateResponse(value)) {
     std::move(callback).Run(std::move(cart_discount_map));
     return;
   }

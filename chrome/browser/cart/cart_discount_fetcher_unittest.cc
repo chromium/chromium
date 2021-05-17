@@ -182,3 +182,49 @@ TEST(CartDiscountFetcherTest, TestHighestDiscounts) {
   EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).highest_discount_string,
             kMockMerchantAHighestDiscountString);
 }
+
+TEST(CartDiscountFetcherTest, TestRawMaerchantOffersIsOptional) {
+  std::unique_ptr<EndpointFetcher> mock_endpoint_fetcher =
+      std::make_unique<MockEndpointFetcher>(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  base::MockCallback<CartDiscountFetcher::CartDiscountFetcherCallback>
+      mock_callback;
+
+  auto fake_responses = std::make_unique<EndpointResponse>();
+  fake_responses->response =
+      "{ "
+      "  \"discounts\": [ "
+      "    { "
+      "      \"merchantIdentifier\": { "
+      "        \"cartUrl\": \"https://www.foo.com/cart\", "
+      "        \"merchantId\": \"0\" "
+      "      }, "
+      "      \"ruleDiscounts\": [ "
+      "        { "
+      "          \"ruleId\": \"0\", "
+      "          \"discount\": { "
+      "            \"percentOff\": 10 "
+      "            }, "
+      "          \"merchantRuleId\": \"1\" "
+      "        } "
+      "      ] "
+      "    } "
+      "  ] "
+      "} ";
+
+  CartDiscountFetcher::CartDiscountMap cart_discount_map;
+  EXPECT_CALL(mock_callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&cart_discount_map));
+
+  CartDiscountFetcherTest::OnDiscountsAvailable(
+      std::move(mock_endpoint_fetcher), mock_callback.Get(),
+      std::move(fake_responses));
+
+  EXPECT_EQ(cart_discount_map.size(), 1u);
+  EXPECT_EQ(cart_discount_map.at(kMockMerchantCartURLA).discount_list.size(),
+            1u);
+  EXPECT_TRUE(cart_discount_map.at(kMockMerchantCartURLA)
+                  .discount_list[0]
+                  .raw_merchant_offer_id()
+                  .empty());
+}
