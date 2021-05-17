@@ -401,6 +401,19 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       FlushCanvas();
       EndWriteAccess();
       cached_snapshot_ = resource_->Bitmap();
+
+      // We'll record its content_id to be used by the FlushForImageListener.
+      // This will be needed in WillDrawInternal, but we are doing it now, as we
+      // don't know if later on we will be in the same thread the
+      // cached_snapshot_ was created and we wouldn't be able to
+      // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
+      // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
+      // other contexts know to flush to avoid unnecessary copy-on-writes.
+      if (cached_snapshot_) {
+        cached_content_id_ =
+            cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
+                0u);
+      }
     }
 
     DCHECK(cached_snapshot_);
@@ -420,16 +433,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return;
 
-    // Because the cached snapshot is about to be cleared we'll record its
-    // content_id to be used by the FlushForImageListener.
-    // ShouldReplaceTargetBuffer needs this ID in order to let other contexts
-    // know to flush to avoid unnecessary copy-on-writes.
-    PaintImage::ContentId content_id = PaintImage::kInvalidContentId;
-    if (cached_snapshot_) {
-      content_id =
-          cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(
-              0u);
-    }
     // Since the resource will be updated, the cached snapshot is no longer
     // valid. Note that it is important to release this reference here to not
     // trigger copy-on-write below from the resource ref in the snapshot.
@@ -441,7 +444,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // We don't need to do copy-on-write for the resource here since writes to
     // the GMB are deferred until it needs to be dispatched to the display
     // compositor via ProduceCanvasResource.
-    if (is_accelerated_ && ShouldReplaceTargetBuffer(content_id)) {
+    if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
+      cached_content_id_ = PaintImage::kInvalidContentId;
       DCHECK(!current_resource_has_write_access_)
           << "Write access must be released before sharing the resource";
 
@@ -689,6 +693,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   bool is_cleared_ = false;
   scoped_refptr<CanvasResource> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
+  PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
 };
 
 // This class does nothing except answering to ProduceCanvasResource() by piping
