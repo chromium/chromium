@@ -93,7 +93,7 @@ gfx::Image SyncErrorInfoBarDelegate::GetIcon() const {
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {
-  if (ShouldShowSyncSignin(error_state_)) {
+  if (error_state_ == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
     [presenter_ showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(error_state_)) {
     if (signin::IsMobileIdentityConsistencyEnabled()) {
@@ -101,9 +101,10 @@ bool SyncErrorInfoBarDelegate::Accept() {
     } else {
       [presenter_ showGoogleServicesSettings];
     }
-  } else if (ShouldShowSyncPassphraseSettings(error_state_)) {
+  } else if (error_state_ == SyncSetupService::kSyncServiceNeedsPassphrase) {
     [presenter_ showSyncPassphraseSettings];
-  } else if (ShouldShowTrustedVaultReauthentication(error_state_)) {
+  } else if (error_state_ ==
+             SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
     [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
                     syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
   }

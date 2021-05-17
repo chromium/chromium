@@ -36,19 +36,6 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
 SyncSetupService::SyncServiceState GetSyncStateForBrowserState(
     ChromeBrowserState* browserState);
 
-// Returns true if sync signin should be displayed based on |syncState|.
-bool ShouldShowSyncSignin(SyncSetupService::SyncServiceState syncState);
-
-// Returns true if sync passphrase settings should be displayed based on
-// |syncState|.
-bool ShouldShowSyncPassphraseSettings(
-    SyncSetupService::SyncServiceState syncState);
-
-// Returns true if Trusted Vault reauthentication dialog should be displayed
-// based on |syncState|.
-bool ShouldShowTrustedVaultReauthentication(
-    SyncSetupService::SyncServiceState syncState);
-
 // Returns true if sync settings (or the google services settings when unified
 // consent is enabled) should be displayed based on |syncState|.
 bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState);

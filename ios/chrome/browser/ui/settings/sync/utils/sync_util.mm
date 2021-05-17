@@ -129,20 +129,6 @@ SyncSetupService::SyncServiceState GetSyncStateForBrowserState(
   return syncSetupService->GetSyncServiceState();
 }
 
-bool ShouldShowSyncSignin(SyncSetupService::SyncServiceState syncState) {
-  return syncState == SyncSetupService::kSyncServiceSignInNeedsUpdate;
-}
-
-bool ShouldShowSyncPassphraseSettings(
-    SyncSetupService::SyncServiceState syncState) {
-  return syncState == SyncSetupService::kSyncServiceNeedsPassphrase;
-}
-
-bool ShouldShowTrustedVaultReauthentication(
-    SyncSetupService::SyncServiceState syncState) {
-  return syncState == SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
-}
-
 bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState) {
   switch (syncState) {
     case SyncSetupService::kSyncServiceCouldNotConnect:
