@@ -873,16 +873,13 @@ void BluetoothLowEnergyWeaveClientConnection::GetConnectionRssi(
     return;
   }
 
-  // TODO(crbug.com/730593): It should be feasible to remove the conversion to
-  // RepeatingCallback entirely.
-  auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
   bluetooth_device->GetConnectionInfo(
       base::BindOnce(&BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo,
-                     weak_ptr_factory_.GetWeakPtr(), callback_holder));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo(
-    base::RepeatingCallback<void(absl::optional<int32_t>)> rssi_callback,
+    base::OnceCallback<void(absl::optional<int32_t>)> rssi_callback,
     const device::BluetoothDevice::ConnectionInfo& connection_info) {
   if (connection_info.rssi == device::BluetoothDevice::kUnknownPower) {
     std::move(rssi_callback).Run(absl::nullopt);

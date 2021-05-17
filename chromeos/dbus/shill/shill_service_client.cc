@@ -85,13 +85,13 @@ class ShillServiceClientImpl : public ShillServiceClient {
                      DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetPropertiesFunction);
-    auto repeating_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     GetHelper(service_path)
         ->CallValueMethodWithErrorCallback(
-            &method_call, AdaptCallbackWithoutStatus(repeating_callback),
+            &method_call,
+            AdaptCallbackWithoutStatus(std::move(split_callback.first)),
             base::BindOnce(&OnGetDictionaryError, "GetProperties", service_path,
-                           repeating_callback));
+                           std::move(split_callback.second)));
   }
 
   void SetProperty(const dbus::ObjectPath& service_path,
@@ -194,13 +194,13 @@ class ShillServiceClientImpl : public ShillServiceClient {
       DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kGetLoadableProfileEntriesFunction);
-    auto repeating_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     GetHelper(service_path)
         ->CallValueMethodWithErrorCallback(
-            &method_call, AdaptCallbackWithoutStatus(repeating_callback),
+            &method_call,
+            AdaptCallbackWithoutStatus(std::move(split_callback.first)),
             base::BindOnce(&OnGetDictionaryError, "GetLoadableProfileEntries",
-                           service_path, repeating_callback));
+                           service_path, std::move(split_callback.second)));
   }
 
   void GetWiFiPassphrase(const dbus::ObjectPath& service_path,

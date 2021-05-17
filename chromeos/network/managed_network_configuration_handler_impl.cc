@@ -621,15 +621,14 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
 void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
     const base::DictionaryValue& shill_properties,
     base::OnceClosure callback) {
-  base::RepeatingClosure adapted_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
       shill_properties,
-      base::BindRepeating(
+      base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
-          weak_ptr_factory_.GetWeakPtr(), adapted_callback),
-      base::BindRepeating(&LogErrorWithDictAndCallCallback, adapted_callback,
-                          FROM_HERE));
+          weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),
+      base::BindOnce(&LogErrorWithDictAndCallCallback,
+                     std::move(split_callback.second), FROM_HERE));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::
@@ -637,8 +636,6 @@ void ManagedNetworkConfigurationHandlerImpl::
         const base::DictionaryValue& existing_properties,
         const base::DictionaryValue& new_properties,
         base::OnceClosure callback) {
-  base::RepeatingClosure adapted_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
   base::DictionaryValue shill_properties;
 
   std::string profile;
@@ -661,13 +658,14 @@ void ManagedNetworkConfigurationHandlerImpl::
 
   shill_properties.MergeDictionary(&new_properties);
 
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
       shill_properties,
-      base::BindRepeating(
+      base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
-          weak_ptr_factory_.GetWeakPtr(), adapted_callback),
-      base::BindRepeating(&LogErrorWithDictAndCallCallback, adapted_callback,
-                          FROM_HERE));
+          weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),
+      base::BindOnce(&LogErrorWithDictAndCallCallback,
+                     std::move(split_callback.second), FROM_HERE));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(

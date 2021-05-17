@@ -273,14 +273,13 @@ void ShillClientHelper::CallObjectPathMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnObjectPathMethodWithoutStatus,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallValueMethod(
@@ -314,14 +313,13 @@ void ShillClientHelper::CallBooleanMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnBooleanMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallStringMethodWithErrorCallback(
@@ -330,14 +328,13 @@ void ShillClientHelper::CallStringMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnStringMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallValueMethodWithErrorCallback(
@@ -346,14 +343,13 @@ void ShillClientHelper::CallValueMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallListValueMethodWithErrorCallback(
@@ -362,14 +358,13 @@ void ShillClientHelper::CallListValueMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnListValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 namespace {

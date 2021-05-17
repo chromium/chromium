@@ -81,17 +81,16 @@ void WifiHotspotDisconnectorImpl::DisconnectFromWifiHotspot(
   pref_service_->Set(prefs::kDisconnectingWifiNetworkPath,
                      base::Value(wifi_network_path));
 
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   network_connection_handler_->DisconnectNetwork(
       wifi_network_path,
       base::BindOnce(&WifiHotspotDisconnectorImpl::OnSuccessfulWifiDisconnect,
                      weak_ptr_factory_.GetWeakPtr(), wifi_network_guid,
                      wifi_network_path, std::move(success_callback),
-                     copyable_error_callback),
+                     std::move(split_callback.first)),
       base::BindOnce(&WifiHotspotDisconnectorImpl::OnFailedWifiDisconnect,
                      weak_ptr_factory_.GetWeakPtr(), wifi_network_guid,
-                     wifi_network_path, copyable_error_callback));
+                     wifi_network_path, std::move(split_callback.second)));
 }
 
 void WifiHotspotDisconnectorImpl::OnSuccessfulWifiDisconnect(

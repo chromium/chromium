@@ -333,7 +333,7 @@ class BluetoothLowEnergyWeaveClientConnection
   void OnTimeoutForSubStatus(SubStatus status);
 
   void OnConnectionInfo(
-      base::RepeatingCallback<void(absl::optional<int32_t>)> rssi_callback,
+      base::OnceCallback<void(absl::optional<int32_t>)> rssi_callback,
       const device::BluetoothDevice::ConnectionInfo& connection_info);
 
   // These functions are used to set up the connection so that it is ready to

@@ -247,15 +247,14 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
   void OnFindEligibleDevicesSuccess(
-      const base::RepeatingCallback<
-          void(mojom::NetworkRequestResult,
-               mojom::FindEligibleDevicesResponsePtr)>& callback,
+      base::OnceCallback<void(mojom::NetworkRequestResult,
+                              mojom::FindEligibleDevicesResponsePtr)> callback,
       const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
       const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
   void OnFindEligibleDevicesError(
-      const base::RepeatingCallback<
-          void(mojom::NetworkRequestResult,
-               mojom::FindEligibleDevicesResponsePtr)>& callback,
+      const base::OnceCallback<void(mojom::NetworkRequestResult,
+                                    mojom::FindEligibleDevicesResponsePtr)>
+          callback,
       NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,

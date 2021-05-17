@@ -212,15 +212,14 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       device::BluetoothAdapter::DiscoverySessionResultCallback& callback) {
     EXPECT_EQ(device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE,
               discovery_filter->GetTransport());
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     start_discovery_args_list_.emplace_back(
         base::WrapUnique(new StartDiscoverySessionArgs(
-            base::BindRepeating(
-                copyable_callback, /*is_error=*/false,
+            base::BindOnce(
+                std::move(split_callback.first), /*is_error=*/false,
                 device::UMABluetoothDiscoverySessionOutcome::SUCCESS),
-            base::BindRepeating(
-                copyable_callback, /*is_error=*/true,
+            base::BindOnce(
+                std::move(split_callback.second), /*is_error=*/true,
                 device::UMABluetoothDiscoverySessionOutcome::UNKNOWN))));
   }
 
@@ -419,15 +418,14 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
 
   void OnStopScan(
       device::BluetoothAdapter::DiscoverySessionResultCallback callback) {
-    auto repeating_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     stop_discovery_args_list_.emplace_back(
         base::WrapUnique(new StopDiscoverySessionArgs(
-            base::BindRepeating(
-                repeating_callback, /*is_error=*/false,
+            base::BindOnce(
+                std::move(split_callback.first), /*is_error=*/false,
                 device::UMABluetoothDiscoverySessionOutcome::SUCCESS),
-            base::BindRepeating(
-                repeating_callback,
+            base::BindOnce(
+                std::move(split_callback.second),
                 /*is_error=*/true,
                 device::UMABluetoothDiscoverySessionOutcome::UNKNOWN))));
   }

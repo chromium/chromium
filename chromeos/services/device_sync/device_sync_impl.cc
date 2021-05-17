@@ -610,13 +610,15 @@ void DeviceSyncImpl::FindEligibleDevices(
     return;
   }
 
-  auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   software_feature_manager_->FindEligibleDevices(
       software_feature,
       base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), callback_holder),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesError,
-                     weak_ptr_factory_.GetWeakPtr(), callback_holder));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void DeviceSyncImpl::NotifyDevices(
@@ -1195,9 +1197,8 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
 }
 
 void DeviceSyncImpl::OnFindEligibleDevicesSuccess(
-    const base::RepeatingCallback<void(mojom::NetworkRequestResult,
-                                       mojom::FindEligibleDevicesResponsePtr)>&
-        callback,
+    base::OnceCallback<void(mojom::NetworkRequestResult,
+                            mojom::FindEligibleDevicesResponsePtr)> callback,
     const std::vector<cryptauth::ExternalDeviceInfo>& eligible_device_infos,
     const std::vector<cryptauth::IneligibleDevice>& ineligible_devices) {
   DCHECK(features::ShouldUseV1DeviceSync());
@@ -1226,22 +1227,22 @@ void DeviceSyncImpl::OnFindEligibleDevicesSuccess(
     }
   }
 
-  callback.Run(mojom::NetworkRequestResult::kSuccess,
-               mojom::FindEligibleDevicesResponse::New(
-                   eligible_remote_devices, ineligible_remote_devices));
+  std::move(callback).Run(
+      mojom::NetworkRequestResult::kSuccess,
+      mojom::FindEligibleDevicesResponse::New(eligible_remote_devices,
+                                              ineligible_remote_devices));
 
   RecordFindEligibleDevicesResult(true /* success */);
 }
 
 void DeviceSyncImpl::OnFindEligibleDevicesError(
-    const base::RepeatingCallback<void(mojom::NetworkRequestResult,
-                                       mojom::FindEligibleDevicesResponsePtr)>&
-        callback,
+    base::OnceCallback<void(mojom::NetworkRequestResult,
+                            mojom::FindEligibleDevicesResponsePtr)> callback,
     NetworkRequestError error) {
   DCHECK(features::ShouldUseV1DeviceSync());
 
-  callback.Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error),
-               nullptr /* response */);
+  std::move(callback).Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error),
+                          nullptr /* response */);
 
   RecordFindEligibleDevicesResult(false /* success */);
   RecordFindEligibleDevicesResultFailureReason(

@@ -27,12 +27,12 @@ namespace chromeos {
 
 namespace {
 
-void LogErrorMessageAndInvokeCallback(base::RepeatingClosure callback,
+void LogErrorMessageAndInvokeCallback(base::OnceClosure callback,
                                       const base::Location& from_where,
                                       const std::string& error_name,
                                       const std::string& error_message) {
   LOG(ERROR) << from_where.ToString() << ": " << error_message;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 const base::DictionaryValue* GetByGUID(
@@ -318,12 +318,11 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
 void PolicyApplicator::DeleteEntry(const std::string& entry,
                                    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::RepeatingClosure adapted_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   ShillProfileClient::Get()->DeleteEntry(
-      dbus::ObjectPath(profile_.path), entry, adapted_callback,
-      base::BindOnce(&LogErrorMessageAndInvokeCallback, adapted_callback,
-                     FROM_HERE));
+      dbus::ObjectPath(profile_.path), entry, std::move(split_callback.first),
+      base::BindOnce(&LogErrorMessageAndInvokeCallback,
+                     std::move(split_callback.second), FROM_HERE));
 }
 
 void PolicyApplicator::WriteNewShillConfiguration(base::Value shill_dictionary,
