@@ -4,6 +4,8 @@
 
 package org.chromium.components.messages;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -117,6 +119,15 @@ class ScopeChangeController {
             // #destroy will remove the observers.
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.DESTROY));
+        }
+
+        @Override
+        public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {
+            super.onTopLevelNativeWindowChanged(windowAndroid);
+            // Dismiss the message if it is moved to another window.
+            // TODO(crbug.com/1205392): This is a temporary solution; remove this when
+            // tab-reparent is fully supported.
+            destroy();
         }
     }
 
