@@ -554,6 +554,9 @@ const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Hides shelf in immersive mode and allows esc hold to exit.
 const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -922,6 +925,10 @@ bool IsSamlReauthenticationOnLockscreenEnabled() {
 
 bool IsPinSetupForFamilyLinkEnabled() {
   return base::FeatureList::IsEnabled(kPinSetupForFamilyLink);
+}
+
+bool IsPinSetupForManagedUsersEnabled() {
+  return base::FeatureList::IsEnabled(kPinSetupForManagedUsers);
 }
 
 bool IsPinAutosubmitFeatureEnabled() {

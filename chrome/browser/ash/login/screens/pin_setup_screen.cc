@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chromeos/login/auth/user_context.h"
@@ -31,6 +33,9 @@ constexpr const char kUserActionSkipButtonClickedOnStart[] =
     "skip-button-on-start";
 constexpr const char kUserActionSkipButtonClickedInFlow[] =
     "skip-button-in-flow";
+
+// If set to true ShouldSkipBecauseOfPolicy returns false.
+static bool g_force_no_skip_because_of_policy_for_tests = false;
 
 struct PinSetupUserAction {
   const char* name_;
@@ -86,6 +91,8 @@ std::string PinSetupScreen::GetResultString(Result result) {
 
 // static
 bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
+  if (g_force_no_skip_because_of_policy_for_tests)
+    return false;
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
       !quick_unlock::IsPinEnabled(prefs) ||
@@ -94,6 +101,13 @@ bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
   }
 
   return false;
+}
+
+// static
+std::unique_ptr<base::AutoReset<bool>>
+PinSetupScreen::SetForceNoSkipBecauseOfPolicyForTests(bool value) {
+  return std::make_unique<base::AutoReset<bool>>(
+      &g_force_no_skip_because_of_policy_for_tests, value);
 }
 
 PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
@@ -115,35 +129,48 @@ PinSetupScreen::~PinSetupScreen() {
     view_->Bind(nullptr);
 }
 
+bool PinSetupScreen::SkipScreen(WizardContext* context) {
+  ClearAuthData(context);
+  exit_callback_.Run(Result::NOT_APPLICABLE);
+  return true;
+}
+
 bool PinSetupScreen::MaybeSkip(WizardContext* context) {
-  if (ShouldSkipBecauseOfPolicy()) {
-    ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
+  if (ShouldSkipBecauseOfPolicy())
+    return SkipScreen(context);
+
+  // Just a precaution:
+  if (!context->extra_factors_auth_session)
+    return SkipScreen(context);
+
+  Profile* active_user_profile = ProfileManager::GetActiveUserProfile();
 
   // Show setup for Family Link users on tablet and clamshell if the device
   // supports PIN for login.
-  bool show_for_family_link_user =
-      features::IsPinSetupForFamilyLinkEnabled() &&
-      ProfileManager::GetActiveUserProfile()->IsChild() &&
-      has_login_support_.value_or(false);
+  bool show_for_family_link_user = features::IsPinSetupForFamilyLinkEnabled() &&
+                                   active_user_profile->IsChild() &&
+                                   has_login_support_.value_or(false);
+  if (show_for_family_link_user)
+    return false;
 
-  // Skip the screen if the device is not in tablet mode, unless tablet mode
-  // first user run is forced on the device.
-  if (!TabletMode::Get()->InTabletMode() &&
-      !switches::ShouldOobeUseTabletModeFirstRun() &&
-      !show_for_family_link_user) {
-    ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
+  // Show setup for managed users if the device supports PIN for login.
+  const bool is_managed_user =
+      active_user_profile->GetProfilePolicyConnector()->IsManaged() &&
+      !active_user_profile->IsChild();
+  const bool show_for_managed_users =
+      features::IsPinSetupForManagedUsersEnabled() && is_managed_user &&
+      has_login_support_.value_or(false);
+  if (show_for_managed_users)
+    return false;
+
+  // Show the screen if the device is in tablet mode or tablet mode first user
+  // run is forced on the device.
+  if (TabletMode::Get()->InTabletMode() ||
+      switches::ShouldOobeUseTabletModeFirstRun()) {
+    return false;
   }
-  // Just a precaution:
-  if (!context->extra_factors_auth_session) {
-    exit_callback_.Run(Result::TIMED_OUT);
-    return true;
-  }
-  return false;
+
+  return SkipScreen(context);
 }
 
 void PinSetupScreen::ShowImpl() {

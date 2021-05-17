@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@ namespace ash {
 
 class PinSetupScreen : public BaseScreen {
  public:
+  using TView = PinSetupScreenView;
   enum class Result { DONE, USER_SKIP, NOT_APPLICABLE, TIMED_OUT };
 
   // This enum is tied directly to a UMA enum defined in
@@ -41,6 +43,9 @@ class PinSetupScreen : public BaseScreen {
   // There is an additional checkpoint that might skip the setup based on user
   // profile and pin availability information in `MaybeSkip`.
   static bool ShouldSkipBecauseOfPolicy();
+
+  static std::unique_ptr<base::AutoReset<bool>>
+  SetForceNoSkipBecauseOfPolicyForTests(bool value);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   PinSetupScreen(PinSetupScreenView* view,
@@ -73,6 +78,7 @@ class PinSetupScreen : public BaseScreen {
 
   base::OneShotTimer token_lifetime_timeout_;
 
+  bool SkipScreen(WizardContext* context);
   void ClearAuthData(WizardContext* context);
   void OnHasLoginSupport(bool login_available);
   void OnTokenTimedOut();
