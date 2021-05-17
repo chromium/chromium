@@ -77,4 +77,8 @@ public class MockTab extends TabImpl {
     public void broadcastOnLoadStopped(boolean toDifferentDocument) {
         for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
     }
+
+    public void setGurlOverrideForTesting(GURL url) {
+        mGurlOverride = url;
+    }
 }

@@ -7,6 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -26,27 +32,49 @@ import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
+import com.google.protobuf.ByteString;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
+import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.BuyableProduct;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.PriceTrackingData;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPrice;
+import org.chromium.chrome.browser.tab.proto.PriceTracking.ProductPriceUpdate;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
+import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
+import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -54,6 +82,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,6 +93,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * TabListCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+        "force-fieldtrials=Study/Group"})
 public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -72,6 +104,37 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private static final int TAB2_ID = 789;
     private static final String EXPECTED_PRICE_STRING = "$287";
     private static final String EXPECTED_PREVIOUS_PRICE_STRING = "$314";
+
+    private static final ProductPriceUpdate PRODUCT_PRICE_UPDATE =
+            ProductPriceUpdate.newBuilder()
+                    .setOldPrice(createProductPrice(10_000_000L, "USD"))
+                    .setNewPrice(createProductPrice(5_000_000L, "USD"))
+                    .build();
+    private static final BuyableProduct BUYABLE_PRODUCT =
+            BuyableProduct.newBuilder()
+                    .setCurrentPrice(createProductPrice(5_000_000L, "USD"))
+                    .build();
+    private static final PriceTrackingData PRICE_TRACKING_DATA =
+            PriceTrackingData.newBuilder()
+                    .setBuyableProduct(BUYABLE_PRODUCT)
+                    .setProductUpdate(PRODUCT_PRICE_UPDATE)
+                    .build();
+    private static final Any ANY_PRICE_TRACKING_DATA =
+            Any.newBuilder()
+                    .setValue(ByteString.copyFrom(PRICE_TRACKING_DATA.toByteArray()))
+                    .build();
+
+    private static ProductPrice createProductPrice(long amountMicros, String currencyCode) {
+        return ProductPrice.newBuilder()
+                .setCurrencyCode(currencyCode)
+                .setAmountMicros(amountMicros)
+                .build();
+    }
+
+    private static final String USD_CURRENCY_SYMBOL = "$";
+    private static final String EXPECTED_PRICE = "$5.00";
+    private static final String EXPECTED_PREVIOUS_PRICE = "$10";
+    private static final GURL TEST_GURL = new GURL("https://www.google.com");
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -93,6 +156,15 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
     @Mock
     private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
+
+    @Mock
+    private UrlUtilities.Natives mUrlUtilitiesJniMock;
+
+    @Mock
+    private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+
+    @Mock
+    private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
@@ -212,6 +284,16 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         doReturn(false).when(mProfile).isOffTheRecord();
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
         Profile.setLastUsedProfileForTesting(mProfile);
+        mMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
+        doReturn(1L)
+                .when(mCurrencyFormatterJniMock)
+                .initCurrencyFormatterAndroid(
+                        any(CurrencyFormatter.class), anyString(), anyString());
+        doNothing().when(mCurrencyFormatterJniMock).setMaxFractionalDigits(anyLong(), anyInt());
+        doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
+        mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
     }
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
@@ -781,6 +863,72 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         Drawable magnifierDrawable = iconImageView.getDrawable();
 
         Assert.assertNotEquals(magnifierDrawable, googleDrawable);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
+    public void testPriceDropEndToEnd() {
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        mockCurrencyFormatter();
+        mockUrlUtilities();
+        mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
+        MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
+        tab.setGurlOverrideForTesting(TEST_GURL);
+        CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+        TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
+                new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
+        mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
+        testGridSelected(mTabGridView, mGridModel);
+        PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
+        TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
+        TextView previousPrice = mTabGridView.findViewById(R.id.previous_price);
+        Assert.assertEquals(EXPECTED_PRICE, currentPrice.getText());
+        Assert.assertEquals(EXPECTED_PREVIOUS_PRICE, previousPrice.getText());
+    }
+
+    private void mockCurrencyFormatter() {
+        doAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(USD_CURRENCY_SYMBOL);
+                sb.append(invocation.getArguments()[2]);
+                return sb.toString();
+            }
+        })
+                .when(mCurrencyFormatterJniMock)
+                .format(anyLong(), any(CurrencyFormatter.class), anyString());
+    }
+
+    private void mockUrlUtilities() {
+        doAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) {
+                return (String) invocation.getArguments()[0];
+            }
+        })
+                .when(mUrlUtilitiesJniMock)
+                .escapeQueryParamValue(anyString(), anyBoolean());
+    }
+
+    private void mockOptimizationGuideResponse(
+            @OptimizationGuideDecision int decision, Any metadata) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                OptimizationGuideCallback callback =
+                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                callback.onOptimizationGuideDecision(decision, metadata);
+                return null;
+            }
+        })
+                .when(mOptimizationGuideBridgeJniMock)
+                .canApplyOptimization(
+                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 
     @Override
