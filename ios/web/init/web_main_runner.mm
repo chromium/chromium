@@ -72,7 +72,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     main_loop_.reset(new WebMainLoop());
     main_loop_->Init();
     main_loop_->EarlyInitialization();
-    main_loop_->MainMessageLoopStart();
+    main_loop_->CreateMainMessageLoop();
     main_loop_->CreateStartupTasks();
     int result_code = main_loop_->GetResultCode();
     if (result_code > 0)

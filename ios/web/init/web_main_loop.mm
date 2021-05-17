@@ -70,9 +70,9 @@ void WebMainLoop::EarlyInitialization() {
   }
 }
 
-void WebMainLoop::MainMessageLoopStart() {
+void WebMainLoop::CreateMainMessageLoop() {
   if (parts_) {
-    parts_->PreMainMessageLoopStart();
+    parts_->PreCreateMainMessageLoop();
   }
 
   ios_global_state::BuildSingleThreadTaskExecutor();
@@ -87,7 +87,7 @@ void WebMainLoop::MainMessageLoopStart() {
   ios_global_state::CreateNetworkChangeNotifier();
 
   if (parts_) {
-    parts_->PostMainMessageLoopStart();
+    parts_->PostCreateMainMessageLoop();
   }
 }
 

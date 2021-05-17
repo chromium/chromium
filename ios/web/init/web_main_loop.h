@@ -27,7 +27,7 @@ class WebMainLoop {
   void Init();
 
   void EarlyInitialization();
-  void MainMessageLoopStart();
+  void CreateMainMessageLoop();
 
   // Creates and starts running the tasks needed to complete startup.
   void CreateStartupTasks();
@@ -58,7 +58,7 @@ class WebMainLoop {
   // True if the non-UI threads were created.
   bool created_threads_;
 
-  // Members initialized in |MainMessageLoopStart()| ---------------------------
+  // Members initialized in |CreateMainMessageLoop()| --------------------------
   // The SingleThreadTaskExecutor and NetworkChangeNotifier are not owned by the
   // WebMainLoop but still need to be destroyed in correct order so use
   // ScopedClosureRunner.

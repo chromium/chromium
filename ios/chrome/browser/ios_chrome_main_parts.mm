@@ -133,7 +133,7 @@ void IOSChromeMainParts::PreEarlyInitialization() {
 #endif
 }
 
-void IOSChromeMainParts::PreMainMessageLoopStart() {
+void IOSChromeMainParts::PreCreateMainMessageLoop() {
   l10n_util::OverrideLocaleWithCocoaLocale();
   const std::string loaded_locale =
       ui::ResourceBundle::InitSharedInstanceWithLocale(

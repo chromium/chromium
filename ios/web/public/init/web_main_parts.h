@@ -18,15 +18,44 @@ namespace web {
 //    code to be called after the common code.
 //
 // Stages:
+//
 //  - EarlyInitialization: things which should be done as soon as possible on
-//    program start (such as setting up signal handlers) and things to be done
-//    at some generic time before the start of the main message loop.
-//  - MainMessageLoopStart: things beginning with the start of the main message
-//    loop and ending with initialization of the main thread; things which
-//    should be done immediately before the start of the main message loop
-//    should go in |PreMainMessageLoopStart()|.
-//  - RunMainMessageLoopParts:  things to be done before and after invoking the
-//    main message loop run method (e.g. CurrentUIThread::Get()->Run()).
+//    program start (such as setting up signal handlers)
+//
+//  - PreCreateMainMessageLoop: things to be done at some generic time before
+//    the creation of the main message loop.
+//
+//  - PostCreateMainMessageLoop: things that should be done as early as possible
+//    but need the main message loop to be around (i.e. APIs like
+//    ThreadTaskRunnerHandle, WebThread::UI are up).
+//
+//  - PreCreateThreads: things that don't need to happen super early but still
+//    need to happen during single-threaded initialization (e.g. immutable
+//    Singletons that are initialized once and read-only from all threads
+//    thereafter).
+//    Note: other threads might exist before this point but no child threads
+//    owned by //ios. As such, this is still "single-threaded" initialization
+//    as far as //ios is concerned and the right place to initialize
+//    thread-compatible objects:
+//    https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks.md#threading-lexicon
+//
+//  - PreMainMessageLoopRun: in doubt, put things here. At this stage all core
+//    APIs have been initialized. Services that must be initialized before the
+//    browser is considered functional can be initialized from here. Ideally
+//    only the frontend is initialized here while the backend takes advantage of
+//    a base::ThreadPool worker to come up asynchronously. Things that must
+//    happen on the main thread eventually but don't need to block startup
+//    should post a BEST_EFFORT task from this stage.
+//
+//  - PostMainMessageLoopRun: stop and cleanup things that can/should be cleaned
+//    up while base::ThreadPool and WebThread::IO are still running.
+//    Note: Also see WebMainLoop::ShutdownThreadsAndCleanUp() which is often a
+//    good fit to stop services (PostMainMessageLoopRun() is called from it).
+//
+//  - PostDestroyThreads: stop and cleanup things that need to be cleaned up in
+//    the single-threaded teardown phase (i.e. typically things that had to
+//    created in PreCreateThreads()).
+//
 //
 // How to add stuff (to existing parts):
 //  - Figure out when your new code should be executed. What must happen
@@ -42,31 +71,14 @@ class WebMainParts {
   WebMainParts() {}
   virtual ~WebMainParts() {}
 
+  // See class comment above for a description of each phase.
   virtual void PreEarlyInitialization() {}
-
   virtual void PostEarlyInitialization() {}
-
-  virtual void PreMainMessageLoopStart() {}
-
-  virtual void PostMainMessageLoopStart() {}
-
-  // Called just before any child threads owned by the web framework
-  // are created.
-  //
-  // The main message loop has been started at this point (but has not
-  // been run).
+  virtual void PreCreateMainMessageLoop() {}
+  virtual void PostCreateMainMessageLoop() {}
   virtual void PreCreateThreads() {}
-
-  // This is called just before the main message loop is run.  The
-  // various browser threads have all been created at this point
   virtual void PreMainMessageLoopRun() {}
-
-  // This happens after the main message loop has stopped, but before
-  // threads are stopped.
   virtual void PostMainMessageLoopRun() {}
-
-  // Called as the very last part of shutdown, after threads have been
-  // stopped and destroyed.
   virtual void PostDestroyThreads() {}
 };
 

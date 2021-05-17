@@ -32,7 +32,7 @@ WebViewWebMainParts::WebViewWebMainParts()
 
 WebViewWebMainParts::~WebViewWebMainParts() = default;
 
-void WebViewWebMainParts::PreMainMessageLoopStart() {
+void WebViewWebMainParts::PreCreateMainMessageLoop() {
   l10n_util::OverrideLocaleWithCocoaLocale();
   ui::ResourceBundle::InitSharedInstanceWithLocale(
       std::string(), nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
