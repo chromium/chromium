@@ -9,7 +9,6 @@
 
 #include "base/debug/elf_reader.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // arm64 has execute-only memory (XOM) protecting code pages from being read.
 // PosixModule reads executable pages in order to extract module info. This may
@@ -75,8 +74,7 @@ FilePath GetDebugBasenameForModule(const void* base_address, const char* file) {
   // Preferentially identify the library using its soname on Android. Libraries
   // mapped directly from apks have the apk filename in |dl_info.dli_fname|, and
   // this doesn't distinguish the particular library.
-  absl::optional<StringPiece> library_name =
-      debug::ReadElfLibraryName(base_address);
+  Optional<StringPiece> library_name = debug::ReadElfLibraryName(base_address);
   if (library_name)
     return FilePath(*library_name);
 #endif  // defined(OS_ANDROID)

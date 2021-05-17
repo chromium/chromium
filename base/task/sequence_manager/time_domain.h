@@ -12,7 +12,6 @@
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -55,7 +54,7 @@ class BASE_EXPORT TimeDomain {
   // clock when this method is called.
   // Can be called from main thread only.
   // NOTE: |lazy_now| and the return value are in the SequenceManager's time.
-  virtual absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) = 0;
+  virtual Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) = 0;
 
   Value AsValue() const;
 
@@ -77,7 +76,7 @@ class BASE_EXPORT TimeDomain {
   SequenceManager* sequence_manager() const;
 
   // Returns the earliest scheduled wake up in the TimeDomain's time.
-  absl::optional<TimeTicks> NextScheduledRunTime() const;
+  Optional<TimeTicks> NextScheduledRunTime() const;
 
   size_t NumberOfScheduledWakeUps() const {
     return delayed_wake_up_queue_.size();
@@ -110,7 +109,7 @@ class BASE_EXPORT TimeDomain {
   // Nullopt |wake_up| cancels a previously set wake up for |queue|.
   // NOTE: |lazy_now| is provided in TimeDomain's time.
   void SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
-                             absl::optional<internal::DelayedWakeUp> wake_up,
+                             Optional<internal::DelayedWakeUp> wake_up,
                              LazyNow* lazy_now);
 
   // Remove the TaskQueue from any internal data sctructures.

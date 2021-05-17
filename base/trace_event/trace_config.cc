@@ -17,7 +17,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trace_event {
@@ -425,7 +424,7 @@ void TraceConfig::InitializeFromConfigDict(const Value& dict) {
 }
 
 void TraceConfig::InitializeFromConfigString(StringPiece config_string) {
-  absl::optional<Value> dict = JSONReader::Read(config_string);
+  base::Optional<Value> dict = JSONReader::Read(config_string);
   if (dict && dict->is_dict())
     InitializeFromConfigDict(*dict);
   else
@@ -513,7 +512,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
         continue;
 
       MemoryDumpConfig::Trigger dump_config;
-      absl::optional<int> interval = trigger.FindIntKey(kMinTimeBetweenDumps);
+      base::Optional<int> interval = trigger.FindIntKey(kMinTimeBetweenDumps);
       if (!interval) {
         // If "min_time_between_dumps_ms" param was not given, then the trace
         // config uses old format where only periodic dumps are supported.
@@ -543,7 +542,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
   const Value* heap_profiler_options =
       memory_dump_config.FindDictKey(kHeapProfilerOptions);
   if (heap_profiler_options) {
-    absl::optional<int> min_size_bytes =
+    base::Optional<int> min_size_bytes =
         heap_profiler_options->FindIntKey(kBreakdownThresholdBytes);
     if (min_size_bytes && *min_size_bytes >= 0) {
       memory_dump_config_.heap_profiler_options.breakdown_threshold_bytes =

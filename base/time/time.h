@@ -72,10 +72,10 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_math.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_FUCHSIA)
 #include <zircon/types.h>
@@ -166,10 +166,10 @@ class BASE_EXPORT TimeDelta {
   //  "0", "+0", "-0" -> TimeDelta()
   //  "inf", "+inf"   -> TimeDelta::Max()
   //  "-inf"          -> TimeDelta::Min()
-  // Returns |absl::nullopt| when parsing fails. Numbers larger than 2^63-1
+  // Returns |base::nullopt| when parsing fails. Numbers larger than 2^63-1
   // will fail parsing. Overflowing `number * unit` will return +/-inf, as
   // appropriate.
-  static absl::optional<TimeDelta> FromString(StringPiece duration_string);
+  static Optional<TimeDelta> FromString(StringPiece duration_string);
 
   // Converts an integer value representing TimeDelta to a class. This is used
   // when deserializing a |TimeDelta| structure, using a value known to be

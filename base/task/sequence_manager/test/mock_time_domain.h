@@ -6,7 +6,6 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TEST_MOCK_TIME_DOMAIN_H_
 
 #include "base/task/sequence_manager/time_domain.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -25,7 +24,7 @@ class MockTimeDomain : public TimeDomain {
   // TimeDomain implementation:
   LazyNow CreateLazyNow() const override;
   TimeTicks Now() const override;
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override;
+  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override;
   void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
   const char* GetName() const override;

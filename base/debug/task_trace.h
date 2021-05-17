@@ -11,7 +11,7 @@
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/optional.h"
 
 namespace base {
 namespace debug {
@@ -53,7 +53,7 @@ class BASE_EXPORT TaskTrace {
   base::span<const void* const> AddressesForTesting() const;
 
  private:
-  absl::optional<StackTrace> stack_trace_;
+  base::Optional<StackTrace> stack_trace_;
   bool trace_overflow_ = false;
 };
 

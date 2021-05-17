@@ -13,7 +13,6 @@
 #include "base/win/dispatch_stub.h"
 #include "base/win/scoped_safearray.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::test::DispatchStub;
 
@@ -627,7 +626,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleBool) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -649,7 +648,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleI1) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -671,7 +670,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleUI1) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -693,7 +692,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleI2) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -715,7 +714,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleUI2) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -737,7 +736,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleI4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -759,7 +758,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleUI4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -781,7 +780,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleI8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -803,7 +802,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleUI8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -825,7 +824,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleR4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -847,7 +846,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleR8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -874,7 +873,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleDate) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -897,7 +896,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleBstr) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -922,7 +921,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleUnknown) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -947,7 +946,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantSingleDispatch) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 1U);
@@ -971,7 +970,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleBool) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -997,7 +996,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleI1) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1023,7 +1022,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleUI1) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1049,7 +1048,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleI2) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1075,7 +1074,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleUI2) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1101,7 +1100,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleI4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1127,7 +1126,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleUI4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1153,7 +1152,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleI8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1179,7 +1178,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleUI8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 3U);
@@ -1204,7 +1203,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleR4) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);
@@ -1228,7 +1227,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleR8) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);
@@ -1256,7 +1255,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleDate) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);
@@ -1281,7 +1280,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleBstr) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);
@@ -1310,7 +1309,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleUnknown) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);
@@ -1339,7 +1338,7 @@ TEST(VariantVectorTest, ReleaseAsSafearrayVariantMultipleDispatch) {
   EXPECT_EQ(variant.type(), VT_ARRAY | kVariantType);
 
   ScopedSafearray safearray(V_ARRAY(variant.ptr()));
-  absl::optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
+  base::Optional<ScopedSafearray::LockScope<kVariantType>> lock_scope =
       safearray.CreateLockScope<kVariantType>();
   ASSERT_TRUE(lock_scope.has_value());
   ASSERT_EQ(lock_scope->size(), 2U);

@@ -5,7 +5,6 @@
 #include "base/traits_bag.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trait_helpers {
@@ -80,7 +79,7 @@ struct OptionalEnumTestTraits {
   constexpr OptionalEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetOptionalEnum<EnumTraitA>(args...)) {}
 
-  const absl::optional<EnumTraitA> enum_trait_a;
+  const Optional<EnumTraitA> enum_trait_a;
 };
 
 }  // namespace

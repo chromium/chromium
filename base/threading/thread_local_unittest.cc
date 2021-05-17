@@ -5,13 +5,13 @@
 #include "base/threading/thread_local.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -213,7 +213,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerFreedOnThreadExit) {
 }
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
-  absl::optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
+  base::Optional<ThreadLocalOwnedPointer<SetTrueOnDestruction>>
       tls_owned_pointer(absl::in_place);
   bool tls_was_destroyed_other = false;
 
@@ -255,7 +255,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
   testing::FLAGS_gtest_death_test_style = "threadsafe";
 
-  absl::optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
+  base::Optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
       absl::in_place);
 
   Thread thread("TestThread");

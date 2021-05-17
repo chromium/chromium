@@ -12,19 +12,19 @@
 
 #include <sddl.h>
 
+#include "base/optional.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
 
 namespace {
 
-bool EqualSid(const absl::optional<Sid>& sid, const ATL::CSid& compare_sid) {
+bool EqualSid(const Optional<Sid>& sid, const ATL::CSid& compare_sid) {
   if (!sid)
     return false;
   return !!::EqualSid(sid->GetPSID(), const_cast<SID*>(compare_sid.GetPSID()));
@@ -38,20 +38,19 @@ bool EqualSid(const Sid& sid, const wchar_t* sddl_sid) {
   return !!::EqualSid(sid.GetPSID(), sid_ptr.get());
 }
 
-bool EqualSid(const absl::optional<Sid>& sid, const wchar_t* sddl_sid) {
+bool EqualSid(const Optional<Sid>& sid, const wchar_t* sddl_sid) {
   if (!sid)
     return false;
   return EqualSid(sid.value(), sddl_sid);
 }
 
-bool EqualSid(const absl::optional<Sid>& sid,
-              const absl::optional<Sid>& compare_sid) {
+bool EqualSid(const Optional<Sid>& sid, const Optional<Sid>& compare_sid) {
   if (!sid || !compare_sid)
     return false;
   return !!::EqualSid(sid->GetPSID(), compare_sid->GetPSID());
 }
 
-bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
+bool EqualSid(const Optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
   if (!sid)
     return false;
   char known_sid_buffer[SECURITY_MAX_SID_SIZE] = {};
@@ -62,7 +61,7 @@ bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
   return !!::EqualSid(sid->GetPSID(), known_sid_buffer);
 }
 
-bool TestSidVector(absl::optional<std::vector<Sid>> sids,
+bool TestSidVector(Optional<std::vector<Sid>> sids,
                    const std::vector<const wchar_t*> sddl) {
   if (!sids)
     return false;
@@ -100,13 +99,13 @@ TEST(SidTest, Initializers) {
   PSID sid_world_pointer = const_cast<SID*>(sid_world.GetPSID());
 
   // Check the PSID constructor.
-  absl::optional<Sid> sid_sid_star = Sid::FromPSID(sid_world_pointer);
+  Optional<Sid> sid_sid_star = Sid::FromPSID(sid_world_pointer);
   ASSERT_TRUE(EqualSid(sid_sid_star, sid_world));
 
   char invalid_sid[16] = {};
   ASSERT_FALSE(Sid::FromPSID(invalid_sid));
 
-  absl::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
+  Optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(sid_sddl);
   ASSERT_TRUE(EqualSid(sid_sddl, sid_world));
 }
@@ -211,9 +210,9 @@ TEST(SidTest, KnownSids) {
 }
 
 TEST(SidTest, SddlString) {
-  absl::optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
+  Optional<Sid> sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(sid_sddl);
-  absl::optional<std::wstring> sddl_str = sid_sddl->ToSddlString();
+  Optional<std::wstring> sddl_str = sid_sddl->ToSddlString();
   ASSERT_TRUE(sddl_str);
   ASSERT_EQ(L"S-1-1-0", *sddl_str);
   ASSERT_FALSE(Sid::FromSddlString(L"X-1-1-0"));
@@ -221,15 +220,15 @@ TEST(SidTest, SddlString) {
 }
 
 TEST(SidTest, RandomSid) {
-  absl::optional<Sid> sid1 = Sid::GenerateRandomSid();
+  Optional<Sid> sid1 = Sid::GenerateRandomSid();
   ASSERT_TRUE(sid1);
-  absl::optional<Sid> sid2 = Sid::GenerateRandomSid();
+  Optional<Sid> sid2 = Sid::GenerateRandomSid();
   ASSERT_TRUE(sid2);
   ASSERT_FALSE(EqualSid(sid1, sid2));
 }
 
 TEST(SidTest, CurrentUser) {
-  absl::optional<Sid> sid1 = Sid::CurrentUser();
+  Optional<Sid> sid1 = Sid::CurrentUser();
   ASSERT_TRUE(sid1);
   std::wstring user_sid;
   ASSERT_TRUE(GetUserSidString(&user_sid));

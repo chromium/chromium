@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
+#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_job.h"
 #include "base/task/post_task.h"
@@ -18,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -71,7 +71,7 @@ class IndexGenerator {
     ranges_to_split_.push({0, size_});
   }
 
-  absl::optional<size_t> GetNext() {
+  Optional<size_t> GetNext() {
     AutoLock auto_lock(lock_);
     if (!pending_indices_.empty()) {
       // Return any pending index first.
@@ -80,7 +80,7 @@ class IndexGenerator {
       return index;
     }
     if (ranges_to_split_.empty())
-      return absl::nullopt;
+      return nullopt;
 
     // Split the oldest running range in 2 and return the middle index as
     // starting point.
@@ -297,7 +297,7 @@ class JobPerfTest : public testing::Test {
                WaitableEvent* complete, JobDelegate* delegate) {
               while (work_list->NumIncompleteWorkItems(0) != 0 &&
                      !delegate->ShouldYield()) {
-                absl::optional<size_t> index = generator->GetNext();
+                Optional<size_t> index = generator->GetNext();
                 if (!index)
                   return;
                 for (size_t i = *index; i < work_list->NumWorkItems(); ++i) {
@@ -354,7 +354,7 @@ class JobPerfTest : public testing::Test {
                 BindRepeating(
                     [](IndexGenerator* generator, WorkList* work_list,
                        WaitableEvent* complete, JobDelegate* delegate) {
-                      absl::optional<size_t> index = generator->GetNext();
+                      Optional<size_t> index = generator->GetNext();
                       if (!index)
                         return;
                       size_t i = *index;

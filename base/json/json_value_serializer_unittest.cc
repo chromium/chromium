@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -77,7 +76,7 @@ void CheckJSONIsStillTheSame(const Value& value) {
 }
 
 void ValidateJsonList(const std::string& json) {
-  absl::optional<Value> list = JSONReader::Read(json);
+  Optional<Value> list = JSONReader::Read(json);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
   ASSERT_EQ(1U, list->GetList().size());
@@ -368,7 +367,7 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ValidateJsonList("[ 1 //// ,2\r\n ]");
 
   // It's ok to have a comment in a string.
-  absl::optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  Optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
   ASSERT_EQ(1U, list->GetList().size());

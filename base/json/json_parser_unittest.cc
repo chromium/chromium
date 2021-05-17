@@ -10,10 +10,10 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -55,7 +55,7 @@ TEST_F(JSONParserTest, NextChar) {
 TEST_F(JSONParserTest, ConsumeString) {
   std::string input("\"test\",|");
   std::unique_ptr<JSONParser> parser(NewTestParser(input));
-  absl::optional<Value> value(parser->ConsumeString());
+  Optional<Value> value(parser->ConsumeString());
   EXPECT_EQ(',', *parser->pos());
 
   TestLastThree(parser.get());
@@ -69,7 +69,7 @@ TEST_F(JSONParserTest, ConsumeString) {
 TEST_F(JSONParserTest, ConsumeList) {
   std::string input("[true, false],|");
   std::unique_ptr<JSONParser> parser(NewTestParser(input));
-  absl::optional<Value> value(parser->ConsumeList());
+  Optional<Value> value(parser->ConsumeList());
   EXPECT_EQ(',', *parser->pos());
 
   TestLastThree(parser.get());
@@ -82,7 +82,7 @@ TEST_F(JSONParserTest, ConsumeList) {
 TEST_F(JSONParserTest, ConsumeDictionary) {
   std::string input("{\"abc\":\"def\"},|");
   std::unique_ptr<JSONParser> parser(NewTestParser(input));
-  absl::optional<Value> value(parser->ConsumeDictionary());
+  Optional<Value> value(parser->ConsumeDictionary());
   EXPECT_EQ(',', *parser->pos());
 
   TestLastThree(parser.get());
@@ -98,7 +98,7 @@ TEST_F(JSONParserTest, ConsumeLiterals) {
   // Literal |true|.
   std::string input("true,|");
   std::unique_ptr<JSONParser> parser(NewTestParser(input));
-  absl::optional<Value> value(parser->ConsumeLiteral());
+  Optional<Value> value(parser->ConsumeLiteral());
   EXPECT_EQ(',', *parser->pos());
 
   TestLastThree(parser.get());
@@ -135,7 +135,7 @@ TEST_F(JSONParserTest, ConsumeNumbers) {
   // Integer.
   std::string input("1234,|");
   std::unique_ptr<JSONParser> parser(NewTestParser(input));
-  absl::optional<Value> value(parser->ConsumeNumber());
+  Optional<Value> value(parser->ConsumeNumber());
   EXPECT_EQ(',', *parser->pos());
 
   TestLastThree(parser.get());
@@ -208,7 +208,7 @@ TEST_F(JSONParserTest, ConsumeNumbers) {
 TEST_F(JSONParserTest, ErrorMessages) {
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[42]");
+    Optional<Value> value = parser.Parse("[42]");
     EXPECT_TRUE(value);
     EXPECT_TRUE(parser.GetErrorMessage().empty());
     EXPECT_EQ(0, parser.error_code());
@@ -217,7 +217,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
   // Test each of the error conditions
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("{},{}");
+    Optional<Value> value = parser.Parse("{},{}");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(
                   1, 3, JSONParser::kUnexpectedDataAfterRoot),
@@ -232,7 +232,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
       nested_json.append(1, ']');
     }
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse(nested_json);
+    Optional<Value> value = parser.Parse(nested_json);
     EXPECT_FALSE(value);
     EXPECT_EQ(
         JSONParser::FormatErrorMessage(1, 200, JSONParser::kTooMuchNesting),
@@ -242,7 +242,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[1,]");
+    Optional<Value> value = parser.Parse("[1,]");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 4, JSONParser::kTrailingComma),
               parser.GetErrorMessage());
@@ -251,7 +251,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("{foo:\"bar\"}");
+    Optional<Value> value = parser.Parse("{foo:\"bar\"}");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(
                   1, 2, JSONParser::kUnquotedDictionaryKey),
@@ -261,7 +261,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("{\"foo\":\"bar\",}");
+    Optional<Value> value = parser.Parse("{\"foo\":\"bar\",}");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 14, JSONParser::kTrailingComma),
               parser.GetErrorMessage());
@@ -270,7 +270,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[nu]");
+    Optional<Value> value = parser.Parse("[nu]");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 2, JSONParser::kSyntaxError),
               parser.GetErrorMessage());
@@ -279,7 +279,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[\"xxx\\xq\"]");
+    Optional<Value> value = parser.Parse("[\"xxx\\xq\"]");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 7, JSONParser::kInvalidEscape),
               parser.GetErrorMessage());
@@ -288,7 +288,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[\"xxx\\uq\"]");
+    Optional<Value> value = parser.Parse("[\"xxx\\uq\"]");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 7, JSONParser::kInvalidEscape),
               parser.GetErrorMessage());
@@ -297,7 +297,7 @@ TEST_F(JSONParserTest, ErrorMessages) {
 
   {
     JSONParser parser(JSON_PARSE_RFC);
-    absl::optional<Value> value = parser.Parse("[\"xxx\\q\"]");
+    Optional<Value> value = parser.Parse("[\"xxx\\q\"]");
     EXPECT_FALSE(value);
     EXPECT_EQ(JSONParser::FormatErrorMessage(1, 7, JSONParser::kInvalidEscape),
               parser.GetErrorMessage());

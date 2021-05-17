@@ -9,10 +9,10 @@
 #include "base/debug/activity_tracker.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -182,7 +182,7 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
 
   // Non-nullopt for non-nested blocking calls of type MAY_BLOCK on foreground
   // threads which we monitor for I/O jank.
-  absl::optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
+  Optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
 
   DISALLOW_COPY_AND_ASSIGN(UncheckedScopedBlockingCall);
 };

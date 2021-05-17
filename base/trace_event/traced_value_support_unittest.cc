@@ -6,7 +6,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace base {
@@ -59,8 +58,8 @@ TEST(TracedValueSupportTest, ScopedRefPtr) {
 }
 
 TEST(TracedValueSupportTest, Optional) {
-  EXPECT_EQ(perfetto::TracedValueToString(absl::optional<int>()), "0x0");
-  EXPECT_EQ(perfetto::TracedValueToString(absl::optional<const int>(42)), "42");
+  EXPECT_EQ(perfetto::TracedValueToString(base::Optional<int>()), "0x0");
+  EXPECT_EQ(perfetto::TracedValueToString(base::Optional<const int>(42)), "42");
 }
 
 TEST(TracedValueSupportTest, WeakPtr) {

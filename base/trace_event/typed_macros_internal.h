@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_TYPED_MACROS_INTERNAL_H_
 
 #include "base/base_export.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros_embedder_support.h"

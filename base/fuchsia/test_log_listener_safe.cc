@@ -9,7 +9,6 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -56,7 +55,7 @@ void SimpleTestLogListener::ListenToLog(
   log->ListenSafe(binding_.NewBinding(), std::move(options));
 }
 
-absl::optional<fuchsia::logger::LogMessage>
+base::Optional<fuchsia::logger::LogMessage>
 SimpleTestLogListener::RunUntilMessageReceived(
     base::StringPiece expected_string) {
   while (!logged_messages_.empty()) {
@@ -68,7 +67,7 @@ SimpleTestLogListener::RunUntilMessageReceived(
     }
   }
 
-  absl::optional<fuchsia::logger::LogMessage> logged_message;
+  base::Optional<fuchsia::logger::LogMessage> logged_message;
   base::RunLoop loop;
   binding_.set_error_handler(
       [quit_loop = loop.QuitClosure()](zx_status_t status) {

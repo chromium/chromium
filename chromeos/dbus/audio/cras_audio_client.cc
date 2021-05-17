@@ -723,7 +723,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                               dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemNsSupported;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(base::nullopt);
       return;
     }
     bool system_ns_supported = 0;
@@ -731,7 +731,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopBool(&system_ns_supported)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(base::nullopt);
       return;
     }
 
@@ -742,7 +742,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Error calling " << cras::kGetSystemAgcSupported;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(base::nullopt);
       return;
     }
     bool system_agc_supported = 0;
@@ -750,7 +750,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     if (!reader.PopBool(&system_agc_supported)) {
       LOG(ERROR) << "Error reading response from cras: "
                  << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(base::nullopt);
       return;
     }
 

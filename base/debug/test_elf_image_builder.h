@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if __SIZEOF_POINTER__ == 4
 using Addr = Elf32_Addr;
@@ -120,7 +120,7 @@ class TestElfImageBuilder {
   const MappingType mapping_type_;
   std::vector<std::vector<uint8_t>> note_contents_;
   std::vector<LoadSegment> load_segments_;
-  absl::optional<std::string> soname_;
+  Optional<std::string> soname_;
 };
 
 }  // namespace base

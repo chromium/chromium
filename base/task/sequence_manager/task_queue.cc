@@ -15,7 +15,6 @@
 #include "base/threading/thread_checker_impl.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -235,10 +234,10 @@ bool TaskQueue::HasTaskToRunImmediately() const {
   return impl_->HasTaskToRunImmediately();
 }
 
-absl::optional<TimeTicks> TaskQueue::GetNextScheduledWakeUp() {
+Optional<TimeTicks> TaskQueue::GetNextScheduledWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)
-    return absl::nullopt;
+    return nullopt;
   return impl_->GetNextScheduledWakeUp();
 }
 

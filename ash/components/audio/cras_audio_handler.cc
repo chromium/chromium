@@ -1950,7 +1950,7 @@ void CrasAudioHandler::GetSystemNsSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemNsSupported(
-    absl::optional<bool> system_ns_supported) {
+    base::Optional<bool> system_ns_supported) {
   if (!system_ns_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system ns supported";
     return;
@@ -1974,7 +1974,7 @@ void CrasAudioHandler::GetSystemAgcSupported() {
 }
 
 void CrasAudioHandler::HandleGetSystemAgcSupported(
-    absl::optional<bool> system_agc_supported) {
+    base::Optional<bool> system_agc_supported) {
   if (!system_agc_supported.has_value()) {
     LOG(ERROR) << "Failed to retrieve system agc supported";
     return;

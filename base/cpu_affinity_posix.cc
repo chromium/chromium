@@ -8,7 +8,6 @@
 
 #include "base/cpu.h"
 #include "base/process/internal_linux.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -121,7 +120,7 @@ bool SetProcessCpuAffinityMode(ProcessHandle process_handle,
   return any_threads && result;
 }
 
-absl::optional<CpuAffinityMode> CurrentThreadCpuAffinityMode() {
+Optional<CpuAffinityMode> CurrentThreadCpuAffinityMode() {
   if (HasBigCpuCores()) {
     cpu_set_t set;
     sched_getaffinity(PlatformThread::CurrentId(), sizeof(set), &set);
@@ -130,7 +129,7 @@ absl::optional<CpuAffinityMode> CurrentThreadCpuAffinityMode() {
     if (CPU_EQUAL(&set, &LittleCores()))
       return CpuAffinityMode::kLittleCoresOnly;
   }
-  return absl::nullopt;
+  return nullopt;
 }
 
 }  // namespace base

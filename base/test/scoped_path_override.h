@@ -7,7 +7,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -38,7 +38,7 @@ class ScopedPathOverride {
 
   int key_;
   ScopedTempDir temp_dir_;
-  absl::optional<FilePath> original_override_;
+  base::Optional<FilePath> original_override_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedPathOverride);
 };

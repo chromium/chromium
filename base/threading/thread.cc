@@ -30,7 +30,6 @@
 
 #if defined(OS_POSIX) && !defined(OS_NACL)
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if defined(OS_WIN)
@@ -99,7 +98,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
       sequence_manager_;
   scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
   OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory_;
-  absl::optional<SimpleTaskExecutor> simple_task_executor_;
+  base::Optional<SimpleTaskExecutor> simple_task_executor_;
 };
 
 }  // namespace

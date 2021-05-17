@@ -5,7 +5,6 @@
 #include "base/android/radio_utils.h"
 
 #include "base/base_jni_headers/RadioUtils_jni.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace android {
@@ -34,22 +33,22 @@ RadioConnectionType RadioUtils::GetConnectionType() {
   }
 }
 
-absl::optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
+Optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
   if (!IsSupported())
-    return absl::nullopt;
+    return nullopt;
 
   JNIEnv* env = AttachCurrentThread();
   int signal_level = Java_RadioUtils_getCellSignalLevel(env);
   if (signal_level < 0) {
-    return absl::nullopt;
+    return nullopt;
   } else {
     return static_cast<RadioSignalLevel>(signal_level);
   }
 }
 
-absl::optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
+Optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
   if (!IsSupported())
-    return absl::nullopt;
+    return nullopt;
 
   JNIEnv* env = AttachCurrentThread();
   return static_cast<RadioDataActivity>(

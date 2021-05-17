@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
@@ -58,7 +59,6 @@
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/test/trace_event_analyzer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 using base::sequence_manager::EnqueueOrder;
@@ -340,7 +340,7 @@ class SequenceManagerTest : public testing::TestWithParam<TestType>,
       // Advance time if we've run out of immediate work to do.
       if (!sequence_manager()->HasImmediateWork()) {
         LazyNow lazy_now(mock_tick_clock());
-        absl::optional<TimeDelta> delay =
+        Optional<TimeDelta> delay =
             sequence_manager()->GetRealTimeDomain()->DelayTillNextTask(
                 &lazy_now);
         if (delay) {
@@ -3587,7 +3587,7 @@ TEST_P(SequenceManagerTest, DisablingQueuesChangesDelayTillNextDoWork) {
 TEST_P(SequenceManagerTest, GetNextScheduledWakeUp) {
   auto queue = CreateTaskQueue();
 
-  EXPECT_EQ(absl::nullopt, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(nullopt, queue->GetNextScheduledWakeUp());
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   TimeDelta delay1 = TimeDelta::FromMilliseconds(10);
@@ -3603,7 +3603,7 @@ TEST_P(SequenceManagerTest, GetNextScheduledWakeUp) {
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
   voter->SetVoteToEnable(false);
-  EXPECT_EQ(absl::nullopt, queue->GetNextScheduledWakeUp());
+  EXPECT_EQ(nullopt, queue->GetNextScheduledWakeUp());
 
   voter->SetVoteToEnable(true);
   EXPECT_EQ(start_time + delay2, queue->GetNextScheduledWakeUp());
@@ -4463,8 +4463,8 @@ class MockTimeDomain : public TimeDomain {
   LazyNow CreateLazyNow() const override { return LazyNow(now_); }
   TimeTicks Now() const override { return now_; }
 
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    return absl::optional<TimeDelta>();
+  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
+    return Optional<TimeDelta>();
   }
 
   MOCK_METHOD1(MaybeFastForwardToNextTask, bool(bool quit_when_idle_requested));

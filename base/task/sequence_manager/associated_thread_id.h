@@ -10,10 +10,10 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -59,10 +59,10 @@ class BASE_EXPORT AssociatedThreadId
   // current thread.
   //
   // Attention: The result might be stale by the time this method returns.
-  absl::optional<PlatformThreadId> GetBoundThreadId() const {
+  Optional<PlatformThreadId> GetBoundThreadId() const {
     auto thread_id = thread_id_.load(std::memory_order_acquire);
     if (thread_id == kInvalidThreadId) {
-      return absl::nullopt;
+      return nullopt;
     } else {
       return thread_id;
     }

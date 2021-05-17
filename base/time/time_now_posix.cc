@@ -17,7 +17,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Ensure the Fuchsia and Mac builds do not include this module. Instead,
 // non-POSIX implementation is used for sampling the system clocks.
@@ -55,12 +54,12 @@ int64_t ClockNow(clockid_t clk_id) {
   return ConvertTimespecToMicros(ts);
 }
 
-absl::optional<int64_t> MaybeClockNow(clockid_t clk_id) {
+base::Optional<int64_t> MaybeClockNow(clockid_t clk_id) {
   struct timespec ts;
   int res = clock_gettime(clk_id, &ts);
   if (res == 0)
     return ConvertTimespecToMicros(ts);
-  return absl::nullopt;
+  return base::nullopt;
 }
 
 #else  // _POSIX_MONOTONIC_CLOCK
@@ -99,11 +98,11 @@ TimeTicks TimeTicksNowIgnoringOverride() {
   return TimeTicks() + TimeDelta::FromMicroseconds(ClockNow(CLOCK_MONOTONIC));
 }
 
-absl::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride() {
-  absl::optional<int64_t> now = MaybeClockNow(CLOCK_MONOTONIC);
+base::Optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride() {
+  base::Optional<int64_t> now = MaybeClockNow(CLOCK_MONOTONIC);
   if (now.has_value())
     return TimeTicks() + TimeDelta::FromMicroseconds(now.value());
-  return absl::nullopt;
+  return base::nullopt;
 }
 }  // namespace subtle
 

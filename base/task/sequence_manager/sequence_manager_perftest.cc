@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -60,10 +59,10 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    absl::optional<TimeTicks> run_time = NextScheduledRunTime();
+  Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
+    Optional<TimeTicks> run_time = NextScheduledRunTime();
     if (!run_time)
-      return absl::nullopt;
+      return nullopt;
     SetNowTicks(*run_time);
     // Makes SequenceManager to continue immediately.
     return TimeDelta();

@@ -14,8 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump.h"
+#include "base/optional.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ALooper;
 
@@ -86,7 +86,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
   // same timeout when subsequent work phases all go idle on the same pending
   // delayed task; nullopt if no wakeup is currently scheduled.
-  absl::optional<TimeTicks> delayed_scheduled_time_;
+  Optional<TimeTicks> delayed_scheduled_time_;
 
   // If set, a callback to fire when the message pump is quit.
   base::OnceClosure on_quit_callback_;

@@ -5,7 +5,6 @@
 #include "base/profiler/arm_cfi_table.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -91,11 +90,11 @@ TEST(ArmCFITableTest, FindEntryForAddress) {
 TEST(ArmCFITableTest, InvalidTable) {
   auto parse_cfi_and_find =
       [](std::vector<uint16_t> data,
-         uintptr_t address) -> absl::optional<ArmCFITable::FrameEntry> {
+         uintptr_t address) -> Optional<ArmCFITable::FrameEntry> {
     auto reader = ArmCFITable::Parse(
         {reinterpret_cast<const uint8_t*>(data.data()), data.size() * 2});
     if (!reader)
-      return absl::nullopt;
+      return base::nullopt;
     return reader->FindEntryForAddress(address);
   };
 

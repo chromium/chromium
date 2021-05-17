@@ -12,7 +12,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/task.h"
 #include "base/task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -129,10 +128,10 @@ void DelayedTaskManager::ProcessRipeTasks() {
   }
 }
 
-absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
+Optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
   CheckedAutoLock auto_lock(queue_lock_);
   if (delayed_task_queue_.empty())
-    return absl::nullopt;
+    return nullopt;
   return delayed_task_queue_.Min().task.delayed_run_time;
 }
 

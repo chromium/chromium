@@ -96,7 +96,7 @@ class BorealisDiskManagerImpl::BuildDiskInfo
   }
 
   void HandleListVmDisksResult(
-      absl::optional<vm_tools::concierge::ListVmDisksResponse> response) {
+      base::Optional<vm_tools::concierge::ListVmDisksResponse> response) {
     if (!response) {
       Fail("OnGetVmDiskInfo failed: failed to get response from concierge");
       return;

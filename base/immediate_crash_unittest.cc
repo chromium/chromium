@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
@@ -18,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -143,16 +143,16 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
     body->push_back(instruction);
 }
 
-absl::optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
+base::Optional<std::vector<Instruction>> ExpectImmediateCrashInvocation(
     std::vector<Instruction> instructions) {
   auto iter = instructions.begin();
   for (const auto inst : kRequiredBody) {
     if (iter == instructions.end())
-      return absl::nullopt;
+      return base::nullopt;
     EXPECT_EQ(inst, *iter);
     iter++;
   }
-  return absl::make_optional(
+  return base::make_optional(
       std::vector<Instruction>(iter, instructions.end()));
 }
 
@@ -226,7 +226,7 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  absl::optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
+  base::Optional<std::vector<Instruction>> result = MaybeSkipCoverageHook(body);
   result = ExpectImmediateCrashInvocation(result.value());
   result = MaybeSkipOptionalFooter(result.value());
   result = MaybeSkipCoverageHook(result.value());

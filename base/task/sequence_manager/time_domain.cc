@@ -9,7 +9,6 @@
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -51,19 +50,19 @@ void TimeDomain::UnregisterQueue(internal::TaskQueueImpl* queue) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   LazyNow lazy_now(CreateLazyNow());
-  SetNextWakeUpForQueue(queue, absl::nullopt, &lazy_now);
+  SetNextWakeUpForQueue(queue, nullopt, &lazy_now);
 }
 
 void TimeDomain::SetNextWakeUpForQueue(
     internal::TaskQueueImpl* queue,
-    absl::optional<internal::DelayedWakeUp> wake_up,
+    Optional<internal::DelayedWakeUp> wake_up,
     LazyNow* lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->GetTimeDomain(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
-  absl::optional<TimeTicks> previous_wake_up;
-  absl::optional<internal::WakeUpResolution> previous_queue_resolution;
+  Optional<TimeTicks> previous_wake_up;
+  Optional<internal::WakeUpResolution> previous_queue_resolution;
   if (!delayed_wake_up_queue_.empty())
     previous_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
   if (queue->heap_handle().IsValid()) {
@@ -87,7 +86,7 @@ void TimeDomain::SetNextWakeUpForQueue(
       delayed_wake_up_queue_.erase(queue->heap_handle());
   }
 
-  absl::optional<TimeTicks> new_wake_up;
+  Optional<TimeTicks> new_wake_up;
   if (!delayed_wake_up_queue_.empty())
     new_wake_up = delayed_wake_up_queue_.Min().wake_up.time;
 
@@ -132,10 +131,10 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   }
 }
 
-absl::optional<TimeTicks> TimeDomain::NextScheduledRunTime() const {
+Optional<TimeTicks> TimeDomain::NextScheduledRunTime() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (delayed_wake_up_queue_.empty())
-    return absl::nullopt;
+    return nullopt;
   return delayed_wake_up_queue_.Min().wake_up.time;
 }
 

@@ -14,6 +14,7 @@
 #include "base/containers/stack.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 

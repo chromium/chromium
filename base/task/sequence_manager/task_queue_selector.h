@@ -16,7 +16,6 @@
 #include "base/task/sequence_manager/task_queue_selector_logic.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -79,7 +78,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
   // Returns the priority of the most important pending task if one exists.
   // O(1).
-  absl::optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
+  Optional<TaskQueue::QueuePriority> GetHighestPendingPriority(
       SelectTaskOption option = SelectTaskOption::kDefault) const;
 
   // WorkQueueSets::Observer implementation:

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -27,7 +28,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -263,7 +263,7 @@ TEST_F(
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  absl::optional<IgnoreHangsInScope> disabler;
+  base::Optional<IgnoreHangsInScope> disabler;
 
   // De-activate hang watching,
   {
@@ -293,7 +293,7 @@ TEST_F(
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  absl::optional<IgnoreHangsInScope> disabler;
+  base::Optional<IgnoreHangsInScope> disabler;
 
   // De-activate hang watching,
   {

@@ -16,7 +16,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace trace_event {
@@ -181,7 +180,7 @@ void TraceLog::SetupATraceStartupTrace(const std::string& category_filter) {
   atrace_startup_config_ = TraceConfig(category_filter);
 }
 
-absl::optional<TraceConfig> TraceLog::TakeATraceStartupConfig() {
+Optional<TraceConfig> TraceLog::TakeATraceStartupConfig() {
   return std::move(atrace_startup_config_);
 }
 

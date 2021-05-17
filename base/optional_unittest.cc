@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/optional.h"
+
 #include <memory>
 #include <set>
 #include <string>
@@ -12,7 +14,6 @@
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ElementsAre;
 
@@ -20,8 +21,8 @@ namespace base {
 
 namespace {
 
-// Object used to test complex object with absl::optional<T> in addition of the
-// move semantics.
+// Object used to test complex object with Optional<T> in addition of the move
+// semantics.
 class TestObject {
  public:
   enum class State {
@@ -204,34 +205,34 @@ class NonTriviallyDestructibleOverloadAddressOf {
 
 }  // anonymous namespace
 
-static_assert(std::is_trivially_destructible<absl::optional<int>>::value,
+static_assert(std::is_trivially_destructible<Optional<int>>::value,
               "OptionalIsTriviallyDestructible");
 
-static_assert(!std::is_trivially_destructible<
-                  absl::optional<NonTriviallyDestructible>>::value,
-              "OptionalIsTriviallyDestructible");
+static_assert(
+    !std::is_trivially_destructible<Optional<NonTriviallyDestructible>>::value,
+    "OptionalIsTriviallyDestructible");
 
 TEST(OptionalTest, DefaultConstructor) {
   {
-    constexpr absl::optional<float> o;
+    constexpr Optional<float> o;
     EXPECT_FALSE(o);
   }
 
   {
-    absl::optional<std::string> o;
+    Optional<std::string> o;
     EXPECT_FALSE(o);
   }
 
   {
-    absl::optional<TestObject> o;
+    Optional<TestObject> o;
     EXPECT_FALSE(o);
   }
 }
 
 TEST(OptionalTest, CopyConstructor) {
   {
-    constexpr absl::optional<float> first(0.1f);
-    constexpr absl::optional<float> other(first);
+    constexpr Optional<float> first(0.1f);
+    constexpr Optional<float> other(first);
 
     EXPECT_TRUE(other);
     EXPECT_EQ(other.value(), 0.1f);
@@ -239,8 +240,8 @@ TEST(OptionalTest, CopyConstructor) {
   }
 
   {
-    absl::optional<std::string> first("foo");
-    absl::optional<std::string> other(first);
+    Optional<std::string> first("foo");
+    Optional<std::string> other(first);
 
     EXPECT_TRUE(other);
     EXPECT_EQ(other.value(), "foo");
@@ -248,8 +249,8 @@ TEST(OptionalTest, CopyConstructor) {
   }
 
   {
-    const absl::optional<std::string> first("foo");
-    absl::optional<std::string> other(first);
+    const Optional<std::string> first("foo");
+    Optional<std::string> other(first);
 
     EXPECT_TRUE(other);
     EXPECT_EQ(other.value(), "foo");
@@ -257,8 +258,8 @@ TEST(OptionalTest, CopyConstructor) {
   }
 
   {
-    absl::optional<TestObject> first(TestObject(3, 0.1));
-    absl::optional<TestObject> other(first);
+    Optional<TestObject> first(TestObject(3, 0.1));
+    Optional<TestObject> other(first);
 
     EXPECT_TRUE(!!other);
     EXPECT_TRUE(other.value() == TestObject(3, 0.1));
@@ -269,7 +270,7 @@ TEST(OptionalTest, CopyConstructor) {
 TEST(OptionalTest, ValueConstructor) {
   {
     constexpr float value = 0.1f;
-    constexpr absl::optional<float> o(value);
+    constexpr Optional<float> o(value);
 
     EXPECT_TRUE(o);
     EXPECT_EQ(value, o.value());
@@ -277,7 +278,7 @@ TEST(OptionalTest, ValueConstructor) {
 
   {
     std::string value("foo");
-    absl::optional<std::string> o(value);
+    Optional<std::string> o(value);
 
     EXPECT_TRUE(o);
     EXPECT_EQ(value, o.value());
@@ -285,7 +286,7 @@ TEST(OptionalTest, ValueConstructor) {
 
   {
     TestObject value(3, 0.1);
-    absl::optional<TestObject> o(value);
+    Optional<TestObject> o(value);
 
     EXPECT_TRUE(o);
     EXPECT_EQ(TestObject::State::COPY_CONSTRUCTED, o->state());
@@ -295,8 +296,8 @@ TEST(OptionalTest, ValueConstructor) {
 
 TEST(OptionalTest, MoveConstructor) {
   {
-    constexpr absl::optional<float> first(0.1f);
-    constexpr absl::optional<float> second(std::move(first));
+    constexpr Optional<float> first(0.1f);
+    constexpr Optional<float> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(second.value(), 0.1f);
@@ -305,8 +306,8 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    absl::optional<std::string> first("foo");
-    absl::optional<std::string> second(std::move(first));
+    Optional<std::string> first("foo");
+    Optional<std::string> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ("foo", second.value());
@@ -315,8 +316,8 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    absl::optional<TestObject> first(TestObject(3, 0.1));
-    absl::optional<TestObject> second(std::move(first));
+    Optional<TestObject> first(TestObject(3, 0.1));
+    Optional<TestObject> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(TestObject::State::MOVE_CONSTRUCTED, second->state());
@@ -329,8 +330,8 @@ TEST(OptionalTest, MoveConstructor) {
   // Even if copy constructor is deleted, move constructor needs to work.
   // Note that it couldn't be constexpr.
   {
-    absl::optional<DeletedCopy> first(absl::in_place, 42);
-    absl::optional<DeletedCopy> second(std::move(first));
+    Optional<DeletedCopy> first(absl::in_place, 42);
+    Optional<DeletedCopy> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(42, second->foo());
@@ -339,8 +340,8 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    absl::optional<DeletedMove> first(absl::in_place, 42);
-    absl::optional<DeletedMove> second(std::move(first));
+    Optional<DeletedMove> first(absl::in_place, 42);
+    Optional<DeletedMove> second(std::move(first));
 
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(42, second->foo());
@@ -349,9 +350,9 @@ TEST(OptionalTest, MoveConstructor) {
   }
 
   {
-    absl::optional<NonTriviallyDestructibleDeletedCopyConstructor> first(
+    Optional<NonTriviallyDestructibleDeletedCopyConstructor> first(
         absl::in_place, 42);
-    absl::optional<NonTriviallyDestructibleDeletedCopyConstructor> second(
+    Optional<NonTriviallyDestructibleDeletedCopyConstructor> second(
         std::move(first));
 
     EXPECT_TRUE(second.has_value());
@@ -364,7 +365,7 @@ TEST(OptionalTest, MoveConstructor) {
 TEST(OptionalTest, MoveValueConstructor) {
   {
     constexpr float value = 0.1f;
-    constexpr absl::optional<float> o(std::move(value));
+    constexpr Optional<float> o(std::move(value));
 
     EXPECT_TRUE(o);
     EXPECT_EQ(0.1f, o.value());
@@ -372,7 +373,7 @@ TEST(OptionalTest, MoveValueConstructor) {
 
   {
     float value = 0.1f;
-    absl::optional<float> o(std::move(value));
+    Optional<float> o(std::move(value));
 
     EXPECT_TRUE(o);
     EXPECT_EQ(0.1f, o.value());
@@ -380,7 +381,7 @@ TEST(OptionalTest, MoveValueConstructor) {
 
   {
     std::string value("foo");
-    absl::optional<std::string> o(std::move(value));
+    Optional<std::string> o(std::move(value));
 
     EXPECT_TRUE(o);
     EXPECT_EQ("foo", o.value());
@@ -388,7 +389,7 @@ TEST(OptionalTest, MoveValueConstructor) {
 
   {
     TestObject value(3, 0.1);
-    absl::optional<TestObject> o(std::move(value));
+    Optional<TestObject> o(std::move(value));
 
     EXPECT_TRUE(o);
     EXPECT_EQ(TestObject::State::MOVE_CONSTRUCTED, o->state());
@@ -398,31 +399,31 @@ TEST(OptionalTest, MoveValueConstructor) {
 
 TEST(OptionalTest, ConvertingCopyConstructor) {
   {
-    absl::optional<int> first(1);
-    absl::optional<double> second(first);
+    Optional<int> first(1);
+    Optional<double> second(first);
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(1.0, second.value());
   }
 
   // Make sure explicit is not marked for convertible case.
   {
-    absl::optional<int> o(1);
-    ignore_result<absl::optional<double>>(o);
+    Optional<int> o(1);
+    ignore_result<Optional<double>>(o);
   }
 }
 
 TEST(OptionalTest, ConvertingMoveConstructor) {
   {
-    absl::optional<int> first(1);
-    absl::optional<double> second(std::move(first));
+    Optional<int> first(1);
+    Optional<double> second(std::move(first));
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(1.0, second.value());
   }
 
   // Make sure explicit is not marked for convertible case.
   {
-    absl::optional<int> o(1);
-    ignore_result<absl::optional<double>>(std::move(o));
+    Optional<int> o(1);
+    ignore_result<Optional<double>>(std::move(o));
   }
 
   {
@@ -448,8 +449,8 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
       double bar_;
     };
 
-    absl::optional<Test1> first(absl::in_place, 42);
-    absl::optional<Test2> second(std::move(first));
+    Optional<Test1> first(absl::in_place, 42);
+    Optional<Test2> second(std::move(first));
     EXPECT_TRUE(second.has_value());
     EXPECT_EQ(42.0, second->bar());
   }
@@ -457,25 +458,25 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
 
 TEST(OptionalTest, ConstructorForwardArguments) {
   {
-    constexpr absl::optional<float> a(absl::in_place, 0.1f);
+    constexpr Optional<float> a(absl::in_place, 0.1f);
     EXPECT_TRUE(a);
     EXPECT_EQ(0.1f, a.value());
   }
 
   {
-    absl::optional<float> a(absl::in_place, 0.1f);
+    Optional<float> a(absl::in_place, 0.1f);
     EXPECT_TRUE(a);
     EXPECT_EQ(0.1f, a.value());
   }
 
   {
-    absl::optional<std::string> a(absl::in_place, "foo");
+    Optional<std::string> a(absl::in_place, "foo");
     EXPECT_TRUE(a);
     EXPECT_EQ("foo", a.value());
   }
 
   {
-    absl::optional<TestObject> a(absl::in_place, 0, 0.1);
+    Optional<TestObject> a(absl::in_place, 0, 0.1);
     EXPECT_TRUE(!!a);
     EXPECT_TRUE(TestObject(0, 0.1) == a.value());
   }
@@ -483,15 +484,15 @@ TEST(OptionalTest, ConstructorForwardArguments) {
 
 TEST(OptionalTest, ConstructorForwardInitListAndArguments) {
   {
-    absl::optional<std::vector<int>> opt(absl::in_place, {3, 1});
+    Optional<std::vector<int>> opt(absl::in_place, {3, 1});
     EXPECT_TRUE(opt);
     EXPECT_THAT(*opt, ElementsAre(3, 1));
     EXPECT_EQ(2u, opt->size());
   }
 
   {
-    absl::optional<std::vector<int>> opt(absl::in_place, {3, 1},
-                                         std::allocator<int>());
+    Optional<std::vector<int>> opt(absl::in_place, {3, 1},
+                                   std::allocator<int>());
     EXPECT_TRUE(opt);
     EXPECT_THAT(*opt, ElementsAre(3, 1));
     EXPECT_EQ(2u, opt->size());
@@ -500,7 +501,7 @@ TEST(OptionalTest, ConstructorForwardInitListAndArguments) {
 
 TEST(OptionalTest, ForwardConstructor) {
   {
-    absl::optional<double> a(1);
+    Optional<double> a(1);
     EXPECT_TRUE(a.has_value());
     EXPECT_EQ(1.0, a.value());
   }
@@ -513,16 +514,16 @@ TEST(OptionalTest, ForwardConstructor) {
       bool c;
     };
 
-    absl::optional<TestData> a({1, 2.0, true});
+    Optional<TestData> a({1, 2.0, true});
     EXPECT_TRUE(a.has_value());
     EXPECT_EQ(1, a->a);
     EXPECT_EQ(2.0, a->b);
     EXPECT_TRUE(a->c);
   }
 
-  // If T has a constructor with a param absl::optional<U>, and another ctor
-  // with a param U, then T(absl::optional<U>) should be used for
-  // absl::optional<T>(absl::optional<U>) constructor.
+  // If T has a constructor with a param Optional<U>, and another ctor with a
+  // param U, then T(Optional<U>) should be used for Optional<T>(Optional<U>)
+  // constructor.
   {
     enum class ParamType {
       DEFAULT_CONSTRUCTED,
@@ -538,7 +539,7 @@ TEST(OptionalTest, ForwardConstructor) {
       Test(Test&& param) : param_type(ParamType::MOVE_CONSTRUCTED) {}
       explicit Test(int param) : param_type(ParamType::INT) {}
       explicit Test(in_place_t param) : param_type(ParamType::IN_PLACE) {}
-      explicit Test(absl::optional<int> param)
+      explicit Test(Optional<int> param)
           : param_type(ParamType::OPTIONAL_INT) {}
 
       ParamType param_type;
@@ -546,20 +547,20 @@ TEST(OptionalTest, ForwardConstructor) {
 
     // Overload resolution with copy-conversion constructor.
     {
-      const absl::optional<int> arg(absl::in_place, 1);
-      absl::optional<Test> testee(arg);
+      const Optional<int> arg(absl::in_place, 1);
+      Optional<Test> testee(arg);
       EXPECT_EQ(ParamType::OPTIONAL_INT, testee->param_type);
     }
 
     // Overload resolution with move conversion constructor.
     {
-      absl::optional<Test> testee(absl::optional<int>(absl::in_place, 1));
+      Optional<Test> testee(Optional<int>(absl::in_place, 1));
       EXPECT_EQ(ParamType::OPTIONAL_INT, testee->param_type);
     }
 
     // Default constructor should be used.
     {
-      absl::optional<Test> testee(absl::in_place);
+      Optional<Test> testee(absl::in_place);
       EXPECT_EQ(ParamType::DEFAULT_CONSTRUCTED, testee->param_type);
     }
   }
@@ -571,61 +572,61 @@ TEST(OptionalTest, ForwardConstructor) {
     // If T is convertible from U, it is not marked as explicit.
     static_assert(std::is_convertible<int, Test>::value,
                   "Int should be convertible to Test.");
-    ([](absl::optional<Test> param) {})(1);
+    ([](Optional<Test> param) {})(1);
   }
 }
 
 TEST(OptionalTest, NulloptConstructor) {
-  constexpr absl::optional<int> a(absl::nullopt);
+  constexpr Optional<int> a(base::nullopt);
   EXPECT_FALSE(a);
 }
 
 TEST(OptionalTest, AssignValue) {
   {
-    absl::optional<float> a;
+    Optional<float> a;
     EXPECT_FALSE(a);
     a = 0.1f;
     EXPECT_TRUE(a);
 
-    absl::optional<float> b(0.1f);
+    Optional<float> b(0.1f);
     EXPECT_TRUE(a == b);
   }
 
   {
-    absl::optional<std::string> a;
+    Optional<std::string> a;
     EXPECT_FALSE(a);
     a = std::string("foo");
     EXPECT_TRUE(a);
 
-    absl::optional<std::string> b(std::string("foo"));
+    Optional<std::string> b(std::string("foo"));
     EXPECT_EQ(a, b);
   }
 
   {
-    absl::optional<TestObject> a;
+    Optional<TestObject> a;
     EXPECT_FALSE(!!a);
     a = TestObject(3, 0.1);
     EXPECT_TRUE(!!a);
 
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> b(TestObject(3, 0.1));
     EXPECT_TRUE(a == b);
   }
 
   {
-    absl::optional<TestObject> a = TestObject(4, 1.0);
+    Optional<TestObject> a = TestObject(4, 1.0);
     EXPECT_TRUE(!!a);
     a = TestObject(3, 0.1);
     EXPECT_TRUE(!!a);
 
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> b(TestObject(3, 0.1));
     EXPECT_TRUE(a == b);
   }
 }
 
 TEST(OptionalTest, AssignObject) {
   {
-    absl::optional<float> a;
-    absl::optional<float> b(0.1f);
+    Optional<float> a;
+    Optional<float> b(0.1f);
     a = b;
 
     EXPECT_TRUE(a);
@@ -634,8 +635,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<std::string> a;
-    absl::optional<std::string> b("foo");
+    Optional<std::string> a;
+    Optional<std::string> b("foo");
     a = b;
 
     EXPECT_TRUE(a);
@@ -644,8 +645,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<TestObject> a;
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> a;
+    Optional<TestObject> b(TestObject(3, 0.1));
     a = b;
 
     EXPECT_TRUE(!!a);
@@ -654,8 +655,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<TestObject> a(TestObject(4, 1.0));
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> a(TestObject(4, 1.0));
+    Optional<TestObject> b(TestObject(3, 0.1));
     a = b;
 
     EXPECT_TRUE(!!a);
@@ -664,8 +665,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<DeletedMove> a(absl::in_place, 42);
-    absl::optional<DeletedMove> b;
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b;
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -674,8 +675,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<DeletedMove> a(absl::in_place, 42);
-    absl::optional<DeletedMove> b(absl::in_place, 1);
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b(absl::in_place, 1);
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -685,8 +686,8 @@ TEST(OptionalTest, AssignObject) {
 
   // Converting assignment.
   {
-    absl::optional<int> a(absl::in_place, 1);
-    absl::optional<double> b;
+    Optional<int> a(absl::in_place, 1);
+    Optional<double> b;
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -696,8 +697,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<int> a(absl::in_place, 42);
-    absl::optional<double> b(absl::in_place, 1);
+    Optional<int> a(absl::in_place, 42);
+    Optional<double> b(absl::in_place, 1);
     b = a;
 
     EXPECT_TRUE(!!a);
@@ -707,8 +708,8 @@ TEST(OptionalTest, AssignObject) {
   }
 
   {
-    absl::optional<int> a;
-    absl::optional<double> b(absl::in_place, 1);
+    Optional<int> a;
+    Optional<double> b(absl::in_place, 1);
     b = a;
     EXPECT_FALSE(!!a);
     EXPECT_FALSE(!!b);
@@ -717,8 +718,8 @@ TEST(OptionalTest, AssignObject) {
 
 TEST(OptionalTest, AssignObject_rvalue) {
   {
-    absl::optional<float> a;
-    absl::optional<float> b(0.1f);
+    Optional<float> a;
+    Optional<float> b(0.1f);
     a = std::move(b);
 
     EXPECT_TRUE(a);
@@ -727,8 +728,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<std::string> a;
-    absl::optional<std::string> b("foo");
+    Optional<std::string> a;
+    Optional<std::string> b("foo");
     a = std::move(b);
 
     EXPECT_TRUE(a);
@@ -737,8 +738,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<TestObject> a;
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> a;
+    Optional<TestObject> b(TestObject(3, 0.1));
     a = std::move(b);
 
     EXPECT_TRUE(!!a);
@@ -750,8 +751,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<TestObject> a(TestObject(4, 1.0));
-    absl::optional<TestObject> b(TestObject(3, 0.1));
+    Optional<TestObject> a(TestObject(4, 1.0));
+    Optional<TestObject> b(TestObject(3, 0.1));
     a = std::move(b);
 
     EXPECT_TRUE(!!a);
@@ -763,8 +764,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<DeletedMove> a(absl::in_place, 42);
-    absl::optional<DeletedMove> b;
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b;
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -773,8 +774,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<DeletedMove> a(absl::in_place, 42);
-    absl::optional<DeletedMove> b(absl::in_place, 1);
+    Optional<DeletedMove> a(absl::in_place, 42);
+    Optional<DeletedMove> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -784,8 +785,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
 
   // Converting assignment.
   {
-    absl::optional<int> a(absl::in_place, 1);
-    absl::optional<double> b;
+    Optional<int> a(absl::in_place, 1);
+    Optional<double> b;
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -794,8 +795,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<int> a(absl::in_place, 42);
-    absl::optional<double> b(absl::in_place, 1);
+    Optional<int> a(absl::in_place, 42);
+    Optional<double> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_TRUE(!!a);
@@ -804,8 +805,8 @@ TEST(OptionalTest, AssignObject_rvalue) {
   }
 
   {
-    absl::optional<int> a;
-    absl::optional<double> b(absl::in_place, 1);
+    Optional<int> a;
+    Optional<double> b(absl::in_place, 1);
     b = std::move(a);
 
     EXPECT_FALSE(!!a);
@@ -815,26 +816,26 @@ TEST(OptionalTest, AssignObject_rvalue) {
 
 TEST(OptionalTest, AssignNull) {
   {
-    absl::optional<float> a(0.1f);
-    absl::optional<float> b(0.2f);
-    a = absl::nullopt;
-    b = absl::nullopt;
+    Optional<float> a(0.1f);
+    Optional<float> b(0.2f);
+    a = base::nullopt;
+    b = base::nullopt;
     EXPECT_EQ(a, b);
   }
 
   {
-    absl::optional<std::string> a("foo");
-    absl::optional<std::string> b("bar");
-    a = absl::nullopt;
-    b = absl::nullopt;
+    Optional<std::string> a("foo");
+    Optional<std::string> b("bar");
+    a = base::nullopt;
+    b = base::nullopt;
     EXPECT_EQ(a, b);
   }
 
   {
-    absl::optional<TestObject> a(TestObject(3, 0.1));
-    absl::optional<TestObject> b(TestObject(4, 1.0));
-    a = absl::nullopt;
-    b = absl::nullopt;
+    Optional<TestObject> a(TestObject(3, 0.1));
+    Optional<TestObject> b(TestObject(4, 1.0));
+    a = base::nullopt;
+    b = base::nullopt;
     EXPECT_TRUE(a == b);
   }
 }
@@ -848,8 +849,8 @@ TEST(OptionalTest, AssignOverload) {
     State state = State::CONSTRUCTED;
   };
 
-  // Here, absl::optional<Test2> can be assigned from absl::optional<Test1>.  In
-  // case of move, marks MOVED to Test1 instance.
+  // Here, Optional<Test2> can be assigned from Optioanl<Test1>.
+  // In case of move, marks MOVED to Test1 instance.
   struct Test2 {
     enum class State {
       DEFAULT_CONSTRUCTED,
@@ -879,8 +880,8 @@ TEST(OptionalTest, AssignOverload) {
   };
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test2> b;
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b;
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -890,8 +891,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test2> b(absl::in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b(absl::in_place);
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -901,8 +902,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test2> b;
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b;
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -912,8 +913,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test2> b(absl::in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test2> b(absl::in_place);
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -923,11 +924,10 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   // Similar to Test2, but Test3 also has copy/move ctor and assign operators
-  // from absl::optional<Test1>, too. In this case, for a = b where a is
-  // absl::optional<Test3> and b is absl::optional<Test1>,
-  // absl::optional<T>::operator=(U&&) where U is absl::optional<Test1> should
-  // be used rather than absl::optional<T>::operator=(absl::optional<U>&&) where
-  // U is Test1.
+  // from Optional<Test1>, too. In this case, for a = b where a is
+  // Optional<Test3> and b is Optional<Test1>,
+  // Optional<T>::operator=(U&&) where U is Optional<Test1> should be used
+  // rather than Optional<T>::operator=(Optional<U>&&) where U is Test1.
   struct Test3 {
     enum class State {
       DEFAULT_CONSTRUCTED,
@@ -947,9 +947,9 @@ TEST(OptionalTest, AssignOverload) {
     explicit Test3(Test1&& test1) : state(State::MOVE_CONSTRUCTED_FROM_TEST1) {
       test1.state = Test1::State::MOVED;
     }
-    explicit Test3(const absl::optional<Test1>& test1)
+    explicit Test3(const Optional<Test1>& test1)
         : state(State::COPY_CONSTRUCTED_FROM_OPTIONAL_TEST1) {}
-    explicit Test3(absl::optional<Test1>&& test1)
+    explicit Test3(Optional<Test1>&& test1)
         : state(State::MOVE_CONSTRUCTED_FROM_OPTIONAL_TEST1) {
       // In the following senarios, given |test1| should always have value.
       DCHECK(test1.has_value());
@@ -964,11 +964,11 @@ TEST(OptionalTest, AssignOverload) {
       test1.state = Test1::State::MOVED;
       return *this;
     }
-    Test3& operator=(const absl::optional<Test1>& test1) {
+    Test3& operator=(const Optional<Test1>& test1) {
       state = State::COPY_ASSIGNED_FROM_OPTIONAL_TEST1;
       return *this;
     }
-    Test3& operator=(absl::optional<Test1>&& test1) {
+    Test3& operator=(Optional<Test1>&& test1) {
       state = State::MOVE_ASSIGNED_FROM_OPTIONAL_TEST1;
       // In the following senarios, given |test1| should always have value.
       DCHECK(test1.has_value());
@@ -980,8 +980,8 @@ TEST(OptionalTest, AssignOverload) {
   };
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test3> b;
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b;
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -991,8 +991,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test3> b(absl::in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b(absl::in_place);
 
     b = a;
     EXPECT_TRUE(!!a);
@@ -1002,8 +1002,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test3> b;
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b;
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -1013,8 +1013,8 @@ TEST(OptionalTest, AssignOverload) {
   }
 
   {
-    absl::optional<Test1> a(absl::in_place);
-    absl::optional<Test3> b(absl::in_place);
+    Optional<Test1> a(absl::in_place);
+    Optional<Test3> b(absl::in_place);
 
     b = std::move(a);
     EXPECT_TRUE(!!a);
@@ -1026,89 +1026,88 @@ TEST(OptionalTest, AssignOverload) {
 
 TEST(OptionalTest, OperatorStar) {
   {
-    absl::optional<float> a(0.1f);
+    Optional<float> a(0.1f);
     EXPECT_EQ(a.value(), *a);
   }
 
   {
-    absl::optional<std::string> a("foo");
+    Optional<std::string> a("foo");
     EXPECT_EQ(a.value(), *a);
   }
 
   {
-    absl::optional<TestObject> a(TestObject(3, 0.1));
+    Optional<TestObject> a(TestObject(3, 0.1));
     EXPECT_EQ(a.value(), *a);
   }
 }
 
 TEST(OptionalTest, OperatorStar_rvalue) {
-  EXPECT_EQ(0.1f, *absl::optional<float>(0.1f));
-  EXPECT_EQ(std::string("foo"), *absl::optional<std::string>("foo"));
-  EXPECT_TRUE(TestObject(3, 0.1) ==
-              *absl::optional<TestObject>(TestObject(3, 0.1)));
+  EXPECT_EQ(0.1f, *Optional<float>(0.1f));
+  EXPECT_EQ(std::string("foo"), *Optional<std::string>("foo"));
+  EXPECT_TRUE(TestObject(3, 0.1) == *Optional<TestObject>(TestObject(3, 0.1)));
 }
 
 TEST(OptionalTest, OperatorArrow) {
-  absl::optional<TestObject> a(TestObject(3, 0.1));
+  Optional<TestObject> a(TestObject(3, 0.1));
   EXPECT_EQ(a->foo(), 3);
 }
 
 TEST(OptionalTest, Value_rvalue) {
-  EXPECT_EQ(0.1f, absl::optional<float>(0.1f).value());
-  EXPECT_EQ(std::string("foo"), absl::optional<std::string>("foo").value());
+  EXPECT_EQ(0.1f, Optional<float>(0.1f).value());
+  EXPECT_EQ(std::string("foo"), Optional<std::string>("foo").value());
   EXPECT_TRUE(TestObject(3, 0.1) ==
-              absl::optional<TestObject>(TestObject(3, 0.1)).value());
+              Optional<TestObject>(TestObject(3, 0.1)).value());
 }
 
 TEST(OptionalTest, ValueOr) {
   {
-    absl::optional<float> a;
+    Optional<float> a;
     EXPECT_EQ(0.0f, a.value_or(0.0f));
 
     a = 0.1f;
     EXPECT_EQ(0.1f, a.value_or(0.0f));
 
-    a = absl::nullopt;
+    a = base::nullopt;
     EXPECT_EQ(0.0f, a.value_or(0.0f));
   }
 
   // value_or() can be constexpr.
   {
-    constexpr absl::optional<int> a(absl::in_place, 1);
+    constexpr Optional<int> a(absl::in_place, 1);
     constexpr int value = a.value_or(10);
     EXPECT_EQ(1, value);
   }
   {
-    constexpr absl::optional<int> a;
+    constexpr Optional<int> a;
     constexpr int value = a.value_or(10);
     EXPECT_EQ(10, value);
   }
 
   {
-    absl::optional<std::string> a;
+    Optional<std::string> a;
     EXPECT_EQ("bar", a.value_or("bar"));
 
     a = std::string("foo");
     EXPECT_EQ(std::string("foo"), a.value_or("bar"));
 
-    a = absl::nullopt;
+    a = base::nullopt;
     EXPECT_EQ(std::string("bar"), a.value_or("bar"));
   }
 
   {
-    absl::optional<TestObject> a;
+    Optional<TestObject> a;
     EXPECT_TRUE(a.value_or(TestObject(1, 0.3)) == TestObject(1, 0.3));
 
     a = TestObject(3, 0.1);
     EXPECT_TRUE(a.value_or(TestObject(1, 0.3)) == TestObject(3, 0.1));
 
-    a = absl::nullopt;
+    a = base::nullopt;
     EXPECT_TRUE(a.value_or(TestObject(1, 0.3)) == TestObject(1, 0.3));
   }
 }
 
 TEST(OptionalTest, Swap_bothNoValue) {
-  absl::optional<TestObject> a, b;
+  Optional<TestObject> a, b;
   a.swap(b);
 
   EXPECT_FALSE(a);
@@ -1118,8 +1117,8 @@ TEST(OptionalTest, Swap_bothNoValue) {
 }
 
 TEST(OptionalTest, Swap_inHasValue) {
-  absl::optional<TestObject> a(TestObject(1, 0.3));
-  absl::optional<TestObject> b;
+  Optional<TestObject> a(TestObject(1, 0.3));
+  Optional<TestObject> b;
   a.swap(b);
 
   EXPECT_FALSE(a);
@@ -1130,8 +1129,8 @@ TEST(OptionalTest, Swap_inHasValue) {
 }
 
 TEST(OptionalTest, Swap_outHasValue) {
-  absl::optional<TestObject> a;
-  absl::optional<TestObject> b(TestObject(1, 0.3));
+  Optional<TestObject> a;
+  Optional<TestObject> b(TestObject(1, 0.3));
   a.swap(b);
 
   EXPECT_TRUE(!!a);
@@ -1141,8 +1140,8 @@ TEST(OptionalTest, Swap_outHasValue) {
 }
 
 TEST(OptionalTest, Swap_bothValue) {
-  absl::optional<TestObject> a(TestObject(0, 0.1));
-  absl::optional<TestObject> b(TestObject(1, 0.3));
+  Optional<TestObject> a(TestObject(0, 0.1));
+  Optional<TestObject> b(TestObject(1, 0.3));
   a.swap(b);
 
   EXPECT_TRUE(!!a);
@@ -1155,7 +1154,7 @@ TEST(OptionalTest, Swap_bothValue) {
 
 TEST(OptionalTest, Emplace) {
   {
-    absl::optional<float> a(0.1f);
+    Optional<float> a(0.1f);
     EXPECT_EQ(0.3f, a.emplace(0.3f));
 
     EXPECT_TRUE(a);
@@ -1163,7 +1162,7 @@ TEST(OptionalTest, Emplace) {
   }
 
   {
-    absl::optional<std::string> a("foo");
+    Optional<std::string> a("foo");
     EXPECT_EQ("bar", a.emplace("bar"));
 
     EXPECT_TRUE(a);
@@ -1171,7 +1170,7 @@ TEST(OptionalTest, Emplace) {
   }
 
   {
-    absl::optional<TestObject> a(TestObject(0, 0.1));
+    Optional<TestObject> a(TestObject(0, 0.1));
     EXPECT_EQ(TestObject(1, 0.2), a.emplace(TestObject(1, 0.2)));
 
     EXPECT_TRUE(!!a);
@@ -1179,7 +1178,7 @@ TEST(OptionalTest, Emplace) {
   }
 
   {
-    absl::optional<std::vector<int>> a;
+    Optional<std::vector<int>> a;
     auto& ref = a.emplace({2, 3});
     static_assert(std::is_same<std::vector<int>&, decltype(ref)>::value, "");
     EXPECT_TRUE(a);
@@ -1188,7 +1187,7 @@ TEST(OptionalTest, Emplace) {
   }
 
   {
-    absl::optional<std::vector<int>> a;
+    Optional<std::vector<int>> a;
     auto& ref = a.emplace({4, 5}, std::allocator<int>());
     static_assert(std::is_same<std::vector<int>&, decltype(ref)>::value, "");
     EXPECT_TRUE(a);
@@ -1198,773 +1197,778 @@ TEST(OptionalTest, Emplace) {
 }
 
 TEST(OptionalTest, Equals_TwoEmpty) {
-  absl::optional<int> a;
-  absl::optional<int> b;
+  Optional<int> a;
+  Optional<int> b;
 
   EXPECT_TRUE(a == b);
 }
 
 TEST(OptionalTest, Equals_TwoEquals) {
-  absl::optional<int> a(1);
-  absl::optional<int> b(1);
+  Optional<int> a(1);
+  Optional<int> b(1);
 
   EXPECT_TRUE(a == b);
 }
 
 TEST(OptionalTest, Equals_OneEmpty) {
-  absl::optional<int> a;
-  absl::optional<int> b(1);
+  Optional<int> a;
+  Optional<int> b(1);
 
   EXPECT_FALSE(a == b);
 }
 
 TEST(OptionalTest, Equals_TwoDifferent) {
-  absl::optional<int> a(0);
-  absl::optional<int> b(1);
+  Optional<int> a(0);
+  Optional<int> b(1);
 
   EXPECT_FALSE(a == b);
 }
 
 TEST(OptionalTest, Equals_DifferentType) {
-  absl::optional<int> a(0);
-  absl::optional<double> b(0);
+  Optional<int> a(0);
+  Optional<double> b(0);
 
   EXPECT_TRUE(a == b);
 }
 
 TEST(OptionalTest, NotEquals_TwoEmpty) {
-  absl::optional<int> a;
-  absl::optional<int> b;
+  Optional<int> a;
+  Optional<int> b;
 
   EXPECT_FALSE(a != b);
 }
 
 TEST(OptionalTest, NotEquals_TwoEquals) {
-  absl::optional<int> a(1);
-  absl::optional<int> b(1);
+  Optional<int> a(1);
+  Optional<int> b(1);
 
   EXPECT_FALSE(a != b);
 }
 
 TEST(OptionalTest, NotEquals_OneEmpty) {
-  absl::optional<int> a;
-  absl::optional<int> b(1);
+  Optional<int> a;
+  Optional<int> b(1);
 
   EXPECT_TRUE(a != b);
 }
 
 TEST(OptionalTest, NotEquals_TwoDifferent) {
-  absl::optional<int> a(0);
-  absl::optional<int> b(1);
+  Optional<int> a(0);
+  Optional<int> b(1);
 
   EXPECT_TRUE(a != b);
 }
 
 TEST(OptionalTest, NotEquals_DifferentType) {
-  absl::optional<int> a(0);
-  absl::optional<double> b(0.0);
+  Optional<int> a(0);
+  Optional<double> b(0.0);
 
   EXPECT_FALSE(a != b);
 }
 
 TEST(OptionalTest, Less_LeftEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r(1);
+  Optional<int> l;
+  Optional<int> r(1);
 
   EXPECT_TRUE(l < r);
 }
 
 TEST(OptionalTest, Less_RightEmpty) {
-  absl::optional<int> l(1);
-  absl::optional<int> r;
+  Optional<int> l(1);
+  Optional<int> r;
 
   EXPECT_FALSE(l < r);
 }
 
 TEST(OptionalTest, Less_BothEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r;
+  Optional<int> l;
+  Optional<int> r;
 
   EXPECT_FALSE(l < r);
 }
 
 TEST(OptionalTest, Less_BothValues) {
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(2);
+    Optional<int> l(1);
+    Optional<int> r(2);
 
     EXPECT_TRUE(l < r);
   }
   {
-    absl::optional<int> l(2);
-    absl::optional<int> r(1);
+    Optional<int> l(2);
+    Optional<int> r(1);
 
     EXPECT_FALSE(l < r);
   }
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(1);
+    Optional<int> l(1);
+    Optional<int> r(1);
 
     EXPECT_FALSE(l < r);
   }
 }
 
 TEST(OptionalTest, Less_DifferentType) {
-  absl::optional<int> l(1);
-  absl::optional<double> r(2.0);
+  Optional<int> l(1);
+  Optional<double> r(2.0);
 
   EXPECT_TRUE(l < r);
 }
 
 TEST(OptionalTest, LessEq_LeftEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r(1);
+  Optional<int> l;
+  Optional<int> r(1);
 
   EXPECT_TRUE(l <= r);
 }
 
 TEST(OptionalTest, LessEq_RightEmpty) {
-  absl::optional<int> l(1);
-  absl::optional<int> r;
+  Optional<int> l(1);
+  Optional<int> r;
 
   EXPECT_FALSE(l <= r);
 }
 
 TEST(OptionalTest, LessEq_BothEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r;
+  Optional<int> l;
+  Optional<int> r;
 
   EXPECT_TRUE(l <= r);
 }
 
 TEST(OptionalTest, LessEq_BothValues) {
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(2);
+    Optional<int> l(1);
+    Optional<int> r(2);
 
     EXPECT_TRUE(l <= r);
   }
   {
-    absl::optional<int> l(2);
-    absl::optional<int> r(1);
+    Optional<int> l(2);
+    Optional<int> r(1);
 
     EXPECT_FALSE(l <= r);
   }
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(1);
+    Optional<int> l(1);
+    Optional<int> r(1);
 
     EXPECT_TRUE(l <= r);
   }
 }
 
 TEST(OptionalTest, LessEq_DifferentType) {
-  absl::optional<int> l(1);
-  absl::optional<double> r(2.0);
+  Optional<int> l(1);
+  Optional<double> r(2.0);
 
   EXPECT_TRUE(l <= r);
 }
 
 TEST(OptionalTest, Greater_BothEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r;
+  Optional<int> l;
+  Optional<int> r;
 
   EXPECT_FALSE(l > r);
 }
 
 TEST(OptionalTest, Greater_LeftEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r(1);
+  Optional<int> l;
+  Optional<int> r(1);
 
   EXPECT_FALSE(l > r);
 }
 
 TEST(OptionalTest, Greater_RightEmpty) {
-  absl::optional<int> l(1);
-  absl::optional<int> r;
+  Optional<int> l(1);
+  Optional<int> r;
 
   EXPECT_TRUE(l > r);
 }
 
 TEST(OptionalTest, Greater_BothValue) {
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(2);
+    Optional<int> l(1);
+    Optional<int> r(2);
 
     EXPECT_FALSE(l > r);
   }
   {
-    absl::optional<int> l(2);
-    absl::optional<int> r(1);
+    Optional<int> l(2);
+    Optional<int> r(1);
 
     EXPECT_TRUE(l > r);
   }
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(1);
+    Optional<int> l(1);
+    Optional<int> r(1);
 
     EXPECT_FALSE(l > r);
   }
 }
 
 TEST(OptionalTest, Greater_DifferentType) {
-  absl::optional<int> l(1);
-  absl::optional<double> r(2.0);
+  Optional<int> l(1);
+  Optional<double> r(2.0);
 
   EXPECT_FALSE(l > r);
 }
 
 TEST(OptionalTest, GreaterEq_BothEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r;
+  Optional<int> l;
+  Optional<int> r;
 
   EXPECT_TRUE(l >= r);
 }
 
 TEST(OptionalTest, GreaterEq_LeftEmpty) {
-  absl::optional<int> l;
-  absl::optional<int> r(1);
+  Optional<int> l;
+  Optional<int> r(1);
 
   EXPECT_FALSE(l >= r);
 }
 
 TEST(OptionalTest, GreaterEq_RightEmpty) {
-  absl::optional<int> l(1);
-  absl::optional<int> r;
+  Optional<int> l(1);
+  Optional<int> r;
 
   EXPECT_TRUE(l >= r);
 }
 
 TEST(OptionalTest, GreaterEq_BothValue) {
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(2);
+    Optional<int> l(1);
+    Optional<int> r(2);
 
     EXPECT_FALSE(l >= r);
   }
   {
-    absl::optional<int> l(2);
-    absl::optional<int> r(1);
+    Optional<int> l(2);
+    Optional<int> r(1);
 
     EXPECT_TRUE(l >= r);
   }
   {
-    absl::optional<int> l(1);
-    absl::optional<int> r(1);
+    Optional<int> l(1);
+    Optional<int> r(1);
 
     EXPECT_TRUE(l >= r);
   }
 }
 
 TEST(OptionalTest, GreaterEq_DifferentType) {
-  absl::optional<int> l(1);
-  absl::optional<double> r(2.0);
+  Optional<int> l(1);
+  Optional<double> r(2.0);
 
   EXPECT_FALSE(l >= r);
 }
 
 TEST(OptionalTest, OptNullEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(opt == absl::nullopt);
+    Optional<int> opt;
+    EXPECT_TRUE(opt == base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(opt == absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(opt == base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(absl::nullopt == opt);
+    Optional<int> opt;
+    EXPECT_TRUE(base::nullopt == opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(absl::nullopt == opt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(base::nullopt == opt);
   }
 }
 
 TEST(OptionalTest, OptNullNotEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(opt != absl::nullopt);
+    Optional<int> opt;
+    EXPECT_FALSE(opt != base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(opt != absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(opt != base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptNotEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(absl::nullopt != opt);
+    Optional<int> opt;
+    EXPECT_FALSE(base::nullopt != opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(absl::nullopt != opt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(base::nullopt != opt);
   }
 }
 
 TEST(OptionalTest, OptNullLower) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(opt < absl::nullopt);
+    Optional<int> opt;
+    EXPECT_FALSE(opt < base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(opt < absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(opt < base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptLower) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(absl::nullopt < opt);
+    Optional<int> opt;
+    EXPECT_FALSE(base::nullopt < opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(absl::nullopt < opt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(base::nullopt < opt);
   }
 }
 
 TEST(OptionalTest, OptNullLowerEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(opt <= absl::nullopt);
+    Optional<int> opt;
+    EXPECT_TRUE(opt <= base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(opt <= absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(opt <= base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptLowerEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(absl::nullopt <= opt);
+    Optional<int> opt;
+    EXPECT_TRUE(base::nullopt <= opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(absl::nullopt <= opt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(base::nullopt <= opt);
   }
 }
 
 TEST(OptionalTest, OptNullGreater) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(opt > absl::nullopt);
+    Optional<int> opt;
+    EXPECT_FALSE(opt > base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(opt > absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(opt > base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptGreater) {
   {
-    absl::optional<int> opt;
-    EXPECT_FALSE(absl::nullopt > opt);
+    Optional<int> opt;
+    EXPECT_FALSE(base::nullopt > opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(absl::nullopt > opt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(base::nullopt > opt);
   }
 }
 
 TEST(OptionalTest, OptNullGreaterEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(opt >= absl::nullopt);
+    Optional<int> opt;
+    EXPECT_TRUE(opt >= base::nullopt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_TRUE(opt >= absl::nullopt);
+    Optional<int> opt(1);
+    EXPECT_TRUE(opt >= base::nullopt);
   }
 }
 
 TEST(OptionalTest, NullOptGreaterEq) {
   {
-    absl::optional<int> opt;
-    EXPECT_TRUE(absl::nullopt >= opt);
+    Optional<int> opt;
+    EXPECT_TRUE(base::nullopt >= opt);
   }
   {
-    absl::optional<int> opt(1);
-    EXPECT_FALSE(absl::nullopt >= opt);
+    Optional<int> opt(1);
+    EXPECT_FALSE(base::nullopt >= opt);
   }
 }
 
 TEST(OptionalTest, ValueEq_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(opt == 1);
 }
 
 TEST(OptionalTest, ValueEq_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(opt == 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(opt == 1);
   }
 }
 
 TEST(OptionalTest, ValueEq_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(opt == 0.0);
 }
 
 TEST(OptionalTest, EqValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(1 == opt);
 }
 
 TEST(OptionalTest, EqValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(1 == opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(1 == opt);
   }
 }
 
 TEST(OptionalTest, EqValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(0.0 == opt);
 }
 
 TEST(OptionalTest, ValueNotEq_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(opt != 1);
 }
 
 TEST(OptionalTest, ValueNotEq_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(opt != 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(opt != 1);
   }
 }
 
 TEST(OPtionalTest, ValueNotEq_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_FALSE(opt != 0.0);
 }
 
 TEST(OptionalTest, NotEqValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(1 != opt);
 }
 
 TEST(OptionalTest, NotEqValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(1 != opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(1 != opt);
   }
 }
 
 TEST(OptionalTest, NotEqValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_FALSE(0.0 != opt);
 }
 
 TEST(OptionalTest, ValueLess_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(opt < 1);
 }
 
 TEST(OptionalTest, ValueLess_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(opt < 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(opt < 1);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_FALSE(opt < 1);
   }
 }
 
 TEST(OPtionalTest, ValueLess_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(opt < 1.0);
 }
 
 TEST(OptionalTest, LessValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(1 < opt);
 }
 
 TEST(OptionalTest, LessValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(1 < opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(1 < opt);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_TRUE(1 < opt);
   }
 }
 
 TEST(OptionalTest, LessValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_FALSE(0.0 < opt);
 }
 
 TEST(OptionalTest, ValueLessEq_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(opt <= 1);
 }
 
 TEST(OptionalTest, ValueLessEq_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(opt <= 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(opt <= 1);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_FALSE(opt <= 1);
   }
 }
 
 TEST(OptionalTest, ValueLessEq_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(opt <= 0.0);
 }
 
 TEST(OptionalTest, LessEqValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(1 <= opt);
 }
 
 TEST(OptionalTest, LessEqValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(1 <= opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(1 <= opt);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_TRUE(1 <= opt);
   }
 }
 
 TEST(OptionalTest, LessEqValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(0.0 <= opt);
 }
 
 TEST(OptionalTest, ValueGreater_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(opt > 1);
 }
 
 TEST(OptionalTest, ValueGreater_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(opt > 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(opt > 1);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_TRUE(opt > 1);
   }
 }
 
 TEST(OptionalTest, ValueGreater_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_FALSE(opt > 0.0);
 }
 
 TEST(OptionalTest, GreaterValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(1 > opt);
 }
 
 TEST(OptionalTest, GreaterValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(1 > opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_FALSE(1 > opt);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_FALSE(1 > opt);
   }
 }
 
 TEST(OptionalTest, GreaterValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_FALSE(0.0 > opt);
 }
 
 TEST(OptionalTest, ValueGreaterEq_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_FALSE(opt >= 1);
 }
 
 TEST(OptionalTest, ValueGreaterEq_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_FALSE(opt >= 1);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(opt >= 1);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_TRUE(opt >= 1);
   }
 }
 
 TEST(OptionalTest, ValueGreaterEq_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(opt <= 0.0);
 }
 
 TEST(OptionalTest, GreaterEqValue_Empty) {
-  absl::optional<int> opt;
+  Optional<int> opt;
   EXPECT_TRUE(1 >= opt);
 }
 
 TEST(OptionalTest, GreaterEqValue_NotEmpty) {
   {
-    absl::optional<int> opt(0);
+    Optional<int> opt(0);
     EXPECT_TRUE(1 >= opt);
   }
   {
-    absl::optional<int> opt(1);
+    Optional<int> opt(1);
     EXPECT_TRUE(1 >= opt);
   }
   {
-    absl::optional<int> opt(2);
+    Optional<int> opt(2);
     EXPECT_FALSE(1 >= opt);
   }
 }
 
 TEST(OptionalTest, GreaterEqValue_DifferentType) {
-  absl::optional<int> opt(0);
+  Optional<int> opt(0);
   EXPECT_TRUE(0.0 >= opt);
 }
 
 TEST(OptionalTest, NotEquals) {
   {
-    absl::optional<float> a(0.1f);
-    absl::optional<float> b(0.2f);
+    Optional<float> a(0.1f);
+    Optional<float> b(0.2f);
     EXPECT_NE(a, b);
   }
 
   {
-    absl::optional<std::string> a("foo");
-    absl::optional<std::string> b("bar");
+    Optional<std::string> a("foo");
+    Optional<std::string> b("bar");
     EXPECT_NE(a, b);
   }
 
   {
-    absl::optional<int> a(1);
-    absl::optional<double> b(2);
+    Optional<int> a(1);
+    Optional<double> b(2);
     EXPECT_NE(a, b);
   }
 
   {
-    absl::optional<TestObject> a(TestObject(3, 0.1));
-    absl::optional<TestObject> b(TestObject(4, 1.0));
+    Optional<TestObject> a(TestObject(3, 0.1));
+    Optional<TestObject> b(TestObject(4, 1.0));
     EXPECT_TRUE(a != b);
   }
 }
 
 TEST(OptionalTest, NotEqualsNull) {
   {
-    absl::optional<float> a(0.1f);
-    absl::optional<float> b(0.1f);
-    b = absl::nullopt;
+    Optional<float> a(0.1f);
+    Optional<float> b(0.1f);
+    b = base::nullopt;
     EXPECT_NE(a, b);
   }
 
   {
-    absl::optional<std::string> a("foo");
-    absl::optional<std::string> b("foo");
-    b = absl::nullopt;
+    Optional<std::string> a("foo");
+    Optional<std::string> b("foo");
+    b = base::nullopt;
     EXPECT_NE(a, b);
   }
 
   {
-    absl::optional<TestObject> a(TestObject(3, 0.1));
-    absl::optional<TestObject> b(TestObject(3, 0.1));
-    b = absl::nullopt;
+    Optional<TestObject> a(TestObject(3, 0.1));
+    Optional<TestObject> b(TestObject(3, 0.1));
+    b = base::nullopt;
     EXPECT_TRUE(a != b);
   }
 }
 
 TEST(OptionalTest, MakeOptional) {
   {
-    absl::optional<float> o = absl::make_optional(32.f);
+    // Use qualified base::make_optional here and elsewhere to avoid the name
+    // confliction to std::make_optional.
+    // The name conflict happens only for types in std namespace, such as
+    // std::string. The other qualified base::make_optional usages are just for
+    // consistency.
+    Optional<float> o = base::make_optional(32.f);
     EXPECT_TRUE(o);
     EXPECT_EQ(32.f, *o);
 
     float value = 3.f;
-    o = absl::make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(o);
     EXPECT_EQ(3.f, *o);
   }
 
   {
-    absl::optional<std::string> o = absl::make_optional(std::string("foo"));
+    Optional<std::string> o = base::make_optional(std::string("foo"));
     EXPECT_TRUE(o);
     EXPECT_EQ("foo", *o);
 
     std::string value = "bar";
-    o = absl::make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(o);
     EXPECT_EQ(std::string("bar"), *o);
   }
 
   {
-    absl::optional<TestObject> o = absl::make_optional(TestObject(3, 0.1));
+    Optional<TestObject> o = base::make_optional(TestObject(3, 0.1));
     EXPECT_TRUE(!!o);
     EXPECT_TRUE(TestObject(3, 0.1) == *o);
 
     TestObject value = TestObject(0, 0.42);
-    o = absl::make_optional(std::move(value));
+    o = base::make_optional(std::move(value));
     EXPECT_TRUE(!!o);
     EXPECT_TRUE(TestObject(0, 0.42) == *o);
     EXPECT_EQ(TestObject::State::MOVED_FROM, value.state());
     EXPECT_EQ(TestObject::State::MOVE_ASSIGNED, o->state());
 
     EXPECT_EQ(TestObject::State::MOVE_CONSTRUCTED,
-              absl::make_optional(std::move(value))->state());
+              base::make_optional(std::move(value))->state());
   }
 
   {
@@ -1976,7 +1980,7 @@ TEST(OptionalTest, MakeOptional) {
       bool c;
     };
 
-    absl::optional<Test> o = absl::make_optional<Test>(1, 2.0, true);
+    Optional<Test> o = base::make_optional<Test>(1, 2.0, true);
     EXPECT_TRUE(!!o);
     EXPECT_EQ(1, o->a);
     EXPECT_EQ(2.0, o->b);
@@ -1984,17 +1988,17 @@ TEST(OptionalTest, MakeOptional) {
   }
 
   {
-    auto str1 = absl::make_optional<std::string>({'1', '2', '3'});
+    auto str1 = base::make_optional<std::string>({'1', '2', '3'});
     EXPECT_EQ("123", *str1);
 
-    auto str2 = absl::make_optional<std::string>({'a', 'b', 'c'},
+    auto str2 = base::make_optional<std::string>({'a', 'b', 'c'},
                                                  std::allocator<char>());
     EXPECT_EQ("abc", *str2);
   }
 }
 
 TEST(OptionalTest, NonMemberSwap_bothNoValue) {
-  absl::optional<TestObject> a, b;
+  Optional<TestObject> a, b;
   absl::swap(a, b);
 
   EXPECT_FALSE(!!a);
@@ -2004,8 +2008,8 @@ TEST(OptionalTest, NonMemberSwap_bothNoValue) {
 }
 
 TEST(OptionalTest, NonMemberSwap_inHasValue) {
-  absl::optional<TestObject> a(TestObject(1, 0.3));
-  absl::optional<TestObject> b;
+  Optional<TestObject> a(TestObject(1, 0.3));
+  Optional<TestObject> b;
   absl::swap(a, b);
 
   EXPECT_FALSE(!!a);
@@ -2015,8 +2019,8 @@ TEST(OptionalTest, NonMemberSwap_inHasValue) {
 }
 
 TEST(OptionalTest, NonMemberSwap_outHasValue) {
-  absl::optional<TestObject> a;
-  absl::optional<TestObject> b(TestObject(1, 0.3));
+  Optional<TestObject> a;
+  Optional<TestObject> b(TestObject(1, 0.3));
   absl::swap(a, b);
 
   EXPECT_TRUE(!!a);
@@ -2026,8 +2030,8 @@ TEST(OptionalTest, NonMemberSwap_outHasValue) {
 }
 
 TEST(OptionalTest, NonMemberSwap_bothValue) {
-  absl::optional<TestObject> a(TestObject(0, 0.1));
-  absl::optional<TestObject> b(TestObject(1, 0.3));
+  Optional<TestObject> a(TestObject(0, 0.1));
+  Optional<TestObject> b(TestObject(1, 0.3));
   absl::swap(a, b);
 
   EXPECT_TRUE(!!a);
@@ -2041,57 +2045,57 @@ TEST(OptionalTest, NonMemberSwap_bothValue) {
 TEST(OptionalTest, Hash_OptionalReflectsInternal) {
   {
     std::hash<int> int_hash;
-    std::hash<absl::optional<int>> opt_int_hash;
+    std::hash<Optional<int>> opt_int_hash;
 
-    EXPECT_EQ(int_hash(1), opt_int_hash(absl::optional<int>(1)));
+    EXPECT_EQ(int_hash(1), opt_int_hash(Optional<int>(1)));
   }
 
   {
     std::hash<std::string> str_hash;
-    std::hash<absl::optional<std::string>> opt_str_hash;
+    std::hash<Optional<std::string>> opt_str_hash;
 
     EXPECT_EQ(str_hash(std::string("foobar")),
-              opt_str_hash(absl::optional<std::string>(std::string("foobar"))));
+              opt_str_hash(Optional<std::string>(std::string("foobar"))));
   }
 }
 
 TEST(OptionalTest, Hash_NullOptEqualsNullOpt) {
-  std::hash<absl::optional<int>> opt_int_hash;
-  std::hash<absl::optional<std::string>> opt_str_hash;
+  std::hash<Optional<int>> opt_int_hash;
+  std::hash<Optional<std::string>> opt_str_hash;
 
-  EXPECT_EQ(opt_str_hash(absl::optional<std::string>()),
-            opt_int_hash(absl::optional<int>()));
+  EXPECT_EQ(opt_str_hash(Optional<std::string>()),
+            opt_int_hash(Optional<int>()));
 }
 
 TEST(OptionalTest, Hash_UseInSet) {
-  std::set<absl::optional<int>> setOptInt;
+  std::set<Optional<int>> setOptInt;
 
   EXPECT_EQ(setOptInt.end(), setOptInt.find(42));
 
-  setOptInt.insert(absl::optional<int>(3));
+  setOptInt.insert(Optional<int>(3));
   EXPECT_EQ(setOptInt.end(), setOptInt.find(42));
   EXPECT_NE(setOptInt.end(), setOptInt.find(3));
 }
 
 TEST(OptionalTest, HasValue) {
-  absl::optional<int> a;
+  Optional<int> a;
   EXPECT_FALSE(a.has_value());
 
   a = 42;
   EXPECT_TRUE(a.has_value());
 
-  a = absl::nullopt;
+  a = nullopt;
   EXPECT_FALSE(a.has_value());
 
   a = 0;
   EXPECT_TRUE(a.has_value());
 
-  a = absl::optional<int>();
+  a = Optional<int>();
   EXPECT_FALSE(a.has_value());
 }
 
 TEST(OptionalTest, Reset_int) {
-  absl::optional<int> a(0);
+  Optional<int> a(0);
   EXPECT_TRUE(a.has_value());
   EXPECT_EQ(0, a.value());
 
@@ -2101,7 +2105,7 @@ TEST(OptionalTest, Reset_int) {
 }
 
 TEST(OptionalTest, Reset_Object) {
-  absl::optional<TestObject> a(TestObject(0, 0.1));
+  Optional<TestObject> a(TestObject(0, 0.1));
   EXPECT_TRUE(a.has_value());
   EXPECT_EQ(TestObject(0, 0.1), a.value());
 
@@ -2111,7 +2115,7 @@ TEST(OptionalTest, Reset_Object) {
 }
 
 TEST(OptionalTest, Reset_NoOp) {
-  absl::optional<int> a;
+  Optional<int> a;
   EXPECT_FALSE(a.has_value());
 
   a.reset();
@@ -2119,7 +2123,7 @@ TEST(OptionalTest, Reset_NoOp) {
 }
 
 TEST(OptionalTest, AssignFromRValue) {
-  absl::optional<TestObject> a;
+  Optional<TestObject> a;
   EXPECT_FALSE(a.has_value());
 
   TestObject obj;
@@ -2129,16 +2133,16 @@ TEST(OptionalTest, AssignFromRValue) {
 }
 
 TEST(OptionalTest, DontCallDefaultCtor) {
-  absl::optional<DeletedDefaultConstructor> a;
+  Optional<DeletedDefaultConstructor> a;
   EXPECT_FALSE(a.has_value());
 
-  a = absl::make_optional<DeletedDefaultConstructor>(42);
+  a = base::make_optional<DeletedDefaultConstructor>(42);
   EXPECT_TRUE(a.has_value());
   EXPECT_EQ(42, a->foo());
 }
 
 TEST(OptionalTest, DontCallNewMemberFunction) {
-  absl::optional<DeleteNewOperators> a;
+  Optional<DeleteNewOperators> a;
   EXPECT_FALSE(a.has_value());
 
   a = DeleteNewOperators();
@@ -2152,7 +2156,7 @@ TEST(OptionalTest, DereferencingNoValueCrashes) {
   };
 
   {
-    const absl::optional<C> const_optional;
+    const Optional<C> const_optional;
     EXPECT_DEATH_IF_SUPPORTED(const_optional.value(), "");
     EXPECT_DEATH_IF_SUPPORTED(const_optional->Method(), "");
     EXPECT_DEATH_IF_SUPPORTED(*const_optional, "");
@@ -2160,7 +2164,7 @@ TEST(OptionalTest, DereferencingNoValueCrashes) {
   }
 
   {
-    absl::optional<C> non_const_optional;
+    Optional<C> non_const_optional;
     EXPECT_DEATH_IF_SUPPORTED(non_const_optional.value(), "");
     EXPECT_DEATH_IF_SUPPORTED(non_const_optional->Method(), "");
     EXPECT_DEATH_IF_SUPPORTED(*non_const_optional, "");
@@ -2198,41 +2202,41 @@ TEST(OptionalTest, Noexcept) {
   };
 
   static_assert(
-      noexcept(absl::optional<int>(std::declval<absl::optional<int>>())),
+      noexcept(Optional<int>(std::declval<Optional<int>>())),
       "move constructor for noexcept move-constructible T must be noexcept "
       "(trivial copy, trivial move)");
   static_assert(
-      !noexcept(absl::optional<Test1>(std::declval<absl::optional<Test1>>())),
+      !noexcept(Optional<Test1>(std::declval<Optional<Test1>>())),
       "move constructor for non-noexcept move-constructible T must not be "
       "noexcept (trivial copy)");
   static_assert(
-      noexcept(absl::optional<Test2>(std::declval<absl::optional<Test2>>())),
+      noexcept(Optional<Test2>(std::declval<Optional<Test2>>())),
       "move constructor for noexcept move-constructible T must be noexcept "
       "(non-trivial copy, trivial move)");
   static_assert(
-      noexcept(absl::optional<Test3>(std::declval<absl::optional<Test3>>())),
+      noexcept(Optional<Test3>(std::declval<Optional<Test3>>())),
       "move constructor for noexcept move-constructible T must be noexcept "
       "(trivial copy, non-trivial move)");
   static_assert(
-      noexcept(absl::optional<Test4>(std::declval<absl::optional<Test4>>())),
+      noexcept(Optional<Test4>(std::declval<Optional<Test4>>())),
       "move constructor for noexcept move-constructible T must be noexcept "
       "(non-trivial copy, non-trivial move)");
   static_assert(
-      !noexcept(absl::optional<Test5>(std::declval<absl::optional<Test5>>())),
+      !noexcept(Optional<Test5>(std::declval<Optional<Test5>>())),
       "move constructor for non-noexcept move-constructible T must not be "
       "noexcept (non-trivial copy)");
 
-  static_assert(noexcept(std::declval<absl::optional<int>>() =
-                             std::declval<absl::optional<int>>()),
-                "move assign for noexcept move-constructible/move-assignable T "
-                "must be noexcept");
   static_assert(
-      !noexcept(std::declval<absl::optional<Test1>>() =
-                    std::declval<absl::optional<Test1>>()),
+      noexcept(std::declval<Optional<int>>() = std::declval<Optional<int>>()),
+      "move assign for noexcept move-constructible/move-assignable T "
+      "must be noexcept");
+  static_assert(
+      !noexcept(std::declval<Optional<Test1>>() =
+                    std::declval<Optional<Test1>>()),
       "move assign for non-noexcept move-constructible T must not be noexcept");
   static_assert(
-      !noexcept(std::declval<absl::optional<Test2>>() =
-                    std::declval<absl::optional<Test2>>()),
+      !noexcept(std::declval<Optional<Test2>>() =
+                    std::declval<Optional<Test2>>()),
       "move assign for non-noexcept move-assignable T must not be noexcept");
 }
 
@@ -2242,7 +2246,7 @@ TEST(OptionalTest, OverrideAddressOf) {
   static_assert(std::is_trivially_destructible<
                     TriviallyDestructibleOverloadAddressOf>::value,
                 "Trivially...AddressOf must be trivially destructible.");
-  absl::optional<TriviallyDestructibleOverloadAddressOf> optional;
+  Optional<TriviallyDestructibleOverloadAddressOf> optional;
   TriviallyDestructibleOverloadAddressOf n;
   optional = n;
 
@@ -2257,7 +2261,7 @@ TEST(OptionalTest, OverrideAddressOf) {
   static_assert(!std::is_trivially_destructible<
                     NonTriviallyDestructibleOverloadAddressOf>::value,
                 "NotTrivially...AddressOf must not be trivially destructible.");
-  absl::optional<NonTriviallyDestructibleOverloadAddressOf> nontrivial_optional;
+  Optional<NonTriviallyDestructibleOverloadAddressOf> nontrivial_optional;
   NonTriviallyDestructibleOverloadAddressOf n1;
   nontrivial_optional = n1;
 }

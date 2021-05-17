@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace util {
 
@@ -55,20 +54,20 @@ TEST(MemoryPressureVoterTest, OnVote) {
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
 
   aggregator.OnVoteForTesting(
-      absl::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+      base::nullopt, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
   // vote count = 1,0,0
   EXPECT_EQ(aggregator.EvaluateVotesForTesting(),
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
 
   aggregator.OnVoteForTesting(
-      absl::nullopt,
+      base::nullopt,
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   // vote count = 1,0,1
   EXPECT_EQ(aggregator.EvaluateVotesForTesting(),
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   aggregator.OnVoteForTesting(
-      absl::nullopt,
+      base::nullopt,
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   // vote count = 1,1,1
   EXPECT_EQ(aggregator.EvaluateVotesForTesting(),
@@ -83,7 +82,7 @@ TEST(MemoryPressureVoterTest, OnVote) {
 
   aggregator.OnVoteForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-      absl::nullopt);
+      base::nullopt);
   // vote count = 1,1,0
   EXPECT_EQ(aggregator.EvaluateVotesForTesting(),
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);

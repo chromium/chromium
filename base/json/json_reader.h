@@ -43,9 +43,9 @@
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -72,10 +72,10 @@ class BASE_EXPORT JSONReader {
     ValueWithError& operator=(ValueWithError&& other);
     ~ValueWithError();
 
-    absl::optional<Value> value;
+    Optional<Value> value;
 
     // Contains default values if |value| exists, or the error status if |value|
-    // is absl::nullopt.
+    // is base::nullopt.
     std::string error_message;
     int error_line = 0;
     int error_column = 0;
@@ -84,11 +84,10 @@ class BASE_EXPORT JSONReader {
   };
 
   // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns absl::nullopt.
-  static absl::optional<Value> Read(
-      StringPiece json,
-      int options = JSON_PARSE_RFC,
-      size_t max_depth = internal::kAbsoluteMaxDepth);
+  // If |json| is not a properly formed JSON string, returns base::nullopt.
+  static Optional<Value> Read(StringPiece json,
+                              int options = JSON_PARSE_RFC,
+                              size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Deprecated. Use the Read() method above.
   // Reads and parses |json|, returning a Value.

@@ -10,9 +10,9 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/optional.h"
 #include "base/parameter_pack.h"
 #include "base/template_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A bag of Traits (structs / enums / etc...) can be an elegant alternative to
 // the builder pattern and multiple default arguments for configuring things.
@@ -182,11 +182,11 @@ struct EnumTraitFilter : public BasicTraitFilter<ArgType> {
 
 template <typename ArgType>
 struct OptionalEnumTraitFilter
-    : public BasicTraitFilter<ArgType, absl::optional<ArgType>> {
+    : public BasicTraitFilter<ArgType, Optional<ArgType>> {
   constexpr OptionalEnumTraitFilter()
-      : BasicTraitFilter<ArgType, absl::optional<ArgType>>(absl::nullopt) {}
+      : BasicTraitFilter<ArgType, Optional<ArgType>>(nullopt) {}
   constexpr OptionalEnumTraitFilter(ArgType arg)
-      : BasicTraitFilter<ArgType, absl::optional<ArgType>>(arg) {}
+      : BasicTraitFilter<ArgType, Optional<ArgType>>(arg) {}
 };
 
 // Tests whether multiple given argtument types are all valid traits according
@@ -237,7 +237,7 @@ static constexpr Enum GetEnum(Args... args) {
 // Helper to make getting an optional enum from a trait with a default more
 // readable.
 template <typename Enum, typename... Args>
-static constexpr absl::optional<Enum> GetOptionalEnum(Args... args) {
+static constexpr Optional<Enum> GetOptionalEnum(Args... args) {
   return GetTraitFromArgList<OptionalEnumTraitFilter<Enum>>(args...);
 }
 

@@ -29,7 +29,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -112,7 +111,7 @@ class BASE_EXPORT TaskQueueImpl {
   bool IsEmpty() const;
   size_t GetNumberOfPendingTasks() const;
   bool HasTaskToRunImmediately() const;
-  absl::optional<TimeTicks> GetNextScheduledWakeUp();
+  Optional<TimeTicks> GetNextScheduledWakeUp();
   void SetQueuePriority(TaskQueue::QueuePriority priority);
   TaskQueue::QueuePriority GetQueuePriority() const;
   void AddTaskObserver(TaskObserver* task_observer);
@@ -236,7 +235,7 @@ class BASE_EXPORT TaskQueueImpl {
   bool IsUnregistered() const;
 
  protected:
-  void SetDelayedWakeUpForTesting(absl::optional<DelayedWakeUp> wake_up);
+  void SetDelayedWakeUpForTesting(Optional<DelayedWakeUp> wake_up);
 
  private:
   friend class WorkQueue;
@@ -358,7 +357,7 @@ class BASE_EXPORT TaskQueueImpl {
     bool is_enabled = true;
     trace_event::BlameContext* blame_context = nullptr;  // Not owned.
     EnqueueOrder current_fence;
-    absl::optional<TimeTicks> delayed_fence;
+    Optional<TimeTicks> delayed_fence;
     // Snapshots the next sequence number when the queue is unblocked, otherwise
     // it contains EnqueueOrder::none(). If the EnqueueOrder of a task just
     // popped from this queue is greater than this, it means that the queue was
@@ -386,12 +385,12 @@ class BASE_EXPORT TaskQueueImpl {
     OnTaskCompletedHandler on_task_completed_handler;
     // Last reported wake up, used only in UpdateWakeUp to avoid
     // excessive calls.
-    absl::optional<DelayedWakeUp> scheduled_wake_up;
+    Optional<DelayedWakeUp> scheduled_wake_up;
     // If false, queue will be disabled. Used only for tests.
     bool is_enabled_for_test = true;
     // The time at which the task queue was disabled, if it is currently
     // disabled.
-    absl::optional<TimeTicks> disabled_time;
+    Optional<TimeTicks> disabled_time;
     // Whether or not the task queue should emit tracing events for tasks
     // posted to this queue when it is disabled.
     bool should_report_posted_tasks_when_disabled = false;
@@ -412,7 +411,7 @@ class BASE_EXPORT TaskQueueImpl {
   // threads.
   void PushOntoDelayedIncomingQueue(Task pending_task);
 
-  absl::optional<DelayedWakeUp> GetNextScheduledWakeUpImpl();
+  Optional<DelayedWakeUp> GetNextScheduledWakeUpImpl();
 
   void ScheduleDelayedWorkTask(Task pending_task);
 
@@ -436,7 +435,7 @@ class BASE_EXPORT TaskQueueImpl {
   // Schedules delayed work on time domain and calls the observer.
   void UpdateDelayedWakeUp(LazyNow* lazy_now);
   void UpdateDelayedWakeUpImpl(LazyNow* lazy_now,
-                               absl::optional<DelayedWakeUp> wake_up);
+                               Optional<DelayedWakeUp> wake_up);
 
   // Activate a delayed fence if a time has come.
   void ActivateDelayedFenceIfNeeded(TimeTicks now);
@@ -484,7 +483,7 @@ class BASE_EXPORT TaskQueueImpl {
       ~TracingOnly();
 
       bool is_enabled = true;
-      absl::optional<TimeTicks> disabled_time;
+      Optional<TimeTicks> disabled_time;
       bool should_report_posted_tasks_when_disabled = false;
     };
 

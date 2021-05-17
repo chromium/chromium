@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
@@ -34,7 +35,6 @@
 
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)
 #include "base/task/thread_pool/task_tracker_posix.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if defined(OS_WIN)
@@ -115,7 +115,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // immediate, nullopt if none). This is thread-safe, i.e., it's safe if tasks
   // are being posted in parallel with this call but such a situation obviously
   // results in a race as to whether this call will see the new tasks in time.
-  absl::optional<TimeTicks> NextScheduledRunTimeForTesting() const;
+  Optional<TimeTicks> NextScheduledRunTimeForTesting() const;
 
   // Forces ripe delayed tasks to be posted (e.g. when time is mocked and
   // advances faster than the real-time delay on ServiceThread).

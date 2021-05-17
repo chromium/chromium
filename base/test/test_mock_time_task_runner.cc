@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -351,7 +350,7 @@ void TestMockTimeTaskRunner::ProcessTasksNoLaterThan(TimeDelta max_delta,
 
   // Multiple test task runners can share the same thread for determinism in
   // unit tests. Make sure this TestMockTimeTaskRunner's tasks run in its scope.
-  absl::optional<ThreadTaskRunnerHandleOverrideForTesting> ttrh_override;
+  base::Optional<ThreadTaskRunnerHandleOverrideForTesting> ttrh_override;
   if (!ThreadTaskRunnerHandle::IsSet() ||
       ThreadTaskRunnerHandle::Get() != proxy_task_runner_.get()) {
     ttrh_override.emplace(proxy_task_runner_.get());

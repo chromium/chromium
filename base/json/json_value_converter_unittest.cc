@@ -12,7 +12,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -105,7 +104,7 @@ TEST(JSONValueConverterTest, ParseSimpleMessage) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -148,7 +147,7 @@ TEST(JSONValueConverterTest, ParseNestedMessage) {
       "  }]\n"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   NestedMessage message;
   base::JSONValueConverter<NestedMessage> converter;
@@ -191,7 +190,7 @@ TEST(JSONValueConverterTest, ParseFailures) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -208,7 +207,7 @@ TEST(JSONValueConverterTest, ParseWithMissingFields) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -232,7 +231,7 @@ TEST(JSONValueConverterTest, EnumParserFails) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -250,7 +249,7 @@ TEST(JSONValueConverterTest, RepeatedValueErrorInTheMiddle) {
       "  \"ints\": [1, false]"
       "}\n";
 
-  absl::optional<Value> value = base::JSONReader::Read(normal_data);
+  Optional<Value> value = base::JSONReader::Read(normal_data);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;

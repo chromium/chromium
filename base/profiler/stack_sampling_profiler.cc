@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "base/win/static_constants.h"
@@ -173,7 +172,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                   base::TimeTicks period_end,
                                   int64_t name_hash,
-                                  absl::optional<int64_t> key,
+                                  Optional<int64_t> key,
                                   int64_t value);
 
   // Removes an active collection based on its collection id, forcing it to run
@@ -230,7 +229,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   void ApplyMetadataToPastSamplesTask(base::TimeTicks period_start,
                                       base::TimeTicks period_end,
                                       int64_t name_hash,
-                                      absl::optional<int64_t> key,
+                                      Optional<int64_t> key,
                                       int64_t value);
   void RemoveCollectionTask(int collection_id);
   void RecordSampleTask(int collection_id);
@@ -399,7 +398,7 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     int64_t name_hash,
-    absl::optional<int64_t> key,
+    Optional<int64_t> key,
     int64_t value) {
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
@@ -567,7 +566,7 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     int64_t name_hash,
-    absl::optional<int64_t> key,
+    Optional<int64_t> key,
     int64_t value) {
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
   MetadataRecorder::Item item(name_hash, key, value);
@@ -891,7 +890,7 @@ void StackSamplingProfiler::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
     int64_t name_hash,
-    absl::optional<int64_t> key,
+    Optional<int64_t> key,
     int64_t value) {
   SamplingThread::GetInstance()->ApplyMetadataToPastSamples(
       period_start, period_end, name_hash, key, value);

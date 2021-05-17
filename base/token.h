@@ -12,7 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/hash/hash.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -80,7 +80,7 @@ class PickleIterator;
 
 // For serializing and deserializing Token values.
 BASE_EXPORT void WriteTokenToPickle(Pickle* pickle, const Token& token);
-BASE_EXPORT absl::optional<Token> ReadTokenFromPickle(
+BASE_EXPORT Optional<Token> ReadTokenFromPickle(
     PickleIterator* pickle_iterator);
 
 }  // namespace base

@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/category_registry.h"
@@ -25,7 +26,6 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RefCountedString;
@@ -110,7 +110,7 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   void StopATrace();
   void AddClockSyncMetadataEvent();
   void SetupATraceStartupTrace(const std::string& category_filter);
-  absl::optional<TraceConfig> TakeATraceStartupConfig();
+  Optional<TraceConfig> TakeATraceStartupConfig();
 #endif  // defined(OS_ANDROID)
 
   // Enabled state listeners give a callback when tracing is enabled or
@@ -577,7 +577,7 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   FilterFactoryForTesting filter_factory_for_testing_;
 
 #if defined(OS_ANDROID)
-  absl::optional<TraceConfig> atrace_startup_config_;
+  base::Optional<TraceConfig> atrace_startup_config_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(TraceLog);

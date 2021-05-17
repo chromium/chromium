@@ -5,7 +5,6 @@
 #include "base/profiler/arm_cfi_table.h"
 
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -85,7 +84,7 @@ ArmCFITable::ArmCFITable(span<const uint32_t> function_addresses,
 
 ArmCFITable::~ArmCFITable() = default;
 
-absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
+Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
     uintptr_t address) const {
   DCHECK(!function_addresses_.empty());
 
@@ -95,7 +94,7 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
   auto func_it = ranges::upper_bound(function_addresses_, address);
   // If no function comes before |address|, no CFI entry  is returned.
   if (func_it == function_addresses_.begin())
-    return absl::nullopt;
+    return nullopt;
   --func_it;
 
   uint32_t func_start_addr = *func_it;
@@ -104,26 +103,26 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
   DCHECK_LE(func_start_addr, address);
 
   if (index == kNoUnwindInformation)
-    return absl::nullopt;
+    return nullopt;
 
   // The unwind data for the current function is at a 2 bytes offset of the
   // index found in UNW_INDEX table.
   if (entry_data_.size() <= index * sizeof(uint16_t))
-    return absl::nullopt;
+    return nullopt;
   BufferIterator<const uint8_t> entry_iterator(entry_data_);
   entry_iterator.Seek(index * sizeof(uint16_t));
 
   // The value of first 2 bytes is the CFI data row count for the function.
   const uint16_t* row_count = entry_iterator.Object<uint16_t>();
   if (row_count == nullptr)
-    return absl::nullopt;
+    return nullopt;
   // And the actual CFI rows start after 2 bytes from the |unwind_data|. Cast
   // the data into an array of CFIUnwindDataRow since the struct is designed to
   // represent each row. We should be careful to read only |row_count| number of
   // elements in the array.
   auto function_cfi = entry_iterator.Span<CFIDataRow>(*row_count);
   if (function_cfi.size() != *row_count)
-    return absl::nullopt;
+    return nullopt;
 
   FrameEntry last_frame_entry = {0, 0};
   // Iterate through all function entries to find a range covering |address|.
@@ -139,7 +138,7 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
 
     uint32_t cfa_offset = entry.cfa_offset();
     if (cfa_offset == 0)
-      return absl::nullopt;
+      return nullopt;
     last_frame_entry.cfa_offset = cfa_offset;
 
     uint32_t ra_offset = entry.ra_offset();
@@ -151,7 +150,7 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
       last_frame_entry.ra_offset = ra_offset;
 
     if (last_frame_entry.ra_offset == 0)
-      return absl::nullopt;
+      return nullopt;
   }
 
   return last_frame_entry;

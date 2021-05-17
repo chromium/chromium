@@ -22,7 +22,7 @@ namespace win {
 
 namespace {
 
-absl::optional<DWORD> WellKnownCapabilityToRid(WellKnownCapability capability) {
+Optional<DWORD> WellKnownCapabilityToRid(WellKnownCapability capability) {
   switch (capability) {
     case WellKnownCapability::kInternetClient:
       return SECURITY_CAPABILITY_INTERNET_CLIENT;
@@ -49,10 +49,10 @@ absl::optional<DWORD> WellKnownCapabilityToRid(WellKnownCapability capability) {
     case WellKnownCapability::kContacts:
       return SECURITY_CAPABILITY_CONTACTS;
   }
-  return absl::nullopt;
+  return nullopt;
 }
 
-absl::optional<WELL_KNOWN_SID_TYPE> WellKnownSidToEnum(WellKnownSid sid) {
+Optional<WELL_KNOWN_SID_TYPE> WellKnownSidToEnum(WellKnownSid sid) {
   switch (sid) {
     case WellKnownSid::kNull:
       return WinNullSid;
@@ -109,16 +109,15 @@ absl::optional<WELL_KNOWN_SID_TYPE> WellKnownSidToEnum(WellKnownSid sid) {
       NOTREACHED();
       break;
   }
-  return absl::nullopt;
+  return nullopt;
 }
 
-absl::optional<Sid> FromSubAuthorities(
-    PSID_IDENTIFIER_AUTHORITY identifier_authority,
-    BYTE sub_authority_count,
-    PDWORD sub_authorities) {
+Optional<Sid> FromSubAuthorities(PSID_IDENTIFIER_AUTHORITY identifier_authority,
+                                 BYTE sub_authority_count,
+                                 PDWORD sub_authorities) {
   BYTE sid[SECURITY_MAX_SID_SIZE];
   if (!::InitializeSid(sid, identifier_authority, sub_authority_count))
-    return absl::nullopt;
+    return nullopt;
 
   for (DWORD index = 0; index < sub_authority_count; ++index) {
     PDWORD sub_authority = ::GetSidSubAuthority(sid, index);
@@ -127,7 +126,7 @@ absl::optional<Sid> FromSubAuthorities(
   return Sid::FromPSID(sid);
 }
 
-absl::optional<std::vector<Sid>> FromStringVector(
+Optional<std::vector<Sid>> FromStringVector(
     const std::vector<const wchar_t*>& strs,
     decltype(Sid::FromSddlString)* create_sid) {
   std::vector<Sid> converted_sids;
@@ -135,7 +134,7 @@ absl::optional<std::vector<Sid>> FromStringVector(
   for (const wchar_t* str : strs) {
     auto sid = create_sid(str);
     if (!sid)
-      return absl::nullopt;
+      return nullopt;
     converted_sids.push_back(std::move(*sid));
   }
   return converted_sids;
@@ -147,10 +146,10 @@ Sid::Sid(const void* sid, size_t length)
     : sid_(static_cast<const char*>(sid),
            static_cast<const char*>(sid) + length) {}
 
-absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
-  absl::optional<DWORD> capability_rid = WellKnownCapabilityToRid(capability);
+Optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
+  Optional<DWORD> capability_rid = WellKnownCapabilityToRid(capability);
   if (!capability_rid)
-    return absl::nullopt;
+    return nullopt;
   SID_IDENTIFIER_AUTHORITY capability_authority = {
       SECURITY_APP_PACKAGE_AUTHORITY};
   DWORD sub_authorities[] = {SECURITY_CAPABILITY_BASE_RID, *capability_rid};
@@ -158,11 +157,11 @@ absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
                             sub_authorities);
 }
 
-absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
+Optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
   DCHECK_GE(GetVersion(), Version::WIN10);
 
   if (!capability_name || !*capability_name)
-    return absl::nullopt;
+    return nullopt;
 
   typedef decltype(
       ::DeriveCapabilitySidsFromName)* DeriveCapabilitySidsFromNameFunc;
@@ -176,7 +175,7 @@ absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
         ::GetProcAddress(module, "DeriveCapabilitySidsFromName"));
   }();
   if (!derive_capability_sids)
-    return absl::nullopt;
+    return nullopt;
 
   // Pre-reserve some space for SID deleters.
   std::vector<ScopedLocalAlloc> deleter_list;
@@ -190,7 +189,7 @@ absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
   if (!derive_capability_sids(capability_name, &capability_groups,
                               &capability_group_count, &capability_sids,
                               &capability_sid_count)) {
-    return absl::nullopt;
+    return nullopt;
   }
 
   deleter_list.emplace_back(capability_groups);
@@ -204,12 +203,12 @@ absl::optional<Sid> Sid::FromNamedCapability(const wchar_t* capability_name) {
   }
 
   if (capability_sid_count < 1)
-    return absl::nullopt;
+    return nullopt;
 
   return FromPSID(capability_sids[0]);
 }
 
-absl::optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
+Optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
   if (type == WellKnownSid::kAllRestrictedApplicationPackages) {
     SID_IDENTIFIER_AUTHORITY package_authority = {
         SECURITY_APP_PACKAGE_AUTHORITY};
@@ -220,30 +219,30 @@ absl::optional<Sid> Sid::FromKnownSid(WellKnownSid type) {
 
   BYTE sid[SECURITY_MAX_SID_SIZE];
   DWORD size_sid = SECURITY_MAX_SID_SIZE;
-  absl::optional<WELL_KNOWN_SID_TYPE> known_sid = WellKnownSidToEnum(type);
+  Optional<WELL_KNOWN_SID_TYPE> known_sid = WellKnownSidToEnum(type);
   if (!known_sid)
-    return absl::nullopt;
+    return nullopt;
   if (!::CreateWellKnownSid(*known_sid, nullptr, sid, &size_sid))
-    return absl::nullopt;
+    return nullopt;
 
   return Sid(sid, size_sid);
 }
 
-absl::optional<Sid> Sid::FromSddlString(const wchar_t* sddl_sid) {
+Optional<Sid> Sid::FromSddlString(const wchar_t* sddl_sid) {
   PSID psid = nullptr;
   if (!::ConvertStringSidToSid(sddl_sid, &psid))
-    return absl::nullopt;
+    return nullopt;
   return FromPSID(TakeLocalAlloc(psid).get());
 }
 
-absl::optional<Sid> Sid::FromPSID(PSID sid) {
+Optional<Sid> Sid::FromPSID(PSID sid) {
   DCHECK(sid);
   if (!sid || !::IsValidSid(sid))
-    return absl::nullopt;
+    return nullopt;
   return Sid(sid, ::GetLengthSid(sid));
 }
 
-absl::optional<Sid> Sid::GenerateRandomSid() {
+Optional<Sid> Sid::GenerateRandomSid() {
   SID_IDENTIFIER_AUTHORITY package_authority = {SECURITY_NULL_SID_AUTHORITY};
   DWORD sub_authorities[4] = {};
   RandBytes(&sub_authorities, sizeof(sub_authorities));
@@ -251,37 +250,37 @@ absl::optional<Sid> Sid::GenerateRandomSid() {
                             sub_authorities);
 }
 
-absl::optional<Sid> Sid::CurrentUser() {
+Optional<Sid> Sid::CurrentUser() {
   // Get the current token.
   HANDLE token = nullptr;
   if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
-    return absl::nullopt;
+    return nullopt;
   ScopedHandle token_scoped(token);
 
   char user_buffer[sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(user_buffer);
 
   if (!::GetTokenInformation(token, TokenUser, user_buffer, size, &size))
-    return absl::nullopt;
+    return nullopt;
 
   TOKEN_USER* user = reinterpret_cast<TOKEN_USER*>(user_buffer);
   if (!user->User.Sid)
-    return absl::nullopt;
+    return nullopt;
   return Sid::FromPSID(user->User.Sid);
 }
 
-absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
+Optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
   SID_IDENTIFIER_AUTHORITY package_authority = {
       SECURITY_MANDATORY_LABEL_AUTHORITY};
   return FromSubAuthorities(&package_authority, 1, &integrity_level);
 }
 
-absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
+Optional<std::vector<Sid>> Sid::FromSddlStringVector(
     const std::vector<const wchar_t*>& sddl_sids) {
   return FromStringVector(sddl_sids, Sid::FromSddlString);
 }
 
-absl::optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
+Optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
     const std::vector<const wchar_t*>& capability_names) {
   return FromStringVector(capability_names, Sid::FromNamedCapability);
 }
@@ -294,10 +293,10 @@ PSID Sid::GetPSID() const {
 }
 
 // Converts the SID to an SDDL format string.
-absl::optional<std::wstring> Sid::ToSddlString() const {
+Optional<std::wstring> Sid::ToSddlString() const {
   LPWSTR sid = nullptr;
   if (!::ConvertSidToStringSid(GetPSID(), &sid))
-    return absl::nullopt;
+    return nullopt;
   return TakeLocalAlloc(sid).get();
 }
 

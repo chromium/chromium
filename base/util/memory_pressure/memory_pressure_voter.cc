@@ -8,7 +8,6 @@
 
 #include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace util {
 
@@ -19,7 +18,7 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
   ~MemoryPressureVoterImpl() override {
     // Remove this voter's vote.
     if (vote_)
-      aggregator_->OnVote(vote_, absl::nullopt);
+      aggregator_->OnVote(vote_, base::nullopt);
   }
 
   MemoryPressureVoterImpl(MemoryPressureVoterImpl&&) = delete;
@@ -39,9 +38,9 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
   // This is the aggregator to which this voter's votes will be cast.
   MemoryPressureVoteAggregator* const aggregator_;
 
-  // optional<> is used here as the vote will be null until the voter's
+  // Optional<> is used here as the vote will be null until the voter's
   // first vote calculation.
-  absl::optional<base::MemoryPressureListener::MemoryPressureLevel> vote_;
+  base::Optional<base::MemoryPressureListener::MemoryPressureLevel> vote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -59,8 +58,8 @@ MemoryPressureVoteAggregator::CreateVoter() {
 }
 
 void MemoryPressureVoteAggregator::OnVoteForTesting(
-    absl::optional<MemoryPressureLevel> old_vote,
-    absl::optional<MemoryPressureLevel> new_vote) {
+    base::Optional<MemoryPressureLevel> old_vote,
+    base::Optional<MemoryPressureLevel> new_vote) {
   OnVote(old_vote, new_vote);
 }
 
@@ -74,8 +73,8 @@ MemoryPressureVoteAggregator::EvaluateVotesForTesting() {
 }
 
 void MemoryPressureVoteAggregator::OnVote(
-    absl::optional<MemoryPressureLevel> old_vote,
-    absl::optional<MemoryPressureLevel> new_vote) {
+    base::Optional<MemoryPressureLevel> old_vote,
+    base::Optional<MemoryPressureLevel> new_vote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(old_vote || new_vote);
   if (old_vote) {

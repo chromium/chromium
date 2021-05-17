@@ -622,7 +622,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void GetSystemNsSupportedOnMainThread();
 
   // Handle dbus callback for GetSystemNsSupported.
-  void HandleGetSystemNsSupported(absl::optional<bool> system_ns_supported);
+  void HandleGetSystemNsSupported(base::Optional<bool> system_ns_supported);
 
   // Calling dbus to get system AGC supported flag.
   void GetSystemAgcSupported();
@@ -631,7 +631,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void GetSystemAgcSupportedOnMainThread();
 
   // Handle dbus callback for GetSystemAgcSupported.
-  void HandleGetSystemAgcSupported(absl::optional<bool> system_agc_supported);
+  void HandleGetSystemAgcSupported(base::Optional<bool> system_agc_supported);
 
   void OnVideoCaptureStartedOnMainThread(media::VideoFacingMode facing);
   void OnVideoCaptureStoppedOnMainThread(media::VideoFacingMode facing);

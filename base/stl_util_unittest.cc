@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -715,7 +714,7 @@ TEST(STLUtilTest, TryEmplaceWrongHints) {
 }
 
 TEST(STLUtilTest, OptionalOrNullptr) {
-  absl::optional<float> optional;
+  Optional<float> optional;
   EXPECT_EQ(nullptr, base::OptionalOrNullptr(optional));
 
   optional = 0.1f;

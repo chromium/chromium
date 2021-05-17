@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -48,7 +48,7 @@ bool ValidateTestLocation(const Value* test_locations,
                           int line);
 
 // Read json output file of test launcher.
-absl::optional<Value> ReadSummary(const FilePath& path);
+Optional<Value> ReadSummary(const FilePath& path);
 
 }  // namespace test_launcher_utils
 

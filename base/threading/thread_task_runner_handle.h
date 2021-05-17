@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 namespace scheduler {
@@ -95,12 +94,12 @@ class BASE_EXPORT ThreadTaskRunnerHandleOverride {
       scoped_refptr<SingleThreadTaskRunner> overriding_task_runner,
       bool allow_nested_runloop = false);
 
-  absl::optional<ThreadTaskRunnerHandle> top_level_thread_task_runner_handle_;
+  base::Optional<ThreadTaskRunnerHandle> top_level_thread_task_runner_handle_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_to_restore_;
 #if DCHECK_IS_ON()
   SingleThreadTaskRunner* expected_task_runner_before_restore_{nullptr};
 #endif
-  absl::optional<RunLoop::ScopedDisallowRunning> no_running_during_override_;
+  base::Optional<RunLoop::ScopedDisallowRunning> no_running_during_override_;
 };
 
 // Note: nesting ThreadTaskRunnerHandles isn't generally desired but it's useful

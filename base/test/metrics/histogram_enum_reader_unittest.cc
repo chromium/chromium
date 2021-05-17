@@ -4,8 +4,8 @@
 
 #include "base/test/metrics/histogram_enum_reader.h"
 
+#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -15,15 +15,14 @@ TEST(HistogramEnumReaderTest, SanityChecks) {
     // otherwise inject content would circumvent a lot of the logic of the
     // method and add additional complexity. "Boolean" is hopefully a pretty
     // stable enum.
-    absl::optional<HistogramEnumEntryMap> results =
-        ReadEnumFromEnumsXml("Boolean");
+    Optional<HistogramEnumEntryMap> results = ReadEnumFromEnumsXml("Boolean");
     ASSERT_TRUE(results);
     EXPECT_EQ("False", results->at(0));
     EXPECT_EQ("True", results->at(1));
   }
 
   {
-    absl::optional<HistogramEnumEntryMap> results =
+    Optional<HistogramEnumEntryMap> results =
         ReadEnumFromEnumsXml("TheWorstNameForAnEnum");
     ASSERT_FALSE(results);
   }

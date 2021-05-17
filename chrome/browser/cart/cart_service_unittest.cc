@@ -1086,7 +1086,7 @@ class CartServiceDiscountTest : public CartServiceTest {
     CartServiceTest::SetUp();
 
     // Add a partner merchant cart.
-    service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+    service_->AddCart(kMockMerchantA, base::nullopt, kMockProtoA);
     task_environment_.RunUntilIdle();
   }
 };

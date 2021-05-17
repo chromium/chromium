@@ -61,7 +61,6 @@
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #endif  // OS_FUCHSIA
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace logging {
 
@@ -738,7 +737,7 @@ TEST_F(LoggingTest, FuchsiaSystemLogging) {
   // test listener.
   LOG(ERROR) << kLogMessage;
 
-  absl::optional<fuchsia::logger::LogMessage> logged_message =
+  base::Optional<fuchsia::logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());

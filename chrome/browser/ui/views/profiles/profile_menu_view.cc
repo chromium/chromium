@@ -82,7 +82,7 @@ ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
   switch (error) {
     case sync_ui_util::NO_SYNC_ERROR:
       NOTREACHED();
-      // TODO(crbug.com/1191411): Convert NO_SYNC_ERROR to absl::nullopt. This
+      // TODO(crbug.com/1191411): Convert NO_SYNC_ERROR to base::nullopt. This
       // case is treated differently in a few places in this file today, and
       // will be even more in the future.
       return {42, 42,

@@ -9,6 +9,7 @@
 
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"
@@ -24,7 +25,6 @@
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -197,7 +197,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   // Reset at the start of each unit of work to cover the work itself and then
   // transition to the next one.
-  absl::optional<WatchHangsInScope> hang_watch_scope_;
+  base::Optional<WatchHangsInScope> hang_watch_scope_;
 };
 
 }  // namespace internal

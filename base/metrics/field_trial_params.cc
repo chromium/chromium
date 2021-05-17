@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -192,7 +191,7 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   if (value_as_string.empty())
     return default_value;
 
-  absl::optional<base::TimeDelta> ret =
+  base::Optional<base::TimeDelta> ret =
       base::TimeDelta::FromString(value_as_string);
   if (!ret.has_value()) {
     DLOG(WARNING)

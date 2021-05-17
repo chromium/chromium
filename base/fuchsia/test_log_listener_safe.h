@@ -12,8 +12,8 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -60,9 +60,9 @@ class SimpleTestLogListener {
                    std::unique_ptr<fuchsia::logger::LogFilterOptions> options);
 
   // Runs the message loop until a log message containing |expected_string| is
-  // received, and returns it. Returns |absl::nullopt| if |binding_| disconnects
+  // received, and returns it. Returns |base::nullopt| if |binding_| disconnects
   // without the |expected_string| having been logged.
-  absl::optional<fuchsia::logger::LogMessage> RunUntilMessageReceived(
+  base::Optional<fuchsia::logger::LogMessage> RunUntilMessageReceived(
       base::StringPiece expected_string);
 
  private:

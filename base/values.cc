@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -280,17 +279,16 @@ const char* Value::GetTypeName(Value::Type type) {
   return kTypeNames[static_cast<size_t>(type)];
 }
 
-absl::optional<bool> Value::GetIfBool() const {
-  return is_bool() ? absl::make_optional(GetBool()) : absl::nullopt;
+Optional<bool> Value::GetIfBool() const {
+  return is_bool() ? make_optional(GetBool()) : nullopt;
 }
 
-absl::optional<int> Value::GetIfInt() const {
-  return is_int() ? absl::make_optional(GetInt()) : absl::nullopt;
+Optional<int> Value::GetIfInt() const {
+  return is_int() ? make_optional(GetInt()) : nullopt;
 }
 
-absl::optional<double> Value::GetIfDouble() const {
-  return (is_int() || is_double()) ? absl::make_optional(GetDouble())
-                                   : absl::nullopt;
+Optional<double> Value::GetIfDouble() const {
+  return (is_int() || is_double()) ? make_optional(GetDouble()) : nullopt;
 }
 
 const std::string* Value::GetIfString() const {
@@ -426,23 +424,23 @@ const Value* Value::FindKeyOfType(StringPiece key, Type type) const {
   return result;
 }
 
-absl::optional<bool> Value::FindBoolKey(StringPiece key) const {
+base::Optional<bool> Value::FindBoolKey(StringPiece key) const {
   const Value* result = FindKeyOfType(key, Type::BOOLEAN);
-  return result ? absl::make_optional(result->GetBool()) : absl::nullopt;
+  return result ? base::make_optional(result->GetBool()) : base::nullopt;
 }
 
-absl::optional<int> Value::FindIntKey(StringPiece key) const {
+base::Optional<int> Value::FindIntKey(StringPiece key) const {
   const Value* result = FindKeyOfType(key, Type::INTEGER);
-  return result ? absl::make_optional(result->GetInt()) : absl::nullopt;
+  return result ? base::make_optional(result->GetInt()) : base::nullopt;
 }
 
-absl::optional<double> Value::FindDoubleKey(StringPiece key) const {
+base::Optional<double> Value::FindDoubleKey(StringPiece key) const {
   if (const Value* cur = FindKey(key)) {
     if (cur->is_int() || cur->is_double())
       return cur->GetDouble();
   }
 
-  return absl::nullopt;
+  return base::nullopt;
 }
 
 const std::string* Value::FindStringKey(StringPiece key) const {
@@ -522,10 +520,10 @@ bool Value::RemoveKey(StringPiece key) {
   return dict().erase(key) != 0;
 }
 
-absl::optional<Value> Value::ExtractKey(StringPiece key) {
+Optional<Value> Value::ExtractKey(StringPiece key) {
   auto found = dict().find(key);
   if (found == dict().end())
-    return absl::nullopt;
+    return nullopt;
 
   Value value = std::move(*found->second);
   dict().erase(found);
@@ -558,27 +556,27 @@ const Value* Value::FindPathOfType(StringPiece path, Type type) const {
   return cur;
 }
 
-absl::optional<bool> Value::FindBoolPath(StringPiece path) const {
+base::Optional<bool> Value::FindBoolPath(StringPiece path) const {
   const Value* cur = FindPath(path);
   if (!cur || !cur->is_bool())
-    return absl::nullopt;
+    return base::nullopt;
   return cur->GetBool();
 }
 
-absl::optional<int> Value::FindIntPath(StringPiece path) const {
+base::Optional<int> Value::FindIntPath(StringPiece path) const {
   const Value* cur = FindPath(path);
   if (!cur || !cur->is_int())
-    return absl::nullopt;
+    return base::nullopt;
   return cur->GetInt();
 }
 
-absl::optional<double> Value::FindDoublePath(StringPiece path) const {
+base::Optional<double> Value::FindDoublePath(StringPiece path) const {
   if (const Value* cur = FindPath(path)) {
     if (cur->is_int() || cur->is_double())
       return cur->GetDouble();
   }
 
-  return absl::nullopt;
+  return base::nullopt;
 }
 
 const std::string* Value::FindStringPath(StringPiece path) const {
@@ -647,9 +645,9 @@ bool Value::RemovePath(StringPiece path) {
   return ExtractPath(path).has_value();
 }
 
-absl::optional<Value> Value::ExtractPath(StringPiece path) {
+Optional<Value> Value::ExtractPath(StringPiece path) {
   if (!is_dict() || path.empty())
-    return absl::nullopt;
+    return nullopt;
 
   // NOTE: PathSplitter is not being used here because recursion is used to
   // ensure that dictionaries that become empty due to this operation are
@@ -660,10 +658,9 @@ absl::optional<Value> Value::ExtractPath(StringPiece path) {
 
   auto found = dict().find(path.substr(0, pos));
   if (found == dict().end() || !found->second->is_dict())
-    return absl::nullopt;
+    return nullopt;
 
-  absl::optional<Value> extracted =
-      found->second->ExtractPath(path.substr(pos + 1));
+  Optional<Value> extracted = found->second->ExtractPath(path.substr(pos + 1));
   if (extracted && found->second->dict().empty())
     dict().erase(found);
 

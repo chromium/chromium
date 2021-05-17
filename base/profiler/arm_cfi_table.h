@@ -10,7 +10,7 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -45,7 +45,7 @@ class BASE_EXPORT ArmCFITable {
 
   // Finds the CFI row for the given |address| in terms of offset from the
   // start of the current binary. Concurrent calls are thread safe.
-  absl::optional<FrameEntry> FindEntryForAddress(uintptr_t address) const;
+  Optional<FrameEntry> FindEntryForAddress(uintptr_t address) const;
 
   size_t GetTableSizeForTesting() const { return function_addresses_.size(); }
 

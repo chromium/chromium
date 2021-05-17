@@ -24,6 +24,7 @@
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/scoped_generic.h"
 #include "base/single_thread_task_runner.h"
@@ -34,7 +35,6 @@
 #include "base/threading/thread.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(SUPPORTS_CODE_ORDERING)
 #error Code ordering support is required for the reached code profiler.
@@ -82,14 +82,14 @@ void HandleSignal(int signal, siginfo_t* info, void* context) {
 }
 
 struct ScopedTimerCloseTraits {
-  static absl::optional<timer_t> InvalidValue() { return absl::nullopt; }
+  static base::Optional<timer_t> InvalidValue() { return base::nullopt; }
 
-  static void Free(absl::optional<timer_t> x) { timer_delete(*x); }
+  static void Free(base::Optional<timer_t> x) { timer_delete(*x); }
 };
 
 // RAII object holding an interval timer.
 using ScopedTimer =
-    base::ScopedGeneric<absl::optional<timer_t>, ScopedTimerCloseTraits>;
+    base::ScopedGeneric<base::Optional<timer_t>, ScopedTimerCloseTraits>;
 
 void DumpToFile(const base::FilePath& path,
                 scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

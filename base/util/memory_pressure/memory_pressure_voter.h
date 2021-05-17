@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace util {
 
@@ -47,8 +47,8 @@ class MemoryPressureVoteAggregator {
   // Voter must not out-live the Aggregator.
   std::unique_ptr<MemoryPressureVoter> CreateVoter();
 
-  void OnVoteForTesting(absl::optional<MemoryPressureLevel> old_vote,
-                        absl::optional<MemoryPressureLevel> new_vote);
+  void OnVoteForTesting(base::Optional<MemoryPressureLevel> old_vote,
+                        base::Optional<MemoryPressureLevel> new_vote);
 
   void NotifyListenersForTesting();
 
@@ -64,8 +64,8 @@ class MemoryPressureVoteAggregator {
   // used so a voter can pass null as |old_vote| if this is their first vote, or
   // null as |new_vote| if they are removing their vote (e.g. when the voter is
   // being destroyed). |old_vote| and |new_vote| should never both be null.
-  void OnVote(absl::optional<MemoryPressureLevel> old_vote,
-              absl::optional<MemoryPressureLevel> new_vote);
+  void OnVote(base::Optional<MemoryPressureLevel> old_vote,
+              base::Optional<MemoryPressureLevel> new_vote);
 
   // Triggers a notification of the MemoryPressureMonitor's current pressure
   // level, allowing each of the various sources of input on MemoryPressureLevel
