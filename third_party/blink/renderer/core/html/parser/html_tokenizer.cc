@@ -1519,8 +1519,17 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
 }
 
 bool HTMLTokenizer::SkipWhitespaces(SegmentedString& source, UChar& cc) {
-  if (cc == '\n')  // We could be pointing to '\r'.
-    cc = source.CurrentChar();
+  // The character `cc` is usually not a whitespace, so we check it here
+  // first, before calling the helper.
+  if (!CheckScanFlag(cc, ScanFlags::kWhitespace))
+    return true;
+  return SkipWhitespacesHelper(source, cc);
+}
+
+bool HTMLTokenizer::SkipWhitespacesHelper(SegmentedString& source, UChar& cc) {
+  DCHECK(!source.IsEmpty());
+  DCHECK(IsTokenizerWhitespace(cc));
+  cc = source.CurrentChar();
   while (true) {
     while (CheckScanFlag(cc, ScanFlags::kWhitespaceNotNewline)) {
       cc = source.AdvancePastNonNewline();

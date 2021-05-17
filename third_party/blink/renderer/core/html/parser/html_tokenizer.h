@@ -198,6 +198,7 @@ class CORE_EXPORT HTMLTokenizer {
   // Returns true if it has skipped all the whitespaces and we still have
   // characters in the source.
   ALWAYS_INLINE bool SkipWhitespaces(SegmentedString& source, UChar& cc);
+  NOINLINE bool SkipWhitespacesHelper(SegmentedString& source, UChar& cc);
 
   inline void ParseError();
 
