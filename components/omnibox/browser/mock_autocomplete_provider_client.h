@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
-#include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

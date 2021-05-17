@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 
 #include <numeric>
 
@@ -17,11 +17,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_pedal_concepts.h"
-#include "components/omnibox/browser/omnibox_pedal_implementations.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_resources.h"
 #include "ui/base/resource/resource_bundle.h"

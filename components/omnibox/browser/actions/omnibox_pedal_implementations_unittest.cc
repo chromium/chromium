@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_pedal_implementations.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_controller.h"
 #include "components/omnibox/common/omnibox_features.h"

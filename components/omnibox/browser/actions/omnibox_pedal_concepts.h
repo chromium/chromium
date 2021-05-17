@@ -4,8 +4,8 @@
 
 // This file is tool-generated using pedal_processor.  Do not edit.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_CONCEPTS_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_CONCEPTS_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_
+#define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_
 
 // This value is generated during Pedal concept data processing, and written
 // to all data files as well as the source code here to ensure synchrony.
@@ -50,4 +50,4 @@ enum class OmniboxPedalId {
   TOTAL_COUNT
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_CONCEPTS_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_CONCEPTS_H_

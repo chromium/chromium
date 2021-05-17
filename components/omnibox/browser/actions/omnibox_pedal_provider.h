@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_PROVIDER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_PROVIDER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
+#define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
 
 #include <memory>
 #include <unordered_map>
@@ -12,8 +12,8 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/values.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_pedal_implementations.h"
 
 class OmniboxPedal;
 class AutocompleteInput;
@@ -106,4 +106,4 @@ class OmniboxPedalProvider {
   bool field_trial_triggered_in_session_ = false;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_PROVIDER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_

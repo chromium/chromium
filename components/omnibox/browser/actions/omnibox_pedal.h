@@ -12,8 +12,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/buildflags.h"
-#include "components/omnibox/browser/omnibox_pedal_concepts.h"
 #include "url/gurl.h"
 
 // Conceptually, a Pedal is a fixed action that can be taken by the user
