@@ -98,11 +98,15 @@ class CORE_EXPORT CompositorAnimations {
     // Cases where the scroll timeline source is not composited.
     kTimelineSourceHasInvalidCompositingState = 1 << 16,
 
+    // Cases where there is an animation of compositor properties but they have
+    // been optimized out so the animation of those properties has no effect.
+    kCompositorPropertyAnimationsHaveNoEffect = 1 << 17,
+
     // The maximum number of flags in this enum (excluding itself). New flags
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 17,
+    kFailureReasonCount = 18,
   };
 
   static FailureReasons CheckCanStartAnimationOnCompositor(
@@ -113,6 +117,10 @@ class CORE_EXPORT CompositorAnimations {
       const PaintArtifactCompositor*,
       double animation_playback_rate,
       PropertyHandleSet* unsupported_properties = nullptr);
+  static bool CompositorPropertyAnimationsHaveNoEffect(
+      const Element& target_element,
+      const EffectModel& effect,
+      const PaintArtifactCompositor*);
   static void CancelIncompatibleAnimationsOnCompositor(const Element&,
                                                        const Animation&,
                                                        const EffectModel&);

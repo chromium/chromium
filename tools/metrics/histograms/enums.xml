@@ -12827,6 +12827,7 @@ Called by update_net_error_codes.py.-->
   <int value="16"
       label="Custom property contains different value types in keyframe
              animation"/>
+  <int value="17" label="Compositor property animations have no effect"/>
 </enum>
 
 <enum name="CompositorFrameSinkSubmitResult">

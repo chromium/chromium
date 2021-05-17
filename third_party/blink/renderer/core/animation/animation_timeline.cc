@@ -205,6 +205,14 @@ void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
   }
 }
 
+void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  for (const auto& animation : animations_) {
+    animation->MarkPendingIfCompositorPropertyAnimationChanges(
+        paint_artifact_compositor);
+  }
+}
+
 void AnimationTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(animations_needing_update_);

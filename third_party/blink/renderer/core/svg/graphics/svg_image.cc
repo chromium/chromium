@@ -703,7 +703,7 @@ void SVGImage::ServiceAnimations(
   // directly without worrying about including PaintArtifactCompositor's
   // analysis of whether animations should be composited.
   frame->GetDocument()->GetDocumentAnimations().UpdateAnimations(
-      DocumentLifecycle::kLayoutClean, nullptr);
+      DocumentLifecycle::kLayoutClean, nullptr, false);
 }
 
 void SVGImage::AdvanceAnimationForTesting() {
