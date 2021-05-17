@@ -54,9 +54,5 @@ KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
   return new FullRestoreService(Profile::FromBrowserContext(context));
 }
 
-bool FullRestoreServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
 }  // namespace full_restore
 }  // namespace chromeos
