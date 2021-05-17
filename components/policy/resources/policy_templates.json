@@ -8770,7 +8770,7 @@
       'owners': ['file://components/policy/resources/OWNERS', 'hendrich@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'url_schema': 'https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md',
+      'url_schema': 'https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md',
       'supported_on': ['chrome_os:16-'],
       'features': {
         'dynamic_refresh': True,
@@ -8788,7 +8788,7 @@
       'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'url_schema': 'https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md',
+      'url_schema': 'https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md',
       'supported_on': ['chrome_os:16-'],
       'device_only': True,
       'features': {
@@ -22717,7 +22717,7 @@
 
       Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security and stability as unknown and potentially hostile code can load inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes. Only turn off the policy if there are compatibility issues with third-party software that must run inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s renderer processes.
 
-      Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies ).''',
+      Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).''',
     },
     {
       'name': 'HSTSPolicyBypassList',
