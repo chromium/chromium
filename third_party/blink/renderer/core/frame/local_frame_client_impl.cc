@@ -734,6 +734,18 @@ void LocalFrameClientImpl::DidObserveLazyLoadBehavior(
     client->DidObserveLazyLoadBehavior(lazy_load_behavior);
 }
 
+void LocalFrameClientImpl::PreloadSubresourceOptimizationsForOrigins(
+    const WTF::HashSet<scoped_refptr<const SecurityOrigin>, SecurityOriginHash>&
+        origins) {
+  if (WebLocalFrameClient* client = web_frame_->Client()) {
+    std::vector<WebSecurityOrigin> origins_list;
+    for (const auto& origin : origins) {
+      origins_list.emplace_back(origin);
+    }
+    client->PreloadSubresourceOptimizationsForOrigins(origins_list);
+  }
+}
+
 void LocalFrameClientImpl::SelectorMatchChanged(
     const Vector<String>& added_selectors,
     const Vector<String>& removed_selectors) {

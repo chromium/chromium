@@ -53,6 +53,7 @@ class HTMLParserOptions;
 class HTMLTokenizer;
 class LazyLoadImageObserver;
 class SegmentedString;
+class SubresourceRedirectOriginsPreloader;
 
 struct CORE_EXPORT CachedDocumentParameters {
   USING_FAST_MALLOC(CachedDocumentParameters);
@@ -69,6 +70,8 @@ struct CORE_EXPORT CachedDocumentParameters {
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
   WeakPersistent<LazyLoadImageObserver> lazy_load_image_observer;
+  WeakPersistent<SubresourceRedirectOriginsPreloader>
+      subresource_redirect_origins_preloader;
   HashSet<String> disabled_image_types;
 };
 

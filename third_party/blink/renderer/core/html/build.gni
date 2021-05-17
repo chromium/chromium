@@ -614,6 +614,8 @@ blink_core_hot_sources_html = [
   "parser/pump_session.h",
   "parser/resource_preloader.cc",
   "parser/resource_preloader.h",
+  "parser/subresource_redirect_origins_preloader.h",
+  "parser/subresource_redirect_origins_preloader.cc",
   "parser/text_document_parser.cc",
   "parser/text_document_parser.h",
   "parser/text_resource_decoder.cc",

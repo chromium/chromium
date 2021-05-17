@@ -76,24 +76,14 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     return SubresourceRedirectResult::
         kIneligibleFirstKDisableSubresourceRedirect;
   }
-
-  RobotsRulesParserCache& robots_rules_parser_cache =
-      RobotsRulesParserCache::Get();
-  const auto origin = url::Origin::Create(url);
-  DCHECK(!origin.opaque());
-  if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
-    // Create the robots rules parser and start the fetch as well.
-    robots_rules_parser_cache.CreateRobotsRulesParser(
-        origin, num_should_redirect_checks_ <= GetFirstKSubresourceLimit()
-                    ? GetRobotsRulesReceiveFirstKSubresourceTimeout()
-                    : GetRobotsRulesReceiveTimeout());
-    GetSubresourceRedirectServiceRemote()->GetRobotsRules(
-        origin, base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
-                               robots_rules_parser_cache.GetWeakPtr(), origin));
-  }
+  CreateAndFetchRobotsRules(
+      url::Origin::Create(url),
+      num_should_redirect_checks_ <= GetFirstKSubresourceLimit()
+          ? GetRobotsRulesReceiveFirstKSubresourceTimeout()
+          : GetRobotsRulesReceiveTimeout());
 
   absl::optional<RobotsRulesParser::CheckResult> result =
-      robots_rules_parser_cache.CheckRobotsRules(
+      RobotsRulesParserCache::Get().CheckRobotsRules(
           routing_id(), url,
           base::BindOnce(
               &LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult,
@@ -171,6 +161,29 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
 
 void LoginRobotsDeciderAgent::NotifyIneligibleBlinkDisallowedSubresource() {
   num_should_redirect_checks_++;
+}
+
+void LoginRobotsDeciderAgent::CreateAndFetchRobotsRules(
+    const url::Origin& origin,
+    const base::TimeDelta& rules_receive_timeout) {
+  DCHECK(!origin.opaque());
+  RobotsRulesParserCache& robots_rules_parser_cache =
+      RobotsRulesParserCache::Get();
+  if (!robots_rules_parser_cache.DoRobotsRulesParserExist(origin)) {
+    // Create the robots rules parser and start the fetch as well.
+    robots_rules_parser_cache.CreateRobotsRulesParser(origin,
+                                                      rules_receive_timeout);
+    GetSubresourceRedirectServiceRemote()->GetRobotsRules(
+        origin, base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
+                               robots_rules_parser_cache.GetWeakPtr(), origin));
+  }
+}
+
+void LoginRobotsDeciderAgent::PreloadSubresourceOptimizationsForOrigins(
+    const std::vector<blink::WebSecurityOrigin>& origins) {
+  for (const auto& origin : origins) {
+    CreateAndFetchRobotsRules(origin, GetRobotsRulesReceiveTimeout());
+  }
 }
 
 }  // namespace subresource_redirect

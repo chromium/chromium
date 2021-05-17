@@ -319,6 +319,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory);
 
+  // Notifies the observers of the origins for which subresource redirect
+  // optimizations can be preloaded.
+  virtual void PreloadSubresourceOptimizationsForOrigins(
+      const std::vector<blink::WebSecurityOrigin>& origins) {}
+
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
 

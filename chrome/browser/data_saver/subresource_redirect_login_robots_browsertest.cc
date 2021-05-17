@@ -1012,6 +1012,68 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageCompressionPageInfoState(true);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestRobotsRulesFetchedInPreloadScanner)) {
+  CreateUkmRecorder();
+  robots_rules_server_.AddRobotsRules(
+      GetHttpsTestURL("/"),
+      {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
+  ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/preload_scanner_image.html"));
+
+  // The robots rules will be fetched, but the image will not load.
+  RetryForHistogramUntilCountReached(
+      &histogram_tester_, "SubresourceRedirect.RobotsRulesFetcher.ResponseCode",
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+
+  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
+  image_compression_server_.VerifyRequestedImagePaths({});
+
+  // Now start loading the image.
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "loadBelowViewportImage()"));
+  EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                         "checkImage()"));
+  FetchHistogramsFromChildProcesses();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kRedirectable, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode",
+      net::HTTP_TEMPORARY_REDIRECT, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+
+  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
+  image_compression_server_.VerifyRequestedImagePaths(
+      {"/load_image/image.png"});
+}
+
 // Verifies that the image is only compressed in low memory device with the low
 // memory feature flag enabled, and in non-low memory devices.
 IN_PROC_BROWSER_TEST_P(SubresourceRedirectLoginRobotsLowMemoryBrowserTest,

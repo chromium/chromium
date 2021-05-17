@@ -726,6 +726,11 @@ class BLINK_EXPORT WebLocalFrameClient {
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) {}
 
+  // Notifies the observers of the origins for which subresource redirect
+  // optimizations can be preloaded.
+  virtual void PreloadSubresourceOptimizationsForOrigins(
+      const std::vector<WebSecurityOrigin>& origins) {}
+
   // Called immediately following the first compositor-driven (frame-generating)
   // layout that happened after an interesting document lifecycle change (see
   // WebMeaningfulLayout for details.)

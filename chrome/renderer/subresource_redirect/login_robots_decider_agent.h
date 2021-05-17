@@ -36,6 +36,8 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   // content::RenderFrameObserver:
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
+  void PreloadSubresourceOptimizationsForOrigins(
+      const std::vector<blink::WebSecurityOrigin>& origins) override;
 
   // mojom::SubresourceRedirectHintsReceiver:
   void SetCompressPublicImagesHints(
@@ -58,6 +60,12 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
       RobotsRulesParser::CheckResult check_result);
 
   bool IsMainFrame() const;
+
+  // Creates and starts the fetch of robots rules for |origin| if the rules are
+  // not available. |rules_receive_timeout| is the timeout value for receiving
+  // the fetched rules.
+  void CreateAndFetchRobotsRules(const url::Origin& origin,
+                                 const base::TimeDelta& rules_receive_timeout);
 
   // Current state of the redirect compression that should be used for the
   // current navigation.
