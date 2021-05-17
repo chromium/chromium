@@ -90,6 +90,9 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     // Fast forward to align deadline be at 2am
     FastForwardBy(base::TimeDelta::FromHours(2));
   }
+  ~UpgradeDetectorChromeosTest() override {
+    chromeos::DBusThreadManager::Shutdown();
+  }
 
   const base::Clock* GetMockClock() { return task_environment_.GetMockClock(); }
 

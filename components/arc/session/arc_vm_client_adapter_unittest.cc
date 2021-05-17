@@ -301,8 +301,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   ~ArcVmClientAdapterTest() override {
     chromeos::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        nullptr);
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetUp() override {

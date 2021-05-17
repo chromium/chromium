@@ -70,6 +70,8 @@ TEST(CrashIdsSourceTest, CallsCrashSender) {
   source.Fetch(base::BindOnce([](std::unique_ptr<SystemLogsResponse>) {}));
 
   EXPECT_EQ(1, fake_debug_client()->upload_crashes_called());
+
+  chromeos::DBusThreadManager::Shutdown();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

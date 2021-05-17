@@ -59,6 +59,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
     chromeos::ConciergeClient::Shutdown();
+    DBusThreadManager::Shutdown();
   }
 
   void DismissNotification() {

@@ -336,9 +336,9 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
 
   ~DeviceScheduledUpdateCheckerTest() override {
     device_scheduled_update_checker_.reset();
+    network_state_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        nullptr);
+    chromeos::DBusThreadManager::Shutdown();
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::NullCallback());
   }

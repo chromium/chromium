@@ -155,6 +155,7 @@ void UpdateRequiredNotificationTest::SetUp() {
 void UpdateRequiredNotificationTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
+  chromeos::DBusThreadManager::Shutdown();
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {

@@ -72,6 +72,7 @@ class SmbFileSystemTest : public testing::Test {
   }
 
   void TearDown() override {
+    chromeos::DBusThreadManager::Shutdown();
     // Because the mock is potentially leaked, expectations needs to be manually
     // verified.
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_client_));

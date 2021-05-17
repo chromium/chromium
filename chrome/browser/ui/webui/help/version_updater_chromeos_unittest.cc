@@ -92,7 +92,11 @@ class VersionUpdaterCrosTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { network_handler_test_helper_.reset(); }
+  void TearDown() override {
+    network_handler_test_helper_.reset();
+    version_updater_.reset();
+    DBusThreadManager::Shutdown();
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

@@ -30,10 +30,7 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
         std::make_unique<chromeos::FakeDebugDaemonClient>());
   }
 
-  void TearDown() override {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        nullptr);
-  }
+  void TearDown() override { chromeos::DBusThreadManager::Shutdown(); }
 
  protected:
   SysLogsSourceCallback fetch_callback() {

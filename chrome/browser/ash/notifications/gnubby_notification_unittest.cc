@@ -48,7 +48,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
     chromeos::ConciergeClient::Shutdown();
-    DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(nullptr);
+    DBusThreadManager::Shutdown();
   }
 
   void OnNotificationAdded() { notification_count_++; }

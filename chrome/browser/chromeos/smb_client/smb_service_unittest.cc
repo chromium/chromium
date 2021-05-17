@@ -183,7 +183,11 @@ class SmbServiceWithSmbfsTest : public testing::Test {
   }
 
   ~SmbServiceWithSmbfsTest() override {
-    // TODO(crbug.com/1208030): Shut down DBus clients.
+    smb_service_.reset();
+    user_manager_enabler_.reset();
+    profile_manager_.reset();
+    chromeos::ConciergeClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   void CreateService(TestingProfile* profile) {

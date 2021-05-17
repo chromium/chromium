@@ -37,8 +37,7 @@ class ArcClientAdapterTest : public testing::Test,
   }
   void TearDown() override {
     chromeos::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        nullptr);
+    chromeos::DBusThreadManager::Shutdown();
   }
 };
 

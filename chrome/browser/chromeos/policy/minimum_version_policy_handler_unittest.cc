@@ -135,6 +135,7 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
 void MinimumVersionPolicyHandlerTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
+  chromeos::DBusThreadManager::Shutdown();
 }
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
