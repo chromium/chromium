@@ -24,6 +24,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -932,6 +933,12 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
 
   if (command_id == IDC_MORE_TOOLS_MENU)
     return true;
+
+  if (command_id == IDC_SHARING_HUB_MENU) {
+    DCHECK(
+        base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu));
+    return true;
+  }
 
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.

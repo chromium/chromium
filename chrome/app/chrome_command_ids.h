@@ -122,7 +122,8 @@
 #define IDC_OFFERS_AND_REWARDS_FOR_PAGE 35026
 #define IDC_WEBAUTHN                    35027
 #define IDC_SHARING_HUB                 35028
-#define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35029
+#define IDC_SHARING_HUB_MENU            35029
+#define IDC_VIRTUAL_CARD_MANUAL_FALLBACK 35030
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
