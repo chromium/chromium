@@ -3830,6 +3830,8 @@ static_library("browser") {
       "policy/device_account_initializer.h",
       "policy/local_sync_policy_handler.cc",
       "policy/local_sync_policy_handler.h",
+      "privacy_sandbox/generated_floc_pref.cc",
+      "privacy_sandbox/generated_floc_pref.h",
       "process_singleton_modal_dialog_lock.cc",
       "process_singleton_modal_dialog_lock.h",
       "process_singleton_startup_lock.cc",

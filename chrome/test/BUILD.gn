@@ -4272,6 +4272,7 @@ test("unit_tests") {
       "../browser/performance_manager/test_support/site_data_utils.cc",
       "../browser/performance_manager/test_support/site_data_utils.h",
       "../browser/policy/serial_allow_usb_devices_for_urls_policy_handler_unittest.cc",
+      "../browser/privacy_sandbox/generated_floc_pref_unittest.cc",
       "../browser/profiles/profile_avatar_icon_util_unittest.cc",
       "../browser/profiles/profile_destroyer_unittest.cc",
       "../browser/resources_integrity_unittest.cc",
