@@ -42,11 +42,14 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
   explicit SubresourceRedirectLoginRobotsBrowserTest(
       bool enable_lite_mode = true,
       bool enable_login_robots_compression_feature = true,
-      bool enable_login_robots_for_low_memory = false)
+      bool enable_login_robots_for_low_memory = false,
+      size_t first_k_disable_subresource_redirect_limit = 0)
       : enable_lite_mode_(enable_lite_mode),
         enable_login_robots_compression_feature_(
             enable_login_robots_compression_feature),
         enable_login_robots_for_low_memory_(enable_login_robots_for_low_memory),
+        first_k_disable_subresource_redirect_limit_(
+            first_k_disable_subresource_redirect_limit),
         https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   ~SubresourceRedirectLoginRobotsBrowserTest() override = default;
@@ -81,6 +84,10 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
       // Allow first 3 images to be loaded faster.
       params["first_k_subresource_limit"] = "3";
       params["robots_rules_receive_first_k_timeout_ms"] = "2000";
+      if (first_k_disable_subresource_redirect_limit_) {
+        params["first_k_disable_subresource_redirect_limit"] =
+            base::NumberToString(first_k_disable_subresource_redirect_limit_);
+      }
       if (enable_login_robots_for_low_memory_)
         params["enable_login_robots_for_low_memory"] = "true";
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
@@ -144,6 +151,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
   bool enable_lite_mode_;
   bool enable_login_robots_compression_feature_;
   bool enable_login_robots_for_low_memory_ = false;
+  size_t first_k_disable_subresource_redirect_limit_ = 0;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -165,7 +173,9 @@ class SubresourceRedirectLoginRobotsLowMemoryBrowserTest
       : SubresourceRedirectLoginRobotsBrowserTest(
             true, /* enable_lite_mode */
             true, /* enable_login_robots_compression_feature */
-            is_login_robots_for_low_memory_feature_enabled()) {}
+            is_login_robots_for_low_memory_feature_enabled(),
+            0 /* first_k_disable_subresource_redirect_limit */
+        ) {}
 
   ~SubresourceRedirectLoginRobotsLowMemoryBrowserTest() override = default;
 
@@ -1078,5 +1088,59 @@ IN_PROC_BROWSER_TEST_P(SubresourceRedirectLoginRobotsLowMemoryBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SubresourceRedirectLoginRobotsLowMemoryBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+class SubresourceRedirectLoginRobotsFirstKDisableBrowserTest
+    : public SubresourceRedirectLoginRobotsBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SubresourceRedirectLoginRobotsFirstKDisableBrowserTest()
+      : SubresourceRedirectLoginRobotsBrowserTest(
+            true,  /* enable_lite_mode */
+            true,  /* enable_login_robots_compression_feature */
+            false, /* is_login_robots_for_low_memory_feature_enabled */
+            1      /* first_k_disable_subresource_redirect_limit */
+        ) {}
+};
+
+// Test that first image is disallowed for compression and only the second image
+// is compressed.
+IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsFirstKDisableBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(TestFirstKImageDisallowed)) {
+  robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
+                                      {{kRuleTypeAllow, ""}});
+  NavigateAndWaitForLoad(browser(),
+                         GetHttpsTestURL("/load_image/two_images.html"));
+
+  EXPECT_TRUE(RunScriptExtractBool("checkBothImagesLoaded()"));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester_,
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
+
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kRedirectable, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kIneligibleFirstKDisableSubresourceRedirect,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode",
+      net::HTTP_TEMPORARY_REDIRECT, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRulesFetcher.ResponseCode", net::HTTP_OK, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.ImageCompressionNotificationInfoBar", 0);
+
+  robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
+  image_compression_server_.VerifyRequestedImagePaths(
+      {"/load_image/image.png?foo"});
+  VerifyImageCompressionPageInfoState(true);
+}
 
 }  // namespace subresource_redirect

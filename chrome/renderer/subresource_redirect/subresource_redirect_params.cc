@@ -71,6 +71,12 @@ base::TimeDelta GetRobotsRulesReceiveFirstKSubresourceTimeout() {
           "robots_rules_receive_first_k_timeout_ms", 2000));
 }
 
+size_t GetFirstKDisableSubresourceRedirectLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kSubresourceRedirect,
+      "first_k_disable_subresource_redirect_limit", 0);
+}
+
 int MaxRobotsRulesParsersCacheSize() {
   return base::GetFieldTrialParamByFeatureAsInt(
       blink::features::kSubresourceRedirect,

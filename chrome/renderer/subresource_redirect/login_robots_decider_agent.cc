@@ -68,6 +68,15 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     return redirect_result_;
   }
 
+  if (num_should_redirect_checks_ <=
+      GetFirstKDisableSubresourceRedirectLimit()) {
+    DCHECK_LE(0UL, GetFirstKDisableSubresourceRedirectLimit());
+    RecordRedirectResultMetric(
+        SubresourceRedirectResult::kIneligibleFirstKDisableSubresourceRedirect);
+    return SubresourceRedirectResult::
+        kIneligibleFirstKDisableSubresourceRedirect;
+  }
+
   RobotsRulesParserCache& robots_rules_parser_cache =
       RobotsRulesParserCache::Get();
   const auto origin = url::Origin::Create(url);

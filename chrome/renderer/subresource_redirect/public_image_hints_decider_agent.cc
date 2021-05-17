@@ -166,6 +166,7 @@ void PublicImageHintsDeciderAgent::RecordMetrics(
     case SubresourceRedirectResult::kIneligibleRobotsDisallowed:
     case SubresourceRedirectResult::kIneligibleRobotsTimeout:
     case SubresourceRedirectResult::kIneligibleLoginDetected:
+    case SubresourceRedirectResult::kIneligibleFirstKDisableSubresourceRedirect:
       NOTREACHED();
   }
   mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;

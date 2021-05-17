@@ -15,53 +15,58 @@ enum class SubresourceRedirectResult {
 
   // The image was determined as public and is eligible to be redirected
   // to a compressed version.
-  kRedirectable,
+  kRedirectable = 1,
 
   // Possible reasons for ineligibility:
 
   // Because of reasons Blink could disallow compression such as non <img>
   // element, CSP/CORS security restrictions, javascript initiated image, etc.
-  kIneligibleBlinkDisallowed,
+  kIneligibleBlinkDisallowed = 2,
 
   // Because the resource is fetched for a subframe.
-  kIneligibleSubframeResource,
+  kIneligibleSubframeResource = 3,
 
   // Because the compressed subresource fetch failed, and then the original
   // subresource was loaded.
-  kIneligibleRedirectFailed,
+  kIneligibleRedirectFailed = 4,
 
   // Possible reasons for ineligibility due to public image hints approach:
 
   // Because the image hint list was not retrieved within certain time limit
   // of navigation start,
-  kIneligibleImageHintsUnavailable,
+  kIneligibleImageHintsUnavailable = 5,
 
   // Because the image hint list was not retrieved at the time of image fetch,
   // but the image URL was found in the hint list, which finished fetching
   // later.
-  kIneligibleImageHintsUnavailableButRedirectable,
+  kIneligibleImageHintsUnavailableButRedirectable = 6,
 
   // Because the image hint list was not retrieved at the time of image fetch,
   // and the image URL was not in the hint list as well, which finished
   // fetching later.
-  kIneligibleImageHintsUnavailableAndMissingInHints,
+  kIneligibleImageHintsUnavailableAndMissingInHints = 7,
 
   // Because the image URL was not found in the image hints.
-  kIneligibleMissingInImageHints,
+  kIneligibleMissingInImageHints = 8,
 
   // Possible reasons for ineligibility due to login and robots rules
   // based approach:
 
   // Because the image was disallowed by robots rules of the image origin.
-  kIneligibleRobotsDisallowed,
+  kIneligibleRobotsDisallowed = 9,
 
   // Because the robots rules fetch timedout.
-  kIneligibleRobotsTimeout,
+  kIneligibleRobotsTimeout = 10,
 
   // Because the page was detected to be logged-in.
-  kIneligibleLoginDetected,
+  kIneligibleLoginDetected = 11,
 
-  kMaxValue = SubresourceRedirectResult::kIneligibleLoginDetected
+  // Because the subresource was within the first k subresources on the page and
+  // got disabled.
+  kIneligibleFirstKDisableSubresourceRedirect = 12,
+
+  kMaxValue =
+      SubresourceRedirectResult::kIneligibleFirstKDisableSubresourceRedirect
 };
 
 }  // namespace subresource_redirect

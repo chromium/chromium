@@ -75593,6 +75593,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Ineligible due to disallowed by robots rules"/>
   <int value="10" label="Ineligible due to robots rules fetch timeout"/>
   <int value="11" label="Ineligible due to logged-in page"/>
+  <int value="12"
+      label="Ineligible due to disabled by first k subresource limit"/>
 </enum>
 
 <enum name="SubresourceRedirectRobotsRulesReceiveResult">
