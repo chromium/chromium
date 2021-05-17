@@ -541,6 +541,10 @@ class UserSessionManager
 
   void OnUserEligibleForOnboardingSurvey(Profile* profile);
 
+  // Triggers loading of the shill profile for |account_id|. This should only be
+  // called for the primary user session.
+  void LoadShillProfile(const AccountId& account_id);
+
   UserSessionManagerDelegate* delegate_;
 
   // Used to listen to network changes.

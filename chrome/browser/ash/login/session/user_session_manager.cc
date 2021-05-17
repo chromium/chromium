@@ -1163,6 +1163,18 @@ void UserSessionManager::VoteForSavingLoginPassword(
   VLOG(1) << "Password consuming service " << static_cast<size_t>(service)
           << " votes " << save_password;
 
+  if (service == PasswordConsumingService::kNetwork) {
+    // When the network management code voted to either save or not save the
+    // login password for the primary user session, it is safe to load shill
+    // profile. Note that it is OK to invoke this multiple times, the upstart
+    // task triggered by this can handle it. This could happen if chrome has
+    // been restarted (e.g. due to a crash) within an active Chrome OS user
+    // session.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&UserSessionManager::LoadShillProfile,
+                                  AsWeakPtr(), user_context_.GetAccountId()));
+  }
+
   // Prevent this code from being called twice from two services or else the
   // second service would trigger the warning below (since the password has been
   // cleared).
@@ -2418,6 +2430,11 @@ void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
 
   hats_notification_controller_ =
       new HatsNotificationController(profile, ash::kHatsOnboardingSurvey);
+}
+
+void UserSessionManager::LoadShillProfile(const AccountId& account_id) {
+  SessionManagerClient::Get()->LoadShillProfile(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 }
 
 }  // namespace ash

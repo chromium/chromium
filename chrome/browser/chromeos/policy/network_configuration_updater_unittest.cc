@@ -14,12 +14,14 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/policy/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/fake_network_device_handler.h"
 #include "chromeos/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/network/onc/certificate_scope.h"
@@ -340,6 +342,10 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   NetworkConfigurationUpdaterTest() : certificate_importer_(NULL) {}
 
   void SetUp() override {
+    chromeos::SessionManagerClient::InitializeFake();
+    ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
+        ash::UserSessionManager::StartSessionType::kPrimary);
+
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, kFakeSerialNumber);
 
