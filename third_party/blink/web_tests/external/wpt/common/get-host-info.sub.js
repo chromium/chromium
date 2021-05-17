@@ -10,6 +10,8 @@ function get_host_info() {
   var HTTPS_PORT2 = '{{ports[https][1]}}';
   var PROTOCOL = self.location.protocol;
   var IS_HTTPS = (PROTOCOL == "https:");
+  var PORT = IS_HTTPS ? HTTPS_PORT : HTTP_PORT;
+  var PORT2 = IS_HTTPS ? HTTPS_PORT2 : HTTP_PORT2;
   var HTTP_PORT_ELIDED = HTTP_PORT == "80" ? "" : (":" + HTTP_PORT);
   var HTTP_PORT2_ELIDED = HTTP_PORT2 == "80" ? "" : (":" + HTTP_PORT2);
   var HTTPS_PORT_ELIDED = HTTPS_PORT == "443" ? "" : (":" + HTTPS_PORT);
@@ -24,6 +26,8 @@ function get_host_info() {
     HTTP_PORT2: HTTP_PORT2,
     HTTPS_PORT: HTTPS_PORT,
     HTTPS_PORT2: HTTPS_PORT2,
+    PORT: PORT,
+    PORT2: PORT2,
     ORIGINAL_HOST: ORIGINAL_HOST,
     REMOTE_HOST: REMOTE_HOST,
 
