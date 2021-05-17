@@ -22,6 +22,11 @@ enum class DndAction;
 // Object representing transferred data offered by a client.
 class DataSource {
  public:
+  // The maximum number of different data types that will be read by
+  // GetDataForPreferredMimeTypes (plain text, RTF, HTML, image, text/uri-list,
+  // application/octet-stream).
+  static constexpr int kMaxDataTypes = 6;
+
   explicit DataSource(DataSourceDelegate* delegate);
   ~DataSource();
 
@@ -71,12 +76,18 @@ class DataSource {
       base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
   using ReadTextDataCallback =
       base::OnceCallback<void(const std::string&, std::u16string)>;
-  void GetDataForPreferredMimeTypes(ReadTextDataCallback text_reader,
-                                    ReadDataCallback rtf_reader,
-                                    ReadTextDataCallback html_reader,
-                                    ReadDataCallback image_reader,
-                                    ReadDataCallback filenames_reader,
-                                    base::RepeatingClosure failure_callback);
+  using ReadFileContentsDataCallback =
+      base::OnceCallback<void(const std::string&,
+                              const base::FilePath&,
+                              const std::vector<uint8_t>&)>;
+  void GetDataForPreferredMimeTypes(
+      ReadTextDataCallback text_reader,
+      ReadDataCallback rtf_reader,
+      ReadTextDataCallback html_reader,
+      ReadDataCallback image_reader,
+      ReadDataCallback filenames_reader,
+      ReadFileContentsDataCallback file_contents_reader,
+      base::RepeatingClosure failure_callback);
 
   void ReadDataForTesting(const std::string& mime_type,
                           ReadDataCallback callback);
@@ -99,6 +110,10 @@ class DataSource {
   void OnTextRead(ReadTextDataCallback callback,
                   const std::string& mime_type,
                   const std::vector<uint8_t>& data);
+
+  void OnFileContentsRead(ReadFileContentsDataCallback callback,
+                          const std::string& mime_type,
+                          const std::vector<uint8_t>& data);
 
   DataSourceDelegate* const delegate_;
   base::ObserverList<DataSourceObserver>::Unchecked observers_;

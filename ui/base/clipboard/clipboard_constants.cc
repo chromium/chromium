@@ -17,6 +17,8 @@ const char kMimeTypeHTML[] = "text/html";
 const char kMimeTypeSvg[] = "image/svg+xml";
 const char kMimeTypeRTF[] = "text/rtf";
 const char kMimeTypePNG[] = "image/png";
+// Used for image drag & drop from LaCrOS.
+const char kMimeTypeOctetStream[] = "application/octet-stream";
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 const char kMimeTypeLinuxUtf8String[] = "UTF8_STRING";

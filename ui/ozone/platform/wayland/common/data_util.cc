@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
@@ -41,6 +42,8 @@ int MimeTypeToFormat(const std::string& mime_type) {
     return OSExchangeData::URL;
   if (mime_type == ui::kMimeTypeHTML)
     return OSExchangeData::HTML;
+  if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream))
+    return OSExchangeData::FILE_CONTENTS;
   return 0;
 }
 
@@ -201,6 +204,14 @@ bool ExtractOSExchangeData(const OSExchangeData& exchange_data,
     GURL base_url;
     exchange_data.GetHtml(&data, &base_url);
     out_content->append(base::UTF16ToUTF8(data));
+    return true;
+  }
+  if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&
+      exchange_data.HasFileContents()) {
+    base::FilePath filename;
+    std::string file_contents;
+    exchange_data.GetFileContents(&filename, &file_contents);
+    out_content->append(file_contents);
     return true;
   }
   if (exchange_data.HasString()) {

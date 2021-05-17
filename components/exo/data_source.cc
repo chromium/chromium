@@ -12,6 +12,7 @@
 #include "base/i18n/character_encoding.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -32,6 +33,7 @@ constexpr char kTextPlain[] = "text/plain";
 constexpr char kTextRTF[] = "text/rtf";
 constexpr char kTextHTML[] = "text/html";
 constexpr char kTextUriList[] = "text/uri-list";
+constexpr char kApplicationOctetStream[] = "application/octet-stream";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -132,6 +134,20 @@ std::u16string CodepageToUTF16(const std::vector<uint8_t>& data,
   base::CodepageToUTF16(
       piece, charset, base::OnStringConversionError::Type::SUBSTITUTE, &output);
   return output;
+}
+
+// Returns name parameter in application/octet-stream;name=<...>, or empty
+// string if parsing fails.
+std::string GetApplicationOctetStreamName(const std::string& mime_type) {
+  base::StringPairs params;
+  if (net::MatchesMimeType(std::string(kApplicationOctetStream), mime_type) &&
+      net::ParseMimeType(mime_type, nullptr, &params)) {
+    for (const auto& kv : params) {
+      if (kv.first == "name")
+        return kv.second;
+    }
+  }
+  return std::string();
 }
 
 }  // namespace
@@ -242,8 +258,14 @@ void DataSource::GetDataForPreferredMimeTypes(
     ReadTextDataCallback html_reader,
     ReadDataCallback image_reader,
     ReadDataCallback filenames_reader,
+    ReadFileContentsDataCallback file_contents_reader,
     base::RepeatingClosure failure_callback) {
-  std::string text_mime, rtf_mime, html_mime, image_mime, filenames_mime;
+  std::string text_mime;
+  std::string rtf_mime;
+  std::string html_mime;
+  std::string image_mime;
+  std::string filenames_mime;
+  std::string file_contents_mime;
 
   int text_rank = std::numeric_limits<int>::max();
   int html_rank = std::numeric_limits<int>::max();
@@ -293,6 +315,8 @@ void DataSource::GetDataForPreferredMimeTypes(
         continue;
 
       filenames_mime = mime_type;
+    } else if (!GetApplicationOctetStreamName(mime_type).empty()) {
+      file_contents_mime = mime_type;
     }
   }
 
@@ -309,6 +333,11 @@ void DataSource::GetDataForPreferredMimeTypes(
            failure_callback);
   ReadData(image_mime, std::move(image_reader), failure_callback);
   ReadData(filenames_mime, std::move(filenames_reader), failure_callback);
+  ReadData(file_contents_mime,
+           base::BindOnce(&DataSource::OnFileContentsRead,
+                          read_data_weak_ptr_factory_.GetWeakPtr(),
+                          std::move(file_contents_reader)),
+           failure_callback);
 }
 
 void DataSource::OnTextRead(ReadTextDataCallback callback,
@@ -316,6 +345,13 @@ void DataSource::OnTextRead(ReadTextDataCallback callback,
                             const std::vector<uint8_t>& data) {
   std::u16string output = CodepageToUTF16(data, GetCharset(mime_type));
   std::move(callback).Run(mime_type, std::move(output));
+}
+
+void DataSource::OnFileContentsRead(ReadFileContentsDataCallback callback,
+                                    const std::string& mime_type,
+                                    const std::vector<uint8_t>& data) {
+  const base::FilePath filename(GetApplicationOctetStreamName(mime_type));
+  std::move(callback).Run(mime_type, filename, data);
 }
 
 bool DataSource::CanBeDataSourceForCopy(Surface* surface) const {

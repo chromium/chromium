@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -293,6 +295,18 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
   if (data.HasString()) {
     mime_types.push_back(kMimeTypeTextUtf8);
     mime_types.push_back(kMimeTypeText);
+  }
+  if (data.HasFileContents()) {
+    base::FilePath file_contents_filename;
+    std::string file_contents;
+    data.GetFileContents(&file_contents_filename, &file_contents);
+
+    std::string filename = file_contents_filename.value();
+    base::ReplaceChars(filename, "\\", "\\\\", &filename);
+    base::ReplaceChars(filename, "\"", "\\\"", &filename);
+    const std::string mime_type =
+        base::StrCat({kMimeTypeOctetStream, ";name=\"", filename, "\""});
+    mime_types.push_back(mime_type);
   }
 
   DCHECK(!mime_types.empty());

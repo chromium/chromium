@@ -105,6 +105,9 @@ class DragDropOperation : public DataSourceObserver,
                        aura::Window* source,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);
+  void OnFileContentsRead(const std::string& mime_type,
+                          const base::FilePath& filename,
+                          const std::vector<uint8_t>& data);
 
   void ScheduleStartDragDropOperation();
 

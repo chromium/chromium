@@ -311,6 +311,37 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
   window_->SetPointerFocus(restored_focus);
 }
 
+TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
+  bool restored_focus = window_->has_pointer_focus();
+  window_->SetPointerFocus(true);
+
+  // The client starts dragging offering text mime type.
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetFileContents(
+      base::FilePath(FILE_PATH_LITERAL("t\\est\".jpg")),
+      kSampleTextForDragAndDrop);
+  int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
+  drag_controller()->StartSession(os_exchange_data, operation);
+  Sync();
+
+  base::RunLoop run_loop;
+  auto callback = base::BindOnce(
+      [](base::RunLoop* loop, std::vector<uint8_t>&& data) {
+        std::string result(data.begin(), data.end());
+        EXPECT_EQ(kSampleTextForDragAndDrop, result);
+        loop->Quit();
+      },
+      &run_loop);
+  data_device_manager_->data_source()->ReadData(
+      "application/octet-stream;name=\"t\\\\est\\\".jpg\"",
+      std::move(callback));
+  run_loop.Run();
+  EXPECT_EQ(1u, data_device_manager_->data_source()->mime_types().size());
+  EXPECT_EQ("application/octet-stream;name=\"t\\\\est\\\".jpg\"",
+            data_device_manager_->data_source()->mime_types().front());
+  window_->SetPointerFocus(restored_focus);
+}
+
 TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
   data_offer->OnOffer(kMimeTypeText,

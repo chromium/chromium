@@ -57,9 +57,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
     URL            = 1 << 1,
     FILE_NAME      = 1 << 2,
     PICKLED_DATA   = 1 << 3,
-#if defined(OS_WIN)
     FILE_CONTENTS  = 1 << 4,
-#endif
 #if defined(USE_AURA)
     HTML           = 1 << 5,
 #endif
@@ -125,6 +123,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool HasString() const;
   bool HasURL(FilenameToURLPolicy policy) const;
   bool HasFile() const;
+  bool HasFileContents() const;
   bool HasCustomFormat(const ClipboardFormatType& format) const;
 
   // Returns true if this OSExchangeData has data in any of the formats in
@@ -132,7 +131,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool HasAnyFormat(int formats,
                     const std::set<ClipboardFormatType>& types) const;
 
-#if defined(OS_WIN)
   // Adds the bytes of a file (CFSTR_FILECONTENTS and CFSTR_FILEDESCRIPTOR on
   // Windows).
   void SetFileContents(const base::FilePath& filename,
@@ -140,6 +138,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const;
 
+#if defined(OS_WIN)
   // Methods used to query and retrieve file data from a drag source
   // IDataObject implementation packaging the data with the
   // CFSTR_FILEDESCRIPTOR/CFSTR_FILECONTENTS clipboard formats instead of the

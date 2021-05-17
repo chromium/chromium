@@ -91,6 +91,10 @@ bool OSExchangeData::HasFile() const {
   return provider_->HasFile();
 }
 
+bool OSExchangeData::HasFileContents() const {
+  return provider_->HasFileContents();
+}
+
 bool OSExchangeData::HasCustomFormat(const ClipboardFormatType& format) const {
   return provider_->HasCustomFormat(format);
 }
@@ -102,10 +106,8 @@ bool OSExchangeData::HasAnyFormat(
     return true;
   if ((formats & URL) != 0 && HasURL(FilenameToURLPolicy::CONVERT_FILENAMES))
     return true;
-#if defined(OS_WIN)
   if ((formats & FILE_CONTENTS) != 0 && provider_->HasFileContents())
     return true;
-#endif
 #if defined(USE_AURA)
   if ((formats & HTML) != 0 && provider_->HasHtml())
     return true;
@@ -119,7 +121,6 @@ bool OSExchangeData::HasAnyFormat(
   return false;
 }
 
-#if defined(OS_WIN)
 void OSExchangeData::SetFileContents(const base::FilePath& filename,
                                      const std::string& file_contents) {
   provider_->SetFileContents(filename, file_contents);
@@ -130,6 +131,7 @@ bool OSExchangeData::GetFileContents(base::FilePath* filename,
   return provider_->GetFileContents(filename, file_contents);
 }
 
+#if defined(OS_WIN)
 bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }

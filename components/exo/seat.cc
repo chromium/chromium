@@ -150,7 +150,7 @@ void Seat::SetSelection(DataSource* source) {
       base::MakeRefCounted<RefCountedScopedClipboardWriter>(endpoint_type);
 
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
-      kMaxClipboardDataTypes,
+      DataSource::kMaxDataTypes,
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
                      writer));
 
@@ -165,7 +165,7 @@ void Seat::SetSelection(DataSource* source) {
                      data_read_callback),
       base::BindOnce(&Seat::OnFilenamesRead, weak_ptr_factory_.GetWeakPtr(),
                      endpoint_type, writer, data_read_callback),
-      data_read_callback);
+      DataSource::ReadFileContentsDataCallback(), data_read_callback);
 }
 
 class Seat::RefCountedScopedClipboardWriter

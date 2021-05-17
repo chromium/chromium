@@ -208,9 +208,9 @@ DragDropOperation::DragDropOperation(
       base::BindOnce(&DragDropOperation::ScheduleStartDragDropOperation,
                      weak_ptr_factory_.GetWeakPtr());
 
-  // When the icon is present, make the count kMaxClipboardDataTypes + 1 so we
-  // can wait for the icon to be captured as well.
-  counter_ = base::BarrierClosure(kMaxClipboardDataTypes + (icon ? 1 : 0),
+  // When the icon is present, make the count kMaxDataTypes + 1 so we can wait
+  // for the icon to be captured as well.
+  counter_ = base::BarrierClosure(DataSource::kMaxDataTypes + (icon ? 1 : 0),
                                   std::move(start_op_callback));
 
   source->GetDataForPreferredMimeTypes(
@@ -223,6 +223,8 @@ DragDropOperation::DragDropOperation(
       base::BindOnce(&DragDropOperation::OnFilenamesRead,
                      weak_ptr_factory_.GetWeakPtr(), data_exchange_delegate,
                      origin->window()),
+      base::BindOnce(&DragDropOperation::OnFileContentsRead,
+                     weak_ptr_factory_.GetWeakPtr()),
       counter_);
 }
 
@@ -273,6 +275,16 @@ void DragDropOperation::OnFilenamesRead(
   DCHECK(os_exchange_data_);
   os_exchange_data_->SetFilenames(data_exchange_delegate->GetFilenames(
       data_exchange_delegate->GetDataTransferEndpointType(source), data));
+  mime_type_ = mime_type;
+  counter_.Run();
+}
+
+void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
+                                           const base::FilePath& filename,
+                                           const std::vector<uint8_t>& data) {
+  DCHECK(os_exchange_data_);
+  os_exchange_data_->SetFileContents(filename,
+                                     std::string(data.begin(), data.end()));
   mime_type_ = mime_type;
   counter_.Run();
 }
