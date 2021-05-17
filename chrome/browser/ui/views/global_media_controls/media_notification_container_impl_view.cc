@@ -516,11 +516,12 @@ void MediaNotificationContainerImplView::AddStopCastButton(
                               base::Unretained(cast_item)),
           l10n_util::GetStringUTF16(
               IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
+  views::InstallRoundRectHighlightPathGenerator(
+      stop_cast_button_, gfx::Insets(), kStopCastButtonStripSize.height() / 2);
+
   stop_cast_button_->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   stop_cast_button_->SetHasInkDropActionOnClick(true);
   stop_cast_button_->ink_drop()->SetBaseColor(foreground_color_);
-  stop_cast_button_->ink_drop()->SetLargeCornerRadius(
-      kStopCastButtonStripSize.height());
   stop_cast_button_->SetEnabledTextColors(foreground_color_);
   stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   stop_cast_button_->SetBorder(views::CreatePaddedBorder(

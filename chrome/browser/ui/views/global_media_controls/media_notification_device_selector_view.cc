@@ -19,6 +19,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -61,6 +62,7 @@ ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(
   ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  ink_drop()->GetInkDrop()->SetShowHighlightOnHover(true);
 
   SetBorder(views::CreateRoundedRectBorder(
       1, kExpandButtonStripSize.height() / 2, gfx::Insets(),
