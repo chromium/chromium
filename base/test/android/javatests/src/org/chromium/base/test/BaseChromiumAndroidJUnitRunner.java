@@ -503,6 +503,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             if (!ApplicationStatus.isInitialized()
                     || ApplicationStatus.isEveryActivityDestroyed()) {
                 LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            } else {
+                LifetimeAssert.resetForTesting();
             }
         } catch (Exception e) {
             // It's not possible (as far as I know) to update already reported test results, so we
