@@ -81,11 +81,10 @@ bool BinaryHasKeychainAccessGroupEntitlementBlocking(
           base::SysUTF8ToCFStringRef(keychain_access_group)));
 }
 
+// Returns whether creating a key pair in the secure enclave succeeds. Keys are
+// not persisted to the keychain.
 API_AVAILABLE(macosx(10.12.2))
 bool CanCreateSecureEnclaveKeyPairBlocking() {
-  // CryptoKit offers SecureEnclave.isAvailable but does not have Swift
-  // bindings. Instead, attempt to create an ephemeral key pair in the secure
-  // enclave.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -103,11 +102,7 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
   base::ScopedCFTypeRef<SecKeyRef> private_key(
       Keychain::GetInstance().KeyCreateRandomKey(params,
                                                  cferr.InitializeInto()));
-  if (!private_key) {
-    FIDO_LOG(DEBUG) << "SecKeyCreateRandomKey failed: " << cferr;
-    return false;
-  }
-  return true;
+  return !!private_key;
 }
 
 }  // namespace
@@ -133,16 +128,12 @@ bool TouchIdContext::TouchIdAvailableImplBlocking(AuthenticatorConfig config) {
   // entitlement that is configured by the embedder; that user authentication
   // with biometry, watch, or device passcode possible; and that the device has
   // a secure enclave.
-  // TODO(martinkr): The calls into the Security Framework in these methods
-  // have been observed to hang or crash. We have since moved them off the UI
-  // thread to keep the browser responsive during hangs at least. But we should
-  // find a way to eliminate them or perhaps cache the result.
-
   if (!BinaryHasKeychainAccessGroupEntitlementBlocking(
           config.keychain_access_group)) {
     FIDO_LOG(ERROR)
         << "Touch ID authenticator unavailable because keychain-access-group "
-           "entitlement is missing or incorrect";
+           "entitlement is missing or incorrect. Expected value: "
+        << config.keychain_access_group;
     return false;
   }
 
@@ -154,12 +145,11 @@ bool TouchIdContext::TouchIdAvailableImplBlocking(AuthenticatorConfig config) {
     return false;
   }
 
-  if (!CanCreateSecureEnclaveKeyPairBlocking()) {
-    FIDO_LOG(DEBUG) << "No secure enclave";
-    return false;
-  }
-
-  return true;
+  // CryptoKit offers a SecureEnclave.isAvailable property, but no ObjectiveC
+  // bindings exist. Instead, test whether we can create a key pair in the
+  // secure enclave. This takes hundreds of milliseconds, so only do it once.
+  static const bool kHasSecureEnclave = CanCreateSecureEnclaveKeyPairBlocking();
+  return kHasSecureEnclave;
 }
 
 // Testing seam to allow faking Touch ID in tests.
