@@ -146,6 +146,21 @@ base::File::Error AsyncFileTestHelper::Move(FileSystemContext* context,
   return result;
 }
 
+base::File::Error AsyncFileTestHelper::MoveWithProgress(
+    FileSystemContext* context,
+    const FileSystemURL& src,
+    const FileSystemURL& dest,
+    const CopyOrMoveProgressCallback& progress_callback) {
+  base::File::Error result = base::File::FILE_ERROR_FAILED;
+  base::RunLoop run_loop;
+  context->operation_runner()->Move(src, dest, FileSystemOperation::OPTION_NONE,
+                                    FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+                                    progress_callback,
+                                    AssignAndQuitCallback(&run_loop, &result));
+  run_loop.Run();
+  return result;
+}
+
 base::File::Error AsyncFileTestHelper::MoveFileLocal(
     FileSystemContext* context,
     const FileSystemURL& src,

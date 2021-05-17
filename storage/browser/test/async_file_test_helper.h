@@ -55,6 +55,13 @@ class AsyncFileTestHelper {
                                 const FileSystemURL& src,
                                 const FileSystemURL& dest);
 
+  // Same as Move, but this supports |progress_callback|.
+  static base::File::Error MoveWithProgress(
+      FileSystemContext* context,
+      const FileSystemURL& src,
+      const FileSystemURL& dest,
+      const CopyOrMoveProgressCallback& progress_callback);
+
   // Performs MoveFileLocal from |src| to |dest| and returns the status code.
   static base::File::Error MoveFileLocal(FileSystemContext* context,
                                          const FileSystemURL& src,

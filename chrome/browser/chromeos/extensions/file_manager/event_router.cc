@@ -647,10 +647,18 @@ void EventRouter::OnCopyProgress(
   file_manager_private::CopyOrMoveProgressStatus status;
   status.type = CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(type);
   status.source_url = std::make_unique<std::string>(source_url.spec());
-  if (type !=
-      storage::FileSystemOperation::CopyOrMoveProgressType::kEndRemoveSource)
+  if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError) {
+    // For cross-filesystems moves, no destination_url is provided when an error
+    // occurs. This translates into to a non-valid destination GURL.
+    // status.destination_url should never be used in this case.
+    status.destination_url =
+        std::make_unique<std::string>(destination_url.possibly_invalid_spec());
+  } else if (type != storage::FileSystemOperation::CopyOrMoveProgressType::
+                         kEndRemoveSource) {
     status.destination_url =
         std::make_unique<std::string>(destination_url.spec());
+  }
+
   if (type == storage::FileSystemOperation::CopyOrMoveProgressType::kError)
     status.error = std::make_unique<std::string>(
         FileErrorToErrorName(base::File::FILE_ERROR_FAILED));
