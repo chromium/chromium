@@ -9,6 +9,9 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/full_restore/full_restore_info.h"
@@ -108,6 +111,17 @@ class ASH_EXPORT FullRestoreController
   void SaveWindowImpl(WindowState* window_state,
                       absl::optional<int> activation_index);
 
+  // Retrieves the saved `WindowInfo` of `window` and restores its
+  // `WindowStateType`. Also creates a post task to clear `window`s
+  // `full_restore::kLaunchedFromFullRestoreKey`.
+  void RestoreStateTypeAndClearLaunchedKey(aura::Window* window);
+
+  // Cancels and removes the Full Restore property clear callback for `window`
+  // from `restore_property_clear_callbacks_`. Also sets the `window`'s
+  // `full_restore::kLaunchedFromFullRestoreKey` to false if `is_destroying` is
+  // true.
+  void ClearLaunchedKey(aura::Window* window, bool is_destroying);
+
   // Sets a callback for testing that will be read from in
   // `OnWidgetInitialized()`.
   void SetReadWindowCallbackForTesting(ReadWindowCallback callback);
@@ -123,6 +137,17 @@ class ASH_EXPORT FullRestoreController
   // True whenever we are stacking windows to match saved activation order.
   bool is_stacking_ = false;
 
+  // The set of windows that have had their widgets initialized and will be
+  // shown later.
+  base::flat_set<aura::Window*> to_be_shown_windows_;
+
+  // When a window is restored, we post a task to clear its
+  // `full_restore::kLaunchedFromFullRestoreKey` property. However, a window can
+  // be closed before this task occurs, deleting the window. This map keeps
+  // track of these posted tasks so we can cancel them upon window deletion.
+  std::map<aura::Window*, base::CancelableOnceClosure>
+      restore_property_clear_callbacks_;
+
   ScopedSessionObserver scoped_session_observer_{this};
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
@@ -135,6 +160,8 @@ class ASH_EXPORT FullRestoreController
   // Observes windows launched by full restore.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};
+
+  base::WeakPtrFactory<FullRestoreController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

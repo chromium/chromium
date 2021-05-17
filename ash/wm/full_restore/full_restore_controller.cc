@@ -225,8 +225,16 @@ void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
 
 void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
-  if (!windows_observation_.IsObservingSource(window))
+  if (!windows_observation_.IsObservingSource(window) &&
+      !to_be_shown_windows_.contains(window)) {
     return;
+  }
+
+  to_be_shown_windows_.erase(window);
+
+  // Arc app geometry is ready at this point so restore state type.
+  if (IsArcWindow(window))
+    RestoreStateTypeAndClearLaunchedKey(window);
 
   // Early return if `window` isn't visible, we're not in tablet mode, or the
   // app list is null.
@@ -252,52 +260,9 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   DCHECK(window->parent());
   windows_observation_.AddObservation(window);
 
-  std::unique_ptr<full_restore::WindowInfo> window_info =
-      g_read_window_callback_for_testing
-          ? g_read_window_callback_for_testing.Run(window)
-          : full_restore::GetWindowInfo(window);
-  if (window_info) {
-    // Snap the window if necessary.
-    auto state_type = window_info->window_state_type;
-    if (state_type) {
-      // Add the window to be tracked by the tablet mode window manager
-      // manually. It is normally tracked when it becomes visible, but in snap
-      // case we want to track it before it becomes visible. This will allow us
-      // to snap the window before it is shown and skip first showing the window
-      // in normal or maximized state.
-      // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
-      // are not managed by TabletModeWindowManager.
-      if (Shell::Get()->tablet_mode_controller()->InTabletMode())
-        Shell::Get()->tablet_mode_controller()->AddWindow(window);
-
-      if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
-          *state_type == chromeos::WindowStateType::kRightSnapped) {
-        base::AutoReset<bool> auto_reset_is_restoring_snap_state(
-            &is_restoring_snap_state_, true);
-        const WMEvent snap_event(*state_type ==
-                                         chromeos::WindowStateType::kLeftSnapped
-                                     ? WM_EVENT_SNAP_LEFT
-                                     : WM_EVENT_SNAP_RIGHT);
-        WindowState::Get(window)->OnWMEvent(&snap_event);
-      }
-    }
-  }
-
-  // Window that are launched from full restore are not activatable initially to
-  // prevent them from taking activation when Widget::Show() is called. Make
-  // these windows activatable once they are launched. Use a post task since it
-  // is quite common for some widgets to explicitly call Show() after
-  // initialized.
-  // TODO(sammiequon): Instead of disabling activation when creating the widget
-  // and enabling it here, use ShowInactive() instead of Show() when the widget
-  // is created.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](aura::Window* window) {
-                       window->SetProperty(
-                           full_restore::kLaunchedFromFullRestoreKey, false);
-                     },
-                     window));
+  // Only restore state type for arc apps once their geometry is ready.
+  if (!IsArcWindow(window))
+    RestoreStateTypeAndClearLaunchedKey(window);
 
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);
@@ -315,6 +280,9 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
 void FullRestoreController::OnWindowDestroying(aura::Window* window) {
   DCHECK(windows_observation_.IsObservingSource(window));
   windows_observation_.RemoveObservation(window);
+
+  if (base::Contains(restore_property_clear_callbacks_, window))
+    ClearLaunchedKey(window, /*is_destroying=*/true);
 }
 
 void FullRestoreController::SaveAllWindows() {
@@ -415,6 +383,69 @@ void FullRestoreController::SaveWindowImpl(
 
   if (g_save_window_callback_for_testing)
     g_save_window_callback_for_testing.Run(window_info);
+}
+
+void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
+    aura::Window* window) {
+  std::unique_ptr<full_restore::WindowInfo> window_info =
+      g_read_window_callback_for_testing
+          ? g_read_window_callback_for_testing.Run(window)
+          : full_restore::GetWindowInfo(window);
+  if (window_info) {
+    // Snap the window if necessary.
+    auto state_type = window_info->window_state_type;
+    if (state_type) {
+      // Add the window to be tracked by the tablet mode window manager
+      // manually. It is normally tracked when it becomes visible, but in snap
+      // case we want to track it before it becomes visible. This will allow us
+      // to snap the window before it is shown and skip first showing the window
+      // in normal or maximized state.
+      // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
+      // are not managed by TabletModeWindowManager.
+      if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+        Shell::Get()->tablet_mode_controller()->AddWindow(window);
+
+      if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
+          *state_type == chromeos::WindowStateType::kRightSnapped) {
+        base::AutoReset<bool> auto_reset_is_restoring_snap_state(
+            &is_restoring_snap_state_, true);
+        const WMEvent snap_event(*state_type ==
+                                         chromeos::WindowStateType::kLeftSnapped
+                                     ? WM_EVENT_SNAP_LEFT
+                                     : WM_EVENT_SNAP_RIGHT);
+        WindowState::Get(window)->OnWMEvent(&snap_event);
+      }
+    }
+  }
+
+  // Window that are launched from full restore are not activatable initially to
+  // prevent them from taking activation when Widget::Show() is called. Make
+  // these windows activatable once they are launched. Use a post task since it
+  // is quite common for some widgets to explicitly call Show() after
+  // initialized.
+  // TODO(sammiequon): Instead of disabling activation when creating the widget
+  // and enabling it here, use ShowInactive() instead of Show() when the widget
+  // is created.
+  restore_property_clear_callbacks_.emplace(
+      window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
+                             weak_ptr_factory_.GetWeakPtr(), window,
+                             /*is_destroying=*/false));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, restore_property_clear_callbacks_[window].callback());
+}
+
+void FullRestoreController::ClearLaunchedKey(aura::Window* window,
+                                             bool is_destroying) {
+  DCHECK(window);
+  DCHECK(base::Contains(restore_property_clear_callbacks_, window));
+
+  restore_property_clear_callbacks_[window].Cancel();
+  restore_property_clear_callbacks_.erase(window);
+
+  // If the window is destroying then prevent extra work by not clearing the
+  // property.
+  if (!is_destroying)
+    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
 }
 
 void FullRestoreController::SetReadWindowCallbackForTesting(

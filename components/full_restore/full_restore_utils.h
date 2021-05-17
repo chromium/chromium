@@ -112,9 +112,9 @@ COMPONENT_EXPORT(FULL_RESTORE)
 bool HasWindowInfo(int32_t restore_window_id);
 
 // Modifies `out_params` based on the window info associated with
-// `restore_window_id`. Returns true if `out_params` was modified.
+// `restore_window_id`.
 COMPONENT_EXPORT(FULL_RESTORE)
-bool ModifyWidgetParams(int32_t restore_window_id,
+void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
 // Invoked when the task is created for an ARC app.

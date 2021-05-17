@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
+#include "base/cancelable_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
@@ -103,6 +104,12 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       return -1;
     absl::optional<int32_t> activation_index = window_info->activation_index;
     return activation_index.value_or(-1);
+  }
+
+  // Returns the restore property clear callbacks.
+  const std::map<aura::Window*, base::CancelableOnceClosure>&
+  GetRestorePropertyClearCallbacks() {
+    return FullRestoreController::Get()->restore_property_clear_callbacks_;
   }
 
   // Mocks creating a widget that is launched from full restore service.
@@ -927,6 +934,25 @@ TEST_F(FullRestoreControllerTest,
   EXPECT_FALSE(restored_widget_1->IsActive());
   EXPECT_FALSE(restored_widget_2->IsActive());
   EXPECT_TRUE(app_list_widget->IsActive());
+}
+
+// Tests that the posted task for clearing a window's
+// `full_restore::kLaunchedFromFullRestoreKey` is cancelled when that window is
+// destroyed.
+TEST_F(FullRestoreControllerTest, RestorePropertyClearCallback) {
+  // Restore a window.
+  AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
+                     chromeos::WindowStateType::kNormal);
+  views::Widget* restored_widget =
+      CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
+  ASSERT_TRUE(restored_widget->GetNativeWindow()->GetProperty(
+      full_restore::kLaunchedFromFullRestoreKey));
+
+  // Destroy the window immediately. There should be no restore property clear
+  // callbacks left.
+  ASSERT_EQ(1u, GetRestorePropertyClearCallbacks().size());
+  restored_widget->CloseNow();
+  EXPECT_EQ(0u, GetRestorePropertyClearCallbacks().size());
 }
 
 }  // namespace ash
