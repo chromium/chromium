@@ -1798,8 +1798,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ChromeShareHighlightsAndroid",
-                        "ChromeShareScreenshot"
+                        "ChromeShareScreenshot",
+                        "PreemptiveLinkToTextGeneration"
                     ],
                     "min_os_version": "5.1"
                 }
