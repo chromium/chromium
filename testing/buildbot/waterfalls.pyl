@@ -2618,7 +2618,7 @@
       'VR Linux': {
         'mixins': [
           'enable_resultdb',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'vr_common_perftests',
@@ -2630,7 +2630,7 @@
       'VR Linux (reclient)': {
         'mixins': [
           'enable_resultdb',
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'vr_common_perftests',
@@ -2641,7 +2641,7 @@
       },
       'WebKit Linux composite_after_paint Dummy Builder': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'blink_tests',
@@ -2655,7 +2655,7 @@
       },
       'WebKit Linux layout_ng_disabled Builder': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'blink_tests',
@@ -2785,7 +2785,7 @@
           'all',
         ],
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
@@ -2806,7 +2806,7 @@
         'browser_config': 'web-engine-shell',
         'os_type': 'linux',
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
@@ -2984,7 +2984,7 @@
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_gtests',
@@ -2995,7 +2995,7 @@
       },
       'linux-blink-heap-verification': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_gtests',
@@ -3111,7 +3111,7 @@
           'symupload'
         ],
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'swarming': {
           'dimension_sets': [
@@ -3135,7 +3135,7 @@
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
       },
       'linux-upload-perfetto': {
@@ -3147,7 +3147,7 @@
       },
       'linux-wpt-fyi-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests',
@@ -3155,7 +3155,7 @@
       },
       'linux-wpt-identity-fyi-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_identity',
@@ -3163,7 +3163,7 @@
       },
       'linux-wpt-input-fyi-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_input',
@@ -4701,7 +4701,7 @@
     'machines': {
       'Cast Audio Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'cast_shell',
@@ -4725,7 +4725,7 @@
       },
       'Cast Linux Debug': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': [
           'cast_shell',
@@ -4770,7 +4770,7 @@
       },
       'Leak Detection Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'leak_detection_isolated_scripts',
@@ -4835,7 +4835,7 @@
       },
       'Linux Tester (Ozone Headless)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
          ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_headless_tests',
@@ -4843,7 +4843,7 @@
       },
       'Linux Tester (Ozone Wayland)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
          ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_wayland_ci_tests',
@@ -4851,7 +4851,7 @@
       },
       'Linux Tester (Ozone X11)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
          'gtest_tests': 'linux_ozone_x11_ci_tests',
@@ -4892,7 +4892,7 @@
       # For documentation, see //services/network/README.md.
       'Network Service Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'network_service_extra_gtests',
@@ -4915,7 +4915,7 @@
       },
       'linux-bfcache-rel': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'bfcache_linux_gtests',
@@ -5153,7 +5153,7 @@
       },
       'Linux CFI': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',
@@ -5161,7 +5161,7 @@
       },
       'Linux Chromium OS ASan LSan Tests (1)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
@@ -5240,7 +5240,7 @@
       },
       'WebKit Linux Leak': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5251,7 +5251,7 @@
       },
       'WebKit Linux MSAN': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -5270,7 +5270,7 @@
       },
       'linux-ubsan-vptr': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           # no "_and_gl":gl_unittests doesn't pass yet,
@@ -5319,7 +5319,7 @@
       },
       'Mojo Linux': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'gtest_tests': 'mojo_linux_gtests',
@@ -6383,7 +6383,7 @@
           'browser_tests',
         ],
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
       },
       'linux-blink-web-tests-force-accessibility-rel': {
@@ -6391,7 +6391,7 @@
           'blink_tests',
         ],
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
