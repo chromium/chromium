@@ -152,8 +152,6 @@ class SupervisedUserService : public KeyedService,
   // custodian.
   std::u16string GetExtensionsLockedMessage() const;
 
-  bool IsSupervisedUserIframeFilterEnabled() const;
-
   static std::string GetEduCoexistenceLoginUrl();
 
   // Returns true if the user is a type of Family Link Child account,

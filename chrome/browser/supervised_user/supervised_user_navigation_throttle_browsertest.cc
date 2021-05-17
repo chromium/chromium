@@ -17,7 +17,6 @@
 #include "chrome/browser/supervised_user/navigation_finished_waiter.h"
 #include "chrome/browser/supervised_user/permission_request_creator_mock.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -297,7 +296,6 @@ class SupervisedUserIframeFilterTest
   SupervisedUserIframeFilterTest() = default;
   ~SupervisedUserIframeFilterTest() override = default;
 
-  void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
@@ -320,15 +318,7 @@ class SupervisedUserIframeFilterTest
 
   std::unique_ptr<RenderFrameTracker> tracker_;
   PermissionRequestCreatorMock* permission_creator_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-void SupervisedUserIframeFilterTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(
-      supervised_users::kSupervisedUserIframeFilter);
-  SupervisedUserNavigationThrottleTest::SetUp();
-}
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
   SupervisedUserNavigationThrottleTest::SetUpOnMainThread();

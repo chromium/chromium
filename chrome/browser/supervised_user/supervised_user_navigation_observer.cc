@@ -162,12 +162,6 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
 
   MaybeUpdateRequestedHosts();
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (!service->IsSupervisedUserIframeFilterEnabled())
-    return;
 
   // Iframe filtering has been enabled.
   web_contents()->ForEachFrame(

@@ -265,11 +265,6 @@ std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
                                     base::UTF8ToUTF16(GetCustodianName()));
 }
 
-bool SupervisedUserService::IsSupervisedUserIframeFilterEnabled() const {
-  return base::FeatureList::IsEnabled(
-      supervised_users::kSupervisedUserIframeFilter);
-}
-
 // static
 std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
   return base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)

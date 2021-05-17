@@ -8,9 +8,6 @@
 
 namespace supervised_users {
 
-const base::Feature kSupervisedUserIframeFilter{
-    "SupervisedUserIframeFilter", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEduCoexistenceFlowV2{"EduCoexistenceV2",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 

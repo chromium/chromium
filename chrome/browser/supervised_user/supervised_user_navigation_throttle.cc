@@ -128,13 +128,6 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
   if (!profile->IsSupervised())
     return nullptr;
 
-  if (!navigation_handle->IsInMainFrame()) {
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-    if (!service->IsSupervisedUserIframeFilterEnabled())
-      return nullptr;
-  }
-
   // Can't use std::make_unique because the constructor is private.
   return base::WrapUnique(
       new SupervisedUserNavigationThrottle(navigation_handle));
