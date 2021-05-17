@@ -1120,8 +1120,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
       kServerIP_, kHeaderWrongTypes);
 
   base::Value actual = service()->StatusAsValue();
-  std::unique_ptr<base::Value> expected =
-      base::test::ParseJsonDeprecated(R"json(
+  base::Value expected = base::test::ParseJson(R"json(
       {
         "originPolicies": [
           {
@@ -1163,7 +1162,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
         ]
       }
       )json");
-  EXPECT_EQ(*expected, actual);
+  EXPECT_EQ(expected, actual);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, NoReportingService_SignedExchange) {

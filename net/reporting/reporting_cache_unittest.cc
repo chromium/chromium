@@ -897,9 +897,8 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
                                        /* reports */ 1, /* succeeded */ false);
 
   base::Value actual = cache()->GetClientsAsValue();
-  std::unique_ptr<base::Value> expected =
-      base::test::ParseJsonDeprecated(base::StringPrintf(
-          R"json(
+  base::Value expected = base::test::ParseJson(base::StringPrintf(
+      R"json(
       [
         {
           "network_isolation_key": "%s",
@@ -935,10 +934,10 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
         },
       ]
       )json",
-          kNik_.ToDebugString().c_str(), kOtherNik_.ToDebugString().c_str()));
+      kNik_.ToDebugString().c_str(), kOtherNik_.ToDebugString().c_str()));
 
   // Compare disregarding order.
-  auto expected_list = expected->TakeList();
+  auto expected_list = expected.TakeList();
   auto actual_list = actual.TakeList();
   std::sort(expected_list.begin(), expected_list.end());
   std::sort(actual_list.begin(), actual_list.end());
