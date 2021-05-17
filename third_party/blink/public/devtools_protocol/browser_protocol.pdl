@@ -1965,6 +1965,13 @@ domain DOM
       open
       closed
 
+  # Document compatibility mode.
+  type CompatibilityMode extends string
+    enum
+      QuirksMode
+      LimitedQuirksMode
+      NoQuirksMode
+
   # DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes.
   # DOMNode is a base node mirror type.
   type Node extends object
@@ -2029,6 +2036,7 @@ domain DOM
       optional array of BackendNode distributedNodes
       # Whether the node is SVG.
       optional boolean isSVG
+      optional CompatibilityMode compatibilityMode
 
   # A structure holding an RGBA color.
   type RGBA extends object

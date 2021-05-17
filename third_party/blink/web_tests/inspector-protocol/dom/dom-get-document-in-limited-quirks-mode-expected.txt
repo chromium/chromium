@@ -1,0 +1,47 @@
+Tests how DOM.getDocument reports limited quirks mode.
+{
+    id : <number>
+    result : {
+        root : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeCount : 2
+            children : [
+                [0] : {
+                    backendNodeId : <number>
+                    localName : 
+                    nodeId : <number>
+                    nodeName : html
+                    nodeType : 10
+                    nodeValue : 
+                    parentId : <number>
+                    publicId : -//W3C//DTD HTML 4.01 Transitional//EN
+                    systemId : http://www.w3.org/TR/html4/loose.dtd
+                }
+                [1] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 2
+                    frameId : <string>
+                    localName : html
+                    nodeId : <number>
+                    nodeName : HTML
+                    nodeType : 1
+                    nodeValue : 
+                    parentId : <number>
+                }
+            ]
+            compatibilityMode : LimitedQuirksMode
+            documentURL : <string>
+            localName : 
+            nodeId : <number>
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            xmlVersion : 
+        }
+    }
+    sessionId : <string>
+}
+

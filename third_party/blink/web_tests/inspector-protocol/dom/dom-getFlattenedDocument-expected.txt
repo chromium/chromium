@@ -250,6 +250,7 @@ Tests DOM.getFlattenedDocument method.
                 childNodeCount : 1
                 children : [
                 ]
+                compatibilityMode : QuirksMode
                 documentURL : <string>
                 localName : 
                 nodeId : <number>
@@ -393,6 +394,7 @@ Tests DOM.getFlattenedDocument method.
             childNodeCount : 1
             children : [
             ]
+            compatibilityMode : QuirksMode
             documentURL : <string>
             localName : 
             nodeId : <number>

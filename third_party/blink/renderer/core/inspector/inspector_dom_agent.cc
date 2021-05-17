@@ -1547,6 +1547,21 @@ protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
   return protocol::DOM::ShadowRootTypeEnum::UserAgent;
 }
 
+// static
+protocol::DOM::CompatibilityMode
+InspectorDOMAgent::GetDocumentCompatibilityMode(Document* document) {
+  switch (document->GetCompatibilityMode()) {
+    case Document::CompatibilityMode::kQuirksMode:
+      return protocol::DOM::CompatibilityModeEnum::QuirksMode;
+    case Document::CompatibilityMode::kLimitedQuirksMode:
+      return protocol::DOM::CompatibilityModeEnum::LimitedQuirksMode;
+    case Document::CompatibilityMode::kNoQuirksMode:
+      return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
+  }
+  NOTREACHED();
+  return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
+}
+
 std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     Node* node,
     int depth,
@@ -1654,6 +1669,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     value->setDocumentURL(DocumentURLString(document));
     value->setBaseURL(DocumentBaseURLString(document));
     value->setXmlVersion(document->xmlVersion());
+    value->setCompatibilityMode(GetDocumentCompatibilityMode(document));
   } else if (auto* doc_type = DynamicTo<DocumentType>(node)) {
     value->setPublicId(doc_type->publicId());
     value->setSystemId(doc_type->systemId());
