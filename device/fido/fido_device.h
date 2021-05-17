@@ -87,9 +87,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDevice {
   // same VID:PID. It defaults to returning the value of |GetId|.
   virtual std::string GetDisplayName() const;
   virtual FidoTransportProtocol DeviceTransport() const = 0;
-  // SupportsCredentialProbing returns true if this device supports silent
-  // probing of credentials.
-  bool SupportsCredentialProbing() const;
 
   // These must only be called on Bluetooth devices.
   virtual bool IsInPairingMode() const;

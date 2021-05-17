@@ -25,18 +25,6 @@ std::string FidoDevice::GetDisplayName() const {
   return GetId();
 }
 
-bool FidoDevice::SupportsCredentialProbing() const {
-  switch (DeviceTransport()) {
-    // caBLE devices might not support silent probing so always send singular
-    // requests.
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
-    case FidoTransportProtocol::kAndroidAccessory:
-      return false;
-    default:
-      return true;
-  }
-}
-
 bool FidoDevice::IsInPairingMode() const {
   NOTREACHED();
   return false;

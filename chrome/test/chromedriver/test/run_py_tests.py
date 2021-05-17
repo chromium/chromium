@@ -3363,7 +3363,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('chromedriver.test', credentials[0]['rpId'])
     self.assertEquals(chr(1),
                       self.UrlSafeBase64Decode(credentials[0]['userHandle']))
-    self.assertEquals(3, credentials[0]['signCount'])
+    self.assertEquals(2, credentials[0]['signCount'])
     self.assertTrue(credentials[0]['privateKey'])
     self.assertEquals('large blob contents',
             self.UrlSafeBase64Decode(credentials[0]['largeBlob']))

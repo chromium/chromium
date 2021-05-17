@@ -50,8 +50,7 @@
     transports: ["usb", "ble", "nfc"],
   })`));
 
-  // Sign count should be increased by two for |nonResidentCredential|: once
-  // for the probe request and once for the actual request.
+  // Sign count should be increased by one for |nonResidentCredential|.
   credentials = (await dp.WebAuthn.getCredentials({authenticatorId})).result.credentials;
   testRunner.log(credentials.find(
       cred => cred.credentialId === nonResidentCredential.credentialId).signCount);

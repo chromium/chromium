@@ -1377,7 +1377,6 @@ TEST_F(AuthenticatorImplTest, NoSilentAuthenticationForCable) {
         GetTestPublicKeyCredentialRequestOptions();
     options->allow_credentials = GetTestCredentials(/*num_credentials=*/2);
     options->cable_authentication_data = GetTestCableExtension();
-    options->appid = kTestOrigin1;
 
     if (is_cable_device) {
       virtual_device_factory_->SetTransport(
@@ -3395,6 +3394,71 @@ TEST_F(AuthenticatorImplTest, GetAssertionWithLargeAllowList) {
     EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
               has_allowed_credential ? AuthenticatorStatus::SUCCESS
                                      : AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  }
+}
+
+// Tests that, regardless of batching support, GetAssertion requests with a
+// single allowed credential ID don't result in a silent probing request.
+TEST_F(AuthenticatorImplTest, GetAssertionSingleElementAllowListDoesNotProbe) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (bool supports_batching : {false, true}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "supports_batching=" << supports_batching);
+
+    ResetVirtualDevice();
+    device::VirtualCtap2Device::Config config;
+    if (supports_batching) {
+      config.max_credential_id_length = kTestCredentialIdLength;
+      config.max_credential_count_in_list = 10;
+    }
+    config.reject_silent_authentication_requests = true;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    auto test_credentials = GetTestCredentials(/*num_credentials=*/1);
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+        test_credentials.front().id(), kTestRelyingPartyId));
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->allow_credentials = std::move(test_credentials);
+
+    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+              AuthenticatorStatus::SUCCESS);
+  }
+}
+
+// Tests that an allow list that fits into a single batch does not result in a
+// silent probing request.
+TEST_F(AuthenticatorImplTest, GetAssertionSingleBatchListDoesNotProbe) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (bool allow_list_fits_single_batch : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "allow_list_fits_single_batch="
+                                      << allow_list_fits_single_batch);
+
+    ResetVirtualDevice();
+    device::VirtualCtap2Device::Config config;
+    config.max_credential_id_length = kTestCredentialIdLength;
+    constexpr size_t kBatchSize = 10;
+    config.max_credential_count_in_list = kBatchSize;
+    config.reject_silent_authentication_requests = true;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    auto test_credentials = GetTestCredentials(
+        /*num_credentials=*/kBatchSize +
+        (allow_list_fits_single_batch ? 0 : 1));
+    ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+        test_credentials.back().id(), kTestRelyingPartyId));
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    options->allow_credentials = std::move(test_credentials);
+
+    EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+              allow_list_fits_single_batch
+                  ? AuthenticatorStatus::SUCCESS
+                  : AuthenticatorStatus::NOT_ALLOWED_ERROR);
   }
 }
 

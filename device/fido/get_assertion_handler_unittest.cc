@@ -210,7 +210,7 @@ TEST_F(FidoGetAssertionHandlerTest, CtapRequestOnSingleDevice) {
   auto request_handler = CreateGetAssertionHandlerCtap();
   discovery()->WaitForCallToStartAndSimulateSuccess();
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponse);
 
@@ -335,7 +335,7 @@ TEST_F(FidoGetAssertionHandlerTest, ValidEmptyCredential) {
   // Resident Keys must be disabled, otherwise allow list check is skipped.
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation(
       test_data::kTestGetInfoResponseWithoutResidentKeySupport);
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponseWithEmptyCredential);
   discovery()->AddDevice(std::move(device));
@@ -362,7 +362,7 @@ TEST_F(FidoGetAssertionHandlerTest, TruncatedUTF8) {
   discovery()->WaitForCallToStartAndSimulateSuccess();
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation(
       test_data::kTestCtap2OnlyAuthenticatorGetInfoResponse);
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponseWithTruncatedUTF8);
   discovery()->AddDevice(std::move(device));
@@ -517,7 +517,7 @@ TEST_F(FidoGetAssertionHandlerTest, SuccessWithOnlyUsbTransportAllowed) {
       CreateGetAssertionHandlerWithRequest(std::move(request));
 
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponse);
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -550,7 +550,7 @@ TEST_F(FidoGetAssertionHandlerTest, SuccessWithOnlyNfcTransportAllowed) {
 
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
   device->SetDeviceTransport(FidoTransportProtocol::kNearFieldCommunication);
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponse);
   nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -588,7 +588,7 @@ TEST_F(FidoGetAssertionHandlerTest, SuccessWithOnlyInternalTransportAllowed) {
   device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetInfo,
       test_data::kTestGetInfoResponsePlatformDevice);
-  device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+  device->ExpectCtap2CommandAndRespondWith(
       CtapRequestCommand::kAuthenticatorGetAssertion,
       test_data::kTestGetAssertionResponse);
   platform_discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -696,7 +696,7 @@ TEST_F(FidoGetAssertionHandlerTest, DeviceFailsImmediately) {
 
                 auto working_device =
                     MockFidoDevice::MakeCtapWithGetInfoExpectation();
-                working_device->ExpectCtap2CommandAndRespondRepeatedlyWith(
+                working_device->ExpectCtap2CommandAndRespondWith(
                     CtapRequestCommand::kAuthenticatorGetAssertion,
                     test_data::kTestGetAssertionResponse);
                 discovery()->AddDevice(std::move(working_device));
