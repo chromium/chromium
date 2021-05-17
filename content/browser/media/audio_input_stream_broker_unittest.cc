@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/sync_socket.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
@@ -19,10 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Test;
+using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::StrictMock;
-using ::testing::InSequence;
+using ::testing::Test;
 
 namespace content {
 
@@ -69,6 +70,11 @@ class MockRendererAudioInputStreamFactoryClient
   }
 
   void CloseReceiver() { receiver_.reset(); }
+
+  void setDisconnectHandler(
+      base::OnceCallback<void(uint32_t, const std::string&)> callback) {
+    receiver_.set_disconnect_with_reason_handler(std::move(callback));
+  }
 
  private:
   mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient> receiver_{
@@ -163,6 +169,16 @@ struct TestEnvironment {
   mojo::Remote<media::mojom::AudioStreamFactory> factory_ptr{
       stream_factory.MakeRemote()};
 };
+
+void ExpectRendererFactoryClientDisconnection(
+    TestEnvironment& env,
+    media::mojom::InputStreamErrorCode expected_error) {
+  env.renderer_factory_client.setDisconnectHandler(base::BindLambdaForTesting(
+      [expected_error](uint32_t reason, const std::string& description) {
+        EXPECT_EQ(static_cast<uint32_t>(expected_error), reason);
+        EXPECT_EQ("", description);
+      }));
+}
 
 }  // namespace
 
@@ -264,6 +280,60 @@ TEST(AudioInputStreamBrokerTest, ObserverDisconnect_CallsDeleter) {
   EXPECT_CALL(env.deleter, Run(env.broker.release()))
       .WillOnce(testing::DeleteArg<0>());
   stream_request_data.observer.reset();
+  env.RunUntilIdle();
+  Mock::VerifyAndClear(&env.deleter);
+
+  env.stream_factory.ResetReceiver();
+  env.RunUntilIdle();
+}
+
+TEST(AudioInputStreamBrokerTest, ObserverDisconnect_PropagateError) {
+  InSequence seq;
+  TestEnvironment env;
+  MockStreamFactory::StreamRequestData stream_request_data(kDeviceId,
+                                                           TestParams());
+  env.stream_factory.ExpectStreamCreation(&stream_request_data);
+
+  env.broker->CreateStream(env.factory_ptr.get());
+  env.RunUntilIdle();
+  EXPECT_TRUE(stream_request_data.requested);
+
+  ExpectRendererFactoryClientDisconnection(
+      env, media::mojom::InputStreamErrorCode::kUnknown);
+
+  EXPECT_CALL(env.deleter, Run(env.broker.release()))
+      .WillOnce(testing::DeleteArg<0>());
+  stream_request_data.observer.ResetWithReason(
+      static_cast<uint32_t>(
+          media::mojom::AudioInputStreamObserver::DisconnectReason::kDefault),
+      std::string());
+  env.RunUntilIdle();
+  Mock::VerifyAndClear(&env.deleter);
+
+  env.stream_factory.ResetReceiver();
+  env.RunUntilIdle();
+}
+
+TEST(AudioInputStreamBrokerTest, ObserverDisconnect_PropagatePermissionsError) {
+  InSequence seq;
+  TestEnvironment env;
+  MockStreamFactory::StreamRequestData stream_request_data(kDeviceId,
+                                                           TestParams());
+  env.stream_factory.ExpectStreamCreation(&stream_request_data);
+
+  env.broker->CreateStream(env.factory_ptr.get());
+  env.RunUntilIdle();
+  EXPECT_TRUE(stream_request_data.requested);
+
+  ExpectRendererFactoryClientDisconnection(
+      env, media::mojom::InputStreamErrorCode::kSystemPermissions);
+
+  EXPECT_CALL(env.deleter, Run(env.broker.release()))
+      .WillOnce(testing::DeleteArg<0>());
+  stream_request_data.observer.ResetWithReason(
+      static_cast<uint32_t>(media::mojom::AudioInputStreamObserver::
+                                DisconnectReason::kSystemPermissions),
+      std::string());
   env.RunUntilIdle();
   Mock::VerifyAndClear(&env.deleter);
 

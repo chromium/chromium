@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
                      media::mojom::ReadOnlyAudioDataPipePtr data_pipe) override;
 
   // media::mojom::AudioInputStreamClient implementation.
-  void OnError() override;
+  void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
 
   SEQUENCE_CHECKER(sequence_checker_);

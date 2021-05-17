@@ -101,7 +101,7 @@ void MojoAudioInputStream::OnMuted(int stream_id, bool is_muted) {
 
 void MojoAudioInputStream::OnStreamError(int stream_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  client_->OnError();
+  client_->OnError(mojom::InputStreamErrorCode::kUnknown);
   OnError();
 }
 

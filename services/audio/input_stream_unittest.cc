@@ -59,7 +59,7 @@ class MockStreamClient : public media::mojom::AudioInputStreamClient {
 
   void CloseBinding() { receiver_.reset(); }
 
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(media::mojom::InputStreamErrorCode));
   MOCK_METHOD1(OnMutedStateChanged, void(bool));
   MOCK_METHOD0(BindingConnectionError, void());
 
@@ -522,7 +522,7 @@ TEST_F(AudioServiceInputStreamTest,
 
   EXPECT_CALL(*this, CreatedCallback(kInvalidStream, kNotMuted));
   EXPECT_CALL(log(), OnError());
-  EXPECT_CALL(client(), OnError());
+  EXPECT_CALL(client(), OnError(media::mojom::InputStreamErrorCode::kUnknown));
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
   base::RunLoop().RunUntilIdle();

@@ -42,8 +42,8 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
       client;
   factory_client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
-  factory_client_receiver_.set_disconnect_handler(base::BindOnce(
-      &media::AudioInputIPCDelegate::OnError, base::Unretained(delegate_)));
+  factory_client_receiver_.set_disconnect_with_reason_handler(
+      base::BindOnce(&MojoAudioInputIPC::OnDisconnect, base::Unretained(this)));
 
   stream_creator_.Run(source_params_, std::move(client), params,
                       automatic_gain_control, total_segments);
@@ -108,9 +108,15 @@ void MojoAudioInputIPC::StreamCreated(
                              std::move(socket_handle), initially_muted);
 }
 
-void MojoAudioInputIPC::OnError() {
+void MojoAudioInputIPC::OnDisconnect(uint32_t error,
+                                     const std::string& reason) {
+  this->OnError(static_cast<media::mojom::InputStreamErrorCode>(error));
+}
+
+void MojoAudioInputIPC::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+
   delegate_->OnError();
 }
 

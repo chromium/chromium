@@ -118,7 +118,7 @@ class MockClient : public mojom::AudioInputStreamClient {
 
   MOCK_METHOD1(OnMutedStateChanged, void(bool));
 
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(mojom::InputStreamErrorCode));
 
  private:
   base::ReadOnlySharedMemoryRegion region_;
@@ -190,7 +190,7 @@ class MojoAudioInputStreamTest : public Test {
 
 TEST_F(MojoAudioInputStreamTest, NoDelegate_SignalsError) {
   bool deleter_called = false;
-  EXPECT_CALL(client_, OnError());
+  EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
   mojo::Remote<mojom::AudioInputStream> stream_remote;
   MojoAudioInputStream stream(
       stream_remote.BindNewPipeAndPassReceiver(),
@@ -252,7 +252,7 @@ TEST_F(MojoAudioInputStreamTest, Created_NotifiesClient) {
 TEST_F(MojoAudioInputStreamTest, SetVolumeTooLarge_Error) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
-  EXPECT_CALL(client_, OnError());
+  EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
 
   audio_input->SetVolume(15);
   base::RunLoop().RunUntilIdle();
@@ -262,7 +262,7 @@ TEST_F(MojoAudioInputStreamTest, SetVolumeTooLarge_Error) {
 TEST_F(MojoAudioInputStreamTest, SetVolumeNegative_Error) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
-  EXPECT_CALL(client_, OnError());
+  EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
 
   audio_input->SetVolume(-0.5);
   base::RunLoop().RunUntilIdle();
@@ -272,7 +272,7 @@ TEST_F(MojoAudioInputStreamTest, SetVolumeNegative_Error) {
 TEST_F(MojoAudioInputStreamTest, DelegateErrorBeforeCreated_PropagatesError) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(deleter_, Finished());
-  EXPECT_CALL(client_, OnError());
+  EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
 
   ASSERT_NE(nullptr, delegate_event_handler_);
   delegate_event_handler_->OnStreamError(kStreamId);
@@ -285,7 +285,7 @@ TEST_F(MojoAudioInputStreamTest, DelegateErrorAfterCreated_PropagatesError) {
   auto audio_input = CreateAudioInput();
   EXPECT_CALL(client_, GotNotification(kInitiallyNotMuted));
   EXPECT_CALL(deleter_, Finished());
-  EXPECT_CALL(client_, OnError());
+  EXPECT_CALL(client_, OnError(mojom::InputStreamErrorCode::kUnknown));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_NE(nullptr, delegate_event_handler_);

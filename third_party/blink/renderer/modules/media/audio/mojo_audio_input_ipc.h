@@ -70,8 +70,10 @@ class MODULES_EXPORT MojoAudioInputIPC
       media::mojom::blink::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
       const absl::optional<base::UnguessableToken>& stream_id) override;
-  void OnError() override;
+  void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
+
+  void OnDisconnect(uint32_t error, const std::string& reason);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

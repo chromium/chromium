@@ -216,7 +216,7 @@ void LoopbackStream::OnError() {
 
   receiver_.reset();
   if (client_) {
-    client_->OnError();
+    client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
     client_.reset();
   }
   observer_.reset();

@@ -43,7 +43,8 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
 
   // Unretained is safe because we own the receiver.
   stream_client_receiver_.set_disconnect_handler(
-      base::BindOnce(&InputIPC::OnError, base::Unretained(this)));
+      base::BindOnce(&InputIPC::OnError, base::Unretained(this),
+                     media::mojom::InputStreamErrorCode::kUnknown));
 
   // For now we don't care about key presses, so we pass a invalid buffer.
   base::ReadOnlySharedMemoryRegion invalid_key_press_count_buffer;
@@ -66,7 +67,7 @@ void InputIPC::StreamCreated(
   DCHECK(delegate_);
 
   if (data_pipe.is_null()) {
-    OnError();
+    OnError(media::mojom::InputStreamErrorCode::kUnknown);
     return;
   }
 
@@ -117,9 +118,10 @@ void InputIPC::CloseStream() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void InputIPC::OnError() {
+void InputIPC::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+  // TODO(toprice): propagate the errorcode to the delegate_.
   delegate_->OnError();
 }
 

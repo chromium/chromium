@@ -71,7 +71,10 @@ class InputStream final : public media::mojom::AudioInputStream,
   void OnMuted(bool is_muted) override;
 
  private:
-  void OnStreamError(bool signalPlatformError);
+  void OnStreamError(
+      base::Optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
+          reason_to_report);
+  void OnStreamPlatformError();
   void CallDeleter();
   void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
 

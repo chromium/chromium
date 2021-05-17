@@ -99,7 +99,9 @@ InputStream::InputStream(
 
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler = base::BindRepeating(
-      &InputStream::OnStreamError, base::Unretained(this), false);
+      &InputStream::OnStreamError, base::Unretained(this),
+      base::Optional<
+          media::mojom::AudioInputStreamObserver::DisconnectReason>());
   receiver_.set_disconnect_handler(error_handler);
   client_.set_disconnect_handler(error_handler);
 
@@ -112,12 +114,12 @@ InputStream::InputStream(
   // Only MONO, STEREO and STEREO_AND_KEYBOARD_MIC channel layouts are expected,
   // see AudioManagerBase::MakeAudioInputStream().
   if (params.channels() > kMaxInputChannels) {
-    OnStreamError(true);
+    OnStreamPlatformError();
     return;
   }
 
   if (!writer_) {
-    OnStreamError(true);
+    OnStreamPlatformError();
     return;
   }
 
@@ -187,7 +189,7 @@ void InputStream::SetVolume(double volume) {
 
   if (volume < 0 || volume > 1) {
     mojo::ReportBadMessage("Invalid volume");
-    OnStreamError(true);
+    OnStreamPlatformError();
     return;
   }
 
@@ -206,7 +208,7 @@ void InputStream::OnCreated(bool initially_muted) {
   base::ReadOnlySharedMemoryRegion shared_memory_region =
       writer_->TakeSharedMemoryRegion();
   if (!shared_memory_region.IsValid()) {
-    OnStreamError(true);
+    OnStreamPlatformError();
     return;
   }
 
@@ -223,12 +225,20 @@ void InputStream::OnError(InputController::ErrorCode error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "Error", this);
 
-  client_->OnError();
+  bool is_permissions_error =
+      error_code == InputController::STREAM_OPEN_SYSTEM_PERMISSIONS_ERROR;
+
+  client_->OnError(is_permissions_error
+                       ? media::mojom::InputStreamErrorCode::kSystemPermissions
+                       : media::mojom::InputStreamErrorCode::kUnknown);
   if (log_)
     log_->OnError();
   SendLogMessage("%s({error_code=%s})", __func__,
                  ErrorCodeToString(error_code));
-  OnStreamError(true);
+  OnStreamError(is_permissions_error ? media::mojom::AudioInputStreamObserver::
+                                           DisconnectReason::kSystemPermissions
+                                     : media::mojom::AudioInputStreamObserver::
+                                           DisconnectReason::kPlatformError);
 }
 
 void InputStream::OnLog(base::StringPiece message) {
@@ -242,18 +252,22 @@ void InputStream::OnMuted(bool is_muted) {
   client_->OnMutedStateChanged(is_muted);
 }
 
-void InputStream::OnStreamError(bool signalPlatformError) {
+void InputStream::OnStreamPlatformError() {
+  OnStreamError(
+      media::mojom::AudioInputStreamObserver::DisconnectReason::kPlatformError);
+}
+
+void InputStream::OnStreamError(
+    base::Optional<media::mojom::AudioInputStreamObserver::DisconnectReason>
+        reason_to_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "OnStreamError", this);
 
-  if (signalPlatformError && observer_) {
-    observer_.ResetWithReason(
-        static_cast<uint32_t>(media::mojom::AudioInputStreamObserver::
-                                  DisconnectReason::kPlatformError),
-        std::string());
-  }
-
-  if (signalPlatformError) {
+  if (reason_to_report.has_value()) {
+    if (observer_) {
+      observer_.ResetWithReason(static_cast<uint32_t>(reason_to_report.value()),
+                                std::string());
+    }
     SendLogMessage("%s()", __func__);
   }
 

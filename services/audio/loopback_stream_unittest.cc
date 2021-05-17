@@ -82,7 +82,7 @@ class MockClientAndObserver : public media::mojom::AudioInputStreamClient,
   void CloseClientBinding() { client_receiver_.reset(); }
   void CloseObserverBinding() { observer_receiver_.reset(); }
 
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD1(OnError, void(media::mojom::InputStreamErrorCode));
   MOCK_METHOD0(DidStartRecording, void());
   void OnMutedStateChanged(bool) override { NOTREACHED(); }
 
@@ -269,7 +269,7 @@ TEST_F(LoopbackStreamTest, ShutsDownStreamWhenInterfacePtrIsClosed) {
   EXPECT_CALL(*client(), DidStartRecording());
   StartLoopbackRecording();
   PumpAudioAndTakeNewRecording();
-  EXPECT_CALL(*client(), OnError());
+  EXPECT_CALL(*client(), OnError(media::mojom::InputStreamErrorCode::kUnknown));
   CloseInputStreamPtr();
   EXPECT_FALSE(stream());
   Mock::VerifyAndClearExpectations(client());
@@ -282,7 +282,7 @@ TEST_F(LoopbackStreamTest, ShutsDownStreamWhenClientBindingIsClosed) {
   PumpAudioAndTakeNewRecording();
   // Note: Expect no call to client::OnError() because it is the client binding
   // that is being closed and causing the error.
-  EXPECT_CALL(*client(), OnError()).Times(0);
+  EXPECT_CALL(*client(), OnError(_)).Times(0);
   client()->CloseClientBinding();
   RunMojoTasks();
   EXPECT_FALSE(stream());
@@ -294,7 +294,7 @@ TEST_F(LoopbackStreamTest, ShutsDownStreamWhenObserverBindingIsClosed) {
   EXPECT_CALL(*client(), DidStartRecording());
   StartLoopbackRecording();
   PumpAudioAndTakeNewRecording();
-  EXPECT_CALL(*client(), OnError());
+  EXPECT_CALL(*client(), OnError(media::mojom::InputStreamErrorCode::kUnknown));
   client()->CloseObserverBinding();
   RunMojoTasks();
   EXPECT_FALSE(stream());

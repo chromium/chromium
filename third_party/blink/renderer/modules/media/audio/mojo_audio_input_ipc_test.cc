@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -117,7 +118,7 @@ class FakeStreamCreator {
 
   void SignalError() {
     ASSERT_TRUE(stream_client_);
-    stream_client_->OnError();
+    stream_client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
   }
 
  private:

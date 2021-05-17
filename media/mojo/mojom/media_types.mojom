@@ -471,3 +471,10 @@ enum MediaStreamType {
   kRemote = 5, // The source is a remote peer connection.
   kNone = 6, // Not a media stream.
 };
+
+// Error codes propagated by Input media streams OnError methods to indicate the
+// reason for an error.
+enum InputStreamErrorCode {
+  kUnknown = 0,
+  kSystemPermissions = 1,
+};

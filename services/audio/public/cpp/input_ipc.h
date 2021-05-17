@@ -45,7 +45,7 @@ class InputIPC : public media::AudioInputIPC,
 
  private:
   // AudioInputStreamClient implementation.
-  void OnError() override;
+  void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
 
   void StreamCreated(media::mojom::ReadOnlyAudioDataPipePtr data_pipe,

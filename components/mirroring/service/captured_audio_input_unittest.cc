@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -104,7 +105,17 @@ class CapturedAudioInputTest : public ::testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(delegate_, OnError())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    stream_client_->OnError();
+    stream_client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
+    run_loop.Run();
+  }
+
+  void SignalStreamPermissionsError() {
+    EXPECT_TRUE(stream_client_.is_bound());
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate_, OnError())
+        .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    stream_client_->OnError(
+        media::mojom::InputStreamErrorCode::kSystemPermissions);
     run_loop.Run();
   }
 
@@ -155,6 +166,12 @@ TEST_F(CapturedAudioInputTest, CreateStream) {
 TEST_F(CapturedAudioInputTest, PropagatesStreamError) {
   CreateStream();
   SignalStreamError();
+  CloseStream();
+}
+
+TEST_F(CapturedAudioInputTest, PropagatesStreamPermissionsError) {
+  CreateStream();
+  SignalStreamPermissionsError();
   CloseStream();
 }
 

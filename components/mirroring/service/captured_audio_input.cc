@@ -81,9 +81,10 @@ void CapturedAudioInput::StreamCreated(
                              /* initally_muted */ false);
 }
 
-void CapturedAudioInput::OnError() {
+void CapturedAudioInput::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+
   delegate_->OnError();
 }
 

@@ -30,6 +30,10 @@
 
 namespace content {
 
+using DisconnectReason =
+    media::mojom::AudioInputStreamObserver::DisconnectReason;
+using InputStreamErrorCode = media::mojom::InputStreamErrorCode;
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -188,8 +192,7 @@ void AudioInputStreamBroker::StreamCreated(
                                   !!data_pipe);
 
   if (!data_pipe) {
-    disconnect_reason_ = media::mojom::AudioInputStreamObserver::
-        DisconnectReason::kStreamCreationFailed;
+    disconnect_reason_ = DisconnectReason::kStreamCreationFailed;
     Cleanup();
     return;
   }
@@ -200,29 +203,44 @@ void AudioInputStreamBroker::StreamCreated(
       std::move(stream), std::move(pending_client_receiver_),
       std::move(data_pipe), initially_muted, stream_id);
 }
+
+InputStreamErrorCode MapDisconnectReasonToErrorCode(DisconnectReason reason) {
+  switch (static_cast<DisconnectReason>(reason)) {
+    case DisconnectReason::kSystemPermissions:
+      return InputStreamErrorCode::kSystemPermissions;
+    case DisconnectReason::kDefault:
+    case DisconnectReason::kPlatformError:
+    case DisconnectReason::kTerminatedByClient:
+    case DisconnectReason::kStreamCreationFailed:
+    case DisconnectReason::kDocumentDestroyed:
+      break;
+  }
+  return InputStreamErrorCode::kUnknown;
+}
+
 void AudioInputStreamBroker::ObserverBindingLost(
     uint32_t reason,
     const std::string& description) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const uint32_t maxValidReason = static_cast<uint32_t>(
-      media::mojom::AudioInputStreamObserver::DisconnectReason::kMaxValue);
-  if (reason > maxValidReason) {
+  DisconnectReason disconnection_reason = static_cast<DisconnectReason>(reason);
+  if (!media::mojom::IsKnownEnumValue(disconnection_reason)) {
     DLOG(ERROR) << "Invalid reason: " << reason;
-  } else if (disconnect_reason_ == media::mojom::AudioInputStreamObserver::
-                                       DisconnectReason::kDocumentDestroyed) {
-    disconnect_reason_ =
-        static_cast<media::mojom::AudioInputStreamObserver::DisconnectReason>(
-            reason);
+  } else if (disconnect_reason_ == DisconnectReason::kDocumentDestroyed) {
+    disconnect_reason_ = disconnection_reason;
   }
+
+  renderer_factory_client_.ResetWithReason(
+      static_cast<uint32_t>(
+          MapDisconnectReasonToErrorCode(disconnection_reason)),
+      description);
 
   Cleanup();
 }
 
 void AudioInputStreamBroker::ClientBindingLost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  disconnect_reason_ = media::mojom::AudioInputStreamObserver::
-      DisconnectReason::kTerminatedByClient;
+  disconnect_reason_ = DisconnectReason::kTerminatedByClient;
   Cleanup();
 }
 
