@@ -43,7 +43,7 @@ def HashName(name):
     An int that is at most 32 bits.
   """
   md5hash = hashlib.md5()
-  md5hash.update(name)
+  md5hash.update(name.encode('utf-8'))
   return int(md5hash.hexdigest()[:8], 16)
 
 
@@ -101,7 +101,7 @@ def _CheckForHashCollisions(sorted_resource_list):
     A set of all |Resource| objects with collisions.
   """
   collisions = set()
-  for i in xrange(len(sorted_resource_list) - 1):
+  for i in range(len(sorted_resource_list) - 1):
     resource = sorted_resource_list[i]
     next_resource = sorted_resource_list[i+1]
     if resource.hash == next_resource.hash:
