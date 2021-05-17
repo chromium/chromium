@@ -105,7 +105,7 @@ std::unique_ptr<views::Label> CreateAddressComponentLabel(
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
+  text_label->SetMultiLine(true);
   return text_label;
 }
 
