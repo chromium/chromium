@@ -35,5 +35,5 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<SaveCardInfobarInteractionHandler>());
   browser_agent->AddInfobarInteractionHandler(
-      std::make_unique<SaveAddressProfileInfobarInteractionHandler>(browser));
+      std::make_unique<SaveAddressProfileInfobarInteractionHandler>());
 }

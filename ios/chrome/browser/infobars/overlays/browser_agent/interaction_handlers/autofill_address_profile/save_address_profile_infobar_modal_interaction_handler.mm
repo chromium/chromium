@@ -7,17 +7,13 @@
 #include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/main/browser.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 SaveAddressProfileInfobarModalInteractionHandler::
-    SaveAddressProfileInfobarModalInteractionHandler(Browser* browser)
-    : browser_(browser) {
-  DCHECK(browser_);
-}
+    SaveAddressProfileInfobarModalInteractionHandler() = default;
 
 SaveAddressProfileInfobarModalInteractionHandler::
     ~SaveAddressProfileInfobarModalInteractionHandler() = default;

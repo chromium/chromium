@@ -13,8 +13,6 @@
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
-#import "ios/chrome/browser/main/test_browser.h"
-#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
@@ -34,9 +32,6 @@ class SaveAddressProfileInfobarModalInteractionHandlerTest
         MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
             CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
                 profile_));
-    handler_ =
-        std::make_unique<SaveAddressProfileInfobarModalInteractionHandler>(
-            &browser_);
   }
 
   MockAutofillSaveUpdateAddressProfileDelegateIOS& mock_delegate() {
@@ -45,15 +40,13 @@ class SaveAddressProfileInfobarModalInteractionHandlerTest
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<SaveAddressProfileInfobarModalInteractionHandler> handler_;
+  SaveAddressProfileInfobarModalInteractionHandler handler_;
   MockAutofillSaveUpdateAddressProfileDelegateIOSFactory delegate_factory_;
   autofill::AutofillProfile profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
-  TestBrowser browser_;
 };
 
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, MainAction) {
   EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
-  handler_->PerformMainAction(infobar_.get());
+  handler_.PerformMainAction(infobar_.get());
 }

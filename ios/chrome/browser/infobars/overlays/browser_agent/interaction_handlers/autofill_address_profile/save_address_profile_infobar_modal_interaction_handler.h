@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_interaction_handler.h"
 
-class Browser;
 class InfoBarIOS;
 
 namespace autofill {
@@ -19,7 +18,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS;
 class SaveAddressProfileInfobarModalInteractionHandler
     : public InfobarModalInteractionHandler {
  public:
-  SaveAddressProfileInfobarModalInteractionHandler(Browser* browser);
+  SaveAddressProfileInfobarModalInteractionHandler();
   ~SaveAddressProfileInfobarModalInteractionHandler() override;
 
   // InfobarModalInteractionHandler:
@@ -39,9 +38,6 @@ class SaveAddressProfileInfobarModalInteractionHandler
   // Returns the SaveAddressProfile delegate from |infobar|.
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfoBarDelegate(
       InfoBarIOS* infobar);
-
-  // The Browser passed on initialization.
-  Browser* browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_AUTOFILL_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_INTERACTION_HANDLER_H_

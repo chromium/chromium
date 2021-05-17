@@ -13,13 +13,13 @@
 #endif
 
 SaveAddressProfileInfobarInteractionHandler::
-    SaveAddressProfileInfobarInteractionHandler(Browser* browser)
+    SaveAddressProfileInfobarInteractionHandler()
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypeSaveAutofillAddressProfile,
           std::make_unique<SaveAddressProfileInfobarBannerInteractionHandler>(),
           /*sheet_handler=*/nullptr,
-          std::make_unique<SaveAddressProfileInfobarModalInteractionHandler>(
-              browser)) {}
+          std::make_unique<
+              SaveAddressProfileInfobarModalInteractionHandler>()) {}
 
 SaveAddressProfileInfobarInteractionHandler::
     ~SaveAddressProfileInfobarInteractionHandler() = default;

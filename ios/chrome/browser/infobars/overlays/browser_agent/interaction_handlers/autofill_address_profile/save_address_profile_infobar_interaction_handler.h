@@ -7,14 +7,12 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/infobar_interaction_handler.h"
 
-class Browser;
-
 // An InfobarInteractionHandler that updates the model layer for interaction
 // events with the UI for save address profile infobars.
 class SaveAddressProfileInfobarInteractionHandler
     : public InfobarInteractionHandler {
  public:
-  SaveAddressProfileInfobarInteractionHandler(Browser* browser);
+  SaveAddressProfileInfobarInteractionHandler();
   ~SaveAddressProfileInfobarInteractionHandler() override;
 };
 
