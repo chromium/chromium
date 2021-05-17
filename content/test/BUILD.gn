@@ -1884,6 +1884,8 @@ test("content_unittests") {
     "../browser/compute_pressure/compute_pressure_sampler_unittest.cc",
     "../browser/compute_pressure/compute_pressure_test_support.cc",
     "../browser/compute_pressure/compute_pressure_test_support.h",
+    "../browser/compute_pressure/cpu_probe_unittest.cc",
+    "../browser/compute_pressure/cpuid_base_frequency_parser_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/conversions/conversion_host_unittest.cc",
@@ -2268,6 +2270,14 @@ test("content_unittests") {
       "../browser/tracing/background_reached_code_tracing_observer_android_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
       "../common/android/gin_java_bridge_value_unittest.cc",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "../browser/compute_pressure/cpu_probe_linux_unittest.cc",
+      "../browser/compute_pressure/procfs_stat_cpu_parser_unittest.cc",
+      "../browser/compute_pressure/sysfs_cpufreq_core_parser_unittest.cc",
     ]
   }
 

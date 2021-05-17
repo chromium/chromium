@@ -641,6 +641,8 @@ source_set("browser") {
     "compute_pressure/compute_pressure_sampler.h",
     "compute_pressure/cpu_probe.cc",
     "compute_pressure/cpu_probe.h",
+    "compute_pressure/cpuid_base_frequency_parser.cc",
+    "compute_pressure/cpuid_base_frequency_parser.h",
     "contacts/contacts_manager_impl.cc",
     "contacts/contacts_manager_impl.h",
     "contacts/contacts_provider.h",
@@ -2205,6 +2207,12 @@ source_set("browser") {
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",
+      "compute_pressure/cpu_probe_linux.cc",
+      "compute_pressure/cpu_probe_linux.h",
+      "compute_pressure/procfs_stat_cpu_parser.cc",
+      "compute_pressure/procfs_stat_cpu_parser.h",
+      "compute_pressure/sysfs_cpufreq_core_parser.cc",
+      "compute_pressure/sysfs_cpufreq_core_parser.h",
       "font_access/font_enumeration_cache_fontconfig.cc",
       "font_access/font_enumeration_cache_fontconfig.h",
       "font_service.cc",
