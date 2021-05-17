@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 604 tests; 364 PASS, 240 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 606 tests; 364 PASS, 242 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -273,6 +273,8 @@ FAIL Parsing: <http://%ef%b7%90zyx.com> against <http://other.com/> assert_equal
 FAIL Parsing: <https://�> against <about:blank> assert_equals: failure should set href to input expected "https://\ufffd" but got "https://%EF%BF%BD/"
 FAIL Parsing: <https://%EF%BF%BD> against <about:blank> assert_equals: failure should set href to input expected "https://%EF%BF%BD" but got "https://%EF%BF%BD/"
 PASS Parsing: <https://x/�?�#�> against <about:blank>
+FAIL Parsing: <http://a.b.c.xn--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://10.0.0.xn--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 PASS Parsing: <http://Ｇｏ.com> against <http://other.com/>
 FAIL Parsing: <http://％４１.com> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
