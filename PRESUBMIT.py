@@ -9,10 +9,6 @@ for more details about the presubmit API built into depot_tools.
 """
 PRESUBMIT_VERSION = '2.0.0'
 
-# This line is 'magic' in that git-cl looks for it to decide whether to
-# use Python3 instead of Python2 when running the code in this file.
-USE_PYTHON3 = True
-
 _EXCLUDED_PATHS = (
     # Generated file.
     (r"^components[\\/]variations[\\/]proto[\\/]devtools[\\/]"
@@ -1933,7 +1929,7 @@ def CheckFilePermissions(input_api, output_api):
     for f in input_api.AffectedFiles():
       # checkperms.py file/directory arguments must be relative to the
       # repository.
-      file_list.write((f.LocalPath() + '\n').encode('utf8'))
+      file_list.write(f.LocalPath() + '\n')
     file_list.close()
     args += ['--file-list', file_list.name]
     try:
@@ -2146,7 +2142,7 @@ def _ExtractAddRulesFromParsedDeps(parsed_deps):
       if rule.startswith('+') or rule.startswith('!')
   ])
   for _, rules in parsed_deps.get('specific_include_rules',
-                                              {}).items():
+                                              {}).iteritems():
     add_rules.update([
         rule[1:] for rule in rules
         if rule.startswith('+') or rule.startswith('!')
@@ -2175,7 +2171,12 @@ def _ParseDeps(contents):
       'Str': str,
   }
 
-  exec(contents, global_scope, local_scope)
+  # TODO(crbug.com/1207012): We need to strip the BOM because it isn't
+  # legal in Python source files. We can remove this check once the CL
+  # that actually removes the BOM from //third_party/crashpad/DEPS lands.
+  if contents.startswith(u'\ufeff'):
+      contents = contents[1:]
+  exec contents in global_scope, local_scope
   return local_scope
 
 
@@ -2906,9 +2907,9 @@ def CheckSecurityOwners(input_api, output_api):
 
   # Go through the OWNERS files to check, filtering out rules that are already
   # present in that OWNERS file.
-  for owners_file, patterns in to_check.items():
+  for owners_file, patterns in to_check.iteritems():
     try:
-      with open(owners_file) as f:
+      with file(owners_file) as f:
         lines = set(f.read().splitlines())
         for entry in patterns.values():
           entry['rules'] = [rule for rule in entry['rules'] if rule not in lines
@@ -2919,10 +2920,10 @@ def CheckSecurityOwners(input_api, output_api):
 
   # All the remaining lines weren't found in OWNERS files, so emit an error.
   errors = []
-  for owners_file, patterns in to_check.items():
+  for owners_file, patterns in to_check.iteritems():
     missing_lines = []
     files = []
-    for _, entry in patterns.items():
+    for _, entry in patterns.iteritems():
       missing_lines.extend(entry['rules'])
       files.extend(['  %s' % f.LocalPath() for f in entry['files']])
     if missing_lines:
@@ -3738,7 +3739,7 @@ def CheckForRelativeIncludes(input_api, output_api):
     return []
 
   error_descriptions = []
-  for file_path, bad_lines in bad_files.items():
+  for file_path, bad_lines in bad_files.iteritems():
     error_description = file_path
     for line in bad_lines:
       error_description += '\n    ' + line
@@ -4289,16 +4290,9 @@ def ChecksCommon(input_api, output_api):
         # The PRESUBMIT.py file (and the directory containing it) might
         # have been affected by being moved or removed, so only try to
         # run the tests if they still exist.
-        use_python3 = False
-        with open(f.LocalPath()) as fp:
-            use_python3 = any(line.startswith('USE_PYTHON3 = True')
-                              for line in fp.readlines())
-
         results.extend(input_api.canned_checks.RunUnitTestsInDirectory(
             input_api, output_api, full_path,
-            files_to_check=[r'^PRESUBMIT_test\.py$'],
-            run_on_python2=not use_python3,
-            run_on_python3=use_python3))
+            files_to_check=[r'^PRESUBMIT_test\.py$']))
   return results
 
 
@@ -5038,18 +5032,18 @@ def CheckStrings(input_api, output_api):
     if file_path.endswith('.grdp'):
       if f.OldContents():
         old_id_to_msg_map = grd_helper.GetGrdpMessagesFromString(
-          '\n'.join(f.OldContents()))
+          unicode('\n'.join(f.OldContents())))
       if f.NewContents():
         new_id_to_msg_map = grd_helper.GetGrdpMessagesFromString(
-          '\n'.join(f.NewContents()))
+          unicode('\n'.join(f.NewContents())))
     else:
       file_dir = input_api.os_path.dirname(file_path) or '.'
       if f.OldContents():
         old_id_to_msg_map = grd_helper.GetGrdMessages(
-          StringIO('\n'.join(f.OldContents())), file_dir)
+          StringIO(unicode('\n'.join(f.OldContents()))), file_dir)
       if f.NewContents():
         new_id_to_msg_map = grd_helper.GetGrdMessages(
-          StringIO('\n'.join(f.NewContents())), file_dir)
+          StringIO(unicode('\n'.join(f.NewContents()))), file_dir)
 
     grd_name, ext = input_api.os_path.splitext(
         input_api.os_path.basename(file_path))
@@ -5167,7 +5161,7 @@ def CheckTranslationExpectations(input_api, output_api,
   # ui/webui/resoucres/tools/generate_grd.py.
   ignore_path = input_api.os_path.join(
       'ui', 'webui', 'resources', 'tools', 'tests')
-  grd_files = [p for p in grd_files if ignore_path not in p]
+  grd_files = filter(lambda p: ignore_path not in p, grd_files)
 
   try:
     translation_helper.get_translatable_grds(repo_root, grd_files,

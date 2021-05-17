@@ -9,11 +9,7 @@ from __future__ import print_function
 import ast
 import os
 import re
-import sys
 import xml.etree.cElementTree as ElementTree
-
-if sys.version_info.major != 2:
-  basestring = str  # pylint: disable=redefined-builtin
 
 
 class GRDFile(object):
@@ -99,7 +95,7 @@ def get_translatable_grds(repo_root, all_grd_paths,
   # the translation expectations.
   grds_with_expectations = set(grd_to_langs.keys()).union(untranslated_grds)
   all_grds = {p: GRDFile(os.path.join(repo_root, p)) for p in all_grd_paths}
-  for path, grd in all_grds.items():
+  for path, grd in all_grds.iteritems():
     if grd.appears_translatable:
       if path not in grds_with_expectations:
         errors.append('%s appears to be translatable (because it contains '
@@ -117,7 +113,7 @@ def get_translatable_grds(repo_root, all_grd_paths,
                     (translation_expectations_path, '\n - '.join(errors)))
 
   translatable_grds = []
-  for path, expected_languages_list in grd_to_langs.items():
+  for path, expected_languages_list in grd_to_langs.iteritems():
     grd = all_grds[path]
     grd.expected_languages = expected_languages_list
     grd._populate_lang_to_xtb_path(errors)

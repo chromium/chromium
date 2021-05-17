@@ -290,17 +290,17 @@ class JSONParsingTest(unittest.TestCase):
     test_data = [
       ('invalid_json_1.json',
        ['{ x }'],
-       'Expecting property name'),
+       'Expecting property name:'),
       ('invalid_json_2.json',
        ['// Hello world!',
         '{ "hello": "world }'],
        'Unterminated string starting at:'),
       ('invalid_json_3.json',
        ['{ "a": "b", "c": "d", }'],
-       'Expecting property name'),
+       'Expecting property name:'),
       ('invalid_json_4.json',
        ['{ "a": "b" "c": "d" }'],
-       "Expecting ',' delimiter:"),
+       'Expecting , delimiter:'),
     ]
 
     input_api.files = [MockFile(filename, contents)
@@ -330,10 +330,10 @@ class JSONParsingTest(unittest.TestCase):
                        MockFile(file_without_comments,
                                 contents_without_comments)]
 
-    self.assertNotEqual(None,
-                        str(PRESUBMIT._GetJSONParseError(input_api,
-                                                         file_with_comments,
-                                                         eat_comments=False)))
+    self.assertEqual('No JSON object could be decoded',
+                     str(PRESUBMIT._GetJSONParseError(input_api,
+                                                      file_with_comments,
+                                                      eat_comments=False)))
     self.assertEqual(None,
                      PRESUBMIT._GetJSONParseError(input_api,
                                                   file_without_comments,
@@ -2218,9 +2218,9 @@ class SecurityChangeTest(unittest.TestCase):
     self._mockChangeOwnerAndReviewers(
         mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
     result = PRESUBMIT.CheckSecurityChanges(mock_input_api, mock_output_api)
-    self.assertEqual(1, len(result))
-    self.assertEqual(result[0].type, 'notify')
-    self.assertEqual(result[0].message,
+    self.assertEquals(1, len(result))
+    self.assertEquals(result[0].type, 'notify')
+    self.assertEquals(result[0].message,
         'The following files change calls to security-sensive functions\n' \
         'that need to be reviewed by ipc/SECURITY_OWNERS.\n'
         '  file.cc\n'
@@ -2237,9 +2237,9 @@ class SecurityChangeTest(unittest.TestCase):
     self._mockChangeOwnerAndReviewers(
         mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
     result = PRESUBMIT.CheckSecurityChanges(mock_input_api, mock_output_api)
-    self.assertEqual(1, len(result))
-    self.assertEqual(result[0].type, 'error')
-    self.assertEqual(result[0].message,
+    self.assertEquals(1, len(result))
+    self.assertEquals(result[0].type, 'error')
+    self.assertEquals(result[0].message,
         'The following files change calls to security-sensive functions\n' \
         'that need to be reviewed by ipc/SECURITY_OWNERS.\n'
         '  file.cc\n'
@@ -2256,7 +2256,7 @@ class SecurityChangeTest(unittest.TestCase):
         mock_input_api, 'owner@chromium.org',
         ['apple@chromium.org', 'banana@chromium.org'])
     result = PRESUBMIT.CheckSecurityChanges(mock_input_api, mock_output_api)
-    self.assertEqual(0, len(result))
+    self.assertEquals(0, len(result))
 
   def testChangeOwnerIsSecurityOwner(self):
     mock_input_api = MockInputApi()
@@ -2268,7 +2268,7 @@ class SecurityChangeTest(unittest.TestCase):
     self._mockChangeOwnerAndReviewers(
         mock_input_api, 'orange@chromium.org', ['pear@chromium.org'])
     result = PRESUBMIT.CheckSecurityChanges(mock_input_api, mock_output_api)
-    self.assertEqual(1, len(result))
+    self.assertEquals(1, len(result))
 
 
 class BannedTypeCheckTest(unittest.TestCase):
@@ -2674,8 +2674,8 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
       MockFile('dir/jumbo.h', ['#include "sphelper.h"']),
     ]
     results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
-    self.assertEqual(1, len(results))
-    self.assertEqual(4, len(results[0].items))
+    self.assertEquals(1, len(results))
+    self.assertEquals(4, len(results[0].items))
     self.assertTrue('StrCat' in results[0].message)
     self.assertTrue('foo_win.cc' in results[0].items[0])
     self.assertTrue('bar.h' in results[0].items[1])
@@ -2689,7 +2689,7 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
       MockFile('dir/baz-win.h', ['#include "base/win/atl.h"']),
     ]
     results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
-    self.assertEqual(0, len(results))
+    self.assertEquals(0, len(results))
 
   def testAllowsToCreateWrapper(self):
     mock_input_api = MockInputApi()
@@ -2699,7 +2699,7 @@ class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
         '#include "base/win/windows_defines.inc"']),
     ]
     results = PRESUBMIT._CheckNoStrCatRedefines(mock_input_api, MockOutputApi())
-    self.assertEqual(0, len(results))
+    self.assertEquals(0, len(results))
 
 
 class StringTest(unittest.TestCase):
