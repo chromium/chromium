@@ -11,7 +11,7 @@ For a typical chromium builder using the chromium recipe, you'll need to file a
 bug for tracking purposes, acquire a host, and then land **three** CLs:
 
 1. in [infradata/config][16], modifying `chromium.star`.
-2. in [chromium/tools/build][17], modifying the chromium\_tests
+2. in [chromium/tools/build][17], modifying the chromium\_tests\_builder\_config
    configuration.
 3. in [chromium/src][18], modifying all of the following:
     1. LUCI service configurations in `//infra/config`
@@ -64,15 +64,28 @@ All CQ builders *must* have mirrored CI builders.
 
 Your new builder's name should follow the [chromium builder naming scheme][3].
 
-"builder groups" are used to group builders in the various Milo UI pages
-and in various config files. Examples of builder group names include
-"chromium.linux" and "chromium.webrtc.fyi".
-Builders that will be sheriffed should mostly use `chromium.$OS`, and
-builders that won't be sheriffed should mostly use `chromium.fyi`.
+Builders are put into builder groups, with the group acting as part of the key
+used for looking up configuration for the builder in various places. Builders
+are also grouped within Milo UI pages according to the builder group. Builder
+groups are somewhat arbitrary, but there are some builder groups with
+significance:
 
-> **Note:** If you're creating a try builder, its name should match the
-> name of the CI builder it mirrors. However, not every existing builder
-> does this ([crbug.com/905879](https://crbug.com/905879)).
+* `chromium.$OS` - These are builder groups for builders that provide testing
+  coverage for a specific OS. These builders are watched by the main sheriff
+  rotation so they must be in a state where builds generally succeed.
+* `chromium` - This is a builder group for builders that produce archived builds
+  for each OS. These builders are watched by the main sheriff rotation.
+* `chromium.fyi` - This is a catch-all builder group for FYI builders (builders
+  that do not have a formal sheriff rotation). Avoid using this, instead add
+  to/create an OS-specific FYI builder group if you are testing an OS-specific
+  configuration (e.g. `chromium.android.fyi`) or a feature/team-specific builder
+  group (e.g. `chromium.updater`).
+
+> **Note:** If you're creating a try builder, its name should match the name of
+> the CI builder it mirrors. The builder group for the try builder should
+> usually be the builder group of the CI builder appended to `tryserver.`.
+> However, not every existing builder does this
+> ([crbug.com/905879](https://crbug.com/905879)).
 
 ## Obtain a host
 
@@ -85,39 +98,8 @@ To acquire the hosts, please file a [capacity bug][1] (internal) and describe
 the amount needed, along with any specialized hardware that's required (e.g.
 mac hardware, attached mobile devices, a specific GPU, etc.).
 
-## Register hardware with swarming
-
-Once your resource request has been approved and you've obtained the hardware,
-you'll need to associate it with your new builder in swarming. You can do so by
-modifying the relevant swarming instance's configuration.
-
-This configuration is written in Starlark, and then used to generate Protobuf
-files which are also checked in to the repo. Chromium's configuration is in
-[`chromium.star`][4] (internal only).
-
-If you're simply using a generic GCE bot, find the stanza corresponding to
-the OS and size that you want, and increment the number of bots allocated for
-that configuration. For example:
-
-```diff
-    # os:Ubuntu-16.04, cpu:x86-64
-    chrome.gce_xenial(
-        prefix = 'luci-chromium-ci-xenial-8',
-        zone = 'us-central1-b',
-        disk_gb = 400,
-        lifetime = time.week,
--       amount = 20,
-+       amount = 21,
-    )
-```
-
-If you've been given a specific hostname, instead add an entry for your bot
-name to be mapped to that hostname. For example:
-
-```diff
-+   # os:Ubuntu-16.04, cpu:x86-64
-+   'Linux Tests': 'swarm1234-c4',
-```
+See [infradata docs][4] (internal) for information on how to register
+the hardware to be used by your builder.
 
 ## Recipe configuration
 
@@ -129,35 +111,27 @@ builder to do.
 For typical chromium compile and/or test builders, the chromium and
 chromium\_trybot recipes should be sufficient.
 
-To configure a chromium CI builder, you'll want to add a config block
-to the file in [recipe\_modules/chromium\_tests][5] corresponding
-to your new builder's builder group. The format is somewhat in flux
-and is not very consistent among the different builder groups, but something
-like this should suffice:
+To configure a chromium CI builder, you'll want to add a config block to the
+file in [recipe\_modules/chromium\_tests\_builder\_config][5] corresponding to
+your new builder's builder group. The format is somewhat in flux and is not very
+consistent among the different builder groups, but something like this should
+suffice:
 
 ``` py
-'your-new-builder': {
-  'chromium_config': 'chromium',
-  'gclient_config': 'chromium',
-  'chromium_apply_config': ['mb', 'ninja_confirm_noop'],
-  'chromium_config_kwargs': {
+'your-new-builder': builder_spec.BuilderSpec.create(
+  chromium_config='chromium',
+  gclient_config='chromium',
+  chromium_apply_config=['mb', 'ninja_confirm_noop'],
+  chromium_config_kwargs={
     'BUILD_CONFIG': 'Release', # or 'Debug', as appropriate
     'TARGET_BITS': 64, # or 32, for some mobile builders
   },
-  'testing': {
-    'platform': '$PLATFORM', # one of 'mac', 'win', or 'linux'
-  },
+  simulation_platform='$PLATFORM',  # one of 'mac', 'win', or 'linux'
 
-  # Optional: where to upload test results. Valid values include:
-  #   'public_server' for test-results.appspot.com
-  #   'staging_server' for test-results-test.appspot.com
-  #   'no_server' to disable upload
-  'test_results_config': 'public_server',
-
-  # There are a variety of other options; most of them are either
-  # unnecessary in most cases or are deprecated. If you think one
-  # may be applicable, please reach out or ask your reviewer.
-}
+  # There are a variety of other options; most of them are either unnecessary in
+  # most cases. If you think one may be applicable, please reach out or ask your
+  # reviewer.
+)
 ```
 
 For chromium try builders, you'll also want to set up mirroring.
@@ -166,36 +140,35 @@ You can do so by adding your new try builder to [trybots.py][21].
 A typical entry will just reference the matching CI builder, e.g.:
 
 ``` py
-TRYBOTS = freeze({
+TRYBOTS = try_spec.TryDatabase.create({
   # ...
 
   'tryserver.chromium.example': {
-    'builders': {
       # If you want to build and test the same targets as one
       # CI builder, you can just do this:
-      'your-new-builder': simple_bot({
-        'builder_group': 'chromium.example',
-        'buildername': 'your-new-builder'
-      }),
+      'your-new-builder': try_spec.TrySpec.create_for_single_mirror(
+          builder_group='chromium.example',
+          buildername='your-new-builder',
+      ),
 
       # If you want to build the same targets as one CI builder
       # but not test anything, you can do this:
-      'your-new-compile-builder': simple_bot({
-        'builder_group': 'chromium.example',
-        'buildername': 'your-new-builder',
-      }, analyze_mode='compile'),
+      'your-new-compile-builder': try_spec.TrySpec.create_for_single_mirror(
+          builder_group='chromium.example',
+          buildername='your-new-builder',
+          analyze_mode='compile',
+      ),
 
       # If you want to build and test the same targets as a builder/tester
       # CI pair, you can do this:
-      'your-new-tester': simple_bot({
-        'builder_group': 'chromium.example',
-        'buildername': 'your-new-builder',
-        'tester': 'your-new-tester',
-      }),
+      'your-new-tester': try_spec.TrySpec.create_for_single_mirror(
+          builder_group='chromium.example',
+          buildername='your-new-builder',
+          tester='your-new-tester',
+      ),
 
       # If you want to mirror multiple try bots, please reach out.
     },
-  },
 
   # ...
 })
@@ -223,9 +196,9 @@ Buildbucket is responsible for taking a build scheduled by a user or
 an agent and translating it into a swarming task. Its configuration
 includes things like:
 
-  * ACLs for scheduling and viewing builds
-  * Swarming dimensions
-  * Recipe name and properties
+* ACLs for scheduling and viewing builds
+* Swarming dimensions
+* Recipe name and properties
 
 Chromium's buildbucket Starlark configuration is [here][23].
 Chromium's generated buildbucket configuration is [here][8].
@@ -243,8 +216,8 @@ A typical chromium builder won't need to configure much; module-level defaults
 apply values that are widely used for the bucket (e.g. bucket and executable).
 
 Each builder group has a function (sometimes multiple) defined that can be used
-to define a builder that runs with that builder group name and sets
-group-specific defaults. Find the block of builders defined using the
+to define a builder that sets the `builder_group` property to the group and sets
+group-specific defaults defaults. Find the block of builders defined using the
 appropriate function and add a new definition, which may be as simple as:
 
 ```starlark
@@ -293,12 +266,11 @@ luci.console_view(
             # A builder's category is a pipe-delimited list of strings
             # that determines how a builder is grouped on a console page.
             # N>=0
-            category = '$GROUP1|$GROUP2|...|$GROUPN',
+            category = '$CATEGORY1|$CATEGORY2|...|$CATEGORYN',
 
-           # A builder's short name is a string up to three characters
-           # long that lets someone uniquely identify it among builders
-           # in the same category.
-           short_name = '$SHORT_NAME',
+            # A builder's short name is the name that shows up in the column for
+            # the builder in the consolew view.
+            short_name = '$SHORT_NAME',
        ),
    ...
    ],
@@ -377,6 +349,33 @@ ci.builder(
 )
 ```
 
+#### Common mistakes
+
+##### Setting branch_selector
+
+A value should only be passed to the `branch_selector` argument if the builder
+should run against the branches. This is uncommon, see the [Branched
+builders](#branched-builders) section for information on whether a builder
+should be branched.
+
+##### Setting tree_closing (CI builder)
+
+The `tree_closing` argument should only be set to `True` if compile failures for
+the builder should prevent additional changes from being landed. This should
+generally be restricted to builders that are watched by a sheriffing rotation.
+
+##### Setting main_console_view (CI builder)
+
+A value should usually be passed to the `main_console_view` argument if the
+builder is in one of the builder groups that is watched by the main chromium
+sheriff rotation (*chromium*, *chromium.win*, *chromium.mac*, *chromium.linux*,
+*chromium.chromiumos* and *chromium.memory*).
+
+##### Setting cq_mirror_console_view (CI builder)
+
+A value should only be passed to the `cq_mirrors_console_view` argument if the
+builder is the mirror of a non-experimental try builder on the CQ.
+
 ### Recipe-specific configurations
 
 #### chromium & chromium\_trybot
@@ -393,6 +392,26 @@ compiling.
 recipe builders is in a group of `.pyl` and derived `.json` files
 in `//testing/buildbot`. The format is described [here][15].
 
+### Branched builders
+
+Active chromium branches have CI and CQ set up that is a subset of the
+configuration for trunk. The exact subset depends on the stage of the branch
+(beta/stable vs. a long-term channel). Most builders do not need to be branched;
+on trunk we run tests for not-yet-supported features and configurations.
+Generally, a builder should be branched if and only if one of the following is
+true:
+
+* The builder is a non-experimental try builder on the CQ (specifies a value for
+  the `tryjob` argument that doesn't set `experiment_percentage`).
+* The builder is a CI builder that is mirrored by a non-experimental try
+  builders on the CQ.
+* The builder is a CI builder that uploads build artifacts.
+
+There are occasional exceptions where builders are or aren't branched such as
+not branching a builder that runs tests on a very small set of machines: with
+limited capacity, it would be overwhelmed with additional builds happening on
+the branch.
+
 ## Questions? Feedback?
 
 If you're in need of further assistance, if you're not sure about
@@ -401,8 +420,8 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 
 [1]: http://go/file-chrome-resource-bug
 [3]: https://bit.ly/chromium-build-naming
-[4]: https://luci-config.appspot.com/#/services/chromium-swarm
-[5]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests
+[4]: http://go/chromium-hardware
+[5]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config
 [6]: /infra/config
 [7]: https://luci-config.appspot.com/schemas/projects:cr-buildbucket.cfg
 [8]: /infra/config/generated/cr-buildbucket.cfg
@@ -418,7 +437,7 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [18]: /
 [19]: https://g.co/bugatrooper
 [20]: https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/appengine/swarming/proto/bots.proto
-[21]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/trybots.py
+[21]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config/trybots.py
 [22]: /infra/config/main.star
 [23]: /infra/config/subprojects/chromium
 [24]: /infra/config/lib/builders.star
