@@ -980,4 +980,19 @@ void ExtensionTabUtil::ClearBackForwardCache() {
   }));
 }
 
+// static
+bool ExtensionTabUtil::IsTabStripEditable() {
+  for (auto* browser : *BrowserList::GetInstance())
+    if (browser && !browser->window()->IsTabStripEditable())
+      return false;
+  return true;
+}
+
+// static
+TabStripModel* ExtensionTabUtil::GetEditableTabStripModel(Browser* browser) {
+  if (!IsTabStripEditable())
+    return nullptr;
+  return browser->tab_strip_model();
+}
+
 }  // namespace extensions

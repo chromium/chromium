@@ -123,7 +123,10 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       }
     }
 
-    TabStripModel* tab_strip = browser->tab_strip_model();
+    TabStripModel* tab_strip =
+        ExtensionTabUtil::GetEditableTabStripModel(browser);
+    if (!tab_strip)
+      return RespondNow(Error(tabs_constants::kTabStripNotEditableQueryError));
     for (const tab_groups::TabGroupId& id :
          tab_strip->group_model()->ListTabGroups()) {
       const tab_groups::TabGroupVisualData* visual_data =
@@ -184,8 +187,11 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   if (params->update_properties.title.get())
     title = base::UTF8ToUTF16(*params->update_properties.title);
 
-  TabGroup* tab_group =
-      browser->tab_strip_model()->group_model()->GetTabGroup(id);
+  TabStripModel* tab_strip_model =
+      ExtensionTabUtil::GetEditableTabStripModel(browser);
+  if (!tab_strip_model)
+    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
   tab_group->SetVisualData(std::move(new_visual_data));
@@ -232,12 +238,12 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     return false;
   }
 
-  if (!source_browser->window()->IsTabStripEditable()) {
+  TabStripModel* source_tab_strip =
+      ExtensionTabUtil::GetEditableTabStripModel(source_browser);
+  if (!source_tab_strip) {
     *error = tabs_constants::kTabStripNotEditableError;
     return false;
   }
-
-  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
   gfx::Range tabs =
       source_tab_strip->group_model()->GetTabGroup(*group)->ListTabs();
   if (tabs.length() == 0)
@@ -249,11 +255,6 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     if (!windows_util::GetBrowserFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
             &target_browser, error)) {
-      return false;
-    }
-
-    if (!target_browser->window()->IsTabStripEditable()) {
-      *error = tabs_constants::kTabStripNotEditableError;
       return false;
     }
 
@@ -271,7 +272,12 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
     // If windowId is different from the current window, move between windows.
     if (target_browser != source_browser) {
-      TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+      TabStripModel* target_tab_strip =
+          ExtensionTabUtil::GetEditableTabStripModel(target_browser);
+      if (!target_tab_strip) {
+        *error = tabs_constants::kTabStripNotEditableError;
+        return false;
+      }
 
       if (new_index > target_tab_strip->count() || new_index < 0)
         new_index = target_tab_strip->count();
