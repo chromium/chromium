@@ -3932,8 +3932,7 @@ void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
 
 // static
 void RenderProcessHostImpl::UnregisterHost(int host_id) {
-  RenderProcessHostImpl* host =
-      reinterpret_cast<RenderProcessHostImpl*>(GetAllHosts().Lookup(host_id));
+  RenderProcessHost* host = GetAllHosts().Lookup(host_id);
   if (!host)
     return;
   TRACE_EVENT(
