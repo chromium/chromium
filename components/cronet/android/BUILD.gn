@@ -996,6 +996,7 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/urlconnection/CronetFixedModeOutputStreamTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLConnectionTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetHttpURLStreamHandlerTest.java",
+      "test/javatests/src/org/chromium/net/urlconnection/CronetInputStreamTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetURLStreamHandlerFactoryTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/MessageLoopTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/QuicUploadTest.java",
@@ -1011,7 +1012,9 @@ if (!is_component_build) {
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/mockito:mockito_java",
     ]
     deps += cronet_javatests_deps_to_package
     data = [ "//components/cronet/testing/test_server/data/" ]
