@@ -400,6 +400,17 @@ consoles.console_view(
     },
 )
 
+consoles.console_view(
+    name = "sheriff.fuchsia",
+    title = "Fuchsia Sheriff Console",
+    ordering = {
+        "*type*": consoles.ordering(short_names = ["a64", "x64"]),
+        None: ["ci", "fyi", "misc"],
+        "chromium.mac": "*type*",
+        "chromium.fyi|13": "*type*",
+    },
+)
+
 # The chromium.clang console includes some entries for builders from the chrome project
 [branches.console_view_entry(
     builder = "chrome:ci/{}".format(name),
@@ -1488,10 +1499,18 @@ ci.chromium_builder(
     name = "fuchsia-official",
     branch_selector = branches.STANDARD_MILESTONE,
     main_console_view = "main",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia",
-        short_name = "off",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia",
+            short_name = "off",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "off-x64",
+        ),
+    ],
     cores = 32,
     # TODO: Change this back down to something reasonable once these builders
     # have populated their cached by getting through the compile step
@@ -2162,18 +2181,34 @@ ci.clang_builder(
 
 ci.clang_builder(
     name = "ToTFuchsia x64",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT Fuchsia",
-        short_name = "x64",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ToT Fuchsia",
+            short_name = "x64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "misc",
+            short_name = "clang-x64",
+        ),
+    ],
 )
 
 ci.clang_builder(
     name = "ToTFuchsiaOfficial",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT Fuchsia",
-        short_name = "off",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ToT Fuchsia",
+            short_name = "off",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "misc",
+            short_name = "clang-off",
+        ),
+    ],
 )
 
 def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
@@ -3054,37 +3089,69 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "fuchsia-fyi-arm64-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|a64",
-        short_name = "dbg",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|a64",
+            short_name = "dbg",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
+            short_name = "a64-dbg",
+        ),
+    ],
     notifies = ["cr-fuchsia"],
 )
 
 ci.fyi_builder(
     name = "fuchsia-fyi-arm64-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|a64",
-        short_name = "rel",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|a64",
+            short_name = "rel",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
+            short_name = "a64",
+        ),
+    ],
     notifies = ["cr-fuchsia"],
 )
 
 ci.fyi_builder(
     name = "fuchsia-fyi-x64-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|x64",
-        short_name = "dbg",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "dbg",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
+            short_name = "x64-dbg",
+        ),
+    ],
     notifies = ["cr-fuchsia"],
 )
 
 ci.fyi_builder(
     name = "fuchsia-fyi-x64-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|x64",
-        short_name = "rel",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "rel",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
+            short_name = "x64",
+        ),
+    ],
     notifies = ["cr-fuchsia"],
 )
 
@@ -3902,10 +3969,18 @@ ci.fyi_coverage_builder(
 
 ci.fyi_coverage_builder(
     name = "fuchsia-code-coverage",
-    console_view_entry = consoles.console_view_entry(
-        category = "code_coverage",
-        short_name = "fsa",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "code_coverage",
+            short_name = "fsa",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "misc",
+            short_name = "cov",
+        ),
+    ],
     use_clang_coverage = True,
     schedule = "triggered",
     triggered_by = [],
@@ -4987,10 +5062,18 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Deterministic Fuchsia (dbg)",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|x64",
-        short_name = "det",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "det",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "misc",
+            short_name = "det",
+        ),
+    ],
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
     goma_jobs = None,
@@ -5028,10 +5111,18 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Fuchsia ARM64",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|a64",
-        short_name = "rel",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|a64",
+            short_name = "rel",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "arm64",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     extra_notifies = ["cr-fuchsia"],
@@ -5040,10 +5131,18 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Fuchsia x64",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|x64",
-        short_name = "rel",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "rel",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "x64",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     extra_notifies = ["cr-fuchsia"],
@@ -5123,10 +5222,18 @@ ci.linux_builder(
 ci.linux_builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|cast",
-        short_name = "a64",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|cast",
+            short_name = "a64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "arm64-cast",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     # Set tree_closing to false to disable the defaualt tree closer, which
@@ -5148,10 +5255,18 @@ ci.linux_builder(
 ci.linux_builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|cast",
-        short_name = "x64",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|cast",
+            short_name = "x64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "x64-cast",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     # Set tree_closing to false to disable the defaualt tree closer, which
@@ -5163,10 +5278,18 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "fuchsia-x64-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|x64",
-        short_name = "dbg",
-    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "dbg",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "x64-dbg",
+        ),
+    ],
     main_console_view = "main",
     extra_notifies = ["cr-fuchsia"],
 )
