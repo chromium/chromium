@@ -627,11 +627,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "composited-layer-borders",
-    "owners": [ "ccameron" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "compositor-threaded-scrollbar-scrolling",
     "owners": [ "arakeri@microsoft.com" ],
     "expiry_milestone": 90

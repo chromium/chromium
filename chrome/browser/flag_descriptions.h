@@ -333,9 +333,6 @@ extern const char kForceColorProfileDescription[];
 extern const char kDynamicColorGamutName[];
 extern const char kDynamicColorGamutDescription[];
 
-extern const char kCompositedLayerBordersName[];
-extern const char kCompositedLayerBordersDescription[];
-
 extern const char kCooperativeSchedulingName[];
 extern const char kCooperativeSchedulingDescription[];
 
