@@ -72,6 +72,11 @@
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
   self.authenticationService->GrantSyncConsent(identity);
 
+  // Turn on FirstSetupComplete flag after the authentication service has
+  // granted user consent to start Sync.
+  self.syncSetupService->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
   self.syncSetupService->CommitSyncChanges();
 }
 
