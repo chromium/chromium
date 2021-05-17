@@ -25,9 +25,12 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -120,6 +123,14 @@ void SelectItemWithSource(ash::ShelfItemDelegate* delegate,
 // Returns true if the given |item| has a pinned shelf item type.
 bool ItemTypeIsPinned(const ash::ShelfItem& item) {
   return ash::IsPinnedShelfItemType(item.type);
+}
+
+// Invoked on a worker thread to create standard icon image.
+gfx::ImageSkia CreateStandardImageOnWorkerThread(const gfx::ImageSkia& image) {
+  gfx::ImageSkia standard_image = apps::CreateStandardIconImage(image);
+  if (!standard_image.isNull())
+    standard_image.MakeThreadSafe();
+  return standard_image;
 }
 
 }  // namespace
@@ -990,6 +1001,34 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id))
     is_standard_icon = false;
 
+  if (is_standard_icon) {
+    UpdateAppImage(app_id, image);
+    return;
+  }
+
+  if (!standard_icon_task_runner_) {
+    standard_icon_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  }
+
+  gfx::ImageSkia copy;
+  if (image.IsThreadSafe()) {
+    copy = image;
+  } else {
+    image.EnsureRepsForSupportedScales();
+    copy = image.DeepCopy();
+  }
+
+  base::PostTaskAndReplyWithResult(
+      standard_icon_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&CreateStandardImageOnWorkerThread, copy),
+      base::BindOnce(&ChromeShelfController::UpdateAppImage,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
+void ChromeShelfController::UpdateAppImage(const std::string& app_id,
+                                           const gfx::ImageSkia& image) {
   // TODO: need to get this working for shortcuts.
   for (int index = 0; index < model_->item_count(); ++index) {
     ash::ShelfItem item = model_->items()[index];
@@ -998,8 +1037,7 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
         item.id.app_id != app_id) {
       continue;
     }
-    item.image =
-        is_standard_icon ? image : apps::CreateStandardIconImage(image);
+    item.image = image;
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     item.notification_badge_color =
         ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(

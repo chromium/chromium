@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -293,6 +294,9 @@ class ChromeShelfController
 
   using WebContentsToAppIDMap = std::map<content::WebContents*, std::string>;
 
+  // Updates images of shelf items representing the app.
+  void UpdateAppImage(const std::string& app_id, const gfx::ImageSkia& image);
+
   // Creates a new app shortcut item and controller on the shelf at |index|.
   ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id, int index);
   ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id,
@@ -446,6 +450,10 @@ class ChromeShelfController
   using RunningAppListIds = std::vector<std::string>;
   using RunningAppListIdMap = std::map<std::string, RunningAppListIds>;
   RunningAppListIdMap last_used_running_application_order_;
+
+  // A sequenced task runner to create standard icons and not spamming the
+  // thread pool.
+  scoped_refptr<base::SequencedTaskRunner> standard_icon_task_runner_;
 
   base::WeakPtrFactory<ChromeShelfController> weak_ptr_factory_{this};
 
