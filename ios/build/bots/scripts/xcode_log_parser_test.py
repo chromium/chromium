@@ -475,10 +475,15 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     mock_get_failed_tests.return_value = expected_test_results['failed']
     mock_root.side_effect = _xcresulttool_get_side_effect
     mock_exist_file.return_value = True
-    self.assertEqual(
-        expected_test_results,
-        xcode_log_parser.Xcode11LogParser().collect_test_results(
-            OUTPUT_PATH, []))
+    results = xcode_log_parser.Xcode11LogParser().collect_test_results(
+        OUTPUT_PATH, [])
+    self.assertEqual(expected_test_results, results)
+    for test in results['passed']:
+      self.assertTrue(isinstance(test, str))
+    for test in results['failed']:
+      self.assertTrue(isinstance(test, str))
+      for line in results['failed'][test]:
+        self.assertTrue(isinstance(line, str))
 
   @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')

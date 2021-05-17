@@ -61,14 +61,16 @@ def format_test_case(test_case):
   """Format test case from `-[TestClass TestMethod]` to `TestClass_TestMethod`.
 
   Args:
-    test_case: (str) Test case id in format `-[TestClass TestMethod]` or
+    test_case: (basestring) Test case id in format `-[TestClass TestMethod]` or
                `[TestClass/TestMethod]`
 
   Returns:
-    Test case id in format TestClass/TestMethod.
+    (str) Test case id in format TestClass/TestMethod.
   """
-  return test_case.replace('[', '').replace(']', '').replace(
-      '-', '').replace(' ', '/')
+  test = test_case.replace('[', '').replace(']',
+                                            '').replace('-',
+                                                        '').replace(' ', '/')
+  return test.encode('utf8') if isinstance(test, unicode) else test
 
 
 def copy_screenshots_for_failed_test(failure_message, test_case_folder):
@@ -162,9 +164,10 @@ class Xcode11LogParser(object):
     for failure_summary in actions_invocation_record['issues'][
         'testFailureSummaries']['_values']:
       error_line = failure_summary['documentLocationInCreatingWorkspace'][
-          'url']['_value']
-      fail_message = [error_line] + failure_summary['message'][
-          '_value'].splitlines()
+          'url']['_value'].encode('utf8')
+      fail_message = [
+          error_line
+      ] + failure_summary['message']['_value'].encode('utf8').splitlines()
       test_case_id = format_test_case(failure_summary['testCaseName']['_value'])
       failed[test_case_id] = fail_message
     return failed
@@ -191,7 +194,7 @@ class Xcode11LogParser(object):
           # can be parsed from root.
           continue
         for test in test_suite['subtests']['_values']:
-          test_name = test['identifier']['_value']
+          test_name = test['identifier']['_value'].encode('utf8')
           if any(
               test_name.endswith(suffix)
               for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
@@ -206,14 +209,14 @@ class Xcode11LogParser(object):
                     xcresult, test['summaryRef']['id']['_value']))
             failure_message = []
             for failure in rootFailure['failureSummaries']['_values']:
-              failure_location = '<unknown>'
-              if 'lineNumber' in failure:
-                failure_location = '%s:%s' % (failure['fileName'].get(
-                    '_value', ''), failure['lineNumber'].get('_value', ''))
-              elif 'fileName' in failure:
-                failure_location = failure['fileName'].get('_value', '')
-              failure_message += [failure_location
-                                 ] + failure['message']['_value'].splitlines()
+              file_name = failure.get('fileName', {}).get('_value',
+                                                          '').encode('utf8')
+              line_number = failure.get('lineNumber', {}).get('_value',
+                                                              '').encode('utf8')
+              failure_location = 'file: %s, line: %s' % (file_name, line_number)
+              failure_message += [
+                  failure_location
+              ] + failure['message']['_value'].encode('utf8').splitlines()
             results['failed'][test_name] = failure_message
 
   @staticmethod

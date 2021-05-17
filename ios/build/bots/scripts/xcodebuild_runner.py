@@ -461,8 +461,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       for attempt, attempt_results in enumerate(shard_attempts):
 
         for test in attempt_results['failed'].keys():
-          output.mark_failed(
-              test, test_log='\n'.join(self.logs.get(test, [])).encode('utf8'))
+          output.mark_failed(test, test_log='\n'.join(self.logs.get(test, [])))
 
         # 'aborted tests' in logs is an array of strings, each string defined
         # as "{TestCase}/{testMethod}"
