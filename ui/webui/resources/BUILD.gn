@@ -143,20 +143,26 @@ ts_library("library") {
   ]
   definitions = [
     # Checked-in .d.ts files.
+    "cr_components/managed_footnote/managed_footnote.d.ts",
     "cr_elements/cr_action_menu/cr_action_menu.m.d.ts",
     "cr_elements/cr_button/cr_button.m.d.ts",
+    "cr_elements/cr_checkbox/cr_checkbox.m.d.ts",
     "cr_elements/cr_container_shadow_behavior.m.d.ts",
     "cr_elements/cr_dialog/cr_dialog.m.d.ts",
+    "cr_elements/cr_drawer/cr_drawer.d.ts",
     "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
     "cr_elements/cr_input/cr_input.m.d.ts",
     "cr_elements/cr_toast/cr_toast.m.d.ts",
     "cr_elements/cr_view_manager/cr_view_manager.d.ts",
+    "cr_elements/find_shortcut_behavior.d.ts",
+    "js/cr/ui/focus_row_behavior.m.d.ts",
     "js/i18n_behavior.m.d.ts",
     "js/web_ui_listener_behavior.m.d.ts",
 
     # Auto-generated .d.ts files.
     "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
     "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
+    "$root_dir/cr_elements/cr_menu_selector/cr_menu_selector.d.ts",
     "$root_dir/cr_elements/cr_splitter/cr_splitter.d.ts",
     "$root_dir/cr_elements/hidden_style_css.m.d.ts",
     "$root_dir/cr_elements/icons.m.d.ts",
@@ -166,12 +172,14 @@ ts_library("library") {
     "$root_dir/js/assert.m.d.ts",
     "$root_dir/js/cr/event_target.m.d.ts",
     "$root_dir/js/cr.m.d.ts",
+    "$root_dir/js/cr/ui/focus_grid.m.d.ts",
     "$root_dir/js/cr/ui/focus_outline_manager.m.d.ts",
     "$root_dir/js/cr/ui/focus_row.m.d.ts",
     "$root_dir/js/event_tracker.m.d.ts",
     "$root_dir/js/load_time_data.m.d.ts",
     "$root_dir/js/parse_html_subset.m.d.ts",
     "$root_dir/js/promise_resolver.m.d.ts",
+    "$root_dir/js/icon.m.d.ts",
     "$root_dir/js/util.m.d.ts",
   ]
 
@@ -192,6 +200,7 @@ ts_definitions("generate_definitions") {
   js_files = [
     "cr_elements/cr_grid/cr_grid.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
+    "cr_elements/cr_menu_selector/cr_menu_selector.js",
     "cr_elements/cr_splitter/cr_splitter.js",
     "cr_elements/hidden_style_css.m.js",
     "cr_elements/icons.m.js",
@@ -201,12 +210,14 @@ ts_definitions("generate_definitions") {
     "js/assert.m.js",
     "js/cr.m.js",
     "js/cr/event_target.m.js",
+    "js/cr/ui/focus_grid.m.js",
     "js/cr/ui/focus_outline_manager.m.js",
     "js/cr/ui/focus_row.m.js",
     "js/event_tracker.m.js",
     "js/load_time_data.m.js",
     "js/parse_html_subset.m.js",
     "js/promise_resolver.m.js",
+    "js/icon.m.js",
     "js/util.m.js",
   ]
 
