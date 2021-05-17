@@ -50,6 +50,7 @@ class BBAgent(object):
                      json_output['id'])
 
     def get_build_test_results(self, build, step_name):
+        self._check_luci_auth()
         assert build.build_id, 'ID of the build must be provided'
         bb_output = self._host.executive.run_command(
             [self.bb_bin_path, 'log', '-nocolor', build.build_id,
