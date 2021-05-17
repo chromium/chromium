@@ -26,7 +26,7 @@ class BorealisDiskManager {
   };
 
   BorealisDiskManager() = default;
-  ~BorealisDiskManager() = default;
+  virtual ~BorealisDiskManager() = default;
 
   // Gets information about the borealis disk and the host device, returns
   // information about how the disk could be resized or an error.
