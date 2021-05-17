@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {RoutineResult, RoutineResultInfo, RoutineRunner, RoutineType, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineRunnerReceiver, RoutineType, SystemRoutineControllerInterface} from './diagnostics_types.js';
 
 /**
  * Represents the execution progress of a test routine.
@@ -42,21 +42,20 @@ export class ResultStatusItem {
 export let StatusCallbackFunction;
 
 /**
- * Implements the RoutineRunner remote. Creates a resolver and resolves it when
- * the onRoutineResult function is called.
+ * Implements the RoutineRunnerInterface remote. Creates a resolver and resolves
+ * it when the onRoutineResult function is called.
  */
 class ExecutionContext {
   constructor() {
     /** @private {!PromiseResolver} */
     this.resolver_ = new PromiseResolver();
 
-    this.routineRunner = new chromeos.diagnostics.mojom.RoutineRunnerReceiver(
-        /** @type {!chromeos.diagnostics.mojom.RoutineRunnerInterface} */ (
-            this));
+    this.routineRunner = new RoutineRunnerReceiver(
+        /** @type {!RoutineRunnerInterface} */ (this));
   }
 
   /**
-   * Implements RoutineRunner.onRoutineResult.
+   * Implements RoutineRunnerInterface.onRoutineResult.
    * @param {!RoutineResultInfo} result
    **/
   onRoutineResult(result) {

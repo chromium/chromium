@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunner, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 
 
 /**
@@ -38,7 +38,7 @@ export class FakeSystemRoutineController {
 
     /**
      * Holds the remote that is called on completion.
-     * @private {?RoutineRunner}
+     * @private {?RoutineRunnerInterface}
      */
     this.remote_ = null;
 
@@ -70,8 +70,7 @@ export class FakeSystemRoutineController {
   /*
    * Implements SystemRoutineController.RunRoutine.
    * @param {!RoutineType} routineType
-   * @param {!RoutineRunner} remoteRunner
-   * @return {!Promise}
+   * @param {!RoutineRunnerInterface} remoteRunner
    */
   runRoutine(routineType, remoteRunner) {
     this.resolver_ = new PromiseResolver();
@@ -85,8 +84,6 @@ export class FakeSystemRoutineController {
         this.fireRemoteWithResult_();
       }, this.delayTimeMilliseconds_);
     }
-
-    return this.resolver_.promise;
   }
 
   /**
@@ -129,6 +126,15 @@ export class FakeSystemRoutineController {
   }
 
   /**
+   * Returns the pending run routine promise.
+   * @return {!Promise}
+   */
+  getRunRoutinePromiseForTesting() {
+    assert(this.resolver_ != null);
+    return this.resolver_.promise;
+  }
+
+  /**
    * Resolves a routine that is in progress. The delay time must be set to
    * -1 or this method will assert. It will also assert if there is no
    * routine running. Use isRoutineInProgressForTesting() to determine if
@@ -163,10 +169,7 @@ export class FakeSystemRoutineController {
     assert(this.routineType_ != null);
     let result = this.routineResults_.get(this.routineType_);
     if (result == undefined) {
-      result = {
-        simpleResult:
-            chromeos.diagnostics.mojom.StandardRoutineResult.kExecutionError
-      };
+      result = {simpleResult: StandardRoutineResult.kExecutionError};
     }
 
     const resultInfo = /** @type {!RoutineResultInfo} */ ({

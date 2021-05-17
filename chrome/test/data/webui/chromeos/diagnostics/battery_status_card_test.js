@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/battery_status_card.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource} from 'chrome://diagnostics/diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {getDiagnosticsIcon} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeBatteryChargeStatus, fakeBatteryChargeStatus2, fakeBatteryHealth, fakeBatteryHealth2, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
@@ -188,8 +188,7 @@ export function batteryStatusCardTestSuite() {
 
           assertEquals(routineSectionElement.routines.length, 1);
           assertEquals(
-              routineSectionElement.routines[0],
-              chromeos.diagnostics.mojom.RoutineType.kBatteryCharge);
+              routineSectionElement.routines[0], RoutineType.kBatteryCharge);
 
           batteryStatusElement.onBatteryChargeStatusUpdated(
               fakeBatteryChargeStatus[2]);
@@ -200,8 +199,7 @@ export function batteryStatusCardTestSuite() {
 
           assertEquals(routineSectionElement.routines.length, 1);
           assertEquals(
-              routineSectionElement.routines[0],
-              chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge);
+              routineSectionElement.routines[0], RoutineType.kBatteryDischarge);
 
           batteryStatusElement.onBatteryChargeStatusUpdated(
               fakeBatteryChargeStatus[3]);
@@ -225,9 +223,7 @@ export function batteryStatusCardTestSuite() {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
-          assertEquals(
-              chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
-              getPowerAdapterStatus());
+          assertEquals(ExternalPowerSource.kAc, getPowerAdapterStatus());
           assertEquals(expectedBatteryIcon, batteryStatusElement.batteryIcon);
         });
   });
@@ -237,8 +233,7 @@ export function batteryStatusCardTestSuite() {
                fakeBatteryInfo, fakeBatteryChargeStatus2, fakeBatteryHealth2)
         .then(() => {
           assertEquals(
-              getPowerAdapterStatus(),
-              chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected);
+              getPowerAdapterStatus(), ExternalPowerSource.kDisconnected);
 
           const expectedIconRange = '71-77';
           assertEquals(

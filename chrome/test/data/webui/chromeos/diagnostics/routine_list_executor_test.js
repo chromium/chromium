@@ -105,11 +105,8 @@ export function fakeRoutineListExecutorTestSuite() {
   test('SingleTest', () => {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [{
-      type: chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-      result: {
-        simpleResult:
-            chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
-      }
+      type: RoutineType.kCpuStress,
+      result: {simpleResult: StandardRoutineResult.kTestFailed}
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -118,39 +115,26 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [
       {
-        type: chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        result: {
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
-        }
+        type: RoutineType.kCpuStress,
+        result: {simpleResult: StandardRoutineResult.kTestPassed}
       },
       {
-        type: chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        result: {
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
-        }
+        type: RoutineType.kCpuCache,
+        result: {simpleResult: StandardRoutineResult.kTestFailed}
       },
       {
-        type: chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
-        result: {
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
-        }
+        type: RoutineType.kCpuFloatingPoint,
+        result: {simpleResult: StandardRoutineResult.kTestPassed}
       },
       {
-        type: chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
-        result: {
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
-        }
+        type: RoutineType.kCpuPrime,
+        result: {simpleResult: StandardRoutineResult.kTestFailed}
       },
       {
-        type: chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+        type: RoutineType.kBatteryCharge,
         result: {
           powerResult: {
-            simpleResult:
-                chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed,
+            simpleResult: StandardRoutineResult.kTestFailed,
             isCharging: true,
             percentDelta: 10,
             timeDeltaSeconds: 10

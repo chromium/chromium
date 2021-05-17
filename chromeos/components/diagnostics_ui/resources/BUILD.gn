@@ -118,6 +118,9 @@ js_library("diagnostics_card") {
 }
 
 js_library("diagnostics_types") {
+  deps = [
+    "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
+  ]
 }
 
 js_library("diagnostics_utils") {
@@ -180,15 +183,11 @@ js_library("mojo_interface_provider") {
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
-    "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("mojo_utils") {
-  deps = [
-    "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
-  ]
 }
 
 js_library("network_card") {

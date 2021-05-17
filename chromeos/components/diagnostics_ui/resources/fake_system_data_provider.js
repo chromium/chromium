@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, CpuUsageObserver, ExternalPowerSource, MemoryUsage, MemoryUsageObserver, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
+
+import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, ExternalPowerSource, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -16,6 +17,15 @@ export class FakeSystemDataProvider {
   constructor() {
     this.methods_ = new FakeMethodResolver();
     this.observables_ = new FakeObservables();
+
+    /** @private {?Promise} */
+    this.observeBatteryChargeStatusPromise_ = null;
+    /** @private {?Promise} */
+    this.observeBatteryHealthPromise_ = null;
+    /** @private {?Promise} */
+    this.observeCpuUsagePromise_ = null;
+    /** @private {?Promise} */
+    this.observeMemoryUsagePromise_ = null;
 
     this.registerMethods();
     this.registerObservables();
@@ -52,18 +62,25 @@ export class FakeSystemDataProvider {
     this.methods_.setResult('getBatteryInfo', {batteryInfo: batteryInfo});
   }
 
-  /*
+  /**
    * Implements SystemDataProviderInterface.ObserveBatteryChargeStatus.
-   * @param {!BatteryChargeStatusObserver} remote
-   * @return {!Promise}
+   * @param {!BatteryChargeStatusObserverRemote} remote
    */
   observeBatteryChargeStatus(remote) {
-    return this.observe_(
+    this.observeBatteryChargeStatusPromise_ = this.observe_(
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated',
         (batteryChargeStatus) => {
           remote.onBatteryChargeStatusUpdated(
               /** @type {!BatteryChargeStatus} */ (batteryChargeStatus));
         });
+  }
+
+  /**
+   * Returns the promise for the most recent battery charge status observation.
+   * @return {?Promise}
+   */
+  getObserveBatteryChargeStatusPromiseForTesting() {
+    return this.observeBatteryChargeStatusPromise_;
   }
 
   /**
@@ -84,17 +101,24 @@ export class FakeSystemDataProvider {
         'BatteryChargeStatusObserver_onBatteryChargeStatusUpdated');
   }
 
-  /*
+  /**
    * Implements SystemDataProviderInterface.ObserveBatteryHealth.
-   * @param {!BatteryHealthObserver} remote
-   * @return {!Promise}
+   * @param {!BatteryHealthObserverRemote} remote
    */
   observeBatteryHealth(remote) {
-    return this.observe_(
+    this.observeBatteryHealthPromise_ = this.observe_(
         'BatteryHealthObserver_onBatteryHealthUpdated', (batteryHealth) => {
           remote.onBatteryHealthUpdated(
               /** @type {!BatteryHealth} */ (batteryHealth));
         });
+  }
+
+  /**
+   * Returns the promise for the most recent battery health observation.
+   * @return {?Promise}
+   */
+  getObserveBatteryHealthPromiseForTesting() {
+    return this.observeBatteryHealthPromise_;
   }
 
   /**
@@ -113,16 +137,24 @@ export class FakeSystemDataProvider {
     this.observables_.trigger('BatteryHealthObserver_onBatteryHealthUpdated');
   }
 
-  /*
+  /**
    * Implements SystemDataProviderInterface.ObserveCpuUsage.
-   * @param {!CpuUsageObserver} remote
-   * @return {!Promise}
+   * @param {!CpuUsageObserverRemote} remote
    */
   observeCpuUsage(remote) {
-    return this.observe_('CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
-      remote.onCpuUsageUpdated(
-          /** @type {!CpuUsage} */ (cpuUsage));
-    });
+    this.observeCpuUsagePromise_ =
+        this.observe_('CpuUsageObserver_onCpuUsageUpdated', (cpuUsage) => {
+          remote.onCpuUsageUpdated(
+              /** @type {!CpuUsage} */ (cpuUsage));
+        });
+  }
+
+  /**
+   * Returns the promise for the most recent cpu usage observation.
+   * @return {?Promise}
+   */
+  getObserveCpuUsagePromiseForTesting() {
+    return this.observeCpuUsagePromise_;
   }
 
   /**
@@ -141,17 +173,25 @@ export class FakeSystemDataProvider {
     this.observables_.trigger('CpuUsageObserver_onCpuUsageUpdated');
   }
 
-  /*
+  /**
+   *
    * Implements SystemDataProviderInterface.ObserveMemoryUsage.
-   * @param {!MemoryUsageObserver} remote
-   * @return {!Promise}
+   * @param {!MemoryUsageObserverRemote} remote
    */
   observeMemoryUsage(remote) {
-    return this.observe_(
+    this.observeCpuUsagePromise_ = this.observe_(
         'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
           remote.onMemoryUsageUpdated(
               /** @type {!MemoryUsage} */ (memoryUsage));
         });
+  }
+
+  /**
+   * Returns the promise for the most recent memory usage observation.
+   * @return {?Promise}
+   */
+  getObserveMemoryUsagePromiseForTesting() {
+    return this.observeCpuUsagePromise_;
   }
 
   /**
@@ -223,7 +263,7 @@ export class FakeSystemDataProvider {
     this.registerObservables();
   }
 
-  /*
+  /**
    * Sets up an observer for methodName.
    * @template T
    * @param {string} methodName

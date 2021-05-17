@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -10,32 +10,30 @@ export const fakeBatteryChargeStatus = [
   {
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerAdapterStatus: ExternalPowerSource.kAc,
     powerTime: stringToMojoString16('3h 15m'),
-    batteryState: chromeos.diagnostics.mojom.BatteryState.kCharging,
+    batteryState: BatteryState.kCharging,
   },
   {
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
-    powerAdapterStatus:
-        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
+    powerAdapterStatus: ExternalPowerSource.kDisconnected,
     powerTime: stringToMojoString16('3h 01m'),
-    batteryState: chromeos.diagnostics.mojom.BatteryState.kDischarging,
+    batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
-    powerAdapterStatus:
-        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
+    powerAdapterStatus: ExternalPowerSource.kDisconnected,
     powerTime: stringToMojoString16('2h 45m'),
-    batteryState: chromeos.diagnostics.mojom.BatteryState.kDischarging,
+    batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 5700,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerAdapterStatus: ExternalPowerSource.kAc,
     powerTime: stringToMojoString16('2h 45m'),
-    batteryState: chromeos.diagnostics.mojom.BatteryState.kFull,
+    batteryState: BatteryState.kFull,
   }
 ];
 
@@ -43,8 +41,7 @@ export const fakeBatteryChargeStatus = [
 export const fakeBatteryChargeStatus2 = [{
   chargeNowMilliampHours: 4200,
   currentNowMilliamps: 1123,
-  powerAdapterStatus:
-      chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected,
+  powerAdapterStatus: ExternalPowerSource.kDisconnected,
   powerTime: stringToMojoString16('3h 15m'),
 }];
 
@@ -211,41 +208,26 @@ export const fakeSystemInfoWithoutBoardName = {
 };
 /** @type {!Map<!RoutineType, !StandardRoutineResult>} */
 export const fakeRoutineResults = new Map([
-  [
-    chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
-  ],
-  [
-    chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
-  ],
-  [
-    chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
-    chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
-  ],
-  [
-    chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
-    chromeos.diagnostics.mojom.StandardRoutineResult.kExecutionError
-  ],
-  [
-    chromeos.diagnostics.mojom.RoutineType.kMemory,
-    chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
-  ],
+  [RoutineType.kCpuStress, StandardRoutineResult.kTestPassed],
+  [RoutineType.kCpuCache, StandardRoutineResult.kTestPassed],
+  [RoutineType.kCpuFloatingPoint, StandardRoutineResult.kTestFailed],
+  [RoutineType.kCpuPrime, StandardRoutineResult.kExecutionError],
+  [RoutineType.kMemory, StandardRoutineResult.kTestPassed],
 ]);
 
 /** @type {!Map<!RoutineType, !PowerRoutineResult>} */
 export const fakePowerRoutineResults = new Map([
   [
-    chromeos.diagnostics.mojom.RoutineType.kBatteryCharge, {
-      result: chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed,
+    RoutineType.kBatteryCharge, {
+      result: StandardRoutineResult.kTestPassed,
       is_charging: true,
       percent_delta: 5,
       time_delta_seconds: 10
     }
   ],
   [
-    chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge, {
-      result: chromeos.diagnostics.mojom.StandardRoutineResult.kUnableToRun,
+    RoutineType.kBatteryDischarge, {
+      result: StandardRoutineResult.kUnableToRun,
       is_charging: false,
       percent_delta: 0,
       time_delta_seconds: 0

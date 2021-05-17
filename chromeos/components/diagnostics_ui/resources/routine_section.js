@@ -211,8 +211,7 @@ Polymer({
 
                 if (status.result &&
                     getSimpleResult(status.result) !==
-                        chromeos.diagnostics.mojom.StandardRoutineResult
-                            .kTestPassed) {
+                        StandardRoutineResult.kTestPassed) {
                   this.hasTestFailure_ = true;
                 }
 
@@ -371,9 +370,7 @@ Polymer({
    * @return {string}
    */
   getPowerRoutineString_() {
-    const stringId =
-        this.routines.includes(
-            chromeos.diagnostics.mojom.RoutineType.kBatteryCharge) ?
+    const stringId = this.routines.includes(RoutineType.kBatteryCharge) ?
         'chargeTestResultText' :
         'dischargeTestResultText';
     const percentText = loadTimeData.getStringF(

@@ -16,7 +16,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MemoryUsage, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
+import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
 import {convertKibToGibDecimalString} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
@@ -38,8 +38,7 @@ Polymer({
 
   /**
    * Receiver responsible for observing memory usage.
-   * @private {
-   *  ?chromeos.diagnostics.mojom.MemoryUsageObserverReceiver}
+   * @private {?MemoryUsageObserverReceiver}
    */
   memoryUsageObserverReceiver_: null,
 
@@ -49,7 +48,7 @@ Polymer({
       type: Array,
       value: () => {
         return [
-          chromeos.diagnostics.mojom.RoutineType.kMemory,
+          RoutineType.kMemory,
         ];
       }
     },
@@ -80,12 +79,11 @@ Polymer({
 
   /** @private */
   observeMemoryUsage_() {
-    this.memoryUsageObserverReceiver_ =
-        new chromeos.diagnostics.mojom.MemoryUsageObserverReceiver(
-            /**
-             * @type {!chromeos.diagnostics.mojom.MemoryUsageObserverInterface}
-             */
-            (this));
+    this.memoryUsageObserverReceiver_ = new MemoryUsageObserverReceiver(
+        /**
+         * @type {!MemoryUsageObserverInterface}
+         */
+        (this));
 
     this.systemDataProvider_.observeMemoryUsage(
         this.memoryUsageObserverReceiver_.$.bindNewPipeAndPassRemote());

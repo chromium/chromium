@@ -70,8 +70,7 @@ export function routineSectionTestSuite() {
     routineSectionElement.routineRuntime = runtime;
 
     if (routines.length === 1 && [
-          chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge,
-          chromeos.diagnostics.mojom.RoutineType.kBatteryCharge
+          RoutineType.kBatteryDischarge, RoutineType.kBatteryCharge
         ].includes(routines[0])) {
       routineSectionElement.isPowerRoutine = true;
     }
@@ -237,8 +236,8 @@ export function routineSectionTestSuite() {
   test('ClickButtonShowsStopTest', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuFloatingPoint,
     ];
 
     return initializeRoutineSection(routines)
@@ -260,8 +259,8 @@ export function routineSectionTestSuite() {
   test('ResultListToggleButton', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuFloatingPoint,
     ];
 
     return initializeRoutineSection(routines)
@@ -287,7 +286,7 @@ export function routineSectionTestSuite() {
   test('PowerResultListToggleButton', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+      RoutineType.kBatteryCharge,
     ];
 
     return initializeRoutineSection(routines)
@@ -307,8 +306,8 @@ export function routineSectionTestSuite() {
   test('ClickButtonInitializesResultList', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuFloatingPoint,
     ];
 
     return initializeRoutineSection(routines)
@@ -370,18 +369,15 @@ export function routineSectionTestSuite() {
   test('ResultListFiltersBySupported', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kMemory,
+      RoutineType.kCpuCache,
+      RoutineType.kMemory,
     ];
 
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kMemory,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
-    routineController.setFakeSupportedRoutines(
-        [chromeos.diagnostics.mojom.RoutineType.kMemory]);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
+    routineController.setFakeSupportedRoutines([RoutineType.kMemory]);
 
     return initializeRoutineSection(routines)
         .then(() => {
@@ -390,9 +386,7 @@ export function routineSectionTestSuite() {
         .then(() => {
           const entries = getEntries();
           assertEquals(1, entries.length);
-          assertEquals(
-              chromeos.diagnostics.mojom.RoutineType.kMemory,
-              entries[0].item.routine);
+          assertEquals(RoutineType.kMemory, entries[0].item.routine);
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
         })
@@ -402,21 +396,18 @@ export function routineSectionTestSuite() {
         .then(() => {
           const entries = getEntries();
           assertEquals(1, entries.length);
-          assertEquals(
-              chromeos.diagnostics.mojom.RoutineType.kMemory,
-              entries[0].item.routine);
+          assertEquals(RoutineType.kMemory, entries[0].item.routine);
         });
   });
 
   test('ResultListStatusSuccess', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kMemory,
+      RoutineType.kMemory,
     ];
 
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kMemory,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         .then(() => {
@@ -462,16 +453,14 @@ export function routineSectionTestSuite() {
   test('ResultListStatusFail', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      RoutineType.kCpuFloatingPoint,
+      RoutineType.kCpuCache,
     ];
 
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed);
+        RoutineType.kCpuFloatingPoint, StandardRoutineResult.kTestFailed);
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         .then(() => {
@@ -538,15 +527,13 @@ export function routineSectionTestSuite() {
   test('CancelQueuedRoutinesWithRoutineCompleted', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuStress, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
@@ -603,15 +590,13 @@ export function routineSectionTestSuite() {
   test('CancelRunningAndQueuedRoutines', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuStress, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
@@ -653,15 +638,13 @@ export function routineSectionTestSuite() {
   test('RunAgainShownAfterCancellation', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuStress, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         // Start tests.
@@ -695,11 +678,10 @@ export function routineSectionTestSuite() {
   test('RunTestsMultipleTimes', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      RoutineType.kCpuCache,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
 
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
@@ -750,7 +732,7 @@ export function routineSectionTestSuite() {
   test('ReportButtonHiddenWithSingleRoutine', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      RoutineType.kCpuCache,
     ];
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
@@ -762,8 +744,8 @@ export function routineSectionTestSuite() {
   test('ReportButtonShownWithMultipleRoutines', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+      RoutineType.kCpuCache,
+      RoutineType.kCpuStress,
     ];
     return initializeRoutineSection(routines)
         .then(() => clickRunTestsButton())
@@ -775,12 +757,11 @@ export function routineSectionTestSuite() {
   test('RoutineRuntimeStatus', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kMemory,
+      RoutineType.kMemory,
     ];
 
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kMemory,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
 
     setMockTime(0);
 
@@ -816,12 +797,11 @@ export function routineSectionTestSuite() {
   test('RoutineRuntimeStatusLarge', () => {
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kMemory,
+      RoutineType.kMemory,
     ];
 
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kMemory,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
 
     setMockTime(0);
 

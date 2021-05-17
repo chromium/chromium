@@ -17,7 +17,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverInterface, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getDiagnosticsIcon} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
@@ -42,15 +42,14 @@ Polymer({
 
   /**
    * Receiver responsible for observing battery charge status.
-   * @private {
-   *  ?chromeos.diagnostics.mojom.BatteryChargeStatusObserverReceiver}
+   * @private {?BatteryChargeStatusObserverReceiver}
    */
   batteryChargeStatusObserverReceiver_: null,
 
   /**
    * Receiver responsible for observing battery health.
    * @private {
-   *  ?chromeos.diagnostics.mojom.BatteryHealthObserverReceiver}
+   *  ?BatteryHealthObserverReceiver}
    */
   batteryHealthObserverReceiver_: null,
 
@@ -137,10 +136,9 @@ Polymer({
   /** @private */
   observeBatteryChargeStatus_() {
     this.batteryChargeStatusObserverReceiver_ =
-        new chromeos.diagnostics.mojom.BatteryChargeStatusObserverReceiver(
+        new BatteryChargeStatusObserverReceiver(
             /**
-             * @type {!chromeos.diagnostics.mojom.
-             *        BatteryChargeStatusObserverInterface}
+             * @type {!BatteryChargeStatusObserverInterface}
              */
             (this));
 
@@ -158,13 +156,11 @@ Polymer({
 
   /** @private */
   observeBatteryHealth_() {
-    this.batteryHealthObserverReceiver_ =
-        new chromeos.diagnostics.mojom.BatteryHealthObserverReceiver(
-            /**
-             * @type {!chromeos.diagnostics.mojom.
-             *        BatteryHealthObserverInterface}
-             */
-            (this));
+    this.batteryHealthObserverReceiver_ = new BatteryHealthObserverReceiver(
+        /**
+         * @type {!BatteryHealthObserverInterface}
+         */
+        (this));
 
     this.systemDataProvider_.observeBatteryHealth(
         this.batteryHealthObserverReceiver_.$.bindNewPipeAndPassRemote());
@@ -172,15 +168,14 @@ Polymer({
 
   /**
    * Get an array of currently relevant routines based on power adaptor status
-   * @param {!chromeos.diagnostics.mojom.ExternalPowerSource} powerAdapterStatus
+   * @param {!ExternalPowerSource} powerAdapterStatus
    * @return {!Array<!RoutineType>}
    * @private
    */
   getCurrentPowerRoutines_(powerAdapterStatus) {
-    return powerAdapterStatus ===
-            chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected ?
-        [chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge] :
-        [chromeos.diagnostics.mojom.RoutineType.kBatteryCharge];
+    return powerAdapterStatus === ExternalPowerSource.kDisconnected ?
+        [RoutineType.kBatteryDischarge] :
+        [RoutineType.kBatteryCharge];
   },
 
   /**
@@ -189,8 +184,8 @@ Polymer({
    * @protected
    */
   getPowerTimeString_() {
-    const fullyCharged = this.batteryChargeStatus_.batteryState ===
-        chromeos.diagnostics.mojom.BatteryState.kFull;
+    const fullyCharged =
+        this.batteryChargeStatus_.batteryState === BatteryState.kFull;
     if (fullyCharged) {
       return loadTimeData.getString('batteryFullText');
     }
@@ -202,7 +197,7 @@ Polymer({
 
     const timeValue = mojoString16ToString(powerTimeStr);
     const charging = this.batteryChargeStatus_.powerAdapterStatus ===
-        chromeos.diagnostics.mojom.ExternalPowerSource.kAc;
+        ExternalPowerSource.kAc;
 
     return charging ?
         loadTimeData.getStringF('batteryChargingStatusText', timeValue) :
@@ -241,7 +236,7 @@ Polymer({
   getRunTestsButtonText_() {
     return loadTimeData.getString(
         this.batteryChargeStatus_.powerAdapterStatus ===
-                chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected ?
+                ExternalPowerSource.kDisconnected ?
             'runBatteryDischargeTestText' :
             'runBatteryChargeTestText')
   },
@@ -251,7 +246,7 @@ Polymer({
     const batteryInfoMissing =
         !this.batteryChargeStatus_ || !this.batteryHealth_;
     const notCharging = this.batteryChargeStatus_.powerAdapterStatus ===
-        chromeos.diagnostics.mojom.ExternalPowerSource.kDisconnected;
+        ExternalPowerSource.kDisconnected;
     if (notCharging || batteryInfoMissing) {
       return '';
     }
@@ -322,7 +317,7 @@ Polymer({
   getBatteryIcon_() {
     const charging = this.batteryChargeStatus_ &&
         this.batteryChargeStatus_.powerAdapterStatus ===
-            chromeos.diagnostics.mojom.ExternalPowerSource.kAc;
+            ExternalPowerSource.kAc;
 
     if (charging) {
       return getDiagnosticsIcon(`${BATTERY_ICON_PREFIX}charging`);
@@ -341,7 +336,7 @@ Polymer({
   updateIconClassList_() {
     return (this.batteryChargeStatus_ &&
             this.batteryChargeStatus_.powerAdapterStatus ===
-                chromeos.diagnostics.mojom.ExternalPowerSource.kAc) ?
+                ExternalPowerSource.kAc) ?
         'remove-stroke' :
         '';
   }

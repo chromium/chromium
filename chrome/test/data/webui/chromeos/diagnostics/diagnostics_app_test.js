@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/diagnostics_app.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, RoutineType, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, RoutineType, StandardRoutineResult, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -275,11 +275,10 @@ export function appTestSuite() {
     let routineSection;
     /** @type {!Array<!RoutineType>} */
     const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      RoutineType.kCpuCache,
     ];
     routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+        RoutineType.kCpuCache, StandardRoutineResult.kTestPassed);
     return initializeDiagnosticsApp(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)

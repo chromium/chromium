@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import './system_data_provider.mojom-lite.js';
-import './system_routine_controller.mojom-lite.js';
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {NetworkHealthProviderInterface, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
+import {NetworkHealthProviderInterface, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemDataProvider, SystemDataProviderInterface, SystemInfo, SystemRoutineController, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {fakeAllNetworksAvailable, fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from './fake_data.js';
 import {FakeNetworkHealthProvider} from './fake_network_health_provider.js';
 import {FakeSystemDataProvider} from './fake_system_data_provider.js';
@@ -21,6 +15,12 @@ import {FakeSystemRoutineController} from './fake_system_routine_controller.js';
  * Provides singleton access to mojo interfaces with the ability
  * to override them with test/fake implementations.
  */
+
+/**
+ * If true this will replace all providers with fakes.
+ * @type {boolean}
+ */
+let useFakeProviders = false;
 
 /**
  * @type {?SystemDataProviderInterface}
@@ -45,12 +45,28 @@ export function setSystemDataProviderForTesting(testProvider) {
 }
 
 /**
+ * Create a FakeSystemDataProvider with reasonable fake data.
+ */
+function setupFakeSystemDataProvider() {
+  systemDataProvider = new FakeSystemDataProvider();
+  systemDataProvider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
+  systemDataProvider.setFakeBatteryHealth(fakeBatteryHealth);
+  systemDataProvider.setFakeBatteryInfo(fakeBatteryInfo);
+  systemDataProvider.setFakeCpuUsage(fakeCpuUsage);
+  systemDataProvider.setFakeMemoryUsage(fakeMemoryUsage);
+  systemDataProvider.setFakeSystemInfo(fakeSystemInfo);
+}
+
+/**
  * @return {!SystemDataProviderInterface}
  */
 export function getSystemDataProvider() {
   if (!systemDataProvider) {
-    systemDataProvider =
-        chromeos.diagnostics.mojom.SystemDataProvider.getRemote();
+    if (useFakeProviders) {
+      setupFakeSystemDataProvider();
+    } else {
+      systemDataProvider = SystemDataProvider.getRemote();
+    }
   }
 
   assert(!!systemDataProvider);
@@ -65,12 +81,27 @@ export function setSystemRoutineControllerForTesting(testController) {
 }
 
 /**
+ * Create a FakeSystemRoutineController with reasonable fake data.
+ */
+function setupFakeSystemRoutineController() {
+  systemRoutineController = new FakeSystemRoutineController();
+  systemRoutineController.setDelayTimeInMillisecondsForTesting(-1);
+
+  // Enable all routines by default.
+  systemRoutineController.setFakeSupportedRoutines(
+      [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+}
+
+/**
  * @return {!SystemRoutineControllerInterface}
  */
 export function getSystemRoutineController() {
   if (!systemRoutineController) {
-    systemRoutineController =
-        chromeos.diagnostics.mojom.SystemRoutineController.getRemote();
+    if (useFakeProviders) {
+      setupFakeSystemRoutineController();
+    } else {
+      systemRoutineController = SystemRoutineController.getRemote();
+    }
   }
 
   assert(!!systemRoutineController);
@@ -84,6 +115,9 @@ export function setNetworkHealthProviderForTesting(testProvider) {
   networkHealthProvider = testProvider;
 }
 
+/**
+ * Create a FakeNetworkHealthProvider with reasonable fake data.
+ */
 function setupFakeNetworkHealthProvider_() {
   const provider = new FakeNetworkHealthProvider();
   // The fake provides a stable state with all networks connected.

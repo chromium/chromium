@@ -15,7 +15,7 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CpuUsage, RoutineType, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
+import {CpuUsage, CpuUsageObserverInterface, CpuUsageObserverReceiver, RoutineType, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -36,7 +36,7 @@ Polymer({
 
   /**
    * Receiver responsible for observing CPU usage.
-   * @private {?chromeos.diagnostics.mojom.CpuUsageObserverReceiver}
+   * @private {?CpuUsageObserverReceiver}
    */
   cpuUsageObserverReceiver_: null,
 
@@ -46,10 +46,10 @@ Polymer({
       type: Array,
       value: () => {
         return [
-          chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-          chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-          chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint,
-          chromeos.diagnostics.mojom.RoutineType.kCpuPrime,
+          RoutineType.kCpuStress,
+          RoutineType.kCpuCache,
+          RoutineType.kCpuFloatingPoint,
+          RoutineType.kCpuPrime,
         ];
       }
     },
@@ -87,12 +87,11 @@ Polymer({
 
   /** @private */
   observeCpuUsage_() {
-    this.cpuUsageObserverReceiver_ =
-        new chromeos.diagnostics.mojom.CpuUsageObserverReceiver(
-            /**
-             * @type {!chromeos.diagnostics.mojom.CpuUsageObserverInterface}
-             */
-            (this));
+    this.cpuUsageObserverReceiver_ = new CpuUsageObserverReceiver(
+        /**
+         * @type {!CpuUsageObserverInterface}
+         */
+        (this));
 
     this.systemDataProvider_.observeCpuUsage(
         this.cpuUsageObserverReceiver_.$.bindNewPipeAndPassRemote());

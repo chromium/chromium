@@ -23,41 +23,41 @@ import {BadgeType} from './text_badge.js';
 export function getRoutineType(routineType) {
   // TODO(michaelcheco): Replace unlocalized strings.
   switch (routineType) {
-    case chromeos.diagnostics.mojom.RoutineType.kBatteryCharge:
+    case RoutineType.kBatteryCharge:
       return loadTimeData.getString('batteryChargeRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kBatteryDischarge:
+    case RoutineType.kBatteryDischarge:
       return loadTimeData.getString('batteryDischargeRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kCaptivePortal:
+    case RoutineType.kCaptivePortal:
       return 'Captive Portal';
-    case chromeos.diagnostics.mojom.RoutineType.kCpuCache:
+    case RoutineType.kCpuCache:
       return loadTimeData.getString('cpuCacheRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kCpuStress:
+    case RoutineType.kCpuStress:
       return loadTimeData.getString('cpuStressRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kCpuFloatingPoint:
+    case RoutineType.kCpuFloatingPoint:
       return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kCpuPrime:
+    case RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kDnsLatency:
+    case RoutineType.kDnsLatency:
       return 'DNS Latency';
-    case chromeos.diagnostics.mojom.RoutineType.kDnsResolution:
+    case RoutineType.kDnsResolution:
       return 'DNS Resolution';
-    case chromeos.diagnostics.mojom.RoutineType.kDnsResolverPresent:
+    case RoutineType.kDnsResolverPresent:
       return 'DNS Resolver Present';
-    case chromeos.diagnostics.mojom.RoutineType.kGatewayCanBePinged:
+    case RoutineType.kGatewayCanBePinged:
       return 'Gateway can be Pinged';
-    case chromeos.diagnostics.mojom.RoutineType.kHasSecureWiFiConnection:
+    case RoutineType.kHasSecureWiFiConnection:
       return 'Secure WiFi Connection';
-    case chromeos.diagnostics.mojom.RoutineType.kHttpFirewall:
+    case RoutineType.kHttpFirewall:
       return 'HTTP Firewall';
-    case chromeos.diagnostics.mojom.RoutineType.kHttpsFirewall:
+    case RoutineType.kHttpsFirewall:
       return 'HTTPS Firewall';
-    case chromeos.diagnostics.mojom.RoutineType.kHttpsLatency:
+    case RoutineType.kHttpsLatency:
       return 'HTTPS Latency';
-    case chromeos.diagnostics.mojom.RoutineType.kLanConnectivity:
+    case RoutineType.kLanConnectivity:
       return 'Lan Connectivity';
-    case chromeos.diagnostics.mojom.RoutineType.kMemory:
+    case RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
-    case chromeos.diagnostics.mojom.RoutineType.kSignalStrength:
+    case RoutineType.kSignalStrength:
       return 'Signal Strength';
     default:
       // Values should always be found in the enum.
@@ -162,7 +162,7 @@ Polymer({
       case ExecutionProgress.kCompleted:
         const testPassed = this.item.result &&
             getSimpleResult(this.item.result) ===
-                chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed;
+                StandardRoutineResult.kTestPassed;
         const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
