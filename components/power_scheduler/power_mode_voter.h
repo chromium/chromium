@@ -108,6 +108,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) FrameProductionPowerModeVoter {
   std::unique_ptr<PowerModeVoter> voter_;
   int consecutive_frames_skipped_ = 0;
   base::TimeTicks last_frame_produced_timestamp_;
+  bool needs_begin_frames_ = false;
 };
 
 // PowerModeVoter that requires two consecutive votes for the same PowerMode

@@ -47,6 +47,7 @@ FrameProductionPowerModeVoter::~FrameProductionPowerModeVoter() = default;
 
 void FrameProductionPowerModeVoter::OnNeedsBeginFramesChanged(
     bool needs_begin_frames) {
+  needs_begin_frames_ = needs_begin_frames;
   if (needs_begin_frames) {
     consecutive_frames_skipped_ = 0;
     voter_->VoteFor(PowerMode::kAnimation);
@@ -69,10 +70,17 @@ void FrameProductionPowerModeVoter::OnFrameProduced() {
 
   last_frame_produced_timestamp_ = now;
   voter_->VoteFor(PowerMode::kAnimation);
+
+  if (!needs_begin_frames_)
+    voter_->ResetVoteAfterTimeout(PowerModeVoter::kAnimationTimeout);
 }
 
 void FrameProductionPowerModeVoter::OnFrameSkipped(bool frame_completed,
                                                    bool waiting_on_main) {
+  // Only consider skipped frames when we still need BeginFrames.
+  if (!needs_begin_frames_)
+    return;
+
   // Ignore frames that are skipped in an incomplete state, e.g. because frame
   // production took too long and the deadline was missed. Such frames should
   // not count as "no-op", because frame production may still be in progress.
