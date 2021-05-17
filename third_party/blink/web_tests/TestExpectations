@@ -6903,6 +6903,11 @@ crbug.com/1095540 [ Linux Debug ] virtual/compositor-threaded-percent-based-scro
 crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Pass Failure ]
 crbug.com/1208774 [ Mac ] external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Pass Failure ]
 
+# To unblock devtools-frontend TypeScript upgrade
+crbug.com/1209833 http/tests/devtools/runtime/runtime-getProperties.js [ Skip ]
+crbug.com/1209833 http/tests/devtools/runtime/runtime-localStorage-getProperties.js [ Skip ]
+crbug.com/1209833 http/tests/devtools/runtime/evaluate-timeout.js [ Skip ]
+
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] animations/animation-paused-hardware.html [ Failure ]
 crbug.com/1208173 [ Mac ] animations/missing-values-first-keyframe.html [ Failure ]
