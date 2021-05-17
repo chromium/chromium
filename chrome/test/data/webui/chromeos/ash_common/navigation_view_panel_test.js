@@ -5,12 +5,23 @@
 import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.m.js';
 
 export function navigationViewPanelTestSuite() {
   /** @type {?NavigationViewPanelElement} */
   let viewElement = null;
+
+  /** @type {number} */
+  let eventCount = 0;
+  /** @type {!Object} */
+  let eventDetail = {};
+  /** @type {number} */
+  let numPageChangedCount = 0;
+  /** @type {string} */
+  let previousPage = '';
+  /** @type {string} */
+  let currentPage = '';
 
   setup(() => {
     viewElement =
@@ -22,7 +33,29 @@ export function navigationViewPanelTestSuite() {
   teardown(() => {
     viewElement.remove();
     viewElement = null;
+    eventCount = 0;
+    eventDetail = {};
+    numPageChangedCount = 0;
+    previousPage = '';
+    currentPage = '';
   });
+
+  /**
+   * @param {!Object} e
+   */
+  function handleEvent(e) {
+    eventDetail = e.detail;
+    eventCount++;
+  }
+
+  /**
+   * @param {!CustomEvent} e
+   */
+  function onNavigationPageChanged(e) {
+    previousPage = e.detail.previous;
+    currentPage = e.detail.current;
+    numPageChangedCount++;
+  }
 
   test('oneEntry', async () => {
     const dummyPage1 = 'dummy-page1';
@@ -43,6 +76,7 @@ export function navigationViewPanelTestSuite() {
     const dummyElement1 =
         viewElement.shadowRoot.querySelector(`#${dummyPage1}`);
     assertFalse(dummyElement1.hidden);
+    dummyElement1['onNavigationPageChanged'] = onNavigationPageChanged;
 
     // Click the second menu item. Expect that the dummyPage2 to be created and
     // not hidden. dummyPage1 should be hidden now.
@@ -50,8 +84,14 @@ export function navigationViewPanelTestSuite() {
     await waitAfterNextRender(viewElement);
     const dummyElement2 =
         viewElement.shadowRoot.querySelector(`#${dummyPage2}`);
+    dummyElement2['onNavigationPageChanged'] = onNavigationPageChanged;
     assertFalse(dummyElement2.hidden);
     assertTrue(dummyElement1.hidden);
+    // Only one page has implemented "onNavigationPageChanged" by the second
+    // navigation click, expect only one client to be notified.
+    assertEquals(1, numPageChangedCount);
+    assertEquals(dummyPage1, previousPage);
+    assertEquals(dummyPage2, currentPage);
 
     // Click the first menu item. Expect that dummyPage2 is now hidden and
     // dummyPage1 is not hidden.
@@ -59,6 +99,37 @@ export function navigationViewPanelTestSuite() {
     await waitAfterNextRender(viewElement);
     assertTrue(dummyElement2.hidden);
     assertFalse(dummyElement1.hidden);
+    // Now that both dummy pages have implemented "onNavigationPageChanged",
+    // the navigation click will trigger both page's methods.
+    assertEquals(3, numPageChangedCount);
+    assertEquals(dummyPage2, previousPage);
+    assertEquals(dummyPage1, currentPage);
+  });
+
+  test('notifyEvent', async () => {
+    const dummyPage1 = 'dummy-page1';
+
+    viewElement.addSelector('dummyPage1', dummyPage1);
+
+    await waitAfterNextRender(viewElement);
+
+    const sideNav = viewElement.shadowRoot.querySelector('navigation-selector');
+    const navElements = sideNav.shadowRoot.querySelectorAll('.navigation-item');
+
+    // Create the element.
+    navElements[0].click();
+    await waitAfterNextRender(viewElement);
+    const dummyElement = viewElement.shadowRoot.querySelector(`#${dummyPage1}`);
+
+    const functionName = 'onEventReceived';
+    const expectedDetail = 'test';
+    // Set the function handler for the element.
+    dummyElement[functionName] = handleEvent;
+    // Trigger notifyEvent and expect |dummyElement| to capture the event.
+    viewElement.notifyEvent(functionName, {detail: expectedDetail});
+
+    assertEquals(1, eventCount);
+    assertEquals(expectedDetail, eventDetail.detail);
   });
 
   test('defaultPage', async () => {

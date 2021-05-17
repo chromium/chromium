@@ -10,6 +10,14 @@ import {MenuSelectorItem, SelectorItem, SelectorProperties} from './navigation_s
  * @fileoverview
  * 'navigation-view-panel' manages the wiring between a display page and
  * <navigation-selector>.
+ *
+ * Child pages that are interested in navigation page change events will need to
+ * implement a public function "onNavigationPageChanged()" to be notified of the
+ * event.
+ *
+ * To send events between pages, the component that has <navigation-view-panel>
+ * must call on "notifyEvent(functionName, params)". |params| is an optional
+ * parameter.
  */
 export class NavigationViewPanelElement extends PolymerElement {
   static get is() {
@@ -73,12 +81,35 @@ export class NavigationViewPanelElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onSwitchPage_() {
+  /**
+   * @param {!SelectorItem} current
+   * @param {?SelectorItem} previous
+   * @private
+   */
+  onSwitchPage_(current, previous) {
     if (!this.selectedItem)
       return;
     const pageComponent = this.getPage_(this.selectedItem);
     this.showPage_(pageComponent);
+
+    const event = {previous: !!previous ? previous.pageIs : '',
+                   current: current.pageIs};
+    this.notifyEvent('onNavigationPageChanged', event);
+  }
+
+  /**
+   * @param {string} functionName
+   * @param {!Object} params
+   */
+  notifyEvent(functionName, params={}) {
+    const components = this.shadowRoot.querySelectorAll('.view-content');
+    // Notify all available child pages of the event.
+    Array.from(components).map((c) => {
+      const functionCall = c[functionName];
+      if (typeof functionCall === "function") {
+        functionCall({detail: params});
+      }
+    });
   }
 
   /**
