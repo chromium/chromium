@@ -270,6 +270,9 @@ class WebStateImpl : public WebState,
                            NSString* default_prompt_text,
                            DialogClosedCallback callback);
 
+  // Returns true if a javascript dialog is running.
+  bool IsJavaScriptDialogRunning();
+
   // Instructs the delegate to create a new web state. Called when this WebState
   // wants to open a new window. |url| is the URL of the new window;
   // |opener_url| is the URL of the page which requested a window to be open;

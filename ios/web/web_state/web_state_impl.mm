@@ -389,6 +389,10 @@ void WebStateImpl::JavaScriptDialogClosed(
   std::move(callback).Run(success, user_input);
 }
 
+bool WebStateImpl::IsJavaScriptDialogRunning() {
+  return running_javascript_dialog_;
+}
+
 WebState* WebStateImpl::CreateNewWebState(const GURL& url,
                                           const GURL& opener_url,
                                           bool initiated_by_user) {

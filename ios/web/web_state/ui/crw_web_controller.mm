@@ -886,10 +886,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)createFullPagePDFWithCompletion:(void (^)(NSData*))completionBlock {
   // Invoke the |completionBlock| with nil rather than a blank PDF for certain
-  // URLs.
+  // URLs or if there is a javascript dialog running.
   const GURL& URL = self.webState->GetLastCommittedURL();
   if (![self contentIsHTML] || !URL.is_valid() ||
-      web::GetWebClient()->IsAppSpecificURL(URL)) {
+      web::GetWebClient()->IsAppSpecificURL(URL) ||
+      self.webStateImpl->IsJavaScriptDialogRunning()) {
     dispatch_async(dispatch_get_main_queue(), ^{
       completionBlock(nil);
     });

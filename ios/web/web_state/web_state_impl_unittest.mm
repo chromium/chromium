@@ -1114,6 +1114,94 @@ TEST_F(WebStateImplTest, DisallowSnapshotsDuringDialogPresentation) {
   EXPECT_TRUE(web_state_->CanTakeSnapshot());
 }
 
+// Tests that IsJavaScriptDialogRunning() is true when a JavaScript dialog is
+// being presented.
+TEST_F(WebStateImplTest, VerifyDialogRunningBoolean) {
+  FakeWebStateDelegate delegate;
+  web_state_->SetDelegate(&delegate);
+
+  EXPECT_FALSE(web_state_->IsJavaScriptDialogRunning());
+
+  // Pause the callback execution to allow testing while the dialog is
+  // presented.
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      true);
+  web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                  @"message", @"",
+                                  base::BindOnce(^(bool, NSString*){
+                                  }));
+
+  // Verify that IsJavaScriptDialogRunning() returns true while the dialog is
+  // presented.
+  EXPECT_TRUE(web_state_->IsJavaScriptDialogRunning());
+
+  // Unpause the presenter and verify that IsJavaScriptDialogRunning() returns
+  // false when the dialog is no longer presented
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+      false);
+  EXPECT_FALSE(web_state_->IsJavaScriptDialogRunning());
+}
+
+// Tests that CreateFullPagePdf invokes completion callback nil when a
+// javascript dialog is running
+TEST_F(WebStateImplTest, CreateFullPagePdfJavaScriptDialog) {
+  if (@available(iOS 14, *)) {
+    FakeWebStateDelegate delegate;
+    web_state_->SetDelegate(&delegate);
+
+    // Load the HTML content.
+    CRWWebController* web_controller = web_state_->GetWebController();
+    NSString* html_content =
+        @"<html><body><div style='background-color:#FF0000; width:50%; "
+         "height:100%;'></div>Hello world</body></html>";
+    [web_controller loadHTML:html_content forURL:GURL("http://example.org")];
+
+    ASSERT_TRUE(
+        test::WaitForWebViewContainingText(web_state_.get(), "Hello world"));
+
+    // Pause the callback execution to allow testing while the dialog is
+    // presented.
+    delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+        true);
+    web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                    @"message", @"",
+                                    base::BindOnce(^(bool, NSString*){
+                                    }));
+
+    // Attempt to create a PDF for this page and validate that it return nil.
+    __block NSData* callback_data_when_dialog = nil;
+    __block BOOL callback_called_when_dialog = NO;
+    web_state_->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+      callback_data_when_dialog = [pdf_document_data copy];
+      callback_called_when_dialog = YES;
+    }));
+
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return callback_called_when_dialog;
+    }));
+
+    EXPECT_FALSE(callback_data_when_dialog);
+
+    // Unpause the presenter and verify that it return data instead of nil when
+    // the dialog is no longer on the screen
+    delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
+        false);
+
+    __block NSData* callback_data_no_dialog = nil;
+    __block BOOL callback_called_no_dialog = NO;
+    web_state_->CreateFullPagePdf(base::BindOnce(^(NSData* pdf_document_data) {
+      callback_data_no_dialog = [pdf_document_data copy];
+      callback_called_no_dialog = YES;
+    }));
+
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return callback_called_no_dialog;
+    }));
+
+    EXPECT_TRUE(callback_data_no_dialog);
+  }
+}
+
 // Tests that the WebView is removed from the view hierarchy and the
 // visibilitychange JavaScript event is fired when covering/revealing the
 // WebContent.
