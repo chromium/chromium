@@ -49,6 +49,6 @@ public class JankFrameMetricsListenerTest {
         metricsListener.setIsListenerRecording(true);
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
-        Assert.assertArrayEquals(new Long[] {10_000_000L}, measurement.getMetrics().getDurations());
+        Assert.assertArrayEquals(new long[] {10_000_000L}, measurement.getMetrics().getDurations());
     }
 }

@@ -41,28 +41,28 @@ import javax.annotation.concurrent.GuardedBy;
  */
 class JankMetricMeasurement {
     protected static class JankMetric {
-        private final Long[] mTimestampsNs;
-        private final Long[] mDurationsNs;
-        private final Long[] mJankBurstsNs;
+        private final long[] mTimestampsNs;
+        private final long[] mDurationsNs;
+        private final long[] mJankBurstsNs;
         private final int mSkippedFrames;
 
         public JankMetric(
-                Long[] timestampsNs, Long[] durationsNs, Long[] jankBurstsNs, int skippedFrames) {
+                long[] timestampsNs, long[] durationsNs, long[] jankBurstsNs, int skippedFrames) {
             mTimestampsNs = timestampsNs;
             mDurationsNs = durationsNs;
             mJankBurstsNs = jankBurstsNs;
             mSkippedFrames = skippedFrames;
         }
 
-        public Long[] getTimestamps() {
+        public long[] getTimestamps() {
             return mTimestampsNs;
         }
 
-        public Long[] getDurations() {
+        public long[] getDurations() {
             return mDurationsNs;
         }
 
-        public Long[] getJankBursts() {
+        public long[] getJankBursts() {
             return mJankBurstsNs;
         }
 
@@ -123,7 +123,7 @@ class JankMetricMeasurement {
      *  Returns an array of all recorded jank bursts measured in nanoseconds (see class doc for
      * details).
      */
-    private static Long[] calculateJankBurstDurationsNs(Long[] timestampsNs, Long[] durationsNs) {
+    private static long[] calculateJankBurstDurationsNs(long[] timestampsNs, long[] durationsNs) {
         assert timestampsNs.length == durationsNs.length;
         ArrayList<Long> jankBurstDurationsNs = new ArrayList<>();
         long currentJankBurstDurationNs = 0;
@@ -166,7 +166,7 @@ class JankMetricMeasurement {
             jankBurstDurationsNs.add(currentJankBurstDurationNs);
         }
 
-        return jankBurstDurationsNs.toArray(new Long[jankBurstDurationsNs.size()]);
+        return longArrayListToPrimitiveArray(jankBurstDurationsNs);
     }
 
     /**
@@ -174,19 +174,28 @@ class JankMetricMeasurement {
      * called.
      */
     JankMetric getMetrics() {
-        Long[] timestampsNs;
-        Long[] totalDurationsNs;
+        long[] timestampsNs;
+        long[] totalDurationsNs;
         int skippedFrames;
 
         synchronized (mLock) {
-            timestampsNs = mTimestampsNs.toArray(new Long[mTimestampsNs.size()]);
-            totalDurationsNs = mTotalDurationsNs.toArray(new Long[mTotalDurationsNs.size()]);
+            timestampsNs = longArrayListToPrimitiveArray(mTimestampsNs);
+            totalDurationsNs = longArrayListToPrimitiveArray(mTotalDurationsNs);
             skippedFrames = mSkippedFrames;
         }
 
-        Long[] jankBursts = calculateJankBurstDurationsNs(timestampsNs, totalDurationsNs);
+        long[] jankBursts = calculateJankBurstDurationsNs(timestampsNs, totalDurationsNs);
 
         return new JankMetric(timestampsNs, totalDurationsNs, jankBursts, skippedFrames);
+    }
+
+    private static long[] longArrayListToPrimitiveArray(ArrayList<Long> longArrayList) {
+        long[] longArray = new long[longArrayList.size()];
+        for (int i = 0; i < longArrayList.size(); i++) {
+            longArray[i] = longArrayList.get(i).longValue();
+        }
+
+        return longArray;
     }
 
     /**
@@ -204,7 +213,7 @@ class JankMetricMeasurement {
      * Checks if the frame at frameIndex is janky (i.e. Its duration is greater than 16 ms). Returns
      * false if frameIndex is out of bounds.
      */
-    private static boolean isFrameJanky(int frameIndex, Long[] durationsNs) {
+    private static boolean isFrameJanky(int frameIndex, long[] durationsNs) {
         if (frameIndex < 0 || frameIndex >= durationsNs.length) return false;
 
         long frameDurationNs = durationsNs[frameIndex];
@@ -219,7 +228,7 @@ class JankMetricMeasurement {
      * and the beginning of the second frame. If either index is out of bounds then we return false.
      */
     private static boolean areFramesConsecutive(
-            int firstFrameIndex, int secondFrameIndex, Long[] timestampsNs, Long[] durationsNs) {
+            int firstFrameIndex, int secondFrameIndex, long[] timestampsNs, long[] durationsNs) {
         assert firstFrameIndex < secondFrameIndex;
         assert timestampsNs.length == durationsNs.length;
         if (firstFrameIndex < 0 || secondFrameIndex < 0) {

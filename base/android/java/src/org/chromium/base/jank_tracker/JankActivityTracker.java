@@ -16,6 +16,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.base.library_loader.LibraryLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +44,10 @@ class JankActivityTracker implements ActivityStateListener {
     private final Runnable mMetricReporter = new Runnable() {
         @Override
         public void run() {
-            // TODO(salg): Log frame durations and jank bursts.
+            if (LibraryLoader.getInstance().isInitialized()) {
+                JankMetricUMARecorder.recordJankMetricsToUMA(mMeasurement.getMetrics());
+            }
+            // TODO(salg@): Cache metrics in case native takes >30s to initialize.
             mMeasurement.clear();
 
             if (mIsMetricReporterLooping.get()) {

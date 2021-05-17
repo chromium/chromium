@@ -1409,6 +1409,68 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.Jank.FrameDuration" units="ms"
+    expires_after="2021-09-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Amount of time it takes to draw Android UI frames on ChromeTabbedActivity as
+    measured by Android's FrameMetrics API. Each frame's duration is recorded
+    individually while ChromeTabbedActivity is resumed. However, there's an
+    unusual implementation detail: Individual frame durations are measured in
+    Java, and passed over to C++ for recording once every 30 seconds. Thus,
+    frames that occur near program termination might be dropped from the data.
+
+    The samples for this metric (Along with Android.Jank.JankBursts and
+    Android.Jank.MissedFrames) are manually passed from Java to C++ every 30
+    seconds to be recorded. This is done instead of recording in real time from
+    Java due to the large number of generated samples (potentially ~60 per
+    second). Recording them directly from Java would result in a JNI call for
+    each sample which could cause performance issues.
+
+    FrameMetrics only reports frames with Android UI updates. An idle omnibox
+    would report only 2 frames per second due to the cursor blink animation.
+    Scrolling through a web page may record no frames if no Android UI (like the
+    address bar) updates.
+  </summary>
+</histogram>
+
+<histogram name="Android.Jank.JankBursts" units="ms" expires_after="2021-09-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Recorded every 30 seconds alongside Android.Jank.FrameDuration. Each sample
+    represents a jank burst: the total frame duration of one or many janky
+    frames drawn in quick succession. For example, the following sequence of
+    frame durations: [2ms, 100ms, 100ms, 100ms, 2ms, 2ms, 2ms, 100ms, 2ms] would
+    be recorded as 2 jank bursts: [300ms, 100ms].
+
+    Jank bursts may include non-janky frames if both adjacent frames are janky,
+    example: [2ms, 100ms, 100ms, 2ms, 100ms, 100ms, 2ms] would count as a single
+    jank burst: [402ms].
+
+    Jank bursts are started with a single janky frame, and end with either 2 or
+    more non-janky frames or a period of inactivity between janky frames
+    (&gt;50ms). For example: [100ms, 100ms, (...500ms without new frames
+    later...), 100ms] would be recorded as 2 jank bursts: [200ms, 100ms]. The
+    third frame is counted separately because of the period of inactivity before
+    it indicates its jankyness is caused by a different event or animation. (see
+    go/clank-zero-browser-jank for more details).
+  </summary>
+</histogram>
+
+<histogram name="Android.Jank.MissedFrames" units="frames"
+    expires_after="2021-09-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Number of frames that Android's FrameMetrics API failed to report on because
+    of high main thread activity. Android.Jank.FrameDuration and
+    Android.Jank.JankBursts are not recorded for these missed frames. This
+    metric is reported every 30 seconds along with Android.Jank.FrameDuration.
+  </summary>
+</histogram>
+
 <histogram name="Android.KernelVersion" enum="AndroidKernelVersion"
     expires_after="2021-10-04">
   <owner>rsesek@chromium.org</owner>

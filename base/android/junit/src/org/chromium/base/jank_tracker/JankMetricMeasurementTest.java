@@ -28,7 +28,7 @@ public class JankMetricMeasurementTest {
         measurement.addFrameMeasurement(1_040_000_000L, 20_000_000L, 0);
         measurement.addFrameMeasurement(1_060_000_000L, 8_000_000L, 0);
 
-        assertArrayEquals(new Long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
+        assertArrayEquals(new long[] {10_000_000L, 12_000_000L, 20_000_000L, 8_000_000L},
                 measurement.getMetrics().getDurations());
     }
 
@@ -55,7 +55,7 @@ public class JankMetricMeasurementTest {
         measurement.addFrameMeasurement(1_100_000_000L, 30_000_000L, 0); // Burst ends here.
         measurement.addFrameMeasurement(1_120_000_000L, 10_000_000L, 0);
 
-        assertArrayEquals(new Long[] {120_000_000L}, measurement.getMetrics().getJankBursts());
+        assertArrayEquals(new long[] {120_000_000L}, measurement.getMetrics().getJankBursts());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class JankMetricMeasurementTest {
         measurement.addFrameMeasurement(1_160_000_000L, 50_000_000L, 0); // Burst ends here.
 
         assertArrayEquals(
-                new Long[] {160_000_000L, 150_000_000L}, measurement.getMetrics().getJankBursts());
+                new long[] {160_000_000L, 150_000_000L}, measurement.getMetrics().getJankBursts());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class JankMetricMeasurementTest {
         measurement.addFrameMeasurement(1_140_000_000L, 10_000_000L, 0);
         measurement.addFrameMeasurement(1_160_000_000L, 50_000_000L, 0); // Burst ends here.
 
-        assertArrayEquals(new Long[] {290_000_000L}, measurement.getMetrics().getJankBursts());
+        assertArrayEquals(new long[] {290_000_000L}, measurement.getMetrics().getJankBursts());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class JankMetricMeasurementTest {
                 3_020_000_000L, 50_000_000L, 0); // Burst starts and ends here.
         measurement.addFrameMeasurement(3_040_000_000L, 10_000_000L, 0);
 
-        assertArrayEquals(new Long[] {150_000_000L, 160_000_000L, 50_000_000L},
+        assertArrayEquals(new long[] {150_000_000L, 160_000_000L, 50_000_000L},
                 measurement.getMetrics().getJankBursts());
     }
 }
