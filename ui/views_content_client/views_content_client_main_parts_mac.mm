@@ -101,7 +101,7 @@ ViewsContentClientMainParts::Create(
 }
 
 // static
-void ViewsContentClientMainParts::PreCreateMainMessageLoop() {
+void ViewsContentClientMainParts::PreBrowserMain() {
   // Simply instantiating an instance of ShellCrApplication serves to register
   // it as the application class. Do make sure that no other code has done this
   // first, though.

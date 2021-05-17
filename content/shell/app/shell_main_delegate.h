@@ -36,7 +36,7 @@ class ShellMainDelegate : public ContentMainDelegate {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void ZygoteForked() override;
 #endif
-  void PreCreateMainMessageLoop() override;
+  void PreBrowserMain() override;
   ContentClient* CreateContentClient() override;
   ContentBrowserClient* CreateContentBrowserClient() override;
   ContentGpuClient* CreateContentGpuClient() override;

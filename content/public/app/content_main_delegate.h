@@ -66,8 +66,9 @@ class CONTENT_EXPORT ContentMainDelegate {
   virtual int TerminateForFatalInitializationError();
 
   // Allows the embedder to perform platform-specific initialization before
-  // creating the main message loop.
-  virtual void PreCreateMainMessageLoop() {}
+  // BrowserMain() is invoked (i.e. before BrowserMainRunner, BrowserMainLoop,
+  // BrowserMainParts, etc. are created).
+  virtual void PreBrowserMain() {}
 
   // Returns true if content should create field trials and initialize the
   // FeatureList instance for this process. Default implementation returns true.

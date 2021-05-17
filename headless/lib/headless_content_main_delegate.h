@@ -43,7 +43,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
       const std::string& process_type,
       const content::MainFunctionParams& main_function_params) override;
 #if defined(OS_MAC)
-  void PreCreateMainMessageLoop() override;
+  void PreBrowserMain() override;
 #endif
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;

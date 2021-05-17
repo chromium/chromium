@@ -24,7 +24,7 @@ class ViewsContentMainDelegate : public content::ContentMainDelegate {
   // content::ContentMainDelegate implementation
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  void PreCreateMainMessageLoop() override;
+  void PreBrowserMain() override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
 

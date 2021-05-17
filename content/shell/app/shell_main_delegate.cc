@@ -319,7 +319,7 @@ void ShellMainDelegate::InitializeResourceBundle() {
 #endif
 }
 
-void ShellMainDelegate::PreCreateMainMessageLoop() {
+void ShellMainDelegate::PreBrowserMain() {
 #if defined(OS_MAC)
   RegisterShellCrApp();
 #endif

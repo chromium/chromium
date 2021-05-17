@@ -8,7 +8,7 @@
 
 namespace headless {
 
-void HeadlessContentMainDelegate::PreCreateMainMessageLoop() {
+void HeadlessContentMainDelegate::PreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [HeadlessShellCrApplication sharedApplication];
 

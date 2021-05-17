@@ -82,9 +82,9 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
   views_content_client_->OnResourcesLoaded();
 }
 
-void ViewsContentMainDelegate::PreCreateMainMessageLoop() {
-  content::ContentMainDelegate::PreCreateMainMessageLoop();
-  ViewsContentClientMainParts::PreCreateMainMessageLoop();
+void ViewsContentMainDelegate::PreBrowserMain() {
+  content::ContentMainDelegate::PreBrowserMain();
+  ViewsContentClientMainParts::PreBrowserMain();
 }
 
 content::ContentClient* ViewsContentMainDelegate::CreateContentClient() {

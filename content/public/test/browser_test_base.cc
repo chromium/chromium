@@ -605,7 +605,7 @@ void BrowserTestBase::SetUp() {
 
     base::ThreadPoolInstance::Create("Browser");
 
-    delegate->PreCreateMainMessageLoop();
+    delegate->PreBrowserMain();
     BrowserTaskExecutor::Create();
     delegate->PostEarlyInitialization(/*is_running_tests=*/true);
 

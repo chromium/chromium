@@ -26,7 +26,7 @@ ViewsContentClientMainParts::~ViewsContentClientMainParts() {
 }
 
 #if !defined(OS_APPLE)
-void ViewsContentClientMainParts::PreCreateMainMessageLoop() {}
+void ViewsContentClientMainParts::PreBrowserMain() {}
 #endif
 
 int ViewsContentClientMainParts::PreMainMessageLoopRun() {

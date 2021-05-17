@@ -1267,7 +1267,7 @@ ChromeMainDelegate::CreateContentUtilityClient() {
   return g_chrome_content_utility_client.Pointer();
 }
 
-void ChromeMainDelegate::PreCreateMainMessageLoop() {
+void ChromeMainDelegate::PreBrowserMain() {
 #if defined(OS_MAC)
   // Tell Cocoa to finish its initialization, which we want to do manually
   // instead of calling NSApplicationMain(). The primary reason is that NSAM()

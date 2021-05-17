@@ -8,7 +8,7 @@
 
 namespace extensions {
 
-void ShellMainDelegate::PreCreateMainMessageLoop() {
+void ShellMainDelegate::PreBrowserMain() {
   // Force the NSApplication subclass to be used.
   [ShellCrApplication sharedApplication];
 

@@ -982,7 +982,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     const bool has_thread_pool =
         GetContentClient()->browser()->CreateThreadPool("Browser");
 
-    delegate_->PreCreateMainMessageLoop();
+    delegate_->PreBrowserMain();
 #if defined(OS_WIN)
     if (l10n_util::GetLocaleOverrides().empty()) {
       // Override the configured locale with the user's preferred UI language.
