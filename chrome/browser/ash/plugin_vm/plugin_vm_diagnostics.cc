@@ -79,8 +79,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     // `is_allowed_diagnostics.GetTopError()` so that we can reuse it.
 
     {
-      EntryBuilder entry(l10n_util::GetStringUTF8(
-          IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_REQUIREMENT));
+      EntryBuilder entry(IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_REQUIREMENT);
       if (!is_allowed_diagnostics.device_supported) {
         entry.SetFail(l10n_util::GetStringFUTF8(
             IDS_VM_STATUS_PAGE_DEVICE_IS_SUPPORTED_EXPLANATION,
@@ -90,42 +89,36 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
     }
 
     {
-      EntryBuilder entry(l10n_util::GetStringUTF8(
-          IDS_VM_STATUS_PAGE_PROFILE_IS_SUPPORTED_REQUIREMENT));
+      EntryBuilder entry(IDS_VM_STATUS_PAGE_PROFILE_IS_SUPPORTED_REQUIREMENT);
 
       switch (is_allowed_diagnostics.profile_supported) {
         case ProfileSupported::kOk:
           break;
         case ProfileSupported::kErrorNonPrimary:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_SECONDARY_PROFILE_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_SECONDARY_PROFILE_EXPLANATION);
           break;
         case ProfileSupported::kErrorChildAccount:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_CHILD_PROFILE_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_CHILD_PROFILE_EXPLANATION);
           break;
         case ProfileSupported::kErrorOffTheRecord:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_GUEST_PROFILE_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_GUEST_PROFILE_EXPLANATION);
           break;
         case ProfileSupported::kErrorEphemeral:
           entry.SetFail(
-              l10n_util::GetStringUTF8(
-                  IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION),
+
+              IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION,
               /*learn_more_link=*/
               "https://support.google.com/chromebook?p=ephemeral_mode");
           break;
         case ProfileSupported::kErrorNotSupported:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_UNSUPPORTED_PROFILE_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_UNSUPPORTED_PROFILE_EXPLANATION);
           break;
       }
       builder_.AddEntry(std::move(entry));
     }
 
     {
-      EntryBuilder entry(
-          l10n_util::GetStringUTF8(IDS_VM_STATUS_PAGE_POLICIES_REQUIREMENT));
+      EntryBuilder entry(IDS_VM_STATUS_PAGE_POLICIES_REQUIREMENT);
       bool set_standard_top_error = true;
 
       switch (is_allowed_diagnostics.policy_configured) {
@@ -138,54 +131,44 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           const base::Value* hash =
               image_policy->FindKey(prefs::kPluginVmImageHashKeyName);
           if (!url || !GURL(url->GetString()).is_valid()) {
-            entry.SetFail(l10n_util::GetStringUTF8(
-                IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION));
+            entry.SetFail(IDS_VM_STATUS_PAGE_IMAGE_URL_POLICY_EXPLANATION);
           } else if (!hash || hash->GetString().empty()) {
-            entry.SetFail(l10n_util::GetStringUTF8(
-                IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION));
+            entry.SetFail(IDS_VM_STATUS_PAGE_IMAGE_HASH_POLICY_EXPLANATION);
           } else {
             set_standard_top_error = false;
           }
         } break;
         case PolicyConfigured::kErrorUnableToCheckPolicy:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION));
+          entry.SetFail(
+              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_POLICIES_EXPLANATION);
           break;
         case PolicyConfigured::kErrorNotEnterpriseEnrolled:
-          entry
-              .SetFail(l10n_util::GetStringUTF8(
-                  IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION))
+          entry.SetFail(IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION)
               .OverrideTopError(
-                  l10n_util::GetStringUTF8(
-                      IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR),
+                  IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR,
                   /*learn_more_link=*/
                   "https://support.google.com/chromebook?p=enroll_device");
           set_standard_top_error = false;
           break;
         case PolicyConfigured::kErrorUserNotAffiliated:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_USER_NOT_AFFILIATED_EXPLANATION);
           break;
         case PolicyConfigured::kErrorUnableToCheckDevicePolicy:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION));
+          entry.SetFail(
+              IDS_VM_STATUS_PAGE_UNABLE_TO_CHECK_DEVICE_ALLOW_EXPLANATION);
           break;
         case PolicyConfigured::kErrorNotAllowedByDevicePolicy:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_DEVICE_NOT_ALLOW_EXPLANATION);
           break;
         case PolicyConfigured::kErrorNotAllowedByUserPolicy:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_USER_NOT_ALLOW_EXPLANATION);
           break;
         case PolicyConfigured::kErrorLicenseNotSetUp:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION));
+          entry.SetFail(IDS_VM_STATUS_PAGE_LICENSE_NOT_SET_UP_EXPLANATION);
           break;
       }
       if (set_standard_top_error) {
-        entry.OverrideTopError(l10n_util::GetStringUTF8(
-            IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR));
+        entry.OverrideTopError(IDS_VM_STATUS_PAGE_INCORRECT_POLICIES_ERROR);
       }
       builder_.AddEntry(std::move(entry));
     }
@@ -221,8 +204,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
     if (plugin_vm_is_allowed) {
       if (!response.has_value()) {
-        entry.SetFail(l10n_util::GetStringUTF8(
-            IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION));
+        entry.SetFail(IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION);
       } else if (!HasDefaultVm(response->images())) {
         entry.SetFail(GetMissingDefaultVmExplanation(response->images()))
             .OverrideTopError(
@@ -260,8 +242,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
   std::string GetMissingDefaultVmExplanation(const ImageListType& images) {
     std::string string_template = l10n_util::GetPluralStringFUTF8(
         IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_EXPLANATION, images.size());
-    std::vector<std::string> subs{
-        l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME)};
+    std::vector<std::string> subs{IDS_PLUGIN_VM_APP_NAME};
 
     if (images.size() > 0) {
       // In this case, we have a second placeholder VM_NAME_LIST. The substitute

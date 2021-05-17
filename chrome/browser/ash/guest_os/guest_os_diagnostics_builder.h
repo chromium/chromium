@@ -24,6 +24,7 @@ class DiagnosticsBuilder {
 
     // The default status of the entry is pass.
     explicit EntryBuilder(const std::string& requirement);
+    explicit EntryBuilder(int requirement_message_id);
 
     EntryBuilder(EntryBuilder&&);
     ~EntryBuilder();
@@ -41,6 +42,14 @@ class DiagnosticsBuilder {
     void OverrideTopError(
         const std::string& error,
         const absl::optional<std::string>& learn_more_link = absl::nullopt);
+
+    // Version that accepting a message id.
+    EntryBuilder& SetFail(
+        int explanation_message_id,
+        const absl::optional<std::string>& learn_more_link = base::nullopt);
+    void OverrideTopError(
+        int error_message_id,
+        const absl::optional<std::string>& learn_more_link = base::nullopt);
 
    private:
     mojom::DiagnosticEntryPtr entry_;
