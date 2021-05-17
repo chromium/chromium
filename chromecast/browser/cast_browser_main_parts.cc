@@ -117,7 +117,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/views_delegate.h"  // nogncheck
 #else
-#include "chromecast/graphics/cast_window_manager_default.h"
+#include "chromecast/graphics/cast_window_manager_default.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

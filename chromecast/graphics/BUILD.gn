@@ -9,7 +9,6 @@ import("//testing/test.gni")
 cast_source_set("graphics") {
   sources = [
     "cast_touch_activity_observer.h",
-    "cast_window_manager.h",
     "gestures/cast_gesture_handler.cc",
     "gestures/cast_gesture_handler.h",
     "rounded_window_corners.cc",
@@ -53,6 +52,7 @@ cast_source_set("graphics") {
       "cast_focus_client_aura.h",
       "cast_touch_event_gate.cc",
       "cast_touch_event_gate.h",
+      "cast_window_manager.h",
       "cast_window_manager_aura.cc",
       "cast_window_manager_aura.h",
       "cast_window_tree_host_aura.cc",
@@ -81,11 +81,9 @@ cast_source_set("graphics") {
       "//ui/wm/public",
     ]
   } else {
-    sources += [
-      "cast_window_manager_default.cc",
-      "cast_window_manager_default.h",
-      "rounded_window_corners_default.cc",
-    ]
+    sources += [ "rounded_window_corners_default.cc" ]
+
+    public_deps += [ ":default_window_manager" ]
   }
 
   if (use_aura) {
@@ -110,6 +108,21 @@ cast_source_set("graphics") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+}
+
+cast_source_set("default_window_manager") {
+  sources = [
+    "cast_window_manager.h",
+    "cast_window_manager_default.cc",
+    "cast_window_manager_default.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+
+  public_deps = [ "//chromecast/ui/mojom" ]
 }
 
 cast_shared_library("libcast_graphics_1.0") {
