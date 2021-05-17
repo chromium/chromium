@@ -19,7 +19,7 @@ Polymer({
   },
 
   /** @private */
-  onDoneClick_() {
+  onSaveClick_() {
     const contactVisibility = /** @type {NearbyContactVisibilityElement} */
         (this.$.contactVisibility);
     contactVisibility.saveVisibilityAndAllowedContacts();
@@ -30,7 +30,7 @@ Polymer({
   },
 
   /** @private */
-  onManageContactsTap_() {
+  onManageContactsClick_() {
     window.open(loadTimeData.getString('nearbyShareManageContactsUrl'));
   }
 });

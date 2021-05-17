@@ -56,13 +56,13 @@
         </nearby-contact-visibility>
       </div>
       <div class="layout horizontal center" slot="button-container">
-        <cr-button id="manageContactsButton" on-click="onManageContactsTap_">
+        <cr-button id="manageContactsButton" on-click="onManageContactsClick_">
           <iron-icon icon="cr:open-in-new"></iron-icon>
           <span>$i18n{nearbyShareManageContactsLabel}</span>
         </cr-button>
         <div id="flex"></div>
-        <cr-button class="action-button" on-click="onDoneClick_">
-          $i18n{done}
+        <cr-button class="action-button" on-click="onSaveClick_">
+          $i18n{nearbyShareVisibilityDialogSave}
         </cr-button>
       </div>
     </cr-dialog>

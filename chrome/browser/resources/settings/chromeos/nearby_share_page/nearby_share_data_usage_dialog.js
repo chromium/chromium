@@ -46,12 +46,12 @@ Polymer({
   },
 
   /** @private */
-  onCancelTap_() {
+  onCancelClick_() {
     this.close();
   },
 
   /** @private */
-  onUpdateTap_() {
+  onSaveClick_() {
     this.setPrefValue(
         'nearby_sharing.data_usage',
         dataUsageStringToEnum(this.$$('cr-radio-group').selected));

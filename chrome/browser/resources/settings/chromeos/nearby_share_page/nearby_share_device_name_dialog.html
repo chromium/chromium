@@ -32,19 +32,20 @@
       </h1>
       <div slot="body">
         <cr-input value="[[settings.deviceName]]"
-            label="$i18n{nearbyShareDeviceNameFieldLabel}"
             on-input="onDeviceNameInput_"
             error-message="[[errorMessage]]"
             invalid="[[hasErrorMessage_(errorMessage)]]" autofocus>
         </cr-input>
       </div>
       <div class="layout horizontal center" slot="button-container">
-        <cr-button class="cancel-button" on-click="onCancelTap_">
+        <cr-button class="cancel-button" on-click="onCancelClick_">
           $i18n{cancel}
         </cr-button>
-        <cr-button id="doneButton" class="action-button" on-click="onDoneTap_"
+        <cr-button id="doneButton"
+            class="action-button"
+            on-click="onSaveClick_"
             disabled="[[hasErrorMessage_(errorMessage)]]">
-          $i18n{done}
+          $i18n{nearbyShareConfirmDeviceName}
         </cr-button>
       </div>
     </cr-dialog>

@@ -55,12 +55,12 @@ Polymer({
   },
 
   /** @private */
-  onCancelTap_() {
+  onCancelClick_() {
     this.close();
   },
 
   /** @private */
-  onDoneTap_() {
+  onSaveClick_() {
     nearby_share.getNearbyShareSettings()
         .setDeviceName(this.getEditInputValue_())
         .then((result) => {

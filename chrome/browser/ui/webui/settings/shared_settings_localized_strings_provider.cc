@@ -307,6 +307,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
+      {"nearbyShareConfirmDeviceName",
+       IDS_SETTINGS_NEARBY_SHARE_CONFIRM_DEVICE_NAME},
       {"nearbyShareManageContactsLabel",
        IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL},
       {"nearbyShareManageContactsRowTitle",
@@ -347,7 +349,9 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareHighVisibilityOn",
        IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON},
       {"nearbyShareHighVisibilityOff",
-       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF}};
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF},
+      {"nearbyShareVisibilityDialogSave",
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE}};
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
