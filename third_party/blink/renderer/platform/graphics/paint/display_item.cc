@@ -207,6 +207,8 @@ String DisplayItem::AsDebugString() const {
 }
 
 String DisplayItem::IdAsString() const {
+  if (IsSubsequenceTombstone())
+    return "SUBSEQUENCE TOMBSTONE";
   if (IsTombstone())
     return "TOMBSTONE " + GetId().ToString();
   return GetId().ToString();
@@ -215,6 +217,9 @@ String DisplayItem::IdAsString() const {
 void DisplayItem::PropertiesAsJSON(JSONObject& json,
                                    bool client_known_to_be_alive) const {
   json.SetString("id", IdAsString());
+  if (IsSubsequenceTombstone())
+    return;
+
   json.SetString("clientDebugName",
                  Client().SafeDebugName(client_known_to_be_alive));
   if (client_known_to_be_alive) {

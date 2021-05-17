@@ -238,6 +238,8 @@ class PLATFORM_EXPORT DisplayItem {
   bool DrawsContent() const { return draws_content_; }
 
 #if DCHECK_IS_ON()
+  // A subsequence tombstone is full of zeros set by memset(0);
+  bool IsSubsequenceTombstone() const { return !is_not_tombstone_ && !client_; }
   static String TypeAsDebugString(DisplayItem::Type);
   String AsDebugString() const;
   String IdAsString() const;

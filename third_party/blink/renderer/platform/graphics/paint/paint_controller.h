@@ -286,7 +286,6 @@ class PLATFORM_EXPORT PaintController {
   void ProcessNewItem(DisplayItem&);
 
   void CheckNewItem(DisplayItem&);
-  DisplayItem& MoveItemFromCurrentListToNewList(wtf_size_t);
   void CheckNewChunk();
 
   struct IdAsHashKey {
@@ -343,7 +342,6 @@ class PLATFORM_EXPORT PaintController {
                                  wtf_size_t subsequence_index,
                                  wtf_size_t start_chunk_index,
                                  wtf_size_t end_chunk_index);
-  void AppendChunkByMoving(PaintChunk&&);
 
   // Resets the indices (e.g. next_item_to_match_) of
   // current_paint_artifact_.GetDisplayItemList() to their initial values. This

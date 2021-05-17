@@ -350,6 +350,11 @@ void RasterInvalidator::Generate(
     UpdateClientDebugNames();
 }
 
+void RasterInvalidator::SetOldPaintArtifact(
+    scoped_refptr<const PaintArtifact> old_paint_artifact) {
+  old_paint_artifact_ = std::move(old_paint_artifact);
+}
+
 size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {
   return sizeof(*this) +
          old_paint_chunks_info_.capacity() * sizeof(PaintChunkInfo);

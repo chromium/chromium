@@ -126,8 +126,10 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
   }
 
   ++num_cached_new_items_;
-  if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
-    ProcessNewItem(MoveItemFromCurrentListToNewList(cached_item));
+  if (!RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+    ProcessNewItem(new_paint_artifact_->GetDisplayItemList().AppendByMoving(
+        current_paint_artifact_->GetDisplayItemList()[cached_item]));
+  }
 
   next_item_to_match_ = cached_item + 1;
   // Items before |next_item_to_match_| have been copied so we don't need to
@@ -366,12 +368,6 @@ void PaintController::ProcessNewItem(DisplayItem& display_item) {
   CheckNewItem(display_item);
 }
 
-DisplayItem& PaintController::MoveItemFromCurrentListToNewList(
-    wtf_size_t index) {
-  return new_paint_artifact_->GetDisplayItemList().AppendByMoving(
-      current_paint_artifact_->GetDisplayItemList()[index]);
-}
-
 void PaintController::CheckNewChunk() {
 #if DCHECK_IS_ON()
   auto& chunks = new_paint_artifact_->PaintChunks();
@@ -401,12 +397,6 @@ void PaintController::UpdateCurrentPaintChunkProperties(
   } else {
     paint_chunker_.UpdateCurrentPaintChunkProperties(nullptr, properties);
   }
-}
-
-void PaintController::AppendChunkByMoving(PaintChunk&& chunk) {
-  ValidateNewChunkId(chunk.id);
-  paint_chunker_.AppendByMoving(std::move(chunk));
-  CheckNewChunk();
 }
 
 bool PaintController::ClientCacheIsValid(
@@ -534,22 +524,32 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
   wtf_size_t new_subsequence_index;
   BeginSubsequence(new_subsequence_index, new_start_chunk_index);
 
+  auto& current_chunks = current_paint_artifact_->PaintChunks();
   for (auto chunk_index = start_chunk_index; chunk_index < end_chunk_index;
        ++chunk_index) {
-    auto& cached_chunk = current_paint_artifact_->PaintChunks()[chunk_index];
-    auto cached_item_index = cached_chunk.begin_index;
-    for (auto& cached_item :
-         current_paint_artifact_->GetDisplayItemList().ItemsInRange(
-             cached_chunk.begin_index, cached_chunk.end_index)) {
-      SECURITY_CHECK(!cached_item.IsTombstone());
-      DCHECK(!cached_item.IsCacheable() ||
-             ClientCacheIsValid(cached_item.Client()));
-      CheckNewItem(MoveItemFromCurrentListToNewList(cached_item_index++));
-    }
-
-    DCHECK_EQ(cached_item_index, cached_chunk.end_index);
-    AppendChunkByMoving(std::move(cached_chunk));
+    auto& cached_chunk = current_chunks[chunk_index];
+    ValidateNewChunkId(cached_chunk.id);
+    paint_chunker_.AppendByMoving(std::move(cached_chunk));
+    CheckNewChunk();
   }
+
+  auto& new_display_item_list = new_paint_artifact_->GetDisplayItemList();
+#if DCHECK_IS_ON()
+  wtf_size_t new_item_start_index = new_display_item_list.size();
+#endif
+  new_display_item_list.AppendSubsequenceByMoving(
+      current_paint_artifact_->GetDisplayItemList(),
+      current_chunks[start_chunk_index].begin_index,
+      current_chunks[end_chunk_index - 1].end_index);
+
+#if DCHECK_IS_ON()
+  for (auto& item : new_display_item_list.ItemsInRange(
+           new_item_start_index, new_display_item_list.size())) {
+    DCHECK(!item.IsTombstone());
+    DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+    CheckNewItem(item);
+  }
+#endif
 
   EndSubsequence(client, new_subsequence_index, new_start_chunk_index);
 

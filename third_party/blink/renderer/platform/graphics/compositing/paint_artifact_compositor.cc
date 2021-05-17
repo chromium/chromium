@@ -1507,7 +1507,11 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
       // Checking |all_moved_from_cached_subsequence| is an optimization to
       // avoid the expensive call to |UpdateCcPictureLayer| when no repainting
       // occurs for this PendingLayer.
-      if (!all_moved_from_cached_subsequence) {
+      if (all_moved_from_cached_subsequence) {
+        // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
+        content_layer_client->GetRasterInvalidator().SetOldPaintArtifact(
+            &pending_layer.chunks.GetPaintArtifact());
+      } else {
         IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.bounds);
         content_layer_client->UpdateCcPictureLayer(
             pending_layer.chunks, cc_combined_bounds,
