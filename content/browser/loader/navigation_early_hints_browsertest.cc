@@ -59,6 +59,10 @@ struct ResponseEntry {
 
 const char kPageWithHintedScriptPath[] = "/page_with_hinted_js.html";
 const char kPageWithHintedScriptBody[] = "<script src=\"/hinted.js\"></script>";
+const char kPageWithHintedModuleScriptPath[] =
+    "/page_with_hinted_module_js.html";
+const char kPageWithHintedModuleScriptBody[] =
+    "<script src=\"/hinted.js\" type=\"module\"></script>";
 const char kHintedScriptPath[] = "/hinted.js";
 const char kHintedScriptBody[] = "document.title = 'Done';";
 const char kHintedStylesheetPath[] = "/hinted.css";
@@ -119,6 +123,11 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
         base::StringPrintf("<%s>; rel=preload; as=script", kHintedScriptPath));
   }
 
+  HeaderField CreateModulePreloadLink() {
+    return HeaderField("link", base::StringPrintf("<%s>; rel=modulepreload",
+                                                  kHintedScriptPath));
+  }
+
   HeaderField CreatePreloadLinkForStylesheet() {
     return HeaderField("link",
                        base::StringPrintf("<%s>; rel=preload; as=stylesheet",
@@ -151,6 +160,18 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
     ResponseEntry entry(kPageWithHintedScriptPath, status_code);
     entry.body = kPageWithHintedScriptBody;
     HeaderField link_header = CreatePreloadLinkForScript();
+    entry.AddEarlyHints({std::move(link_header)});
+
+    return entry;
+  }
+
+  ResponseEntry CreatePageEntryWithHintedModuleScript(
+      net::HttpStatusCode status_code) {
+    RegisterHintedScriptResource();
+
+    ResponseEntry entry(kPageWithHintedModuleScriptPath, status_code);
+    entry.body = kPageWithHintedModuleScriptBody;
+    HeaderField link_header = CreateModulePreloadLink();
     entry.AddEarlyHints({std::move(link_header)});
 
     return entry;
@@ -197,6 +218,24 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
 
   EXPECT_TRUE(NavigateToURLAndWaitTitle(
       net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath),
+      "Done"));
+  PreloadedResources preloads = WaitForPreloadedResources();
+  EXPECT_EQ(preloads.size(), 1UL);
+
+  GURL preloaded_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
+  auto it = preloads.find(preloaded_url);
+  ASSERT_TRUE(it != preloads.end());
+  ASSERT_FALSE(it->second.was_canceled);
+  ASSERT_TRUE(it->second.error_code.has_value());
+  EXPECT_EQ(it->second.error_code.value(), net::OK);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, ModulePreload) {
+  ResponseEntry entry = CreatePageEntryWithHintedModuleScript(net::HTTP_OK);
+  RegisterResponse(entry);
+
+  EXPECT_TRUE(NavigateToURLAndWaitTitle(
+      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedModuleScriptPath),
       "Done"));
   PreloadedResources preloads = WaitForPreloadedResources();
   EXPECT_EQ(preloads.size(), 1UL);

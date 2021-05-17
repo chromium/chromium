@@ -70,10 +70,16 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
 )");
 
 network::mojom::RequestDestination LinkAsAttributeToRequestDestination(
-    network::mojom::LinkAsAttribute attr) {
-  switch (attr) {
+    const network::mojom::LinkHeaderPtr& link) {
+  switch (link->as) {
     case network::mojom::LinkAsAttribute::kUnspecified:
-      return network::mojom::RequestDestination::kEmpty;
+      // For modulepreload destination should be "script" when `as` is not
+      // specified.
+      if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
+        return network::mojom::RequestDestination::kScript;
+      } else {
+        return network::mojom::RequestDestination::kEmpty;
+      }
     case network::mojom::LinkAsAttribute::kImage:
       return network::mojom::RequestDestination::kImage;
     case network::mojom::LinkAsAttribute::kFont:
@@ -109,8 +115,13 @@ net::RequestPriority CalculateRequestPriority(
 }
 
 network::mojom::RequestMode CalculateRequestMode(
-    network::mojom::CrossOriginAttribute attr) {
-  switch (attr) {
+    const network::mojom::LinkHeaderPtr& link) {
+  if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
+    // When fetching a module script, mode is always "cors".
+    return network::mojom::RequestMode::kCors;
+  }
+
+  switch (link->cross_origin) {
     case network::mojom::CrossOriginAttribute::kUnspecified:
       return network::mojom::RequestMode::kNoCors;
     case network::mojom::CrossOriginAttribute::kAnonymous:
@@ -121,10 +132,17 @@ network::mojom::RequestMode CalculateRequestMode(
   return network::mojom::RequestMode::kSameOrigin;
 }
 
-network::mojom::CredentialsMode CalculateCredentialMode(
-    network::mojom::CrossOriginAttribute attr) {
-  switch (attr) {
+network::mojom::CredentialsMode CalculateCredentialsMode(
+    const network::mojom::LinkHeaderPtr& link) {
+  switch (link->cross_origin) {
     case network::mojom::CrossOriginAttribute::kUnspecified:
+      // For modulepreload credentials mode should be "same-origin" when
+      // `cross-origin` is not specified.
+      if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
+        return network::mojom::CredentialsMode::kSameOrigin;
+      } else {
+        return network::mojom::CredentialsMode::kInclude;
+      }
     case network::mojom::CrossOriginAttribute::kUseCredentials:
       return network::mojom::CredentialsMode::kInclude;
     case network::mojom::CrossOriginAttribute::kAnonymous:
@@ -255,8 +273,10 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
     const network::ResourceRequest& navigation_request) {
   for (const auto& link : early_hints->headers->link_headers) {
     // TODO(crbug.com/671310): Support other `rel` attributes.
-    if (link->rel == network::mojom::LinkRelAttribute::kPreload)
+    if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
+        link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
       MaybePreloadHintedResource(link, navigation_request);
+    }
   }
 }
 
@@ -300,7 +320,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   network::ResourceRequest request;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.priority = CalculateRequestPriority(link);
-  request.destination = LinkAsAttributeToRequestDestination(link->as);
+  request.destination = LinkAsAttributeToRequestDestination(link);
   request.url = link->href;
   request.site_for_cookies = site_for_cookies;
   request.request_initiator = top_frame_origin;
@@ -309,8 +329,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   request.load_flags = net::LOAD_NORMAL;
   request.resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
-  request.mode = CalculateRequestMode(link->cross_origin);
-  request.credentials_mode = CalculateCredentialMode(link->cross_origin);
+  request.mode = CalculateRequestMode(link);
+  request.credentials_mode = CalculateCredentialsMode(link);
 
   request.trusted_params = network::ResourceRequest::TrustedParams();
   // Ideally, IsolationInfo for preloading subresources should be created by
