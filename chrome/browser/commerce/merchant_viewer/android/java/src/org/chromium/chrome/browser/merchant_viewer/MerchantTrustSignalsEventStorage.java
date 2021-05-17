@@ -20,12 +20,13 @@ import java.util.List;
  */
 public class MerchantTrustSignalsEventStorage {
     private long mNativeMerchantSignalDB;
+    private static boolean sSkipNativeAssertionsForTesting;
 
     MerchantTrustSignalsEventStorage(Profile profile) {
         assert !profile.isOffTheRecord()
             : "MerchantTrustSignalsEventStorage is not supported for incognito profiles";
         MerchantTrustSignalsEventStorageJni.get().init(this, profile);
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
     }
 
     /**
@@ -39,7 +40,7 @@ public class MerchantTrustSignalsEventStorage {
     @MainThread
     @VisibleForTesting
     public void saveWithCallback(MerchantTrustSignalsEvent event, Runnable onComplete) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().save(
                 mNativeMerchantSignalDB, event.getKey(), event.getTimestamp(), onComplete);
     }
@@ -50,7 +51,7 @@ public class MerchantTrustSignalsEventStorage {
      * @param callback A callback with loaded result.
      */
     public void load(String key, Callback<MerchantTrustSignalsEvent> callback) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().load(mNativeMerchantSignalDB, key, callback);
     }
 
@@ -60,7 +61,7 @@ public class MerchantTrustSignalsEventStorage {
      * @param callback A callback with loaded results.
      */
     public void loadWithPrefix(String prefix, Callback<List<MerchantTrustSignalsEvent>> callback) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().loadWithPrefix(
                 mNativeMerchantSignalDB, prefix, callback);
     }
@@ -70,7 +71,7 @@ public class MerchantTrustSignalsEventStorage {
      * @param event The {@link MerchantTrustSignalsEvent} to delete.
      */
     public void delete(MerchantTrustSignalsEvent event) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().delete(
                 mNativeMerchantSignalDB, event.getKey(), null);
     }
@@ -78,7 +79,7 @@ public class MerchantTrustSignalsEventStorage {
     @MainThread
     @VisibleForTesting
     public void deleteForTesting(MerchantTrustSignalsEvent event, Runnable onComplete) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().delete(
                 mNativeMerchantSignalDB, event.getKey(), onComplete);
     }
@@ -87,14 +88,14 @@ public class MerchantTrustSignalsEventStorage {
      * Delete all events from the database.
      */
     public void deleteAll() {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().deleteAll(mNativeMerchantSignalDB, null);
     }
 
     @MainThread
     @VisibleForTesting
     public void deleteAllForTesting(Runnable onComplete) {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().deleteAll(mNativeMerchantSignalDB, onComplete);
     }
 
@@ -102,15 +103,28 @@ public class MerchantTrustSignalsEventStorage {
      * Destroy the database.
      */
     public void destroy() {
-        assert mNativeMerchantSignalDB != 0;
+        makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().destroy(mNativeMerchantSignalDB);
     }
 
     @CalledByNative
     private void setNativePtr(long nativePtr) {
-        assert nativePtr != 0;
-        assert mNativeMerchantSignalDB == 0;
+        if (!sSkipNativeAssertionsForTesting) {
+            assert nativePtr != 0;
+            assert mNativeMerchantSignalDB == 0;
+        }
         mNativeMerchantSignalDB = nativePtr;
+    }
+
+    private void makeNativeAssertion() {
+        if (!sSkipNativeAssertionsForTesting) {
+            assert mNativeMerchantSignalDB != 0;
+        }
+    }
+
+    @VisibleForTesting
+    static void setSkipNativeAssertionsForTesting(boolean skipNativeAssertionsForTesting) {
+        sSkipNativeAssertionsForTesting = skipNativeAssertionsForTesting;
     }
 
     @NativeMethods

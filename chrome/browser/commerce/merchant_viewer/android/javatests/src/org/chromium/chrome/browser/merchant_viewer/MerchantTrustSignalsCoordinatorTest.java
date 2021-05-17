@@ -33,6 +33,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -120,10 +122,19 @@ public class MerchantTrustSignalsCoordinatorTest {
     private MerchantTrustSignalsEventStorage mMockMerchantTrustStorage;
 
     @Mock
+    private MerchantTrustSignalsStorageFactory mMockMerchantTrustStorageFactory;
+
+    @Mock
     private MerchantTrustSignalsEvent mMockMerchantTrustSignalsEvent;
 
     @Captor
     private ArgumentCaptor<Callback> mOnMessageEnqueuedCallbackCaptor;
+
+    @Mock
+    private ObservableSupplier<Profile> mMockProfileSupplier;
+
+    @Mock
+    private MerchantTrustDetailsTabCoordinator mMockDetailsTabCoordinator;
 
     private MerchantTrustSignals mDummyMerchantTrustSignals =
             MerchantTrustSignals.newBuilder()
@@ -143,6 +154,9 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(mMockDisplayAndroid).when(mMockWindowAndroid).getDisplay();
         doReturn("fake_host").when(mMockGurl).getHost();
         doReturn("different_host").when(mMockGurl2).getHost();
+        doReturn(mMockMerchantTrustStorage)
+                .when(mMockMerchantTrustStorageFactory)
+                .getForLastUsedProfile();
     }
 
     @UiThreadTest
@@ -308,6 +322,28 @@ public class MerchantTrustSignalsCoordinatorTest {
                         any(Callback.class));
     }
 
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testMaybeDisplayMessageWithInvalidStorage() {
+        doReturn(null).when(mMockMerchantTrustStorageFactory).getForLastUsedProfile();
+
+        MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
+        doReturn(null).when(mMockMerchantMessageScheduler).getScheduledMessageContext();
+        doReturn(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1))
+                .when(mMockMerchantTrustSignalsEvent)
+                .getTimestamp();
+        doReturn("fake_host").when(mMockMerchantTrustSignalsEvent).getKey();
+
+        setMockTrustSignalsData(mDummyMerchantTrustSignals);
+        setMockTrustSignalsEventData("fake_host", mMockMerchantTrustSignalsEvent);
+
+        coordinator.maybeDisplayMessage(
+                new MerchantTrustMessageContext(mMockGurl, mMockWebContents));
+
+        verify(mMockMerchantTrustStorage, never()).save(any(MerchantTrustSignalsEvent.class));
+    }
+
     @SmallTest
     @Test
     public void testOnMessageDismissed() {
@@ -346,6 +382,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         return new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
                 mMockBottomSheetController, mMockDecorView, mMockTabModelSelector,
                 mMockMerchantMessageScheduler, mMockTabProvider, mMockMerchantTrustDataProvider,
-                mMockMerchantTrustStorage, mMockMetrics);
+                mMockMetrics, mMockDetailsTabCoordinator, mMockProfileSupplier,
+                mMockMerchantTrustStorageFactory);
     }
 }
