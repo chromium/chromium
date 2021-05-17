@@ -8,8 +8,8 @@ Security Critical: Yes
 
 Description:
 This package contains the protos that are used to upload metrics data to Google.
-Updates to this code should be made by changing the internal copies, and then
-running the export script.
+Updates to this code should be made by changing the internal copies and then
+running the export script. No manual editting should be done.
 
 blaze run //analysis/uma/proto_export:proto_export -- \
   --from_piper \
