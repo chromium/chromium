@@ -109,8 +109,11 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
               IDS_VM_STATUS_PAGE_GUEST_PROFILE_EXPLANATION));
           break;
         case ProfileSupported::kErrorEphemeral:
-          entry.SetFail(l10n_util::GetStringUTF8(
-              IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION));
+          entry.SetFail(
+              l10n_util::GetStringUTF8(
+                  IDS_VM_STATUS_PAGE_EPHEMERAL_PROFILE_EXPLANATION),
+              /*learn_more_link=*/
+              "https://support.google.com/chromebook?p=ephemeral_mode");
           break;
         case ProfileSupported::kErrorNotSupported:
           entry.SetFail(l10n_util::GetStringUTF8(
@@ -152,8 +155,11 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
           entry
               .SetFail(l10n_util::GetStringUTF8(
                   IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_EXPLANATION))
-              .OverrideTopError(l10n_util::GetStringUTF8(
-                  IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR));
+              .OverrideTopError(
+                  l10n_util::GetStringUTF8(
+                      IDS_VM_STATUS_PAGE_DEVICE_NOT_ENROLLED_ERROR),
+                  /*learn_more_link=*/
+                  "https://support.google.com/chromebook?p=enroll_device");
           set_standard_top_error = false;
           break;
         case PolicyConfigured::kErrorUserNotAffiliated:
@@ -219,9 +225,12 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
             IDS_VM_STATUS_PAGE_FAILED_TO_CHECK_VM_EXPLANATION));
       } else if (!HasDefaultVm(response->images())) {
         entry.SetFail(GetMissingDefaultVmExplanation(response->images()))
-            .OverrideTopError(l10n_util::GetStringFUTF8(
-                IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
-                l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+            .OverrideTopError(
+                l10n_util::GetStringFUTF8(
+                    IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR,
+                    l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)),
+                /*learn_more_link=*/
+                "https://support.google.com/chromebook?p=parallels_setup");
       } else {
         // Everything is good. Do nothing.
       }
