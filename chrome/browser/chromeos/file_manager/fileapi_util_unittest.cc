@@ -20,8 +20,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
-#include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -33,13 +33,12 @@ namespace {
 // Helper class that sets up a temporary file system.
 class TempFileSystem {
  public:
-  TempFileSystem(Profile* profile, const std::string& extension_id)
+  TempFileSystem(Profile* profile, const GURL& appURL)
       : name_(base::UnguessableToken::Create().ToString()),
-        extension_id_(extension_id),
-        origin_(url::Origin::Create(
-            extensions::Extension::GetBaseURLFromExtensionId(extension_id))),
+        appURL_(appURL),
+        origin_(url::Origin::Create(appURL)),
         file_system_context_(
-            GetFileSystemContextForSourceURL(profile, origin_.GetURL())) {}
+            GetFileSystemContextForSourceURL(profile, appURL)) {}
 
   ~TempFileSystem() {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(name_);
@@ -59,8 +58,13 @@ class TempFileSystem {
     // Grant the test extension the ability to access the just created
     // file system.
     file_system_context_->external_backend()->GrantFileAccessToExtension(
-        extension_id_, base::FilePath(name_));
+        appURL_.host(), base::FilePath(name_));
     return true;
+  }
+
+  bool TearDown() {
+    return storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        name_);
   }
 
   // For the given FileSystemURL creates a file.
@@ -76,11 +80,9 @@ class TempFileSystem {
             base::FilePath::FromUTF8Unsafe(path)));
   }
 
-  const url::Origin origin() const { return origin_; }
-
  private:
   const std::string name_;
-  const std::string extension_id_;
+  const GURL appURL_;
   const url::Origin origin_;
   storage::FileSystemContext* const file_system_context_;
   base::ScopedTempDir temp_dir_;
@@ -88,9 +90,12 @@ class TempFileSystem {
 
 class FileManagerFileAPIUtilTest : public ::testing::Test {
  public:
-  FileManagerFileAPIUtilTest()
-      : source_url_(
-            extensions::Extension::GetBaseURLFromExtensionId(extension_id_)) {}
+  // Carries information on how to create a FileSystemURL for a given file name.
+  // For !valid orders we create a test URL. Otherwise, we use temp file system.
+  struct FileSystemURLOrder {
+    std::string file_name;
+    bool valid;
+  };
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -109,9 +114,59 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
   TestingProfile* GetProfile() { return profile_; }
 
  protected:
-  const std::string extension_id_ = "abc";
+  // Checks if the conversion of FileDefinition to EntryDefinition works
+  // correctly for the given |appURLStr| and a set of |orders|. If the
+  // order indicates that the file should not be created, we expect the
+  // conversion to return base::File::FILE_ERROR_NOT_FOUND error. Otherwise,
+  // we expect base::File::FILE_OK status.
+  void CheckConvertFileDefinitionListToEntryDefinitionList(
+      const std::string& appURLStr,
+      const std::vector<FileSystemURLOrder>& orders) {
+    GURL appURL(appURLStr);
+    ASSERT_TRUE(appURL.is_valid());
+    auto temp_file_system = std::make_unique<TempFileSystem>(profile_, appURL);
+    ASSERT_TRUE(temp_file_system->SetUp());
+
+    std::vector<base::File::Error> errors;
+    std::vector<FileDefinition> file_definitions;
+    for (const FileSystemURLOrder& order : orders) {
+      storage::FileSystemURL fs_url;
+      if (order.valid) {
+        fs_url = temp_file_system->CreateFileSystemURL(order.file_name);
+        errors.push_back(base::File::FILE_OK);
+      } else {
+        fs_url = storage::FileSystemURL::CreateForTest(
+            url::Origin::Create(appURL), storage::kFileSystemTypeExternal,
+            base::FilePath(order.file_name));
+        errors.push_back(base::File::FILE_ERROR_NOT_FOUND);
+      }
+      file_definitions.push_back({.virtual_path = fs_url.virtual_path()});
+    }
+
+    base::RunLoop run_loop;
+    EntryDefinitionListCallback callback = base::BindOnce(
+        [](std::unique_ptr<TempFileSystem> temp_file_system,
+           std::vector<base::File::Error> errors,
+           base::OnceClosure quit_closure,
+           std::unique_ptr<EntryDefinitionList> entries) {
+          ASSERT_EQ(errors.size(), entries->size());
+          for (size_t i = 0; i < errors.size(); ++i) {
+            const EntryDefinition& entry_def = (*entries)[i];
+            EXPECT_EQ(errors[i], entry_def.error)
+                << "for " << entry_def.full_path << " at " << i;
+          }
+
+          EXPECT_TRUE(temp_file_system->TearDown());
+          std::move(quit_closure).Run();
+        },
+        std::move(temp_file_system), std::move(errors), run_loop.QuitClosure());
+    ConvertFileDefinitionListToEntryDefinitionList(
+        file_manager::util::GetFileSystemContextForSourceURL(profile_, appURL),
+        url::Origin::Create(appURL), file_definitions, std::move(callback));
+    run_loop.Run();
+  }
+
   const std::string file_system_id_ = "test-filesystem";
-  const GURL source_url_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -129,9 +184,10 @@ void PassFileChooserFileInfoList(FileChooserFileInfoList* output,
 TEST_F(FileManagerFileAPIUtilTest,
        ConvertSelectedFileInfoListToFileChooserFileInfoList) {
   Profile* const profile = GetProfile();
+  const std::string extension_id = "abc";
   auto fake_provider =
       chromeos::file_system_provider::FakeExtensionProvider::Create(
-          extension_id_);
+          extension_id);
   const auto kProviderId = fake_provider->GetId();
   auto* service = chromeos::file_system_provider::Service::Get(profile);
   service->RegisterProvider(std::move(fake_provider));
@@ -159,7 +215,7 @@ TEST_F(FileManagerFileAPIUtilTest,
   }
 
   const std::string path = FILE_PATH_LITERAL(base::StrCat(
-      {"/provided/", extension_id_, ":", file_system_id_, ":/hello.txt"}));
+      {"/provided/", extension_id, ":", file_system_id_, ":/hello.txt"}));
   // Non-native file with cache.
   {
     ui::SelectedFileInfo info;
@@ -207,118 +263,95 @@ TEST_F(FileManagerFileAPIUtilTest,
 }
 
 TEST_F(FileManagerFileAPIUtilTest,
-       ConvertFileDefinitionListToEntryDefinitionListSuccess) {
-  base::RunLoop run_loop;
-  EntryDefinitionListCallback callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(2, entries->size());
-        EXPECT_EQ(base::File::FILE_OK, entries->at(0).error);
-        EXPECT_EQ(base::File::FILE_OK, entries->at(1).error);
-
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure());
-
-  Profile* const profile = GetProfile();
-  TempFileSystem temp_file_system(profile, extension_id_);
-  ASSERT_TRUE(temp_file_system.SetUp());
-
-  // Create two external FileSystemURL objects for the test extension that
-  // reference actual files created on the temporary file system.
-  storage::FileSystemURL x_file_url =
-      temp_file_system.CreateFileSystemURL("x.txt");
-  storage::FileSystemURL y_file_url =
-      temp_file_system.CreateFileSystemURL("y.txt");
-  // Create the underlying files referenced by the above created FileSystemURLs.
-  ASSERT_EQ(base::File::FILE_OK, temp_file_system.CreateFile(x_file_url));
-  ASSERT_EQ(base::File::FILE_OK, temp_file_system.CreateFile(y_file_url));
-
-  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()},
-                 y_fd = {.virtual_path = y_file_url.virtual_path()};
-  ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForSourceURL(profile,
-                                                           source_url_),
-      temp_file_system.origin(), {x_fd, y_fd}, std::move(callback));
-  run_loop.Run();
+       ConvertFileDefinitionListToEntryDefinitionListExtension) {
+  std::vector<FileSystemURLOrder> orders = {
+      {.file_name = "x.txt", .valid = true},
+      {.file_name = "no-such-file.txt", .valid = false},
+      {.file_name = "z.txt", .valid = true},
+  };
+  CheckConvertFileDefinitionListToEntryDefinitionList("chrome-extension://abc",
+                                                      orders);
+  CheckConvertFileDefinitionListToEntryDefinitionList("chrome-extension://abc/",
+                                                      orders);
+  CheckConvertFileDefinitionListToEntryDefinitionList(
+      "chrome-extension://abc/efg", orders);
 }
 
 TEST_F(FileManagerFileAPIUtilTest,
-       ConvertFileDefinitionListToEntryDefinitionListNotFound) {
-  base::RunLoop run_loop;
-  EntryDefinitionListCallback callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
-        EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, entries->at(0).error);
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure());
-
-  TempFileSystem temp_file_system(GetProfile(), extension_id_);
-  storage::FileSystemURL x_file_url = storage::FileSystemURL::CreateForTest(
-      temp_file_system.origin(), storage::kFileSystemTypeExternal,
-      base::FilePath().Append("not-found"));
-  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
-
-  ConvertFileDefinitionListToEntryDefinitionList(
-      file_manager::util::GetFileSystemContextForSourceURL(GetProfile(),
-                                                           source_url_),
-      temp_file_system.origin(), {x_fd}, std::move(callback));
-  run_loop.Run();
+       ConvertFileDefinitionListToEntryDefinitionListApp) {
+  std::vector<FileSystemURLOrder> orders = {
+      {.file_name = "a.txt", .valid = false},
+      {.file_name = "b.txt", .valid = false},
+      {.file_name = "i-am-a-file.txt", .valid = true},
+  };
+  CheckConvertFileDefinitionListToEntryDefinitionList("chrome://file-manager",
+                                                      orders);
+  CheckConvertFileDefinitionListToEntryDefinitionList("chrome://file-manager/",
+                                                      orders);
+  CheckConvertFileDefinitionListToEntryDefinitionList(
+      "chrome://file-manager/abc", orders);
 }
 
 TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionNullContext) {
-  base::RunLoop run_loop;
-  EntryDefinitionListCallback callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
-        EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-                  entries->at(0).error);
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure());
-
-  TempFileSystem temp_file_system(GetProfile(), extension_id_);
-  ASSERT_TRUE(temp_file_system.SetUp());
-  storage::FileSystemURL x_file_url = temp_file_system.CreateFileSystemURL(".");
+  Profile* const profile = GetProfile();
+  const GURL appURL("chrome-extension://abc/");
+  auto temp_file_system = std::make_unique<TempFileSystem>(profile, appURL);
+  ASSERT_TRUE(temp_file_system->SetUp());
+  storage::FileSystemURL x_file_url =
+      temp_file_system->CreateFileSystemURL(".");
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
 
   // Check a simple case where the context is already null before we have
   // a chance to call the conversion function.
+  base::RunLoop run_loop;
+  EntryDefinitionListCallback callback = base::BindOnce(
+      [](std::unique_ptr<TempFileSystem> temp_file_system,
+         base::OnceClosure quit_closure,
+         std::unique_ptr<EntryDefinitionList> entries) {
+        ASSERT_EQ(1, entries->size());
+        EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
+                  entries->at(0).error);
+        EXPECT_TRUE(temp_file_system->TearDown());
+        std::move(quit_closure).Run();
+      },
+      std::move(temp_file_system), run_loop.QuitClosure());
+
   ConvertFileDefinitionListToEntryDefinitionList(
-      nullptr, temp_file_system.origin(), {x_fd}, std::move(callback));
+      nullptr, url::Origin::Create(appURL), {x_fd}, std::move(callback));
   run_loop.Run();
 }
 
 TEST_F(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionContextReset) {
+  Profile* const profile = GetProfile();
+  const GURL appURL("chrome-extension://abc/");
+  auto temp_file_system = std::make_unique<TempFileSystem>(profile, appURL);
+  ASSERT_TRUE(temp_file_system->SetUp());
+  storage::FileSystemURL x_file_url =
+      temp_file_system->CreateFileSystemURL(".");
+  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForSourceURL(profile, appURL);
+
   base::RunLoop run_loop;
   EntryDefinitionListCallback callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
+      [](std::unique_ptr<TempFileSystem> temp_file_system,
+         base::OnceClosure quit_closure,
          std::unique_ptr<EntryDefinitionList> entries) {
         ASSERT_EQ(1, entries->size());
         EXPECT_EQ(base::File::FILE_OK, entries->at(0).error);
+        EXPECT_TRUE(temp_file_system->TearDown());
         std::move(quit_closure).Run();
       },
-      run_loop.QuitClosure());
-
-  TempFileSystem temp_file_system(GetProfile(), extension_id_);
-  ASSERT_TRUE(temp_file_system.SetUp());
-  storage::FileSystemURL x_file_url = temp_file_system.CreateFileSystemURL(".");
-  FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForSourceURL(GetProfile(),
-                                                           source_url_);
+      std::move(temp_file_system), run_loop.QuitClosure());
 
   // Check the case where the context is not null, but is reset to null as
   // soon as function call is completed. Conversion takes place on a
   // different thread, after the function call returns. However, since
   // it holds to a copy of a scoped pointer we expect it to succeed.
   ConvertFileDefinitionListToEntryDefinitionList(file_system_context,
-                                                 temp_file_system.origin(),
+                                                 url::Origin::Create(appURL),
                                                  {x_fd}, std::move(callback));
   file_system_context.reset();
 
