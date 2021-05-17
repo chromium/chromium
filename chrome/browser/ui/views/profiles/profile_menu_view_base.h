@@ -66,13 +66,15 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kMaxValue = kCreateIncognitoShortcutButton,
   };
 
+  // TODO(crbug.com/1191411): Remove this enum and plumb the color ids directly.
   enum class SyncInfoContainerBackgroundState {
-    kNoError,
     kPaused,
     kError,
     kNoPrimaryAccount,
   };
 
+  // TODO(crbug.com/1191411): Dismantle this struct, it doesn't cover all sync
+  // info cases.
   struct SyncInfo {
     int description_string_id;
     int button_string_id;
@@ -132,9 +134,16 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& title,
       const std::u16string& subtitle = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
-  void SetSyncInfo(const SyncInfo& sync_info,
-                   const base::RepeatingClosure& action,
-                   bool show_badge);
+  // Displays the sync info section as a rounded rectangle with text on top and
+  // a button on the bottom. Clicking the button triggers |action|.
+  // |sync_info.background_state| determines the rectangle's background color.
+  void BuildSyncInfoWithCallToAction(const SyncInfo& sync_info,
+                                     const base::RepeatingClosure& action,
+                                     bool show_badge);
+  // Displays the sync info section as a rectangle with text. Clicking the
+  // rectangle triggers |action|.
+  void BuildSyncInfoWithoutCallToAction(int text_string_id,
+                                        const base::RepeatingClosure& action);
   void AddShortcutFeatureButton(const gfx::VectorIcon& icon,
                                 const std::u16string& text,
                                 base::RepeatingClosure action);
@@ -183,6 +192,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Requests focus for a button when opened by keyboard.
   void FocusButtonOnKeyboardOpen();
 
+  void BuildSyncInfoCallToActionBackground(
+      SyncInfoContainerBackgroundState background_state,
+      ui::NativeTheme* native_theme);
+
   // views::BubbleDialogDelegateView:
   void Init() final;
   void OnThemeChanged() override;
@@ -220,8 +233,11 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
 
-  SyncInfoContainerBackgroundState sync_background_state_ =
-      SyncInfoContainerBackgroundState::kNoError;
+  // Builds the background for |sync_info_container_|. This requires
+  // ui::NativeTheme, which is only available once OnThemeChanged() is called,
+  // so the class caches this callback and calls it afterwards.
+  base::RepeatingCallback<void(ui::NativeTheme*)>
+      sync_info_background_callback_ = base::DoNothing();
 
   // Actual heading string would be set by children classes.
   std::u16string profile_mgmt_heading_;

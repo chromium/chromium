@@ -682,9 +682,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
                                subtitle);
 }
 
-void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
-                                      const base::RepeatingClosure& action,
-                                      bool show_badge) {
+void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
+    const SyncInfo& sync_info,
+    const base::RepeatingClosure& action,
+    bool show_badge) {
   const std::u16string description =
       l10n_util::GetStringUTF16(sync_info.description_string_id);
   const std::u16string clickable_text =
@@ -692,7 +693,6 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  sync_background_state_ = sync_info.background_state;
 
   sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
   sync_info_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -706,15 +706,6 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded, true,
                                views::MinimumFlexSizeRule::kScaleToZero));
-
-  if (description.empty()) {
-    sync_info_container_->AddChildView(std::make_unique<SyncButton>(
-        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                            base::Unretained(this), std::move(action)),
-        this, clickable_text));
-    return;
-  }
-
   sync_info_container_->SetProperty(
       views::kMarginsKey, gfx::Insets(kDefaultMargin, kMenuEdgeMargin));
 
@@ -766,6 +757,26 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
                               base::Unretained(this), std::move(action)),
           clickable_text));
   button->SetProminent(true);
+
+  sync_info_background_callback_ = base::BindRepeating(
+      &ProfileMenuViewBase::BuildSyncInfoCallToActionBackground,
+      base::Unretained(this), sync_info.background_state);
+}
+
+void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
+    int text_string_id,
+    const base::RepeatingClosure& action) {
+  sync_info_container_->RemoveAllChildViews(/*delete_children=*/true);
+  sync_info_container_->SetLayoutManager(std::make_unique<views::FillLayout>());
+  sync_info_container_->AddChildView(std::make_unique<SyncButton>(
+      base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                          base::Unretained(this), std::move(action)),
+      this, l10n_util::GetStringUTF16(text_string_id)));
+
+  // No background required, so ui::NativeTheme isn't needed and
+  // |sync_info_background_callback_| can be set to base::DoNothing().
+  sync_info_container_->SetBackground(nullptr);
+  sync_info_background_callback_ = base::DoNothing();
 }
 
 void ProfileMenuViewBase::AddShortcutFeatureButton(
@@ -1017,32 +1028,11 @@ void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
     first_profile_button_->RequestFocus();
 }
 
-void ProfileMenuViewBase::Init() {
-  Reset();
-  BuildMenu();
-}
-
-void ProfileMenuViewBase::OnWindowClosing() {
-  DCHECK_EQ(g_profile_bubble_, this);
-  if (anchor_button())
-    anchor_button()->ink_drop()->AnimateToState(
-        views::InkDropState::DEACTIVATED, nullptr);
-  g_profile_bubble_ = nullptr;
-}
-
-void ProfileMenuViewBase::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-
-  const auto* const native_theme = GetNativeTheme();
-  SetBackground(views::CreateSolidBackground(native_theme->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
-
+void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
+    SyncInfoContainerBackgroundState background_state,
+    ui::NativeTheme* native_theme) {
   ui::NativeTheme::ColorId bg_color;
-  switch (sync_background_state_) {
-    case SyncInfoContainerBackgroundState::kNoError:
-      sync_info_container_->SetBackground(nullptr);
-      // Return early to avoid a visible padded border, set below.
-      return;
+  switch (background_state) {
     case SyncInfoContainerBackgroundState::kPaused:
       bg_color = ui::NativeTheme::kColorId_SyncInfoContainerPaused;
       break;
@@ -1062,6 +1052,26 @@ void ProfileMenuViewBase::OnThemeChanged() {
           native_theme->GetSystemColor(
               ui::NativeTheme::kColorId_MenuSeparatorColor)),
       gfx::Insets(kSyncInfoInsidePadding)));
+}
+
+void ProfileMenuViewBase::Init() {
+  Reset();
+  BuildMenu();
+}
+
+void ProfileMenuViewBase::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DialogBackground)));
+  sync_info_background_callback_.Run(GetNativeTheme());
+}
+
+void ProfileMenuViewBase::OnWindowClosing() {
+  DCHECK_EQ(g_profile_bubble_, this);
+  if (anchor_button())
+    anchor_button()->ink_drop()->AnimateToState(
+        views::InkDropState::DEACTIVATED, nullptr);
+  g_profile_bubble_ = nullptr;
 }
 
 ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {

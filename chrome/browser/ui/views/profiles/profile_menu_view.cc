@@ -81,8 +81,12 @@ ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
     sync_ui_util::AvatarSyncErrorType error) {
   switch (error) {
     case sync_ui_util::NO_SYNC_ERROR:
-      return {IDS_SETTINGS_EMPTY_STRING, IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON,
-              ProfileMenuViewBase::SyncInfoContainerBackgroundState::kNoError};
+      NOTREACHED();
+      // TODO(crbug.com/1191411): Convert NO_SYNC_ERROR to base::nullopt. This
+      // case is treated differently in a few places in this file today, and
+      // will be even more in the future.
+      return {42, 42,
+              ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
     case sync_ui_util::AUTH_ERROR:
       // Sync paused. The user can reauth to resolve the signin error.
       return {IDS_PROFILES_DICE_SYNC_PAUSED_TITLE,
@@ -125,10 +129,6 @@ ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
       return GetStandardSyncErrorInfo(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
   }
-
-  NOTREACHED();
-  return {IDS_SETTINGS_EMPTY_STRING, IDS_SETTINGS_EMPTY_STRING,
-          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kNoError};
 }
 
 ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
@@ -581,15 +581,18 @@ void ProfileMenuView::BuildSyncInfo() {
     const sync_ui_util::AvatarSyncErrorType error =
         sync_ui_util::GetAvatarSyncErrorType(browser()->profile());
 
-    const base::RepeatingClosure action =
-        error == sync_ui_util::NO_SYNC_ERROR
-            ? base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
-                                  base::Unretained(this))
-            : base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
-                                  base::Unretained(this), error);
-    SetSyncInfo(GetSyncInfoForAvatarErrorType(error), action,
-                /*show_badge=*/true);
-
+    if (error == sync_ui_util::NO_SYNC_ERROR) {
+      BuildSyncInfoWithoutCallToAction(
+          IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON,
+          base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
+                              base::Unretained(this)));
+    } else {
+      BuildSyncInfoWithCallToAction(
+          GetSyncInfoForAvatarErrorType(error),
+          base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
+                              base::Unretained(this), error),
+          /*show_badge=*/true);
+    }
     return;
   }
 
@@ -601,7 +604,7 @@ void ProfileMenuView::BuildSyncInfo() {
           unconsented_account);
 
   if (account_info.has_value()) {
-    SetSyncInfo(
+    BuildSyncInfoWithCallToAction(
         {IDS_PROFILES_DICE_NOT_SYNCING_TITLE, IDS_PROFILES_DICE_SIGNIN_BUTTON,
          SyncInfoContainerBackgroundState::kNoPrimaryAccount},
         base::BindRepeating(&ProfileMenuView::OnSigninAccountButtonClicked,
@@ -612,11 +615,12 @@ void ProfileMenuView::BuildSyncInfo() {
     // There is always an account on ChromeOS.
     NOTREACHED();
 #else
-    SetSyncInfo({IDS_PROFILES_DICE_SYNC_PROMO, IDS_PROFILES_DICE_SIGNIN_BUTTON,
-                 SyncInfoContainerBackgroundState::kNoPrimaryAccount},
-                base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
-                                    base::Unretained(this)),
-                /*show_badge=*/false);
+    BuildSyncInfoWithCallToAction(
+        {IDS_PROFILES_DICE_SYNC_PROMO, IDS_PROFILES_DICE_SIGNIN_BUTTON,
+         SyncInfoContainerBackgroundState::kNoPrimaryAccount},
+        base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
+                            base::Unretained(this)),
+        /*show_badge=*/false);
 #endif
   }
 }
