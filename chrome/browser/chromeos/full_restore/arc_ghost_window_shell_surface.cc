@@ -11,6 +11,7 @@
 #include "components/exo/buffer.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
+#include "ui/views/background.h"
 #include "ui/views/window/caption_button_types.h"
 
 namespace chromeos {
@@ -24,10 +25,14 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     gfx::Rect bounds,
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
+    absl::optional<uint32_t> color,
     std::unique_ptr<views::View> content,
     base::RepeatingClosure close_callback) {
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
+
+  // Set throbber color by |color_utils::GetColorWithMaxContrast(color)|.
+  uint32_t theme_color = color.has_value() ? color.value() : SK_ColorWHITE;
 
   // TODO(sstan): Handle the desk container from full_restore data.
   int container = ash::desks_util::GetActiveDeskContainerId();
@@ -59,6 +64,10 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
       1 << views::CAPTION_BUTTON_ICON_MENU;
   shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
 
+  content->SetBackground(views::CreateSolidBackground(theme_color));
+  shell_surface->OnSetFrameColors(theme_color, theme_color);
+
+  // Apply ghost window content view.
   exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(content));
   overlay_params.translucent = true;
   overlay_params.overlaps_frame = false;
