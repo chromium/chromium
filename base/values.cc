@@ -4,11 +4,10 @@
 
 #include "base/values.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <cmath>
-#include <new>
 #include <ostream>
+#include <tuple>
 #include <utility>
 
 #include "base/as_const.h"
@@ -16,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/json/json_writer.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"

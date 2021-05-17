@@ -24,10 +24,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <initializer_list>
 #include <iosfwd>
-#include <map>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -36,6 +37,7 @@
 #include "base/containers/checked_range.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
@@ -45,7 +47,6 @@ namespace base {
 
 class DictionaryValue;
 class ListValue;
-class Value;
 
 // The Value class is the base class for Values. A Value can be instantiated
 // via passing the appropriate type or backing storage to the constructor.
