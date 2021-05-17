@@ -8,11 +8,13 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_capture/common/content_capture_features.h"
@@ -87,11 +89,20 @@ void ConfigureFeaturesIfNotSet(
     const std::vector<base::Feature>& features_to_disable) {
   auto* cl = base::CommandLine::ForCurrentProcess();
   std::vector<std::string> enabled_features;
+  base::flat_set<std::string> feature_names_enabled_via_command_line;
   std::string enabled_features_str =
       cl->GetSwitchValueASCII(::switches::kEnableFeatures);
   for (const auto& f :
        base::FeatureList::SplitFeatureListString(enabled_features_str)) {
     enabled_features.emplace_back(f);
+
+    // "<" is used as separator for field trial/groups.
+    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+        f, "<", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    // Split with supplied params should always return at least one entry.
+    DCHECK(!parts.empty());
+    if (parts[0].length() > 0)
+      feature_names_enabled_via_command_line.insert(std::string(parts[0]));
   }
 
   std::vector<std::string> disabled_features;
@@ -104,7 +115,7 @@ void ConfigureFeaturesIfNotSet(
 
   for (const auto& feature : features_to_enable) {
     if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(enabled_features, feature.name)) {
+        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
       enabled_features.push_back(feature.name);
     }
   }
@@ -113,7 +124,7 @@ void ConfigureFeaturesIfNotSet(
 
   for (const auto& feature : features_to_disable) {
     if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(enabled_features, feature.name)) {
+        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
       disabled_features.push_back(feature.name);
     }
   }
