@@ -10,6 +10,9 @@
 namespace extensions {
 
 // Implements chrome.launcherSearchProvider.setSearchResults method.
+// TODO(crbug.com/1208731): This is unused but needs to be defined while the
+// launcher files extension still exists. It should be removed along with the
+// extension.
 class LauncherSearchProviderSetSearchResultsFunction
     : public ExtensionFunction {
  public:

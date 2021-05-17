@@ -776,19 +776,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Tasks, /* tasks.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("executeDefaultTaskDownloads"),
-        TestCase("executeDefaultTaskDownloads").InGuestMode(),
-        TestCase("executeDefaultTaskDrive"),
-        TestCase("defaultTaskForPdf"),
-        TestCase("defaultTaskForTextPlain"),
-        TestCase("defaultTaskDialogDownloads"),
-        TestCase("defaultTaskDialogDownloads").InGuestMode(),
-        TestCase("defaultTaskDialogDrive"),
-        TestCase("changeDefaultDialogScrollList"),
-        TestCase("genericTaskIsNotExecuted"),
-        TestCase("genericTaskAndNonGenericTask"),
-        TestCase("noActionBarOpenForDirectories")));
+    ::testing::Values(TestCase("executeDefaultTaskDownloads"),
+                      TestCase("executeDefaultTaskDownloads").InGuestMode(),
+                      TestCase("executeDefaultTaskDrive"),
+                      TestCase("defaultTaskForPdf"),
+                      TestCase("defaultTaskForTextPlain"),
+                      TestCase("defaultTaskDialogDownloads"),
+                      TestCase("defaultTaskDialogDownloads").InGuestMode(),
+                      TestCase("defaultTaskDialogDrive"),
+                      TestCase("changeDefaultDialogScrollList"),
+                      TestCase("genericTaskIsNotExecuted"),
+                      TestCase("genericTaskAndNonGenericTask"),
+                      TestCase("noActionBarOpenForDirectories")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FolderShortcuts, /* folder_shortcuts.js */
@@ -867,13 +866,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("copyBetweenWindowsLocalToDrive"),
-        TestCase("copyBetweenWindowsLocalToUsb"),
-        TestCase("copyBetweenWindowsUsbToDrive"),
-        TestCase("copyBetweenWindowsDriveToLocal"),
-        TestCase("copyBetweenWindowsDriveToUsb"),
-        TestCase("copyBetweenWindowsUsbToLocal")));
+    ::testing::Values(TestCase("copyBetweenWindowsLocalToDrive"),
+                      TestCase("copyBetweenWindowsLocalToUsb"),
+                      TestCase("copyBetweenWindowsUsbToDrive"),
+                      TestCase("copyBetweenWindowsDriveToLocal"),
+                      TestCase("copyBetweenWindowsDriveToUsb"),
+                      TestCase("copyBetweenWindowsUsbToLocal")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GridView, /* grid_view.js */
@@ -984,13 +982,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("launchFilesAppSwa").FilesSwa(),
                       TestCase("launchFilesAppSwa").FilesSwa().InGuestMode()));
 #endif
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    LauncherSearch, /* launcher_search.js */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("launcherOpenSearchResult").MediaSwa(),
-                      TestCase("launcherSearch"),
-                      TestCase("launcherSearchOffline").Offline()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */

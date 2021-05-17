@@ -28,7 +28,6 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
-#include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
@@ -90,7 +89,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
   ash::HoldingSpaceKeyedServiceFactory::GetInstance();
   KerberosCredentialsManagerFactory::GetInstance();
-  launcher_search_provider::ServiceFactory::GetInstance();
   nearby::NearbyConnectionsDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();

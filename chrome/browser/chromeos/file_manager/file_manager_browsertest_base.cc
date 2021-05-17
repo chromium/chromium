@@ -61,7 +61,6 @@
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -349,17 +348,17 @@ struct AddEntriesMessage {
           target_path(target_path),
           last_modified_time(base::Time::Now()) {}
 
-    EntryType type;                  // Entry type: file or directory.
-    SharedOption shared_option;      // File entry sharing option.
-    std::string source_file_name;    // Source file name prototype.
+    EntryType type;                   // Entry type: file or directory.
+    SharedOption shared_option;       // File entry sharing option.
+    std::string source_file_name;     // Source file name prototype.
     std::string thumbnail_file_name;  // DocumentsProvider thumbnail file name.
-    std::string target_path;         // Target file or directory path.
-    std::string name_text;           // Display file name.
-    std::string team_drive_name;     // Name of team drive this entry is in.
-    std::string computer_name;       // Name of the computer this entry is in.
-    std::string mime_type;           // File entry content mime type.
-    base::Time last_modified_time;   // Entry last modified time.
-    EntryCapabilities capabilities;  // Entry permissions.
+    std::string target_path;          // Target file or directory path.
+    std::string name_text;            // Display file name.
+    std::string team_drive_name;      // Name of team drive this entry is in.
+    std::string computer_name;        // Name of the computer this entry is in.
+    std::string mime_type;            // File entry content mime type.
+    base::Time last_modified_time;    // Entry last modified time.
+    EntryCapabilities capabilities;   // Entry permissions.
     EntryFolderFeature folder_feature;  // Entry folder feature.
     bool pinned = false;                // Whether the file should be pinned.
 
@@ -2637,25 +2636,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             &run_loop),
         profile());
     run_loop.Run();
-    return;
-  }
-
-  if (name == "runLauncherSearch") {
-    app_list::LauncherSearchProvider search_provider(profile());
-    std::u16string query;
-    ASSERT_TRUE(value.GetString("query", &query));
-
-    search_provider.Start(query);
-    base::RunLoop run_loop;
-    search_provider.set_result_changed_callback(run_loop.QuitClosure());
-    run_loop.Run();
-
-    std::vector<base::Value> names;
-    for (auto& result : search_provider.results()) {
-      names.emplace_back(result->title());
-    }
-    std::sort(names.begin(), names.end());
-    base::JSONWriter::Write(base::Value(std::move(names)), output);
     return;
   }
 
