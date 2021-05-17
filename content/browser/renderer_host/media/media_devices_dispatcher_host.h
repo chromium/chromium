@@ -10,7 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
@@ -60,8 +62,12 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       bool subscribe_audio_output,
       mojo::PendingRemote<blink::mojom::MediaDevicesListener> listener)
       override;
+  void SetCaptureHandleConfig(
+      blink::mojom::CaptureHandleConfigPtr config) override;
 
  private:
+  friend class MediaDevicesDispatcherHostTest;
+
   using GetVideoInputDeviceFormatsCallback =
       GetAllVideoInputDeviceFormatsCallback;
 
@@ -112,6 +118,17 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       const url::Origin& security_origin,
       const media::VideoCaptureDeviceDescriptors& device_descriptors);
 
+  void ReceivedBadMessage(int render_process_id,
+                          bad_message::BadMessageReason reason);
+
+  void SetBadMessageCallbackForTesting(
+      base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+          callback);
+
+  void SetCaptureHandleConfigCallbackForTesting(
+      base::RepeatingCallback<
+          void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback);
+
   // The following const fields can be accessed on any thread.
   const int render_process_id_;
   const int render_frame_id_;
@@ -128,6 +145,12 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       current_audio_input_capabilities_;
 
   std::vector<uint32_t> subscription_ids_;
+
+  base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+      bad_message_callback_for_testing_;
+
+  base::RepeatingCallback<void(int, int, blink::mojom::CaptureHandleConfigPtr)>
+      capture_handle_config_callback_for_testing_;
 
   base::WeakPtrFactory<MediaDevicesDispatcherHost> weak_factory_{this};
 

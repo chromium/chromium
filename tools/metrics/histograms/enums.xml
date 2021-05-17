@@ -7316,6 +7316,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="241" label="PAYMENTS_WITHOUT_PERMISSION"/>
   <int value="242" label="WEB_BUNDLE_INVALID_NAVIGATION_URL"/>
   <int value="243" label="WCI_INVALID_DOWNLOAD_IMAGE_RESULT"/>
+  <int value="244" label="MDDH_NULL_CAPTURE_HANDLE_CONFIG"/>
+  <int value="245" label="MDDH_INVALID_CAPTURE_HANDLE"/>
+  <int value="246" label="MDDH_INVALID_ALL_ORIGINS_PERMITTED"/>
+  <int value="247" label="MDDH_INVALID_PERMITTED_ORIGIN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -32498,6 +32502,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3908" label="V8Screens_Oncurrentscreenchange_AttributeSetter"/>
   <int value="3909" label="RTCOfferAnswerOptionsVoiceActivityDetection"/>
   <int value="3910" label="MultiColAndListItem"/>
+  <int value="3911" label="CaptureHandle"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

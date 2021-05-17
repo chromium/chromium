@@ -11,17 +11,21 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_handle_config.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using blink::mojom::blink::MediaDeviceInfoPtr;
+using ::testing::_;
 
 namespace blink {
 
@@ -36,10 +40,23 @@ const char kFakeVideoInputGroupId2[] = "fake_video_input_group 2";
 const char kFakeAudioOutputDeviceId1[] = "fake_audio_output 1";
 const char kFakeAudioOutputDeviceId2[] = "fake_audio_output 2";
 
+String MaxLengthCaptureHandle() {
+  String maxHandle = "0123456789abcdef";  // 16 characters.
+  while (maxHandle.length() < 1024) {
+    maxHandle = maxHandle + maxHandle;
+  }
+  CHECK_EQ(maxHandle.length(), 1024u) << "Malformed test.";
+  return maxHandle;
+}
+
 class MockMediaDevicesDispatcherHost
     : public mojom::blink::MediaDevicesDispatcherHost {
  public:
   MockMediaDevicesDispatcherHost() {}
+
+  ~MockMediaDevicesDispatcherHost() final {
+    EXPECT_FALSE(expected_capture_handle_config_);
+  }
 
   void EnumerateDevices(bool request_audio_input,
                         bool request_video_input,
@@ -158,6 +175,41 @@ class MockMediaDevicesDispatcherHost
     listener_.Bind(std::move(listener));
   }
 
+  void SetCaptureHandleConfig(
+      mojom::blink::CaptureHandleConfigPtr config) override {
+    ASSERT_TRUE(config);
+
+    auto expected_config = std::move(expected_capture_handle_config_);
+    expected_capture_handle_config_ = nullptr;
+    ASSERT_TRUE(expected_config);
+
+    // TODO(crbug.com/1208868): Define CaptureHandleConfig traits that compare
+    // |permitted_origins| using SecurityOrigin::IsSameOriginWith(), thereby
+    // allowing this block to be replaced by a single EXPECT_EQ. (This problem
+    // only manifests in Blink.)
+    EXPECT_EQ(config->expose_origin, expected_config->expose_origin);
+    EXPECT_EQ(config->capture_handle, expected_config->capture_handle);
+    EXPECT_EQ(config->all_origins_permitted,
+              expected_config->all_origins_permitted);
+    ASSERT_EQ(config->permitted_origins.size(),
+              expected_config->permitted_origins.size());
+    for (size_t i = 0; i < config->permitted_origins.size(); ++i) {
+      EXPECT_TRUE(config->permitted_origins[i]->IsSameOriginWith(
+          expected_config->permitted_origins[i].get()));
+    }
+  }
+
+  void ExpectSetCaptureHandleConfig(
+      mojom::blink::CaptureHandleConfigPtr config) {
+    ASSERT_TRUE(config);
+    ASSERT_FALSE(expected_capture_handle_config_) << "Unfulfilled expectation.";
+    expected_capture_handle_config_ = std::move(config);
+  }
+
+  mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config() {
+    return std::move(expected_capture_handle_config_);
+  }
+
   mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>
   CreatePendingRemoteAndBind() {
     mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost> remote;
@@ -174,6 +226,7 @@ class MockMediaDevicesDispatcherHost
  private:
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
+  mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
 };
 
 class MediaDevicesTest : public testing::Test {
@@ -240,6 +293,11 @@ class MediaDevicesTest : public testing::Test {
 
   ScopedTestingPlatformSupport<TestingPlatformSupport>& platform() {
     return platform_;
+  }
+
+  MockMediaDevicesDispatcherHost& dispatcher_host() {
+    DCHECK(dispatcher_host_);
+    return *dispatcher_host_;
   }
 
  private:
@@ -364,6 +422,28 @@ TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   EXPECT_FALSE(devices_enumerated());
 }
 
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  media_devices->SetConnectionErrorCallbackForTesting(
+      WTF::Bind(&MediaDevicesTest::OnDispatcherHostConnectionError,
+                WTF::Unretained(this)));
+  ASSERT_FALSE(dispatcher_host_connection_error());
+
+  // Simulate a connection error by closing the binding.
+  CloseBinding();
+  platform()->RunUntilIdle();
+
+  // Note: SetCaptureHandleConfigEmpty proves the following is a valid call.
+  CaptureHandleConfig input_config;
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+  EXPECT_TRUE(dispatcher_host_connection_error());
+}
+
 TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(scope.GetWindow());
@@ -414,6 +494,209 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
   SimulateDeviceChange();
   platform()->RunUntilIdle();
   EXPECT_FALSE(device_changed());
+}
+
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigEmpty) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = false;
+  expected_config->capture_handle = "";
+  expected_config->all_origins_permitted = false;
+  expected_config->permitted_origins = {};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigWithExposeOrigin) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setExposeOrigin(true);
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = true;
+  expected_config->capture_handle = "";
+  expected_config->all_origins_permitted = false;
+  expected_config->permitted_origins = {};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithHandle) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setHandle("0xabcdef0123456789");
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = false;
+  expected_config->capture_handle = "0xabcdef0123456789";
+  expected_config->all_origins_permitted = false;
+  expected_config->permitted_origins = {};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithMaxHandle) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  const String maxHandle = MaxLengthCaptureHandle();
+
+  CaptureHandleConfig input_config;
+  input_config.setHandle(maxHandle);
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = false;
+  expected_config->capture_handle = maxHandle;
+  expected_config->all_origins_permitted = false;
+  expected_config->permitted_origins = {};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest,
+       SetCaptureHandleConfigCaptureWithOverMaxHandleRejected) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setHandle(MaxLengthCaptureHandle() + "a");  // Over max length.
+
+  // Note: dispatcher_host().ExpectSetCaptureHandleConfig() not called.
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(ESErrorType::kTypeError));
+}
+
+TEST_F(MediaDevicesTest,
+       SetCaptureHandleConfigCaptureWithPermittedOriginsWildcard) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setPermittedOrigins({"*"});
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = false;
+  expected_config->capture_handle = "";
+  expected_config->all_origins_permitted = true;
+  expected_config->permitted_origins = {};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, SetCaptureHandleConfigCaptureWithPermittedOrigins) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setPermittedOrigins(
+      {"https://chromium.org", "ftp://chromium.org:1234"});
+
+  // Expected output.
+  auto expected_config = mojom::blink::CaptureHandleConfig::New();
+  expected_config->expose_origin = false;
+  expected_config->capture_handle = "";
+  expected_config->all_origins_permitted = false;
+  expected_config->permitted_origins = {
+      SecurityOrigin::CreateFromString("https://chromium.org"),
+      SecurityOrigin::CreateFromString("ftp://chromium.org:1234")};
+  dispatcher_host().ExpectSetCaptureHandleConfig(std::move(expected_config));
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest,
+       SetCaptureHandleConfigCaptureWithWildcardAndSomethingElseRejected) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setPermittedOrigins({"*", "https://chromium.org"});
+
+  // Note: dispatcher_host().ExpectSetCaptureHandleConfig() not called.
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kNotSupportedError));
+}
+
+TEST_F(MediaDevicesTest,
+       SetCaptureHandleConfigCaptureWithMalformedOriginRejected) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+
+  CaptureHandleConfig input_config;
+  input_config.setPermittedOrigins({"https://chromium.org:99999"});  // Invalid.
+
+  // Note: dispatcher_host().ExpectSetCaptureHandleConfig() not called.
+
+  media_devices->setCaptureHandleConfig(scope.GetScriptState(), &input_config,
+                                        scope.GetExceptionState());
+
+  platform()->RunUntilIdle();
+
+  ASSERT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            ToExceptionCode(DOMExceptionCode::kNotSupportedError));
 }
 
 }  // namespace blink

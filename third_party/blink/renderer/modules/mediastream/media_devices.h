@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class CaptureHandleConfig;
 class ExceptionState;
 class LocalFrame;
 class Navigator;
@@ -62,6 +63,10 @@ class MODULES_EXPORT MediaDevices final
   ScriptPromise getCurrentBrowsingContextMedia(ScriptState*,
                                                const MediaStreamConstraints*,
                                                ExceptionState&);
+
+  void setCaptureHandleConfig(ScriptState*,
+                              const CaptureHandleConfig*,
+                              ExceptionState&);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;

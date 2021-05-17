@@ -40,4 +40,15 @@
       MeasureAs = GetCurrentBrowsingContextMedia
     ] Promise<MediaStream>
     getCurrentBrowsingContextMedia(optional MediaStreamConstraints constraints = {});
+
+    // Allows an application APP to opt-in to exposing certain information to
+    // applications which end up capturing APP.
+    // TODO(crbug.com/1208868): Link to the spec once it's published.
+    [
+      // Intentionally unmeasured. The origin trial limitation of 0.5% of
+      // page loads is applied to reading the CaptureHandle, not to setting
+      // the capture handle configuration. See go/capture-handle-ot for details.
+      RuntimeEnabled = CaptureHandle, CallWith = ScriptState, RaisesException
+    ] void
+    setCaptureHandleConfig(optional CaptureHandleConfig config = {});
 };

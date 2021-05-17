@@ -338,6 +338,11 @@
       name: "CapabilityDelegationPaymentRequest",
     },
     {
+      name: "CaptureHandle",
+      depends_on: ["GetDisplayMedia"],
+      status: {"Android": "", "default": "experimental"},
+    },
+    {
       name: "CaptureTimeInCsrc",
       status: "stable",
     },

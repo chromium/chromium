@@ -258,6 +258,10 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED();
   }
 
+  void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
+    NOTREACHED();
+  }
+
   void GetAllVideoInputDeviceFormats(
       const String&,
       GetAllVideoInputDeviceFormatsCallback callback) override {

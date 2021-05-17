@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
-#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -132,8 +131,8 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
   if ((!request_audio_input && !request_video_input && !request_audio_output) ||
       (request_video_input_capabilities && !request_video_input) ||
       (request_audio_input_capabilities && !request_audio_input)) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
 
@@ -199,8 +198,8 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
 
   if (!subscribe_audio_input && !subscribe_video_input &&
       !subscribe_audio_output) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
 
@@ -217,6 +216,45 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
                                      render_process_id_, render_frame_id_,
                                      devices_to_subscribe, std::move(listener));
   subscription_ids_.push_back(subscription_id);
+}
+
+void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
+    blink::mojom::CaptureHandleConfigPtr config) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!config) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_NULL_CAPTURE_HANDLE_CONFIG);
+    return;
+  }
+
+  static_assert(sizeof(decltype(config->capture_handle)::value_type) == 2, "");
+  if (config->capture_handle.length() > 1024) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_CAPTURE_HANDLE);
+    return;
+  }
+
+  if (config->all_origins_permitted && !config->permitted_origins.empty()) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_ALL_ORIGINS_PERMITTED);
+    return;
+  }
+
+  for (const auto& origin : config->permitted_origins) {
+    if (origin.opaque()) {
+      ReceivedBadMessage(render_process_id_,
+                         bad_message::MDDH_INVALID_PERMITTED_ORIGIN);
+      return;
+    }
+  }
+
+  if (capture_handle_config_callback_for_testing_) {
+    capture_handle_config_callback_for_testing_.Run(
+        render_process_id_, render_frame_id_, config->Clone());
+  }
+
+  // TODO(crbug.com/1200910): Set the capture-handle config.
 }
 
 void MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID(
@@ -437,6 +475,34 @@ void MediaDevicesDispatcherHost::FinalizeGetAudioInputCapabilities() {
 
   current_audio_input_capabilities_.clear();
   pending_audio_input_capabilities_requests_.clear();
+}
+
+void MediaDevicesDispatcherHost::ReceivedBadMessage(
+    int render_process_id,
+    bad_message::BadMessageReason reason) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (bad_message_callback_for_testing_) {
+    bad_message_callback_for_testing_.Run(render_process_id, reason);
+  }
+
+  bad_message::ReceivedBadMessage(render_process_id, reason);
+}
+
+void MediaDevicesDispatcherHost::SetBadMessageCallbackForTesting(
+    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!bad_message_callback_for_testing_);
+  bad_message_callback_for_testing_ = callback;
+}
+
+void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
+    base::RepeatingCallback<
+        void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!capture_handle_config_callback_for_testing_);
+  capture_handle_config_callback_for_testing_ = callback;
 }
 
 }  // namespace content

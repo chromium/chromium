@@ -5198,6 +5198,7 @@ interface MediaDevices : EventTarget
     method getDisplayMedia
     method getSupportedConstraints
     method getUserMedia
+    method setCaptureHandleConfig
     setter ondevicechange
 interface MediaElementAudioSourceNode : AudioNode
     attribute @@toStringTag

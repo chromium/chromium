@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/origin.mojom";
+
+struct CaptureHandleConfig {
+  // Whether the captured app's origin should be exposed to capturing apps.
+  bool expose_origin = false;
+
+  // The handle the captured app exposes to capturing apps.
+  mojo_base.mojom.String16 capture_handle;
+
+  // Whether all capturers should see the captured app's origin and/or handle.
+  bool all_origins_permitted = false;
+
+  // If |all_origins_permitted| is false, then |permitted_origins| contains
+  // the origins of capturers who are permitted to observe the captured app's
+  // origin and/or handle.
+  // If |all_origins_permitted| is true, then |permitted_origins| must be empty.
+  array<url.mojom.Origin> permitted_origins;
+};

@@ -14,6 +14,7 @@ modules_idl_files = [
 ]
 
 modules_dictionary_idl_files = [
+  "capture_handle_config.idl",
   "constrain_boolean_parameters.idl",
   "constrain_dom_string_parameters.idl",
   "constrain_double_range.idl",

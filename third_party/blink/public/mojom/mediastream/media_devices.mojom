@@ -7,6 +7,7 @@ module blink.mojom;
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/media/capture_handle_config.mojom";
 
 enum MediaDeviceType {
   MEDIA_AUDIO_INPUT,
@@ -112,6 +113,10 @@ interface MediaDevicesDispatcherHost {
                           bool subscribe_video_input,
                           bool subscribe_audio_output,
                           pending_remote<MediaDevicesListener> listener);
+
+  // Allows an application APP to opt-in to exposing certain information to
+  // applications which end up capturing APP.
+  SetCaptureHandleConfig(CaptureHandleConfig config);
 };
 
 // This object lives in the renderer process and is used by the browser process

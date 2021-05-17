@@ -269,6 +269,10 @@ enum BadMessageReason {
   PAYMENTS_WITHOUT_PERMISSION = 241,
   WEB_BUNDLE_INVALID_NAVIGATION_URL = 242,
   WCI_INVALID_DOWNLOAD_IMAGE_RESULT = 243,
+  MDDH_NULL_CAPTURE_HANDLE_CONFIG = 244,
+  MDDH_INVALID_CAPTURE_HANDLE = 245,
+  MDDH_INVALID_ALL_ORIGINS_PERMITTED = 246,
+  MDDH_INVALID_PERMITTED_ORIGIN = 247,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

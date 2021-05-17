@@ -84,6 +84,17 @@ class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
 };
 
+std::u16string MaxLengthCaptureHandle() {
+  static_assert(sizeof(std::u16string::value_type) == 2, "");
+  std::u16string maxHandle = u"0123456789abcdef";  // 16 characters.
+  maxHandle.reserve(1024);
+  while (maxHandle.length() < 1024) {
+    maxHandle += maxHandle;
+  }
+  CHECK_EQ(maxHandle.length(), 1024u) << "Malformed test.";
+  return maxHandle;
+}
+
 }  // namespace
 
 class MediaDevicesDispatcherHostTest
@@ -122,8 +133,17 @@ class MediaDevicesDispatcherHostTest
         ->set_salt_and_origin_callback_for_testing(base::BindRepeating(
             &MediaDevicesDispatcherHostTest::GetSaltAndOrigin,
             base::Unretained(this)));
+    host_->SetBadMessageCallbackForTesting(
+        base::BindRepeating(&MediaDevicesDispatcherHostTest::MockOnBadMessage,
+                            base::Unretained(this)));
+    host_->SetCaptureHandleConfigCallbackForTesting(base::BindRepeating(
+        &MediaDevicesDispatcherHostTest::OnCaptureHandleConfigAccepted,
+        base::Unretained(this)));
   }
-  ~MediaDevicesDispatcherHostTest() override { audio_manager_->Shutdown(); }
+  ~MediaDevicesDispatcherHostTest() override {
+    audio_manager_->Shutdown();
+    EXPECT_FALSE(expected_set_capture_handle_config_);
+  }
 
   void SetUp() override {
     std::vector<media::FakeVideoCaptureDeviceSettings> fake_video_devices(
@@ -184,6 +204,33 @@ class MediaDevicesDispatcherHostTest
   MOCK_METHOD0(MockAudioInputCapabilitiesCallback, void());
   MOCK_METHOD0(MockAllVideoInputDeviceFormatsCallback, void());
   MOCK_METHOD0(MockAvailableVideoInputDeviceFormatsCallback, void());
+  MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
+
+  void OnCaptureHandleConfigAccepted(
+      int render_process_id,
+      int render_frame_id,
+      blink::mojom::CaptureHandleConfigPtr config) {
+    ASSERT_TRUE(expected_set_capture_handle_config_.has_value());
+
+    EXPECT_EQ(render_process_id,
+              expected_set_capture_handle_config_->render_process_id);
+    EXPECT_EQ(render_frame_id,
+              expected_set_capture_handle_config_->render_frame_id);
+    EXPECT_EQ(config, expected_set_capture_handle_config_->config);
+
+    expected_set_capture_handle_config_ = base::nullopt;
+  }
+
+  void ExpectOnCaptureHandleConfigAccepted(
+      int render_process_id,
+      int render_frame_id,
+      blink::mojom::CaptureHandleConfigPtr config) {
+    ASSERT_FALSE(expected_set_capture_handle_config_);
+    expected_set_capture_handle_config_.emplace();
+    expected_set_capture_handle_config_->render_process_id = render_process_id;
+    expected_set_capture_handle_config_->render_frame_id = render_frame_id;
+    expected_set_capture_handle_config_->config = std::move(config);
+  }
 
   void VideoInputCapabilitiesCallback(
       std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr> capabilities) {
@@ -440,6 +487,14 @@ class MediaDevicesDispatcherHostTest
   url::Origin origin_;
 
   std::vector<blink::WebMediaDeviceInfoArray> enumerated_devices_;
+
+  struct ExpectedCaptureHandleConfig {
+    int render_process_id;
+    int render_frame_id;
+    blink::mojom::CaptureHandleConfigPtr config;
+  };
+  base::Optional<ExpectedCaptureHandleConfig>
+      expected_set_capture_handle_config_;
 };
 
 TEST_P(MediaDevicesDispatcherHostTest, EnumerateAudioInputDevices) {
@@ -538,6 +593,81 @@ TEST_P(MediaDevicesDispatcherHostTest, GetAvailableVideoInputDeviceFormats) {
                          AvailableVideoInputDeviceFormatsCallback,
                      base::Unretained(this)));
   run_loop.Run();
+}
+
+TEST_P(MediaDevicesDispatcherHostTest, SetCaptureHandleConfigWithNullptr) {
+  EXPECT_CALL(*this,
+              MockOnBadMessage(kProcessId,
+                               bad_message::MDDH_NULL_CAPTURE_HANDLE_CONFIG));
+  host_->SetCaptureHandleConfig(nullptr);
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       SetCaptureHandleConfigWithExcessivelLongHandle) {
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  config->capture_handle = MaxLengthCaptureHandle() + u"a";  // Max exceeded.
+  EXPECT_CALL(*this, MockOnBadMessage(
+                         kProcessId, bad_message::MDDH_INVALID_CAPTURE_HANDLE));
+  host_->SetCaptureHandleConfig(std::move(config));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       SetCaptureHandleConfigWithAllPermittedAndSpecificallyPermitted) {
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  config->all_origins_permitted = true;
+  config->permitted_origins = {
+      url::Origin::Create(GURL("https://chromium.org:123"))};
+  EXPECT_CALL(
+      *this, MockOnBadMessage(kProcessId,
+                              bad_message::MDDH_INVALID_ALL_ORIGINS_PERMITTED));
+  host_->SetCaptureHandleConfig(std::move(config));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest, SetCaptureHandleConfigWithBadOrigin) {
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  config->permitted_origins = {
+      url::Origin::Create(GURL("https://chromium.org:999999"))  // Invalid.
+  };
+  EXPECT_CALL(
+      *this,
+      MockOnBadMessage(kProcessId, bad_message::MDDH_INVALID_PERMITTED_ORIGIN));
+  host_->SetCaptureHandleConfig(std::move(config));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       SetCaptureHandleConfigWithMaxHandleLengthAllowed) {
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  // Valid (and max-length) handle.
+  config->capture_handle = MaxLengthCaptureHandle();
+  config->permitted_origins = {
+      url::Origin::Create(GURL("https://chromium.org:123")),
+      url::Origin::Create(GURL("ftp://google.com:321"))};
+  EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
+  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  host_->SetCaptureHandleConfig(std::move(config));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       SetCaptureHandleConfigWithSpecificOriginsAllowed) {
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  config->capture_handle = u"0123456789abcdef";
+  config->permitted_origins = {
+      url::Origin::Create(GURL("https://chromium.org:123")),
+      url::Origin::Create(GURL("ftp://google.com:321"))};
+  EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
+  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  host_->SetCaptureHandleConfig(std::move(config));
+}
+
+TEST_P(MediaDevicesDispatcherHostTest,
+       SetCaptureHandleConfigWithAllOriginsAllowed) {
+  EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
+  auto config = blink::mojom::CaptureHandleConfig::New();
+  config->capture_handle = u"0123456789abcdef";
+  config->all_origins_permitted = true;
+  EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
+  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  host_->SetCaptureHandleConfig(std::move(config));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
