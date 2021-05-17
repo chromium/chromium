@@ -152,6 +152,24 @@ grit("help_app_bundle_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
+grit("help_app_kids_magazine_bundle_resources") {
+  if (enable_cros_help_app) {
+    source = "../components/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd"
+  } else {
+    source = "../components/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  outputs = [
+    "grit/chromeos_help_app_kids_magazine_bundle_resources.h",
+    "grit/chromeos_help_app_kids_magazine_bundle_resources_map.cc",
+    "grit/chromeos_help_app_kids_magazine_bundle_resources_map.h",
+    "chromeos_help_app_kids_magazine_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
 if (!is_official_build) {
   # Resources used by chrome://sample-system-web-app
   grit("sample_system_web_app_resources") {

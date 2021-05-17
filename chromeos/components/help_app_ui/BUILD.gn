@@ -43,6 +43,7 @@ static_library("help_app_ui") {
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
     "//chromeos/components/web_applications",
     "//chromeos/resources:help_app_bundle_resources",
+    "//chromeos/resources:help_app_kids_magazine_bundle_resources",
     "//chromeos/resources:help_app_resources",
     "//chromeos/strings",
     "//chromeos/system",

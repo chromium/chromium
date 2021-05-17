@@ -378,6 +378,18 @@
   "chromeos/components/help_app_ui/resources/help_app_resources.grd": {
     "includes": [2520],
   },
+  # Both help_app_kids_magazine_bundle_resources.grd and
+  # help_app_kids_magazine_bundle_mock_resources.grd start with the same id
+  # because only one of them is built depending on if src_internal is available.
+  # Lower bound for number of resource ids is the number of files, which is 3 in
+  # in this case (HTML, JS and CSS file).
+  "chromeos/components/help_app_ui/resources/prod/help_app_kids_magazine_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [2530],
+  },
+  "chromeos/components/help_app_ui/resources/mock/help_app_kids_magazine_bundle_mock_resources.grd": {
+    "includes": [2530],
+  },
   # Both help_app_bundle_resources.grd and help_app_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # src_internal is available. Lower bound is that we bundle ~100 images for

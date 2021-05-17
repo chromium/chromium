@@ -86,6 +86,26 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
+
+  content::WebUIDataSource* magazine_untrusted_source =
+      CreateHelpAppKidsMagazineUntrustedDataSource();
+
+  content::WebUIDataSource::Add(browser_context, magazine_untrusted_source);
+
+  // Register common permissions for chrome-untrusted:// pages.
+  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // granted by default.
+  auto* magazine_permissions_allowlist =
+      WebUIAllowlist::GetOrCreate(browser_context);
+  const url::Origin magazine_untrusted_origin =
+      url::Origin::Create(GURL(kChromeUIHelpAppKidsMagazineUntrustedURL));
+  magazine_permissions_allowlist->RegisterAutoGrantedPermissions(
+      magazine_untrusted_origin, {
+                                     ContentSettingsType::COOKIES,
+                                     ContentSettingsType::IMAGES,
+                                     ContentSettingsType::JAVASCRIPT,
+                                     ContentSettingsType::SOUND,
+                                 });
 }
 
 HelpAppUI::~HelpAppUI() = default;
