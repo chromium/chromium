@@ -38,6 +38,7 @@ enum class PaintBenchmarkMode {
   // The above modes don't additionally invalidate paintings, i.e. during
   // repeated benchmarking, the PaintController is fully cached.
   kPartialInvalidation,
+  kSmallInvalidation,
   kSubsequenceCachingDisabled,
   kCachingDisabled,
 };
@@ -149,11 +150,13 @@ class PLATFORM_EXPORT PaintController {
   // true. Otherwise returns false.
   bool UseCachedSubsequenceIfPossible(const DisplayItemClient&);
 
-  // Returns the index of the paint chunk that is forced for the subsequence.
-  wtf_size_t BeginSubsequence();
+  void BeginSubsequence(wtf_size_t& subsequence_index,
+                        wtf_size_t& start_chunk_index);
   // The |start| parameter should be the return value of the corresponding
   // BeginSubsequence().
-  void EndSubsequence(const DisplayItemClient&, wtf_size_t start_chunk_index);
+  void EndSubsequence(const DisplayItemClient&,
+                      wtf_size_t subsequence_index,
+                      wtf_size_t start_chunk_index);
 
   void BeginSkippingCache() {
     if (usage_ == kTransient)
@@ -336,8 +339,10 @@ class PLATFORM_EXPORT PaintController {
 
   wtf_size_t FindCachedItem(const DisplayItem::Id&);
   wtf_size_t FindOutOfOrderCachedItemForward(const DisplayItem::Id&);
-  void CopyCachedSubsequence(wtf_size_t start_chunk_index,
-                             wtf_size_t end_chunk_index);
+  void AppendSubsequenceByMoving(const DisplayItemClient&,
+                                 wtf_size_t subsequence_index,
+                                 wtf_size_t start_chunk_index,
+                                 wtf_size_t end_chunk_index);
   void AppendChunkByMoving(PaintChunk&&);
 
   // Resets the indices (e.g. next_item_to_match_) of
@@ -362,13 +367,16 @@ class PLATFORM_EXPORT PaintController {
   }
 
   struct SubsequenceMarkers {
+    const DisplayItemClient* client = nullptr;
     // The start and end (not included) index of paint chunks in this
     // subsequence.
     wtf_size_t start_chunk_index = 0;
     wtf_size_t end_chunk_index = 0;
   };
 
-  SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient&);
+  wtf_size_t GetSubsequenceIndex(const DisplayItemClient&) const;
+  const SubsequenceMarkers* GetSubsequenceMarkers(
+      const DisplayItemClient&) const;
 
   void ValidateNewChunkId(const PaintChunk::Id&);
 
@@ -455,11 +463,14 @@ class PLATFORM_EXPORT PaintController {
 
   String under_invalidation_message_prefix_;
 
-  using CachedSubsequenceMap =
-      HashMap<const DisplayItemClient*, SubsequenceMarkers>;
-  CachedSubsequenceMap current_cached_subsequences_;
-  CachedSubsequenceMap new_cached_subsequences_;
-  wtf_size_t last_cached_subsequence_end_ = 0;
+  struct SubsequencesData {
+    // Map a client to the index into |tree|.
+    HashMap<const DisplayItemClient*, wtf_size_t> map;
+    // A pre-order list of the subsequence tree.
+    Vector<SubsequenceMarkers> tree;
+  };
+  SubsequencesData current_subsequences_;
+  SubsequencesData new_subsequences_;
 
   wtf_size_t current_fragment_ = 0;
 

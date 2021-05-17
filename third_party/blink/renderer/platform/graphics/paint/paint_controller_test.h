@@ -82,7 +82,8 @@ class PaintControllerTestBase : public testing::Test {
   }
 
   using SubsequenceMarkers = PaintController::SubsequenceMarkers;
-  SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
+  const SubsequenceMarkers* GetSubsequenceMarkers(
+      const DisplayItemClient& client) {
     return paint_controller_->GetSubsequenceMarkers(client);
   }
 

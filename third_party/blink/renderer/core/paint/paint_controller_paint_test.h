@@ -65,7 +65,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
     return RootPaintController().ClientCacheIsValid(client);
   }
 
-  using SubsequenceMarkers = PaintController::SubsequenceMarkers;
+  using SubsequenceMarkers = const PaintController::SubsequenceMarkers;
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
     return RootPaintController().GetSubsequenceMarkers(client);
   }

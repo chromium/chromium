@@ -84,6 +84,8 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
   results_->SetDouble(
       "record_time_partial_invalidation_ms",
       paint_benchmark_result.record_time_partial_invalidation_ms);
+  results_->SetDouble("record_time_small_invalidation_ms",
+                      paint_benchmark_result.record_time_small_invalidation_ms);
   results_->SetDouble(
       "raster_invalidation_and_convert_time_ms",
       paint_benchmark_result.raster_invalidation_and_convert_time_ms);

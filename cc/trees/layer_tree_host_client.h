@@ -73,6 +73,7 @@ struct PaintBenchmarkResult {
   double record_time_caching_disabled_ms = 0;
   double record_time_subsequence_caching_disabled_ms = 0;
   double record_time_partial_invalidation_ms = 0;
+  double record_time_small_invalidation_ms = 0;
   double raster_invalidation_and_convert_time_ms = 0;
   double paint_artifact_compositor_update_time_ms = 0;
   size_t painter_memory_usage = 0;

@@ -81,6 +81,7 @@ class RasterizeAndRecordMicro(legacy_page_test.LegacyPageTest):
                    'record_time_caching_disabled',
                    'record_time_subsequence_caching_disabled',
                    'record_time_partial_invalidation',
+                   'record_time_small_invalidation',
                    'raster_invalidation_and_convert_time',
                    'paint_artifact_compositor_update_time'):
       results.AddMeasurement(metric, 'ms', data.get(metric + '_ms', 0))
