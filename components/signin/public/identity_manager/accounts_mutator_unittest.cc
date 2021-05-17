@@ -334,8 +334,8 @@ TEST_F(AccountsMutatorTest,
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
-  AccountInfo primary_account_info =
-      MakePrimaryAccountAvailable(identity_manager(), primary_account_email);
+  AccountInfo primary_account_info = MakePrimaryAccountAvailable(
+      identity_manager(), primary_account_email, signin::ConsentLevel::kSync);
 
   // Now try invalidating the primary account, and check that it gets updated.
   base::RunLoop run_loop;
@@ -372,8 +372,8 @@ TEST_F(
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
-  AccountInfo primary_account_info =
-      MakePrimaryAccountAvailable(identity_manager(), primary_account_email);
+  AccountInfo primary_account_info = MakePrimaryAccountAvailable(
+      identity_manager(), primary_account_email, signin::ConsentLevel::kSync);
 
   // Next, add a secondary account.
   base::RunLoop run_loop;

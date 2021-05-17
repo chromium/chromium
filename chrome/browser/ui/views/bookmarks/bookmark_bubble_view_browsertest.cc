@@ -34,7 +34,8 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       signin::ClearPrimaryAccount(identity_manager);
     } else {
       constexpr char kTestUserEmail[] = "testuser@gtest.com";
-      signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail);
+      signin::MakePrimaryAccountAvailable(identity_manager, kTestUserEmail,
+                                          signin::ConsentLevel::kSync);
     }
 #endif
 

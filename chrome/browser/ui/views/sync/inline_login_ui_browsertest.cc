@@ -353,7 +353,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com");
+  signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com",
+                                      signin::ConsentLevel::kSync);
   EnableSigninAllowed(true);
 
   EXPECT_TRUE(

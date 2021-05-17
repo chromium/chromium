@@ -515,7 +515,8 @@ class DiceBrowsingDataRemoverBrowserTest
     if (is_primary) {
       DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
       return signin::MakePrimaryAccountAvailable(identity_manager,
-                                                 account_id + "@gmail.com");
+                                                 account_id + "@gmail.com",
+                                                 signin::ConsentLevel::kSync);
     }
     auto account_info =
         signin::MakeAccountAvailable(identity_manager, account_id);

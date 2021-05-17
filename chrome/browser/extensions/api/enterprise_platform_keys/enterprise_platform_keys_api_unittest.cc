@@ -83,8 +83,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // user in the IdentityManager class.
   virtual void SetAuthenticatedUser() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        kUserEmail);
+        IdentityManagerFactory::GetForProfile(browser()->profile()), kUserEmail,
+        signin::ConsentLevel::kSync);
   }
 
   // Like extension_function_test_utils::RunFunctionAndReturnError but with an

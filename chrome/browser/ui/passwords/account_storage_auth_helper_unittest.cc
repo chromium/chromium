@@ -76,7 +76,8 @@ class AccountStorageAuthHelperTest : public ::testing::Test {
 };
 
 TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
+                                      signin::ConsentLevel::kSync);
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
                                    signin::ConsentLevel::kSync),
@@ -86,7 +87,8 @@ TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
 }
 
 TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
+                                      signin::ConsentLevel::kSync);
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
                                    signin::ConsentLevel::kSync),
@@ -102,7 +104,8 @@ TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
 }
 
 TEST_F(AccountStorageAuthHelperTest, ShouldNotSetOptInOnFailedReauth) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
+                                      signin::ConsentLevel::kSync);
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(GetIdentityManager()->GetPrimaryAccountId(
                                    signin::ConsentLevel::kSync),

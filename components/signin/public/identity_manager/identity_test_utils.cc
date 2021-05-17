@@ -183,9 +183,10 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
 }
 
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
-                                        const std::string& email) {
+                                        const std::string& email,
+                                        ConsentLevel consent_level) {
   CoreAccountInfo account_info =
-      SetPrimaryAccount(identity_manager, email, ConsentLevel::kSync);
+      SetPrimaryAccount(identity_manager, email, consent_level);
   SetRefreshTokenForPrimaryAccount(identity_manager);
   absl::optional<AccountInfo> primary_account_info =
       identity_manager

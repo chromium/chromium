@@ -405,8 +405,8 @@ class DiceBrowserTest : public InProcessBrowserTest,
   // Signin with a main account and add token for a secondary account.
   void SetupSignedInAccounts() {
     // Signin main account.
-    AccountInfo primary_account_info =
-        signin::MakePrimaryAccountAvailable(GetIdentityManager(), main_email_);
+    AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
+        GetIdentityManager(), main_email_, signin::ConsentLevel::kSync);
     ASSERT_TRUE(
         GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
     ASSERT_FALSE(

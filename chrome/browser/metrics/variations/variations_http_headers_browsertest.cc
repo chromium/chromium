@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   // Sign the user in.
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
-      "main_email@gmail.com");
+      "main_email@gmail.com", signin::ConsentLevel::kSync);
 
   ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
 

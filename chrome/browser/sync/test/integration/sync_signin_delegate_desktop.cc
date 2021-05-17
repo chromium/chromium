@@ -38,7 +38,8 @@ void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
     }
   } else {
     // Authenticate sync client using GAIA credentials.
-    signin::MakePrimaryAccountAvailable(identity_manager, username);
+    signin::MakePrimaryAccountAvailable(identity_manager, username,
+                                        signin::ConsentLevel::kSync);
   }
 }
 

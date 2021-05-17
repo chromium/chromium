@@ -1052,7 +1052,8 @@ class MultiProfileDownloadNotificationTest
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
-      signin::MakePrimaryAccountAvailable(identity_manager, info.email);
+      signin::MakePrimaryAccountAvailable(identity_manager, info.email,
+                                          signin::ConsentLevel::kSync);
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service1_;

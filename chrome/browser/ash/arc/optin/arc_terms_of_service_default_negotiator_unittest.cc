@@ -65,8 +65,8 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(profile()),
-        "testing@account.com");
+        IdentityManagerFactory::GetForProfile(profile()), "testing@account.com",
+        signin::ConsentLevel::kSync);
 
     ash::StatsReportingController::RegisterLocalStatePrefs(
         local_state_.registry());

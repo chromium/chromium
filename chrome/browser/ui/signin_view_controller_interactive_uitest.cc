@@ -129,7 +129,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 // dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        SyncConfirmationDefaultFocus) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com");
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
+                                      signin::ConsentLevel::kSync);
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();

@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, kPrimaryAccountEmail);
+      identity_manager, kPrimaryAccountEmail, signin::ConsentLevel::kSync);
   AccountInfo secondary_account_info =
       signin::MakeAccountAvailable(identity_manager, kSecondaryAccountEmail);
 
@@ -134,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   const char kAccountEmail[] = "account@email.com";
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info =
-      signin::MakePrimaryAccountAvailable(identity_manager, kAccountEmail);
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kAccountEmail, signin::ConsentLevel::kSync);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager, account_info.account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

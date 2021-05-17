@@ -76,7 +76,8 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 // newly-available account.
 // NOTE: See disclaimer at top of file re: direct usage.
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
-                                        const std::string& email);
+                                        const std::string& email,
+                                        ConsentLevel consent_level);
 
 // Revokes sync consent from the primary account: the primary account is left
 // at ConsentLevel::kSignin.

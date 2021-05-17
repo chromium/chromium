@@ -43,8 +43,8 @@ void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {
   // The move bubble is shown only to signed in users. Make sure there is one.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo info =
-      signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com");
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
 
   CreateAnchorViewAndShow();
 

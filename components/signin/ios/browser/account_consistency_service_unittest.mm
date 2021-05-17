@@ -195,7 +195,8 @@ class AccountConsistencyServiceTest : public PlatformTest {
   // Identity APIs.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(identity_test_env_->identity_manager(),
-                                        kFakeEmail);
+                                        kFakeEmail,
+                                        signin::ConsentLevel::kSync);
     WaitUntilAllCookieRequestsAreApplied();
   }
 

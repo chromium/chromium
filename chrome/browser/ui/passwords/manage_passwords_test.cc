@@ -174,8 +174,8 @@ void ManagePasswordsTest::SetupMovingPasswords() {
   // The move bubble is shown only to signed in users. Make sure there is one.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  AccountInfo info =
-      signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com");
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
   auto form_manager = std::make_unique<
       testing::NiceMock<password_manager::MockPasswordFormManagerForUI>>();
   password_manager::MockPasswordFormManagerForUI* form_manager_ptr =

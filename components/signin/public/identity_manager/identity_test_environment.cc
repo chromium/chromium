@@ -400,7 +400,8 @@ void IdentityTestEnvironment::RemoveRefreshTokenForPrimaryAccount() {
 
 AccountInfo IdentityTestEnvironment::MakePrimaryAccountAvailable(
     const std::string& email) {
-  return signin::MakePrimaryAccountAvailable(identity_manager(), email);
+  return signin::MakePrimaryAccountAvailable(identity_manager(), email,
+                                             signin::ConsentLevel::kSync);
 }
 
 AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(

@@ -459,7 +459,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
     ASSERT_TRUE(identity_manager);
 
     signin::MakePrimaryAccountAvailable(
-        identity_manager, base::WideToUTF8(GetParam().existing_email));
+        identity_manager, base::WideToUTF8(GetParam().existing_email),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -656,7 +657,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
   if (!GetParam().cred_provider_used_other_profile &&
       !GetParam().email_in_other_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
-        identity_manager, base::WideToUTF8(GetParam().email_in_other_profile));
+        identity_manager, base::WideToUTF8(GetParam().email_in_other_profile),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -681,8 +683,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
 
   if (!GetParam().email_in_current_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
-        identity_manager,
-        base::WideToUTF8(GetParam().email_in_current_profile));
+        identity_manager, base::WideToUTF8(GetParam().email_in_current_profile),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));

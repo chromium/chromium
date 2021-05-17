@@ -65,7 +65,8 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   virtual void SetAuthenticatedUser() {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
-    signin::MakePrimaryAccountAvailable(identity_manager, kUserEmail);
+    signin::MakePrimaryAccountAvailable(identity_manager, kUserEmail,
+                                        signin::ConsentLevel::kSync);
   }
 
   scoped_refptr<const Extension> extension_;
