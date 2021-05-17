@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "base/feature_list.h"
 
 namespace features {
 
 // Enables Nearby Sharing functionality.
 const base::Feature kNearbySharing{"NearbySharing",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables support for Nearby Share on child accounts.
+const base::Feature kNearbySharingChildAccounts{
+    "NearbySharingChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables use of device contacts in Nearby Share. The Nearby server returns
 // both Google contacts and device contacts in ListContactPeople RPC responses.
