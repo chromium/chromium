@@ -45,7 +45,8 @@ content::BrowserContext* CaptionControllerFactory::GetBrowserContextToUse(
 
 KeyedService* CaptionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new CaptionController(Profile::FromBrowserContext(context));
+  return new CaptionController(
+      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 }  // namespace captions

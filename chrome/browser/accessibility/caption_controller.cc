@@ -12,7 +12,6 @@
 #include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/accessibility/caption_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/live_caption/pref_names.h"
@@ -40,7 +39,8 @@ const char* const kCaptionStylePrefsToObserve[] = {
 
 namespace captions {
 
-CaptionController::CaptionController(Profile* profile) : profile_(profile) {}
+CaptionController::CaptionController(PrefService* profile_prefs)
+    : profile_prefs_(profile_prefs) {}
 
 CaptionController::~CaptionController() {
   if (enabled_) {
@@ -73,11 +73,11 @@ void CaptionController::Init() {
       "Accessibility.LiveCaption.UseSodaForLiveCaption",
       base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile_->GetPrefs());
+  pref_change_registrar_->Init(profile_prefs_);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line &&
       command_line->HasSwitch(switches::kEnableLiveCaptionPrefForTesting)) {
-    profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, true);
+    profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, true);
   }
 
   pref_change_registrar_->Add(
@@ -115,19 +115,19 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   } else {
     StopLiveCaption();
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-        profile_->GetPrefs(), g_browser_process->local_state());
+        profile_prefs_, g_browser_process->local_state());
   }
 }
 
 void CaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_)
     speech::SodaInstaller::GetInstance()->InstallLanguage(
-        profile_->GetPrefs()->GetString(prefs::kLiveCaptionLanguageCode),
+        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode),
         g_browser_process->local_state());
 }
 
 bool CaptionController::IsLiveCaptionEnabled() {
-  PrefService* profile_prefs = profile_->GetPrefs();
+  PrefService* profile_prefs = profile_prefs_;
   return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 }
 
@@ -147,7 +147,7 @@ void CaptionController::StartLiveCaption() {
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
     speech::SodaInstaller::GetInstance()->Init(
-        profile_->GetPrefs(), g_browser_process->local_state());
+        profile_prefs_, g_browser_process->local_state());
   }
 }
 
@@ -238,10 +238,9 @@ void CaptionController::OnLanguageIdentificationEvent(
 }
 
 void CaptionController::OnCaptionStyleUpdated() {
-  PrefService* profile_prefs = profile_->GetPrefs();
   // Metrics are recorded when passing the caption prefs to the browser, so do
   // not duplicate them here.
-  caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs,
+  caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs_,
                                                    false /* record_metrics */);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
 }

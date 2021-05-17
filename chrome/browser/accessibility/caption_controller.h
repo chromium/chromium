@@ -15,7 +15,6 @@
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 
-class Profile;
 class PrefChangeRegistrar;
 
 namespace ui {
@@ -44,7 +43,7 @@ class CaptionController : public KeyedService,
                           public speech::SodaInstaller::Observer,
                           public ui::NativeThemeObserver {
  public:
-  explicit CaptionController(Profile* profile);
+  explicit CaptionController(PrefService* profile_prefs);
   ~CaptionController() override;
   CaptionController(const CaptionController&) = delete;
   CaptionController& operator=(const CaptionController&) = delete;
@@ -99,9 +98,7 @@ class CaptionController : public KeyedService,
 
   void UpdateAccessibilityCaptionHistograms();
 
-  // Owns us via the KeyedService mechanism.
-  Profile* profile_;
-
+  PrefService* profile_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   absl::optional<ui::CaptionStyle> caption_style_;
