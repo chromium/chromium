@@ -644,6 +644,12 @@ ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
+    std::vector<base::Value> results) {
+  return ResponseValue(
+      new ArgumentListResponseValue(this, base::Value(std::move(results))));
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     std::unique_ptr<base::ListValue> args) {
   base::Value new_args;
   if (args)
@@ -678,6 +684,13 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
     const std::string& s3) {
   return ResponseValue(new ErrorResponseValue(
       this, ErrorUtils::FormatErrorMessage(format, s1, s2, s3)));
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
+    std::vector<base::Value> args,
+    const std::string& error) {
+  return ResponseValue(new ErrorWithArgumentsResponseValue(
+      this, base::Value(std::move(args)), error));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(

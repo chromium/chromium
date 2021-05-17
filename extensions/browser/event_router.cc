@@ -1033,8 +1033,25 @@ void EventRouter::RemoveLazyEventListenerImpl(
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
+             std::vector<base::Value> event_args)
+    : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
              std::unique_ptr<base::ListValue> event_args)
     : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
+             std::vector<base::Value> event_args,
+             content::BrowserContext* restrict_to_browser_context)
+    : Event(histogram_value,
+            event_name,
+            std::move(event_args),
+            restrict_to_browser_context,
+            GURL(),
+            EventRouter::USER_GESTURE_UNKNOWN,
+            EventFilteringInfo()) {}
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
@@ -1047,6 +1064,22 @@ Event::Event(events::HistogramValue histogram_value,
             GURL(),
             EventRouter::USER_GESTURE_UNKNOWN,
             EventFilteringInfo()) {}
+
+Event::Event(events::HistogramValue histogram_value,
+             const std::string& event_name,
+             std::vector<base::Value> event_args,
+             content::BrowserContext* restrict_to_browser_context,
+             const GURL& event_url,
+             EventRouter::UserGestureState user_gesture,
+             const EventFilteringInfo& info)
+    : Event(histogram_value,
+            event_name,
+            base::ListValue::From(base::Value::ToUniquePtrValue(
+                base::Value(std::move(event_args)))),
+            restrict_to_browser_context,
+            event_url,
+            user_gesture,
+            info) {}
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
@@ -1071,7 +1104,7 @@ Event::Event(events::HistogramValue histogram_value,
       << "See extension_event_histogram_value.h for inspiration.";
 }
 
-Event::~Event() {}
+Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {
   auto copy = std::make_unique<Event>(
