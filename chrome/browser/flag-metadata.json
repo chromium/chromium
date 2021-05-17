@@ -262,12 +262,12 @@
   },
   {
     "name": "assistant-intent-page-url",
-    "owners": [ "jds", "chrome-language" ],
+    "owners": [ "jds", "chrome-language@google.com" ],
     "expiry_milestone": 94
   },
   {
     "name": "assistant-intent-translate-info",
-    "owners": [ "jds", "chrome-language" ],
+    "owners": [ "jds", "chrome-language@google.com" ],
     "expiry_milestone": 94
   },
   {
@@ -628,10 +628,7 @@
   },
   {
     "name": "content-languages-in-language-picker",
-    "owners": [
-      "basiaz",
-      "chrome-language"
-    ],
+    "owners": [ "basiaz", "chrome-language@google.com" ],
     "expiry_milestone": 93
   },
   {
@@ -958,7 +955,7 @@
   },
   {
     "name": "detected-source-language-option",
-    "owners": [ "cuianthony", "chrome-language" ],
+    "owners": [ "cuianthony", "chrome-language@google.com" ],
     "expiry_milestone": 93
   },
   {
@@ -4076,12 +4073,12 @@
   },
   {
     "name": "override-language-prefs-for-href-translate",
-    "owners": [ "sclittle", "chrome-language" ],
+    "owners": [ "sclittle", "chrome-language@google.com" ],
     "expiry_milestone": 91
   },
   {
     "name": "override-site-prefs-for-href-translate",
-    "owners": [ "sclittle", "chrome-language" ],
+    "owners": [ "sclittle", "chrome-language@google.com" ],
     "expiry_milestone": 91
   },
   {
@@ -5236,7 +5233,7 @@
   },
   {
     "name": "voice-button-in-top-toolbar",
-    "owners": [ "jds", "chrome-language" ],
+    "owners": [ "jds", "chrome-language@google.com" ],
     "expiry_milestone": 93
   },
   {
