@@ -56,12 +56,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         mObserver = null;
     }
 
-    protected void checkCanUseGooglePlayServices() throws AccountManagerDelegateException {
-        if (!isGooglePlayServicesAvailable()) {
-            throw new AccountManagerDelegateException("Can't use Google Play Services");
-        }
-    }
-
     @Override
     public void attachAccountsChangeObserver(AccountsChangeObserver observer) {
         assert mObserver == null : "Another AccountsChangeObserver is already attached!";
@@ -100,11 +94,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
         // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
         // so don't report any accounts if Google Play Services are out of date.
         return new Account[] {};
-    }
-
-    @Deprecated
-    protected Account[] getAccountsSync() throws AccountManagerDelegateException {
-        return getAccounts();
     }
 
     @Override
