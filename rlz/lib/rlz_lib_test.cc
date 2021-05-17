@@ -629,11 +629,9 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
-  base::Thread::Options options;
-  options.message_pump_type = base::MessagePumpType::IO;
-
   base::Thread io_thread("rlz_unittest_io_thread");
-  ASSERT_TRUE(io_thread.StartWithOptions(options));
+  ASSERT_TRUE(io_thread.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
 
   network::TestURLLoaderFactory test_url_loader_factory;
   URLLoaderFactoryRAII set_factory(
