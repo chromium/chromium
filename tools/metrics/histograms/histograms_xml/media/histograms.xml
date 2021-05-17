@@ -305,7 +305,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.StreamCallbackError2"
-    enum="AudioCaptureDeviceError" expires_after="2021-08-09">
+    enum="AudioCaptureDeviceError" expires_after="never">
+<!-- expires-never: Audio pipeline health metric. -->
+
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -836,12 +838,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.StreamCallbackError2"
-    enum="AudioRenderDeviceError" expires_after="2020-04-05">
-  <owner>maxmorin@chromium.org</owner>
+    enum="AudioRenderDeviceError" expires_after="never">
+<!-- expires-never: Audio pipeline health metric. -->
+
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <summary>
     When AudioOutputDevice is stopped, this stat is recorded with whether an
     error callback was ever received over IPC, and in that case whether the
-    error occurred during or after stream creation.
+    error occurred during or after stream creation. Expired in Apr 2020 and
+    re-enabled in May 2021.
   </summary>
 </histogram>
 
