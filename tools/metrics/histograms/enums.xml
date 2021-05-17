@@ -18407,7 +18407,22 @@ Called by update_debug_scenarios.py.-->
   <int value="39" label="TrustedWebActivityIssue::kUnavailableOffline"/>
   <int value="40" label="TrustedWebActivityIssue::kDigitalAssetLinks"/>
   <int value="41" label="LowTextContrastIssue"/>
-  <int value="42" label="CorsIssue"/>
+  <int value="42" label="CorsIssue::InsecurePrivateNetwork"/>
+  <int value="43" label="CorsIssue::InsecurePrivateNetworkPreflight"/>
+  <int value="44" label="CorsIssue::InvalidHeaders"/>
+  <int value="45" label="CorsIssue::WildcardOriginWithCredentials"/>
+  <int value="46" label="CorsIssue::PreflightResponseInvalid"/>
+  <int value="47" label="CorsIssue::OriginMismatch"/>
+  <int value="48" label="CorsIssue::AllowCredentialsRequired"/>
+  <int value="49" label="CorsIssue::MethodDisallowedByPreflightResponse"/>
+  <int value="50" label="CorsIssue::HeaderDisallowedByPreflightResponse"/>
+  <int value="51" label="CorsIssue::RedirectContainsCredentials"/>
+  <int value="52" label="CorsIssue::DisallowedByMode"/>
+  <int value="53" label="CorsIssue::CorsDisabledScheme"/>
+  <int value="54" label="CorsIssue::PreflightMissingAllowExternal"/>
+  <int value="55" label="CorsIssue::PreflightInvalidAllowExternal"/>
+  <int value="56" label="CorsIssue::InvalidResponse"/>
+  <int value="57" label="CorsIssue::NoCorsRedirectModeNotFollow"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
