@@ -199,7 +199,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void ReadTurbulencePaintFilter(
       sk_sp<PaintFilter>* filter,
       const absl::optional<PaintFilter::CropRect>& crop_rect);
-  void ReadPaintFlagsPaintFilter(
+  void ReadShaderPaintFilter(
       sk_sp<PaintFilter>* filter,
       const absl::optional<PaintFilter::CropRect>& crop_rect);
   void ReadMatrixPaintFilter(

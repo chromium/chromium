@@ -9,14 +9,15 @@
 #include "base/containers/stack_container.h"
 #include "base/stl_util.h"
 #include "cc/paint/paint_export.h"
-#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/paint_shader.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPoint3.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 
 namespace viz {
 class GLRenderer;
@@ -50,7 +51,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
     kOffset,
     kTile,
     kTurbulence,
-    kPaintFlags,
+    kShader,
     kMatrix,
     kLightingDistant,
     kLightingPoint,
@@ -670,29 +671,37 @@ class CC_PAINT_EXPORT TurbulencePaintFilter final : public PaintFilter {
   SkISize tile_size_;
 };
 
-class CC_PAINT_EXPORT PaintFlagsPaintFilter final : public PaintFilter {
+class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
  public:
-  static constexpr Type kType = Type::kPaintFlags;
-  explicit PaintFlagsPaintFilter(PaintFlags flags,
-                                 const CropRect* crop_rect = nullptr);
-  ~PaintFlagsPaintFilter() override;
+  static constexpr Type kType = Type::kShader;
 
-  const PaintFlags& flags() const { return flags_; }
+  using Dither = SkImageFilters::Dither;
+
+  ShaderPaintFilter(sk_sp<PaintShader> shader,
+                    uint8_t alpha,
+                    SkFilterQuality filter_quality,
+                    SkImageFilters::Dither dither,
+                    const CropRect* crop_rect = nullptr);
+
+  ~ShaderPaintFilter() override;
+
+  const PaintShader& shader() const { return *shader_; }
+  uint8_t alpha() const { return alpha_; }
+  SkFilterQuality filter_quality() const { return filter_quality_; }
+  SkImageFilters::Dither dither() const { return dither_; }
 
   size_t SerializedSize() const override;
-  bool operator==(const PaintFlagsPaintFilter& other) const;
+  bool operator==(const ShaderPaintFilter& other) const;
 
  protected:
   sk_sp<PaintFilter> SnapshotWithImagesInternal(
       ImageProvider* image_provider) const override;
 
  private:
-  PaintFlagsPaintFilter(PaintFlags flags,
-                        ImageProvider* image_provider,
-                        const CropRect* crop_rect);
-
-  PaintFlags flags_;
-  absl::optional<ScopedRasterFlags> raster_flags_;
+  sk_sp<PaintShader> shader_;
+  uint8_t alpha_;
+  SkFilterQuality filter_quality_;
+  SkImageFilters::Dither dither_;
 };
 
 class CC_PAINT_EXPORT MatrixPaintFilter final : public PaintFilter {

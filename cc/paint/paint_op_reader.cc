@@ -830,8 +830,8 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
     case PaintFilter::Type::kTurbulence:
       ReadTurbulencePaintFilter(filter, crop_rect);
       break;
-    case PaintFilter::Type::kPaintFlags:
-      ReadPaintFlagsPaintFilter(filter, crop_rect);
+    case PaintFilter::Type::kShader:
+      ReadShaderPaintFilter(filter, crop_rect);
       break;
     case PaintFilter::Type::kMatrix:
       ReadMatrixPaintFilter(filter, crop_rect);
@@ -1189,15 +1189,26 @@ void PaintOpReader::ReadTurbulencePaintFilter(
       &tile_size, base::OptionalOrNullptr(crop_rect)));
 }
 
-void PaintOpReader::ReadPaintFlagsPaintFilter(
+void PaintOpReader::ReadShaderPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
-  PaintFlags flags;
-  Read(&flags);
-  if (!valid_)
+  using Dither = SkImageFilters::Dither;
+
+  sk_sp<PaintShader> shader;
+  uint8_t alpha = 255;
+  SkFilterQuality quality = kNone_SkFilterQuality;
+  Dither dither = Dither::kNo;
+
+  Read(&shader);
+  Read(&alpha);
+  Read(&quality);
+  ReadEnum<Dither, Dither::kYes>(&dither);
+
+  if (!shader || !valid_)
     return;
-  filter->reset(
-      new PaintFlagsPaintFilter(flags, base::OptionalOrNullptr(crop_rect)));
+
+  filter->reset(new ShaderPaintFilter(std::move(shader), alpha, quality, dither,
+                                      base::OptionalOrNullptr(crop_rect)));
 }
 
 void PaintOpReader::ReadMatrixPaintFilter(

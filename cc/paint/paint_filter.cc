@@ -97,8 +97,8 @@ std::string PaintFilter::TypeToString(Type type) {
       return "kTile";
     case Type::kTurbulence:
       return "kTurbulence";
-    case Type::kPaintFlags:
-      return "kPaintFlags";
+    case Type::kShader:
+      return "kShader";
     case Type::kMatrix:
       return "kMatrix";
     case Type::kLightingDistant:
@@ -204,9 +204,9 @@ bool PaintFilter::operator==(const PaintFilter& other) const {
     case Type::kTurbulence:
       return *static_cast<const TurbulencePaintFilter*>(this) ==
              static_cast<const TurbulencePaintFilter&>(other);
-    case Type::kPaintFlags:
-      return *static_cast<const PaintFlagsPaintFilter*>(this) ==
-             static_cast<const PaintFlagsPaintFilter&>(other);
+    case Type::kShader:
+      return *static_cast<const ShaderPaintFilter*>(this) ==
+             static_cast<const ShaderPaintFilter&>(other);
     case Type::kMatrix:
       return *static_cast<const MatrixPaintFilter*>(this) ==
              static_cast<const MatrixPaintFilter&>(other);
@@ -962,66 +962,69 @@ bool TurbulencePaintFilter::operator==(
          tile_size_ == other.tile_size_;
 }
 
-PaintFlagsPaintFilter::PaintFlagsPaintFilter(PaintFlags flags,
-                                             const CropRect* crop_rect)
-    : PaintFlagsPaintFilter(std::move(flags), nullptr, crop_rect) {}
-
-PaintFlagsPaintFilter::PaintFlagsPaintFilter(PaintFlags flags,
-                                             ImageProvider* image_provider,
-                                             const CropRect* crop_rect)
-    : PaintFilter(kType, crop_rect, flags.HasDiscardableImages()),
-      flags_(std::move(flags)) {
-  if (image_provider) {
-    raster_flags_.emplace(&flags_, image_provider, SkMatrix::I(), 0, 255u);
+ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
+                                     uint8_t alpha,
+                                     SkFilterQuality filter_quality,
+                                     SkImageFilters::Dither dither,
+                                     const CropRect* crop_rect)
+    : PaintFilter(kType, crop_rect, shader->has_discardable_images()),
+      shader_(std::move(shader)),
+      alpha_(alpha),
+      filter_quality_(filter_quality),
+      dither_(dither) {
+  sk_sp<SkShader> sk_shader = shader_->GetSkShader(filter_quality_);
+  // Combine the alpha multiply into the SkShader if it's not opaque
+  if (alpha < 255) {
+    // The blend effectively produces (shader * alpha), the rgb of the secondary
+    // color are ignored.
+    SkColor color = SkColorSetARGB(alpha, 255, 255, 255);
+    sk_shader = SkShaders::Blend(SkBlendMode::kDstIn, std::move(sk_shader),
+                                 SkShaders::Color(color));
   }
 
-  const SkPaint& paint =
-      raster_flags_ ? raster_flags_->flags()->ToSkPaint() : flags_.ToSkPaint();
-  // The paint flags should only be a color, shader, and filter quality,
-  // just DCHECK to make sure caller expectations are not valid.
-  DCHECK(paint.getBlendMode() == SkBlendMode::kSrcOver);
-  DCHECK(paint.getStyle() == SkPaint::kFill_Style);
-  DCHECK(!paint.getPathEffect());
-  DCHECK(!paint.getMaskFilter());
-  DCHECK(!paint.getImageFilter());
-  DCHECK(!paint.getColorFilter());
-
-  sk_sp<SkShader> shader = paint.refShader();
-  if (shader) {
-    // Combine paint's alpha if the color isn't opaque (the constant RGB is
-    // overridden by the shader's per-pixel color).
-    if (paint.getAlpha() < 255) {
-      // The blend effectively produces (shader * paint alpha).
-      shader = SkShaders::Blend(SkBlendMode::kDstIn, std::move(shader),
-                                SkShaders::Color(paint.getColor()));
-    }
-  } else {
-    shader = SkShaders::Color(paint.getColor());
-  }
-
-  using Dither = SkImageFilters::Dither;
-  cached_sk_filter_ = SkImageFilters::Shader(
-      std::move(shader), paint.isDither() ? Dither::kYes : Dither::kNo,
-      crop_rect);
+  cached_sk_filter_ =
+      SkImageFilters::Shader(std::move(sk_shader), dither, crop_rect);
 }
 
-PaintFlagsPaintFilter::~PaintFlagsPaintFilter() = default;
+ShaderPaintFilter::~ShaderPaintFilter() = default;
 
-size_t PaintFlagsPaintFilter::SerializedSize() const {
+size_t ShaderPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size = BaseSerializedSize();
-  total_size += flags_.GetSerializedSize();
+  total_size += PaintShader::GetSerializedSize(shader_.get());
+  total_size += sizeof(alpha_);
+  total_size += sizeof(filter_quality_);  // filter quality
+  total_size += sizeof(dither_);
   return total_size.ValueOrDefault(0u);
 }
 
-sk_sp<PaintFilter> PaintFlagsPaintFilter::SnapshotWithImagesInternal(
+sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
-  return sk_sp<PaintFilter>(
-      new PaintFlagsPaintFilter(flags_, image_provider, crop_rect()));
+  PaintFlags orig_flags;
+  orig_flags.setShader(shader_);
+  orig_flags.setAlpha(alpha_);
+  orig_flags.setFilterQuality(filter_quality_);
+  orig_flags.setDither(dither_ == SkImageFilters::Dither::kYes);
+
+  ScopedRasterFlags raster_flags(&orig_flags, image_provider, SkMatrix::I(), 0,
+                                 255u);
+  const PaintFlags* snapshot = raster_flags.flags();
+  if (snapshot) {
+    // Ref the updated paint shader so that it can outlive ScopedRasterFlags
+    return sk_make_sp<ShaderPaintFilter>(
+        sk_ref_sp(snapshot->getShader()), snapshot->getAlpha(),
+        snapshot->getFilterQuality(),
+        snapshot->isDither() ? Dither::kYes : Dither::kNo, crop_rect());
+  } else {
+    // If decode failed, then just fallback to the solid color
+    return sk_make_sp<ShaderPaintFilter>(nullptr, alpha_, filter_quality_,
+                                         dither_, crop_rect());
+  }
 }
 
-bool PaintFlagsPaintFilter::operator==(
-    const PaintFlagsPaintFilter& other) const {
-  return flags_ == other.flags_;
+bool ShaderPaintFilter::operator==(const ShaderPaintFilter& other) const {
+  DCHECK(shader_ && other.shader_);
+  return alpha_ == other.alpha_ && filter_quality_ == other.filter_quality_ &&
+         dither_ == other.dither_ && *shader_ == *other.shader_;
 }
 
 MatrixPaintFilter::MatrixPaintFilter(const SkMatrix& matrix,

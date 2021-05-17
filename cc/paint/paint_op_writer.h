@@ -155,7 +155,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const OffsetPaintFilter& filter, const SkM44& current_ctm);
   void Write(const TilePaintFilter& filter, const SkM44& current_ctm);
   void Write(const TurbulencePaintFilter& filter, const SkM44& current_ctm);
-  void Write(const PaintFlagsPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const ShaderPaintFilter& filter, const SkM44& current_ctm);
   void Write(const MatrixPaintFilter& filter, const SkM44& current_ctm);
   void Write(const LightingDistantPaintFilter& filter,
              const SkM44& current_ctm);

@@ -110,11 +110,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<TurbulencePaintFilter>(
           TurbulencePaintFilter::TurbulenceType::kTurbulence, 0.1f, 0.2f, 2,
           0.3f, nullptr, &crop_rect);
-    case PaintFilter::Type::kPaintFlags: {
-      PaintFlags flags;
-      flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
-                                             SkTileMode::kClamp, nullptr));
-      return sk_make_sp<PaintFlagsPaintFilter>(flags, &crop_rect);
+    case PaintFilter::Type::kShader: {
+      return sk_make_sp<ShaderPaintFilter>(
+          PaintShader::MakeImage(image, SkTileMode::kClamp, SkTileMode::kClamp,
+                                 nullptr),
+          /*alpha=*/255, kNone_SkFilterQuality, SkImageFilters::Dither::kNo,
+          &crop_rect);
     }
     case PaintFilter::Type::kMatrix:
       return sk_make_sp<MatrixPaintFilter>(SkMatrix::I(), kNone_SkFilterQuality,

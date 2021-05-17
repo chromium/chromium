@@ -667,8 +667,8 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
     case PaintFilter::Type::kTurbulence:
       Write(static_cast<const TurbulencePaintFilter&>(*filter), current_ctm);
       break;
-    case PaintFilter::Type::kPaintFlags:
-      Write(static_cast<const PaintFlagsPaintFilter&>(*filter), current_ctm);
+    case PaintFilter::Type::kShader:
+      Write(static_cast<const ShaderPaintFilter&>(*filter), current_ctm);
       break;
     case PaintFilter::Type::kMatrix:
       Write(static_cast<const MatrixPaintFilter&>(*filter), current_ctm);
@@ -845,9 +845,12 @@ void PaintOpWriter::Write(const TurbulencePaintFilter& filter,
   WriteSimple(filter.tile_size());
 }
 
-void PaintOpWriter::Write(const PaintFlagsPaintFilter& filter,
+void PaintOpWriter::Write(const ShaderPaintFilter& filter,
                           const SkM44& current_ctm) {
-  Write(filter.flags(), current_ctm);
+  Write(&filter.shader(), filter.filter_quality(), current_ctm);
+  Write(filter.alpha());
+  Write(filter.filter_quality());
+  WriteEnum(filter.dither());
 }
 
 void PaintOpWriter::Write(const MatrixPaintFilter& filter,
