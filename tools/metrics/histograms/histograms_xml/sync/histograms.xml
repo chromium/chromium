@@ -93,7 +93,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BookmarkModelMerger.ReachableInputUpdates"
-    enum="RemoteBookmarkUpdateError" expires_after="2021-10-25">
+    units="bookmarks" expires_after="2021-10-25">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -105,8 +105,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Sync.BookmarkModelMerger.ValidInputUpdates"
-    enum="RemoteBookmarkUpdateError" expires_after="2021-10-25">
+<histogram name="Sync.BookmarkModelMerger.ValidInputUpdates" units="bookmarks"
+    expires_after="2021-10-25">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
