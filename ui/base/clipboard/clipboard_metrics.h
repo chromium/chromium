@@ -14,14 +14,15 @@ enum class ClipboardFormatMetric {
   kText = 0,  // On applicable platforms, includes both UNICODE and ANSI text.
   kHtml = 1,
   kRtf = 2,
-  kImage = 3,
+  kImage = 3,  // Bitmap data.
   kBookmark = 4,
   kData = 5,
   kCustomData = 6,
   kWebSmartPaste = 7,  // Only used on write.
   kSvg = 8,
   kFilenames = 9,
-  kMaxValue = kFilenames,
+  kPng = 10,
+  kMaxValue = kPng,
 };
 
 void RecordRead(ClipboardFormatMetric metric);

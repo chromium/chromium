@@ -12257,6 +12257,7 @@ histogram as enum -->
   <int value="7" label="WebSmartPaste"/>
   <int value="8" label="Svg"/>
   <int value="9" label="Filenames"/>
+  <int value="10" label="Png"/>
 </enum>
 
 <enum name="ClipboardFormatWrite">
