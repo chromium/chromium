@@ -6,6 +6,7 @@
 #define NET_URL_REQUEST_REDIRECT_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
