@@ -10,6 +10,7 @@ green-10.png
 blue-10.png
 png_per_row_alpha.png
 icc-v2-gbr.jpg
+dice.png
 jxl/3x3.png
 jxl/3x3a.png
 ```
@@ -22,6 +23,7 @@ cjxl -d 0 green-10.png green-10-lossless.jxl
 cjxl -d 0 blue-10.png blue-10-lossless.jxl
 cjxl -d 0 png_per_row_alpha.png alpha-lossless.jxl
 cjxl icc-v2-gbr.jpg icc-v2-gbr.jxl
+cjxl -d 0 dice.png alpha-large-dice.jxl
 
 cjxl 3x3.png temp.jxl -d 0
 djxl temp.jxl 3x3_srgb.png
