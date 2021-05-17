@@ -288,9 +288,9 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 
   StatusOr<scoped_refptr<VideoFrame>> result(nullptr);
   if (use_gpu_buffer)
-    result = PrepareGpuFrame(options_.frame_size, frame);
+    result = PrepareGpuFrame(input_coded_size_, frame);
   else
-    result = PrepareCpuFrame(options_.frame_size, frame);
+    result = PrepareCpuFrame(input_coded_size_, frame);
 
   if (result.has_error()) {
     auto status = std::move(result).error();
@@ -416,6 +416,7 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     size_t output_buffer_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
+  input_coded_size_ = input_coded_size;
   input_buffer_size_ =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
 
@@ -626,7 +627,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
-      PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(size), size,
+      PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
       mapping.GetMemoryAsSpan<uint8_t>().data(), mapping.size(),
       src_frame->timestamp());
 

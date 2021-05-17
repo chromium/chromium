@@ -166,6 +166,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   Options options_;
   OutputCB output_cb_;
+
+  gfx::Size input_coded_size_;
 };
 
 }  // namespace media
