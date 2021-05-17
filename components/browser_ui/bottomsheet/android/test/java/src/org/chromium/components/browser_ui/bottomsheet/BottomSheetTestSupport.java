@@ -4,8 +4,11 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+
+import java.util.concurrent.TimeoutException;
 
 /** Utilities to support testing with the {@link BottomSheetController}. */
 public class BottomSheetTestSupport {
@@ -105,5 +108,86 @@ public class BottomSheetTestSupport {
      */
     public boolean hasSuppressionTokens() {
         return mController.hasSuppressionTokensForTesting();
+    }
+
+    /**
+     * Wait for the bottom sheet to enter the specified state. If the sheet is already in the
+     * specified state, this method returns immediately.
+     * @param controller The controller for the bottom sheet.
+     * @param state The state to wait for.
+     */
+    public static void waitForState(BottomSheetController controller, @SheetState int state) {
+        if (controller.getSheetState() == state) return;
+        CallbackHelper stateChangeHelper = new CallbackHelper();
+        BottomSheetObserver observer = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetStateChanged(int newState) {
+                if (state == newState) stateChangeHelper.notifyCalled();
+            }
+        };
+        controller.addObserver(observer);
+        try {
+            stateChangeHelper.waitForFirst();
+        } catch (TimeoutException ex) {
+            assert false : "Bottom sheet state never changed to " + sheetStateToString(state);
+        }
+        controller.removeObserver(observer);
+    }
+
+    /**
+     * Wait for the specified content to be shown. If the content is already showing this method
+     * returns immediately. If the sheet is suppressed when this method is called, the expected
+     * content change is to null.
+     * @param controller The controller for the bottom sheet.
+     * @param content The content to wait for.
+     */
+    public static void waitForContentChange(
+            BottomSheetController controller, BottomSheetContent content) {
+        BottomSheetControllerImpl controllerImpl = (BottomSheetControllerImpl) controller;
+        boolean contentShouldBeNull = controllerImpl.hasSuppressionTokensForTesting();
+
+        if ((contentShouldBeNull && controller.getCurrentSheetContent() == null)
+                || controller.getCurrentSheetContent() == content) {
+            return;
+        }
+
+        CallbackHelper contentChangeHelper = new CallbackHelper();
+        BottomSheetObserver observer = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetContentChanged(BottomSheetContent newContent) {
+                if ((contentShouldBeNull && newContent == null) || content == newContent) {
+                    contentChangeHelper.notifyCalled();
+                }
+            }
+        };
+        controller.addObserver(observer);
+        try {
+            contentChangeHelper.waitForFirst();
+        } catch (TimeoutException ex) {
+            assert false : "Bottom sheet content never changed!";
+        }
+        controller.removeObserver(observer);
+    }
+
+    /**
+     * @param state The state of the bottom sheet to convert to a string.
+     * @return The string version of the sheet state.
+     */
+    private static String sheetStateToString(@SheetState int state) {
+        switch (state) {
+            case SheetState.HIDDEN:
+                return "HIDDEN";
+            case SheetState.PEEK:
+                return "PEEK";
+            case SheetState.HALF:
+                return "HALF";
+            case SheetState.FULL:
+                return "FULL";
+            case SheetState.SCROLLING:
+                return "SCROLLING";
+            default:
+                break;
+        }
+        return "UNKNOWN STATE";
     }
 }
