@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -94,10 +95,13 @@ class APIBinding {
   void InitializeTemplate(v8::Isolate* isolate);
 
   // Decorates |object_template| with the properties specified by |properties|.
+  // |is_root| is used to determine whether to add the properties to
+  // |root_properties_|.
   void DecorateTemplateWithProperties(
       v8::Isolate* isolate,
       v8::Local<v8::ObjectTemplate> object_template,
-      const base::DictionaryValue& properties);
+      const base::DictionaryValue& properties,
+      bool is_root);
 
   // Handler for getting the v8::Object associated with an event on the API.
   static void GetEventObject(v8::Local<v8::Name>,
@@ -138,6 +142,9 @@ class APIBinding {
 
   // The associated properties of the API, if any.
   const base::DictionaryValue* property_definitions_;
+  // The names of all the "root properties" added to the API; i.e., properties
+  // exposed on the API object itself.
+  base::flat_set<std::string> root_properties_;
 
   // The callback for constructing a custom type.
   CreateCustomType create_custom_type_;

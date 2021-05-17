@@ -518,12 +518,20 @@ TEST_F(APIBindingUnittest, RestrictedAPIs) {
   const char kEvents[] =
       "[{'name': 'allowedEvent'}, {'name': 'restrictedEvent'}]";
   SetEvents(kEvents);
+  const char kProperties[] =
+      R"({
+           "allowedProperty": { "type": "integer", "value": 3 },
+           "restrictedProperty": { "type": "string", "value": "restricted" }
+         })";
+  SetProperties(kProperties);
   auto is_available = [](v8::Local<v8::Context> context,
                          const std::string& name) {
     std::set<std::string> allowed = {"test.allowedOne", "test.allowedTwo",
-                                     "test.allowedEvent"};
+                                     "test.allowedEvent",
+                                     "test.allowedProperty"};
     std::set<std::string> restricted = {
-        "test.restrictedOne", "test.restrictedTwo", "test.restrictedEvent"};
+        "test.restrictedOne", "test.restrictedTwo", "test.restrictedEvent",
+        "test.restrictedProperty"};
     EXPECT_TRUE(allowed.count(name) || restricted.count(name)) << name;
     return allowed.count(name) != 0;
   };
@@ -546,9 +554,11 @@ TEST_F(APIBindingUnittest, RestrictedAPIs) {
   EXPECT_TRUE(is_defined("allowedOne"));
   EXPECT_TRUE(is_defined("allowedTwo"));
   EXPECT_TRUE(is_defined("allowedEvent"));
+  EXPECT_TRUE(is_defined("allowedProperty"));
   EXPECT_FALSE(is_defined("restrictedOne"));
   EXPECT_FALSE(is_defined("restrictedTwo"));
   EXPECT_FALSE(is_defined("restrictedEvent"));
+  EXPECT_FALSE(is_defined("restrictedProperty"));
 }
 
 // Tests that events specified in the API are created as properties of the API

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -405,6 +406,15 @@ v8::Local<v8::Object> APIBinding::CreateInstance(
       CHECK(success.FromJust());
     }
   }
+  for (const auto& property : root_properties_) {
+    std::string full_name = base::StrCat({api_name_, ".", property});
+    if (!access_checker_->HasAccess(context, full_name)) {
+      v8::Maybe<bool> success =
+          object->Delete(context, gin::StringToSymbol(isolate, property));
+      CHECK(success.IsJust());
+      CHECK(success.FromJust());
+    }
+  }
 
   binding_hooks_->InitializeInstance(context, object);
 
@@ -449,7 +459,7 @@ void APIBinding::InitializeTemplate(v8::Isolate* isolate) {
 
   if (property_definitions_) {
     DecorateTemplateWithProperties(isolate, object_template,
-                                   *property_definitions_);
+                                   *property_definitions_, /*is_root=*/true);
   }
 
   // Allow custom bindings a chance to tweak the template, such as to add
@@ -462,7 +472,8 @@ void APIBinding::InitializeTemplate(v8::Isolate* isolate) {
 void APIBinding::DecorateTemplateWithProperties(
     v8::Isolate* isolate,
     v8::Local<v8::ObjectTemplate> object_template,
-    const base::DictionaryValue& properties) {
+    const base::DictionaryValue& properties,
+    bool is_root) {
   static const char kValueKey[] = "value";
   for (base::DictionaryValue::Iterator iter(properties); !iter.IsAtEnd();
        iter.Advance()) {
@@ -477,13 +488,8 @@ void APIBinding::DecorateTemplateWithProperties(
     }
 
     const base::ListValue* platforms = nullptr;
-    // TODO(devlin): This isn't great. It's bad to have availability primarily
-    // defined in the features files, and then partially defined within the
-    // API specification itself. Additionally, they aren't equivalent
-    // definitions. But given the rarity of property restrictions, and the fact
-    // that they are all limited by platform, it makes more sense to isolate
-    // this check here. If this becomes more common, we should really find a
-    // way of moving these checks to the features files.
+    // TODO(devlin): Availability should be specified in the features files,
+    // not the API schema files.
     if (dict->GetList("platforms", &platforms)) {
       std::string this_platform = binding::GetPlatformString();
       auto is_this_platform = [&this_platform](const base::Value& platform) {
@@ -504,6 +510,8 @@ void APIBinding::DecorateTemplateWithProperties(
           v8_key, &APIBinding::GetCustomPropertyObject,
           v8::External::New(isolate, property_data.get()));
       custom_properties_.push_back(std::move(property_data));
+      if (is_root)
+        root_properties_.insert(iter.key());
       continue;
     }
 
@@ -532,10 +540,12 @@ void APIBinding::DecorateTemplateWithProperties(
           v8::ObjectTemplate::New(isolate);
       const base::DictionaryValue* property_dict = nullptr;
       CHECK(dict->GetDictionary("properties", &property_dict));
-      DecorateTemplateWithProperties(isolate, property_template,
-                                     *property_dict);
+      DecorateTemplateWithProperties(isolate, property_template, *property_dict,
+                                     /*is_root=*/false);
       object_template->Set(v8_key, property_template);
     }
+    if (is_root)
+      root_properties_.insert(iter.key());
   }
 }
 
