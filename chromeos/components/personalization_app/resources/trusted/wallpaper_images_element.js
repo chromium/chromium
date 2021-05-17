@@ -192,14 +192,19 @@ export class WallpaperImages extends PolymerElement {
    * @private
    * @param {!Event} event
    */
-  onImageSelected_(event) {
+  async onImageSelected_(event) {
     /** @type {!chromeos.personalizationApp.mojom.WallpaperImage} */
     const image =
         validateReceivedSelection(event, EventType.SELECT_IMAGE, this.images_);
 
-    // TODO(b/178017996) set image as wallpaper when clicked.
-    console.warn(
-        'onImageSelected not implemented yet. Selected', image.url.url);
+    // TODO(b/178215472) show a loading indicator.
+    const {success} =
+        await this.wallpaperProvider_.selectWallpaper(image.assetId);
+
+    // TODO(b/181697575) show a user facing error and handle failure cases.
+    if (!success) {
+      console.warn('Setting wallpaper image failed');
+    }
   }
 }
 

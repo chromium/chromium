@@ -50,7 +50,7 @@ export async function teardownElement(element) {
 
 /**
  * Sets up the test wallpaper provider and clears the page.
- * @returns {!TestWallpaperProvider}
+ * @return {!TestWallpaperProvider}
  */
 export function baseSetup() {
   const wallpaperProvider = new TestWallpaperProvider();

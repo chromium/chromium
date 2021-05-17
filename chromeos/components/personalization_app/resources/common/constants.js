@@ -36,6 +36,6 @@ export let SelectCollectionEvent;
 export let SendImagesEvent;
 
 /**
- * @typedef {{ type: EventType, imageUrl: string }}
+ * @typedef {{ type: EventType, assetId: bigint }}
  */
 export let SelectImageEvent;

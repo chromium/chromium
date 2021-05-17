@@ -7,6 +7,8 @@
 
 #include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
 
+#include <stdint.h>
+
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,9 +39,12 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
 
+  void SelectWallpaper(uint64_t image_asset_id,
+                       SelectWallpaperCallback callback) override;
+
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
-      receiver_{this};
+      wallpaper_receiver_{this};
 };
 
 #endif  // CHROMEOS_COMPONENTS_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_

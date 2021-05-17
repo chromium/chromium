@@ -19,6 +19,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -33,6 +34,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -66,6 +68,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 using ash::prefs::kWallpaperCollectionId;
 using color_utils::ColorProfile;
@@ -1005,12 +1008,26 @@ void WallpaperControllerImpl::SetCustomWallpaper(
   }
 }
 
+void WallpaperControllerImpl::SetOnlineWallpaper(
+    const AccountId& account_id,
+    const GURL& url,
+    WallpaperLayout layout,
+    bool preview_mode,
+    SetOnlineWallpaperCallback callback) {
+  DCHECK(callback);
+  SetOnlineWallpaperIfExists(
+      account_id, url.spec(), layout, preview_mode,
+      base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
+                     weak_factory_.GetWeakPtr(), account_id, url, layout,
+                     preview_mode, std::move(callback)));
+}
+
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
     WallpaperLayout layout,
     bool preview_mode,
-    SetOnlineWallpaperIfExistsCallback callback) {
+    SetOnlineWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DCHECK(CanSetUserWallpaper(account_id));
 
@@ -1028,7 +1045,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
     const std::string& url,
     WallpaperLayout layout,
     bool preview_mode,
-    SetOnlineWallpaperFromDataCallback callback) {
+    SetOnlineWallpaperCallback callback) {
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !CanSetUserWallpaper(account_id)) {
     std::move(callback).Run(/*success=*/false);
@@ -1797,24 +1814,26 @@ bool WallpaperControllerImpl::InitializeUserWallpaperInfo(
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
-    SetOnlineWallpaperIfExistsCallback callback,
+    SetOnlineWallpaperCallback callback,
     const OnlineWallpaperParams& params,
     const base::FilePath& file_path) {
   bool file_exists = !file_path.empty();
-  std::move(callback).Run(file_exists);
-  if (file_exists) {
-    ReadAndDecodeWallpaper(
-        base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                       weak_factory_.GetWeakPtr(), params, /*save_file=*/false,
-                       SetOnlineWallpaperFromDataCallback()),
-        sequenced_task_runner_, file_path);
+  if (!file_exists) {
+    std::move(callback).Run(false);
+    return;
   }
+
+  ReadAndDecodeWallpaper(
+      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
+                     weak_factory_.GetWeakPtr(), params, /*save_file=*/false,
+                     std::move(callback)),
+      sequenced_task_runner_, file_path);
 }
 
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     const OnlineWallpaperParams& params,
     bool save_file,
-    SetOnlineWallpaperFromDataCallback callback,
+    SetOnlineWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
   if (callback)
@@ -2276,10 +2295,8 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       break;
     case DAILY:
     case ONLINE:
-      SetOnlineWallpaperIfExists(
-          account_id, info.location, info.layout, false,
-          base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
-                         weak_factory_.GetWeakPtr(), account_id, info));
+      SetOnlineWallpaper(account_id, GURL(info.location), info.layout,
+                         /*preview_mode=*/false, base::DoNothing());
       break;
     case POLICY:
     case THIRDPARTY:
@@ -2293,18 +2310,25 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
 
 void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     const AccountId& account_id,
-    WallpaperInfo info,
+    const GURL& url,
+    WallpaperLayout layout,
+    bool preview_mode,
+    SetOnlineWallpaperCallback callback,
     bool success) {
-  if (success)
+  if (success) {
+    // Run callback and exit if setting the online wallpaper succeeded.
+    std::move(callback).Run(true);
     return;
+  }
 
-  const OnlineWallpaperParams params = {account_id, info.location, info.layout,
+  // Try again after downloading the image.
+  const OnlineWallpaperParams params = {account_id, url.spec(), layout,
                                         /*preview_mode=*/false};
   ImageDownloader::Get()->Download(
-      GURL(info.location), NO_TRAFFIC_ANNOTATION_YET,
+      url, NO_TRAFFIC_ANNOTATION_YET,
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
-                     SetOnlineWallpaperFromDataCallback()));
+                     std::move(callback)));
 }
 
 constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(

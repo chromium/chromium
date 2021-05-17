@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 
 class AccountId;
+class GURL;
 
 namespace gfx {
 class ImageSkia;
@@ -60,9 +61,26 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const gfx::ImageSkia& image,
                                   bool preview_mode) = 0;
 
-  // Sets wallpaper from the Chrome OS wallpaper picker. If the wallpaper file
-  // corresponding to |url| already exists in local file system (i.e.
-  // |SetOnlineWallpaperFromData| was called earlier with the same |url|),
+  // Sets the wallpaper at |url| as the active wallpaper for the user at
+  // |account_id|. The first time this is called, will download the wallpaper
+  // and cache on disk. Subsequent calls with the same url will use the stored
+  // wallpaper. If |preview_mode| is true, the visible background wallpaper will
+  // change, but that change will not be persisted in preferences. Call
+  // |ConfirmPreviewMode| or |CancelPreviewMode| to finalize. |callback| is
+  // required and will be called after the image is fetched (from network or
+  // disk) and decoded.
+  using SetOnlineWallpaperCallback = base::OnceCallback<void(bool success)>;
+  virtual void SetOnlineWallpaper(const AccountId& account_id,
+                                  const GURL& url,
+                                  WallpaperLayout layout,
+                                  bool preview_mode,
+                                  SetOnlineWallpaperCallback callback) = 0;
+
+  // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
+  // downloading the image if it is not on disk yet.
+  // Sets wallpaper from the Chrome OS wallpaper picker. If the
+  // wallpaper file corresponding to |url| already exists in local file system
+  // (i.e. |SetOnlineWallpaperFromData| was called earlier with the same |url|),
   // returns true and sets wallpaper for the user, otherwise returns false.
   // |account_id|: The user's account id.
   // |url|: The wallpaper url.
@@ -71,13 +89,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
   //                 called.
   // Responds with true if the wallpaper file exists in local file system.
-  using SetOnlineWallpaperIfExistsCallback = base::OnceCallback<void(bool)>;
   virtual void SetOnlineWallpaperIfExists(
       const AccountId& account_id,
       const std::string& url,
       WallpaperLayout layout,
       bool preview_mode,
-      SetOnlineWallpaperIfExistsCallback callback) = 0;
+      SetOnlineWallpaperCallback callback) = 0;
 
   // Sets wallpaper from the Chrome OS wallpaper picker and saves the wallpaper
   // to local file system. After this, |SetOnlineWallpaperIfExists| will return
@@ -91,14 +108,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   //                 called.
   // Responds with true if the wallpaper is set successfully (i.e. no decoding
   // error etc.).
-  using SetOnlineWallpaperFromDataCallback = base::OnceCallback<void(bool)>;
   virtual void SetOnlineWallpaperFromData(
       const AccountId& account_id,
       const std::string& image_data,
       const std::string& url,
       WallpaperLayout layout,
       bool preview_mode,
-      SetOnlineWallpaperFromDataCallback callback) = 0;
+      SetOnlineWallpaperCallback callback) = 0;
 
   // Sets the user's wallpaper to be the default wallpaper. Note: different user
   // types may have different default wallpapers.

@@ -5,7 +5,7 @@
 import {untrustedOrigin} from 'chrome://personalization/common/constants.js';
 import {selectImage} from 'chrome://personalization/common/iframe_api.js';
 import {promisifySendImagesForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
@@ -123,15 +123,20 @@ export function WallpaperImagesTest() {
 
     const original = wallpaperImagesElement.onImageSelected_;
     const selectImagePromise = new Promise((resolve) => {
-      function patched(event) {
-        // Rewrite event to make it look as if it is coming from untrusted
-        // origin.
-        assertThrows(
-            () => original.call(
-                wallpaperImagesElement,
-                {data: event.data, origin: untrustedOrigin}),
-            'Assertion failed: No valid selection found in choices');
-        resolve();
+      async function patched(event) {
+        try {
+          // Rewrite event to make it look as if it is coming from untrusted
+          // origin.
+          await original.call(
+              wallpaperImagesElement,
+              {data: event.data, origin: untrustedOrigin});
+          assertNotReached();
+        } catch (e) {
+          assertEquals(
+              'Assertion failed: No valid selection found in choices',
+              e.message);
+        }
+        resolve(true);
       }
       window.removeEventListener('message', original);
       window.addEventListener('message', patched, {once: true});
@@ -141,9 +146,40 @@ export function WallpaperImagesTest() {
     await wallpaperProvider.whenCalled(fetchImagesMethod);
     await sendImagesPromise;
     await waitAfterNextRender(wallpaperImagesElement);
-
-    selectImage(window, /*image_url=*/ 'does_not_exist');
+    // This image assetId should fail validation.
+    selectImage(window, /*image_url=*/ BigInt(-10));
     // Wait for the message handler |patched| to run.
-    await selectImagePromise;
+    const result = await selectImagePromise;
+    assertTrue(result);
   });
+
+  test(
+      'calls SelectWallpaper when valid SelectImageEvent is received',
+      async () => {
+        wallpaperImagesElement = initElement(
+            WallpaperImages.is, {active: true, collectionId: 'id_0'});
+
+        const original = wallpaperImagesElement.onImageSelected_;
+        const selectImagePromise = new Promise((resolve) => {
+          async function patched(event) {
+            const selectPromise =
+                wallpaperProvider.whenCalled('selectWallpaper');
+            original.call(
+                wallpaperImagesElement,
+                {data: event.data, origin: untrustedOrigin});
+            const args = await selectPromise;
+            resolve(args);
+          }
+          window.removeEventListener('message', original);
+          window.addEventListener('message', patched, {once: true});
+        });
+
+        await wallpaperProvider.whenCalled(fetchImagesMethod);
+        await waitAfterNextRender(wallpaperImagesElement);
+
+        selectImage(window, /*assetId=*/ wallpaperProvider.images[0].assetId);
+
+        const assetId = await selectImagePromise;
+        assertEquals(wallpaperProvider.images[0].assetId, assetId);
+      });
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview a singleton getter for the mojom interfaces used in
+ * @fileoverview a singleton getter for the mojom interface used in
  * the Personalization SWA. Also contains utility functions around fetching
  * mojom data and mocking out the implementation for testing.
  */

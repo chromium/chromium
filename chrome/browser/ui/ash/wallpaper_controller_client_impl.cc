@@ -45,6 +45,8 @@
 #include "extensions/browser/value_store/value_store.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/display/screen.h"
+#include "url/gurl.h"
 
 using extension_misc::kWallpaperManagerId;
 
@@ -252,6 +254,18 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
+// static
+std::string WallpaperControllerClientImpl::GetBackdropWallpaperSuffix() {
+  // TODO(b/186807814) handle different display resolutions better.
+  // FIFE url is used for Backdrop wallpapers and the desired image size should
+  // be specified. Currently we are using two times the display size. This is
+  // determined by trial and error and is subject to change.
+  gfx::Size display_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  return "=w" + base::NumberToString(
+                    2 * std::max(display_size.width(), display_size.height()));
+}
+
 std::string WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id) const {
   DCHECK(CanGetFilesId());
@@ -281,12 +295,25 @@ void WallpaperControllerClientImpl::SetCustomWallpaper(
       account_id, wallpaper_files_id, file_name, layout, image, preview_mode);
 }
 
+void WallpaperControllerClientImpl::SetOnlineWallpaper(
+    const AccountId& account_id,
+    const GURL& url,
+    ash::WallpaperLayout layout,
+    bool preview_mode,
+    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
+  if (!IsKnownUser(account_id))
+    return;
+
+  wallpaper_controller_->SetOnlineWallpaper(account_id, url, layout,
+                                            preview_mode, std::move(callback));
+}
+
 void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
     ash::WallpaperLayout layout,
     bool preview_mode,
-    ash::WallpaperController::SetOnlineWallpaperIfExistsCallback callback) {
+    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
   if (!IsKnownUser(account_id))
     return;
   wallpaper_controller_->SetOnlineWallpaperIfExists(
@@ -299,7 +326,7 @@ void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
     const std::string& url,
     ash::WallpaperLayout layout,
     bool preview_mode,
-    ash::WallpaperController::SetOnlineWallpaperFromDataCallback callback) {
+    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
   if (!IsKnownUser(account_id))
     return;
   wallpaper_controller_->SetOnlineWallpaperFromData(

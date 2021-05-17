@@ -22,6 +22,9 @@ struct WallpaperCollection {
 struct WallpaperImage {
     // URL of the image file to be displayed in the UI.
     url.mojom.Url url;
+
+    // Unique opaque identifier for this image.
+    uint64 asset_id;
 };
 
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
@@ -38,4 +41,7 @@ interface WallpaperProvider {
     // set as the user's wallpaper. |images| will be null on error.
     FetchImagesForCollection(string collection_id) => (
         array<WallpaperImage>? images);
+
+    // Sets the given wallpaper as the user's background.
+    SelectWallpaper(uint64 image_asset_id) => (bool success);
 };

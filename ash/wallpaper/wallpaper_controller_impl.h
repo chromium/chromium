@@ -27,12 +27,14 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
+class GURL;
 class PrefRegistrySimple;
 
 namespace base {
@@ -235,19 +237,22 @@ class ASH_EXPORT WallpaperControllerImpl
                           WallpaperLayout layout,
                           const gfx::ImageSkia& image,
                           bool preview_mode) override;
-  void SetOnlineWallpaperIfExists(
-      const AccountId& account_id,
-      const std::string& url,
-      WallpaperLayout layout,
-      bool preview_mode,
-      SetOnlineWallpaperIfExistsCallback callback) override;
-  void SetOnlineWallpaperFromData(
-      const AccountId& account_id,
-      const std::string& image_data,
-      const std::string& url,
-      WallpaperLayout layout,
-      bool preview_mode,
-      SetOnlineWallpaperFromDataCallback callback) override;
+  void SetOnlineWallpaper(const AccountId& account_id,
+                          const GURL& url,
+                          WallpaperLayout layout,
+                          bool preview_mode,
+                          SetOnlineWallpaperCallback callback) override;
+  void SetOnlineWallpaperIfExists(const AccountId& account_id,
+                                  const std::string& url,
+                                  WallpaperLayout layout,
+                                  bool preview_mode,
+                                  SetOnlineWallpaperCallback callback) override;
+  void SetOnlineWallpaperFromData(const AccountId& account_id,
+                                  const std::string& image_data,
+                                  const std::string& url,
+                                  WallpaperLayout layout,
+                                  bool preview_mode,
+                                  SetOnlineWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            const std::string& wallpaper_files_id,
                            bool show_wallpaper) override;
@@ -423,7 +428,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // Used as the callback of checking ONLINE wallpaper existence in
   // |SetOnlineWallpaperIfExists|. Initiates reading and decoding the wallpaper
   // if |file_path| is not empty.
-  void SetOnlineWallpaperFromPath(SetOnlineWallpaperIfExistsCallback callback,
+  void SetOnlineWallpaperFromPath(SetOnlineWallpaperCallback callback,
                                   const OnlineWallpaperParams& params,
                                   const base::FilePath& file_path);
 
@@ -432,7 +437,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // if |params.account_id| is the active user.
   void OnOnlineWallpaperDecoded(const OnlineWallpaperParams& params,
                                 bool save_file,
-                                SetOnlineWallpaperFromDataCallback callback,
+                                SetOnlineWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
@@ -551,7 +556,10 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const AccountId& account_id,
-                                   WallpaperInfo info,
+                                   const GURL& url,
+                                   WallpaperLayout layout,
+                                   bool preview_mode,
+                                   SetOnlineWallpaperCallback callback,
                                    bool success);
 
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);

@@ -64,8 +64,12 @@ export function validateReceivedSelection(event, expectedEventType, choices) {
       selected = choices.find(choice => choice.id === data.collectionId);
       break;
     case EventType.SELECT_IMAGE:
-      assert(!!data.imageUrl, 'Expected an image url parameter');
-      selected = choices.find(choice => choice.url.url === data.imageUrl);
+      assert(
+          data.hasOwnProperty('assetId'),
+          'Expected an image assetId parameter');
+      assert(
+          typeof data.assetId === 'bigint', 'assetId parameter must be bigint');
+      selected = choices.find(choice => choice.assetId === data.assetId);
       break;
     default:
       assertNotReached('Unknown event type');
@@ -91,11 +95,11 @@ export function selectCollection(target, collectionId) {
 /**
  * Select an image. Sent from untrusted to trusted.
  * @param {!Object} target the window to post the message to.
- * @param {string} imageUrl the selected image url.
+ * @param {!bigint} assetId the selected image assetId.
  */
-export function selectImage(target, imageUrl) {
+export function selectImage(target, assetId) {
   /** @type {!SelectImageEvent} */
-  const event = {type: EventType.SELECT_IMAGE, imageUrl};
+  const event = {type: EventType.SELECT_IMAGE, assetId};
   target.postMessage(event, trustedOrigin);
 }
 

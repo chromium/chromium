@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "url/gurl.h"
 
 class AccountId;
 class ValueStore;
@@ -39,6 +40,10 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
 
   static WallpaperControllerClientImpl* Get();
 
+  // Returns a suffix to be appended to the base url of Backdrop (online)
+  // wallpapers.
+  static std::string GetBackdropWallpaperSuffix();
+
   // Returns files identifier for the |account_id|.
   std::string GetFilesId(const AccountId& account_id) const;
 
@@ -56,19 +61,25 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
                           bool preview_mode);
+  void SetOnlineWallpaper(
+      const AccountId& account_id,
+      const GURL& url,
+      ash::WallpaperLayout layout,
+      bool preview_mode,
+      ash::WallpaperController::SetOnlineWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
       const AccountId& account_id,
       const std::string& url,
       ash::WallpaperLayout layout,
       bool preview_mode,
-      ash::WallpaperController::SetOnlineWallpaperIfExistsCallback callback);
+      ash::WallpaperController::SetOnlineWallpaperCallback callback);
   void SetOnlineWallpaperFromData(
       const AccountId& account_id,
       const std::string& image_data,
       const std::string& url,
       ash::WallpaperLayout layout,
       bool preview_mode,
-      ash::WallpaperController::SetOnlineWallpaperFromDataCallback callback);
+      ash::WallpaperController::SetOnlineWallpaperCallback callback);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);

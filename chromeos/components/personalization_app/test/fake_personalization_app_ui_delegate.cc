@@ -4,6 +4,8 @@
 
 #include "chromeos/components/personalization_app/test/fake_personalization_app_ui_delegate.h"
 
+#include <stdint.h>
+
 #include "base/check_op.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
@@ -22,8 +24,8 @@ FakePersonalizationAppUiDelegate::~FakePersonalizationAppUiDelegate() = default;
 void FakePersonalizationAppUiDelegate::BindInterface(
     mojo::PendingReceiver<
         chromeos::personalization_app::mojom::WallpaperProvider> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  wallpaper_receiver_.reset();
+  wallpaper_receiver_.Bind(std::move(receiver));
 }
 
 void FakePersonalizationAppUiDelegate::FetchCollections(
@@ -42,6 +44,12 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   DCHECK_EQ(collection_id, kFakeCollectionId);
   std::vector<chromeos::personalization_app::mojom::WallpaperImagePtr> images;
   images.push_back(
-      chromeos::personalization_app::mojom::WallpaperImage::New(GURL()));
+      chromeos::personalization_app::mojom::WallpaperImage::New(GURL(), 0));
   std::move(callback).Run(std::move(images));
+}
+
+void FakePersonalizationAppUiDelegate::SelectWallpaper(
+    uint64_t image_asset_id,
+    SelectWallpaperCallback callback) {
+  std::move(callback).Run(/*success=*/true);
 }

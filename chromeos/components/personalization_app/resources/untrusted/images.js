@@ -12,7 +12,9 @@ import {selectImage, validateReceivedData} from '../common/iframe_api.js';
 
 /** @param {Event} event */
 function onClickImage(event) {
-  selectImage(window.parent, event.currentTarget.src);
+  // This throws if assetId is not a valid BigInt.
+  const assetId = BigInt(event.currentTarget.dataset.assetId);
+  selectImage(window.parent, assetId);
 }
 
 /**
@@ -22,6 +24,7 @@ function onClickImage(event) {
 function imageToHtml(image) {
   const img = /** @type {!HTMLImageElement} */ (document.createElement('img'));
   img.src = image.url.url;
+  img.dataset.assetId = image.assetId;
   img.onclick = onClickImage;
   return img;
 }
