@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -254,7 +255,26 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
         render_process_id_, render_frame_id_, config->Clone());
   }
 
-  // TODO(crbug.com/1200910): Set the capture-handle config.
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](int render_process_id, int render_frame_id,
+             blink::mojom::CaptureHandleConfigPtr config) {
+            DCHECK_CURRENTLY_ON(BrowserThread::UI);
+            RenderFrameHostImpl* const rfhi =
+                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+            if (!rfhi || !rfhi->IsCurrent()) {
+              return;
+            }
+            if (rfhi != rfhi->GetMainFrame()) {
+              // Would be overkill to add thread-hopping just to support a test,
+              // so we execute directly.
+              bad_message::ReceivedBadMessage(render_process_id,
+                                              bad_message::MDDH_NOT_TOP_LEVEL);
+            }
+            rfhi->delegate()->SetCaptureHandleConfig(std::move(config));
+          },
+          render_process_id_, render_frame_id_, std::move(config)));
 }
 
 void MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID(

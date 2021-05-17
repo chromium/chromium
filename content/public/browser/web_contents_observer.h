@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -150,6 +151,13 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // should be captured if capturing this WebContents, WITHOUT changing the
   // RenderFrameHost.
   virtual void CaptureTargetChanged() {}
+
+  // This method is invoked when the capture handle config changes. This can
+  // happen when:
+  // 1. The web-application calls |mediaDevices.setCaptureHandleConfig|.
+  // 2. The top-level frame is navigated cross-document.
+  virtual void OnCaptureHandleConfigUpdate(
+      const blink::mojom::CaptureHandleConfig& config) {}
 
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.

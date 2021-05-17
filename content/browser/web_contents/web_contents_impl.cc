@@ -1873,6 +1873,12 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
                      weak_factory_.GetWeakPtr(), stay_hidden, stay_awake));
 }
 
+const blink::mojom::CaptureHandleConfig&
+WebContentsImpl::GetCaptureHandleConfig() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return capture_handle_config_;
+}
+
 bool WebContentsImpl::IsBeingCaptured() {
   return visible_capturer_count_ + hidden_capturer_count_ > 0;
 }
@@ -4021,6 +4027,23 @@ std::string WebContentsImpl::GetDefaultMediaDeviceID(
   return delegate_->GetDefaultMediaDeviceID(this, type);
 }
 
+void WebContentsImpl::SetCaptureHandleConfig(
+    blink::mojom::CaptureHandleConfigPtr config) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (capture_handle_config_ == *config) {
+    return;  // Avoid unnecessary notifications.
+  }
+
+  capture_handle_config_ = std::move(*config);
+
+  // Propagates the capture-handle-config inside of the browser process.
+  // Only render processes which are eligible based on |permittedOrigins|
+  // will get this.
+  observers_.NotifyObservers(&WebContentsObserver::OnCaptureHandleConfigUpdate,
+                             capture_handle_config_);
+}
+
 SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {
   return GetController().GetSessionStorageNamespaceMap();
 }
@@ -5205,8 +5228,17 @@ void WebContentsImpl::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::ReadyToCommitNavigation",
                "navigation_handle", navigation_handle);
+
+  // Cross-document navigation of the top-level frame resets the capture
+  // handle config.
+  if (!navigation_handle->IsSameDocument() &&
+      navigation_handle->IsInMainFrame()) {
+    SetCaptureHandleConfig(blink::mojom::CaptureHandleConfig::New());
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,
                              navigation_handle);
+
   // If any domains are blocked from accessing 3D APIs because they may
   // have caused the GPU to reset recently, unblock them here if the user
   // initiated this navigation. This implies that the user was involved in

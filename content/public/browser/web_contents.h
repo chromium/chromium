@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
@@ -554,6 +555,10 @@ class WebContents : public PageNavigator,
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake) WARN_UNUSED_RESULT = 0;
+
+  // Getter for the capture handle, which allows a captured application to
+  // opt-in to exposing information to its capturer(s).
+  virtual const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() = 0;
 
   // Returns true if audio/screenshot/video is being captured by the embedder,
   // as indicated by calls to IncrementCapturerCount().

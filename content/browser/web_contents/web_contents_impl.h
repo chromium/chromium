@@ -395,6 +395,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake) override WARN_UNUSED_RESULT;
+  const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
   bool IsAudioMuted() override;
@@ -619,6 +620,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                        const GURL& url) override;
   WebContents* GetAsWebContents() override;
   bool IsNeverComposited() override;
+  void SetCaptureHandleConfig(
+      blink::mojom::CaptureHandleConfigPtr config) override;
   ui::AXMode GetAccessibilityMode() override;
   // Broadcasts the mode change to all frames.
   void SetAccessibilityMode(ui::AXMode mode) override;
@@ -2170,6 +2173,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   viz::FrameSinkId xr_render_target_;
 
   base::OnceCallback<void(const gfx::Rect&)> show_poup_menu_callback_;
+
+  // Allows the app in the current WebContents to opt-in to exposing
+  // information to apps that capture it.
+  blink::mojom::CaptureHandleConfig capture_handle_config_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

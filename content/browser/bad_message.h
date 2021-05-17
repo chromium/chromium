@@ -273,6 +273,7 @@ enum BadMessageReason {
   MDDH_INVALID_CAPTURE_HANDLE = 245,
   MDDH_INVALID_ALL_ORIGINS_PERMITTED = 246,
   MDDH_INVALID_PERMITTED_ORIGIN = 247,
+  MDDH_NOT_TOP_LEVEL = 248,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

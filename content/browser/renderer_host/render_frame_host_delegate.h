@@ -266,6 +266,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual std::string GetDefaultMediaDeviceID(
       blink::mojom::MediaStreamType type);
 
+  // Setter for the capture handle config, which allows a captured application
+  // to opt-in to exposing information to its capturer(s).
+  virtual void SetCaptureHandleConfig(
+      blink::mojom::CaptureHandleConfigPtr config) {}
+
   // Get the accessibility mode for the WebContents that owns this frame.
   virtual ui::AXMode GetAccessibilityMode();
 
