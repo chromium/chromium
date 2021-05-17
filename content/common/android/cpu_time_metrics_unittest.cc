@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/android/cpu_time_metrics.h"
+#include "content/common/android/cpu_time_metrics_internal.h"
 
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/synchronization/waitable_event.h"
@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
+namespace internal {
 namespace {
 
 void WorkForOneCpuSec(base::WaitableEvent* event) {
@@ -39,8 +40,9 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 
   // Create the ProcessCpuTimeTaskObserver instance and register it
   // as the process visibility observer.
-  SetIgnoreHistogramAllocatorForTesting(true);
-  SetupCpuTimeMetrics();
+  ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
+  std::unique_ptr<ProcessCpuTimeMetrics> metrics =
+      ProcessCpuTimeMetrics::CreateForTesting();
 
   // Start out in the foreground and spend one CPU second there.
   // This will also set the current power mode to 'idle'.
@@ -52,9 +54,10 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   // Wait until the thread has consumed one second of CPU time.
   event.Wait();
 
-  // Update the state to background to trigger the collection.
+  // Update the state to background to trigger the collection of high level
+  // metrics.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
-  WaitForCpuTimeMetricsForTesting();
+  metrics->WaitForCollectionForTesting();
 
   // The test process has no process-type command line flag, so is recognized as
   // the browser process. The thread created above is named like a sampling
@@ -77,14 +80,23 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
                                 power_scheduler::PowerMode::kIdle);
   EXPECT_GE(browser_cpu_seconds_power_mode_idle, 1);
 
+  // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =
+      histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
+                                kSamplingProfilerThreadBucket);
+  EXPECT_EQ(thread_cpu_seconds, 0);
+
+  metrics->PerformFullCollectionForTesting();
+  metrics->WaitForCollectionForTesting();
+
+  thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
                                 kSamplingProfilerThreadBucket);
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
 
-  SetIgnoreHistogramAllocatorForTesting(false);
+  ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(false);
 }
 
 TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
@@ -100,8 +112,9 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
 
   // Create the ProcessCpuTimeTaskObserver instance and register it
   // as the process visibility observer.
-  SetIgnoreHistogramAllocatorForTesting(true);
-  SetupCpuTimeMetrics();
+  ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
+  std::unique_ptr<ProcessCpuTimeMetrics> metrics =
+      ProcessCpuTimeMetrics::CreateForTesting();
 
   // Start out in the background and spend one CPU second there.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
@@ -112,9 +125,10 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   // Wait until the thread has consumed one second of CPU time.
   event.Wait();
 
-  // Update the state to foreground to trigger the collection.
+  // Update the state to foreground to trigger the collection of high level
+  // metrics.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
-  WaitForCpuTimeMetricsForTesting();
+  metrics->WaitForCollectionForTesting();
 
   // The test process has no process-type command line flag, so is recognized as
   // the browser process. The thread created above is named like a sampling
@@ -132,15 +146,25 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
       "Power.CpuTimeSecondsPerProcessType.Background", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_background, 1);
 
+  // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =
+      histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
+                                kSamplingProfilerThreadBucket);
+  EXPECT_EQ(thread_cpu_seconds, 0);
+
+  metrics->PerformFullCollectionForTesting();
+  metrics->WaitForCollectionForTesting();
+
+  thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
                                 kSamplingProfilerThreadBucket);
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
 
-  SetIgnoreHistogramAllocatorForTesting(false);
+  ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(false);
 }
 
 }  // namespace
+}  // namespace internal
 }  // namespace content

@@ -262,8 +262,10 @@ source_set("common") {
 
   if (is_android) {
     sources += [
+      "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/cpu_time_metrics_internal.cc",
+      "android/cpu_time_metrics_internal.h",
       "android/gin_java_bridge_errors.cc",
       "android/gin_java_bridge_errors.h",
       "android/gin_java_bridge_value.cc",

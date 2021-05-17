@@ -18,12 +18,6 @@ namespace content {
 // where the sandbox allows isolated processes to read from /proc/self/stats.
 CONTENT_EXPORT void SetupCpuTimeMetrics();
 
-// Wait for any current in-progress collection of CPU time UMA metrics on the
-// current thread. Beware: Should only be used for testing.
-CONTENT_EXPORT void WaitForCpuTimeMetricsForTesting();
-
-CONTENT_EXPORT void SetIgnoreHistogramAllocatorForTesting(bool);
-
 }  // namespace content
 
 #endif  // CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_H_
