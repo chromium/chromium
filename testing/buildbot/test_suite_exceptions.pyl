@@ -2002,6 +2002,12 @@
       },
     },
   },
+  'mediapipe_validating_tests': {
+    'remove_from': [
+      # TODO(crbug.com/1201887): Remove once tests are stable.
+      'Fuchsia x64',
+    ],
+  },
   'mojo_test_apk': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.

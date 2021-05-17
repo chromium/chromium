@@ -1673,6 +1673,17 @@
           'enable_resultdb',
         ],
       },
+      'mediapipe_validating': {
+        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'name': 'mediapipe_validating_tests',
+        'telemetry_test_name': 'mediapipe',
+        'args': [
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
       'pixel': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
