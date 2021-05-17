@@ -29,8 +29,9 @@
       margin: 5px;
   }
 </style>
+<script src="/mathml/support/fonts.js"></script>
 <script>
-  window.addEventListener("load", () => { document.fonts.ready.then(runTests); });
+  window.addEventListener("load", () => { loadAllFonts().then(runTests); });
   function runTests() {
       // force initial layout so we're sure what we're testing against
       document.documentElement.getBoundingClientRect();

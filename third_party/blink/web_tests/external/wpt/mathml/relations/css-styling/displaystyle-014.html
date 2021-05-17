@@ -11,6 +11,7 @@
     <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#fractions-mfrac">
     <link rel="match" href="displaystyle-014-ref.html"/>
     <meta name="assert" content="Test dynamic change of mathbackground on an operator does not interfer with its displaystyle">
+    <script src="/mathml/support/fonts.js"></script>
     <script type="text/javascript">
       function doTest() {
         document.body.offsetTop; // Update layout
@@ -18,7 +19,7 @@
                  setAttribute('mathbackground', 'red');
         document.documentElement.removeAttribute("class");
       }
-      window.addEventListener("load", () => { document.fonts.ready.then(doTest); });
+      window.addEventListener("load", () => { loadAllFonts().then(doTest); });
     </script>
     <link rel="stylesheet" href="/fonts/ahem.css">
     <style>

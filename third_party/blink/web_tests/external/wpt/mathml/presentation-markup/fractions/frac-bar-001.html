@@ -24,8 +24,9 @@
       }
     </style>
     <script src="/common/reftest-wait.js"></script>
+    <script src="/mathml/support/fonts.js"></script>
     <script>
-      window.addEventListener("load", () => { document.fonts.ready.then(adjustPositionOfFraction); });
+      window.addEventListener("load", () => { loadAllFonts().then(adjustPositionOfFraction); });
 
       function adjustPositionOfFraction()
       {
