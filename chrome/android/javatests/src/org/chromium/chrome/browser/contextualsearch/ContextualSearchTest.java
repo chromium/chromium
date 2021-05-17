@@ -133,7 +133,7 @@ public class ContextualSearchTest {
                 String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
             // Skip native calls and immediately "resolve" the search term.
             onSearchTermResolutionResponse(true, 200, selection, selection, "", "", false, 0, 10,
-                    "", "", "", "", QuickActionCategory.NONE, 0, "", "", 0, new String[0]);
+                    "", "", "", "", QuickActionCategory.NONE, 0, "", "", 0, "");
         }
 
         /**

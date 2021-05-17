@@ -211,7 +211,7 @@ public class ContextualSearchManager
     private ContextualSearchRequest mLastSearchRequestLoaded;
 
     @NonNull
-    private String[] mRelatedSearches = new String[] {};
+    private RelatedSearchesList mRelatedSearches;
 
     /** Whether the Accessibility Mode is enabled. */
     private boolean mIsAccessibilityModeEnabled;
@@ -487,7 +487,7 @@ public class ContextualSearchManager
         mWereSearchResultsSeen = false;
 
         mSearchRequest = null;
-        mRelatedSearches = new String[] {};
+        mRelatedSearches = null;
 
         mInProductHelp.onCloseContextualSearch(Profile.getLastUsedRegularProfile());
 
@@ -722,8 +722,7 @@ public class ContextualSearchManager
      * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      * @param cocaCardTag The primary internal Coca card tag for the response, or {@code 0} if none.
-     * @param relatedSearches The queries known as Related Searches. These are suggested searches
-     *        related to the context.
+     * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config data.
      */
     @CalledByNative
     public void onSearchTermResolutionResponse(boolean isNetworkUnavailable, int responseCode,
@@ -733,7 +732,7 @@ public class ContextualSearchManager
             final String caption, final String quickActionUri,
             @QuickActionCategory final int quickActionCategory, final long loggedEventId,
             final String searchUrlFull, final String searchUrlPreload,
-            @CardTag final int cocaCardTag, final String[] relatedSearches) {
+            @CardTag final int cocaCardTag, final String relatedSearchesJson) {
         ContextualSearchUma.logResolveReceived(mSelectionController.isTapSelection());
         ResolvedSearchTerm resolvedSearchTerm =
                 new ResolvedSearchTerm
@@ -741,7 +740,7 @@ public class ContextualSearchManager
                                 alternateTerm, mid, doPreventPreload, selectionStartAdjust,
                                 selectionEndAdjust, contextLanguage, thumbnailUrl, caption,
                                 quickActionUri, quickActionCategory, loggedEventId, searchUrlFull,
-                                searchUrlPreload, cocaCardTag, relatedSearches)
+                                searchUrlPreload, cocaCardTag, relatedSearchesJson)
                         .build();
         mNetworkCommunicator.handleSearchTermResolutionResponse(resolvedSearchTerm);
     }
@@ -772,13 +771,17 @@ public class ContextualSearchManager
 
         boolean receivedCaptionOrThumbnail = !TextUtils.isEmpty(resolvedSearchTerm.caption())
                 || !TextUtils.isEmpty(resolvedSearchTerm.thumbnailUrl());
-        mRelatedSearches = resolvedSearchTerm.relatedSearches();
 
+        mRelatedSearches = new RelatedSearchesList(resolvedSearchTerm.relatedSearchesJson());
+        int numRSearches = mRelatedSearches.getQueries().size();
+        String[] relatedSearches = new String[numRSearches];
+        for (int i = 0; i < numRSearches; i++) {
+            relatedSearches[i] = mRelatedSearches.getQueries().get(i);
+        }
         assert mSearchPanel != null;
-
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), resolvedSearchTerm.relatedSearches());
+                resolvedSearchTerm.cardTagEnum(), relatedSearches);
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will
@@ -1356,8 +1359,9 @@ public class ContextualSearchManager
     @Override
     public void onRelatedSearchesSuggestionClicked(int suggestionIndex) {
         // TODO(donnd): update metrics and the stamp for Related Searches (use params).
-        assert suggestionIndex < mRelatedSearches.length;
-        String searchQuery = mRelatedSearches[suggestionIndex];
+        assert suggestionIndex < mRelatedSearches.getQueries().size();
+        String searchQuery = mRelatedSearches.getQueries().get(suggestionIndex);
+        // TODO(donnd): use the returned URL instead of building one here.
         mSearchRequest = new ContextualSearchRequest(searchQuery);
         mSearchPanel.setSearchTerm(searchQuery);
         // TODO(donnd): determine what to show in the Caption.

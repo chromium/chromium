@@ -10,6 +10,9 @@ import android.support.test.InstrumentationRegistry;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressObserver;
@@ -629,7 +632,7 @@ class ContextualSearchFakeServer
      * fake search of a given type (LongPress or Tap). This means that if you need different
      * behaviors you need to add new DOM nodes with different IDs in the test's HTML file.
      */
-    public void registerFakeSearches() {
+    public void registerFakeSearches() throws Exception {
         registerFakeNonResolveSearch(new FakeNonResolveSearch("search", "Search"));
         registerFakeNonResolveSearch(new FakeNonResolveSearch("term", "Term"));
         registerFakeNonResolveSearch(new FakeNonResolveSearch("resolution", "Resolution"));
@@ -648,9 +651,18 @@ class ContextualSearchFakeServer
         registerFakeResolveSearch(germanFakeTapSearch);
 
         // Setup the "intelligence" node to return Related Searches along with the usual result.
+        JSONObject rSearch1 = new JSONObject();
+        rSearch1.put("title", "Related Search 1");
+        JSONObject rSearch2 = new JSONObject();
+        rSearch2.put("title", "Related Search 2");
+        JSONArray rSearches = new JSONArray();
+        rSearches.put(rSearch1);
+        rSearches.put(rSearch2);
+        JSONObject suggestions = new JSONObject();
+        suggestions.put("content", rSearches);
         ResolvedSearchTerm intelligenceWithRelatedSearches =
                 new ResolvedSearchTerm.Builder(false, 200, "Intelligence", "Intelligence")
-                        .setRelatedSearches(new String[] {"Related Search 1", "Related Search 2"})
+                        .setRelatedSearchesJson(suggestions.toString())
                         .build();
         FakeResolveSearch fakeSearchWithRelatedSearches =
                 new FakeResolveSearch("intelligence", intelligenceWithRelatedSearches);

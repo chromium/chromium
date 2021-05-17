@@ -684,7 +684,7 @@ public class ContextualSearchManagerTest {
     /**
      * Registers all fake searches to be used in tests.
      */
-    private void registerFakeSearches() {
+    private void registerFakeSearches() throws Exception {
         mFakeServer.registerFakeSearches();
     }
 
@@ -3785,7 +3785,7 @@ public class ContextualSearchManagerTest {
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
         Assert.assertTrue("Related Searches results should have been returned but were not!",
-                resolvedSearchTerm.relatedSearches().length > 0);
+                !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // TODO(donnd): Add a check that the searches appeared in the Panel once the Panel can.
     }
 

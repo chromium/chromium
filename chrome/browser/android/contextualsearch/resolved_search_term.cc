@@ -25,7 +25,7 @@ ResolvedSearchTerm::ResolvedSearchTerm(int response_code)
       search_url_full(""),
       search_url_preload(""),
       coca_card_tag(0),
-      related_searches({}) {}
+      related_searches_json("") {}
 
 ResolvedSearchTerm::ResolvedSearchTerm(
     bool is_invalid,
@@ -46,7 +46,7 @@ ResolvedSearchTerm::ResolvedSearchTerm(
     const std::string& search_url_full,
     const std::string& search_url_preload,
     int coca_card_tag,
-    const std::vector<std::string>& related_searches)
+    const std::string& related_searches_json)
     : is_invalid(is_invalid),
       response_code(response_code),
       search_term(search_term),
@@ -65,6 +65,6 @@ ResolvedSearchTerm::ResolvedSearchTerm(
       search_url_full(search_url_full),
       search_url_preload(search_url_preload),
       coca_card_tag(coca_card_tag),
-      related_searches(related_searches) {}
+      related_searches_json(related_searches_json) {}
 
 ResolvedSearchTerm::~ResolvedSearchTerm() {}

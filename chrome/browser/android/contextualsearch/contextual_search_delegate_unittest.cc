@@ -236,7 +236,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string search_url_full() { return search_url_full_; }
   std::string search_url_preload() { return search_url_preload_; }
   int coca_card_tag() { return coca_card_tag_; }
-  std::vector<std::string> related_searches() { return related_searches_; }
+  std::string related_searches_json() { return related_searches_json_; }
 
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
@@ -264,7 +264,7 @@ class ContextualSearchDelegateTest : public testing::Test {
     search_url_full_ = resolved_search_term.search_url_full;
     search_url_preload_ = resolved_search_term.search_url_preload;
     coca_card_tag_ = resolved_search_term.coca_card_tag;
-    related_searches_ = resolved_search_term.related_searches;
+    related_searches_json_ = resolved_search_term.related_searches_json;
   }
 
   void recordSampleSelectionAvailable(const std::string& encoding,
@@ -293,7 +293,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string search_url_full_;
   std::string search_url_preload_;
   int coca_card_tag_;
-  std::vector<std::string> related_searches_;
+  std::string related_searches_json_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -566,7 +566,8 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
       "\"search_url_preload\":\"https://www.google.com/"
       "search?q=define+obscure&ctxs=2&pf=c&sns=1\","
       "\"card_tag\":12,"
-      "\"searches\":[\"Barack Obama\",\"Donald Trump\"]"
+      "\"suggestions\":{\"content\":[{\"title\":\"Barack "
+      "Obama\"},{\"title\":\"Donald Trump\"}]}"
       "}";
   std::string search_term;
   std::string display_text;
@@ -584,14 +585,14 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   std::string search_url_full;
   std::string search_url_preload;
   int coca_card_tag;
-  std::vector<std::string> related_searches;
+  std::string related_searches_json;
 
   delegate_->DecodeSearchTermFromJsonResponse(
       json_with_escape, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
       &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag,
-      &related_searches);
+      &related_searches_json);
 
   EXPECT_EQ("obama", search_term);
   EXPECT_EQ("Barack Obama", display_text);
@@ -611,9 +612,7 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2&pf=c&sns=1",
             search_url_preload);
   EXPECT_EQ(12, coca_card_tag);
-  EXPECT_EQ(2u, related_searches.size());
-  EXPECT_EQ("Barack Obama", related_searches[0]);
-  EXPECT_EQ("Donald Trump", related_searches[1]);
+  EXPECT_FALSE(related_searches_json.empty());
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
@@ -710,25 +709,31 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithStringCocaCardTag) {
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearches) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  std::string response("{\"searches\":[\"RSS 1\",\"RSS 2\"]}");
+  // Although this JSON is a reasonable sample of expected content the nested
+  // JSON for the suggestions is not parsed in native code.
+  std::string response(
+      "{\"suggestions\":"
+      "{\"content\":"
+      "[{\"title\":\"Barack Obama\"},{\"title\":\"Donald Trump\"}]}}");
   SimulateResponseReturned(response);
-  EXPECT_EQ(2u, related_searches().size());
-  EXPECT_EQ("RSS 1", related_searches()[0]);
-  EXPECT_EQ("RSS 2", related_searches()[1]);
+  EXPECT_TRUE(related_searches_json().find("Barack Obama") !=
+              std::string::npos);
+  EXPECT_TRUE(related_searches_json().find("Donald Trump") !=
+              std::string::npos);
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearchesWhenDisabled) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(chrome::android::kRelatedSearches);
   CreateDefaultSearchContextAndRequestSearchTerm();
-  std::string response("{\"searches\":[\"RSS 1\",\"RSS 2\"]}");
+  std::string response("{\"rsearches\":{\"RSS 1\",\"RSS 2\"}");
   SimulateResponseReturned(response);
-  EXPECT_EQ(0u, related_searches().size());
+  EXPECT_TRUE(related_searches_json().empty());
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithEmptyRelatedSearches) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  std::string response("{\"searches\":[]}");
+  std::string response("{\"rsearches\":{}");
   SimulateResponseReturned(response);
-  EXPECT_EQ(0u, related_searches().size());
+  EXPECT_TRUE(related_searches_json().empty());
 }

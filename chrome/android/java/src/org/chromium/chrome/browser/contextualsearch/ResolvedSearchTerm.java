@@ -59,7 +59,7 @@ public class ResolvedSearchTerm {
     private final String mSearchUrlPreload;
     @CardTag
     private final int mCardTagEnum;
-    private final String mRelatedSearches[];
+    private final String mRelatedSearchesJson;
 
     /**
      * Called in response to the
@@ -89,7 +89,7 @@ public class ResolvedSearchTerm {
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      * @param cardTagEnum A {@link CardTag} enumeration indicating what kind of card was returned,
      *        or {@code 0} if no card was returned.
-     * @param relatedSearches An array of searches that may be related to the content.
+     * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config data.
      */
     private ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode,
             final String searchTerm, final String displayText, final String alternateTerm,
@@ -98,7 +98,7 @@ public class ResolvedSearchTerm {
             final String caption, final String quickActionUri,
             @QuickActionCategory final int quickActionCategory, final long loggedEventId,
             final String searchUrlFull, final String searchUrlPreload,
-            @CardTag final int cardTagEnum, final String[] relatedSearches) {
+            @CardTag final int cardTagEnum, final String relatedSearchesJson) {
         mIsNetworkUnavailable = isNetworkUnavailable;
         mResponseCode = responseCode;
         mSearchTerm = searchTerm;
@@ -117,7 +117,7 @@ public class ResolvedSearchTerm {
         mSearchUrlFull = searchUrlFull;
         mSearchUrlPreload = searchUrlPreload;
         mCardTagEnum = cardTagEnum;
-        mRelatedSearches = relatedSearches;
+        mRelatedSearchesJson = relatedSearchesJson;
     }
 
     public boolean isNetworkUnavailable() {
@@ -221,8 +221,8 @@ public class ResolvedSearchTerm {
         }
     }
 
-    public String[] relatedSearches() {
-        return mRelatedSearches;
+    public String relatedSearchesJson() {
+        return mRelatedSearchesJson;
     }
 
     @Override
@@ -237,8 +237,8 @@ public class ResolvedSearchTerm {
             sections.add("Network unavailable!");
         } else if (mResponseCode != HttpURLConnection.HTTP_OK) {
             sections.add("ResponseCode:" + mResponseCode);
-        } else if (relatedSearches().length > 0) {
-            sections.add("Related Searches: [" + TextUtils.join(", ", mRelatedSearches) + "]");
+        } else if (!relatedSearchesJson().isEmpty()) {
+            sections.add("Related Searches JSON: " + mRelatedSearchesJson);
         } else {
             if (mDoPreventPreload) sections.add("Preventing preload!");
             if (!TextUtils.isEmpty(mSearchTerm)) sections.add("Search for '" + mSearchTerm + "'");
@@ -293,7 +293,7 @@ public class ResolvedSearchTerm {
         private String mSearchUrlPreload;
         @CardTag
         private int mCardTagEnum;
-        private String[] mRelatedSearches;
+        private String mRelatedSearchesJson;
 
         /** Starts building using the given {@link ResolvedSearchTerm}. */
         public Builder(ResolvedSearchTerm resolvedSearchTerm) {
@@ -315,7 +315,7 @@ public class ResolvedSearchTerm {
             mSearchUrlFull = resolvedSearchTerm.mSearchUrlFull;
             mSearchUrlPreload = resolvedSearchTerm.mSearchUrlPreload;
             mCardTagEnum = resolvedSearchTerm.mCardTagEnum;
-            mRelatedSearches = resolvedSearchTerm.mRelatedSearches;
+            mRelatedSearchesJson = resolvedSearchTerm.mRelatedSearchesJson;
         }
 
         /**
@@ -349,7 +349,7 @@ public class ResolvedSearchTerm {
                 final String displayText, final String alternateTerm, boolean doPreventPreload) {
             this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
                     doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, 0L, "", "",
-                    CardTag.CT_NONE, new String[0]);
+                    CardTag.CT_NONE, "");
         }
 
         /**
@@ -380,7 +380,8 @@ public class ResolvedSearchTerm {
          * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
          * @param cardTag The primary internal Coca card tag for the resolution, or {@code 0} if
          *         none.
-         * @param relatedSearches An array of searches that may be related to the content.
+         * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config
+         *         data.
          */
         public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
                 final String displayText, final String alternateTerm, final String mid,
@@ -388,7 +389,7 @@ public class ResolvedSearchTerm {
                 final String contextLanguage, final String thumbnailUrl, final String caption,
                 final String quickActionUri, @QuickActionCategory final int quickActionCategory,
                 final long loggedEventId, final String searchUrlFull, final String searchUrlPreload,
-                @CardTag final int cardTag, final String[] relatedSearches) {
+                @CardTag final int cardTag, final String relatedSearchesJson) {
             mIsNetworkUnavailable = isNetworkUnavailable;
             mResponseCode = responseCode;
             mSearchTerm = searchTerm;
@@ -407,7 +408,7 @@ public class ResolvedSearchTerm {
             mSearchUrlFull = searchUrlFull;
             mSearchUrlPreload = searchUrlPreload;
             mCardTagEnum = fromCocaCardTag(cardTag);
-            mRelatedSearches = relatedSearches;
+            mRelatedSearchesJson = relatedSearchesJson;
         }
 
         /**
@@ -536,11 +537,11 @@ public class ResolvedSearchTerm {
         }
 
         /**
-         * @param relatedSearches The list of related searches generated from the context.
-.
+         * @param relatedSearchesJson A blob of JSON that contains the Related Searches and config
+         *         data.
          */
-        public Builder setRelatedSearches(String[] relatedSearches) {
-            mRelatedSearches = relatedSearches;
+        public Builder setRelatedSearchesJson(String relatedSearchesJson) {
+            mRelatedSearchesJson = relatedSearchesJson;
             return this;
         }
 
@@ -555,7 +556,7 @@ public class ResolvedSearchTerm {
                     mDisplayText, mAlternateTerm, mMid, mDoPreventPreload, mSelectionStartAdjust,
                     mSelectionEndAdjust, mContextLanguage, mThumbnailUrl, mCaption, mQuickActionUri,
                     mQuickActionCategory, mLoggedEventId, mSearchUrlFull, mSearchUrlPreload,
-                    mCardTagEnum, mRelatedSearches);
+                    mCardTagEnum, mRelatedSearchesJson);
         }
     }
 }

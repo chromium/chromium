@@ -149,7 +149,7 @@ class ContextualSearchDelegate
       std::string* search_url_full,
       std::string* search_url_preload,
       int* coca_card_tag,
-      std::vector<std::string>* related_searches);
+      std::string* related_searches_json);
 
   // Extracts the start and end location from a mentions list, and sets the
   // integers referenced by |startResult| and |endResult|.

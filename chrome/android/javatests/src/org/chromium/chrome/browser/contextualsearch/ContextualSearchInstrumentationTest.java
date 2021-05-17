@@ -664,7 +664,7 @@ public class ContextualSearchInstrumentationTest {
     /**
      * Registers all fake searches to be used in tests.
      */
-    private void registerFakeSearches() {
+    private void registerFakeSearches() throws Exception {
         mFakeServer.registerFakeSearches();
     }
 

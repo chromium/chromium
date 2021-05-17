@@ -64,7 +64,7 @@ struct ResolvedSearchTerm {
                      const std::string& search_url_full,
                      const std::string& search_url_preload,
                      int coca_card_tag,
-                     const std::vector<std::string>& related_searches);
+                     const std::string& related_searches_json);
   ~ResolvedSearchTerm();
 
   // TODO(donnd): switch to member-initialization style instead of initializers.
@@ -88,7 +88,7 @@ struct ResolvedSearchTerm {
   const std::string search_url_full;
   const std::string search_url_preload;
   const int coca_card_tag;
-  std::vector<std::string> related_searches;
+  const std::string related_searches_json;
 
   DISALLOW_COPY_AND_ASSIGN(ResolvedSearchTerm);
 };
