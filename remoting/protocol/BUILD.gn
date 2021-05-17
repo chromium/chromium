@@ -273,6 +273,8 @@ static_library("protocol") {
       "webrtc_frame_scheduler.h",
       "webrtc_frame_scheduler_simple.cc",
       "webrtc_frame_scheduler_simple.h",
+      "webrtc_video_encoder_wrapper.cc",
+      "webrtc_video_encoder_wrapper.h",
       "webrtc_video_frame_adapter.cc",
       "webrtc_video_frame_adapter.h",
       "webrtc_video_stream.cc",
@@ -398,6 +400,7 @@ source_set("unit_tests") {
       "video_frame_pump_unittest.cc",
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
+      "webrtc_video_encoder_wrapper_unittest.cc",
       "webrtc_video_frame_adapter_unittest.cc",
       "webrtc_video_track_source_unittest.cc",
     ]
