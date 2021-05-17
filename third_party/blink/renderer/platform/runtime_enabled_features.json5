@@ -541,7 +541,7 @@
       // @font-face descriptor size-adjust.
       // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
       name: "CSSFontFaceSizeAdjust",
-      status: "experimental",
+      status: "stable",
     },
     {
       // @font-face descriptors ascent-override, descent-override and
