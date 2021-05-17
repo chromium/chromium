@@ -454,7 +454,7 @@ content::BrowserContext* CastBrowserMainParts::browser_context() {
   return cast_browser_process_->browser_context();
 }
 
-void CastBrowserMainParts::PreMainMessageLoopStart() {
+void CastBrowserMainParts::PreCreateMainMessageLoop() {
   // GroupedHistograms needs to be initialized before any threads are created
   // to prevent race conditions between calls to Preregister and those threads
   // attempting to collect metrics.
@@ -474,7 +474,7 @@ void CastBrowserMainParts::PreMainMessageLoopStart() {
 #endif  // !(defined(OS_ANDROID) || defined(OS_FUCHSIA))
 }
 
-void CastBrowserMainParts::PostMainMessageLoopStart() {
+void CastBrowserMainParts::PostCreateMainMessageLoop() {
   // Ensure CastMetricsHelper initialized on UI thread.
   metrics::CastMetricsHelper::GetInstance();
 }

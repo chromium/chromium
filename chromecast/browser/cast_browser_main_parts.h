@@ -80,8 +80,8 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   content::BrowserContext* browser_context();
 
   // content::BrowserMainParts implementation:
-  void PreMainMessageLoopStart() override;
-  void PostMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
+  void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreCreateThreads() override;
   int PreMainMessageLoopRun() override;

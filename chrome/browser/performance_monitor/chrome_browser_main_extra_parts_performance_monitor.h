@@ -27,7 +27,7 @@ class ChromeBrowserMainExtraPartsPerformanceMonitor
       const ChromeBrowserMainExtraPartsPerformanceMonitor&) = delete;
 
   // ChromeBrowserMainExtraParts:
-  void PostMainMessageLoopStart() override;
+  void PostCreateMainMessageLoop() override;
   void PreMainMessageLoopRun() override;
 
  private:

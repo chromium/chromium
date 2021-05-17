@@ -119,7 +119,7 @@ ShellBrowserMainParts::ShellBrowserMainParts(
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
 #if !defined(OS_MAC)
-void ShellBrowserMainParts::PreMainMessageLoopStart() {
+void ShellBrowserMainParts::PreCreateMainMessageLoop() {
 #if defined(USE_AURA) && defined(USE_X11)
   if (!features::IsUsingOzonePlatform())
     ui::TouchFactory::SetTouchDeviceListFromCommandLine();
@@ -127,7 +127,7 @@ void ShellBrowserMainParts::PreMainMessageLoopStart() {
 }
 #endif
 
-void ShellBrowserMainParts::PostMainMessageLoopStart() {
+void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::DBusThreadManager::Initialize();
   bluez::BluezDBusManager::InitializeFake();

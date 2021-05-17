@@ -73,10 +73,10 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
   return ChromeBrowserMainPartsPosix::PreEarlyInitialization();
 }
 
-void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
+void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::PRE_MAIN_MESSAGE_LOOP_START);
-  ChromeBrowserMainPartsPosix::PreMainMessageLoopStart();
+  ChromeBrowserMainPartsPosix::PreCreateMainMessageLoop();
 
   // ChromeBrowserMainParts should have loaded the resource bundle by this
   // point (needed to load the nib).
@@ -133,10 +133,10 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   }
 }
 
-void ChromeBrowserMainPartsMac::PostMainMessageLoopStart() {
+void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
-  ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
+  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 
   if (base::FeatureList::IsEnabled(
           net::features::kCertVerifierBuiltinFeature)) {

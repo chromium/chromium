@@ -10,7 +10,7 @@
 
 namespace headless {
 
-void HeadlessBrowserMainParts::PostMainMessageLoopStart() {
+void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
 #if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
 #endif

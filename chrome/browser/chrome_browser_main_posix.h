@@ -15,7 +15,7 @@ class ChromeBrowserMainPartsPosix : public ChromeBrowserMainParts {
 
   // content::BrowserMainParts overrides.
   int PreEarlyInitialization() override;
-  void PostMainMessageLoopStart() override;
+  void PostCreateMainMessageLoop() override;
 
   // ChromeBrowserMainParts overrides.
   void ShowMissingLocaleMessageBox() override;

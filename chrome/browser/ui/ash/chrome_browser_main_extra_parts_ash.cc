@@ -114,7 +114,7 @@ ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh() = default;
 
 ChromeBrowserMainExtraPartsAsh::~ChromeBrowserMainExtraPartsAsh() = default;
 
-void ChromeBrowserMainExtraPartsAsh::PreMainMessageLoopStart() {
+void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
   user_profile_loaded_observer_ = std::make_unique<UserProfileLoadedObserver>();
 }
 

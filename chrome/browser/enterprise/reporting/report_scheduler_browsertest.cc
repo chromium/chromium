@@ -30,7 +30,7 @@ class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
   explicit ChromeBrowserExtraSetUp(
       policy::ChromeBrowserCloudManagementController::Observer* observer)
       : observer_(observer) {}
-  void PreMainMessageLoopStart() override {
+  void PreCreateMainMessageLoop() override {
     g_browser_process->browser_policy_connector()
         ->chrome_browser_cloud_management_controller()
         ->AddObserver(observer_);

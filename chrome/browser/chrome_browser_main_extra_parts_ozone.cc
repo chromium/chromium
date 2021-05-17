@@ -31,7 +31,7 @@ void ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization() {
 #endif
 }
 
-void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
+void ChromeBrowserMainExtraPartsOzone::PostCreateMainMessageLoop() {
   auto shutdown_cb = base::BindOnce([] {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Force a crash so that a crash report is generated.
@@ -42,7 +42,7 @@ void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
   });
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::GetInstance()->PostMainMessageLoopStart(
+    ui::OzonePlatform::GetInstance()->PostCreateMainMessageLoop(
         std::move(shutdown_cb));
     return;
   }

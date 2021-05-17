@@ -289,7 +289,7 @@ class OzonePlatformWayland : public OzonePlatform {
     buffer_manager_->AddBindingWaylandBufferManagerGpu(std::move(receiver));
   }
 
-  void PostMainMessageLoopStart(
+  void PostCreateMainMessageLoop(
       base::OnceCallback<void()> shutdown_cb) override {
     DCHECK(connection_);
     connection_->SetShutdownCb(std::move(shutdown_cb));

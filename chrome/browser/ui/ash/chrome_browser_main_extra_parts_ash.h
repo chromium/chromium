@@ -62,7 +62,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   ~ChromeBrowserMainExtraPartsAsh() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
-  void PreMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
   void PreProfileInit() override;
   void PostProfileInit() override;
   void PostBrowserStart() override;

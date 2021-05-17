@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Corresponds to chrome_browser_main_extra_parts.h.
   //
   // The browser process' initialization involves several steps -
-  // PreEarlyInitialization, PostMainMessageLoopStart, PostMainMessageLoopRun,
+  // PreEarlyInitialization, PostCreateMainMessageLoop, PostMainMessageLoopRun,
   // etc. In order to be consistent with that and allow platform specific
   // initialization steps, the OzonePlatform has three methods - one static
   // PreEarlyInitialization that is expected to do some early non-ui
@@ -189,7 +189,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // Sets error handlers if supported for the browser process after the message
   // loop started. It's required to call this so that we can exit cleanly if the
   // server can exit before we do.
-  virtual void PostMainMessageLoopStart(base::OnceCallback<void()> shutdown_cb);
+  virtual void PostCreateMainMessageLoop(
+      base::OnceCallback<void()> shutdown_cb);
   // Resets the error handlers if set.
   virtual void PostMainMessageLoopRun();
 

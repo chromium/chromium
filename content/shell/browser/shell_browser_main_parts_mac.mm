@@ -128,7 +128,7 @@ base::scoped_nsobject<NSMenu> BuildMainMenu() {
 
 namespace content {
 
-void ShellBrowserMainParts::PreMainMessageLoopStart() {
+void ShellBrowserMainParts::PreCreateMainMessageLoop() {
   base::scoped_nsobject<NSMenu> main_menu = BuildMainMenu();
   [[NSApplication sharedApplication] setMainMenu:main_menu];
 }

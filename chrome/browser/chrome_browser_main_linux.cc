@@ -77,13 +77,12 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-
-void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
+void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
 #endif
 
-  ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
+  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {

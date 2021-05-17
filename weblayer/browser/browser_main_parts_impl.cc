@@ -185,7 +185,7 @@ int BrowserMainPartsImpl::PreCreateThreads() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void BrowserMainPartsImpl::PreMainMessageLoopStart() {
+void BrowserMainPartsImpl::PreCreateMainMessageLoop() {
 #if defined(USE_AURA) && defined(USE_X11)
   if (!features::IsUsingOzonePlatform())
     ui::TouchFactory::SetTouchDeviceListFromCommandLine();

@@ -629,19 +629,20 @@ int BrowserMainLoop::EarlyInitialization() {
   return RESULT_CODE_NORMAL_EXIT;
 }
 
-void BrowserMainLoop::PreMainMessageLoopStart() {
-  TRACE_EVENT0("startup",
-               "BrowserMainLoop::MainMessageLoopStart:PreMainMessageLoopStart");
+void BrowserMainLoop::PreCreateMainMessageLoop() {
+  TRACE_EVENT0(
+      "startup",
+      "BrowserMainLoop::CreateMainMessageLoop:PreCreateMainMessageLoop");
   if (parts_) {
-    parts_->PreMainMessageLoopStart();
+    parts_->PreCreateMainMessageLoop();
   }
 }
 
-void BrowserMainLoop::MainMessageLoopStart() {
-  // DO NOT add more code here. Use PreMainMessageLoopStart() above or
-  // PostMainMessageLoopStart() below.
+void BrowserMainLoop::CreateMainMessageLoop() {
+  // DO NOT add more code here. Use PreCreateMainMessageLoop() above or
+  // PostCreateMainMessageLoop() below.
 
-  TRACE_EVENT0("startup", "BrowserMainLoop::MainMessageLoopStart");
+  TRACE_EVENT0("startup", "BrowserMainLoop::CreateMainMessageLoop");
 
   base::PlatformThread::SetName("CrBrowserMain");
 
@@ -653,8 +654,8 @@ void BrowserMainLoop::MainMessageLoopStart() {
       BrowserThread::UI, base::ThreadTaskRunnerHandle::Get()));
 }
 
-void BrowserMainLoop::PostMainMessageLoopStart() {
-  TRACE_EVENT0("startup", "BrowserMainLoop::PostMainMessageLoopStart");
+void BrowserMainLoop::PostCreateMainMessageLoop() {
+  TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateMainMessageLoop");
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:SystemMonitor");
     system_monitor_ = std::make_unique<base::SystemMonitor>();
@@ -706,7 +707,7 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
   }
 
   if (parts_)
-    parts_->PostMainMessageLoopStart();
+    parts_->PostCreateMainMessageLoop();
 
 #if defined(OS_ANDROID)
   {

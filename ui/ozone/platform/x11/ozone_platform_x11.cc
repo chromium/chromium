@@ -276,7 +276,7 @@ class OzonePlatformX11 : public OzonePlatform,
         std::make_unique<X11SurfaceFactory>(std::move(connection));
   }
 
-  void PostMainMessageLoopStart(
+  void PostCreateMainMessageLoop(
       base::OnceCallback<void()> shutdown_cb) override {
     // Installs the X11 error handlers for the UI process after the
     // main message loop has started. This will allow us to exit cleanly

@@ -30,8 +30,8 @@ class ShellBrowserMainParts : public BrowserMainParts {
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
   void PostCreateThreads() override;
-  void PreMainMessageLoopStart() override;
-  void PostMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
+  void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(

@@ -155,8 +155,8 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
-  ChromeBrowserMainParts::PostMainMessageLoopStart();
+void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
+  ChromeBrowserMainParts::PostCreateMainMessageLoop();
 
   // Exit in response to SIGINT, SIGTERM, etc.
   InstallShutdownSignalHandlers(

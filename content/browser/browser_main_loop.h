@@ -139,13 +139,11 @@ class CONTENT_EXPORT BrowserMainLoop {
   // successful or not.
   bool InitializeToolkit();
 
-  void PreMainMessageLoopStart();
+  void PreCreateMainMessageLoop();
   // Creates the main message loop, bringing APIs like
-  // ThreadTaskRunnerHandle::Get() online. TODO(gab): Rename this to
-  // CreateMainMessageLoop() since the message loop isn't actually "started"
-  // here...
-  void MainMessageLoopStart();
-  void PostMainMessageLoopStart();
+  // ThreadTaskRunnerHandle::Get() online.
+  void CreateMainMessageLoop();
+  void PostCreateMainMessageLoop();
 
   // Create and start running the tasks we need to complete startup. Note that
   // this can be called more than once (currently only on Android) if we get a
@@ -266,9 +264,9 @@ class CONTENT_EXPORT BrowserMainLoop {
   // Init()
   // EarlyInitialization()
   // InitializeToolkit()
-  // PreMainMessageLoopStart()
-  // MainMessageLoopStart()
-  // PostMainMessageLoopStart()
+  // PreCreateMainMessageLoop()
+  // CreateMainMessageLoop()
+  // PostCreateMainMessageLoop()
   // CreateStartupTasks()
   //   PreCreateThreads()
   //     InitializeMemoryManagementComponent()
@@ -315,7 +313,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<aura::Env> env_;
 #endif
 
-  // Members initialized in |PostMainMessageLoopStart()| -----------------------
+  // Members initialized in |PostCreateMainMessageLoop()| ----------------------
   std::unique_ptr<base::SystemMonitor> system_monitor_;
   std::unique_ptr<base::HighResolutionTimerManager> hi_res_timer_manager_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
@@ -331,7 +329,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // reset() on shutdown) but after |main_thread_| and services below.
   std::unique_ptr<BrowserMainParts> parts_;
 
-  // Members initialized in |MainMessageLoopStart()| ---------------------------
+  // Members initialized in |CreateMainMessageLoop()| --------------------------
   // This must get destroyed before other threads that are created in |parts_|.
   std::unique_ptr<BrowserThreadImpl> main_thread_;
 

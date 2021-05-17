@@ -164,7 +164,7 @@ OzonePlatform::GetPlatformUserInputMonitor(
   return {};
 }
 
-void OzonePlatform::PostMainMessageLoopStart(
+void OzonePlatform::PostCreateMainMessageLoop(
     base::OnceCallback<void()> shutdown_cb) {}
 
 void OzonePlatform::PostMainMessageLoopRun() {}

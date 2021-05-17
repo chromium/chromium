@@ -115,9 +115,9 @@ int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
     if (!main_loop_->InitializeToolkit())
       return 1;
 
-    main_loop_->PreMainMessageLoopStart();
-    main_loop_->MainMessageLoopStart();
-    main_loop_->PostMainMessageLoopStart();
+    main_loop_->PreCreateMainMessageLoop();
+    main_loop_->CreateMainMessageLoop();
+    main_loop_->PostCreateMainMessageLoop();
 
     // WARNING: If we get a WM_ENDSESSION, objects created on the stack here
     // are NOT deleted. If you need something to run during WM_ENDSESSION add it

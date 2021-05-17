@@ -561,15 +561,15 @@ int ChromeBrowserMainPartsChromeos::PreEarlyInitialization() {
   return ChromeBrowserMainPartsLinux::PreEarlyInitialization();
 }
 
-void ChromeBrowserMainPartsChromeos::PreMainMessageLoopStart() {
+void ChromeBrowserMainPartsChromeos::PreCreateMainMessageLoop() {
   // Initialize session manager in early stage in case others want to listen
   // to session state change right after browser is started.
   g_browser_process->platform_part()->InitializeSessionManager();
 
-  ChromeBrowserMainPartsLinux::PreMainMessageLoopStart();
+  ChromeBrowserMainPartsLinux::PreCreateMainMessageLoop();
 }
 
-void ChromeBrowserMainPartsChromeos::PostMainMessageLoopStart() {
+void ChromeBrowserMainPartsChromeos::PostCreateMainMessageLoop() {
   // Used by ChromeOS components to retrieve the system token certificate
   // database.
   SystemTokenCertDbStorage::Initialize();
@@ -586,10 +586,10 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopStart() {
   // Need to be done after LoginState has been initialized in DBusServices().
   ::memory::MemoryKillsMonitor::Initialize();
 
-  ChromeBrowserMainPartsLinux::PostMainMessageLoopStart();
+  ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop();
 }
 
-// Threads are initialized between MainMessageLoopStart and MainMessageLoopRun.
+// Threads are initialized between CreateMainMessageLoop and MainMessageLoopRun.
 // about_flags settings are applied in ChromeBrowserMainParts::PreCreateThreads.
 int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   network_change_manager_client_ = std::make_unique<NetworkChangeManagerClient>(

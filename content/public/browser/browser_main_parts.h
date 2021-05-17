@@ -34,10 +34,10 @@ namespace content {
 //  - ToolkitInitialized: similar to EarlyInitialization but for the UI toolkit.
 //    Allows an embedder to do any extra toolkit initialization.
 //
-//  - PreMainMessageLoopStart: things to be done at some generic time before the
-//    creation of the main message loop.
+//  - PreCreateMainMessageLoop: things to be done at some generic time before
+//    the creation of the main message loop.
 //
-//  - PostMainMessageLoopStart: things that should be done as early as possible
+//  - PostCreateMainMessageLoop: things that should be done as early as possible
 //    but need the main message loop to be around (i.e. APIs like
 //    ThreadTaskRunnerHandle, BrowserThread::UI are up).
 //
@@ -102,7 +102,7 @@ namespace content {
 //  - Split out any platform-specific bits. Please avoid #ifdefs it at all
 //    possible. You have two choices for platform-specific code: (1) Execute it
 //    from one of the |Pre/Post...()| methods in an embedder's platform-specific
-//    override (e.g., ChromeBrowserMainPartsWin::PreMainMessageLoopStart()); do
+//    override (e.g., ChromeBrowserMainPartsWin::PreCreateMainMessageLoop()); do
 //    this if the code is unique to an embedder and platform type. Or (2)
 //    execute it from one of the "stages" (e.g.,
 //    |BrowserMainLoop::EarlyInitialization()|) and provide platform-specific
@@ -125,8 +125,8 @@ class CONTENT_EXPORT BrowserMainParts {
   virtual int PreEarlyInitialization();
   virtual void PostEarlyInitialization() {}
   virtual void ToolkitInitialized() {}
-  virtual void PreMainMessageLoopStart() {}
-  virtual void PostMainMessageLoopStart() {}
+  virtual void PreCreateMainMessageLoop() {}
+  virtual void PostCreateMainMessageLoop() {}
   virtual int PreCreateThreads();
   virtual void PostCreateThreads() {}
   virtual int PreMainMessageLoopRun();

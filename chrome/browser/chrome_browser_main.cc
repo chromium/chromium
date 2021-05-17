@@ -715,15 +715,15 @@ void ChromeBrowserMainParts::ToolkitInitialized() {
     chrome_extra_parts_[i]->ToolkitInitialized();
 }
 
-void ChromeBrowserMainParts::PreMainMessageLoopStart() {
-  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreMainMessageLoopStart");
+void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
+  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateMainMessageLoop");
 
   for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PreMainMessageLoopStart();
+    chrome_extra_parts_[i]->PreCreateMainMessageLoop();
 }
 
-void ChromeBrowserMainParts::PostMainMessageLoopStart() {
-  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostMainMessageLoopStart");
+void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
+  TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostCreateMainMessageLoop");
 
 #if !defined(OS_ANDROID)
   // Initialize the upgrade detector here after ChromeBrowserMainPartsChromeos
@@ -745,7 +745,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopStart() {
     device_event_log::Initialize(0 /* default max entries */);
 
   for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
-    chrome_extra_parts_[i]->PostMainMessageLoopStart();
+    chrome_extra_parts_[i]->PostCreateMainMessageLoop();
 }
 
 int ChromeBrowserMainParts::PreCreateThreads() {

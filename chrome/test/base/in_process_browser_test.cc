@@ -178,7 +178,7 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
   ChromeBrowserMainExtraPartsBrowserProcessInjection() = default;
 
   // ChromeBrowserMainExtraParts implementation
-  void PreMainMessageLoopStart() override {
+  void PreCreateMainMessageLoop() override {
     // The real GeolocationManager initializes a CLLocationManager. It has
     // been observed that when thousands of instances of this object are
     // created, as happens when running browser tests, the CoreLocationAgent

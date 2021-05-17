@@ -14,7 +14,8 @@ ChromeBrowserMainExtraPartsPerformanceMonitor::
 ChromeBrowserMainExtraPartsPerformanceMonitor::
     ~ChromeBrowserMainExtraPartsPerformanceMonitor() = default;
 
-void ChromeBrowserMainExtraPartsPerformanceMonitor::PostMainMessageLoopStart() {
+void ChromeBrowserMainExtraPartsPerformanceMonitor::
+    PostCreateMainMessageLoop() {
   process_monitor_ = performance_monitor::ProcessMonitor::Create();
   system_monitor_ = performance_monitor::SystemMonitor::Create();
 }

@@ -582,7 +582,7 @@ void ChromeBrowserMainPartsWin::ToolkitInitialized() {
   gfx::win::SetGetMinimumFontSizeCallback(&GetMinimumFontSize);
 }
 
-void ChromeBrowserMainPartsWin::PreMainMessageLoopStart() {
+void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   // installer_util references strings that are normally compiled into
   // setup.exe.  In Chrome, these strings are in the locale files.
   SetupInstallerUtilStrings();
@@ -594,7 +594,7 @@ void ChromeBrowserMainPartsWin::PreMainMessageLoopStart() {
   bool os_crypt_init = OSCrypt::Init(local_state);
   DCHECK(os_crypt_init);
 
-  ChromeBrowserMainParts::PreMainMessageLoopStart();
+  ChromeBrowserMainParts::PreCreateMainMessageLoop();
   if (!parameters().ui_task) {
     // Make sure that we know how to handle exceptions from the message loop.
     InitializeWindowProcExceptions();

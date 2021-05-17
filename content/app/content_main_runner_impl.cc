@@ -995,7 +995,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     // Register the TaskExecutor for posting task to the BrowserThreads. It is
     // incorrect to post to a BrowserThread before this point. This instantiates
     // and binds the MessageLoopForUI on the main thread (but it's only labeled
-    // as BrowserThread::UI in BrowserMainLoop::MainMessageLoopStart).
+    // as BrowserThread::UI in BrowserMainLoop::CreateMainMessageLoop).
     BrowserTaskExecutor::Create();
 
     delegate_->PostEarlyInitialization(main_params.ui_task != nullptr);
