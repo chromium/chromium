@@ -4851,6 +4851,21 @@
             ]
         }
     ],
+    "MobileIdentityConsistencyPromos": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MobileIdentityConsistencyPromos"
+                    ]
+                }
+            ]
+        }
+    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
