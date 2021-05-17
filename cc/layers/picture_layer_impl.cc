@@ -101,7 +101,8 @@ PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
       is_backdrop_filter_mask_(false),
       was_screen_space_transform_animating_(false),
       only_used_low_res_last_append_quads_(false),
-      nearest_neighbor_(false) {
+      nearest_neighbor_(false),
+      raster_source_size_changed_(false) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 
@@ -615,6 +616,7 @@ bool PictureLayerImpl::UpdateTiles() {
   if (should_adjust_raster_scale)
     RecalculateRasterScales();
   UpdateTilingsForRasterScaleAndTranslation(should_adjust_raster_scale);
+  raster_source_size_changed_ = false;
 
   if (layer_tree_impl()->IsActiveTree())
     AddLowResolutionTilingIfNeeded();
@@ -727,6 +729,9 @@ void PictureLayerImpl::UpdateRasterSource(
          bounds() == raster_source->GetSize())
       << " bounds " << bounds().ToString() << " pile "
       << raster_source->GetSize().ToString();
+
+  if (!raster_source_ || raster_source_->GetSize() != raster_source->GetSize())
+    raster_source_size_changed_ = true;
 
   // We have an updated recording if the DisplayItemList in the new RasterSource
   // is different.
@@ -1377,10 +1382,12 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
 
   // Avoid frequent raster scale changes if we have an animating transform.
   if (draw_properties().screen_space_transform_is_animating) {
-    // Except when the device viewport rect has changed because the raster scale
-    // may depend on the rect.
-    if (layer_tree_impl()->device_viewport_rect_changed())
+    // Except when the device viewport rect or the raster source size has
+    // changed because the raster scale may depend on the rect.
+    if (layer_tree_impl()->device_viewport_rect_changed() ||
+        raster_source_size_changed_) {
       return true;
+    }
     // Or when the raster scale is not affected by invalid scale and is too
     // small compared to the ideal scale.
     if (ideal_contents_scale_.x() >
@@ -1554,11 +1561,18 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
     const gfx::Vector2dF& preserved_raster_contents_scale) {
   DCHECK(draw_properties().screen_space_transform_is_animating);
 
-  // TODO(crbug.com/1196414): Support 2D scales in animations.
   float maximum_animation_scale =
       layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
           transform_tree_index());
-  float scale = std::max(raster_contents_scale_key(), maximum_animation_scale);
+  raster_contents_scale_.SetToMax(
+      gfx::Vector2dF(maximum_animation_scale, maximum_animation_scale));
+
+  if (HasWillChangeTransformHint()) {
+    // If we have a will-change: transform hint, do not shrink the content
+    // raster scale, otherwise we will end up throwing away larger tiles we may
+    // need again.
+    raster_contents_scale_.SetToMax(preserved_raster_contents_scale);
+  }
 
   // However we want to avoid excessive memory use. Choose a scale at which this
   // layer's rastered content is not larger than the viewport.
@@ -1579,19 +1593,14 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
       std::min(raster_source_size.width(), max_viewport_dimension),
       std::min(raster_source_size.height(), max_viewport_dimension));
   gfx::SizeF max_visible_bounds_at_max_scale =
-      gfx::ScaleSize(max_visible_bounds, scale);
+      gfx::ScaleSize(max_visible_bounds, raster_contents_scale_.x(),
+                     raster_contents_scale_.y());
   float maximum_area = max_visible_bounds_at_max_scale.width() *
                        max_visible_bounds_at_max_scale.height();
   // Clamp the scale to make the rastered content not larger than the viewport.
-  if (UNLIKELY(maximum_area > squared_viewport_area))
-    scale /= std::sqrt(maximum_area / squared_viewport_area);
-  raster_contents_scale_ = gfx::Vector2dF(scale, scale);
-
-  if (HasWillChangeTransformHint()) {
-    // If we have a will-change: transform hint, do not shrink the content
-    // raster scale, otherwise we will end up throwing away larger tiles we
-    // may need again.
-    raster_contents_scale_.SetToMax(preserved_raster_contents_scale);
+  if (UNLIKELY(maximum_area > squared_viewport_area)) {
+    raster_contents_scale_.Scale(
+        1.f / std::sqrt(maximum_area / squared_viewport_area));
   }
 }
 

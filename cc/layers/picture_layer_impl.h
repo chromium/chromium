@@ -294,6 +294,11 @@ class CC_EXPORT PictureLayerImpl
   // Whether the layer did not have a draw quad during last AppendQuads call.
   bool did_checkerboard_quad_ : 1;
 
+  // This is set by UpdateRasterSource() on change of raster source size. It's
+  // used to recalculate raster scale during transform animation. It's reset to
+  // false after raster scale update.
+  bool raster_source_size_changed_ : 1;
+
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNone;
 

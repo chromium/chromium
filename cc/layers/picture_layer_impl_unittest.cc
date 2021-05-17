@@ -3176,13 +3176,36 @@ TEST_F(LegacySWPictureLayerImplTest,
   // The maximum animation scale exceeds the squared size of the maximum
   // viewport dimension, so raster scale should be shrunk to make the
   // rasterized layer not larger than the viewport.
-  contents_scale = 2.f;
   maximum_animation_scale = 21.f;
 
   SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
                                             page_scale, maximum_animation_scale,
                                             affected_by_invalid_scale);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 20.f);
+  EXPECT_NEAR(20.f, pending_layer()->HighResTiling()->contents_scale_key(),
+              0.001f);
+  EXPECT_NEAR(20.f, active_layer()->HighResTiling()->contents_scale_key(),
+              0.001f);
+
+  // The clamping logic still works with will-change:transform.
+  // Raster source size change forces adjustment of raster scale.
+  GetTransformNode(active_layer())->will_change_transform = true;
+  GetTransformNode(pending_layer())->will_change_transform = true;
+  layer_bounds = gfx::Size(200, 200);
+  Region invalidation;
+  // UpdateRasterSource() requires that the pending tree doesn't have tiles.
+  pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
+  pending_layer()->SetBounds(layer_bounds);
+  pending_layer()->UpdateRasterSource(
+      FakeRasterSource::CreateFilled(layer_bounds), &invalidation, nullptr,
+      nullptr);
+  pending_layer()->PushPropertiesTo(active_layer());
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_NEAR(10.f, pending_layer()->HighResTiling()->contents_scale_key(),
+              0.001f);
+  EXPECT_NEAR(10.f, active_layer()->HighResTiling()->contents_scale_key(),
+              0.001f);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
@@ -3721,9 +3744,6 @@ TEST_F(LegacySWPictureLayerImplTest, TinyRasterScale) {
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.5f);
 }
-
-TEST_F(LegacySWPictureLayerImplTest,
-       AnimationChangeRespectsWillChangeTransformHint) {}
 
 TEST_F(LegacySWPictureLayerImplTest, LowResReadyToDrawNotEnoughToActivate) {
   gfx::Size tile_size(100, 100);
