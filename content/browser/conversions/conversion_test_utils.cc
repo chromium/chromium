@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/browser/conversions/conversion_storage_context.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -321,7 +320,7 @@ std::vector<ConversionReport> GetConversionsToReportForTesting(
     base::Time max_report_time) {
   base::RunLoop run_loop;
   std::vector<ConversionReport> conversion_reports;
-  manager->conversion_storage_context_->storage()
+  manager->conversion_storage_
       .AsyncCall(&ConversionStorage::GetConversionsToReport)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(

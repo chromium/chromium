@@ -674,8 +674,6 @@ source_set("browser") {
     "conversions/conversion_reporter_impl.cc",
     "conversions/conversion_reporter_impl.h",
     "conversions/conversion_storage.h",
-    "conversions/conversion_storage_context.cc",
-    "conversions/conversion_storage_context.h",
     "conversions/conversion_storage_delegate_impl.cc",
     "conversions/conversion_storage_delegate_impl.h",
     "conversions/conversion_storage_sql.cc",
