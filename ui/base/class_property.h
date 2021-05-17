@@ -137,8 +137,6 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
   std::map<const void*, Value> prop_map_;
 };
 
-namespace {
-
 // No single new-style cast works for every conversion to/from int64_t, so we
 // need this helper class.
 template<typename T>
@@ -161,8 +159,6 @@ class ClassPropertyCaster<base::TimeDelta> {
     return base::TimeDelta::FromMicroseconds(x);
   }
 };
-
-}  // namespace
 
 namespace subtle {
 
