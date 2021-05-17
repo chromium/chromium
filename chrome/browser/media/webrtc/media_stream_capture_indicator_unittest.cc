@@ -115,34 +115,51 @@ class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
 };
 
 struct ObserverMethodTestParam {
+  ObserverMethodTestParam(
+      blink::mojom::MediaStreamType stream_type,
+      media::mojom::DisplayMediaInformationPtr display_media_info,
+      MockObserverSetExpectationsMethod observer_method,
+      AccessorMethod accessor_method)
+      : stream_type(stream_type),
+        display_media_info(display_media_info.Clone()),
+        observer_method(observer_method),
+        accessor_method(accessor_method) {}
+
+  ObserverMethodTestParam(const ObserverMethodTestParam& other)
+      : stream_type(other.stream_type),
+        display_media_info(other.display_media_info.Clone()),
+        observer_method(other.observer_method),
+        accessor_method(other.accessor_method) {}
+
   blink::mojom::MediaStreamType stream_type;
-  absl::optional<media::mojom::DisplayMediaInformation> display_media_info;
+  media::mojom::DisplayMediaInformationPtr display_media_info;
   MockObserverSetExpectationsMethod observer_method;
   AccessorMethod accessor_method;
 };
 
 ObserverMethodTestParam kObserverMethodTestParams[] = {
     {blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-     /*display_media_info=*/absl::nullopt,
+     /*display_media_info=*/nullptr,
      &MockObserver::SetOnIsCapturingVideoChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingVideo},
     {blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-     /*display_media_info=*/absl::nullopt,
+     /*display_media_info=*/nullptr,
      &MockObserver::SetOnIsCapturingAudioChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingAudio},
     {blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
-     /*display_media_info=*/absl::nullopt,
+     /*display_media_info=*/nullptr,
      &MockObserver::SetOnIsBeingMirroredChangedExpectation,
      &MediaStreamCaptureIndicator::IsBeingMirrored},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-     /*display_media_info=*/absl::nullopt,
+     /*display_media_info=*/nullptr,
      &MockObserver::SetOnIsCapturingWindowChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingWindow},
     {blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-     media::mojom::DisplayMediaInformation(
+     media::mojom::DisplayMediaInformation::New(
          media::mojom::DisplayCaptureSurfaceType::MONITOR,
          /*logical_surface=*/true,
-         media::mojom::CursorCaptureType::NEVER),
+         media::mojom::CursorCaptureType::NEVER,
+         /*capture_handle=*/nullptr),
      &MockObserver::SetOnIsCapturingDisplayChangedExpectation,
      &MediaStreamCaptureIndicator::IsCapturingDisplay},
 };

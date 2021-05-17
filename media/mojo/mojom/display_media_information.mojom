@@ -4,6 +4,8 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/capture_handle.mojom";
+
 // Mojo equivalent to media::DisplayMediaInformation. See also
 // media/base/display_media_information.h
 
@@ -24,4 +26,5 @@ struct DisplayMediaInformation {
   DisplayCaptureSurfaceType display_surface;
   bool logical_surface;
   CursorCaptureType cursor;
+  CaptureHandle? capture_handle;
 };

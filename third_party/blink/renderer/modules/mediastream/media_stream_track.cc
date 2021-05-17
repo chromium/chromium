@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -680,6 +681,16 @@ MediaTrackSettings* MediaStreamTrack::getSettings() const {
     }
     settings->setCursor(value);
   }
+  if (platform_settings.capture_handle.has_value()) {
+    const auto& settings_handle = platform_settings.capture_handle.value();
+    auto* capture_handle = CaptureHandle::Create();
+    if (settings_handle.origin) {
+      capture_handle->setOrigin(settings_handle.origin);
+    }
+    capture_handle->setHandle(settings_handle.handle);
+    settings->setCaptureHandle(capture_handle);
+  }
+
   return settings;
 }
 

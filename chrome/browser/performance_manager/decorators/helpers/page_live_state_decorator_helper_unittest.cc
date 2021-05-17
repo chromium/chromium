@@ -130,7 +130,8 @@ TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDisplayChanged) {
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       media::mojom::DisplayMediaInformation::New(
           media::mojom::DisplayCaptureSurfaceType::MONITOR,
-          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER),
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr),
       &PageLiveStateDecorator::Data::IsCapturingDisplay);
 }
 

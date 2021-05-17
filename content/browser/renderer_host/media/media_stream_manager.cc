@@ -419,7 +419,7 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
   MediaStreamDevice device(media_type, media_id.ToString(),
                            media_id.ToString());
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      display_surface, true, media::mojom::CursorCaptureType::NEVER);
+      display_surface, true, media::mojom::CursorCaptureType::NEVER, nullptr);
   devices.push_back(device);
   if (!request_audio)
     return devices;

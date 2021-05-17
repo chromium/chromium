@@ -701,6 +701,15 @@ void MediaStreamVideoTrack::GetSettings(
     settings.display_surface = info->display_surface;
     settings.logical_surface = info->logical_surface;
     settings.cursor = info->cursor;
+    if (info->capture_handle) {
+      settings.capture_handle.emplace();
+      if (!info->capture_handle->origin.opaque()) {
+        settings.capture_handle->origin =
+            String::FromUTF8(info->capture_handle->origin.Serialize());
+      }
+      settings.capture_handle->handle =
+          WebString::FromUTF16(info->capture_handle->capture_handle);
+    }
   }
 }
 
