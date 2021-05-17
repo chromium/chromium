@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "remoting/base/compound_buffer.h"
+#include "remoting/host/scoped_url_forwarder.h"
 #include "remoting/protocol/message_serialization.h"
 #include "url/gurl.h"
 
@@ -50,6 +51,7 @@ RemoteOpenUrlMessageHandler::~RemoteOpenUrlMessageHandler() {
 void RemoteOpenUrlMessageHandler::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  scoped_url_forwarder_ = ScopedUrlForwarder::Create();
   ipc_server_.StartServer();
 }
 
@@ -78,6 +80,7 @@ void RemoteOpenUrlMessageHandler::OnIncomingMessage(
 void RemoteOpenUrlMessageHandler::OnDisconnecting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  scoped_url_forwarder_.reset();
   ipc_server_.StopServer();
 
   // The remote connection is going away, so inform all IPC clients to open the

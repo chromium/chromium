@@ -325,6 +325,8 @@ static_library("common") {
     "resizing_host_observer.h",
     "resources.h",
     "sas_injector.h",
+    "scoped_url_forwarder.cc",
+    "scoped_url_forwarder.h",
     "screen_controls.h",
     "screen_resolution.cc",
     "screen_resolution.h",
@@ -475,6 +477,8 @@ static_library("common") {
       "curtain_mode_linux.cc",
       "disconnect_window_linux.cc",
       "keyboard_layout_monitor_linux.cc",
+      "scoped_url_forwarder_linux.cc",
+      "scoped_url_forwarder_linux.h",
       "xsession_chooser_linux.cc",
     ]
   }
