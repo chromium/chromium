@@ -227,11 +227,12 @@ function convertSyncTrustedVaultKeys(fakeKeys) {
       {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeEncryptionKeyMaterial),
        version: fakeKeys.fakeEncryptionKeyVersion}
     ],
-    trustedPublicKeys: []
+    trustedRecoveryMethods: []
   };
-  for (var i = 0; i < fakeKeys.fakeTrustedPublicKeys.length; i++) {
-    keys.trustedPublicKeys.push(
-      {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeTrustedPublicKeys[i])});
+  for (var i = 0; i < fakeKeys.fakeTrustedRecoveryMethods.length; i++) {
+    keys.trustedRecoveryMethods.push(
+      {publicKey: base64DecodeToArrayBuffer(fakeKeys.fakeTrustedRecoveryMethods[i].publicKey),
+       type: fakeKeys.fakeTrustedRecoveryMethods[i].type});
   }
   return keys;
 }

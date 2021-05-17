@@ -105,6 +105,8 @@ class StandaloneTrustedVaultBackend
 
   void SetRecoverabilityDegradedForTesting();
 
+  std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
+
   void SetClockForTesting(base::Clock* clock);
 
  private:
@@ -176,6 +178,7 @@ class StandaloneTrustedVaultBackend
   base::Clock* clock_;
 
   bool is_recoverability_degraded_for_testing_ = false;
+  std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 };
 
 }  // namespace syncer

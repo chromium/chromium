@@ -288,6 +288,19 @@ void StandaloneTrustedVaultClient::SetRecoverabilityDegradedForTesting() {
           backend_));
 }
 
+void StandaloneTrustedVaultClient::
+    GetLastAddedRecoveryMethodPublicKeyForTesting(
+        base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  base::PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::
+                         GetLastAddedRecoveryMethodPublicKeyForTesting,
+                     backend_),
+      std::move(callback));
+}
+
 void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {

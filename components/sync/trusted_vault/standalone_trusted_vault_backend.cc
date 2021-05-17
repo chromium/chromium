@@ -218,9 +218,10 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  if (primary_account_->gaia == gaia_id) {
+  if (primary_account_->gaia == gaia_id && !public_key.empty()) {
     // TODO(crbug.com/1081649): Implement logic.
     NOTIMPLEMENTED();
+    last_added_recovery_method_public_key_for_testing_ = public_key;
     is_recoverability_degraded_for_testing_ = false;
     delegate_->NotifyRecoverabilityDegradedChanged();
   }
@@ -246,6 +247,12 @@ StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
 void StandaloneTrustedVaultBackend::SetRecoverabilityDegradedForTesting() {
   is_recoverability_degraded_for_testing_ = true;
   delegate_->NotifyRecoverabilityDegradedChanged();
+}
+
+std::vector<uint8_t>
+StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
+    const {
+  return last_added_recovery_method_public_key_for_testing_;
 }
 
 void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {

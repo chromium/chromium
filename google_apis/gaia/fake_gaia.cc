@@ -125,14 +125,16 @@ std::string FormatCookieForMultilogin(std::string name, std::string value) {
   return base::StringPrintf(format, name.c_str(), value.c_str());
 }
 
-std::string FormatSyncTrustedPublicKeys(
+std::string FormatSyncTrustedRecoveryMethods(
     const std::vector<std::vector<uint8_t>>& public_keys) {
   std::string result;
   for (const std::vector<uint8_t>& public_key : public_keys) {
     if (!result.empty()) {
       base::StrAppend(&result, {","});
     }
-    base::StrAppend(&result, {"\"", base::Base64Encode(public_key), "\""});
+    base::StrAppend(&result,
+                    {"{\"publicKey\":\"", base::Base64Encode(public_key),
+                     "\",\"type\":3}"});
   }
   return result;
 }
@@ -147,13 +149,14 @@ std::string FormatSyncTrustedVaultKeysHeader(
       "{"
       "\"fakeEncryptionKeyMaterial\":\"%s\","
       "\"fakeEncryptionKeyVersion\":%d,"
-      "\"fakeTrustedPublicKeys\":[%s]"
+      "\"fakeTrustedRecoveryMethods\":[%s]"
       "}";
   return base::StringPrintf(
       format,
       base::Base64Encode(sync_trusted_vault_keys.encryption_key).c_str(),
       sync_trusted_vault_keys.encryption_key_version,
-      FormatSyncTrustedPublicKeys(sync_trusted_vault_keys.trusted_public_keys)
+      FormatSyncTrustedRecoveryMethods(
+          sync_trusted_vault_keys.trusted_public_keys)
           .c_str());
 }
 

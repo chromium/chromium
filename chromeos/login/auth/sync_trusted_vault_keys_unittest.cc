@@ -20,7 +20,11 @@ using testing::NotNull;
 MATCHER(HasEmptyValue, "") {
   return arg.encryption_keys().empty() &&
          arg.last_encryption_key_version() == 0 &&
-         arg.trusted_public_keys().empty();
+         arg.trusted_recovery_methods().empty();
+}
+
+MATCHER_P2(MatchesRecoveryMethod, public_key, type, "") {
+  return arg.public_key == public_key && arg.type_hint == type;
 }
 
 base::DictionaryValue MakeKeyValueWithoutVersion(
@@ -34,6 +38,15 @@ base::DictionaryValue MakeKeyValue(const std::vector<uint8_t>& key_material,
                                    int version) {
   base::DictionaryValue key_value = MakeKeyValueWithoutVersion(key_material);
   key_value.SetIntKey("version", version);
+  return key_value;
+}
+
+base::DictionaryValue MakePublicKeyAndType(
+    const std::vector<uint8_t>& public_key,
+    int type) {
+  base::DictionaryValue key_value;
+  key_value.SetKey("publicKey", base::Value(public_key));
+  key_value.SetIntKey("type", type);
   return key_value;
 }
 
@@ -75,7 +88,7 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeys) {
               Eq(kEncryptionKeyVersion2));
   EXPECT_THAT(actual_converted_keys.encryption_keys(),
               ElementsAre(kEncryptionKeyMaterial1, kEncryptionKeyMaterial2));
-  EXPECT_THAT(actual_converted_keys.trusted_public_keys(), IsEmpty());
+  EXPECT_THAT(actual_converted_keys.trusted_recovery_methods(), IsEmpty());
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeysWithMissingVersion) {
@@ -97,26 +110,31 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeysWithMissingVersion) {
               Eq(kEncryptionKeyVersion1));
   EXPECT_THAT(actual_converted_keys.encryption_keys(),
               ElementsAre(kEncryptionKeyMaterial1));
-  EXPECT_THAT(actual_converted_keys.trusted_public_keys(), IsEmpty());
+  EXPECT_THAT(actual_converted_keys.trusted_recovery_methods(), IsEmpty());
 }
 
-TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedPublicKeys) {
+TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedRecoveryMethods) {
   const std::vector<uint8_t> kPublicKeyMaterial1 = {1, 2, 3, 4};
   const std::vector<uint8_t> kPublicKeyMaterial2 = {5, 6, 7, 8};
+  const int kMethodType1 = 7;
+  const int kMethodType2 = 8;
 
   std::vector<base::Value> key_values;
-  key_values.push_back(MakeKeyValueWithoutVersion(kPublicKeyMaterial1));
-  key_values.push_back(MakeKeyValueWithoutVersion(kPublicKeyMaterial2));
+  key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial1, kMethodType1));
+  key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial2, kMethodType2));
 
   base::DictionaryValue root_value;
-  root_value.SetKey("trustedPublicKeys", base::Value(std::move(key_values)));
+  root_value.SetKey("trustedRecoveryMethods",
+                    base::Value(std::move(key_values)));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
   EXPECT_THAT(actual_converted_keys.last_encryption_key_version(), Eq(0));
   EXPECT_THAT(actual_converted_keys.encryption_keys(), IsEmpty());
-  EXPECT_THAT(actual_converted_keys.trusted_public_keys(),
-              ElementsAre(kPublicKeyMaterial1, kPublicKeyMaterial2));
+  EXPECT_THAT(
+      actual_converted_keys.trusted_recovery_methods(),
+      ElementsAre(MatchesRecoveryMethod(kPublicKeyMaterial1, kMethodType1),
+                  MatchesRecoveryMethod(kPublicKeyMaterial2, kMethodType2)));
 }
 
 }  // namespace chromeos

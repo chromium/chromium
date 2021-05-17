@@ -38,11 +38,20 @@ cr.define('cr.login', function() {
   /* #export */ let SyncTrustedVaultKey;
 
   /**
+   * Individual sync trusted recovery method.
+   * @typedef {{
+   *   publicKey: ArrayBuffer,
+   *   type: number,
+   * }}
+   */
+  /* #export */ let SyncTrustedRecoveryMethod;
+
+  /**
    * Sync trusted vault encryption keys optionally passed with 'authCompleted'
    * message.
    * @typedef {{
    *   encryptionKeys: Array<SyncTrustedVaultKey>,
-   *   trustedPublicKeys: Array<SyncTrustedVaultKey>
+   *   trustedRecoveryMethods: Array<SyncTrustedRecoveryMethod>
    * }}
    */
   /* #export */ let SyncTrustedVaultKeys;

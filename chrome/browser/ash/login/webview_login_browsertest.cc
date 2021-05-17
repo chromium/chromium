@@ -84,6 +84,7 @@
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -619,18 +620,37 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 
   // Verify that the sync trusted vault keys have been received and stored.
-  base::RunLoop loop;
-  std::vector<std::vector<uint8_t>> actual_keys;
-  trusted_vault_client->FetchKeys(
-      sync_service->GetAuthenticatedAccountInfo(),
-      base::BindLambdaForTesting(
-          [&](const std::vector<std::vector<uint8_t>>& keys) {
-            actual_keys = keys;
-            loop.Quit();
-          }));
-  loop.Run();
+  {
+    base::RunLoop loop;
+    std::vector<std::vector<uint8_t>> actual_keys;
+    trusted_vault_client->FetchKeys(
+        sync_service->GetAuthenticatedAccountInfo(),
+        base::BindLambdaForTesting(
+            [&](const std::vector<std::vector<uint8_t>>& keys) {
+              actual_keys = keys;
+              loop.Quit();
+            }));
+    loop.Run();
 
-  EXPECT_THAT(actual_keys, testing::ElementsAre(fake_gaia_keys.encryption_key));
+    EXPECT_THAT(actual_keys,
+                testing::ElementsAre(fake_gaia_keys.encryption_key));
+  }
+
+  // Verify that the recovery method was passed too.
+  {
+    base::RunLoop loop;
+    std::vector<uint8_t> actual_public_key;
+    static_cast<syncer::StandaloneTrustedVaultClient*>(
+        sync_service->GetSyncClientForTest()->GetTrustedVaultClient())
+        ->GetLastAddedRecoveryMethodPublicKeyForTesting(
+            base::BindLambdaForTesting([&](const std::vector<uint8_t>& key) {
+              actual_public_key = key;
+              loop.Quit();
+            }));
+    loop.Run();
+
+    EXPECT_EQ(actual_public_key, fake_gaia_keys.trusted_public_keys.back());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
