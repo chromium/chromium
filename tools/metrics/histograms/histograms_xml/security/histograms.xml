@@ -372,7 +372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.PageInfo.Action"
-    enum="WebsiteSettingsAction" expires_after="2021-07-18">
+    enum="WebsiteSettingsAction" expires_after="2021-10-25">
   <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
