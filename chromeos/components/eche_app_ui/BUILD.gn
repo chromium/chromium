@@ -84,6 +84,7 @@ source_set("unit_tests") {
   deps = [
     ":eche_app_ui",
     ":test_support",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",

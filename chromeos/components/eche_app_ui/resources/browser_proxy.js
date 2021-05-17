@@ -54,6 +54,11 @@ const EcheApiBindingImpl = new class {
     systemInfoObserverRouter.onScreenBacklightStateChanged.addListener(
         callback);
   }
+
+  onReceivedTabletModeChanged(callback) {
+    systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
+        callback);
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -72,4 +77,6 @@ echeapi.system.getSystemInfo =
     EcheApiBindingImpl.getSystemInfo.bind(EcheApiBindingImpl);
 echeapi.system.registerScreenBacklightState =
     EcheApiBindingImpl.onScreenBacklightStateChanged.bind(EcheApiBindingImpl);
+echeapi.webrtc.registerTabletModeChangedReceiver =
+    EcheApiBindingImpl.onReceivedTabletModeChanged.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;

@@ -47,10 +47,16 @@ interface SystemInfoProvider {
 // browser-to-render should be added in this interface if there is no other
 // reason.
 interface SystemInfoObserver {
-    // Interface for monitoring screen backlight state of device. The state is
-    // detected from Chrome browser process and is notified to Eche App in
-    // renderer process. Updates with the latest screen backlight state.
+  // Interface for monitoring screen backlight state of device. The state is
+  // detected from Chrome browser process and is notified to Eche App in
+  // renderer process. Updates with the latest screen backlight state.
   OnScreenBacklightStateChanged(ScreenBacklightState state);
+
+  // Interface for monitoring tablet mode state of device. The state is detected
+  // from Chrome browser process and is notified to eche app in renderer
+  // process. TODO(b/184119538): Need to handle the resize issue and virtual
+  // keyboard in table mode.
+  OnReceivedTabletModeChanged(bool is_tablet_mode);
 };
 
 // Interface for generating uid. The uid is unique and persistent.

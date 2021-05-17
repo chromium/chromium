@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_ECHE_APP_UI_SYSTEM_INFO_PROVIDER_H_
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_SYSTEM_INFO_PROVIDER_H_
 
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,7 +22,8 @@ class SystemInfo;
 // Provides the system information likes board/device names for EcheApp and
 // exposes the interface via mojoa.
 class SystemInfoProvider : public mojom::SystemInfoProvider,
-                           public ash::ScreenBacklightObserver {
+                           public ash::ScreenBacklightObserver,
+                           public ash::TabletModeObserver {
  public:
   explicit SystemInfoProvider(std::unique_ptr<SystemInfo> system_info);
   ~SystemInfoProvider() override;
@@ -41,7 +43,11 @@ class SystemInfoProvider : public mojom::SystemInfoProvider,
   // ash::ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
       ash::ScreenBacklightState screen_state) override;
+  // ash:TabletModeObserver overrides.
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
+  void SetTabletModeChanged(bool enabled);
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
   mojo::Remote<mojom::SystemInfoObserver> observer_remote_;
   std::unique_ptr<SystemInfo> system_info_;
