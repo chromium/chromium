@@ -168,16 +168,16 @@ NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     int process_id,
     int route_id,
     const GURL& url,
-    blink::mojom::PrerenderRelType rel_type,
+    blink::mojom::PrerenderTriggerType trigger_type,
     const content::Referrer& referrer,
     const url::Origin& initiator_origin,
     const gfx::Size& size) {
   Origin origin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
-  switch (rel_type) {
-    case blink::mojom::PrerenderRelType::kPrerender:
+  switch (trigger_type) {
+    case blink::mojom::PrerenderTriggerType::kLinkRelPrerender:
       origin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
       break;
-    case blink::mojom::PrerenderRelType::kNext:
+    case blink::mojom::PrerenderTriggerType::kLinkRelNext:
       origin = ORIGIN_LINK_REL_NEXT;
       break;
   }

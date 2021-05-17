@@ -58,21 +58,21 @@ namespace {
 
 // Decide the prerender type based on the link rel attribute. Returns
 // absl::nullopt if the attribute doesn't indicate the prerender type.
-absl::optional<mojom::blink::PrerenderRelType> PrerenderRelTypeFromRelAttribute(
-    const LinkRelAttribute& rel_attribute,
-    Document& document) {
-  absl::optional<mojom::blink::PrerenderRelType> rel_type;
+absl::optional<mojom::blink::PrerenderTriggerType>
+PrerenderTriggerTypeFromRelAttribute(const LinkRelAttribute& rel_attribute,
+                                     Document& document) {
+  absl::optional<mojom::blink::PrerenderTriggerType> trigger_type;
   if (rel_attribute.IsLinkPrerender()) {
     UseCounter::Count(document, WebFeature::kLinkRelPrerender);
-    rel_type = mojom::blink::PrerenderRelType::kPrerender;
+    trigger_type = mojom::blink::PrerenderTriggerType::kLinkRelPrerender;
   }
   if (rel_attribute.IsLinkNext()) {
     UseCounter::Count(document, WebFeature::kLinkRelNext);
-    // Prioritize mojom::blink::PrerenderRelType::kPrerender.
-    if (!rel_type)
-      rel_type = mojom::blink::PrerenderRelType::kNext;
+    // Prioritize mojom::blink::PrerenderTriggerType::kLinkRelPrerender.
+    if (!trigger_type)
+      trigger_type = mojom::blink::PrerenderTriggerType::kLinkRelNext;
   }
-  return rel_type;
+  return trigger_type;
 }
 
 }  // namespace
@@ -180,13 +180,12 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, this);
 
-  absl::optional<mojom::blink::PrerenderRelType> prerender_rel_type =
-      PrerenderRelTypeFromRelAttribute(params.rel, document);
-  if (prerender_rel_type) {
+  absl::optional<mojom::blink::PrerenderTriggerType> trigger_type =
+      PrerenderTriggerTypeFromRelAttribute(params.rel, document);
+  if (trigger_type) {
     // The previous prerender should already be aborted by Abort().
     DCHECK(!prerender_);
-    prerender_ =
-        PrerenderHandle::Create(document, params.href, *prerender_rel_type);
+    prerender_ = PrerenderHandle::Create(document, params.href, *trigger_type);
   }
   return true;
 }

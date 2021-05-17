@@ -102,7 +102,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       int process_id,
       int route_id,
       const GURL& url,
-      blink::mojom::PrerenderRelType rel_type,
+      blink::mojom::PrerenderTriggerType trigger_type,
       const content::Referrer& referrer,
       const url::Origin& initiator_origin,
       const gfx::Size& size);

@@ -8,17 +8,17 @@ import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-enum PrerenderRelType {
+enum PrerenderTriggerType {
   // https://html.spec.whatwg.org/C/#link-type-prerender
-  kPrerender,
+  kLinkRelPrerender,
 
   // https://html.spec.whatwg.org/C/#link-type-next
-  kNext,
+  kLinkRelNext,
 };
 
 struct PrerenderAttributes {
   url.mojom.Url url;
-  PrerenderRelType rel_type;
+  PrerenderTriggerType trigger_type;
   blink.mojom.Referrer referrer;
   gfx.mojom.Size view_size;
 };

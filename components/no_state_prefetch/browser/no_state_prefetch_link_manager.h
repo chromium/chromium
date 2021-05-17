@@ -80,7 +80,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
     const int launcher_render_process_id;
     const int launcher_render_view_id;
     const GURL url;
-    const blink::mojom::PrerenderRelType rel_type;
+    const blink::mojom::PrerenderTriggerType trigger_type;
     const content::Referrer referrer;
     const url::Origin initiator_origin;
     const gfx::Size size;

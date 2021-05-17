@@ -45,7 +45,7 @@ namespace blink {
 PrerenderHandle* PrerenderHandle::Create(
     Document& document,
     const KURL& url,
-    mojom::blink::PrerenderRelType prerender_rel_type) {
+    mojom::blink::PrerenderTriggerType trigger_type) {
   // Prerenders are unlike requests in most ways (for instance, they pass down
   // fragments, and they don't return data), but they do have referrers.
 
@@ -58,7 +58,7 @@ PrerenderHandle* PrerenderHandle::Create(
 
   auto attributes = mojom::blink::PrerenderAttributes::New();
   attributes->url = url;
-  attributes->rel_type = prerender_rel_type;
+  attributes->trigger_type = trigger_type;
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
   attributes->view_size =

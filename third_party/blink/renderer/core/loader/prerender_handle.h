@@ -63,7 +63,7 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
   static PrerenderHandle* Create(
       Document&,
       const KURL&,
-      mojom::blink::PrerenderRelType prerender_rel_type);
+      mojom::blink::PrerenderTriggerType prerender_trigger_type);
 
   using PassKey = base::PassKey<PrerenderHandle>;
   PrerenderHandle(PassKey,

@@ -285,8 +285,8 @@ TEST_F(PrerenderProcessorTest, RelTypeNext) {
   const GURL kPrerenderingUrl = GetSameOriginUrl("/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
-  // Set kNext instead of the default kPrerender.
-  attributes->rel_type = blink::mojom::PrerenderRelType::kNext;
+  // Set kLinkRelNext instead of the default kLinkRelPrerender.
+  attributes->trigger_type = blink::mojom::PrerenderTriggerType::kLinkRelNext;
   attributes->referrer = blink::mojom::Referrer::New();
 
   // Start() call with kNext should be aborted.

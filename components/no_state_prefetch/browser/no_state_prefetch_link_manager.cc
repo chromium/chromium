@@ -58,7 +58,7 @@ NoStatePrefetchLinkManager::LinkTrigger::LinkTrigger(
     : launcher_render_process_id(launcher_render_process_id),
       launcher_render_view_id(launcher_render_view_id),
       url(attributes->url),
-      rel_type(attributes->rel_type),
+      trigger_type(attributes->trigger_type),
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(initiator_origin),
       size(attributes->view_size),
@@ -265,7 +265,7 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
         manager_->AddPrerenderFromLinkRelPrerender(
             pending_trigger->launcher_render_process_id,
             pending_trigger->launcher_render_view_id, pending_trigger->url,
-            pending_trigger->rel_type, pending_trigger->referrer,
+            pending_trigger->trigger_type, pending_trigger->referrer,
             pending_trigger->initiator_origin, pending_trigger->size);
     if (!handle) {
       // This trigger couldn't be launched, it's gone.

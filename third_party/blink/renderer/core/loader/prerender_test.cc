@@ -93,8 +93,8 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor,
   size_t CancelCount() const { return cancel_count_; }
 
   const KURL& Url() const { return attributes_->url; }
-  mojom::blink::PrerenderRelType RelType() const {
-    return attributes_->rel_type;
+  mojom::blink::PrerenderTriggerType PrerenderTriggerType() const {
+    return attributes_->trigger_type;
   }
 
  private:
@@ -222,7 +222,8 @@ TEST_P(PrerenderTest, SinglePrerender) {
   MockPrerenderProcessor& processor = *processors()[0];
 
   EXPECT_EQ(KURL("http://example.com/prerender"), processor.Url());
-  EXPECT_EQ(mojom::blink::PrerenderRelType::kPrerender, processor.RelType());
+  EXPECT_EQ(mojom::blink::PrerenderTriggerType::kLinkRelPrerender,
+            processor.PrerenderTriggerType());
 
   EXPECT_EQ(0u, processor.CancelCount());
 }

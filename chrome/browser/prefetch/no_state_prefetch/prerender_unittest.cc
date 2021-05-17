@@ -413,7 +413,8 @@ class PrerenderTest : public testing::Test {
                       int render_view_id) {
     auto attributes = blink::mojom::PrerenderAttributes::New();
     attributes->url = url;
-    attributes->rel_type = blink::mojom::PrerenderRelType::kPrerender;
+    attributes->trigger_type =
+        blink::mojom::PrerenderTriggerType::kLinkRelPrerender;
     attributes->referrer = blink::mojom::Referrer::New(
         initiator_url, network::mojom::ReferrerPolicy::kDefault);
     attributes->view_size = kDefaultViewSize;
