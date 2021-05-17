@@ -77,9 +77,9 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
           image_compression_server_.GetURL();
       // This rules fetch timeout is chosen such that the tests would have
       // enough time to fetch the rules without causing a timeout.
-      params["robots_rules_receive_timeout"] = "2500";
-      // Allow first 5 images to be loaded faster.
-      params["first_k_subresource_limit"] = "5";
+      params["robots_rules_receive_timeout_ms"] = "3000";
+      // Allow first 3 images to be loaded faster.
+      params["first_k_subresource_limit"] = "3";
       params["robots_rules_receive_first_k_timeout_ms"] = "2000";
       if (enable_login_robots_for_low_memory_)
         params["enable_login_robots_for_low_memory"] = "true";
@@ -943,21 +943,19 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageCompressionPageInfoState(false);
 }
 
-// Test is flaky, see crbug.com/1198646
-IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLED_TestFirstKImagesLoadFaster) {
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestFirstKImagesLoadFaster)) {
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
   NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
 
-  // Load 4 more images from different domain, so that they will fetch different
+  // Load 2 more images from different domain, so that they will fetch different
   // robots rules and will all timeout with the shorter first k timeout
   // duration.
   for (const char* image_origin : {
            "foo1.com",
            "foo2.com",
-           "foo3.com",
-           "foo4.com",
        }) {
     base::ElapsedTimer elapsed_timer;
     std::string load_image_url = base::StrCat(
@@ -969,42 +967,36 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
     EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
     // The image should load closer to 2 seconds.
     EXPECT_LT(base::TimeDelta::FromSecondsD(0.9), elapsed_timer.Elapsed());
-    EXPECT_GT(base::TimeDelta::FromSecondsD(2.2), elapsed_timer.Elapsed());
+    EXPECT_GT(base::TimeDelta::FromSecondsD(2.6), elapsed_timer.Elapsed());
   }
 
   FetchHistogramsFromChildProcesses();
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.CompressionAttempt.ResponseCode",
-      net::HTTP_TEMPORARY_REDIRECT, 5);
+      net::HTTP_TEMPORARY_REDIRECT, 3);
   histogram_tester_.ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
   histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 5);
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 3);
 
-  // The next 2 images should use longer robots rules fetch timeout duration,
-  // since this is past the 5 first K limit.
-  for (const char* image_origin : {
-           "bar1.com",
-           "bar2.com",
-       }) {
-    base::ElapsedTimer elapsed_timer;
-    std::string load_image_url = base::StrCat(
-        {"loadNewImage('",
-         https_test_server_.GetURL(image_origin, "/load_image/image.png")
-             .spec(),
-         "')"});
-    EXPECT_TRUE(RunScriptExtractBool(load_image_url));
-    EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
-    // The image should load closer to 2.5 seconds.
-    EXPECT_LT(base::TimeDelta::FromSecondsD(2.4), elapsed_timer.Elapsed());
-  }
+  // The next image should use longer robots rules fetch timeout duration,
+  // since this is past the first K limit.
+  base::ElapsedTimer elapsed_timer;
+  std::string load_image_url = base::StrCat(
+      {"loadNewImage('",
+       https_test_server_.GetURL("bar1.com", "/load_image/image.png").spec(),
+       "')"});
+  EXPECT_TRUE(RunScriptExtractBool(load_image_url));
+  EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
+  // The image should load closer to 3 seconds.
+  EXPECT_LT(base::TimeDelta::FromSecondsD(2.9), elapsed_timer.Elapsed());
 
   FetchHistogramsFromChildProcesses();
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.CompressionAttempt.ResponseCode",
-      net::HTTP_TEMPORARY_REDIRECT, 7);
+      net::HTTP_TEMPORARY_REDIRECT, 4);
   histogram_tester_.ExpectTotalCount(
-      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 7);
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 4);
   histogram_tester_.ExpectTotalCount(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
   VerifyImageCompressionPageInfoState(true);
