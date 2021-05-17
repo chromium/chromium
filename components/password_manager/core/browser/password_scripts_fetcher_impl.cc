@@ -21,7 +21,7 @@ namespace {
 constexpr int kCacheTimeoutInMinutes = 5;
 constexpr int kFetchTimeoutInSeconds = 3;
 
-constexpr int kMaxDownloadSizeInBytes = 10 * 1024;
+constexpr int kMaxDownloadSizeInBytes = 512 * 1024;
 
 using ParsingResult =
     password_manager::PasswordScriptsFetcherImpl::ParsingResult;
