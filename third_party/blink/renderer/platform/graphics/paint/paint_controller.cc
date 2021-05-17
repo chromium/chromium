@@ -551,6 +551,21 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
   }
 #endif
 
+  // Keep descendant subsequence entries.
+  for (wtf_size_t i = subsequence_index + 1;
+       i < current_subsequences_.tree.size(); i++) {
+    auto& markers = current_subsequences_.tree[i];
+    if (markers.start_chunk_index >= end_chunk_index)
+      break;
+    DCHECK(!new_subsequences_.map.Contains(markers.client))
+        << "Multiple subsequences for client: " << markers.client->DebugName();
+    new_subsequences_.map.insert(markers.client, new_subsequences_.tree.size());
+    new_subsequences_.tree.push_back(SubsequenceMarkers{
+        markers.client,
+        markers.start_chunk_index + new_start_chunk_index - start_chunk_index,
+        markers.end_chunk_index + new_start_chunk_index - start_chunk_index});
+  }
+
   EndSubsequence(client, new_subsequence_index, new_start_chunk_index);
 
 #if DCHECK_IS_ON()

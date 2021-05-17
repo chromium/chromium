@@ -1173,10 +1173,8 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
 
   // Invalidate container1 but not content1.
   container1.Invalidate();
-
   // Container2 itself now becomes empty (but still has the 'content2' child),
   // and chooses not to output subsequence info.
-
   container2.Invalidate();
   content2.Invalidate();
   EXPECT_FALSE(
@@ -1242,6 +1240,150 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
                           IsPaintChunk(1, 3, content1_id, content1_properties),
                           IsPaintChunk(3, 4, container1_foreground_id,
                                        container1_foreground_properties)));
+}
+
+TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
+    return;
+
+  FakeDisplayItemClient root("root");
+  auto properties = DefaultPaintChunkProperties();
+  PaintChunk::Id root_id(root, DisplayItem::kLayerChunk);
+  GraphicsContext context(GetPaintController());
+  GetPaintController().UpdateCurrentPaintChunkProperties(&root_id, properties);
+
+  FakeDisplayItemClient container1("container1");
+  PaintChunk::Id container1_bg_id(container1, kBackgroundType);
+  PaintChunk::Id container1_fg_id(container1, kForegroundType);
+  FakeDisplayItemClient content1a("content1a");
+  PaintChunk::Id content1a_id(content1a, kBackgroundType);
+  FakeDisplayItemClient content1b("content1b");
+  PaintChunk::Id content1b_id(content1b, kForegroundType);
+  FakeDisplayItemClient container2("container2");
+  PaintChunk::Id container2_id(container2, kBackgroundType);
+  FakeDisplayItemClient content2a("content2a");
+  PaintChunk::Id content2a_id(content2a, kBackgroundType);
+  FakeDisplayItemClient content2b("content2b");
+  PaintChunk::Id content2b_id(content2b, kForegroundType);
+
+  {
+    SubsequenceRecorder r(context, container1);
+    DrawRect(context, container1, kBackgroundType, IntRect(100, 100, 100, 100));
+    {
+      SubsequenceRecorder r(context, content1a);
+      DrawRect(context, content1a, kBackgroundType, IntRect(100, 100, 50, 200));
+    }
+    {
+      SubsequenceRecorder r(context, content1b);
+      DrawRect(context, content1b, kForegroundType, IntRect(100, 100, 50, 200));
+    }
+    DrawRect(context, container1, kForegroundType, IntRect(100, 100, 100, 100));
+  }
+  {
+    SubsequenceRecorder r(context, container2);
+    DrawRect(context, container2, kBackgroundType, IntRect(100, 200, 100, 100));
+    {
+      SubsequenceRecorder r(context, content2a);
+      DrawRect(context, content2a, kBackgroundType, IntRect(100, 200, 50, 200));
+    }
+    {
+      SubsequenceRecorder r(context, content2b);
+      DrawRect(context, content2b, kForegroundType, IntRect(100, 200, 50, 200));
+    }
+  }
+  CommitAndFinishCycle();
+
+  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+              ElementsAre(IsSameId(&container1, kBackgroundType),
+                          IsSameId(&content1a, kBackgroundType),
+                          IsSameId(&content1b, kForegroundType),
+                          IsSameId(&container1, kForegroundType),
+                          IsSameId(&container2, kBackgroundType),
+                          IsSameId(&content2a, kBackgroundType),
+                          IsSameId(&content2b, kForegroundType)));
+
+  EXPECT_SUBSEQUENCE(container1, 0, 4);
+  EXPECT_SUBSEQUENCE(content1a, 1, 2);
+  EXPECT_SUBSEQUENCE(content1b, 2, 3);
+  EXPECT_SUBSEQUENCE(container2, 4, 7);
+  EXPECT_SUBSEQUENCE(content2a, 5, 6);
+  EXPECT_SUBSEQUENCE(content2b, 6, 7);
+
+  EXPECT_THAT(GetPaintController().PaintChunks(),
+              ElementsAre(IsPaintChunk(0, 1, container1_bg_id, properties),
+                          IsPaintChunk(1, 2, content1a_id, properties),
+                          IsPaintChunk(2, 3, content1b_id, properties),
+                          IsPaintChunk(3, 4, container1_fg_id, properties),
+                          IsPaintChunk(4, 5, container2_id, properties),
+                          IsPaintChunk(5, 6, content2a_id, properties),
+                          IsPaintChunk(6, 7, content2b_id, properties)));
+
+  // Nothing invalidated. Should keep all subsequences.
+  EXPECT_TRUE(
+      SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container1));
+  EXPECT_TRUE(
+      SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container2));
+
+  CommitAndFinishCycle();
+
+  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+              ElementsAre(IsSameId(&container1, kBackgroundType),
+                          IsSameId(&content1a, kBackgroundType),
+                          IsSameId(&content1b, kForegroundType),
+                          IsSameId(&container1, kForegroundType),
+                          IsSameId(&container2, kBackgroundType),
+                          IsSameId(&content2a, kBackgroundType),
+                          IsSameId(&content2b, kForegroundType)));
+
+  EXPECT_SUBSEQUENCE(container1, 0, 4);
+  EXPECT_SUBSEQUENCE(content1a, 1, 2);
+  EXPECT_SUBSEQUENCE(content1b, 2, 3);
+  EXPECT_SUBSEQUENCE(container2, 4, 7);
+  EXPECT_SUBSEQUENCE(content2a, 5, 6);
+  EXPECT_SUBSEQUENCE(content2b, 6, 7);
+
+  EXPECT_THAT(GetPaintController().PaintChunks(),
+              ElementsAre(IsPaintChunk(0, 1, container1_bg_id, properties),
+                          IsPaintChunk(1, 2, content1a_id, properties),
+                          IsPaintChunk(2, 3, content1b_id, properties),
+                          IsPaintChunk(3, 4, container1_fg_id, properties),
+                          IsPaintChunk(4, 5, container2_id, properties),
+                          IsPaintChunk(5, 6, content2a_id, properties),
+                          IsPaintChunk(6, 7, content2b_id, properties)));
+
+  // Swap order of the subsequences of container1 and container2.
+  // Nothing invalidated. Should keep all subsequences.
+  EXPECT_TRUE(
+      SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container2));
+  EXPECT_TRUE(
+      SubsequenceRecorder::UseCachedSubsequenceIfPossible(context, container1));
+
+  CommitAndFinishCycle();
+
+  EXPECT_THAT(GetPaintController().GetDisplayItemList(),
+              ElementsAre(IsSameId(&container2, kBackgroundType),
+                          IsSameId(&content2a, kBackgroundType),
+                          IsSameId(&content2b, kForegroundType),
+                          IsSameId(&container1, kBackgroundType),
+                          IsSameId(&content1a, kBackgroundType),
+                          IsSameId(&content1b, kForegroundType),
+                          IsSameId(&container1, kForegroundType)));
+
+  EXPECT_SUBSEQUENCE(container2, 0, 3);
+  EXPECT_SUBSEQUENCE(content2a, 1, 2);
+  EXPECT_SUBSEQUENCE(content2b, 2, 3);
+  EXPECT_SUBSEQUENCE(container1, 3, 7);
+  EXPECT_SUBSEQUENCE(content1a, 4, 5);
+  EXPECT_SUBSEQUENCE(content1b, 5, 6);
+
+  EXPECT_THAT(GetPaintController().PaintChunks(),
+              ElementsAre(IsPaintChunk(0, 1, container2_id, properties),
+                          IsPaintChunk(1, 2, content2a_id, properties),
+                          IsPaintChunk(2, 3, content2b_id, properties),
+                          IsPaintChunk(3, 4, container1_bg_id, properties),
+                          IsPaintChunk(4, 5, content1a_id, properties),
+                          IsPaintChunk(5, 6, content1b_id, properties),
+                          IsPaintChunk(6, 7, container1_fg_id, properties)));
 }
 
 TEST_P(PaintControllerTest, SkipCache) {
