@@ -1689,6 +1689,33 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
             PageVisibilityState::kHidden);
 }
 
+// Tests that prerendering doesn't affect WebContents::GetTitle().
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TitleWhilePrerendering) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/simple_page.html");
+  const std::u16string kInitialTitle(u"title");
+  const std::u16string kPrerenderingTitle(u"OK");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("document.title = $1", kInitialTitle)));
+  EXPECT_EQ(shell()->web_contents()->GetTitle(), kInitialTitle);
+
+  // Start a prerender to `kPrerenderUrl` that has title `kPrerenderingTitle`.
+  ASSERT_NE(AddPrerender(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Make sure that WebContents::GetTitle() returns the current title from the
+  // primary page.
+  EXPECT_EQ(shell()->web_contents()->GetTitle(), kInitialTitle);
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  // The title should be updated with the activated page.
+  EXPECT_EQ(shell()->web_contents()->GetTitle(), kPrerenderingTitle);
+}
+
 class ScopedDataSaverTestContentBrowserClient
     : public TestContentBrowserClient {
  public:
