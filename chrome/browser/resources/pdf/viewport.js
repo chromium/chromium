@@ -1410,7 +1410,8 @@ export class Viewport {
             this.documentNeedsScrollbars(this.zoomManager_.applyBrowserZoom(
                 this.clampZoom_(this.internalZoom_ * scaleDelta)));
 
-        this.pinchCenter_ = this.frameToPluginCoordinate_(center);
+        const centerInPlugin = this.frameToPluginCoordinate_(center);
+        this.pinchCenter_ = centerInPlugin;
 
         // If there's no horizontal scrolling, keep the content centered so
         // the user can't zoom in on the non-content area.
@@ -1430,7 +1431,7 @@ export class Viewport {
 
         this.fittingType_ = FittingType.NONE;
 
-        this.setPinchZoomInternal_(scaleDelta, this.pinchCenter_);
+        this.setPinchZoomInternal_(scaleDelta, centerInPlugin);
         this.updateViewport_();
         this.prevScale_ = /** @type {number} */ (startScaleRatio);
       });
