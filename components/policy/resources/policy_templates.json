@@ -21444,7 +21444,7 @@
     {
       'name': 'ContextAwareAccessSignalsAllowlist',
       'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org'],
-      'future_on': ['chrome.*'],
+      'future_on': ['chrome.*', 'chrome_os'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -21468,6 +21468,8 @@
       URLs must have HTTPS scheme, e.g. "https://example.com".
 
       Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+      For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
       For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
     },
