@@ -229,8 +229,8 @@ void TabWebContentsDelegateAndroid::FindReply(
     bool final_update) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
-  if (!find_result_observer_.IsObserving(find_tab_helper))
-    find_result_observer_.Add(find_tab_helper);
+  if (!find_result_observations_.IsObservingSource(find_tab_helper))
+    find_result_observations_.AddObservation(find_tab_helper);
 
   find_tab_helper->HandleFindReply(request_id,
                                    number_of_matches,
@@ -543,7 +543,7 @@ void TabWebContentsDelegateAndroid::OnFindResultAvailable(
 
 void TabWebContentsDelegateAndroid::OnFindTabHelperDestroyed(
     find_in_page::FindTabHelper* helper) {
-  find_result_observer_.Remove(helper);
+  find_result_observations_.RemoveObservation(helper);
 }
 
 bool TabWebContentsDelegateAndroid::ShouldEnableEmbeddedMediaExperience()
