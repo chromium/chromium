@@ -119,6 +119,12 @@ bool SnapContainerData::FindSnapPosition(
     const SnapSelectionStrategy& strategy,
     gfx::ScrollOffset* snap_position,
     TargetSnapAreaElementIds* target_element_ids) const {
+  recordreplay::Assert("SnapContainerData::FindSnapPosition Start %d %d %d %s %s",
+                       strategy.ShouldSnapOnX(), strategy.ShouldSnapOnY(),
+                       strategy.ShouldPrioritizeSnapTargets(),
+                       target_snap_area_element_ids_.x.ToString().c_str(),
+                       target_snap_area_element_ids_.y.ToString().c_str());
+
   *target_element_ids = TargetSnapAreaElementIds();
   if (scroll_snap_type_.is_none)
     return false;
@@ -397,6 +403,9 @@ SnapContainerData::FindClosestValidAreaInternal(
 SnapSearchResult SnapContainerData::GetSnapSearchResult(
     SearchAxis axis,
     const SnapAreaData& area) const {
+  recordreplay::Assert("SnapContainerData::GetSnapSearchResult %.2f %.2f %.2f %.2f",
+                       area.rect.x(), area.rect.y(),
+                       area.rect.right(), area.rect.bottom());
   SnapSearchResult result;
   if (axis == SearchAxis::kX) {
     result.set_visible_range(gfx::RangeF(area.rect.y() - rect_.bottom(),
