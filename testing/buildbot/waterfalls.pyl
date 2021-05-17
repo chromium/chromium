@@ -2323,7 +2323,7 @@
       },
       'linux-rel-swarming': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_swarm_linux_gtests',

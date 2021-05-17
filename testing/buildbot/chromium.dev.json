@@ -982,7 +982,7 @@
           "dimension_sets": [
             {
               "cores": "8",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -1000,7 +1000,7 @@
           "dimension_sets": [
             {
               "cores": "8",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
@@ -1019,7 +1019,7 @@
           "dimension_sets": [
             {
               "cores": "8",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -1037,7 +1037,7 @@
           "dimension_sets": [
             {
               "cores": "2",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -1055,7 +1055,7 @@
           "dimension_sets": [
             {
               "cores": "8",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -1073,7 +1073,7 @@
           "dimension_sets": [
             {
               "cores": "8",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
@@ -1091,7 +1091,7 @@
           "dimension_sets": [
             {
               "cores": "2",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"

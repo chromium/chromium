@@ -42,7 +42,7 @@ defaults.builderless.set(None)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set(luci.recipe(name = "swarming/staging"))
 defaults.execution_timeout.set(3 * time.hour)
-defaults.os.set(os.LINUX_DEFAULT)
+defaults.os.set(os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
 defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
