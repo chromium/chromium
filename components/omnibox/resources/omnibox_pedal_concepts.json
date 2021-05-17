@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-04-21T01:37:11.864Z",
+  "time_generated": "2021-05-17T16:54:53.299Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -7220,11 +7220,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create site",
-            "description_text": "Create a new site in Google Site quickly",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
-            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
+            "description_text": "Create a new site in Google Sites quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Sites quickly",
+            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Sites quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-04-13T22:21:59.622Z"
+          "date_modified_omnibox_ui_strings": "2021-05-17T16:53:22.676Z"
         },
         {
           "id": 18,
@@ -7322,11 +7322,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create form",
-            "description_text": "Create a new form in Google Form quickly",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
-            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
+            "description_text": "Create a new form in Google Forms quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Forms quickly",
+            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Forms quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-04-13T22:22:10.895Z"
+          "date_modified_omnibox_ui_strings": "2021-05-17T16:51:46.845Z"
         },
         {
           "id": 20,
@@ -8349,11 +8349,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create site",
-            "description_text": "Create a new site in Google Site quickly",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
-            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
+            "description_text": "Create a new site in Google Sites quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Sites quickly",
+            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Sites quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-04-15T21:30:18.620Z"
+          "date_modified_omnibox_ui_strings": "2021-05-17T16:52:41.554Z"
         },
         {
           "id": 18,
@@ -8440,11 +8440,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create form",
-            "description_text": "Create a new form in Google Form quickly",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
-            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
+            "description_text": "Create a new form in Google Forms quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Forms quickly",
+            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Forms quickly"
           },
-          "date_modified_omnibox_ui_strings": "2021-04-15T21:31:43.711Z"
+          "date_modified_omnibox_ui_strings": "2021-05-17T16:52:04.567Z"
         },
         {
           "id": 20,

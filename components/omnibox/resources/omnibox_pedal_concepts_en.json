@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 3,
-  "data_version": 15831389,
+  "data_version": 15865521,
   "tokenize_each_character": false,
   "dictionary": [
     "a",
@@ -1419,9 +1419,9 @@
       ],
       "omnibox_ui_strings": {
         "button_text": "Create site",
-        "description_text": "Create a new site in Google Site quickly",
-        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
-        "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
+        "description_text": "Create a new site in Google Sites quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Sites quickly",
+        "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Sites quickly"
       },
       "url": "https://sites.google.com/u/0/create?usp=chrome_actions"
     },
@@ -1562,9 +1562,9 @@
       ],
       "omnibox_ui_strings": {
         "button_text": "Create form",
-        "description_text": "Create a new form in Google Form quickly",
-        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
-        "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
+        "description_text": "Create a new form in Google Forms quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Forms quickly",
+        "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Forms quickly"
       },
       "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions"
     },
