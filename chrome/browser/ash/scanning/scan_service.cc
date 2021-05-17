@@ -7,11 +7,13 @@
 #include <cstdint>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/content/scanning/scanning_uma.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,6 +60,12 @@ std::string CreateFilename(const base::Time::Exploded& start_time,
                            const mojo_ipc::FileType file_type) {
   std::string file_ext;
   switch (file_type) {
+    case mojo_ipc::FileType::kSearchablePdf:
+      DCHECK(base::FeatureList::IsEnabled(
+          chromeos::features::kScanAppSearchablePdf));
+      // Temporarily set searchable pdfs to follow png pipeline while
+      // implementing.
+      FALLTHROUGH;
     case mojo_ipc::FileType::kPng:
       file_ext = "png";
       break;
@@ -201,6 +209,11 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
         !WriteImage(scan_to_path.Append(filename), scanned_image)) {
       return base::FilePath();
     }
+  }
+  // Temporarily set searchable pdfs to follow png pipeline while implementing.
+  else if (file_type == mojo_ipc::FileType::kSearchablePdf) {
+    if (!WriteImage(scan_to_path.Append(filename), scanned_image))
+      return base::FilePath();
   }
 
   return scan_to_path.Append(filename);

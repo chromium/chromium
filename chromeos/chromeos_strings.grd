@@ -521,6 +521,10 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_PNG_OPTION_TEXT" desc="The text displayed for the PNG file type option.">
         PNG
       </message>
+      <!-- TODO (kmoed): Remove "translateable="false"" once string is confirmed. -->
+      <message translateable="false" name="IDS_SCANNING_APP_SEARCHABLE_PDF_OPTION_TEXT" desc="The text displayed for the Searchable PDF file type option. This option utilizes the Object Character Recognition (OCR) service to generate a PDF file whose text has been added as a searchable layer.">
+        Searchable PDF
+      </message>
       <message name="IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available color modes (e.g. color, grayscale, black and white, etc.).">
         Color
       </message>
