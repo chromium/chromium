@@ -239,6 +239,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 
   install_source_ = install_source;
   background_installation_ = true;
+  from_info_ = true;
 
   RecordInstallEvent();
 
@@ -248,8 +249,22 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 
   UpdateFinalizerClientData(install_params_, &options);
 
-  install_finalizer_->FinalizeInstall(*web_application_info, options,
-                                      std::move(callback));
+  // If no install params have been set, default to not adding any shortcuts,
+  // overriding the default used in the install-from-manifest case, which is
+  // to add shortcuts.
+  if (!install_params_) {
+    install_params_ = InstallManager::InstallParams();
+    install_params_->add_to_applications_menu = false;
+    install_params_->add_to_desktop = false;
+    install_params_->add_to_quick_launch_bar = false;
+  }
+
+  install_callback_ = std::move(callback);
+  WebApplicationInfo web_application_info_copy = *web_application_info;
+  install_finalizer_->FinalizeInstall(
+      web_application_info_copy, options,
+      base::BindOnce(&WebAppInstallTask::OnInstallFinalizedCreateOsHooks,
+                     GetWeakPtr(), std::move(web_application_info)));
 }
 
 void WebAppInstallTask::InstallWebAppWithParams(
@@ -383,8 +398,9 @@ void WebAppInstallTask::CallInstallCallback(const AppId& app_id,
 bool WebAppInstallTask::ShouldStopInstall() const {
   // Install should stop early if WebContents is being destroyed.
   // WebAppInstallTask::WebContentsDestroyed will get called eventually and
-  // the callback will be invoked at that point.
-  return !web_contents() || web_contents()->IsBeingDestroyed();
+  // the callback will be invoked at that point. Installs from info don't have a
+  // web contents, so this should always return false in that case.
+  return !from_info_ && (!web_contents() || web_contents()->IsBeingDestroyed());
 }
 
 void WebAppInstallTask::OnWebAppUrlLoadedGetWebApplicationInfo(
@@ -804,10 +820,10 @@ void WebAppInstallTask::OnDialogCompleted(
 
   install_finalizer_->FinalizeInstall(
       web_app_info_copy, finalize_options,
-      base::BindOnce(&WebAppInstallTask::OnInstallFinalizedCreateShortcuts,
+      base::BindOnce(&WebAppInstallTask::OnInstallFinalizedCreateOsHooks,
                      GetWeakPtr(), std::move(web_app_info)));
 
-  // Check that the finalizer hasn't called OnInstallFinalizedCreateShortcuts
+  // Check that the finalizer hasn't called OnInstallFinalizedCreateOsHooks
   // synchronously:
   DCHECK(install_callback_);
 }
@@ -820,7 +836,7 @@ void WebAppInstallTask::OnInstallFinalized(const AppId& app_id,
   CallInstallCallback(app_id, code);
 }
 
-void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
+void WebAppInstallTask::OnInstallFinalizedCreateOsHooks(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     const AppId& app_id,
     InstallResultCode code) {
@@ -847,7 +863,8 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   }
 
   // Only record the AppBanner stats for locally installed apps.
-  RecordAppBanner(web_contents(), web_app_info->start_url);
+  if (web_contents())
+    RecordAppBanner(web_contents(), web_app_info->start_url);
 
   InstallOsHooksOptions options;
 

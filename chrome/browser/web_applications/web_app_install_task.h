@@ -242,7 +242,7 @@ class WebAppInstallTask : content::WebContentsObserver {
                          bool user_accepted,
                          std::unique_ptr<WebApplicationInfo> web_app_info);
   void OnInstallFinalized(const AppId& app_id, InstallResultCode code);
-  void OnInstallFinalizedCreateShortcuts(
+  void OnInstallFinalizedCreateOsHooks(
       std::unique_ptr<WebApplicationInfo> web_app_info,
       const AppId& app_id,
       InstallResultCode code);
@@ -265,6 +265,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
 
+  // True when the install is initiated from InstallWebAppFromInfo. In this
+  // case, there will be no WebContents.
+  bool from_info_ = false;
+
   // The mechanism via which the app creation was triggered, will stay as
   // kNoInstallSource for updates.
   static constexpr webapps::WebappInstallSource kNoInstallSource =
@@ -281,7 +285,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   AppRegistrar* registrar_;
 
   base::WeakPtrFactory<WebAppInstallTask> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app
