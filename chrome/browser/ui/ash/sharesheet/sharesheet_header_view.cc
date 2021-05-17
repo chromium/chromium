@@ -30,6 +30,8 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -41,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -89,6 +92,7 @@ namespace sharesheet {
 
 class SharesheetHeaderView::SharesheetImagePreview : public views::View {
  public:
+  METADATA_HEADER(SharesheetImagePreview);
   explicit SharesheetImagePreview(size_t file_count) {
     SetPaintToLayer();
     layer()->SetRoundedCornerRadius(
@@ -100,6 +104,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         /* collapse_margins_spacing */ false));
     SetPreferredSize(kImagePreviewFullSize);
     SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+    SetFocusBehavior(View::FocusBehavior::NEVER);
 
     size_t grid_icon_count =
         (file_count > 0) ? std::min(file_count, kImagePreviewMaxIcons) : 1;
@@ -198,6 +203,9 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
   std::vector<views::ImageView*> image_views_;
 };
 
+BEGIN_METADATA(SharesheetHeaderView, SharesheetImagePreview, views::View)
+END_METADATA
+
 // SharesheetHeaderView --------------------------------------------------------
 
 SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
@@ -216,6 +224,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
   // Sets all views to be vertically centre-aligned.
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   const bool has_files =
       (intent_->file_urls.has_value() && !intent_->file_urls.value().empty());
@@ -248,6 +257,11 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
 }
 
 SharesheetHeaderView::~SharesheetHeaderView() = default;
+
+void SharesheetHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kGenericContainer;
+  node_data->SetNameExplicitlyEmpty();
+}
 
 void SharesheetHeaderView::ShowTextPreview() {
   std::vector<std::u16string> text_fields = ExtractShareText();
@@ -295,11 +309,9 @@ void SharesheetHeaderView::ShowTextPreview() {
 
 void SharesheetHeaderView::AddTextLine(const std::u16string& text,
                                        const std::u16string& tooltip_text) {
-  auto* new_line = text_view_->AddChildView(
-      std::make_unique<views::Label>(text, CONTEXT_SHARESHEET_BUBBLE_BODY));
-  new_line->SetLineHeight(kPrimaryTextLineHeight);
-  new_line->SetEnabledColor(kPrimaryTextColor);
-  new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  auto* new_line = text_view_->AddChildView(CreateShareLabel(
+      text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
+      kPrimaryTextColor, gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY));
   new_line->SetHandlesTooltips(true);
   if (tooltip_text.empty()) {
     return;
