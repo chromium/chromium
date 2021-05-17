@@ -346,8 +346,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 
 // Invokes the UI shown when a user has to reload a page in order to run an
 // extension.
+// TODO(https://crbug.com/1184437): Very flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_InvokeUi_ReloadPageBubble DISABLED_InvokeUi_ReloadPageBubble
+#else
+#define MAYBE_InvokeUi_ReloadPageBubble InvokeUi_ReloadPageBubble
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
-                       InvokeUi_ReloadPageBubble) {
+                       MAYBE_InvokeUi_ReloadPageBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
   extensions::TestExtensionDir test_dir;
   // Load an extension that injects scripts at "document_start", which requires
