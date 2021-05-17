@@ -57,6 +57,7 @@ source_set("first_run") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/web_resource",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

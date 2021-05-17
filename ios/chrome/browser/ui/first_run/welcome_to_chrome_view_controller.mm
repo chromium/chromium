@@ -15,6 +15,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_resource/web_resource_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_configuration.h"
@@ -197,8 +198,16 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (void)welcomeToChromeViewDidTapOKButton:(WelcomeToChromeView*)view {
-  GetApplicationContext()->GetLocalState()->SetBoolean(
-      metrics::prefs::kMetricsReportingEnabled, view.checkBoxSelected);
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+
+  prefs->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
+                    view.checkBoxSelected);
+
+  // Sets a LocalState pref marking the TOS EULA as accepted.
+  if (!prefs->GetBoolean(prefs::kEulaAccepted)) {
+    prefs->SetBoolean(prefs::kEulaAccepted, true);
+    prefs->CommitPendingWrite();
+  }
 
   if (view.checkBoxSelected) {
     if (self.didTapTOSLink)
