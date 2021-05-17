@@ -105,8 +105,7 @@ assert(!enable_mutex_priority_inheritance || is_chromecast,
 # In theory, such a configuration is possible, but its scope would be limited to
 # only Blink partitions, which is currently not tested. Better to trigger an
 # error, than have BackupRefPtr silently disabled while believing it is enabled.
-# TODO(1206505): Temporarily don't trigger on Linux.
-if (!is_nacl && !is_linux) {
+if (!is_nacl) {
   assert(!use_backup_ref_ptr || use_allocator == "partition",
          "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
 }

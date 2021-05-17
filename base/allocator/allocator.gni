@@ -16,10 +16,7 @@ _disable_partition_alloc =
     (is_win && (is_component_build || is_debug)) ||
     (is_android && is_component_build) || (is_android && is_chromecast) ||
     (is_linux && is_component_build)
-
-# TODO(crbug.com/1199278): Disabled on Linux due to aligned allocation issues
-# triggered by Intel Tiger Lake GPU drivers.
-_is_partition_alloc_platform = is_android || is_win
+_is_partition_alloc_platform = is_android || is_win || is_linux
 
 # The debug CRT on Windows has some debug features that are incompatible with
 # the shim. NaCl in particular does seem to link some binaries statically
