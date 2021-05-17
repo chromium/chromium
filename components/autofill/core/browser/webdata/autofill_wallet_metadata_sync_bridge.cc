@@ -299,6 +299,28 @@ bool UpdateServerMetadata(AutofillTable* table,
   }
 }
 
+bool IsSyncedWalletAddress(const AutofillProfile* profile) {
+  switch (profile->record_type()) {
+    case AutofillProfile::LOCAL_PROFILE:
+      return false;
+    case AutofillProfile::SERVER_PROFILE:
+      return true;
+  }
+}
+
+bool IsSyncedWalletCard(const CreditCard* card) {
+  switch (card->record_type()) {
+    case CreditCard::LOCAL_CARD:
+      return false;
+    case CreditCard::MASKED_SERVER_CARD:
+      return true;
+    case CreditCard::FULL_SERVER_CARD:
+      return true;
+    case CreditCard::VIRTUAL_CARD:
+      return false;
+  }
+}
+
 }  // namespace
 
 // static
@@ -431,8 +453,7 @@ void AutofillWalletMetadataSyncBridge::ApplyStopSyncChanges(
 
 void AutofillWalletMetadataSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
-  // Skip local profiles.
-  if (change.data_model()->record_type() != AutofillProfile::SERVER_PROFILE) {
+  if (!IsSyncedWalletAddress(change.data_model())) {
     return;
   }
   LocalMetadataChanged(WalletMetadataSpecifics::ADDRESS, change);
@@ -440,6 +461,11 @@ void AutofillWalletMetadataSyncBridge::AutofillProfileChanged(
 
 void AutofillWalletMetadataSyncBridge::CreditCardChanged(
     const CreditCardChange& change) {
+  // TODO(crbug.com/1206306): Clean up old metadata for local cards, this early
+  // return was missing for quite a while in production.
+  if (!IsSyncedWalletCard(change.data_model())) {
+    return;
+  }
   LocalMetadataChanged(WalletMetadataSpecifics::CARD, change);
 }
 

@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -178,6 +179,24 @@ CreditCard CreateServerCreditCardWithDetails(
   card.set_use_count(use_count);
   card.set_use_date(UseDateFromProtoValue(use_date));
   card.set_billing_address_id(billing_address_id);
+  return card;
+}
+
+AutofillProfile CreateLocalProfileWithDetails(size_t use_count,
+                                              int64_t use_date) {
+  AutofillProfile profile;
+  DCHECK_EQ(profile.record_type(), AutofillProfile::LOCAL_PROFILE);
+  profile.set_use_count(use_count);
+  profile.set_use_date(UseDateFromProtoValue(use_date));
+  return profile;
+}
+
+CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
+                                            int64_t use_date) {
+  CreditCard card;
+  DCHECK_EQ(card.record_type(), CreditCard::LOCAL_CARD);
+  card.set_use_count(use_count);
+  card.set_use_date(UseDateFromProtoValue(use_date));
   return card;
 }
 
@@ -864,6 +883,63 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
+// Verify that updates of local (non-sync) addresses are ignored.
+TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncAddresses) {
+  // Add local data.
+  AutofillProfile existing_profile =
+      CreateLocalProfileWithDetails(/*use_count=*/10, /*use_date=*/20);
+  table()->AddAutofillProfile(existing_profile);
+  ResetBridge();
+
+  // Check that there is no metadata, from start on.
+  ASSERT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+
+  existing_profile.set_use_count(11);
+  existing_profile.set_use_date(UseDateFromProtoValue(21));
+  bridge()->AutofillProfileChanged(
+      AutofillProfileChange(AutofillProfileChange::UPDATE,
+                            existing_profile.guid(), &existing_profile));
+
+  // Check that there is also no metadata at the end.
+  EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
+// Verify that updates of local (non-sync) credit cards are ignored.
+// Regression test for crbug.com/1206306.
+TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
+  // Local credit cards need crypto for storage.
+  OSCryptMocker::SetUp();
+
+  // Add local data.
+  CreditCard existing_card =
+      CreateLocalCreditCardWithDetails(/*use_count=*/30, /*use_date=*/40);
+  table()->AddCreditCard(existing_card);
+  ResetBridge();
+
+  // Check that there is no metadata, from start on.
+  ASSERT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+
+  existing_card.set_use_count(31);
+  existing_card.set_use_date(UseDateFromProtoValue(41));
+  bridge()->CreditCardChanged(CreditCardChange(
+      AutofillProfileChange::UPDATE, existing_card.guid(), &existing_card));
+
+  // Check that there is also no metadata at the end.
+  EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+
+  OSCryptMocker::TearDown();
 }
 
 // Verify that old orphan metadata gets deleted on startup.
