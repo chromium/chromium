@@ -12,6 +12,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -151,6 +152,10 @@ class SyncEncryptionHandler {
   // Returns KeystoreKeysHandler, allowing to pass new keystore keys and to
   // check whether keystore keys need to be requested from the server.
   virtual KeystoreKeysHandler* GetKeystoreKeysHandler() = 0;
+
+  // Returns debug information related to trusted vault passphrase type.
+  virtual const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  GetTrustedVaultDebugInfo() = 0;
 };
 
 }  // namespace syncer

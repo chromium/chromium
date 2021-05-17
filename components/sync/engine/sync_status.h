@@ -12,6 +12,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 
 namespace syncer {
@@ -67,13 +68,13 @@ struct SyncStatus {
   int num_server_overwrites_total;
 
   // Encryption related.
-  // TODO(crbug.com/1081643): Add fields related to TRUSTED_VAULT_PASSPHRASE.
   ModelTypeSet encrypted_types;
   bool cryptographer_can_encrypt;
   bool crypto_has_pending_keys;
   bool has_keystore_key;
   base::Time keystore_migration_time;
   PassphraseType passphrase_type;
+  sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 
   // Per-datatype throttled status.
   ModelTypeSet throttled_types;

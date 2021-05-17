@@ -169,6 +169,14 @@ void AllStatus::SetKeystoreMigrationTime(const base::Time& migration_time) {
   NotifyStatusChanged();
 }
 
+void AllStatus::SetTrustedVaultDebugInfo(
+    const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+        trusted_vault_debug_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  status_.trusted_vault_debug_info = trusted_vault_debug_info;
+  NotifyStatusChanged();
+}
+
 void AllStatus::SetSyncId(const std::string& sync_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.sync_id = sync_id;

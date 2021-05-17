@@ -535,6 +535,23 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   }
 }
 
+ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return state_.GetEncryptedTypes();
+}
+
+Cryptographer* NigoriSyncBridgeImpl::GetCryptographer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_.cryptographer);
+  return state_.cryptographer.get();
+}
+
+PassphraseType NigoriSyncBridgeImpl::GetPassphraseType() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ProtoPassphraseInt32ToEnum(state_.passphrase_type)
+      .value_or(PassphraseType::kImplicitPassphrase);
+}
+
 void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
     const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -643,21 +660,10 @@ KeystoreKeysHandler* NigoriSyncBridgeImpl::GetKeystoreKeysHandler() {
   return this;
 }
 
-ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
+const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+NigoriSyncBridgeImpl::GetTrustedVaultDebugInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return state_.GetEncryptedTypes();
-}
-
-Cryptographer* NigoriSyncBridgeImpl::GetCryptographer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_.cryptographer);
-  return state_.cryptographer.get();
-}
-
-PassphraseType NigoriSyncBridgeImpl::GetPassphraseType() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ProtoPassphraseInt32ToEnum(state_.passphrase_type)
-      .value_or(PassphraseType::kImplicitPassphrase);
+  return state_.trusted_vault_debug_info;
 }
 
 bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
@@ -819,6 +825,8 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     state_.keystore_migration_time =
         ProtoTimeToTime(specifics.keystore_migration_time());
   }
+
+  state_.trusted_vault_debug_info = specifics.trusted_vault_debug_info();
 
   absl::optional<sync_pb::NigoriKey> keystore_decryptor_key;
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
@@ -1029,6 +1037,9 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.keystore_migration_time = base::Time();
   state_.custom_passphrase_key_derivation_params = absl::nullopt;
   state_.last_default_trusted_vault_key_name = absl::nullopt;
+  state_.trusted_vault_debug_info =
+      sync_pb::NigoriSpecifics::TrustedVaultDebugInfo();
+
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(),
       /*has_pending_keys=*/false);

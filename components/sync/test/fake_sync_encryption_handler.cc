@@ -17,6 +17,19 @@ FakeSyncEncryptionHandler::~FakeSyncEncryptionHandler() = default;
 
 void FakeSyncEncryptionHandler::NotifyInitialStateToObservers() {}
 
+ModelTypeSet FakeSyncEncryptionHandler::GetEncryptedTypes() {
+  return AlwaysEncryptedUserTypes();
+}
+
+Cryptographer* FakeSyncEncryptionHandler::GetCryptographer() {
+  // GetCryptographer() must never return null.
+  return &fake_cryptographer_;
+}
+
+PassphraseType FakeSyncEncryptionHandler::GetPassphraseType() {
+  return PassphraseType::kKeystorePassphrase;
+}
+
 bool FakeSyncEncryptionHandler::NeedKeystoreKey() const {
   return keystore_key_.empty();
 }
@@ -69,17 +82,9 @@ KeystoreKeysHandler* FakeSyncEncryptionHandler::GetKeystoreKeysHandler() {
   return this;
 }
 
-ModelTypeSet FakeSyncEncryptionHandler::GetEncryptedTypes() {
-  return AlwaysEncryptedUserTypes();
-}
-
-Cryptographer* FakeSyncEncryptionHandler::GetCryptographer() {
-  // GetCryptographer() must never return null.
-  return &fake_cryptographer_;
-}
-
-PassphraseType FakeSyncEncryptionHandler::GetPassphraseType() {
-  return PassphraseType::kKeystorePassphrase;
+const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+FakeSyncEncryptionHandler::GetTrustedVaultDebugInfo() {
+  return sync_pb::NigoriSpecifics::TrustedVaultDebugInfo::default_instance();
 }
 
 }  // namespace syncer

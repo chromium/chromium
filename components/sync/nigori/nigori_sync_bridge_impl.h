@@ -63,15 +63,17 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void NotifyInitialStateToObservers() override;
+  ModelTypeSet GetEncryptedTypes() override;
+  Cryptographer* GetCryptographer() override;
+  PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
-  ModelTypeSet GetEncryptedTypes() override;
-  Cryptographer* GetCryptographer() override;
-  PassphraseType GetPassphraseType() override;
+  const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  GetTrustedVaultDebugInfo() override;
 
   // KeystoreKeysHandler implementation.
   bool NeedKeystoreKey() const override;

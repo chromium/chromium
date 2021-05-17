@@ -15,6 +15,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 
@@ -60,6 +61,9 @@ class AllStatus : public SyncEngineEventListener {
   void SetPassphraseType(PassphraseType type);
   void SetHasKeystoreKey(bool has_keystore_key);
   void SetKeystoreMigrationTime(const base::Time& migration_time);
+  void SetTrustedVaultDebugInfo(
+      const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+          trusted_vault_debug_info);
 
   void SetSyncId(const std::string& sync_id);
   void SetInvalidatorClientId(const std::string& invalidator_client_id);

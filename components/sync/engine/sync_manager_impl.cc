@@ -248,6 +248,8 @@ void SyncManagerImpl::OnCryptographerStateChanged(Cryptographer* cryptographer,
   allstatus_.SetCryptoHasPendingKeys(has_pending_keys);
   allstatus_.SetKeystoreMigrationTime(
       sync_encryption_handler_->GetKeystoreMigrationTime());
+  allstatus_.SetTrustedVaultDebugInfo(
+      sync_encryption_handler_->GetTrustedVaultDebugInfo());
 }
 
 void SyncManagerImpl::OnPassphraseTypeChanged(

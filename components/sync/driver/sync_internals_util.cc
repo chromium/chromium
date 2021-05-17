@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/base/time.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -259,10 +260,18 @@ std::string GetVersionString(const std::string& channel) {
          version_info::GetLastChange() + ")" + version_modifier;
 }
 
-std::string GetTimeStr(base::Time time, const std::string& default_msg) {
+std::string GetTimeStr(base::Time time,
+                       const std::string& default_msg = "n/a") {
   if (time.is_null())
     return default_msg;
   return GetTimeDebugString(time);
+}
+
+std::string GetTimeStrFromProto(int64_t proto_time,
+                                const std::string& default_msg = "n/a") {
+  if (proto_time == 0)
+    return default_msg;
+  return GetTimeDebugString(ProtoTimeToTime(proto_time));
 }
 
 // Analogous to GetTimeDebugString from components/sync/base/time.h. Consider
@@ -294,15 +303,15 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
     case CONNECTION_OK:
       return base::StringPrintf(
           "OK since %s",
-          GetTimeStr(status.connection_status_update_time, "n/a").c_str());
+          GetTimeStr(status.connection_status_update_time).c_str());
     case CONNECTION_AUTH_ERROR:
       return base::StringPrintf(
           "auth error since %s",
-          GetTimeStr(status.connection_status_update_time, "n/a").c_str());
+          GetTimeStr(status.connection_status_update_time).c_str());
     case CONNECTION_SERVER_ERROR:
       return base::StringPrintf(
           "server error since %s",
-          GetTimeStr(status.connection_status_update_time, "n/a").c_str());
+          GetTimeStr(status.connection_status_update_time).c_str());
   }
   NOTREACHED();
   return std::string();
@@ -404,8 +413,12 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       section_encryption->AddStringStat("Keystore Migration Time");
   Stat<std::string>* passphrase_type =
       section_encryption->AddStringStat("Passphrase Type");
-  Stat<std::string>* passphrase_time =
-      section_encryption->AddStringStat("Passphrase Time");
+  Stat<std::string>* explicit_passphrase_time =
+      section_encryption->AddStringStat("Explicit passphrase Time");
+  Stat<std::string>* trusted_vault_migration_time =
+      section_encryption->AddStringStat("Trusted Vault Migration Time");
+  Stat<int>* trusted_vault_key_version =
+      section_encryption->AddIntStat("Trusted Vault Version/Epoch");
 
   Section* section_last_session = section_list.AddSection(
       "Status from Last Completed Session", /*is_sensitive=*/false);
@@ -511,8 +524,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   }
 
   // Credentials.
-  token_request_time->Set(GetTimeStr(token_status.token_request_time, "n/a"));
-  token_response_time->Set(GetTimeStr(token_status.token_response_time, "n/a"));
+  token_request_time->Set(GetTimeStr(token_status.token_request_time));
+  token_response_time->Set(GetTimeStr(token_status.token_response_time));
   std::string err = token_status.last_get_token_error.error_message();
   last_token_request_result->Set(err.empty() ? "OK" : err,
                                  /*is_good=*/err.empty());
@@ -552,9 +565,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
         service->GetUserSettings()->IsUsingExplicitPassphrase());
     is_passphrase_required->Set(
         service->GetUserSettings()->IsPassphraseRequired());
-    passphrase_time->Set(
-        GetTimeStr(service->GetUserSettings()->GetExplicitPassphraseTime(),
-                   "No Passphrase Time"));
+    explicit_passphrase_time->Set(
+        GetTimeStr(service->GetUserSettings()->GetExplicitPassphraseTime()));
   }
   if (is_status_valid) {
     cryptographer_can_encrypt->Set(full_status.cryptographer_can_encrypt);
@@ -564,6 +576,14 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     keystore_migration_time->Set(
         GetTimeStr(full_status.keystore_migration_time, "Not Migrated"));
     passphrase_type->Set(PassphraseTypeToString(full_status.passphrase_type));
+
+    if (full_status.passphrase_type ==
+        PassphraseType::kTrustedVaultPassphrase) {
+      trusted_vault_migration_time->Set(GetTimeStrFromProto(
+          full_status.trusted_vault_debug_info.migration_time()));
+      trusted_vault_key_version->Set(
+          full_status.trusted_vault_debug_info.key_version());
+    }
   }
 
   // Status from Last Completed Session.

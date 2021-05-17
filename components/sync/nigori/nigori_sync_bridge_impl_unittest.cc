@@ -1337,6 +1337,8 @@ TEST_F(NigoriSyncBridgeImplTest,
   ASSERT_THAT(bridge()->MergeSyncData(std::move(default_entity_data)),
               Eq(absl::nullopt));
   bridge()->NotifyInitialStateToObservers();
+  ASSERT_FALSE(bridge()->GetTrustedVaultDebugInfo().has_migration_time());
+  ASSERT_FALSE(bridge()->GetTrustedVaultDebugInfo().has_key_version());
 
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() =
@@ -1363,6 +1365,8 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_CALL(*observer(), OnBootstrapTokenUpdated).Times(0);
   bridge()->AddTrustedVaultDecryptionKeys({kTrustedVaultKey});
   EXPECT_FALSE(bridge()->HasPendingKeysForTesting());
+  EXPECT_TRUE(bridge()->GetTrustedVaultDebugInfo().has_migration_time());
+  EXPECT_TRUE(bridge()->GetTrustedVaultDebugInfo().has_key_version());
 }
 
 // Tests the processing of a remote incremental update that rotates the trusted
