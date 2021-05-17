@@ -1996,11 +1996,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (mContextualSearchManager != null) {
             mContextualSearchManager.initialize(contentContainer, layoutManager,
-                    mRootUiCoordinator.getBottomSheetController(), getCompositorViewHolder(),
+                    mRootUiCoordinator.getBottomSheetController(), compositorViewHolder,
                     getControlContainerHeightResource() == NO_CONTROL_CONTAINER
-                            ? 0
-                            : getResources().getDimensionPixelSize(
-                                    getControlContainerHeightResource()),
+                            ? 0f
+                            : getResources().getDimension(getControlContainerHeightResource()),
                     getToolbarManager(), getActivityType());
         }
     }

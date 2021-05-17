@@ -147,7 +147,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param browserControlsStateProvider Used to measure the browser controls.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
-     * @param toolbarHeight The height of the toolbar in pixels.
+     * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
      * @param activityType The {@link ActivityType} for the current activity.
      * @param currentTabSupplier Supplies the current activity tab.
@@ -156,11 +156,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             @NonNull OverlayPanelManager panelManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            @NonNull CompositorViewHolder compositorViewHolder, int toolbarHeight,
+            @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
             @NonNull Supplier<Tab> currentTabSupplier) {
         super(context, layoutManager, panelManager, browserControlsStateProvider, windowAndroid,
-                compositorViewHolder, toolbarHeight, currentTabSupplier);
+                compositorViewHolder, toolbarHeightDp, currentTabSupplier);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mCompositorViewHolder = compositorViewHolder;

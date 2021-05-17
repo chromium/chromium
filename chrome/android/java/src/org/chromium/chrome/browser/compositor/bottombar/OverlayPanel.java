@@ -185,13 +185,15 @@ public class OverlayPanel extends OverlayPanelAnimation
      *         controls.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
      * @param compositorViewHolder The {@link CompositorViewHolder}
+     * @param toolbarHeightDp The height of the toolbar in dp.
+     * @param currentTabSupplier Supplies the current {@link Tab}.
      */
     public OverlayPanel(@NonNull Context context, @NonNull LayoutManagerImpl layoutManager,
             @NonNull OverlayPanelManager panelManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup compositorViewHolder,
-            int toolbarHeight, @NonNull Supplier<Tab> currentTabSupplier) {
-        super(context, layoutManager, toolbarHeight);
+            float toolbarHeightDp, @NonNull Supplier<Tab> currentTabSupplier) {
+        super(context, layoutManager, toolbarHeightDp);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;

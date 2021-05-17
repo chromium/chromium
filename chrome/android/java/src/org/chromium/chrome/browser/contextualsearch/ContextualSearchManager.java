@@ -320,13 +320,13 @@ public class ContextualSearchManager
      * @param bottomSheetController The {@link BottomSheetController} that is used to show
      *                              {@link BottomSheetContent}.
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
-     * @param toolbarHeight The height of the toolbar in pixels.
+     * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The manager of the toolbar, used to query toolbar state.
      * @param activityType The type of the current activity.
      */
     public void initialize(@NonNull ViewGroup parentView, @NonNull LayoutManagerImpl layoutManager,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull CompositorViewHolder compositorViewHolder, int toolbarHeight,
+            @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager, @ActivityType int activityType) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
@@ -343,7 +343,7 @@ public class ContextualSearchManager
         } else {
             panel = new ContextualSearchPanel(mActivity, mLayoutManager,
                     mLayoutManager.getOverlayPanelManager(), mBrowserControlsStateProvider,
-                    mWindowAndroid, compositorViewHolder, toolbarHeight, toolbarManager,
+                    mWindowAndroid, compositorViewHolder, toolbarHeightDp, toolbarManager,
                     activityType, mTabSupplier);
         }
 
