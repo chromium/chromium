@@ -308,7 +308,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.DismissWithEsc" units="ms"
-    expires_after="M90">
+    expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
@@ -320,7 +320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.DismissWithIgnore" units="ms"
-    expires_after="M90">
+    expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.StartNewNavigation" units="ms"
-    expires_after="M90">
+    expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.SwitchTab" units="ms"
-    expires_after="M90">
+    expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -413,7 +413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Security.SafetyTips.SafetyTipShown_AfterFlag"
-    enum="SafetyTipStatus" expires_after="M90">
+    enum="SafetyTipStatus" expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
@@ -425,7 +425,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.StatusWithInitiator.{SafetyTipInitiator}"
-    enum="SafetyTipStatus" expires_after="M90">
+    enum="SafetyTipStatus" expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>meacer@chromium.org</owner>
   <summary>
