@@ -78,7 +78,8 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   // very good way of detecting this so we'll filter based on the
   // filename.
   bool is_sfnt = false;
-  static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc", ""};
+  static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc",
+                                            ".otf", ".OTF", ""};
   for (size_t j = 0;; j++) {
     if (kSFNTExtensions[j][0] == 0) {
       // None of the extensions matched.
