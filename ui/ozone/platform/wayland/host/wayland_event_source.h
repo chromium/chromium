@@ -130,12 +130,21 @@ class WaylandEventSource : public PlatformEventSource,
 
  private:
   struct PointerFrame {
-    uint32_t axis_source = WL_POINTER_AXIS_SOURCE_WHEEL;
+    PointerFrame();
+    PointerFrame(const PointerFrame& other);
+    PointerFrame(PointerFrame&&);
+    ~PointerFrame();
+
+    PointerFrame& operator=(const PointerFrame&);
+    PointerFrame& operator=(PointerFrame&&);
+
+    base::Optional<uint32_t> axis_source;
     float dx = 0.0f;
     float dy = 0.0f;
     base::TimeDelta dt;
     bool is_axis_stop = false;
   };
+
   struct TouchPoint;
 
   // PlatformEventSource:

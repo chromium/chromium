@@ -24,7 +24,6 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
@@ -63,6 +62,16 @@ WaylandEventSource::TouchPoint::TouchPoint(gfx::PointF location,
     : window(current_window), last_known_location(location) {
   DCHECK(window);
 }
+
+WaylandEventSource::PointerFrame::PointerFrame() = default;
+WaylandEventSource::PointerFrame::PointerFrame(const PointerFrame&) = default;
+WaylandEventSource::PointerFrame::PointerFrame(PointerFrame&&) = default;
+WaylandEventSource::PointerFrame::~PointerFrame() = default;
+
+WaylandEventSource::PointerFrame& WaylandEventSource::PointerFrame::operator=(
+    const PointerFrame&) = default;
+WaylandEventSource::PointerFrame& WaylandEventSource::PointerFrame::operator=(
+    PointerFrame&&) = default;
 
 // WaylandEventSource implementation
 
@@ -221,11 +230,20 @@ void WaylandEventSource::OnPointerFrameEvent() {
         kGestureScrollFingerCount);
     DispatchEvent(&event);
     recent_pointer_frames_.clear();
-  } else {
-    MouseWheelEvent event(
-        gfx::Vector2d(current_pointer_frame_.dx, current_pointer_frame_.dy),
-        pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
-    DispatchEvent(&event);
+  } else if (current_pointer_frame_.axis_source) {
+    if (*current_pointer_frame_.axis_source == WL_POINTER_AXIS_SOURCE_WHEEL) {
+      MouseWheelEvent event(
+          gfx::Vector2d(current_pointer_frame_.dx, current_pointer_frame_.dy),
+          pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
+      DispatchEvent(&event);
+    } else if (*current_pointer_frame_.axis_source ==
+               WL_POINTER_AXIS_SOURCE_FINGER) {
+      ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
+                        EventTimeForNow(), flags, current_pointer_frame_.dx,
+                        current_pointer_frame_.dy, current_pointer_frame_.dx,
+                        current_pointer_frame_.dy, kGestureScrollFingerCount);
+      DispatchEvent(&event);
+    }
 
     if (recent_pointer_frames_.size() + 1 > kRecentPointerFrameMaxSize)
       recent_pointer_frames_.pop_back();
@@ -236,6 +254,7 @@ void WaylandEventSource::OnPointerFrameEvent() {
   current_pointer_frame_.dx = 0;
   current_pointer_frame_.dy = 0;
   current_pointer_frame_.is_axis_stop = false;
+  current_pointer_frame_.axis_source.reset();
 }
 
 void WaylandEventSource::OnPointerAxisSourceEvent(uint32_t axis_source) {
@@ -426,8 +445,10 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
   float dx = 0.0f;
   float dy = 0.0f;
   for (auto& frame : recent_pointer_frames_) {
-    if (frame.axis_source != WL_POINTER_AXIS_SOURCE_FINGER)
+    if (frame.axis_source &&
+        *frame.axis_source != WL_POINTER_AXIS_SOURCE_FINGER) {
       break;
+    }
     if (frame.dx == 0 && frame.dy == 0)
       break;
     if (dt + frame.dt > base::TimeDelta::FromMilliseconds(200))
