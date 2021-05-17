@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/memories_service.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 
 #include <numeric>
 #include <utility>
@@ -56,8 +56,8 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 // TODO(manukh): Move mojom translation to `MemoriesHandler` once we've created
 //  a mirror cpp struct the `MemoryService` can return instead. There's no need
 //  to do this yet, since the `MemoriesHandler` is the only consumer of
-//  `MemoriesService`, but once the omnibox comes into play, we'll need a common
-//  non-mojom response.
+//  `HistoryClustersService`, but once the omnibox comes into play, we'll need a
+//  common non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
 history_clusters::mojom::VisitPtr VisitToMojom(
@@ -92,7 +92,7 @@ std::vector<history_clusters::mojom::MemoryPtr> ClustersToMojom(
 // TODO(mahmadi): At the moment, the recency threshold of `query_params` is
 //  ignored and continuation query params is set to nullptr. The service does
 //  not support paging.
-MemoriesService::QueryMemoriesResponse FormQueryMemoriesResponse(
+HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
     std::vector<history::Cluster> clusters) {
   return {nullptr, ClustersToMojom(clusters)};
@@ -100,63 +100,68 @@ MemoriesService::QueryMemoriesResponse FormQueryMemoriesResponse(
 
 }  // namespace
 
-MemoriesService::QueryMemoriesResponse::QueryMemoriesResponse(
+HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
     std::vector<mojom::MemoryPtr> clusters)
     : query_params(std::move(query_params)), clusters(std::move(clusters)) {}
 
-MemoriesService::QueryMemoriesResponse::QueryMemoriesResponse(
+HistoryClustersService::QueryMemoriesResponse::QueryMemoriesResponse(
     QueryMemoriesResponse&& other) = default;
 
-MemoriesService::QueryMemoriesResponse::~QueryMemoriesResponse() = default;
+HistoryClustersService::QueryMemoriesResponse::~QueryMemoriesResponse() =
+    default;
 
-MemoriesService::MemoriesService(
+HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
   remote_model_helper_ = std::make_unique<MemoriesRemoteModelHelper>(
       url_loader_factory,
-      base::BindRepeating(&MemoriesService::NotifyDebugMessage,
+      base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
                           weak_ptr_factory_.GetWeakPtr()));
   remote_model_helper_weak_factory_ =
       std::make_unique<base::WeakPtrFactory<MemoriesRemoteModelHelper>>(
           remote_model_helper_.get());
 }
 
-MemoriesService::~MemoriesService() = default;
+HistoryClustersService::~HistoryClustersService() = default;
 
-void MemoriesService::Shutdown() {}
+void HistoryClustersService::Shutdown() {}
 
-void MemoriesService::AddObserver(Observer* obs) {
+void HistoryClustersService::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
 }
 
-void MemoriesService::RemoveObserver(Observer* obs) {
+void HistoryClustersService::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void MemoriesService::NotifyDebugMessage(const std::string& message) const {
+void HistoryClustersService::NotifyDebugMessage(
+    const std::string& message) const {
   for (Observer& obs : observers_) {
     obs.OnMemoriesDebugMessage(message);
   }
 }
 
 IncompleteVisitContextAnnotations&
-MemoriesService::GetIncompleteVisitContextAnnotations(int64_t nav_id) {
+HistoryClustersService::GetIncompleteVisitContextAnnotations(int64_t nav_id) {
   DCHECK(HasIncompleteVisitContextAnnotations(nav_id));
   return GetOrCreateIncompleteVisitContextAnnotations(nav_id);
 }
 
 IncompleteVisitContextAnnotations&
-MemoriesService::GetOrCreateIncompleteVisitContextAnnotations(int64_t nav_id) {
+HistoryClustersService::GetOrCreateIncompleteVisitContextAnnotations(
+    int64_t nav_id) {
   return incomplete_visit_context_annotations_[nav_id];
 }
 
-bool MemoriesService::HasIncompleteVisitContextAnnotations(int64_t nav_id) {
+bool HistoryClustersService::HasIncompleteVisitContextAnnotations(
+    int64_t nav_id) {
   return incomplete_visit_context_annotations_.count(nav_id);
 }
 
-void MemoriesService::CompleteVisitContextAnnotationsIfReady(int64_t nav_id) {
+void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
+    int64_t nav_id) {
   auto& visit_context_annotations =
       GetIncompleteVisitContextAnnotations(nav_id);
   DCHECK((visit_context_annotations.status.history_rows &&
@@ -183,7 +188,7 @@ void MemoriesService::CompleteVisitContextAnnotationsIfReady(int64_t nav_id) {
   }
 }
 
-void MemoriesService::QueryMemories(
+void HistoryClustersService::QueryMemories(
     mojom::QueryParamsPtr query_params,
     base::OnceCallback<void(QueryMemoriesResponse)> callback,
     base::CancelableTaskTracker* task_tracker) {
@@ -217,7 +222,7 @@ void MemoriesService::QueryMemories(
     std::move(on_visits_callback).Run(visits_);
 }
 
-void MemoriesService::RemoveVisits(
+void HistoryClustersService::RemoveVisits(
     const std::vector<history::ExpireHistoryArgs>& expire_list,
     base::OnceClosure closure,
     base::CancelableTaskTracker* task_tracker) {

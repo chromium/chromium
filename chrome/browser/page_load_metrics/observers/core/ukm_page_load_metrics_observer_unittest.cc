@@ -16,8 +16,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -31,7 +31,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/history_clusters/core/memories_service.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -2064,9 +2064,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
 #endif  // !defined(OS_ANDROID)
 
 TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
-  // TODO(tommycli): Should we move this test to either MemoriesService or
-  // HistoryClustersTabHelper? On the one hand, the logic resides there.
-  // On the other hand this serves as a good integration test with UKM.
+  // TODO(tommycli): Should we move this test to either HistoryClustersService
+  // or HistoryClustersTabHelper? On the one hand, the logic resides there. On
+  // the other hand this serves as a good integration test with UKM.
   GURL url(kTestUrl1);
 
   history::HistoryService* history_service =

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_
-#define COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -26,7 +26,7 @@
 namespace history_clusters {
 
 // This Service is the API for UIs to fetch Chrome Memories.
-class MemoriesService : public KeyedService {
+class HistoryClustersService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -42,12 +42,12 @@ class MemoriesService : public KeyedService {
     std::vector<mojom::MemoryPtr> clusters;
   };
 
-  explicit MemoriesService(
+  explicit HistoryClustersService(
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  MemoriesService(const MemoriesService&) = delete;
-  MemoriesService& operator=(const MemoriesService&) = delete;
-  ~MemoriesService() override;
+  HistoryClustersService(const HistoryClustersService&) = delete;
+  HistoryClustersService& operator=(const HistoryClustersService&) = delete;
+  ~HistoryClustersService() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -59,7 +59,8 @@ class MemoriesService : public KeyedService {
   // Notifies the observers of a debug message being available.
   void NotifyDebugMessage(const std::string& message) const;
 
-  // TODO(manukh) `MemoriesService` should be responsible for constructing the
+  // TODO(manukh) `HistoryClustersService` should be responsible for
+  // constructing the
   //  `AnnotatedVisit`s rather than exposing these methods which are used by
   //  `HistoryClustersTabHelper` to construct the visits.
   // Gets an `IncompleteVisitContextAnnotations` after DCHECKing it exists; this
@@ -93,7 +94,7 @@ class MemoriesService : public KeyedService {
                     base::CancelableTaskTracker* task_tracker);
 
  private:
-  friend class MemoriesServiceTestApi;
+  friend class HistoryClustersServiceTestApi;
 
   // If the Memories flag is enabled, this contains all the visits in-memory
   // during the Profile lifetime. If the `kPersistContextAnnotationsInHistoryDb`
@@ -123,9 +124,9 @@ class MemoriesService : public KeyedService {
       remote_model_helper_weak_factory_;
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.
-  base::WeakPtrFactory<MemoriesService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<HistoryClustersService> weak_ptr_factory_{this};
 };
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_SERVICE_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_

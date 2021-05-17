@@ -6,12 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("core") {
   sources = [
+    "history_clusters_service.cc",
+    "history_clusters_service.h",
     "memories_features.cc",
     "memories_features.h",
     "memories_remote_model_helper.cc",
     "memories_remote_model_helper.h",
-    "memories_service.cc",
-    "memories_service.h",
     "visit_data.h",
   ]
   deps = [
@@ -37,7 +37,7 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "memories_service_unittest.cc" ]
+  sources = [ "history_clusters_service_unittest.cc" ]
   deps = [
     ":core",
     ":test_support",
@@ -52,7 +52,7 @@ source_set("unit_tests") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "memories_service_test_api.h" ]
+  sources = [ "history_clusters_service_test_api.h" ]
   deps = [
     ":core",
     "//components/history/core/browser",

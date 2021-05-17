@@ -15,15 +15,15 @@
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history_clusters/memories_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "components/history_clusters/core/memories_service_test_api.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -66,11 +66,11 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     helper_ = HistoryClustersTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(helper_);
 
-    memories_service_test_api_ =
-        std::make_unique<history_clusters::MemoriesServiceTestApi>(
-            MemoriesServiceFactory::GetForBrowserContext(
+    history_clusters_service_test_api_ =
+        std::make_unique<history_clusters::HistoryClustersServiceTestApi>(
+            HistoryClustersServiceFactory::GetForBrowserContext(
                 web_contents()->GetBrowserContext()));
-    ASSERT_TRUE(memories_service_test_api_);
+    ASSERT_TRUE(history_clusters_service_test_api_);
 
     ASSERT_TRUE(profile()->CreateHistoryService());
     ASSERT_TRUE(history_service_ = HistoryServiceFactory::GetForProfile(
@@ -88,7 +88,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::vector<history::AnnotatedVisit> GetVisits() const {
-    return memories_service_test_api_->GetVisits();
+    return history_clusters_service_test_api_->GetVisits();
   }
 
   void AddToHistory(const GURL& url,
@@ -110,8 +110,8 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   HistoryClustersTabHelper* helper_;
 
-  std::unique_ptr<history_clusters::MemoriesServiceTestApi>
-      memories_service_test_api_;
+  std::unique_ptr<history_clusters::HistoryClustersServiceTestApi>
+      history_clusters_service_test_api_;
 
   base::CancelableTaskTracker tracker_;
   history::HistoryService* history_service_;

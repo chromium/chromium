@@ -12,8 +12,8 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/memories.mojom.h"
-#include "components/history_clusters/core/memories_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,8 +32,9 @@ class QueryResults;
 #endif
 
 // Handles bidirectional communication between memories page and the browser.
-class MemoriesHandler : public history_clusters::mojom::PageHandler,
-                        public history_clusters::MemoriesService::Observer {
+class MemoriesHandler
+    : public history_clusters::mojom::PageHandler,
+      public history_clusters::HistoryClustersService::Observer {
  public:
   MemoriesHandler(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                       pending_page_handler,
@@ -51,12 +52,12 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
   void RemoveVisits(std::vector<history_clusters::mojom::VisitPtr> visits,
                     RemoveVisitsCallback callback) override;
 
-  // history_clusters::MemoriesService::Observer:
+  // history_clusters::HistoryClustersService::Observer:
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
   // Called with `memory_mojoms` and `continuation_query_params` when the
-  // results of querying the MemoriesService are available. The latter is
+  // results of querying the HistoryClustersService are available. The latter is
   // created in anticipation of a continuation query. Subsequently, the bound
   // partially constructed `result_mojom` parameter is supplied with
   // `memory_mojoms` and `continuation_query_params` and sent to the JS.
@@ -85,14 +86,14 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler,
 
   Profile* profile_;
   content::WebContents* web_contents_;
-  // Tracker for query requests to the MemoriesService.
+  // Tracker for query requests to the HistoryClustersService.
   base::CancelableTaskTracker query_task_tracker_;
-  // Tracker for remove requests to the MemoriesService.
+  // Tracker for remove requests to the HistoryClustersService.
   base::CancelableTaskTracker remove_task_tracker_;
 
   // Used to observe the service.
-  base::ScopedObservation<history_clusters::MemoriesService,
-                          history_clusters::MemoriesService::Observer>
+  base::ScopedObservation<history_clusters::HistoryClustersService,
+                          history_clusters::HistoryClustersService::Observer>
       service_observation_{this};
 
   mojo::Remote<history_clusters::mojom::Page> page_;

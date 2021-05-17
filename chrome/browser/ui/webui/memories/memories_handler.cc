@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/history_clusters/memories_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/history_clusters/core/memories_features.h"
@@ -64,9 +64,10 @@ MemoriesHandler::MemoriesHandler(
   DCHECK(profile_);
   DCHECK(web_contents_);
 
-  auto* memory_service = MemoriesServiceFactory::GetForBrowserContext(profile_);
-  DCHECK(memory_service);
-  service_observation_.Observe(memory_service);
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+  DCHECK(history_clusters_service);
+  service_observation_.Observe(history_clusters_service);
 }
 
 MemoriesHandler::~MemoriesHandler() = default;
@@ -95,15 +96,15 @@ void MemoriesHandler::QueryMemories(
   if (history_clusters::RemoteModelEndpoint().is_valid()) {
     // Cancel pending queries, if any.
     query_task_tracker_.TryCancelAll();
-    auto* memory_service =
-        MemoriesServiceFactory::GetForBrowserContext(profile_);
-    memory_service->QueryMemories(
+    auto* history_clusters_service =
+        HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+    history_clusters_service->QueryMemories(
         std::move(query_params),
         base::BindOnce(
             [](base::OnceCallback<void(
                    history_clusters::mojom::QueryParamsPtr,
                    std::vector<history_clusters::mojom::MemoryPtr>)> callback,
-               history_clusters::MemoriesService::QueryMemoriesResponse
+               history_clusters::HistoryClustersService::QueryMemoriesResponse
                    response) {
               std::move(callback).Run(std::move(response.query_params),
                                       std::move(response.clusters));
@@ -142,8 +143,9 @@ void MemoriesHandler::RemoveVisits(
     expire_args.end_time = visit_ptr->time + base::TimeDelta::FromSeconds(1);
     expire_args.begin_time = visit_ptr->first_visit_time;
   }
-  auto* memory_service = MemoriesServiceFactory::GetForBrowserContext(profile_);
-  memory_service->RemoveVisits(
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+  history_clusters_service->RemoveVisits(
       expire_list,
       base::BindOnce(&MemoriesHandler::OnVisitsRemoved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(visits)),

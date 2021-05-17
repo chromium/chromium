@@ -40,7 +40,7 @@ class URLDatabase;
 }
 
 namespace history_clusters {
-class MemoriesService;
+class HistoryClustersService;
 }
 
 namespace network {
@@ -72,7 +72,7 @@ class AutocompleteProviderClient {
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
-  virtual history_clusters::MemoriesService* GetMemoriesService();
+  virtual history_clusters::HistoryClustersService* GetHistoryClustersService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
   virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;
