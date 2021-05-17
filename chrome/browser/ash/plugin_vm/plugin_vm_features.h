@@ -62,9 +62,8 @@ class PluginVmFeatures {
   // in crosh/vmc error messages.
   virtual bool IsAllowed(const Profile* profile, std::string* reason = nullptr);
 
-  // Returns whether Plugin VM has been installed.
-  // TODO(timloh): We should detect installations via VMC, currently the user
-  // needs to manually launch the installer once for the pref to get set.
+  // Returns whether Plugin VM is installed. Using vmc may cause this to return
+  // an incorrect value, e.g. by renaming or deleting VMs.
   virtual bool IsConfigured(const Profile* profile);
 
   // Returns true if Plugin VM is allowed and configured for the current

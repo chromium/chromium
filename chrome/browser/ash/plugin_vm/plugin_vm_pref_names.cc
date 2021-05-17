@@ -25,7 +25,8 @@ const char kPluginVmImageUrlKeyName[] = "url";
 const char kPluginVmImageHashKeyName[] = "hash";
 
 // A boolean preference representing whether there is a PluginVm image for
-// this user on this device.
+// this user on this device. Using vmc may cause this to go out-of-date, e.g.
+// by renaming or deleting VMs.
 const char kPluginVmImageExists[] = "plugin_vm.image_exists";
 
 // Boolean preferences indicating whether Plugin VM is allowed to use certain

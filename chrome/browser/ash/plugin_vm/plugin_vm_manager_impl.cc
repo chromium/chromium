@@ -372,6 +372,12 @@ void PluginVmManagerImpl::OnVmStateChanged(
   // 2) Ensure default shared path exists.
   // 3) Share paths with PluginVm
   if (vm_state_ == vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING) {
+    // If the VM was just created via VMC (instead of the installer), this flag
+    // will not yet be set. Setting it here allows us to avoid showing the
+    // installer when the user launches from the UI
+    profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmImageExists,
+                                     true);
+
     vm_tools::concierge::GetVmInfoRequest concierge_request;
     concierge_request.set_owner_id(owner_id_);
     concierge_request.set_name(kPluginVmName);
