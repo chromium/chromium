@@ -576,10 +576,6 @@ static void TestBitmapWrite(Clipboard* clipboard,
   }
 }
 
-#if !defined(OS_ANDROID)
-// TODO(https://crbug.com/1056650): Re-enable these tests after fixing the root
-// cause. This test only fails on Android.
-
 // Only kN32_SkColorType bitmaps are allowed in the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
 TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
@@ -615,7 +611,6 @@ TYPED_TEST(ClipboardTest, Bitmap_N32_Premul_2x7) {
   };
   TestBitmapWrite(&this->clipboard(), SkImageInfo::MakeN32Premul(2, 7), b, b);
 }
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
