@@ -828,8 +828,7 @@ TEST_F(CrashReportDatabaseTest, CleanBrokenDatabase) {
 
   ASSERT_TRUE(LoggingWriteFile(
       handle.get(), &expired_timestamp, sizeof(expired_timestamp)));
-  ASSERT_TRUE(LoggingCloseFile(handle.get()));
-  ignore_result(handle.release());
+  ASSERT_TRUE(LoggingCloseFile(handle.release()));
 
   EXPECT_EQ(db()->CleanDatabase(0), 1);
 
