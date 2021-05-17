@@ -114,6 +114,9 @@ const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
 const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kVerticalSplitScreen{"VerticalSplitScreen",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kWebUITabStripTabDragIntegration{
     "WebUITabStripTabDragIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -274,6 +277,10 @@ bool IsStylusBatteryStatusEnabled() {
 
 bool IsDisplayIdentificationEnabled() {
   return base::FeatureList::IsEnabled(kDisplayIdentification);
+}
+
+bool IsVerticalSplitScreenEnabled() {
+  return base::FeatureList::IsEnabled(kVerticalSplitScreen);
 }
 
 bool IsWebUITabStripTabDragIntegrationEnabled() {
