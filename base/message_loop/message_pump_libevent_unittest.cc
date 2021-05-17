@@ -43,7 +43,7 @@ class MessagePumpLibeventTest : public testing::Test {
 
   void SetUp() override {
     Thread::Options options(MessagePumpType::IO, 0);
-    ASSERT_TRUE(io_thread_.StartWithOptions(options));
+    ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
     int ret = pipe(pipefds_);
     ASSERT_EQ(0, ret);
   }

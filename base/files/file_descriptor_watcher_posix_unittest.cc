@@ -67,7 +67,7 @@ class FileDescriptorWatcherTest
         FileDescriptorWatcherTestType::MESSAGE_PUMP_FOR_IO_ON_OTHER_THREAD) {
       Thread::Options options;
       options.message_pump_type = MessagePumpType::IO;
-      ASSERT_TRUE(other_thread_.StartWithOptions(options));
+      ASSERT_TRUE(other_thread_.StartWithOptions(std::move(options)));
       file_descriptor_watcher_ =
           std::make_unique<FileDescriptorWatcher>(other_thread_.task_runner());
     }
