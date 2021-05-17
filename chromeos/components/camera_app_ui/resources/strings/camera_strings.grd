@@ -335,6 +335,9 @@
       <message desc="Label for zoom out camera preview" name="IDS_ZOOM_OUT_BUTTON">
         Zoom out
       </message>
+      <message desc="Label for button that resets all pan/tilt/zoom controls to the default value" name="IDS_PTZ_RESET_ALL_BUTTON">
+        Reset all
+      </message>
       <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
         Custom video parameters
       </message>

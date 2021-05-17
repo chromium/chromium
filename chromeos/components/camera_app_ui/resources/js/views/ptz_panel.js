@@ -6,6 +6,7 @@ import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
+import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
@@ -104,7 +105,13 @@ export class PTZPanel extends View {
      * @private {!HTMLDivElement}
      * @const
      */
-    this.panel_ = dom.get('#panel-container', HTMLDivElement);
+    this.panel_ = dom.get('#ptz-panel', HTMLDivElement);
+
+    /**
+     * @private {!HTMLButtonElement}
+     * @const
+     */
+    this.resetAll_ = dom.get('#ptz-reset-all', HTMLButtonElement);
 
     /**
      * @private {!HTMLButtonElement}
@@ -147,6 +154,33 @@ export class PTZPanel extends View {
      * @private
      */
     this.mirrorObserver_ = null;
+
+    /**
+     * Queues asynchronous pan change jobs in sequence.
+     * @type {!AsyncJobQueue}
+     * @private
+     */
+    this.panQueues_ = new AsyncJobQueue();
+
+    /**
+     * Queues asynchronous tilt change jobs in sequence.
+     * @type {!AsyncJobQueue}
+     * @private
+     */
+    this.tiltQueues_ = new AsyncJobQueue();
+
+    /**
+     * Queues asynchronous zoom change jobs in sequence.
+     * @type {!AsyncJobQueue}
+     * @private
+     */
+    this.zoomQueues_ = new AsyncJobQueue();
+
+    /**
+     * @type {!MediaTrackConstraints}
+     * @private
+     */
+    this.defaultPTZ_ = {};
 
     [this.panLeft_, this.panRight_, this.tiltUp_, this.tiltDown_, this.zoomIn_,
      this.zoomOut_]
@@ -203,11 +237,11 @@ export class PTZPanel extends View {
    * @param {string} attr One of pan, tilt, zoom attribute name to be bound.
    * @param {!HTMLButtonElement} incBtn Button for increasing the value.
    * @param {!HTMLButtonElement} decBtn Button for decreasing the value.
-   * @param {!MediaSettingsRange} range Available value range.
+   * @return {!AsyncJobQueue}
    */
-  bind_(attr, incBtn, decBtn, range) {
+  bind_(attr, incBtn, decBtn) {
     let needMirror = false;
-    const {min, max, step} = range;
+    const {min, max, step} = this.track_.getCapabilities()[attr];
     const getCurrent = () => this.track_.getSettings()[attr];
     const checkDisabled = () => {
       const current = getCurrent();
@@ -240,7 +274,7 @@ export class PTZPanel extends View {
           step * direction;
       return () => {
         queue.push(async () => {
-          if (this.track_.readyState !== 'live') {
+          if (!this.track_.enabled) {
             return;
           }
           const current = getCurrent();
@@ -275,6 +309,68 @@ export class PTZPanel extends View {
       pressTimeout,
       holdInterval,
     });
+
+    return queue;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  canPan_() {
+    return this.track_.getCapabilities().pan !== undefined;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  canTilt_() {
+    return this.track_.getCapabilities().tilt !== undefined;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  canZoom_() {
+    return this.track_.getCapabilities().zoom !== undefined;
+  }
+
+  /**
+   * @param {!MediaStreamTrack} track
+   * @return {!Promise}
+   * @private
+   */
+  async updateDefaultPTZ_(track) {
+    const newDefault = {};
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator === null) {
+      // VCD of fake camera will always reset to default when first opened. Use
+      // current value at first open as default.
+      const {pan, tilt, zoom} = this.track_.getSettings();
+      if (this.canPan_()) {
+        newDefault.pan = pan;
+      }
+      if (this.canTilt_()) {
+        newDefault.tilt = tilt;
+      }
+      if (this.canZoom_()) {
+        newDefault.zoom = zoom;
+      }
+    } else {
+      const {deviceId} = this.track_.getSettings();
+      if (this.canPan_()) {
+        newDefault.pan = await deviceOperator.getPanDefault(deviceId);
+      }
+      if (this.canTilt_()) {
+        newDefault.tilt = await deviceOperator.getTiltDefault(deviceId);
+      }
+      if (this.canZoom_()) {
+        newDefault.zoom = await deviceOperator.getZoomDefault(deviceId);
+      }
+    }
+    this.defaultPTZ_ = newDefault;
   }
 
   /**
@@ -285,31 +381,54 @@ export class PTZPanel extends View {
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel_.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel_.style.left = `${right + 6}px`;
-
+    const oldTrack = this.track_;
     this.track_ = stream.getVideoTracks()[0];
-    const {pan, tilt, zoom} = this.track_.getCapabilities();
-    const capabilities = {
-      pan: pan !== undefined,
-      tilt: tilt !== undefined,
-      zoom: zoom !== undefined,
+
+    let updatingDefault = Promise.resolve();
+    if (oldTrack === null ||
+        oldTrack.getSettings().deviceId !==
+            this.track_.getSettings().deviceId) {
+      updatingDefault = this.updateDefaultPTZ_(this.track_);
+    }
+
+    const canPan = this.canPan_();
+    const canTilt = this.canTilt_();
+    const canZoom = this.canZoom_();
+
+    metrics.sendOpenPTZPanelEvent({
+      pan: canPan,
+      tilt: canTilt,
+      zoom: canZoom,
+    });
+
+    state.set(state.State.HAS_PAN_SUPPORT, canPan);
+    state.set(state.State.HAS_TILT_SUPPORT, canTilt);
+    state.set(state.State.HAS_ZOOM_SUPPORT, canZoom);
+
+    if (canPan) {
+      this.panQueues_ = this.bind_('pan', this.panRight_, this.panLeft_);
+    }
+
+    if (canTilt) {
+      this.tiltQueues_ = this.bind_('tilt', this.tiltUp_, this.tiltDown_);
+    }
+
+    if (canZoom) {
+      this.zoomQueues_ = this.bind_('zoom', this.zoomIn_, this.zoomOut_);
+    }
+
+    this.resetAll_.onclick = async () => {
+      await updatingDefault;
+      await Promise.all([
+        this.panQueues_.clear(),
+        this.tiltQueues_.clear(),
+        this.zoomQueues_.clear(),
+      ]);
+      if (!this.track_.enabled) {
+        return;
+      }
+      await this.track_.applyConstraints({advanced: [this.defaultPTZ_]});
     };
-    metrics.sendOpenPTZPanelEvent(capabilities);
-
-    state.set(state.State.HAS_PAN_SUPPORT, capabilities.pan);
-    state.set(state.State.HAS_TILT_SUPPORT, capabilities.tilt);
-    state.set(state.State.HAS_ZOOM_SUPPORT, capabilities.zoom);
-
-    if (pan !== undefined) {
-      this.bind_('pan', this.panRight_, this.panLeft_, pan);
-    }
-
-    if (tilt !== undefined) {
-      this.bind_('tilt', this.tiltUp_, this.tiltDown_, tilt);
-    }
-
-    if (zoom !== undefined) {
-      this.bind_('zoom', this.zoomIn_, this.zoomOut_, zoom);
-    }
   }
 
   /**

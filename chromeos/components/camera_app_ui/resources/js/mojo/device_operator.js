@@ -172,6 +172,12 @@ export class DeviceOperator {
    * @throws {!Error} Thrown when given device id is invalid.
    */
   async getStaticMetadata(deviceId, tag) {
+    // All the unsigned vendor tag number defined in HAL will be forced fit into
+    // signed int32 when passing through mojo. So all number > 0x7FFFFFFF
+    // require another conversion.
+    if (tag > 0x7FFFFFFF) {
+      tag = /** @type {cros.mojom.CameraMetadataTag} */ (-(~tag + 1));
+    }
     const device = await this.getDevice_(deviceId);
     const {cameraInfo} = await device.getCameraInfo();
     const staticMetadata = cameraInfo.staticCameraCharacteristics;
@@ -347,6 +353,39 @@ export class DeviceOperator {
   }
 
   /**
+   * @param {string} deviceId
+   * @return {!Promise<number|undefined>} Resolves to undefined when called with
+   *     |deviceId| which don't support pan control.
+   */
+  async getPanDefault(deviceId) {
+    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x8001000d);
+    const data = await this.getStaticMetadata(deviceId, tag);
+    return data[0];
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Promise<number|undefined>} Resolves to undefined when called with
+   *     |deviceId| which don't support tilt control.
+   */
+  async getTiltDefault(deviceId) {
+    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x80010016);
+    const data = await this.getStaticMetadata(deviceId, tag);
+    return data[0];
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Promise<number|undefined>} Resolves to undefined when called with
+   *     |deviceId| which don't support zoom control.
+   */
+  async getZoomDefault(deviceId) {
+    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x80010019);
+    const data = await this.getStaticMetadata(deviceId, tag);
+    return data[0];
+  }
+
+  /**
    * Sets the frame rate range in VCD. If the range is invalid (e.g. 0 fps), VCD
    * will fallback to use the default one.
    * @param {string} deviceId
@@ -397,10 +436,8 @@ export class DeviceOperator {
    */
   async isPortraitModeSupported(deviceId) {
     // TODO(wtlee): Change to portrait mode tag.
-    // This should be 0x80000000 but mojo interface will convert the tag to
-    // int32.
     const portraitModeTag =
-        /** @type{!cros.mojom.CameraMetadataTag} */ (-0x80000000);
+        /** @type{!cros.mojom.CameraMetadataTag} */ (0x80000000);
 
     const portraitMode =
         await this.getStaticMetadata(deviceId, portraitModeTag);

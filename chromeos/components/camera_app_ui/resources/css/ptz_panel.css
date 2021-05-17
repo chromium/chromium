@@ -2,21 +2,61 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#panel-container {
-  --divider-color: rgba(95, 99, 104, 0.38);
-  --divider-width: 1px;
-
-  backdrop-filter: blur(10px);
-  background: rgba(32, 33, 36, 0.9);
-  border-radius: 4px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+#ptz-panel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
   position: absolute;
 }
 
-body.taking.video #panel-container {
-  bottom: 24px;
-  transition: bottom var(--fast1-duration);
+#ptz-panel button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+#reset-all-container,
+#panel-container {
+  backdrop-filter: blur(10px);
+  background: rgb(32, 33, 36, 0.9);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+#reset-all-container {
+  border-radius: var(--border-radius-rounded-with-short-side);
+  height: 32px;
+  margin-bottom: 8px;
+}
+
+#ptz-reset-all {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  padding-inline-end: 16px;
+  padding-inline-start: 7px;
+}
+
+#ptz-reset-all:focus::after {
+  border-radius: var(--border-radius-rounded-with-short-side);
+}
+
+#ptz-reset-all>.icon {
+  background-image: url(/images/ptz_reset_all.svg);
+  height: 20px;
+  margin-inline-end: 10px;
+  width: 20px;
+}
+
+#ptz-reset-all>.text {
+  color: var(--grey-200);
+  font-family: var(--default-font-family);
+  font-weight: 500;
+}
+
+#panel-container {
+  --divider-color: rgba(255, 255, 255, 0.14);
+  --divider-width: 1px;
+
+  border-radius: 20px;
 }
 
 #panel-container button {
@@ -28,10 +68,6 @@ body.taking.video #panel-container {
   height: 48px;
   position: absolute;
   width: 48px;
-}
-
-#panel-container button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #panel-container button:disabled::before {
@@ -217,27 +253,27 @@ body.has-pan-support.has-tilt-support.has-zoom-support :is(#tilt-down, #tilt-up,
 
 body.has-pan-support.has-tilt-support.has-zoom-support #tilt-down {
   --x: calc(calc(192px - var(--svg-width)) / 2);
-  --y: calc(48px * 3 + calc(48px - var(--svg-height)) / 2);
+  --y: calc(192px - 20px - var(--svg-height));
 
   clip-path: path('M 0 192 L 192 192 L 123 123 A 38 38 0 0 1 69 123 Z');
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #tilt-up {
   --x: calc(calc(192px - var(--svg-width)) / 2);
-  --y: calc(calc(48px - var(--svg-height)) / 2);
+  --y: 20px;
 
   clip-path: path('M 0 0 L 192 0 L 123 69 A 38 38 0 0 0 69 69 Z');
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #pan-left {
-  --x: calc(calc(48px - var(--svg-width)) / 2);
+  --x: 20px;
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
   clip-path: path('M 0 0 L 0 192 L 69 123 A 38 38 0 0 1 69 69 Z');
 }
 
 body.has-pan-support.has-tilt-support.has-zoom-support #pan-right {
-  --x: calc(48px * 3 + calc(48px - var(--svg-width)) / 2);
+  --x: calc(192px - 20px - var(--svg-width));
   --y: calc(calc(192px - var(--svg-height)) / 2);
 
   clip-path: path('M 192 0 L 192 192 L 123 123 A 38 38 0 0 0 123 69 Z');

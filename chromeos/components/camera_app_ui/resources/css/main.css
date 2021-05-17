@@ -27,6 +27,8 @@
   --default-font-family: 'Google Sans', sans-serif;
   --fixed-width-font-family: 'Cousine', monospace;
 
+  /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
+  --border-radius-rounded-with-short-side: 9999999px;
 }
 
 html {
