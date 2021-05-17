@@ -49756,6 +49756,13 @@ from previous Chrome versions.
   <int value="2" label="Connection closed"/>
 </enum>
 
+<enum name="MachineLearningServiceProcessError">
+  <int value="0" label="kSpawnWorkerProcessFailed"/>
+  <int value="1" label="kChangeEuidToMlServiceDBusFailed"/>
+  <int value="2" label="kChangeEuidBackToRootFailed"/>
+  <int value="3" label="kGetWorkerProcessMemoryUsageFailed"/>
+</enum>
+
 <enum name="MachineLevelUserCloudPolicyEnrollmentResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to fetch DM Token from the server"/>
