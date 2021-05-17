@@ -85,7 +85,7 @@ class InkDropImplTestApi
 
   // Wrappers to InkDropImpl internals:
   InkDropImpl::HighlightStateFactory* state_factory() {
-    return ink_drop_->highlight_state_factory_.get();
+    return &ink_drop_->highlight_state_factory_;
   }
 
   void SetHighlightState(

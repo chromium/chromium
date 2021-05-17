@@ -26,7 +26,8 @@ namespace views {
 // NOTE: The InkDropImpl class is also tested by the InkDropFactoryTest tests.
 class InkDropImplTest : public testing::Test {
  public:
-  InkDropImplTest();
+  explicit InkDropImplTest(InkDropImpl::AutoHighlightMode auto_highlight_mode =
+                               InkDropImpl::AutoHighlightMode::NONE);
   ~InkDropImplTest() override;
 
  protected:
@@ -79,7 +80,9 @@ class InkDropImplTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(InkDropImplTest);
 };
 
-InkDropImplTest::InkDropImplTest() {
+InkDropImplTest::InkDropImplTest(
+    InkDropImpl::AutoHighlightMode auto_highlight_mode)
+    : ink_drop_host_(auto_highlight_mode) {
   ink_drop_host()->ink_drop()->SetMode(views::InkDropHost::InkDropMode::ON);
   test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop());
   ink_drop_host()->set_disable_timers_for_test(true);
@@ -110,23 +113,14 @@ class InkDropImplAutoHighlightTest
   InkDropImplAutoHighlightTest();
   ~InkDropImplAutoHighlightTest() override;
 
-  InkDropImpl::AutoHighlightMode GetAutoHighlightMode() const;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(InkDropImplAutoHighlightTest);
 };
 
 InkDropImplAutoHighlightTest::InkDropImplAutoHighlightTest()
-    : InkDropImplTest() {
-  ink_drop()->SetAutoHighlightMode(GetAutoHighlightMode());
-}
+    : InkDropImplTest(testing::get<0>(GetParam())) {}
 
 InkDropImplAutoHighlightTest::~InkDropImplAutoHighlightTest() = default;
-
-InkDropImpl::AutoHighlightMode
-InkDropImplAutoHighlightTest::GetAutoHighlightMode() const {
-  return testing::get<0>(GetParam());
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 //

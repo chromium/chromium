@@ -49,20 +49,11 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   // |ink_drop_host|. |host_size| is used to set the size of the ink drop layer.
   //
   // By default the highlight will be made visible while |this| is hovered but
-  // not focused and the NONE AutoHighlightMode will be used.
-  InkDropImpl(InkDropHost* ink_drop_host, const gfx::Size& host_size);
+  // not focused.
+  InkDropImpl(InkDropHost* ink_drop_host,
+              const gfx::Size& host_size,
+              AutoHighlightMode auto_highlight_mode);
   ~InkDropImpl() override;
-
-  // Auto highlighting is a mechanism to show/hide the highlight based on the
-  // visibility of the ripple. See the documentation of the AutoHighlightMode
-  // for more info on the different modes.
-  //
-  // This method is intended as a configuration option to be used after
-  // construction. Behavior is undefined if |this| has already handled any
-  // InkDrop inherited functions.
-  // TODO(pbos): Move along with AutoHighlightMode to views::InkDrop so users
-  // can configure inkdrops created by parent classes.
-  void SetAutoHighlightMode(AutoHighlightMode auto_highlight_mode);
 
   const absl::optional<base::TimeDelta>& hover_highlight_fade_duration() const {
     return hover_highlight_fade_duration_;
@@ -156,7 +147,7 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
    private:
     // Used by |this| to create the new states to transition to.
-    HighlightStateFactory* state_factory_;
+    HighlightStateFactory* const state_factory_;
 
     DISALLOW_COPY_AND_ASSIGN(HighlightState);
   };
@@ -269,6 +260,10 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   // add/remove the root layer to/from it.
   InkDropHost* const ink_drop_host_;
 
+  // Used by |this| to initialize the starting |highlight_state_| and by the
+  // current |highlight_state_| to create the next state.
+  HighlightStateFactory highlight_state_factory_;
+
   // The root Layer that parents the InkDropRipple layers and the
   // InkDropHighlight layers. The |root_layer_| is the one that is added and
   // removed from the |ink_drop_host_|.
@@ -297,10 +292,6 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // The current InkDropRipple. Created on demand using CreateInkDropRipple().
   std::unique_ptr<InkDropRipple> ink_drop_ripple_;
-
-  // Used by |this| to initialize the starting |highlight_state_| and by the
-  // current |highlight_state_| to create the next state.
-  std::unique_ptr<HighlightStateFactory> highlight_state_factory_;
 
   // The current state object that handles all inputs that affect the visibility
   // of the |highlight_|.

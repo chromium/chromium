@@ -77,8 +77,16 @@ class TestInkDropHighlight : public InkDropHighlight {
 
 }  // namespace
 
-TestInkDropHost::TestInkDropHost() {
-  InkDrop::UseInkDropWithoutAutoHighlight(ink_drop());
+TestInkDropHost::TestInkDropHost(
+    InkDropImpl::AutoHighlightMode auto_highlight_mode) {
+  ink_drop()->SetCreateInkDropCallback(base::BindRepeating(
+      [](TestInkDropHost* host,
+         InkDropImpl::AutoHighlightMode auto_highlight_mode)
+          -> std::unique_ptr<views::InkDrop> {
+        return std::make_unique<views::InkDropImpl>(
+            host->ink_drop(), host->size(), auto_highlight_mode);
+      },
+      this, auto_highlight_mode));
 
   ink_drop()->SetCreateHighlightCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropHighlight> {

@@ -490,9 +490,10 @@ class NotificationInkDropImpl : public views::InkDropImpl {
  public:
   NotificationInkDropImpl(views::InkDropHost* ink_drop_host,
                           const gfx::Size& host_size)
-      : views::InkDropImpl(ink_drop_host, host_size) {
-    SetAutoHighlightMode(views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  }
+      : views::InkDropImpl(
+            ink_drop_host,
+            host_size,
+            views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE) {}
 
   void HostSizeChanged(const gfx::Size& new_size) override {
     // Prevent a call to InkDropImpl::HostSizeChanged which recreates the ripple

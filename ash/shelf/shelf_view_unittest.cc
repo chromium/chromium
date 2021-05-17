@@ -2400,7 +2400,8 @@ class ShelfViewInkDropTest : public ShelfViewTest {
     browser_button_ = test_api_->GetButton(0);
 
     auto ink_drop_impl = std::make_unique<views::InkDropImpl>(
-        browser_button_->ink_drop(), browser_button_->size());
+        browser_button_->ink_drop(), browser_button_->size(),
+        views::InkDropImpl::AutoHighlightMode::NONE);
     browser_button_ink_drop_impl_ = ink_drop_impl.get();
 
     auto browser_button_ink_drop =

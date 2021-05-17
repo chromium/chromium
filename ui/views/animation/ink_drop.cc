@@ -25,9 +25,8 @@ std::unique_ptr<InkDrop> CreateInkDropImpl(
     InkDropImpl::AutoHighlightMode auto_highlight_mode,
     bool highlight_on_hover,
     bool highlight_on_focus) {
-  auto ink_drop =
-      std::make_unique<InkDropImpl>(host, host->host_view()->size());
-  ink_drop->SetAutoHighlightMode(auto_highlight_mode);
+  auto ink_drop = std::make_unique<InkDropImpl>(host, host->host_view()->size(),
+                                                auto_highlight_mode);
   ink_drop->SetShowHighlightOnHover(highlight_on_hover);
   ink_drop->SetShowHighlightOnFocus(highlight_on_focus);
   return ink_drop;

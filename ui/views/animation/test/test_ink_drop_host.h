@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/views/animation/ink_drop_impl.h"
 
 namespace views {
 
@@ -14,7 +15,8 @@ namespace views {
 // during tests.  Tracks the number of hosted ink drop layers.
 class TestInkDropHost : public View {
  public:
-  TestInkDropHost();
+  explicit TestInkDropHost(InkDropImpl::AutoHighlightMode auto_highlight_mode =
+                               InkDropImpl::AutoHighlightMode::NONE);
   ~TestInkDropHost() override;
 
   int num_ink_drop_layers_added() const { return num_ink_drop_layers_added_; }
