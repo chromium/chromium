@@ -535,6 +535,10 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
 
 void NewTabPageHandler::ChooseLocalCustomBackground(
     ChooseLocalCustomBackgroundCallback callback) {
+  // Early return if the select file dialog is already active.
+  if (select_file_dialog_)
+    return;
+
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
   ui::SelectFileDialog::FileTypeInfo file_types;
