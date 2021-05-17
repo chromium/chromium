@@ -137,7 +137,8 @@
       }
 
       #newAccessibilitySettingsButton,
-      #newTimezoneSettingsButton {
+      #newTimezoneSettingsButton,
+      #enableDebuggingButton {
         margin-top: 16px;
       }
 
@@ -183,8 +184,28 @@
       :host-context([orientation=horizontal]) .new-welcome-header-text {
         text-align: start;
       }
+
+      #title {
+        align-self: center;
+        color: var(--oobe-header-text-color);
+        margin: 0;
+        user-select: none;
+        @apply --oobe-header-font;
+      }
+
+      .welcome-illustration {
+        user-select: none;
+      }
+
+      video {
+        height: 200px;
+        width: 449px;
+      }
+
+      #enableDebuggingDiv {
+        margin-top: 2px;
+      }
     </style>
-    <link rel="stylesheet" href="oobe_welcome_dialog.css">
     <div id="newDialog" class="layout vertical" hidden="[[!isNewLayout_]]">
       <h1 id="newTitle" class="new-welcome-header-text">
         [[i18nDynamic(locale, 'newWelcomeScreenGreeting')]]
@@ -214,6 +235,13 @@
               icon2x="oobe-32:timezone"
               on-click="onTimezoneClicked_"
               hidden="[[!timezoneButtonVisible]]">
+          </oobe-welcome-secondary-button>
+          <oobe-welcome-secondary-button id="enableDebuggingButton"
+            text-key="debuggingFeaturesLink"
+            icon1x="oobe-32:chromebook"
+            icon2x="oobe-32:chromebook"
+            on-click="onDebuggingLinkClicked_"
+            hidden="[[!debuggingLinkVisible]]">
           </oobe-welcome-secondary-button>
         </div>
         <oobe-text-button id="getStarted"

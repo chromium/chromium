@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray_test_api.h"
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
                        DebuggerModeTest) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   test::OobeJS().ClickOnPath(
-      {"connect", "welcomeScreen", "enableDebuggingLink"});
+      {"connect", "welcomeScreen", "enableDebuggingButton"});
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"debugging", "removeProtectionDialog"})
