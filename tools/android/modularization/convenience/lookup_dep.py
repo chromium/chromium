@@ -61,9 +61,10 @@ def main():
   if arguments.output_directory:
     constants.SetOutputDirectory(arguments.output_directory)
   constants.CheckOutputDirectory()
-  out_dir: str = constants.GetOutDirectory()
+  abs_out_dir: pathlib.Path = pathlib.Path(
+      constants.GetOutDirectory()).resolve()
 
-  index = ClassLookupIndex(pathlib.Path(out_dir), arguments.build)
+  index = ClassLookupIndex(abs_out_dir, arguments.build)
   matches = {c: index.match(c) for c in arguments.classes}
 
   if not arguments.build:
@@ -73,7 +74,7 @@ def main():
         arguments.build = True
         break
     if arguments.build:
-      index = ClassLookupIndex(pathlib.Path(out_dir), True)
+      index = ClassLookupIndex(abs_out_dir, True)
       matches = {c: index.match(c) for c in arguments.classes}
 
   if not arguments.build:
@@ -109,8 +110,8 @@ class ClassLookupIndex:
 
   A class might be in multiple targets if it's bytecode rewritten."""
 
-  def __init__(self, build_output_dir: pathlib.Path, should_build: bool):
-    self._build_output_dir = build_output_dir
+  def __init__(self, abs_build_output_dir: pathlib.Path, should_build: bool):
+    self._abs_build_output_dir = abs_build_output_dir
     self._should_build = should_build
     self._class_index = self._index_root()
 
@@ -154,7 +155,7 @@ class ClassLookupIndex:
     list_java_targets_command = [
         'build/android/list_java_targets.py', '--gn-labels',
         '--print-build-config-paths',
-        f'--output-directory={self._build_output_dir}'
+        f'--output-directory={self._abs_build_output_dir}'
     ]
     if self._should_build:
       list_java_targets_command += ['--build']
@@ -222,7 +223,7 @@ class ClassLookupIndex:
     sources_path = deps_info.get('java_sources_file')
     if sources_path:
       # Read the java_sources_file, indexing the classes found
-      with open(self._build_output_dir / sources_path) as sources_contents:
+      with open(self._abs_build_output_dir / sources_path) as sources_contents:
         out = set()
         for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())
@@ -235,18 +236,29 @@ class ClassLookupIndex:
     # android_aar_prebuilt())
     # |unprocessed_jar_path| might be set but not exist if not all targets have
     # been built.
-    unprocessed_jar_path = self._build_output_dir / deps_info.get(
-        'unprocessed_jar_path')
-    if unprocessed_jar_path and os.path.exists(unprocessed_jar_path):
-      return self._extract_full_class_names_from_jar(unprocessed_jar_path)
+    unprocessed_jar_path = deps_info.get('unprocessed_jar_path')
+    if unprocessed_jar_path:
+      abs_unprocessed_jar_path = (self._abs_build_output_dir /
+                                  unprocessed_jar_path)
+      if abs_unprocessed_jar_path.exists():
+        # Normalize path but do not follow symlink if .jar is symlink.
+        abs_unprocessed_jar_path = (abs_unprocessed_jar_path.parent.resolve() /
+                                    abs_unprocessed_jar_path.name)
+
+        return self._extract_full_class_names_from_jar(
+            self._abs_build_output_dir, abs_unprocessed_jar_path)
 
     return set()
 
   @staticmethod
-  def _extract_full_class_names_from_jar(jar_path: pathlib.Path) -> Set[str]:
+  def _extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
+                                         abs_jar_path: pathlib.Path
+                                         ) -> Set[str]:
     """Returns set of fully qualified class names in passed-in jar."""
     out = set()
-    for zip_entry_name in ClassLookupIndex._read_jar_namelist(jar_path):
+    jar_namelist = ClassLookupIndex._read_jar_namelist(abs_build_output_dir,
+                                                       abs_jar_path)
+    for zip_entry_name in jar_namelist:
       if not zip_entry_name.endswith('.class'):
         continue
       # Remove .class suffix
@@ -261,19 +273,25 @@ class ClassLookupIndex:
     return out
 
   @staticmethod
-  def _read_jar_namelist(jar_path: pathlib.Path) -> list[str]:
+  def _read_jar_namelist(abs_build_output_dir: pathlib.Path,
+                         abs_jar_path: pathlib.Path) -> list[str]:
     """Returns list of jar members by name."""
 
     # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
-    cache_path = jar_path.with_suffix(jar_path.suffix + '.namelist_cache')
+    cache_path = abs_jar_path.with_suffix(abs_jar_path.suffix +
+                                          '.namelist_cache')
+    if not abs_jar_path.is_relative_to(abs_build_output_dir):
+      cache_path = (abs_build_output_dir / 'gen' /
+                    cache_path.relative_to(_SRC_DIR))
     if (cache_path.exists()
-        and os.path.getmtime(cache_path) > os.path.getmtime(jar_path)):
+        and os.path.getmtime(cache_path) > os.path.getmtime(abs_jar_path)):
       with open(cache_path) as f:
-        return f.readlines()
+        return [s.strip() for s in f.readlines()]
 
-    with zipfile.ZipFile(jar_path) as z:
+    with zipfile.ZipFile(abs_jar_path) as z:
       namelist = z.namelist()
 
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
     with open(cache_path, 'w') as f:
       f.write('\n'.join(namelist))
 
