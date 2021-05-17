@@ -1,21 +1,15 @@
 // Copied form Puppeteer
 `use strict`;
-const childProcess = require('child_process');
-const readline = require('readline');
-const promisify = require('util').promisify;
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+import childProcess from 'child_process';
+import readline from 'readline';
+import { promisify } from  'util';
+import fs from  'fs';
+import path from  'path';
+import os from  'os';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 
-module.exports = {
-    launch: async function () {
-        return launch();
-    }
-};
-
-async function launch() {
+export default async function launch() {
     const tempDir = await getTempDir();
     const chromeExecutable = process.env.CHROME_PATH;
 
@@ -52,7 +46,12 @@ async function launch() {
             "about:blank"
         ],
     );
-    return await waitForWSEndpoint(proc);
+    return {
+        cdpUrl: await waitForWSEndpoint(proc),
+        closeBrowser: () => {
+            proc.kill();
+        }
+    }
 }
 
 async function getTempDir() {

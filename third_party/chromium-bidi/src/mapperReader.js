@@ -1,25 +1,14 @@
 `use strict`;
 
-const rollup = require('rollup');
+import { rollup } from 'rollup';
 
-module.exports = {
-    readMapper: async function () {
-        return await mapperReader();
-    }
-};
-
-const mapperReader = async () => {
-    const inputOptions = {
+export default async function read() {
+    const bundle = await rollup({
         input: "src/bidiMapper/mapper.js",
-    };
-    const outputOptions = {
+    });
+
+    const result = await bundle.generate({
         format: 'iife'
-    };
-    const bundle = await rollup.rollup(inputOptions);
-
-    const result = await bundle.generate(outputOptions);
-
-    console.log(result);
-
+    });
     return result.output[0].code;
 };
