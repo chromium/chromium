@@ -606,7 +606,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                   'Intel' in driver_vendor)
       assert is_intel, 'Intel driver schema is only for Intel GPUs'
       valid_version = check_intel_driver_version(driver_version['value'])
-      if 'value2' in driver_version:
+      if driver_version.has_key('value2'):
         valid_version = (valid_version and
                          check_intel_driver_version(driver_version['value2']))
       assert valid_version, INTEL_DRIVER_VERSION_SCHEMA
@@ -616,7 +616,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
       is_nvidia = (format(vendor_id, '#04x') == '0x10de')
       assert is_nvidia, 'Nvidia driver schema is only for Nvidia GPUs'
       valid_version = check_nvidia_driver_version(driver_version['value'])
-      if 'value2' in driver_version:
+      if driver_version.has_key('value2'):
         valid_version = (valid_version and
                          check_nvidia_driver_version(driver_version['value2']))
       assert valid_version, NVIDIA_DRIVER_VERSION_SCHEMA
