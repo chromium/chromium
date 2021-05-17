@@ -135,6 +135,13 @@ void ChromeFeaturesServiceProvider::Start(
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      kChromeFeaturesServiceInterface,
+      kChromeFeaturesServiceIsDNSProxyEnabledMethod,
+      base::BindRepeating(&ChromeFeaturesServiceProvider::IsDnsProxyEnabled,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeFeaturesServiceProvider::OnExported(
@@ -255,6 +262,13 @@ void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
                                   &peripheral_data_access_enabled);
   SendResponse(method_call, std::move(response_sender),
                peripheral_data_access_enabled);
+}
+
+void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  SendResponse(method_call, std::move(response_sender),
+               base::FeatureList::IsEnabled(features::kEnableDnsProxy));
 }
 
 }  // namespace chromeos
