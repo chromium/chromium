@@ -71,6 +71,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   const std::string& GetLastSpokenUtterance() { return last_spoken_utterance_; }
   void ClearLastSpokenUtterance() { last_spoken_utterance_ = ""; }
   void Shutdown() override {}
+  bool PreferEngineDelegateVoices() override { return false; }
 
  private:
   std::vector<VoiceData> voices_;

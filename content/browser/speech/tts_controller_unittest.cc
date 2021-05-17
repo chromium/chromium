@@ -70,6 +70,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   std::string GetError() override { return error_; }
   void ClearError() override { error_.clear(); }
   void Shutdown() override {}
+  bool PreferEngineDelegateVoices() override { return false; }
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }

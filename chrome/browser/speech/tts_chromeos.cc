@@ -146,6 +146,10 @@ bool TtsPlatformImplChromeOs::IsSpeaking() {
   return false;
 }
 
+bool TtsPlatformImplChromeOs::PreferEngineDelegateVoices() {
+  return true;
+}
+
 // static
 TtsPlatformImplChromeOs*
 TtsPlatformImplChromeOs::GetInstance() {

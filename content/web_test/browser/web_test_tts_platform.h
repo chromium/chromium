@@ -37,6 +37,7 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   void Shutdown() override;
+  bool PreferEngineDelegateVoices() override;
 
  private:
   WebTestTtsPlatform();

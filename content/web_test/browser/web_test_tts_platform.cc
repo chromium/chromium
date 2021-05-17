@@ -67,6 +67,10 @@ void WebTestTtsPlatform::SetError(const std::string& error) {}
 
 void WebTestTtsPlatform::Shutdown() {}
 
-WebTestTtsPlatform::WebTestTtsPlatform() {}
+bool WebTestTtsPlatform::PreferEngineDelegateVoices() {
+  return false;
+}
 
-WebTestTtsPlatform::~WebTestTtsPlatform() {}
+WebTestTtsPlatform::WebTestTtsPlatform() = default;
+
+WebTestTtsPlatform::~WebTestTtsPlatform() = default;

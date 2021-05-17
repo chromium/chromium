@@ -302,18 +302,36 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
 
 void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
                                   std::vector<VoiceData>* out_voices) {
+  std::vector<VoiceData> engine_delegate_voices;
   if (browser_context && engine_delegate_ &&
       engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
-    engine_delegate_->GetVoices(browser_context, out_voices);
+    engine_delegate_->GetVoices(browser_context, &engine_delegate_voices);
   }
 
   TtsPlatform* tts_platform = GetTtsPlatform();
   DCHECK(tts_platform);
+  std::vector<VoiceData> platform_voices;
   // Ensure we have all built-in voices loaded. This is a no-op if already
   // loaded.
   tts_platform->LoadBuiltInTtsEngine(browser_context);
   if (TtsPlatformReady())
-    tts_platform->GetVoices(out_voices);
+    tts_platform->GetVoices(&platform_voices);
+
+  if (tts_platform->PreferEngineDelegateVoices()) {
+    out_voices->insert(out_voices->end(),
+                       std::make_move_iterator(engine_delegate_voices.begin()),
+                       std::make_move_iterator(engine_delegate_voices.end()));
+    out_voices->insert(out_voices->end(),
+                       std::make_move_iterator(platform_voices.begin()),
+                       std::make_move_iterator(platform_voices.end()));
+  } else {
+    out_voices->insert(out_voices->end(),
+                       std::make_move_iterator(platform_voices.begin()),
+                       std::make_move_iterator(platform_voices.end()));
+    out_voices->insert(out_voices->end(),
+                       std::make_move_iterator(engine_delegate_voices.begin()),
+                       std::make_move_iterator(engine_delegate_voices.end()));
+  }
 
   if (!allow_remote_voices_) {
     auto it =

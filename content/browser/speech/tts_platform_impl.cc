@@ -57,4 +57,8 @@ void TtsPlatformImpl::SetError(const std::string& error) {
 
 void TtsPlatformImpl::Shutdown() {}
 
+bool TtsPlatformImpl::PreferEngineDelegateVoices() {
+  return false;
+}
+
 }  // namespace content

@@ -85,6 +85,10 @@ class CONTENT_EXPORT TtsPlatform {
   // If supported, the platform shutdown its internal state. After that call,
   // other methods may no-op.
   virtual void Shutdown() = 0;
+
+  // Returns whether TtsController should prefer voices from TtsEngineDelegate
+  // over those from this platform. Defaults to false.
+  virtual bool PreferEngineDelegateVoices() = 0;
 };
 
 }  // namespace content

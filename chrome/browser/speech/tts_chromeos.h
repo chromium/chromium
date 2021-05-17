@@ -37,6 +37,7 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   bool IsSpeaking() override;
+  bool PreferEngineDelegateVoices() override;
 
   // Unimplemented.
   void Pause() override {}

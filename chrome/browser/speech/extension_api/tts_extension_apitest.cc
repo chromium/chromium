@@ -123,6 +123,8 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void Shutdown() override {}
 
+  bool PreferEngineDelegateVoices() override { return true; }
+
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 
   void SetErrorToEpicFail() { SetError("epic fail"); }
