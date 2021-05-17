@@ -424,7 +424,7 @@ TEST_P(MemoryAllocationPerfTest, DirectMapped) {
 }
 
 #if !defined(MEMORY_CONSTRAINED)
-TEST_P(MemoryAllocationPerfTest, MultiBucketWithNoisyNeighbor) {
+TEST_P(MemoryAllocationPerfTest, DISABLED_MultiBucketWithNoisyNeighbor) {
   auto params = GetParam();
   RunTest(std::get<0>(params), std::get<1>(params), MultiBucket, DirectMapped,
           "MultiBucketWithNoisyNeighbor");
