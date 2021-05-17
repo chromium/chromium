@@ -1474,8 +1474,16 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       }));
 }
 
+// Disabled due to flakiness. See https://crbug.com/1126755.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_PRE_ThirdPartyCookiesBlocked DISABLED_PRE_ThirdPartyCookiesBlocked
+#define MAYBE_ThirdPartyCookiesBlocked DISABLED_ThirdPartyCookiesBlocked
+#else
+#define MAYBE_PRE_ThirdPartyCookiesBlocked PRE_ThirdPartyCookiesBlocked
+#define MAYBE_ThirdPartyCookiesBlocked ThirdPartyCookiesBlocked
+#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       PRE_ThirdPartyCookiesBlocked) {
+                       MAYBE_PRE_ThirdPartyCookiesBlocked) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // The system and SafeBrowsing network contexts don't support the third party
@@ -1495,8 +1503,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_TRUE(GetCookies(https_server()->base_url()).empty());
 }
 
+// Disabled due to flakiness. See https://crbug.com/1126755.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       ThirdPartyCookiesBlocked) {
+                       MAYBE_ThirdPartyCookiesBlocked) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // The system and SafeBrowsing network contexts don't support the third party
