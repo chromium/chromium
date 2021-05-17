@@ -546,4 +546,14 @@
       See details
     </message>
   </if>
+
+  <!-- Strings related to virtual card numbers -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a virtual card number id autofilled.">
+      Your virtual card number is applied.
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
+      View virtual card
+    </message>
+  </if>
 </grit-part>

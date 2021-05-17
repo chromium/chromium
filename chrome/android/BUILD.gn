@@ -3431,6 +3431,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillPopupBridge.java",
+    "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
     "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/InternalAuthenticator.java",
