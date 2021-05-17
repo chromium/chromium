@@ -11,11 +11,23 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 
+// Downstream core scheduling interface for 4.19, 5.4 kernels.
+// TODO(b/152605392): Remove once those kernel versions are obsolete.
 #ifndef PR_SET_CORE_SCHED
-// Setup core-scheduling for the task.
-// TODO(b/152605392): Replace this once upstream interface is known.
 #define PR_SET_CORE_SCHED 0x200
 #endif
+
+// Upstream interface for core scheduling.
+#ifndef PR_SCHED_CORE
+#define PR_SCHED_CORE 62
+#define PR_SCHED_CORE_GET 0
+#define PR_SCHED_CORE_CREATE 1
+#define PR_SCHED_CORE_SHARE_TO 2
+#define PR_SCHED_CORE_SHARE_FROM 3
+#define PR_SCHED_CORE_MAX 4
+#endif
+
+enum pid_type { PIDTYPE_PID = 0, PIDTYPE_TGID, PIDTYPE_PGID };
 
 namespace chromeos {
 namespace system {
@@ -30,9 +42,10 @@ void EnableCoreSchedulingIfAvailable() {
     return;
   }
 
-  if (prctl(PR_SET_CORE_SCHED, 1) == -1) {
-    // prctl(2) will return EINVAL for unknown functions. We're tolerant to this
-    // and will log an error message for non EINVAL errnos.
+  // prctl(2) will return EINVAL for unknown functions. We're tolerant to this
+  // and will log an error message for non EINVAL errnos.
+  if (prctl(PR_SET_CORE_SCHED, 1) == -1 &&
+      prctl(PR_SCHED_CORE, PR_SCHED_CORE_CREATE, 0, PIDTYPE_PID, 0) == -1) {
     PLOG_IF(WARNING, errno != EINVAL) << "Unable to set core scheduling";
   }
 }
