@@ -57,7 +57,7 @@ class TestPageLoadMetricsEmbedderInterface
     return std::move(timer);
   }
 
-  bool IsPrerender(content::WebContents* web_contents) override {
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
 

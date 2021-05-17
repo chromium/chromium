@@ -229,9 +229,9 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
       embedder_interface_(std::move(embedder_interface)),
       has_navigated_(false),
       page_load_metrics_receiver_(web_contents, this) {
-  // Prerenders erroneously report that they are initially visible, so we
-  // manually override visibility state for prerender.
-  if (embedder_interface_->IsPrerender(web_contents))
+  // NoStatePrefetch loads erroneously report that they are initially visible,
+  // so we manually override visibility state for prerender.
+  if (embedder_interface_->IsNoStatePrefetch(web_contents))
     in_foreground_ = false;
 
   RegisterInputEventObserver(web_contents->GetMainFrame()->GetRenderViewHost());

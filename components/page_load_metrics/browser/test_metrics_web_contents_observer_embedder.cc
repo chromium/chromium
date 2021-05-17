@@ -171,7 +171,7 @@ TestMetricsWebContentsObserverEmbedder::CreateTimer() {
   return std::move(timer);
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsPrerender(
+bool TestMetricsWebContentsObserverEmbedder::IsNoStatePrefetch(
     content::WebContents* web_contents) {
   return false;
 }

@@ -83,7 +83,7 @@ class PageLoadMetricsEmbedder
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override;
-  bool IsPrerender(content::WebContents* web_contents) override;
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -93,7 +93,6 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override;
-  bool IsPrerendering() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsEmbedder);
@@ -107,7 +106,7 @@ PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
 void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     page_load_metrics::PageLoadTracker* tracker) {
-  if (!IsPrerendering()) {
+  if (!IsNoStatePrefetch(web_contents())) {
     tracker->AddObserver(std::make_unique<AbortsPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<JavascriptFrameworksUkmObserver>());
@@ -190,11 +189,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(std::move(translate_observer));
 }
 
-bool PageLoadMetricsEmbedder::IsPrerendering() const {
-  return prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-             web_contents()) != nullptr;
-}
-
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -203,7 +197,8 @@ bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
   return search::IsInstantNTPURL(url, profile);
 }
 
-bool PageLoadMetricsEmbedder::IsPrerender(content::WebContents* web_contents) {
+bool PageLoadMetricsEmbedder::IsNoStatePrefetch(
+    content::WebContents* web_contents) {
   return prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
       web_contents);
 }

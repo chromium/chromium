@@ -44,7 +44,7 @@ class TestPageLoadMetricsEmbedder
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
-  bool IsPrerender(content::WebContents* web_contents) override {
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
@@ -62,7 +62,6 @@ class TestPageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override {}
-  bool IsPrerendering() const override { return false; }
 
  private:
   page_load_metrics::PageLoadMetricsMemoryTracker memory_tracker_;

@@ -29,7 +29,7 @@ class TestMetricsWebContentsObserverEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   void RegisterObservers(PageLoadTracker* tracker) override;
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
-  bool IsPrerender(content::WebContents* web_contents) override;
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;

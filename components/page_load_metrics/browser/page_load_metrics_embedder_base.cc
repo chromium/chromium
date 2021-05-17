@@ -24,17 +24,13 @@ PageLoadMetricsEmbedderBase::~PageLoadMetricsEmbedderBase() = default;
 
 void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   // Register observers used by all embedders
-  if (!IsPrerendering()) {
+  if (!IsNoStatePrefetch(web_contents())) {
     tracker->AddObserver(
         std::make_unique<BackForwardCachePageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<LayoutPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
-
-    // So far, PrerenderPageLoadMetricsObserver is used to gather metrics from
-    // normal (non-prerendering) page loads, to estimate future coverage of
-    // prerendering, so it's in the !IsPrerendering() block.
     tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
   }
   // Allow the embedder to register any embedder-specific observers

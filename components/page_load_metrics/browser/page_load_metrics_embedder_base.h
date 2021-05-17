@@ -28,7 +28,6 @@ class PageLoadMetricsEmbedderBase : public PageLoadMetricsEmbedderInterface {
  protected:
   ~PageLoadMetricsEmbedderBase() override;
   virtual void RegisterEmbedderObservers(PageLoadTracker* tracker) = 0;
-  virtual bool IsPrerendering() const = 0;
 
  private:
   content::WebContents* const web_contents_;

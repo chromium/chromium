@@ -30,7 +30,7 @@ class PageLoadMetricsEmbedder
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override;
-  bool IsPrerender(content::WebContents* web_contents) override;
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -40,7 +40,6 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override;
-  bool IsPrerendering() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsEmbedder);
@@ -55,15 +54,12 @@ PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     page_load_metrics::PageLoadTracker* tracker) {}
 
-bool PageLoadMetricsEmbedder::IsPrerendering() const {
-  return false;
-}
-
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
   return false;
 }
 
-bool PageLoadMetricsEmbedder::IsPrerender(content::WebContents* web_contents) {
+bool PageLoadMetricsEmbedder::IsNoStatePrefetch(
+    content::WebContents* web_contents) {
   return false;
 }
 
