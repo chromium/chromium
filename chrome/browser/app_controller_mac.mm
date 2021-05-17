@@ -393,18 +393,16 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       profile_manager_->AddObserver(this);
       for (Profile* profile : profile_manager_->GetLoadedProfiles())
         profile->AddObserver(this);
-    } else {
-      profile_manager_->GetProfileAttributesStorage().AddObserver(this);
     }
+    profile_manager_->GetProfileAttributesStorage().AddObserver(this);
   }
 
   ~AppControllerProfileObserver() override {
     DCHECK(profile_manager_);
     if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
       profile_manager_->RemoveObserver(this);
-    } else {
-      profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
     }
+    profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
   }
 
  private:
@@ -1156,6 +1154,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 - (void)commandDispatch:(id)sender {
+  // Drop commands received after shutdown was initiated.
+  if (g_browser_process->IsShuttingDown())
+    return;
+
   Profile* lastProfile = [self safeLastProfileForNewWindows];
 
   // Handle the case where we're dispatching a command from a sender that's in a

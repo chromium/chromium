@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   // Delete profile2.
   profile_manager->ScheduleProfileForDeletion(profile2->GetPath(),
                                               base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
 
   // Verify the controller's history is back to profile1.
   EXPECT_EQ([ac historyMenuBridge]->service(),
