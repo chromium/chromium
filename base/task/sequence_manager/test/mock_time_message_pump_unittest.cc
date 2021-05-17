@@ -22,8 +22,8 @@ using ::testing::StrictMock;
 
 class MockMessagePumpDelegate : public MessagePump::Delegate {
  public:
-  MOCK_METHOD0(OnBeginNativeWork, void());
-  MOCK_METHOD0(OnEndNativeWork, void());
+  MOCK_METHOD0(OnBeginWorkItem, void());
+  MOCK_METHOD0(OnEndWorkItem, void());
   MOCK_METHOD0(BeforeWait, void());
   MOCK_METHOD0(DoWork, NextWorkInfo());
   MOCK_METHOD0(DoIdleWork, bool());

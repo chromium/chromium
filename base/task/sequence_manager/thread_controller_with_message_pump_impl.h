@@ -89,8 +89,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       const SequenceManager::Settings& settings);
 
   // MessagePump::Delegate implementation.
-  void OnBeginNativeWork() override;
-  void OnEndNativeWork() override;
+  void OnBeginWorkItem() override;
+  void OnEndWorkItem() override;
   void BeforeWait() override;
   MessagePump::Delegate::NextWorkInfo DoWork() override;
   bool DoIdleWork() override;
@@ -160,7 +160,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   }
 
   // Instantiate a WatchHangsInScope to cover the current work if hang
-  // watching is activated via finch and the current loop is not nested.
+  // watching is activated via finch.
   void MaybeStartWatchHangsInScope();
 
   // TODO(altimin): Merge with the one in SequenceManager.

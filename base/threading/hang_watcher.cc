@@ -130,10 +130,11 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
 
   DCHECK(timeout >= base::TimeDelta()) << "Negative timeouts are invalid.";
 
-  // TODO(crbug.com/1034046): Remove when all threads using
-  // WatchHangsInScope are monitored. Thread is not monitored, noop.
-  if (!current_hang_watch_state)
+  // Thread is not monitored, noop.
+  if (!current_hang_watch_state) {
+    took_effect_ = false;
     return;
+  }
 
   DCHECK(current_hang_watch_state)
       << "WatchHangsInScope can only be used on a thread that "
@@ -185,9 +186,9 @@ WatchHangsInScope::~WatchHangsInScope() {
   internal::HangWatchState* current_hang_watch_state =
       internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
 
-  // TODO(crbug.com/1034046): Remove when all threads using
-  // WatchHangsInScope are monitored. Thread is not monitored, noop.
-  if (!current_hang_watch_state) {
+  // If hang watching was not enabled at construction time there is nothing to
+  // validate or undo.
+  if (!took_effect_) {
     return;
   }
 

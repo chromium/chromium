@@ -144,7 +144,7 @@ class ThreadController {
   //
   // Note 1: "native tasks" are only captured if the MessagePump is
   // instrumented to see them and shares them with ThreadController (via
-  // MessagePump::Delegate::OnBeginNativeWork). As such it is still possible to
+  // MessagePump::Delegate::OnBeginWorkItem). As such it is still possible to
   // view trace events emanating from native tasks without "ThreadController
   // active" being active.
   // Note 2: Non-instrumented native tasks do not break the two high-level

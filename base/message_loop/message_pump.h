@@ -77,18 +77,18 @@ class BASE_EXPORT MessagePump {
     // the pump will now wait.
     virtual bool DoIdleWork() = 0;
 
-    class ScopedDoNativeWork {
+    class ScopedDoWorkItem {
      public:
-      ScopedDoNativeWork() : outer_(nullptr) {}
+      ScopedDoWorkItem() : outer_(nullptr) {}
 
-      ~ScopedDoNativeWork() {
+      ~ScopedDoWorkItem() {
         if (outer_)
-          outer_->OnEndNativeWork();
+          outer_->OnEndWorkItem();
       }
 
-      ScopedDoNativeWork(ScopedDoNativeWork&& rhs)
+      ScopedDoWorkItem(ScopedDoWorkItem&& rhs)
           : outer_(std::exchange(rhs.outer_, nullptr)) {}
-      ScopedDoNativeWork& operator=(ScopedDoNativeWork&& rhs) {
+      ScopedDoWorkItem& operator=(ScopedDoWorkItem&& rhs) {
         outer_ = std::exchange(rhs.outer_, nullptr);
         return *this;
       }
@@ -96,21 +96,21 @@ class BASE_EXPORT MessagePump {
      private:
       friend Delegate;
 
-      explicit ScopedDoNativeWork(Delegate* outer) : outer_(outer) {
-        outer_->OnBeginNativeWork();
+      explicit ScopedDoWorkItem(Delegate* outer) : outer_(outer) {
+        outer_->OnBeginWorkItem();
       }
 
       Delegate* outer_;
     };
 
-    // Called before a unit of native work is executed. This allows reports
+    // Called before a unit of work is executed. This allows reports
     // about individual units of work to be produced. The unit of work ends when
-    // the returned ScopedDoNativeWork goes out of scope.
+    // the returned ScopedDoWorkItem goes out of scope.
     // TODO(crbug.com/851163): Place calls for all platforms. Without this, some
     // state like the top-level "ThreadController active" trace event will not
-    // be correct when native work is performed.
-    ScopedDoNativeWork BeginNativeWork() WARN_UNUSED_RESULT {
-      return ScopedDoNativeWork(this);
+    // be correct when work is performed.
+    ScopedDoWorkItem BeginWorkItem() WARN_UNUSED_RESULT {
+      return ScopedDoWorkItem(this);
     }
 
     // Called before the message pump starts waiting for work. This indicates
@@ -119,9 +119,9 @@ class BASE_EXPORT MessagePump {
     virtual void BeforeWait() = 0;
 
    private:
-    // Called upon entering/exiting a ScopedDoNativeWork.
-    virtual void OnBeginNativeWork() = 0;
-    virtual void OnEndNativeWork() = 0;
+    // Called upon entering/exiting a ScopedDoWorkItem.
+    virtual void OnBeginWorkItem() = 0;
+    virtual void OnEndWorkItem() = 0;
   };
 
   MessagePump();
@@ -140,7 +140,7 @@ class BASE_EXPORT MessagePump {
   //   for (;;) {
   //     bool did_native_work = false;
   //     {
-  //       auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+  //       auto scoped_do_work = state_->delegate->BeginWorkItem();
   //       did_native_work = DoNativeWork();
   //     }
   //     if (should_quit_)

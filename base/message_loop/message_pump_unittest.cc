@@ -46,8 +46,8 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
   MOCK_METHOD0(DoIdleWork, bool());
 
-  MOCK_METHOD0(OnBeginNativeWork, void(void));
-  MOCK_METHOD0(OnEndNativeWork, void(void));
+  MOCK_METHOD0(OnBeginWorkItem, void(void));
+  MOCK_METHOD0(OnEndWorkItem, void(void));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMessagePumpDelegate);
@@ -64,14 +64,14 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
     if (GetParam() == MessagePumpType::UI) {
       // The Windows MessagePumpForUI may do native work from ::PeekMessage()
       // and labels itself as such.
-      EXPECT_CALL(delegate, OnBeginNativeWork);
-      EXPECT_CALL(delegate, OnEndNativeWork);
+      EXPECT_CALL(delegate, OnBeginWorkItem);
+      EXPECT_CALL(delegate, OnEndWorkItem);
 
       // If the above event was MessagePumpForUI's own kMsgHaveWork internal
       // event, it will process another event to replace it (ref.
       // ProcessPumpReplacementMessage).
-      EXPECT_CALL(delegate, OnBeginNativeWork).Times(AtMost(1));
-      EXPECT_CALL(delegate, OnEndNativeWork).Times(AtMost(1));
+      EXPECT_CALL(delegate, OnBeginWorkItem).Times(AtMost(1));
+      EXPECT_CALL(delegate, OnEndWorkItem).Times(AtMost(1));
     }
 #endif  // defined(OS_WIN)
   }
@@ -85,8 +85,8 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
          std::is_same<MessagePumpForIO, MessagePumpLibevent>::value)) {
       // MessagePumpLibEvent checks for native notifications once after
       // processing a DoWork().
-      EXPECT_CALL(delegate, OnBeginNativeWork);
-      EXPECT_CALL(delegate, OnEndNativeWork);
+      EXPECT_CALL(delegate, OnBeginWorkItem);
+      EXPECT_CALL(delegate, OnEndWorkItem);
     }
 #endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
   }
@@ -176,8 +176,8 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     action_.store(NONE);
   }
 
-  void OnBeginNativeWork() override {}
-  void OnEndNativeWork() override {}
+  void OnBeginWorkItem() override {}
+  void OnEndWorkItem() override {}
   void BeforeWait() override {}
 
   MessagePump::Delegate::NextWorkInfo DoWork() override {

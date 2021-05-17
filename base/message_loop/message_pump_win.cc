@@ -282,7 +282,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // current thread.
 
       // As in ProcessNextWindowsMessage().
-      auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+      auto scoped_do_work = run_state_->delegate->BeginWorkItem();
       {
         TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                      "MessagePumpForUI::WaitForWork GetQueueStatus");
@@ -457,12 +457,12 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
     // |had_messages| as ::GetQueueStatus() is an optimistic check that may
     // racily have missed an incoming event -- it doesn't hurt to have empty
     // internal units of work when ::PeekMessage turns out to be a no-op).
-    // Instantiate |scoped_do_native_work| ahead of GetQueueStatus() so that
+    // Instantiate |scoped_do_work| ahead of GetQueueStatus() so that
     // trace events it emits fully outscope GetQueueStatus' events
     // (GetQueueStatus() itself not being expected to do work; it's fine to use
-    // only on ScopedDoNativeWork for both calls -- we trace them independently
+    // only one ScopedDoWorkItem for both calls -- we trace them independently
     // just in case internal work stalls).
-    auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
 
     {
       // Individually trace ::GetQueueStatus and ::PeekMessage because sampling
@@ -527,7 +527,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   if (msg.message == kMsgHaveWork && msg.hwnd == message_window_.hwnd())
     return ProcessPumpReplacementMessage();
 
-  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+  auto scoped_do_work = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT("base,toplevel", "MessagePumpForUI DispatchMessage",
               [&](perfetto::EventContext ctx) {
@@ -561,8 +561,8 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
   MSG msg;
   bool have_message = false;
   {
-    // ::PeekMessage may process internal events. Consider it native work.
-    auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+    // ::PeekMessage may process internal events.
+    auto scoped_do_work = run_state_->delegate->BeginWorkItem();
 
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("base"),
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
@@ -619,7 +619,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
     // ProcessPumpReplacementMessage() which finds the WM_TIMER message
     // installed by ScheduleNativeTimer(). That message needs to be handled
     // directly as handing it off to ProcessMessageHelper() below would cause an
-    // unnecessary ScopedDoNativeWork which may incorrectly lead the Delegate's
+    // unnecessary ScopedDoWorkItem which may incorrectly lead the Delegate's
     // heuristics to conclude that the DoWork() in HandleTimerMessage() is
     // nested inside a native task. It's also safe to skip the below
     // ScheduleWork() as it is not mandatory before invoking DoWork() and
@@ -779,7 +779,7 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
   if (ProcessInternalIOItem(item))
     return true;
 
-  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
+  auto scoped_do_work = run_state_->delegate->BeginWorkItem();
 
   TRACE_EVENT(
       "base,toplevel", "IOHandler::OnIOCompleted",

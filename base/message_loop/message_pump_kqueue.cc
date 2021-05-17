@@ -426,7 +426,7 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
         --event_count_;
       }
 
-      auto scoped_do_native_work = delegate->BeginNativeWork();
+      auto scoped_do_work = delegate->BeginWorkItem();
       if (event->filter == EVFILT_READ) {
         fd_watcher->OnFileCanReadWithoutBlocking(event->ident);
       } else if (event->filter == EVFILT_WRITE) {
@@ -457,7 +457,7 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
       // The controller could have been removed by some other work callout
       // before this event could be processed.
       if (controller) {
-        auto scoped_do_native_work = delegate->BeginNativeWork();
+        auto scoped_do_work = delegate->BeginWorkItem();
         controller->watcher()->OnMachMessageReceived(port);
       }
     } else if (event->filter == EVFILT_TIMER) {

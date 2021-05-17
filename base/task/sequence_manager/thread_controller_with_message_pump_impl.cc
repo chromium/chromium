@@ -188,12 +188,14 @@ void ThreadControllerWithMessagePumpImpl::InitializeThreadTaskRunnerHandle() {
 }
 
 void ThreadControllerWithMessagePumpImpl::MaybeStartWatchHangsInScope() {
-  // Nested runloops are covered by the parent loop hang watch scope.
-  // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
-  // scope deadline.
-  // TODO(crbug/1034046): Also track native work outside a top-level RunLoop.
-  if (main_thread_only().run_level_tracker.num_run_levels() == 1 &&
-      base::HangWatcher::IsEnabled()) {
+  if (base::HangWatcher::IsEnabled()) {
+    // If run_level_tracker.num_run_level() == 1 this starts the first scope. If
+    // it's greater than 1 then this cancels the existing scope and starts a new
+    // one. This behavior is desired since #task-in-task-implies-nested (see
+    // RunLevelTracker class comments). In a nested loop it's desirable to
+    // cancel the hang watching that applies to the outer loop since the
+    // expectations that were setup with regards to its expected runtime do not
+    // apply anymore.
     hang_watch_scope_.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
   }
 }
@@ -229,42 +231,28 @@ ThreadControllerWithMessagePumpImpl::GetAssociatedThread() const {
   return associated_thread_;
 }
 
-void ThreadControllerWithMessagePumpImpl::OnBeginNativeWork() {
+void ThreadControllerWithMessagePumpImpl::OnBeginWorkItem() {
   MaybeStartWatchHangsInScope();
   work_id_provider_->IncrementWorkId();
   main_thread_only().run_level_tracker.OnTaskStarted();
 }
 
-void ThreadControllerWithMessagePumpImpl::OnEndNativeWork() {
+void ThreadControllerWithMessagePumpImpl::OnEndWorkItem() {
+  // Work completed, stop hang watching this specific work item.
+  hang_watch_scope_.reset();
   work_id_provider_->IncrementWorkId();
-
-  // Nested runloops are covered by the parent loop hang watch scope.
-  // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
-  // scope deadline.
-  if (main_thread_only().run_level_tracker.num_run_levels() == 1)
-    hang_watch_scope_.reset();
-
   main_thread_only().run_level_tracker.OnTaskEnded();
 }
 
 void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   work_id_provider_->IncrementWorkId();
-
-  // Nested runloops are covered by the parent loop hang watch scope.
-  // TODO(crbug/1034046): Provide more granular scoping that reuses the parent
-  // scope deadline.
-  // TODO(crbug/1034046): There should never be an outstanding
-  // |hang_watch_scope_| here, DCHECK?
-  if (main_thread_only().run_level_tracker.num_run_levels() == 1)
-    hang_watch_scope_.reset();
-
+  // The loop is going to sleep, stop watching for hangs.
+  hang_watch_scope_.reset();
   main_thread_only().run_level_tracker.OnIdle();
 }
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
-  MaybeStartWatchHangsInScope();
-
   work_deduplicator_.OnWorkStarted();
   LazyNow continuation_lazy_now(time_source_);
   TimeDelta delay_till_next_task = DoWorkImpl(&continuation_lazy_now);
@@ -334,13 +322,12 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     if (!task)
       break;
 
-    work_id_provider_->IncrementWorkId();
-
-    // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
-    // so that the "ThreadController active" trace event lives on top of all
-    // "run task" events.
-    main_thread_only().run_level_tracker.OnTaskStarted();
     {
+      // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
+      // so that the "ThreadController active" trace event lives on top of all
+      // "run task" events.
+      auto work_item_scope = BeginWorkItem();
+
       // Execute the task and assume the worst: it is probably not reentrant.
       AutoReset<bool> ban_nested_application_tasks(
           &main_thread_only().task_execution_allowed, false);
@@ -361,7 +348,6 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       // after it.
       main_thread_only().task_source->DidRunTask();
     }
-    main_thread_only().run_level_tracker.OnTaskEnded();
 
     // When Quit() is called we must stop running the batch because the caller
     // expects per-task granularity.
@@ -388,9 +374,6 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   TRACE_EVENT0("sequence_manager", "SequenceManager::DoIdleWork");
-  MaybeStartWatchHangsInScope();
-
-  work_id_provider_->IncrementWorkId();
 #if defined(OS_WIN)
   if (!power_monitor_.IsProcessInPowerSuspendState()) {
     // Avoid calling Time::ActivateHighResolutionTimer() between
@@ -413,12 +396,15 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   }
 #endif  // defined(OS_WIN)
 
-  if (main_thread_only().task_source->OnSystemIdle()) {
-    // The OnSystemIdle() callback resulted in more immediate work, so schedule
-    // a DoWork callback. For some message pumps returning true from here is
-    // sufficient to do that but not on mac.
-    pump_->ScheduleWork();
-    return false;
+  {
+    auto work_item_scope = BeginWorkItem();
+    if (main_thread_only().task_source->OnSystemIdle()) {
+      // The OnSystemIdle() callback resulted in more immediate work, so
+      // schedule a DoWork callback. For some message pumps returning true from
+      // here is sufficient to do that but not on mac.
+      pump_->ScheduleWork();
+      return false;
+    }
   }
 
   main_thread_only().run_level_tracker.OnIdle();
@@ -469,11 +455,9 @@ void ThreadControllerWithMessagePumpImpl::Run(bool application_tasks_allowed,
   main_thread_only().run_level_tracker.OnRunLoopEnded();
   main_thread_only().quit_pending = false;
 
-  // Reset the hang watch scope upon exiting the outermost loop since the
-  // execution it covers is now completely over. TODO(crbug/1034046): There
-  // should never be an outstanding |hang_watch_scope_| here, DCHECK?
-  if (main_thread_only().run_level_tracker.num_run_levels() == 0)
-    hang_watch_scope_.reset();
+  // All work items should be over when exiting the loop so hang watching should
+  // not be live.
+  DCHECK(!hang_watch_scope_);
 }
 
 void ThreadControllerWithMessagePumpImpl::OnBeginNestedRunLoop() {

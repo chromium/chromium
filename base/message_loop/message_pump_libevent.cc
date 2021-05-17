@@ -212,7 +212,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 
     // Process native events if any are ready. Do not block waiting for more.
     {
-      auto scoped_do_native_work = delegate->BeginNativeWork();
+      auto scoped_do_work = delegate->BeginWorkItem();
       event_base_loop(event_base_, EVLOOP_NONBLOCK);
     }
 
@@ -329,9 +329,9 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
 
   // Make the MessagePumpDelegate aware of this other form of "DoWork". Skip if
   // OnLibeventNotification is called outside of Run() (e.g. in unit tests).
-  Delegate::ScopedDoNativeWork scoped_do_native_work;
+  Delegate::ScopedDoWorkItem scoped_do_work;
   if (pump->run_state_)
-    scoped_do_native_work = pump->run_state_->delegate->BeginNativeWork();
+    scoped_do_work = pump->run_state_->delegate->BeginWorkItem();
 
   if ((flags & (EV_READ | EV_WRITE)) == (EV_READ | EV_WRITE)) {
     // Both callbacks will be called. It is necessary to check that |controller|

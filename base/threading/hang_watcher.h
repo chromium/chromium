@@ -75,6 +75,9 @@ class BASE_EXPORT WatchHangsInScope {
   WatchHangsInScope& operator=(const WatchHangsInScope&) = delete;
 
  private:
+  // Will be true if the object actually set a deadline and false if not.
+  bool took_effect_ = true;
+
   // This object should always be constructed and destructed on the same thread.
   THREAD_CHECKER(thread_checker_);
 
