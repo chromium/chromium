@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -33,7 +34,7 @@ std::vector<std::string> GetBlockedURLs() {
 ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
     content::RenderFrame* render_frame,
     media::SpeechRecognitionClient::OnReadyCallback callback)
-    : render_frame_(render_frame),
+    : content::RenderFrameObserver(render_frame),
       on_ready_callback_(std::move(callback)),
       blocked_urls_(GetBlockedURLs()) {
   initialize_callback_ = media::BindToCurrentLoop(base::BindRepeating(
@@ -51,7 +52,7 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
       ->BindSpeechRecognitionBrowserObserver(
           speech_recognition_availability_observer_.BindNewPipeAndPassRemote());
 
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_client_browser_interface_receiver));
 }
 
@@ -115,15 +116,21 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionLanguageChanged(
   }
 }
 
+void ChromeSpeechRecognitionClient::OnDestruct() {
+  // Do nothing. The lifetime of the ChromeSpeechRecognitionClient is managed by
+  // the owner of the object. However, the ChromeSpeechRecognitionClient will
+  // not be able to be initialized after the RenderFrame is destroyed.
+}
+
 void ChromeSpeechRecognitionClient::Initialize() {
-  if (speech_recognition_context_.is_bound())
+  if (speech_recognition_context_.is_bound() || !render_frame())
     return;
 
   // Create a SpeechRecognitionRecognizerClient remote and bind it to the
   // render frame. The receiver is in the browser.
   mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_remote;
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       speech_recognition_client_remote.InitWithNewPipeAndPassReceiver());
 
   // Create a SpeechRecognitionContext and bind it to the render frame. The
@@ -141,14 +148,14 @@ void ChromeSpeechRecognitionClient::Initialize() {
       media::BindToCurrentLoop(
           base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_context_receiver));
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     is_website_blocked_ = false;
   } else {
     is_website_blocked_ = IsUrlBlocked(
-        render_frame_->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
+        render_frame()->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
     base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
                               is_website_blocked_);
   }

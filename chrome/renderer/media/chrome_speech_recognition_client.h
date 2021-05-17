@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/speech_recognition_client.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
@@ -22,7 +23,8 @@ class RenderFrame;
 }  // namespace content
 
 class ChromeSpeechRecognitionClient
-    : public media::SpeechRecognitionClient,
+    : public content::RenderFrameObserver,
+      public media::SpeechRecognitionClient,
       public media::mojom::SpeechRecognitionBrowserObserver,
       public media::AudioDataS16Converter {
  public:
@@ -37,6 +39,9 @@ class ChromeSpeechRecognitionClient
   ChromeSpeechRecognitionClient& operator=(
       const ChromeSpeechRecognitionClient&) = delete;
   ~ChromeSpeechRecognitionClient() override;
+
+  // content::RenderFrameObserver
+  void OnDestruct() override;
 
   // media::SpeechRecognitionClient
   void AddAudio(scoped_refptr<media::AudioBuffer> buffer) override;
@@ -75,8 +80,6 @@ class ChromeSpeechRecognitionClient
   // recognizer is disconnected. Sends an error message to the UI and halts
   // future transcriptions.
   void OnRecognizerDisconnected();
-
-  content::RenderFrame* render_frame_;
 
   ChromeSpeechRecognitionClient::InitializeCallback initialize_callback_;
 
