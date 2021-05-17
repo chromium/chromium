@@ -210,20 +210,8 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   // For kHTMLCanvasConvertToBlobPromise to-blob function type, we color
   // covnert to the requested color space and pixel format.
   if (function_type_ != kHTMLCanvasConvertToBlobPromise) {
-    bool isColorManagementEnabled =
-        RuntimeEnabledFeatures::CanvasColorManagementEnabled();
-    if (skia_image->colorSpace() && !isColorManagementEnabled) {
-      image_ = image_->ConvertToColorSpace(
-          SkColorSpace::MakeSRGB(),
-          GetColorTypeForConversion(skia_image->colorType()));
-      skia_image = image_->PaintImageForCurrentFrame().GetSwSkImage();
-    }
-
-    if (skia_image->peekPixels(&src_data_)) {
+    if (skia_image->peekPixels(&src_data_))
       static_bitmap_image_loaded_ = true;
-      if (!isColorManagementEnabled)
-        src_data_.setColorSpace(nullptr);
-    }
   } else {
     sk_sp<SkColorSpace> blob_color_space =
         BlobColorSpaceToSkColorSpace(encode_options_->colorSpace());

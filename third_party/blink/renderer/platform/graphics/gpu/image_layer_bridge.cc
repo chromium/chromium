@@ -216,11 +216,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     *out_resource = viz::TransferableResource::MakeSoftware(
         registered.bitmap->id(), size, resource_format);
-    if (RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-      out_resource->color_space = sk_image->colorSpace()
-                                      ? gfx::ColorSpace(*sk_image->colorSpace())
-                                      : gfx::ColorSpace::CreateSRGB();
-    }
+    out_resource->color_space = sk_image->colorSpace()
+                                    ? gfx::ColorSpace(*sk_image->colorSpace())
+                                    : gfx::ColorSpace::CreateSRGB();
     auto func = WTF::Bind(&ImageLayerBridge::ResourceReleasedSoftware,
                           WrapWeakPersistent(this), std::move(registered));
     *out_release_callback = std::move(func);

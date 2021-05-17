@@ -170,29 +170,8 @@ bool ImageDataBuffer::EncodeImageInternal(const ImageEncodingMimeType mime_type,
 String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
                                   const double& quality) const {
   DCHECK(is_valid_);
-
-  SkPixmap pixmap = pixmap_;
-  // If |pixmap_| is not sRGB, then |srgb_skia_image| is a sRGB-converted copy
-  // of the |pixmap_|, and |pixmap| is set to point to its pixels.
-  // https://crbug.com/1206674
-  sk_sp<SkImage> srgb_skia_image = nullptr;
-  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-    // toDataURL always encodes in sRGB and does not include the color space
-    // information.
-    if (pixmap.colorSpace()) {
-      if (!pixmap.colorSpace()->isSRGB()) {
-        auto skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
-        srgb_skia_image = skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
-        if (!srgb_skia_image->peekPixels(&pixmap))
-          return "data:,";
-        MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
-      }
-      pixmap.setColorSpace(nullptr);
-    }
-  }
-
   Vector<unsigned char> result;
-  if (!EncodeImageInternal(mime_type, quality, &result, pixmap))
+  if (!EncodeImageInternal(mime_type, quality, &result, pixmap_))
     return "data:,";
 
   return "data:" + ImageEncodingMimeTypeName(mime_type) + ";base64," +
