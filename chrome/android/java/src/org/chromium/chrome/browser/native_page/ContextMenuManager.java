@@ -247,7 +247,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     protected @StringRes int getResourceIdForMenuItem(@ContextMenuItemId int id) {
         switch (id) {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
-                return TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                return (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                               && mNavigationDelegate.isOpenInNewTabInGroupEnabled())
                         ? R.string.contextmenu_open_in_new_tab_group
                         : R.string.contextmenu_open_in_new_tab;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:

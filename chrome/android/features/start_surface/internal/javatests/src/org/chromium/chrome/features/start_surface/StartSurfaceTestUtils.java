@@ -42,6 +42,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
+import org.chromium.chrome.browser.suggestions.tile.TileSource;
+import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -53,12 +57,18 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
+import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -264,7 +274,7 @@ public class StartSurfaceTestUtils {
     }
 
     /**
-     * Click the first MV tile in mv_tiles_layout.
+     * Click the first MV tile (Explore tile) in mv_tiles_layout.
      * @param cta The ChromeTabbedActivity under test.
      * @param currentTabCount The correct number of normal tabs.
      */
@@ -331,6 +341,36 @@ public class StartSurfaceTestUtils {
         } catch (ExecutionException e) {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
+    }
+
+    /**
+     * Set MV tiles on start surface by setting suggestionsDeps.
+     * @param suggestionsDeps The SuggestionsDependenciesRule under test.
+     * @return The MostVisitedSites the test used.
+     */
+    public static FakeMostVisitedSites setMVTiles(SuggestionsDependenciesRule suggestionsDeps) {
+        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
+        mostVisitedSites.setTileSuggestions(createFakeSiteSuggestions());
+        suggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
+        return mostVisitedSites;
+    }
+
+    /**
+     * Returns a list of SiteSuggestion.
+     */
+    public static List<SiteSuggestion> createFakeSiteSuggestions() {
+        List<SiteSuggestion> siteSuggestions = new ArrayList<>();
+        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES", new GURL("https://www.bar.com"),
+                "", TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
+                new Date()));
+
+        for (int i = 0; i < 7; i++) {
+            siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
+                    new GURL("https://www." + i + ".com"), "", TileTitleSource.TITLE_TAG,
+                    TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
+        }
+
+        return siteSuggestions;
     }
 
     /**

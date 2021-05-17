@@ -95,9 +95,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
-import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
-import org.chromium.chrome.browser.suggestions.tile.TileSource;
-import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -123,12 +120,10 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -862,9 +857,7 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void renderSingleAsHomepage_Landscape() throws IOException {
         // clang-format on
-        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
-        mostVisitedSites.setTileSuggestions(createFakeSiteSuggestions());
-        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
+        StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
 
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -941,12 +934,8 @@ public class InstantStartTest {
                     "/start_surface_variation/single/exclude_mv_tiles/false"})
     public void testMVTilesWithExploreSitesView() throws InterruptedException, IOException {
         // clang-format on
-        saveSiteSuggestionTilesToFile();
-
-        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
-        mostVisitedSites.setTileSuggestions(createFakeSiteSuggestions());
-        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
-
+        FakeMostVisitedSites mostVisitedSites = StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
+        saveSiteSuggestionTilesToFile(mostVisitedSites.getCurrentSites());
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
@@ -1179,8 +1168,7 @@ public class InstantStartTest {
         };
     }
 
-    private static List<Tile> createFakeSiteSuggestionTiles() {
-        List<SiteSuggestion> siteSuggestions = createFakeSiteSuggestions();
+    private static List<Tile> createFakeSiteSuggestionTiles(List<SiteSuggestion> siteSuggestions) {
         List<Tile> suggestionTiles = new ArrayList<>();
         for (int i = 0; i < siteSuggestions.size(); i++) {
             suggestionTiles.add(new Tile(siteSuggestions.get(i), i));
@@ -1188,22 +1176,8 @@ public class InstantStartTest {
         return suggestionTiles;
     }
 
-    private static List<SiteSuggestion> createFakeSiteSuggestions() {
-        List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES", new GURL("https://www.bar.com"),
-                "", TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
-                new Date()));
-
-        for (int i = 0; i < 7; i++) {
-            siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
-                    new GURL("https://www." + i + ".com"), "", TileTitleSource.TITLE_TAG,
-                    TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
-        }
-
-        return siteSuggestions;
-    }
-
-    private static void saveSiteSuggestionTilesToFile() throws InterruptedException {
+    private static void saveSiteSuggestionTilesToFile(List<SiteSuggestion> siteSuggestions)
+            throws InterruptedException {
         // Get old file and ensure to delete it.
         File oldFile = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
         Assert.assertTrue(oldFile.delete() && !oldFile.exists());
@@ -1211,7 +1185,7 @@ public class InstantStartTest {
         // Save suggestion lists to file.
         final CountDownLatch latch = new CountDownLatch(1);
         MostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
-                createFakeSiteSuggestionTiles(), latch::countDown);
+                createFakeSiteSuggestionTiles(siteSuggestions), latch::countDown);
 
         // Wait util the file has been saved.
         latch.await();

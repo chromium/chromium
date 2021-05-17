@@ -72,6 +72,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -87,9 +88,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.MvTilesLayout;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
@@ -99,6 +104,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -106,16 +112,21 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration tests of the {@link StartSurface} for cases with tabs. See {@link
@@ -144,6 +155,9 @@ public class StartSurfaceTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+
     private final boolean mUseInstantStart;
     private final boolean mImmediateReturn;
 
@@ -151,6 +165,7 @@ public class StartSurfaceTest {
     private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
     @LayoutType
     private int mCurrentlyActiveLayout;
+    private FakeMostVisitedSites mMostVisitedSites;
 
     public StartSurfaceTest(boolean useInstantStart, boolean immediateReturn) {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.INSTANT_START, useInstantStart);
@@ -162,6 +177,7 @@ public class StartSurfaceTest {
     @Before
     public void setUp() throws IOException {
         mLayoutChangedCallbackHelper = new CallbackHelper();
+        mMostVisitedSites = StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
 
         int expectedTabs = 1;
         int additionalTabs = expectedTabs - (mImmediateReturn ? 0 : 1);
@@ -1648,6 +1664,158 @@ public class StartSurfaceTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertEquals(tab1.getTitle(), title2.getText()));
     }
+
+    /* MV tiles context menu tests starts. */
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testDismissTileWithContextMenuAndUndo() throws Exception {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+
+        SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(1);
+        final View tileView = getTileViewFor(siteToDismiss);
+
+        // Dismiss the tile using the context menu.
+        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.REMOVE);
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(siteToDismiss.url));
+
+        // Ensure that the removal is reflected in the ui.
+        Assert.assertEquals(8, getMvTilesLayout().getChildCount());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mMostVisitedSites.setTileSuggestions(getNewSitesAfterDismiss(siteToDismiss)));
+        waitForTileRemoved(siteToDismiss);
+        Assert.assertEquals(7, getMvTilesLayout().getChildCount());
+
+        // Undo the dismiss through snack bar.
+        final View snackbarButton = waitForSnackbar();
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(siteToDismiss.url));
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) snackbarButton::callOnClick);
+        Assert.assertFalse(mMostVisitedSites.isUrlBlocklisted(siteToDismiss.url));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testOpenTileInNewTabWithContextMenu() throws ExecutionException {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+
+        SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
+        final View tileView = getTileViewFor(siteToOpen);
+
+        // Open the tile using the context menu.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
+        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB);
+        hideWatcher.waitForBehavior();
+        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        // Verifies a new Tab is created.
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+
+        SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
+        final View tileView = getTileViewFor(siteToOpen);
+
+        // Open the tile using the context menu.
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
+        invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB);
+        hideWatcher.waitForBehavior();
+        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        // Verifies a new Tab is created.
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
+    }
+
+    private MvTilesLayout getMvTilesLayout() {
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout));
+        MvTilesLayout mvTilesLayout = mActivityTestRule.getActivity().findViewById(
+                org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mvTilesLayout);
+        return mvTilesLayout;
+    }
+
+    private View getTileViewFor(SiteSuggestion suggestion) {
+        View tileView = getMvTilesLayout().getTileViewForTesting(suggestion);
+        Assert.assertNotNull("Tile not found for suggestion " + suggestion.url, tileView);
+
+        return tileView;
+    }
+
+    private List<SiteSuggestion> getNewSitesAfterDismiss(SiteSuggestion siteToDismiss) {
+        List<SiteSuggestion> newSites = new ArrayList<>();
+        for (SiteSuggestion site : mMostVisitedSites.getCurrentSites()) {
+            if (!site.url.equals(siteToDismiss.url)) {
+                newSites.add(site);
+            }
+        }
+        return newSites;
+    }
+
+    private void invokeContextMenu(View view, int contextMenuItemId) throws ExecutionException {
+        TestTouchUtils.performLongClickOnMainSync(
+                InstrumentationRegistry.getInstrumentation(), view);
+        Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
+                mActivityTestRule.getActivity(), contextMenuItemId, 0));
+    }
+
+    private void waitForTileRemoved(final SiteSuggestion suggestion) throws TimeoutException {
+        MvTilesLayout mvTilesLayout = getMvTilesLayout();
+        final SuggestionsTileView removedTile = mvTilesLayout.getTileViewForTesting(suggestion);
+        if (removedTile == null) return;
+
+        final CallbackHelper callback = new CallbackHelper();
+        mvTilesLayout.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+            @Override
+            public void onChildViewAdded(View parent, View child) {}
+
+            @Override
+            public void onChildViewRemoved(View parent, View child) {
+                if (child == removedTile) callback.notifyCalled();
+            }
+        });
+        callback.waitForCallback("The expected tile was not removed.", 0);
+        mvTilesLayout.setOnHierarchyChangeListener(null);
+    }
+
+    /** Wait for the snackbar associated to a tile dismissal to be shown and returns its button. */
+    private View waitForSnackbar() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final String expectedSnackbarMessage =
+                cta.getResources().getString(R.string.most_visited_item_removed);
+        CriteriaHelper.pollUiThread(() -> {
+            SnackbarManager snackbarManager = cta.getSnackbarManager();
+            Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
+            TextView snackbarMessage = cta.findViewById(R.id.snackbar_message);
+            Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+            Criteria.checkThat(
+                    snackbarMessage.getText().toString(), Matchers.is(expectedSnackbarMessage));
+        });
+
+        return cta.findViewById(R.id.snackbar_button);
+    }
+    /* MV tiles context menu tests ends. */
 
     private boolean isInstantReturn() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && mImmediateReturn;

@@ -8,8 +8,14 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
+import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 
 /**
@@ -67,6 +73,21 @@ public class MvTilesLayout extends LinearLayout {
         }
     }
 
+    SuggestionsTileView findTileView(Tile tile) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View tileView = getChildAt(i);
+
+            assert tileView instanceof SuggestionsTileView : "Tiles must be SuggestionsTileView";
+
+            SuggestionsTileView suggestionsTileView = (SuggestionsTileView) tileView;
+
+            if (tile.getUrl().equals(suggestionsTileView.getUrl())) {
+                return (SuggestionsTileView) tileView;
+            }
+        }
+        return null;
+    }
+
     private void updateSingleTileViewLayout(
             TileView tileView, int newMargin, boolean isSetStartMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) tileView.getLayoutParams();
@@ -78,5 +99,15 @@ public class MvTilesLayout extends LinearLayout {
             layoutParams.setMarginEnd(newMargin);
             tileView.setLayoutParams(layoutParams);
         }
+    }
+
+    @VisibleForTesting
+    public SuggestionsTileView getTileViewForTesting(SiteSuggestion suggestion) {
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            SuggestionsTileView tileView = (SuggestionsTileView) getChildAt(i);
+            if (suggestion.equals(tileView.getData())) return tileView;
+        }
+        return null;
     }
 }

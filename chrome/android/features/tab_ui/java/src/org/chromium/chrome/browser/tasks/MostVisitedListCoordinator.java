@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks;
 
 import android.app.Activity;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Log;
@@ -152,18 +151,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
     }
 
     private SuggestionsTileView findTileView(Tile tile) {
-        for (int i = 0; i < mMvTilesLayout.getChildCount(); i++) {
-            View tileView = mMvTilesLayout.getChildAt(i);
-
-            assert tileView instanceof SuggestionsTileView : "Tiles must be SuggestionsTileView";
-
-            SuggestionsTileView suggestionsTileView = (SuggestionsTileView) tileView;
-
-            if (tile.getUrl().equals(suggestionsTileView.getUrl())) {
-                return (SuggestionsTileView) tileView;
-            }
-        }
-        return null;
+        return mMvTilesLayout.findTileView(tile);
     }
 
     /** TileGroup.Observer implementation. */
@@ -203,6 +191,11 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
             super(activity, profile, host, tabModelSelector, tab);
             mParentTabSupplier = parentTabSupplier;
             mTabDelegate = new TabDelegate(false);
+        }
+
+        @Override
+        public boolean isOpenInNewTabInGroupEnabled() {
+            return false;
         }
 
         @Override

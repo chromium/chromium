@@ -19,6 +19,13 @@ public interface NativePageNavigationDelegate {
         return IncognitoUtils.isIncognitoModeEnabled();
     }
 
+    /**
+     * Returns whether context menus should allow the option to open a link in a new tab in group.
+     */
+    default boolean isOpenInNewTabInGroupEnabled() {
+        return true;
+    };
+
     /** @return Whether context menus should allow the option to open a link in a new window. */
     boolean isOpenInNewWindowEnabled();
 
