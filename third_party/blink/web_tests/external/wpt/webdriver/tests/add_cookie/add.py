@@ -7,6 +7,7 @@ from webdriver.transport import Response
 from tests.support.asserts import assert_error, assert_success
 from tests.support.helpers import clear_all_cookies
 
+
 def add_cookie(session, cookie):
     return session.transport.send(
         "POST", "session/{session_id}/cookie".format(**vars(session)),
@@ -51,6 +52,43 @@ def test_no_browsing_context(session, closed_frame):
 
     response = add_cookie(session, new_cookie)
     assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize(
+    "page",
+    [
+        "about:blank",
+        "blob:foo/bar",
+        "data:text/html;charset=utf-8,<p>foo</p>",
+        "file:///foo/bar",
+        "ftp://example.org",
+        "javascript:foo",
+        "ws://example.org",
+        "wss://example.org",
+    ],
+    ids=[
+        "about",
+        "blob",
+        "data",
+        "file",
+        "ftp",
+        "javascript",
+        "websocket",
+        "secure websocket",
+    ],
+)
+def test_cookie_unsupported_scheme(session, page):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+        "domain": page,
+        "path": "/",
+        "httpOnly": False,
+        "secure": False
+    }
+
+    result = add_cookie(session, new_cookie)
+    assert_error(result, "invalid cookie domain")
 
 
 def test_add_domain_cookie(session, url, server_config):

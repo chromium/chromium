@@ -1,0 +1,27 @@
+const kImageSetTests = [
+  { property: 'background-image', imageSet: "url(example.png) 1x", valid: true },
+  { property: 'background-image', imageSet: "url('example.png') 1x", valid: true },
+  { property: 'background-image', imageSet: "'example.jpg' 1x", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) 1x, 'example.png' 2x", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) 1dppx", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) 1dpi", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) 1dpcm, 'example.png' 2x", valid: true },
+  { property: 'background-image', imageSet: "'example.jpeg' 222dpi, url(example.png) 3.5x", valid: true },
+  { property: 'background-image', imageSet: "linear-gradient(black, white) 1x", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) 1x type('image/png')", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) type('image/png')", valid: true },
+  { property: 'background-image', imageSet: "url(example.png) type('image/png') 1x", valid: true },
+  { property: 'content', imageSet: "linear-gradient(black, white) 1x, 'example.png' 4x", valid: true },
+  { property: 'content', imageSet: "url('example.png') 192dpi, linear-gradient(black, white) 1x", valid: true },
+
+  { property: 'background-image', imageSet: "none, url(example.png) 1x", valid: false },
+  { property: 'background-image', imageSet: "", valid: false },
+  { property: 'background-image', imageSet: "url(example.png) 0x", valid: false },
+  { property: 'background-image', imageSet: "url(example.png) -20x", valid: false },
+  { property: 'background-image', imageSet: "'example.jpeg' 92pid url(example.png) 1x", valid: false },
+  { property: 'background-image', imageSet: "url(example.png) type(image/png)", valid: false },
+  { property: 'background-image', imageSet: "url(example.png) type('image/png') type('image/png')", valid: false },
+  { property: 'background-image', imageSet: "url(example.png) 1xtype('image/png')", valid: false },
+  { property: 'background-image', imageSet: "type('image/png') url(example.png) 1x", valid: false },
+  { property: 'cursor', imageSet: "linear-gradient(black, white) 1x", valid: false }
+];
