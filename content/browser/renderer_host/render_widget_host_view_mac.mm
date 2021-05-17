@@ -258,9 +258,16 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   if (!remote_cocoa_application) {
     ns_view_ = in_process_ns_view_bridge_.get();
     // Observe local Screen info, to correspond with the locally hosted NSView.
+    // This condition is triggered during init within a locally hosted NSView,
+    // and when a remote view is migrated into a locally hosted NSView. Since
+    // the bridge adds itself as an observer during construction, it may already
+    // be an observer, and calling AddObserver here would cause a CHECK to fail.
+    // To workaround that case, this code removes the observer first, which is a
+    // safe no-op if the bridge is already not an observer.
     // TODO(crbug.com/1204273): Maybe recreate `in_process_ns_view_bridge_`?
     display::Screen::GetScreen()->RemoveObserver(
         in_process_ns_view_bridge_.get());
+    display::Screen::GetScreen()->AddObserver(in_process_ns_view_bridge_.get());
     return;
   }
 
