@@ -105,6 +105,9 @@ bool PromoCanBeDisplayed() {
 - (void)logUserFinishedActivityFlow {
 }
 
+- (void)logUserEnteredAppViaFirstPartyScheme {
+}
+
 - (void)logPromoWasDismissed {
   self.promoIsShowing = NO;
 }

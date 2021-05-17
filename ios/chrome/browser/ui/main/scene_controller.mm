@@ -364,6 +364,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.sceneState.appState.shouldShowDefaultBrowserPromo &&
       (parameters.postOpeningAction == NO_ACTION);
   self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
+
+  if (parameters.openedViaFirstPartyScheme) {
+    DefaultBrowserSceneAgent* sceneAgent =
+        [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
+    [sceneAgent.nonModalScheduler logUserEnteredAppViaFirstPartyScheme];
+  }
 }
 
 #pragma mark - SceneStateObserver

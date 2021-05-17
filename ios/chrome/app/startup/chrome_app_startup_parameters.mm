@@ -126,6 +126,32 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
+bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
+  switch (callerApp) {
+    case CALLER_APP_GOOGLE_SEARCH:
+    case CALLER_APP_GOOGLE_GMAIL:
+    case CALLER_APP_GOOGLE_PLUS:
+    case CALLER_APP_GOOGLE_DRIVE:
+    case CALLER_APP_GOOGLE_EARTH:
+    case CALLER_APP_GOOGLE_OTHER:
+    case CALLER_APP_GOOGLE_YOUTUBE:
+    case CALLER_APP_GOOGLE_MAPS:
+    case CALLER_APP_GOOGLE_CHROME_TODAY_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_SEARCH_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_CONTENT_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME:
+      return true;
+    case CALLER_APP_OTHER:
+    case CALLER_APP_APPLE_MOBILESAFARI:
+    case CALLER_APP_APPLE_OTHER:
+    case CALLER_APP_THIRD_PARTY:
+    case CALLER_APP_NOT_AVAILABLE:
+    case MOBILE_SESSION_CALLER_APP_COUNT:
+      return false;
+  }
+}
+
 }  // namespace
 
 @implementation ChromeAppStartupParameters {
@@ -254,6 +280,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
                                                        completeURL:completeURL];
   } else {
     GURL externalURL = gurl;
+    BOOL openedViaSpecificScheme = NO;
     MobileSessionStartAction action = START_ACTION_OTHER;
     if (gurl.SchemeIs(url::kHttpScheme)) {
       action = START_ACTION_OPEN_HTTP_FROM_OS;
@@ -276,6 +303,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
       else
         replace_scheme.SetSchemeStr(url::kHttpScheme);
       externalURL = gurl.ReplaceComponents(replace_scheme);
+      openedViaSpecificScheme = YES;
     }
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -293,10 +321,14 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 
     if (!externalURL.is_valid())
       return nil;
-    return [[ChromeAppStartupParameters alloc] initWithExternalURL:externalURL
-                                                 declaredSourceApp:appId
-                                                   secureSourceApp:nil
-                                                       completeURL:completeURL];
+    ChromeAppStartupParameters* params =
+        [[ChromeAppStartupParameters alloc] initWithExternalURL:externalURL
+                                              declaredSourceApp:appId
+                                                secureSourceApp:nil
+                                                    completeURL:completeURL];
+    params.openedViaFirstPartyScheme =
+        openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
+    return params;
   }
 }
 

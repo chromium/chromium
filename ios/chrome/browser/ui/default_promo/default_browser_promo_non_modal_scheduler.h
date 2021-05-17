@@ -28,6 +28,10 @@ class Browser;
 // Handles the user finishing a share and schedules a promo if necessary.
 - (void)logUserFinishedActivityFlow;
 
+// Handles the user launching the app via a first party scheme and schedules a
+// promo if necessary.
+- (void)logUserEnteredAppViaFirstPartyScheme;
+
 // Handles the promo being dismissed, either through user action or timeout.
 - (void)logPromoWasDismissed;
 
