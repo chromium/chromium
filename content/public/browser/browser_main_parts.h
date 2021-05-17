@@ -49,7 +49,7 @@ namespace content {
 //    owned by content. As such, this is still "single-threaded" initialization
 //    as far as content and its embedders are concerned and the right place to
 //    initialize thread-compatible objects:
-//    https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks.md#threading-lexicon
+//    https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md#threading-lexicon
 //
 //  - PostCreateThreads: things that should be done as early as possible but
 //    need browser process threads to be alive (i.e. APIs like base::ThreadPool
