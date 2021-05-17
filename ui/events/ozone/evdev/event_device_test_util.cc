@@ -1071,7 +1071,7 @@ const DeviceCapabilities kDrallionStylus = {
 const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
     /* path */
     "/sys/devices/pci0000:00/0000:00:19.0/PRP0001:00/input/input3/event3",
-    /* name */ "PRP0001:00",
+    /* name */ "mic_mute_switch",
     /* phys */ "gpio-keys/input0",
     /* uniq */ "",
     /* bustype */ "0019",

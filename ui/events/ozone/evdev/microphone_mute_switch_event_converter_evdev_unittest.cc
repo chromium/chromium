@@ -87,6 +87,9 @@ class MicrophoneMuteSwitchEventConverterEvdevTest : public testing::Test {
 
     ui::EventDeviceInfo devinfo;
     CapabilitiesToDeviceInfo(caps, &devinfo);
+    // The internal device type is derived from sysfs subsystem symlink on DUT.
+    // Unittest doesn't run GetInputDeviceTypeFromPath. Set it here manually.
+    devinfo.SetDeviceType(ui::InputDeviceType::INPUT_DEVICE_INTERNAL);
     return std::make_unique<ui::MicrophoneMuteSwitchEventConverterEvdev>(
         std::move(events_in), base::FilePath(kTestDevicePath), 1, devinfo,
         dispatcher_.get());
