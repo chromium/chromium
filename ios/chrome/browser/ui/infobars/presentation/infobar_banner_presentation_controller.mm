@@ -21,7 +21,7 @@ const CGFloat kContainerMaxWidth = 398;
 const CGFloat kContainerMaxHeight = 230;
 // Minimum height or width frame change that should warrant a resizing of the
 // container view in response to a relayout.
-const CGFloat kMinimumSizeChange = 0.01;
+const CGFloat kMinimumSizeChange = 0.5;
 }
 
 @interface InfobarBannerPresentationController ()
@@ -122,8 +122,16 @@ const CGFloat kMinimumSizeChange = 0.01;
   }
 
   UIView* bannerView = self.presentedView;
-  bannerView.frame = [bannerView.superview convertRect:bannerFrame
-                                              fromView:window];
+  CGRect newFrame = [bannerView.superview convertRect:bannerFrame
+                                             fromView:window];
+  if (std::fabs(newFrame.size.height - bannerView.frame.size.height) >
+          kMinimumSizeChange ||
+      std::fabs(newFrame.size.width - bannerView.frame.size.width) >
+          kMinimumSizeChange) {
+    bannerView.frame = newFrame;
+    self.needsLayout = YES;
+  }
+
   [super containerViewWillLayoutSubviews];
 }
 

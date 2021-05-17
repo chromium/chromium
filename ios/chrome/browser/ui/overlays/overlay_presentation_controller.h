@@ -21,6 +21,12 @@
 // the presenter.  Returns NO by default.
 @property(nonatomic, readonly) BOOL resizesPresentationContainer;
 
+// YES if the presented view was resized and therefore the presenting view
+// controller needs a new layout pass. Defaults to YES to allow for a layout
+// pass the first time through since the presenting view controller needs to
+// resize from CGRectZero to the presented view size or vice versa.
+@property(nonatomic, assign) BOOL needsLayout;
+
 // Subclasses must notify the superclass when their container views lay out
 // their subviews.
 - (void)containerViewWillLayoutSubviews NS_REQUIRES_SUPER;
