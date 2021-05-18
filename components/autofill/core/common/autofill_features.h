@@ -21,6 +21,24 @@ extern const base::Feature kAutofillAddressEnhancementVotes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool>
+    kAutofillAutoBlockSaveAddressProfilePrompt;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAutoBlockSaveAddressProfilePromptExpirationDays;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAutoBlockSaveAddressProfilePromptStrikeLimit;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool>
+    kAutofillAutoBlockUpdateAddressProfilePrompt;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAutoBlockUpdateAddressProfilePromptExpirationDays;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAutoBlockUpdateAddressProfilePromptStrikeLimit;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePromptNicknameSupport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;

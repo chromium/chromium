@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -38,13 +39,17 @@ std::string AutofillProfileUpdateStrikeDatabase::GetProjectPrefix() const {
 }
 
 int AutofillProfileUpdateStrikeDatabase::GetMaxStrikesLimit() const {
-  return 3;
+  // The default limit for strikes is 3.
+  return features::kAutofillAutoBlockUpdateAddressProfilePromptStrikeLimit
+      .Get();
 }
 
 absl::optional<base::TimeDelta>
 AutofillProfileUpdateStrikeDatabase::GetExpiryTimeDelta() const {
-  // Expiry time is 6 months.
-  return base::TimeDelta::FromDays(183);
+  // Expiry time is 180 days by default.
+  return base::TimeDelta::FromDays(
+      features::kAutofillAutoBlockUpdateAddressProfilePromptExpirationDays
+          .Get());
 }
 
 bool AutofillProfileUpdateStrikeDatabase::UniqueIdsRequired() const {

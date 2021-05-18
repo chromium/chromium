@@ -1625,15 +1625,18 @@ void PersonalDataManager::SetProfiles(std::vector<AutofillProfile>* profiles) {
 
 bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
     const GURL& url) const {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host() ||
+      !features::kAutofillAutoBlockSaveAddressProfilePrompt.Get()) {
     return false;
   }
+
   return GetProfileSaveStrikeDatabase()->IsMaxStrikesLimitReached(url.host());
 }
 
 void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
     const GURL& url) {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host() ||
+      !features::kAutofillAutoBlockSaveAddressProfilePrompt.Get()) {
     return;
   }
   GetProfileSaveStrikeDatabase()->AddStrike(url.host());
@@ -1649,15 +1652,18 @@ void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
 
 bool PersonalDataManager::IsProfileUpdateBlocked(
     const std::string& guid) const {
-  if (!GetProfileUpdateStrikeDatabase()) {
+  if (!GetProfileUpdateStrikeDatabase() ||
+      !features::kAutofillAutoBlockUpdateAddressProfilePrompt.Get()) {
     return false;
   }
+
   return GetProfileUpdateStrikeDatabase()->IsMaxStrikesLimitReached(guid);
 }
 
 void PersonalDataManager::AddStrikeToBlockProfileUpdate(
     const std::string& guid) {
-  if (!GetProfileUpdateStrikeDatabase()) {
+  if (!GetProfileUpdateStrikeDatabase() ||
+      !features::kAutofillAutoBlockUpdateAddressProfilePrompt.Get()) {
     return;
   }
   GetProfileUpdateStrikeDatabase()->AddStrike(guid);
