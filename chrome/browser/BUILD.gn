@@ -6899,6 +6899,7 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx",
+    "//ui/gfx:test_support",
   ]
 
   if (!is_android && !is_fuchsia) {

@@ -7,6 +7,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/font_list.h"
 
 namespace gfx {
 
@@ -15,6 +16,18 @@ class BoxF;
 class PointF;
 class RectF;
 class SizeF;
+
+// Tests should use this scoped setter, instead of calling
+// SetDefaultFontDescription directly.
+class ScopedDefaultFontDescription {
+ public:
+  explicit ScopedDefaultFontDescription(const std::string& font_description) {
+    FontList::SetDefaultFontDescription(font_description);
+  }
+  ~ScopedDefaultFontDescription() {
+    FontList::SetDefaultFontDescription(std::string());
+  }
+};
 
 #define EXPECT_AXIS_TRANSFORM2D_EQ(a, b) \
   EXPECT_PRED_FORMAT2(::gfx::AssertAxisTransform2dFloatEqual, a, b)

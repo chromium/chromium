@@ -53,6 +53,9 @@ class LayoutProviderTest : public testing::Test {
     base::win::EnableHighDPISupport();
 #endif
     gfx::InitializeFonts();
+    // Some previous test may have left the default font description set to an
+    // unexpected state.
+    gfx::FontList::SetDefaultFontDescription(std::string());
   }
 
  private:

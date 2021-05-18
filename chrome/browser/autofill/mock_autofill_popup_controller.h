@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/test/gfx_util.h"
 
 namespace autofill {
 
@@ -84,6 +85,7 @@ class MockAutofillPopupController
 
  private:
   std::vector<autofill::Suggestion> suggestions_;
+  gfx::ScopedDefaultFontDescription default_font_desc_setter_;
 
   base::WeakPtrFactory<MockAutofillPopupController> weak_ptr_factory_{this};
 };

@@ -7,9 +7,8 @@
 
 namespace autofill {
 
-MockAutofillPopupController::MockAutofillPopupController() {
-  gfx::FontList::SetDefaultFontDescription("Arial, Times New Roman, 15px");
-}
+MockAutofillPopupController::MockAutofillPopupController()
+    : default_font_desc_setter_("Arial, Times New Roman, 15px") {}
 
 MockAutofillPopupController::~MockAutofillPopupController() = default;
 

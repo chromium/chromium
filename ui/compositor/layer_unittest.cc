@@ -64,6 +64,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/test/gfx_util.h"
 
 using cc::MatchesPNGFile;
 using cc::WritePNGFile;
@@ -108,10 +109,9 @@ class ColoredLayer : public Layer, public LayerDelegate {
 class LayerWithRealCompositorTest : public testing::TestWithParam<bool> {
  public:
   LayerWithRealCompositorTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
-    gfx::FontList::SetDefaultFontDescription("Segoe UI, 15px");
-  }
-  ~LayerWithRealCompositorTest() override {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
+        default_font_desc_setter_("Segoe UI, 15px") {}
+  ~LayerWithRealCompositorTest() override = default;
 
   // Overridden from testing::Test:
   void SetUp() override {
@@ -250,6 +250,8 @@ class LayerWithRealCompositorTest : public testing::TestWithParam<bool> {
 
   // The root directory for test files.
   base::FilePath test_data_dir_;
+
+  gfx::ScopedDefaultFontDescription default_font_desc_setter_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerWithRealCompositorTest);
 };
