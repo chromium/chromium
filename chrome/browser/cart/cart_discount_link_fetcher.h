@@ -15,10 +15,12 @@ class PendingSharedURLLoaderFactory;
 // This is used to get an encrypted discount link.
 class CartDiscountLinkFetcher {
  public:
-  using CartDiscountLinkFetcherCallback = base::OnceCallback<void(std::string)>;
+  using CartDiscountLinkFetcherCallback = base::OnceCallback<void(const GURL&)>;
+
+  virtual ~CartDiscountLinkFetcher();
 
   // Fetches the encrypted link for the given |cart_content_proto|.
-  static void Fetch(
+  virtual void Fetch(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       cart_db::ChromeCartContentProto cart_content_proto,
       CartDiscountLinkFetcherCallback callback);
@@ -34,7 +36,6 @@ class CartDiscountLinkFetcher {
       cart_db::ChromeCartContentProto cart_content_proto);
   static void OnLinkFetched(std::unique_ptr<EndpointFetcher> endpoint_fetcher,
                             CartDiscountLinkFetcherCallback callback,
-                            std::string default_url,
                             std::unique_ptr<EndpointResponse> responses);
 };
 

@@ -94,7 +94,8 @@ CartService::CartService(Profile* profile)
           ServiceAccessType::EXPLICIT_ACCESS)),
       domain_name_mapping_(JSONToDictionary(IDR_CART_DOMAIN_NAME_MAPPING_JSON)),
       domain_cart_url_mapping_(
-          JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)) {
+          JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)),
+      discount_link_fetcher_(std::make_unique<CartDiscountLinkFetcher>()) {
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
   }
@@ -296,8 +297,53 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
 void CartService::GetDiscountURL(
     const GURL& cart_url,
     base::OnceCallback<void(const ::GURL&)> callback) {
-  // TODO(crbug.com/1204146): Add logic here to fetch discount URL from service.
-  std::move(callback).Run(cart_url);
+  if (!IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
+    std::move(callback).Run(cart_url);
+    return;
+  }
+  LoadCart(eTLDPlusOne(cart_url),
+           base::BindOnce(&CartService::OnGetDiscountURL,
+                          weak_ptr_factory_.GetWeakPtr(), cart_url,
+                          std::move(callback)));
+}
+
+void CartService::OnGetDiscountURL(
+    const GURL& default_cart_url,
+    base::OnceCallback<void(const ::GURL&)> callback,
+    bool success,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  DCHECK_EQ(proto_pairs.size(), 1U);
+  if (proto_pairs.size() != 1U) {
+    std::move(callback).Run(default_cart_url);
+    return;
+  }
+  auto& cart_proto = proto_pairs[0].second;
+  if (cart_proto.discount_info().discount_info().empty()) {
+    std::move(callback).Run(default_cart_url);
+    return;
+  }
+  auto pending_factory = profile_->GetDefaultStoragePartition()
+                             ->GetURLLoaderFactoryForBrowserProcess()
+                             ->Clone();
+
+  discount_link_fetcher_->Fetch(
+      std::move(pending_factory), cart_proto,
+      base::BindOnce(&CartService::OnDiscountURLFetched,
+                     weak_ptr_factory_.GetWeakPtr(), default_cart_url,
+                     std::move(callback), cart_proto));
+}
+
+void CartService::OnDiscountURLFetched(
+    const GURL& default_cart_url,
+    base::OnceCallback<void(const ::GURL&)> callback,
+    const cart_db::ChromeCartContentProto& cart_proto,
+    const GURL& discount_url) {
+  std::move(callback).Run(discount_url.is_valid() ? discount_url
+                                                  : default_cart_url);
+  if (discount_url.is_valid()) {
+    CacheUsedDiscounts(cart_proto);
+    CleanUpDiscounts(cart_proto);
+  }
 }
 
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
@@ -665,4 +711,9 @@ void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   cart_db_->AddCart(eTLDPlusOne(GURL(proto.merchant_cart_url())), proto,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::SetCartDiscountLinkFetcherForTesting(
+    std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher) {
+  discount_link_fetcher_ = std::move(discount_link_fetcher);
 }

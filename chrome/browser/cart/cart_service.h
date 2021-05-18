@@ -9,6 +9,8 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/cart/cart_db.h"
+#include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_discount_link_fetcher.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -100,6 +102,7 @@ class CartService : public history::HistoryServiceObserver,
  private:
   friend class CartServiceFactory;
   friend class CartServiceTest;
+  friend class CartServiceDiscountTest;
   FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
                            TestEnableFakeData);
 
@@ -142,11 +145,24 @@ class CartService : public history::HistoryServiceObserver,
 
   // Gets called when users has enabled the rule-based discount feature.
   void StartGettingDiscount();
+  // A callback to fetch discount URL.
+  void OnGetDiscountURL(const GURL& default_cart_url,
+                        base::OnceCallback<void(const ::GURL&)> callback,
+                        bool success,
+                        std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to return discount URL when it is fetched.
+  void OnDiscountURLFetched(const GURL& default_cart_url,
+                            base::OnceCallback<void(const ::GURL&)> callback,
+                            const cart_db::ChromeCartContentProto& cart_proto,
+                            const GURL& discount_url);
 
   // A callback to decide if there are partner carts.
   void HasPartnerCarts(base::OnceCallback<void(bool)> callback,
                        bool success,
                        std::vector<CartDB::KeyAndValue> proto_pairs);
+  // Set discount_link_fetcher_ for testing purpose.
+  void SetCartDiscountLinkFetcherForTesting(
+      std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);
 
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
   void CleanUpDiscounts(cart_db::ChromeCartContentProto proto);
@@ -159,6 +175,7 @@ class CartService : public history::HistoryServiceObserver,
   absl::optional<base::Value> domain_name_mapping_;
   absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
+  std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

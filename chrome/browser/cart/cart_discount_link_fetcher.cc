@@ -25,19 +25,19 @@ const char kFetchDiscountLinkEndpoint[] =
 const int64_t kTimeoutMs = 30000;
 }  // namespace
 
+CartDiscountLinkFetcher::~CartDiscountLinkFetcher() = default;
+
 void CartDiscountLinkFetcher::Fetch(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     cart_db::ChromeCartContentProto cart_content_proto,
     CartDiscountLinkFetcherCallback callback) {
-  std::string default_url = cart_content_proto.merchant_cart_url();
 
   auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
                                        std::move(cart_content_proto));
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->PerformRequest(
-      base::BindOnce(&OnLinkFetched, std::move(fetcher), std::move(callback),
-                     std::move(default_url)),
+      base::BindOnce(&OnLinkFetched, std::move(fetcher), std::move(callback)),
       nullptr);
 }
 
@@ -146,25 +146,21 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
 void CartDiscountLinkFetcher::OnLinkFetched(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     CartDiscountLinkFetcherCallback callback,
-    std::string default_url,
     std::unique_ptr<EndpointResponse> responses) {
   VLOG(2) << "Response: " << responses->response;
   DCHECK(responses) << "responses should not be null";
   if (!responses) {
-    std::move(callback).Run(std::move(default_url));
+    std::move(callback).Run(GURL());
     return;
   }
 
   absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
 
-  if (!value || !value->is_dict()) {
+  if (!value || !value->is_dict() || !value->FindKey("url")) {
     NOTREACHED() << "empty response or wrong format";
-    std::move(callback).Run(std::move(default_url));
+    std::move(callback).Run(GURL());
     return;
   }
-
-  std::string url = value->FindKey("url")->GetString();
-
-  std::move(callback).Run(std::move(url));
+  std::move(callback).Run(GURL(value->FindKey("url")->GetString()));
 }
