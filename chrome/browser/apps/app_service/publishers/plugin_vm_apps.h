@@ -76,6 +76,7 @@ class PluginVmApps : public apps::PublisherBase,
       bool new_icon_key);
   void OnPluginVmAllowedChanged(bool is_allowed);
   void OnPluginVmConfiguredChanged();
+  void OnPermissionChanged();
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 

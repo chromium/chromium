@@ -244,6 +244,10 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
   // this pref to the empty list.
   profile_->GetPrefs()->Set(crostini::prefs::kCrostiniContainers,
                             base::Value(base::Value::Type::LIST));
+
+  // Reset mic permissions, we don't want it to persist across
+  // re-installation.
+  profile_->GetPrefs()->SetBoolean(prefs::kCrostiniMicAllowed, false);
 }
 
 void CrostiniInstaller::Cancel(base::OnceClosure callback) {

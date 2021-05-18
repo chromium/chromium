@@ -132,6 +132,11 @@ absl::optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
   if (content::GetNetworkConnectionTracker()->IsOffline())
     return FailureReason::OFFLINE;
 
+  // Reset camera/mic permissions, we don't want it to persist across
+  // re-installation.
+  profile_->GetPrefs()->SetBoolean(prefs::kPluginVmCameraAllowed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kPluginVmMicAllowed, false);
+
   // Request wake lock when state_ goes to kInstalling, and cancel it when state
   // goes back to kIdle.
   GetWakeLock()->RequestWakeLock();

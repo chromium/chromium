@@ -145,6 +145,11 @@ PluginVmApps::PluginVmApps(
       plugin_vm::prefs::kPluginVmImageExists,
       base::BindRepeating(&PluginVmApps::OnPluginVmConfiguredChanged,
                           base::Unretained(this)));
+  for (const PermissionInfo& info : permission_infos) {
+    pref_registrar_.Add(info.pref_name,
+                        base::BindRepeating(&PluginVmApps::OnPermissionChanged,
+                                            base::Unretained(this)));
+  }
 
   is_allowed_ = plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile_);
 }
@@ -211,12 +216,6 @@ void PluginVmApps::SetPermission(const std::string& app_id,
   }
 
   profile_->GetPrefs()->SetBoolean(pref_name, permission_ptr->value);
-
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kPluginVm;
-  app->app_id = plugin_vm::kPluginVmShelfAppId;
-  PopulatePermissions(app.get(), profile_);
-  Publish(std::move(app), subscribers_);
 }
 
 void PluginVmApps::Uninstall(const std::string& app_id,
@@ -334,6 +333,14 @@ void PluginVmApps::OnPluginVmConfiguredChanged() {
   app->app_id = plugin_vm::kPluginVmShelfAppId;
   SetShowInAppManagement(
       app.get(), plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_));
+  Publish(std::move(app), subscribers_);
+}
+
+void PluginVmApps::OnPermissionChanged() {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = apps::mojom::AppType::kPluginVm;
+  app->app_id = plugin_vm::kPluginVmShelfAppId;
+  PopulatePermissions(app.get(), profile_);
   Publish(std::move(app), subscribers_);
 }
 
