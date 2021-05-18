@@ -112,6 +112,9 @@ SnapContainerData& SnapContainerData::operator=(SnapContainerData&& other) =
     default;
 
 void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
+  recordreplay::Assert("SnapContainerData::AddSnapAreaData %.2f %.2f %.2f %.2f",
+                       snap_area_data.rect.x(), snap_area_data.rect.y(),
+                       snap_area_data.rect.right(), snap_area_data.rect.bottom());
   snap_area_list_.push_back(snap_area_data);
 }
 
@@ -343,6 +346,10 @@ SnapContainerData::FindClosestValidAreaInternal(
   float smallest_distance =
       axis == SearchAxis::kX ? proximity_range_.x() : proximity_range_.y();
   for (const SnapAreaData& area : snap_area_list_) {
+    recordreplay::Assert("SnapContainerData::FindClosestValidAreaInternal #1 %.2f %.2f %.2f %.2f",
+                        area.rect.x(), area.rect.y(),
+                        area.rect.right(), area.rect.bottom());
+
     if (!strategy.IsValidSnapArea(axis, area))
       continue;
 
