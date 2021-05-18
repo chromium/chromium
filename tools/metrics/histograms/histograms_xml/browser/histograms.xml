@@ -513,7 +513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Browser.Tabs.TabSwitchResult"
-    enum="TabSwitchResult" expires_after="2021-09-12">
+    enum="TabSwitchResult" expires_after="2021-11-14">
 <!-- Name completed by histogram_suffixes name="TabSwitchingType" -->
 
   <owner>fdoray@chromium.org</owner>

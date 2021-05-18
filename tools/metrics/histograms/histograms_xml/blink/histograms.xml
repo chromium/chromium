@@ -1456,7 +1456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ImageDecoders.IncrementallyDecodedByteSize"
-    units="bytes" expires_after="2021-09-12">
+    units="bytes" expires_after="2021-11-14">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>

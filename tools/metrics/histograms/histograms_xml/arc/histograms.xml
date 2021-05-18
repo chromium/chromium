@@ -230,7 +230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.Checkin.Attempts" units="attempts"
-    expires_after="2021-09-15">
+    expires_after="2021-11-14">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -243,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.Checkin.TimeDelta" units="ms"
-    expires_after="2021-09-15">
+    expires_after="2021-11-14">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>
@@ -274,7 +274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Arc.Auth.SignIn.TimeDelta" units="ms"
-    expires_after="2021-09-15">
+    expires_after="2021-11-14">
 <!-- Name completed by histogram_suffixes name="ArcUserTypes" -->
 
   <owner>mhasank@google.com</owner>

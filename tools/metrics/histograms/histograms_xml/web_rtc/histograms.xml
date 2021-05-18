@@ -423,7 +423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.DelayedPacketOutageEventMs" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the duration of each packet loss concealment (a.k.a. expand) event
@@ -747,7 +747,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ExpandRatePercent" units="%"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the expand rate for an incoming WebRTC audio stream. The expand
@@ -951,7 +951,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.TimePerProbeCluster" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -971,7 +971,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.TotalProbeClustersRequested" units="units"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -3662,7 +3662,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.webkitApiCount" enum="RTCAPIName"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>guidou@chromium.org</owner>
   <owner>hbos@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
@@ -3712,7 +3712,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Upload" enum="WebRtcEventLoggingUploadEnum"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>eladalon@chromium.org</owner>
   <owner>saeedj@google.com</owner>
   <owner>manj@google.com</owner>

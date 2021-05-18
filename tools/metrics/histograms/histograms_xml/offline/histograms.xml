@@ -106,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ConnectivityChanged.DeviceState.Offline"
-    enum="OfflineIndicatorSurfaceState" expires_after="2021-09-12">
+    enum="OfflineIndicatorSurfaceState" expires_after="2021-11-14">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>sinansahin@google.com</owner>

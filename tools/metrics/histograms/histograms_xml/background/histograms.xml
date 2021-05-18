@@ -360,7 +360,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="BackgroundSync.Registration.OneShot.EventSucceededAtCompletion"
-    enum="BooleanSuccess" expires_after="2021-09-12">
+    enum="BooleanSuccess" expires_after="2021-11-14">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="BackgroundSync.Registration.OneShot.NumAttemptsForSuccessfulEvent"
-    units="attempts" expires_after="2021-09-12">
+    units="attempts" expires_after="2021-11-14">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

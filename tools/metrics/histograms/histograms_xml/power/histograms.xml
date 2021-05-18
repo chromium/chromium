@@ -310,7 +310,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-11-07">
+    expires_after="2021-11-14">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>

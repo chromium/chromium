@@ -79,7 +79,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BookmarkGUIDSource2" enum="BookmarkGUIDSource"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -203,7 +203,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypeManagerOption"
-    enum="SyncFeatureOrTransport" expires_after="2021-09-12">
+    enum="SyncFeatureOrTransport" expires_after="2021-11-14">
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -1033,7 +1033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeCommitRequest" enum="SyncModelTypes"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1047,7 +1047,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeGetUpdatesRequest" enum="SyncModelTypes"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1242,7 +1242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.StopSource" enum="SyncStopSource"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>

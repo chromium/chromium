@@ -256,7 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosCursorHighlight" enum="BooleanEnabled"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

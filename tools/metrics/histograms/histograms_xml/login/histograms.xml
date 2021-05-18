@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PromptToCompleteLoginTime" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>rsorokin@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <owner>cros-oac@google.com</owner>

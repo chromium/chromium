@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>jwd@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.IOSLog.OnSuccess" units="records"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>rkaplow@chromium.org</owner>
   <summary>
     Number of times when UKM.LogSize.OnSuccess was recorded on iOS. Recorded

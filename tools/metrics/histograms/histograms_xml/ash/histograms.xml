@@ -1536,7 +1536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.NightLight.ScheduleType" enum="AshNightLightScheduleType"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>afakhry@chromium.org</owner>
   <summary>
     The selected Night Light schedule type. Emitted when the user changes the

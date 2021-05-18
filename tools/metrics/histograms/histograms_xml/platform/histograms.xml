@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DetachableBase.ROUpdateResult"
-    enum="DetachableBaseROUpdateResult" expires_after="2021-09-12">
+    enum="DetachableBaseROUpdateResult" expires_after="2021-11-14">
   <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
@@ -474,7 +474,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.IntelMaxMicroArchitecture"
-    enum="IntelMaxMicroArchitecture" expires_after="2021-09-12">
+    enum="IntelMaxMicroArchitecture" expires_after="2021-11-14">
   <owner>fbarchard@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -593,7 +593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.Meminfo" units="KB" expires_after="2021-11-07">
+<histogram name="Platform.Meminfo" units="KB" expires_after="2021-11-14">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>

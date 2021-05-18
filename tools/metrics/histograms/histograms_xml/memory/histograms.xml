@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -497,7 +497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.LockingSuccess"
-    enum="BooleanLockingSuccess" expires_after="2021-09-12">
+    enum="BooleanLockingSuccess" expires_after="2021-11-14">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1097,7 +1097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2021-09-12">
+    units="MB" expires_after="2021-11-14">
   <owner>tasak@google.com</owner>
   <owner>bartekn@google.com</owner>
   <summary>

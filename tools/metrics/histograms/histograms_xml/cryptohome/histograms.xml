@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Cryptohome errors.</summary>

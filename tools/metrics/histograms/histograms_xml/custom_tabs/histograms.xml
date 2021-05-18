@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>yusufo@chromium.org</owner>
   <summary>
     Android: AppId declared by the launching application in EXTRA_APPLICATION_ID

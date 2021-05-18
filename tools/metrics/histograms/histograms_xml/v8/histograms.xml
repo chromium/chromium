@@ -355,7 +355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.Execute" units="ms" expires_after="2021-09-12">
+<histogram name="V8.Execute" units="ms" expires_after="2021-11-14">
   <owner>rmcilroy@chromium.org</owner>
   <summary>
     Time spent in JavaScript Execution, including runtime calls, callbacks, and

@@ -602,7 +602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -690,7 +690,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>connily@chromium.org</owner>
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -711,7 +711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCountPerLoad" units="groups"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>connily@chromium.org</owner>
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -1384,7 +1384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabManager.TimeSinceTabClosedUntilRestored" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>aebacanu@chromium.org</owner>
   <owner>carlscab@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -2850,7 +2850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2021-09-12">
+<histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2021-11-14">
   <owner>connily@chromium.org</owner>
   <owner>cyan@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

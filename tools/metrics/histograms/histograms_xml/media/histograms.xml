@@ -1469,7 +1469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
-    expires_after="2021-08-15">
+    expires_after="2021-11-14">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1651,7 +1651,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.CdmFileIO.TimeTo" units="ms"
-    expires_after="2021-09-12">
+    expires_after="2021-11-14">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4115,7 +4115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.Video.Roughness" units="ms" expires_after="2021-09-12">
+<histogram name="Media.Video.Roughness" units="ms" expires_after="2021-11-14">
   <owner>eugene@chromium.org</owner>
   <owner>videostack-eng@chromium.org</owner>
   <summary>
