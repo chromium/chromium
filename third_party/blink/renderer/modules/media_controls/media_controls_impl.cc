@@ -699,6 +699,11 @@ Node::InsertionNotificationRequest MediaControlsImpl::InsertedInto(
 }
 
 void MediaControlsImpl::UpdateCSSClassFromState() {
+  // Skip CSS class updates when not needed in order to avoid triggering
+  // unnecessary style calculation.
+  if (!MediaElement().ShouldShowControls() && !is_hiding_controls_)
+    return;
+
   const ControlsState state = State();
 
   Vector<String> toAdd;
@@ -959,6 +964,8 @@ void MediaControlsImpl::MaybeShow() {
 }
 
 void MediaControlsImpl::Hide() {
+  base::AutoReset<bool> auto_reset_hiding_controls(&is_hiding_controls_, true);
+
   panel_->SetIsWanted(false);
   panel_->SetIsDisplayed(false);
 

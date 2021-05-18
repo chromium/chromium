@@ -6,7 +6,7 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='phase-pre-ready state-no-source sizing-small use-default-poster'",
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-pre-ready state-no-source use-default-poster'",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#333333"
@@ -17,7 +17,7 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutFlexibleBox DIV",
+      "name": "LayoutNGFlexibleBox DIV",
       "bounds": [800, 600]
     }
   ]

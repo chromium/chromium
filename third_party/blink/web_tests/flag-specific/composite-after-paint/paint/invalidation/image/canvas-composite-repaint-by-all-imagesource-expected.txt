@@ -58,7 +58,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [150, 60],
       "contentsOpaqueForText": true,
       "drawsContent": false,

@@ -6,7 +6,7 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='phase-pre-ready state-no-source sizing-small use-default-poster'",
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-pre-ready state-no-source use-default-poster'",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#333333"

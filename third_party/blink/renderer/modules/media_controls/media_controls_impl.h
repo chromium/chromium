@@ -401,6 +401,12 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   bool is_paused_for_scrubbing_ : 1;
   bool is_scrubbing_ = false;
 
+  // When controls are hidden, we defer CSS updates on them in order to avoid
+  // unnecessary style calculation. When controls transition from shown to
+  // hidden, we set this flag to true to ensure that one final style update
+  // takes place in order to eliminate states such as scrubbing.
+  bool is_hiding_controls_ = false;
+
   // Watches the video element for resize and updates media controls as
   // necessary.
   Member<ResizeObserver> resize_observer_;

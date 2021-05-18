@@ -208,6 +208,22 @@ class MediaControlsImplTest : public PageTestBase,
 
   void SimulateOnSeeking() { media_controls_->OnSeeking(); }
   void SimulateOnSeeked() { media_controls_->OnSeeked(); }
+  void SimulateOnWaiting() { media_controls_->OnWaiting(); }
+  void SimulateOnPlaying() { media_controls_->OnPlaying(); }
+
+  void SimulateMediaControlPlaying() {
+    MediaControls().MediaElement().SetReadyState(
+        HTMLMediaElement::kHaveEnoughData);
+    MediaControls().MediaElement().SetNetworkState(
+        WebMediaPlayer::NetworkState::kNetworkStateLoading);
+  }
+
+  void SimulateMediaControlBuffering() {
+    MediaControls().MediaElement().SetReadyState(
+        HTMLMediaElement::kHaveCurrentData);
+    MediaControls().MediaElement().SetNetworkState(
+        WebMediaPlayer::NetworkState::kNetworkStateLoading);
+  }
 
   MediaControlsImpl& MediaControls() { return *media_controls_; }
   MediaControlVolumeSliderElement* VolumeSliderElement() const {
@@ -1291,6 +1307,86 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTimeWhenZoomed) {
   GestureDoubleTapAt(rightOfCenter);
   test::RunPendingTasks();
   EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
+}
+
+TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnPlaying) {
+  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
+                                                     false);
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().Play();
+  test::RunPendingTasks();
+
+  Element* panel = GetElementByShadowPseudoId(MediaControls(),
+                                              "-webkit-media-controls-panel");
+  ASSERT_NE(nullptr, panel);
+  EXPECT_FALSE(IsElementVisible(*panel));
+  UpdateAllLifecyclePhasesForTest();
+  Document& document = this->GetDocument();
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+
+  int old_element_count = document.GetStyleEngine().StyleForElementCount();
+
+  SimulateMediaControlPlaying();
+  SimulateOnPlaying();
+  EXPECT_EQ(MediaControls().State(),
+            MediaControlsImpl::ControlsState::kPlaying);
+
+  // With the controls hidden, playback state change should not trigger style
+  // calculation.
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  int new_element_count = document.GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(old_element_count, new_element_count);
+
+  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
+                                                     true);
+  EXPECT_TRUE(IsElementVisible(*panel));
+
+  // Showing the controls should trigger the deferred style calculation.
+  EXPECT_TRUE(document.NeedsLayoutTreeUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  new_element_count = document.GetStyleEngine().StyleForElementCount();
+  EXPECT_LT(old_element_count, new_element_count);
+}
+
+TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnWaiting) {
+  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
+                                                     false);
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().Play();
+  test::RunPendingTasks();
+
+  Element* panel = GetElementByShadowPseudoId(MediaControls(),
+                                              "-webkit-media-controls-panel");
+  ASSERT_NE(nullptr, panel);
+  EXPECT_FALSE(IsElementVisible(*panel));
+  UpdateAllLifecyclePhasesForTest();
+  Document& document = this->GetDocument();
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+
+  int old_element_count = document.GetStyleEngine().StyleForElementCount();
+
+  SimulateMediaControlBuffering();
+  SimulateOnWaiting();
+  EXPECT_EQ(MediaControls().State(),
+            MediaControlsImpl::ControlsState::kBuffering);
+
+  // With the controls hidden, playback state change should not trigger style
+  // calculation.
+  EXPECT_FALSE(document.NeedsLayoutTreeUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  int new_element_count = document.GetStyleEngine().StyleForElementCount();
+  EXPECT_EQ(old_element_count, new_element_count);
+
+  MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
+                                                     true);
+  EXPECT_TRUE(IsElementVisible(*panel));
+
+  // Showing the controls should trigger the deferred style calculation.
+  EXPECT_TRUE(document.NeedsLayoutTreeUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  new_element_count = document.GetStyleEngine().StyleForElementCount();
+  EXPECT_LT(old_element_count, new_element_count);
 }
 
 }  // namespace blink
