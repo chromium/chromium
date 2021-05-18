@@ -2155,6 +2155,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "lacros-arm-generic-chrome",
+)
+
+chrome_internal_verifier(
     builder = "linux-chrome",
     branch_selector = branches.STANDARD_MILESTONE,
 )
