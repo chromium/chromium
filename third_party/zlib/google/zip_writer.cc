@@ -13,18 +13,19 @@ namespace zip {
 namespace internal {
 
 bool ZipWriter::ShouldContinue() {
-  if (progress_callback_) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-    if (next_progress_report_time_ <= now) {
-      next_progress_report_time_ = now + progress_period_;
-      if (!progress_callback_.Run(progress_)) {
-        LOG(ERROR) << "Cancelling ZIP creation";
-        return false;
-      }
-    }
-  }
+  if (!progress_callback_)
+    return true;
 
-  return true;
+  const base::TimeTicks now = base::TimeTicks::Now();
+  if (next_progress_report_time_ > now)
+    return true;
+
+  next_progress_report_time_ = now + progress_period_;
+  if (progress_callback_.Run(progress_))
+    return true;
+
+  LOG(ERROR) << "Cancelling ZIP creation";
+  return false;
 }
 
 bool ZipWriter::AddFileContent(const base::FilePath& path, base::File file) {
@@ -147,11 +148,10 @@ bool ZipWriter::Close() {
   zip_file_ = nullptr;
 
   // Call the progress callback one last time with the final progress status.
-  //
-  // We don't care about the callback return value (cancellation request), since
-  // we're done anyway.
-  if (progress_callback_)
-    progress_callback_.Run(progress_);
+  if (progress_callback_ && !progress_callback_.Run(progress_)) {
+    LOG(ERROR) << "Cancelling ZIP creation at the end";
+    return false;
+  }
 
   return success;
 }
