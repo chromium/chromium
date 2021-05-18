@@ -334,9 +334,7 @@ const int kMainIntentCheckDelay = 1;
     continueUserActivity:(NSUserActivity*)userActivity
       restorationHandler:
           (void (^)(NSArray<id<UIUserActivityRestoring>>*))restorationHandler {
-  if (_appState.initStage <= InitStageSafeMode ||
-      _browserLauncher.browserInitializationStage <
-          INITIALIZATION_STAGE_FOREGROUND)
+  if (_appState.initStage < InitStageBrowserObjectsForUI)
     return NO;
 
   BOOL applicationIsActive =
@@ -355,9 +353,7 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
-  if (_appState.initStage <= InitStageSafeMode ||
-      _browserLauncher.browserInitializationStage <
-          INITIALIZATION_STAGE_FOREGROUND)
+  if (_appState.initStage < InitStageBrowserObjectsForUI)
     return;
 
   [UserActivityHandler
@@ -378,9 +374,7 @@ const int kMainIntentCheckDelay = 1;
 - (BOOL)application:(UIApplication*)application
             openURL:(NSURL*)url
             options:(NSDictionary<NSString*, id>*)options {
-  if (_appState.initStage <= InitStageSafeMode ||
-      _browserLauncher.browserInitializationStage <
-          INITIALIZATION_STAGE_FOREGROUND)
+  if (_appState.initStage < InitStageBrowserObjectsForUI)
     return NO;
 
   if (ios::GetChromeBrowserProvider()

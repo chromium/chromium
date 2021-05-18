@@ -338,17 +338,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)crashIfRequested;
 // Performs synchronous browser state initialization steps.
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState;
-// Helper methods to initialize the application to a specific stage.
-// Setting |_browserInitializationStage| to a specific stage requires the
-// corresponding function to return YES.
 // Initializes the application to the minimum initialization needed in all
 // cases.
 - (void)startUpBrowserBasicInitialization;
-// Initializes the application to INITIALIZATION_STAGE_BACKGROUND, which is
-// needed by background handlers.
+//  Initializes the browser objects for the background handlers.
 - (void)startUpBrowserBackgroundInitialization;
-// Initializes the application to INITIALIZATION_STAGE_FOREGROUND, which is
-// needed when application runs in foreground.
+// Initializes the browser objects for the browser UI (e.g., the browser
+// state).
 - (void)startUpBrowserForegroundInitialization;
 @end
 
@@ -359,7 +355,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Defined by public protocols.
 // - BrowserLauncher
 @synthesize launchOptions = _launchOptions;
-@synthesize browserInitializationStage = _browserInitializationStage;
 // - StartupInformation
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
@@ -375,25 +370,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)dealloc {
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
-}
-
-// This function starts up to only what is needed at each stage of the
-// initialization. It is possible to continue initialization later.
-- (void)startUpBrowserToStage:(BrowserInitializationStageType)stage {
-  if (_browserInitializationStage < INITIALIZATION_STAGE_BACKGROUND &&
-      stage >= INITIALIZATION_STAGE_BACKGROUND) {
-    [self startUpBrowserBackgroundInitialization];
-    _browserInitializationStage = INITIALIZATION_STAGE_BACKGROUND;
-  }
-
-  if (_browserInitializationStage < INITIALIZATION_STAGE_FOREGROUND &&
-      stage >= INITIALIZATION_STAGE_FOREGROUND) {
-    // When adding a new initialization flow, consider setting
-    // |_appState.userInteracted| at the appropriate time.
-    DCHECK(_appState.userInteracted);
-    [self startUpBrowserForegroundInitialization];
-    _browserInitializationStage = INITIALIZATION_STAGE_FOREGROUND;
-  }
 }
 
 - (void)startUpBrowserBasicInitialization {
@@ -616,6 +592,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       break;
     case InitStageSafeMode:
       [self addPostSafeModeAgents];
+      break;
+    case InitStageBrowserObjectsForBackgroundHandlers:
+      [self startUpBrowserBackgroundInitialization];
+      [appState queueTransitionToNextInitStage];
+      break;
+    case InitStageBrowserObjectsForUI:
+      // When adding a new initialization flow, consider setting
+      // |_appState.userInteracted| at the appropriate time.
+      DCHECK(_appState.userInteracted);
+      [self startUpBrowserForegroundInitialization];
+      [appState queueTransitionToNextInitStage];
       break;
     case InitStageFinal:
       break;

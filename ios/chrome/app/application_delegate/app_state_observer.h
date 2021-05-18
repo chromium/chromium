@@ -19,8 +19,15 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // The app is starting the minimal basic browser services to support safe
   // mode.
   InitStageBrowserBasic,
-  // The app is considering whether safe mode should be used.
+  // The app is considering whether safe mode should be used. The app will stay
+  // at the InitStageSafeMode stage if safe mode is needed, or will move to the
+  // next stage otherwise.
   InitStageSafeMode,
+  // The app is initializing the browser objects for the background handlers.
+  InitStageBrowserObjectsForBackgroundHandlers,
+  // The app is initializing the browser objects for the browser UI (e.g., the
+  // browser state).
+  InitStageBrowserObjectsForUI,
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
   // The value may change when inserting enum items between Start and Final.

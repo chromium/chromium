@@ -66,6 +66,10 @@ class FakeProfileSessionDurationsService
 
 @end
 
+InitStage GetMinimalInitStageThatAllowsLogging() {
+  return static_cast<InitStage>(InitStageSafeMode + 1);
+}
+
 class AppMetricsAppStateAgentTest : public PlatformTest {
  protected:
   AppMetricsAppStateAgentTest() {
@@ -85,7 +89,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     app_state_.mainBrowserState = browser_state_.get();
-    app_state_.initStageForTesting = InitStageFinal;
+    app_state_.initStageForTesting = GetMinimalInitStageThatAllowsLogging();
     [agent_ setAppState:app_state_];
   }
 
@@ -190,7 +194,7 @@ TEST_F(AppMetricsAppStateAgentTest, CountSessionDurationSafeMode) {
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());
 
   // Session starts when safe mode completes.
-  app_state_.initStageForTesting = InitStageFinal;
+  app_state_.initStageForTesting = GetMinimalInitStageThatAllowsLogging();
   SimulateTransitionToCurrentStage();
   EXPECT_EQ(1, getProfileSessionDurationsService()->session_started_count());
   EXPECT_EQ(0, getProfileSessionDurationsService()->session_ended_count());

@@ -119,9 +119,8 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // step cannot be included in the |startUpBrowserToStage:| method.
 - (void)initializeUIPreSafeMode;
 
-// Complete the browser initialization for a regular startup that is needed
-// after safe mode.
-- (void)initializeUIPostSafeMode;
+// Complete the browser initialization for a regular startup.
+- (void)completeUIInitialization;
 
 // Saves the current launch details to user defaults.
 - (void)saveLaunchDetailsToDefaults;
@@ -254,8 +253,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   crash_keys::SetCurrentlyInBackground(true);
 
-  if ([_browserLauncher browserInitializationStage] <
-      INITIALIZATION_STAGE_FOREGROUND) {
+  if (self.initStage < InitStageBrowserObjectsForUI) {
     // The clean-up done in |-applicationDidEnterBackground:| is only valid for
     // the case when the application is started in foreground, so there is
     // nothing to clean up as the application was not initialized for foregound.
@@ -317,12 +315,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)applicationWillEnterForeground:(UIApplication*)application
                        metricsMediator:(MetricsMediator*)metricsMediator
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  // TODO(crbug.com/1197330): Replace the browser launcher init stage by the
-  // app init stage.
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
-  if ([_browserLauncher browserInitializationStage] <
-      INITIALIZATION_STAGE_FOREGROUND) {
+  if (self.initStage < InitStageBrowserObjectsForUI) {
     // Start the initialization in the case it wasn't already done before
     // foregrounding the app. |initStage| will be greater than InitStageStart if
     // the initialization was already started.
@@ -388,8 +383,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
              connectionInformation:
                  (id<ConnectionInformation>)connectionInformation {
   DCHECK(!base::ios::IsSceneStartupSupported());
-  DCHECK([_browserLauncher browserInitializationStage] ==
-         INITIALIZATION_STAGE_FOREGROUND);
+  DCHECK(self.initStage >= InitStageBrowserObjectsForUI);
 
   // This is for iOS 12-compatibility only.
   DCHECK(self.mainSceneState);
@@ -450,8 +444,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
   // provider (and no tabs)
-  if ([_browserLauncher browserInitializationStage] >=
-      INITIALIZATION_STAGE_FOREGROUND) {
+  if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
       sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
     }
@@ -490,8 +483,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)willResignActiveTabModel {
-  if ([_browserLauncher browserInitializationStage] <
-      INITIALIZATION_STAGE_FOREGROUND) {
+  if (self.initStage < InitStageBrowserObjectsForUI) {
     // If the application did not pass the foreground initialization stage,
     // there is no active tab model to resign.
     return;
@@ -657,12 +649,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self queueTransitionToNextInitStage];
 }
 
-- (void)initializeUIPostSafeMode {
-  // Fully start the browser.
-  // Don't add code here. Add it in MainController's
-  // -startUpBrowserForegroundInitialization.
+- (void)completeUIInitialization {
   DCHECK([self.startupInformation isColdStart]);
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   if (EnableSyntheticCrashReportsForUte()) {
     // Must be called after sequenced context creation, which happens in
@@ -762,9 +750,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // TODO(crbug.com/1191489): Move this logic to a specific agent.
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (previousInitStage == InitStageSafeMode) {
-    [self initializeUIPostSafeMode];
+  if (previousInitStage != InitStageBrowserObjectsForUI) {
+    return;
   }
+
+  [self completeUIInitialization];
 }
 
 @end

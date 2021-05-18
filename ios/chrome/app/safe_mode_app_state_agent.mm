@@ -91,13 +91,13 @@
   if (self.appState.initStage != InitStageSafeMode) {
     return;
   }
-    // Iterate further in the init stages when safe mode isn't needed; stop
-    // and switch the app to safe mode otherwise.
-    if ([SafeModeCoordinator shouldStart]) {
-      return;
-    }
+  // Iterate further in the init stages when safe mode isn't needed; stop
+  // and switch the app to safe mode otherwise.
+  if ([SafeModeCoordinator shouldStart]) {
+    return;
+  }
 
-    [self.appState queueTransitionToNextInitStage];
+  [self.appState queueTransitionToNextInitStage];
 }
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
