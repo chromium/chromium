@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +55,6 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& start_url) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions));
   const AppId app_id = GenerateAppIdFromURL(start_url);
   WebApplicationInfo web_app_info;
 

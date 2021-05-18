@@ -105,11 +105,9 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    auto* provider = WebAppProvider::Get(browser->profile());
-    if (provider && provider->registrar().IsInstalled(app_id))
-      controller = std::make_unique<WebAppBrowserController>(browser);
-  }
+  auto* provider = WebAppProvider::Get(browser->profile());
+  if (provider && provider->registrar().IsInstalled(app_id))
+    controller = std::make_unique<WebAppBrowserController>(browser);
   if (!controller) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(browser->profile())

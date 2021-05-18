@@ -46,8 +46,7 @@ void WebAppInternalsPageHandlerImpl::AddPageResources(
 
 void WebAppInternalsPageHandlerImpl::IsBmoEnabled(
     IsBmoEnabledCallback callback) {
-  std::move(callback).Run(
-      base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions));
+  std::move(callback).Run(true);
 }
 
 void WebAppInternalsPageHandlerImpl::GetWebApps(GetWebAppsCallback callback) {

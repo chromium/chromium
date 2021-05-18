@@ -1110,71 +1110,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Tests that SWA-specific data is correctly migrated to Web Apps without
-// Extensions.
-class SystemWebAppManagerMigrationTest : public SystemWebAppBrowserTestBase {
- public:
-  SystemWebAppManagerMigrationTest()
-      : SystemWebAppBrowserTestBase(/*install_mock=*/false) {
-    maybe_installation_ =
-        TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms();
-    maybe_installation_->set_update_policy(
-        SystemWebAppManager::UpdatePolicy::kOnVersionChange);
-
-    if (content::IsPreTest()) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
-    }
-  }
-  ~SystemWebAppManagerMigrationTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// These tests use the App Service which is only enabled on Chrome OS.
-// TODO(crbug.com/1201318): Re-enable this test on Chrome OS.
-IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
-                       DISABLED_PRE_ExtraDataIsMigrated) {
-  WaitForTestSystemAppInstall();
-  AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
-
-  const bool app_found =
-      GetAppServiceProxy(browser()->profile())
-          ->AppRegistryCache()
-          .ForOneApp(app_id, [](const apps::AppUpdate& update) {
-            EXPECT_EQ(std::vector<std::string>({"Security"}),
-                      update.AdditionalSearchTerms());
-            EXPECT_EQ(apps::mojom::OptionalBool::kFalse,
-                      update.ShowInManagement());
-          });
-  ASSERT_TRUE(app_found);
-}
-
-// These tests use the App Service which is only enabled on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ExtraDataIsMigrated ExtraDataIsMigrated
-#else
-#define MAYBE_ExtraDataIsMigrated DISABLED_ExtraDataIsMigrated
-#endif
-IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
-                       MAYBE_ExtraDataIsMigrated) {
-  WaitForTestSystemAppInstall();
-  AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
-
-  auto* proxy = GetAppServiceProxy(browser()->profile());
-  const bool app_found = proxy->AppRegistryCache().ForOneApp(
-      app_id, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(std::vector<std::string>({"Security"}),
-                  update.AdditionalSearchTerms());
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInManagement());
-      });
-  ASSERT_TRUE(app_found);
-}
-
 class SystemWebAppManagerChromeUntrustedTest
     : public SystemWebAppManagerBrowserTest {
  public:
@@ -1475,7 +1410,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
 }
-// This feature will only work when DesktopPWAsWithoutExtensions launches.
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAppSuspensionBrowserTest);
 

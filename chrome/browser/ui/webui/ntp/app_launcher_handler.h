@@ -225,8 +225,7 @@ class AppLauncherHandler
   extensions::ExtensionService* const extension_service_;
 
   // The apps are represented in the web apps model, which outlives us since
-  // it's owned by our containing profile. Populated iff
-  // features::kDesktopPWAsWithoutExtensions is enabled.
+  // it's owned by our containing profile.
   web_app::WebAppProvider* const web_app_provider_;
 
   base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>

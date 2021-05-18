@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
@@ -37,7 +36,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/web_contents.h"
 
@@ -78,10 +76,7 @@ WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
 
   CreateCommonSubsystems(profile_);
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions))
-    CreateWebAppsSubsystems(profile_);
-  else
-    CreateBookmarkAppsSubsystems(profile_);
+  CreateWebAppsSubsystems(profile_);
 }
 
 WebAppProvider::~WebAppProvider() = default;

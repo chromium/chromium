@@ -44,7 +44,6 @@ std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
     InstallFinalizer* install_finalizer,
     InstallManager* install_manager,
     AppRegistryController* controller) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions));
   if (g_disabled_for_testing)
     return nullptr;
 

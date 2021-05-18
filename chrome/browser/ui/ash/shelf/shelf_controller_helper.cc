@@ -35,7 +35,6 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -78,25 +77,23 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
 
 absl::optional<std::string> GetAppIdForTab(Profile* profile,
                                            content::WebContents* tab) {
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)) {
-    if (web_app::WebAppProviderBase* provider =
-            web_app::WebAppProviderBase::GetProviderBase(profile)) {
-      // Use the Browser's app name to determine the web app for app windows and
-      // use the tab's url for app tabs.
+  if (web_app::WebAppProviderBase* provider =
+          web_app::WebAppProviderBase::GetProviderBase(profile)) {
+    // Use the Browser's app name to determine the web app for app windows and
+    // use the tab's url for app tabs.
 
-      // Note: It is possible to come here after a tab got removed from the
-      // browser before it gets destroyed, in which case there is no browser.
-      if (Browser* browser = chrome::FindBrowserWithWebContents(tab)) {
-        if (browser->app_controller() && browser->app_controller()->HasAppId())
-          return browser->app_controller()->GetAppId();
-      }
+    // Note: It is possible to come here after a tab got removed from the
+    // browser before it gets destroyed, in which case there is no browser.
+    if (Browser* browser = chrome::FindBrowserWithWebContents(tab)) {
+      if (browser->app_controller() && browser->app_controller()->HasAppId())
+        return browser->app_controller()->GetAppId();
+    }
 
-      absl::optional<web_app::AppId> app_id =
-          provider->registrar().FindAppWithUrlInScope(tab->GetURL());
-      if (app_id && provider->registrar().GetAppUserDisplayMode(*app_id) ==
-                        web_app::DisplayMode::kBrowser) {
-        return app_id;
-      }
+    absl::optional<web_app::AppId> app_id =
+        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
+    if (app_id && provider->registrar().GetAppUserDisplayMode(*app_id) ==
+                      web_app::DisplayMode::kBrowser) {
+      return app_id;
     }
   }
 
@@ -109,9 +106,7 @@ absl::optional<std::string> GetAppIdForTab(Profile* profile,
     return web_app::GetAppIdFromApplicationName(browser->app_name());
 
   const extensions::Extension* extension = GetExtensionForTab(profile, tab);
-  if (extension &&
-      (!extension->from_bookmark() ||
-       !base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions)))
+  if (extension && !extension->from_bookmark())
     return extension->id();
   return absl::nullopt;
 }

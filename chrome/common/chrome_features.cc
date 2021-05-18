@@ -297,8 +297,7 @@ const base::Feature kDesktopPWAsRunOnOsLogin {
 
 // Enables or disables usage of shared LevelDB instance (ModelTypeStoreService).
 // If this flag is disabled, the new Web Apps system uses its own isolated
-// LevelDB instance for manual testing purposes. Requires
-// kDesktopPWAsWithoutExtensions to be enabled.
+// LevelDB instance for manual testing purposes.
 //
 // TODO(crbug.com/1065748): Delete this feature flag.
 const base::Feature kDesktopPWAsSharedStoreService{
@@ -314,13 +313,6 @@ const base::Feature kDesktopPWAsTabStrip{"DesktopPWAsTabStrip",
 // TODO(crbug.com/897314): Enable this feature.
 const base::Feature kDesktopPWAsTabStripLinkCapturing{
     "DesktopPWAsTabStripLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables or disables new Desktop PWAs implementation that does not use
-// extensions.
-//
-// TODO(crbug.com/1065748): Delete this feature flag.
-const base::Feature kDesktopPWAsWithoutExtensions{
-    "DesktopPWAsWithoutExtensions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {

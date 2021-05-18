@@ -161,10 +161,6 @@ void GetWebAppBasicInfo(const web_app::AppId& app_id,
   info->SetBoolean(kPackagedAppKey, false);
 }
 
-bool DesktopPWAsWithoutExtensions() {
-  return base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions);
-}
-
 bool HasMatchingOrGreaterThanIcon(const SortedSizesPx& downloaded_icon_sizes,
                                   int pixels) {
   if (downloaded_icon_sizes.empty())
@@ -1265,8 +1261,7 @@ void AppLauncherHandler::PromptToEnableApp(const std::string& extension_id) {
   if (!extension_id_prompting_.empty())
     return;  // Only one prompt at a time.
 
-  if (DesktopPWAsWithoutExtensions() &&
-      web_app_provider_->registrar().IsInstalled(extension_id_prompting_)) {
+  if (web_app_provider_->registrar().IsInstalled(extension_id_prompting_)) {
     NOTIMPLEMENTED();
     return;
   }
@@ -1312,8 +1307,7 @@ void AppLauncherHandler::ExtensionEnableFlowFinished() {
 void AppLauncherHandler::ExtensionEnableFlowAborted(bool user_initiated) {
   DCHECK_EQ(extension_id_prompting_, extension_enable_flow_->extension_id());
 
-  if (DesktopPWAsWithoutExtensions() &&
-      web_app_provider_->registrar().IsInstalled(extension_id_prompting_)) {
+  if (web_app_provider_->registrar().IsInstalled(extension_id_prompting_)) {
     NOTIMPLEMENTED();
     return;
   }

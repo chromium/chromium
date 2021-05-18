@@ -414,7 +414,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
   }
 
-  // Web Apps sync is disabled by default.
   if (web_app::WebAppProvider::Get(profile_)) {
     bool enable_web_apps_sync = !disabled_types.Has(syncer::WEB_APPS);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

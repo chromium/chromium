@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -196,19 +195,6 @@ class AppMatcher {
     // then the contents match the app.
     if (browser->app_controller() && browser->app_controller()->HasAppId())
       return browser->app_controller()->GetAppId() == app_id_;
-
-    // Bookmark apps set to launch in app windows should not match contents
-    // running in tabs.
-    if (registrar_->GetAppUserDisplayMode(app_id_) !=
-            web_app::DisplayMode::kBrowser &&
-        // TODO(crbug.com/1054116): when the flag is on, we allow web
-        // contents in a normal browser to match a web app. This is going to
-        // be weird because GetAppMenuItems(0) and HasRunningApplications()
-        // does not consider normal browsers.
-        !base::FeatureList::IsEnabled(
-            features::kDesktopPWAsWithoutExtensions)) {
-      return false;
-    }
 
     // There are three ways to identify the association of a URL with this
     // web app:

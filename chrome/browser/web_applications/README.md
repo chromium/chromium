@@ -152,11 +152,7 @@ returning a `WebApp` reference? Because web apps used to be backed by
 `Extension`s and in that mode there were no `WebApp`s; instead everything was
 stored on an `Extension`. See `WebAppRegistrar`'s sibling
 [`BookmarkAppRegistrar`](extensions/bookmark_app_registrar.h) for that
-implementation. Since the backing object was decided based on the feature flag
-`kDesktopPWAsWithoutExtensions` the rest of the logic had to go through a
-generic interface [`AppRegistrar`](components/app_registrar.h) with a separate
-getter for each field.
-Note that the Extensions based implementation is obsolete and needs cleaning up.
+implementation.
 
 
 ### [`WebAppInstallManager`](web_app_install_manager.h)
