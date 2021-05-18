@@ -2,14 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
-
 template("build_closure") {
   assert(defined(invoker.sources))
   assert(defined(invoker.target))
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "//third_party/google_input_tools/builder.py"
     sources = invoker.sources
     outputs = [ invoker.target ]
