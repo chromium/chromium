@@ -8,8 +8,10 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,7 +23,8 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 
-@interface SaveAddressProfileInfobarModalOverlayCoordinator ()
+@interface SaveAddressProfileInfobarModalOverlayCoordinator () <
+    SaveAddressProfileInfobarModalOverlayMediatorDelegate>
 // Redefine ModalConfiguration properties as readwrite.
 @property(nonatomic, strong, readwrite) OverlayRequestMediator* modalMediator;
 @property(nonatomic, strong, readwrite) UIViewController* modalViewController;
@@ -46,6 +49,38 @@ using autofill_address_profile_infobar_overlays::
   return SaveAddressProfileModalRequestConfig::RequestSupport();
 }
 
+#pragma mark - SaveAddressProfileInfobarModalOverlayMediatorDelegate
+
+- (void)showEditView {
+  [self.baseViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           // Shows Edit View Controller.
+                           [self onSaveUpdateViewDismissed];
+                         }];
+}
+
+#pragma mark - Private
+
+- (void)onSaveUpdateViewDismissed {
+  SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
+      static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
+          self.modalMediator);
+  InfobarEditAddressProfileTableViewController* editModalViewController =
+      [[InfobarEditAddressProfileTableViewController alloc]
+          initWithModalDelegate:modalMediator];
+
+  modalMediator.editAddressConsumer = editModalViewController;
+  self.modalMediator = modalMediator;
+  self.modalViewController = editModalViewController;
+
+  [self configureViewController];
+
+  [self.baseViewController presentViewController:self.viewController
+                                        animated:YES
+                                      completion:nil];
+}
+
 @end
 
 @implementation
@@ -61,6 +96,7 @@ using autofill_address_profile_infobar_overlays::
       [[InfobarSaveAddressProfileTableViewController alloc]
           initWithModalDelegate:modalMediator];
   modalMediator.consumer = modalViewController;
+  modalMediator.saveAddressProfileMediatorDelegate = self;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;
 }

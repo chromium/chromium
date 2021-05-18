@@ -28,6 +28,10 @@
 // Resets |modalViewController| and |modalMediator| to the new instances.
 - (void)configureModal;
 
+// Resets |modalTransitionDriver| and |modalNavController|. Reassigns |mediator|
+// to |modalMediator|.
+- (void)configureViewController;
+
 // Resets |modalMediator| and |modalViewController|.
 - (void)resetModal;
 

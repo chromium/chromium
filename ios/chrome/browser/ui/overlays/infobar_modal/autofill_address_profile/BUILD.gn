@@ -8,6 +8,7 @@ source_set("autofill_address_profile") {
     "save_address_profile_infobar_modal_overlay_coordinator.mm",
     "save_address_profile_infobar_modal_overlay_mediator.h",
     "save_address_profile_infobar_modal_overlay_mediator.mm",
+    "save_address_profile_infobar_modal_overlay_mediator_delegate.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

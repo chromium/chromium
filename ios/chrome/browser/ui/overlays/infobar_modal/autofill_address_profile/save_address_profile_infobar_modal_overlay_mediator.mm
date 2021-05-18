@@ -6,7 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
@@ -18,8 +18,6 @@
 
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
-using save_address_profile_infobar_modal_responses::
-    PresentAddressProfileSettings;
 
 @interface SaveAddressProfileInfobarModalOverlayMediator ()
 // The save address profile modal config from the request.
@@ -62,6 +60,21 @@ using save_address_profile_infobar_modal_responses::
   [_consumer setupModalViewControllerWithPrefs:prefs];
 }
 
+- (void)setEditAddressConsumer:
+    (id<InfobarEditAddressProfileModalConsumer>)editAddressConsumer {
+  if (_editAddressConsumer == editAddressConsumer)
+    return;
+
+  _editAddressConsumer = editAddressConsumer;
+
+  SaveAddressProfileModalRequestConfig* config = self.config;
+  if (!_editAddressConsumer || !config)
+    return;
+
+  [_editAddressConsumer
+      setupModalViewControllerWithData:config->GetProfileInfo()];
+}
+
 #pragma mark - OverlayRequestMediator
 
 + (const OverlayRequestSupport*)requestSupport {
@@ -70,16 +83,11 @@ using save_address_profile_infobar_modal_responses::
 
 #pragma mark - InfobarSaveAddressProfileModalDelegate
 
-- (void)presentAddressProfileSettings {
-  // Receiving this delegate callback when the request is null means that the
-  // present address profile settings button was tapped after the request was
-  // cancelled, but before the modal UI has finished being dismissed.
-  if (!self.request)
+- (void)showEditView {
+  if (!self.request) {
     return;
-
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<
-                             PresentAddressProfileSettings>()];
-  [self dismissInfobarModal:nil];
+  }
+  [self.saveAddressProfileMediatorDelegate showEditView];
 }
 
 @end

@@ -33,14 +33,7 @@
   if (self.started || !self.request)
     return;
   [self configureModal];
-  self.mediator = self.modalMediator;
-  self.modalTransitionDriver = [[InfobarModalTransitionDriver alloc]
-      initWithTransitionMode:InfobarModalTransitionBase];
-  self.modalTransitionDriver.modalPositioner = self;
-  self.modalNavController = [[UINavigationController alloc]
-      initWithRootViewController:self.modalViewController];
-  self.modalNavController.modalPresentationStyle = UIModalPresentationCustom;
-  self.modalNavController.transitioningDelegate = self.modalTransitionDriver;
+  [self configureViewController];
   [self.baseViewController presentViewController:self.viewController
                                         animated:animated
                                       completion:^{
@@ -120,6 +113,17 @@
 
 - (void)configureModal {
   NOTREACHED() << "Subclasses implement.";
+}
+
+- (void)configureViewController {
+  self.mediator = self.modalMediator;
+  self.modalTransitionDriver = [[InfobarModalTransitionDriver alloc]
+      initWithTransitionMode:InfobarModalTransitionBase];
+  self.modalTransitionDriver.modalPositioner = self;
+  self.modalNavController = [[UINavigationController alloc]
+      initWithRootViewController:self.modalViewController];
+  self.modalNavController.modalPresentationStyle = UIModalPresentationCustom;
+  self.modalNavController.transitioningDelegate = self.modalTransitionDriver;
 }
 
 - (void)resetModal {

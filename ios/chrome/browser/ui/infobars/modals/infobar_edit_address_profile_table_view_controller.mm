@@ -152,6 +152,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+#pragma mark - InfobarEditAddressProfileModalConsumer
+
+- (void)setupModalViewControllerWithData:(NSDictionary*)data {
+  self.profileData = [NSMutableDictionary dictionaryWithDictionary:data];
+  [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView

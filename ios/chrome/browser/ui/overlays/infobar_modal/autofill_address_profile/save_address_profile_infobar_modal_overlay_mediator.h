@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_address_profile_modal_delegate.h"
+#import "ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_mediator_delegate.h"
 
+@protocol InfobarEditAddressProfileModalConsumer;
 @protocol InfobarSaveAddressProfileModalConsumer;
 
 // Mediator that configures the modal UI for save address profile infobar.
@@ -18,6 +20,15 @@
 // The consumer that is configured by this mediator.  Setting to a new value
 // configures the new consumer.
 @property(nonatomic) id<InfobarSaveAddressProfileModalConsumer> consumer;
+
+// The consumer that is configured by this mediator for the edit address
+// profile.
+@property(nonatomic) id<InfobarEditAddressProfileModalConsumer>
+    editAddressConsumer;
+
+// Delegate to communicate user actions to change the UI presentation.
+@property(nonatomic) id<SaveAddressProfileInfobarModalOverlayMediatorDelegate>
+    saveAddressProfileMediatorDelegate;
 
 @end
 

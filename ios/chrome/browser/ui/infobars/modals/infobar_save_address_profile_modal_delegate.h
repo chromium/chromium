@@ -12,9 +12,8 @@
 // Delegate to handle Save Address Profile Infobar Modal actions.
 @protocol InfobarSaveAddressProfileModalDelegate <InfobarModalDelegate>
 
-// Dismisses the InfobarModal with no animation, then presents the Address
-// Profile Settings screen modally.
-- (void)presentAddressProfileSettings;
+// Presents the edit View.
+- (void)showEditView;
 
 @end
 

@@ -238,7 +238,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)showEditAddressProfileModal {
-  // TODO(crbug.com/1167062): Show edit view.
+  [self.saveAddressProfileModalDelegate showEditView];
 }
 
 - (void)loadUpdateAddressModal {

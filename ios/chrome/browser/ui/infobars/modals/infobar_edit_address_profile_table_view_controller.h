@@ -5,13 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_EDIT_ADDRESS_PROFILE_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_EDIT_ADDRESS_PROFILE_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/infobars/modals/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol InfobarSaveAddressProfileModalDelegate;
 
 // The TableView for an Autofill save/update address edit menu.
 @interface InfobarEditAddressProfileTableViewController
-    : ChromeTableViewController
+    : ChromeTableViewController <InfobarEditAddressProfileModalConsumer>
 
 - (instancetype)initWithModalDelegate:
     (id<InfobarSaveAddressProfileModalDelegate>)delegate;
