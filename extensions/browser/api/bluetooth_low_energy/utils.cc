@@ -35,8 +35,8 @@ std::unique_ptr<base::DictionaryValue> CharacteristicToValue(
   std::vector<CharacteristicProperty> properties = from->properties;
   from->properties.clear();
   std::unique_ptr<base::DictionaryValue> to = from->ToValue();
-  to->SetWithoutPathExpansion("properties",
-                              CharacteristicPropertiesToValue(properties));
+  to->SetKey("properties", base::Value::FromUniquePtrValue(
+                               CharacteristicPropertiesToValue(properties)));
   return to;
 }
 
@@ -53,8 +53,9 @@ std::unique_ptr<base::DictionaryValue> DescriptorToValue(Descriptor* from) {
   base::DictionaryValue* chrc_value = NULL;
   to->GetDictionaryWithoutPathExpansion("characteristic", &chrc_value);
   DCHECK(chrc_value);
-  chrc_value->SetWithoutPathExpansion(
-      "properties", CharacteristicPropertiesToValue(properties));
+  chrc_value->SetKey("properties",
+                     base::Value::FromUniquePtrValue(
+                         CharacteristicPropertiesToValue(properties)));
   return to;
 }
 

@@ -606,8 +606,8 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     if (strip_null_from_objects_ && child->is_none())
       continue;
 
-    result->SetWithoutPathExpansion(std::string(*name_utf8, name_utf8.length()),
-                                    std::move(child));
+    result->SetKey(std::string(*name_utf8, name_utf8.length()),
+                   base::Value::FromUniquePtrValue(std::move(child)));
   }
 
   return std::move(result);

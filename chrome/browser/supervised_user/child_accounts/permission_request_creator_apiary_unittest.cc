@@ -29,7 +29,8 @@ std::string BuildResponse() {
   base::DictionaryValue dict;
   auto permission_dict = std::make_unique<base::DictionaryValue>();
   permission_dict->SetKey("id", base::Value("requestid"));
-  dict.SetWithoutPathExpansion("permissionRequest", std::move(permission_dict));
+  dict.SetKey("permissionRequest",
+              base::Value::FromUniquePtrValue(std::move(permission_dict)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

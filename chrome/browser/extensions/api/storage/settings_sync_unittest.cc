@@ -1404,8 +1404,7 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
       ASSERT_TRUE(data.status().ok());
 
       base::DictionaryValue expected_data;
-      expected_data.SetWithoutPathExpansion(
-          "key.with.dot", std::make_unique<base::Value>("value"));
+      expected_data.SetKey("key.with.dot", base::Value("value"));
       EXPECT_EQ(expected_data, data.settings());
     }
 

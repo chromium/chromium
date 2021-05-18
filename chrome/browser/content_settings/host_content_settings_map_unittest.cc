@@ -1095,8 +1095,9 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
     auto dummy_payload = std::make_unique<base::DictionaryValue>();
     dummy_payload->SetInteger("setting", CONTENT_SETTING_ALLOW);
-    all_settings_dictionary->SetWithoutPathExpansion("[*.]\xC4\x87ira.com,*",
-                                                     std::move(dummy_payload));
+    all_settings_dictionary->SetKey(
+        "[*.]\xC4\x87ira.com,*",
+        base::Value::FromUniquePtrValue(std::move(dummy_payload)));
   }
 
   HostContentSettingsMapFactory::GetForProfile(&profile);

@@ -318,7 +318,8 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   std::vector<std::string> dot_list;
   dot_list.push_back(dot_key);
   base::DictionaryValue dot_dict;
-  dot_dict.SetWithoutPathExpansion(dot_key, dot_value.CreateDeepCopy());
+  dot_dict.SetKey(dot_key,
+                  base::Value::FromUniquePtrValue(dot_value.CreateDeepCopy()));
 
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(dot_key));
 

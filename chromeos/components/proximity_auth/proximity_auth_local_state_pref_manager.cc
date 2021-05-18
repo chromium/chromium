@@ -154,8 +154,9 @@ void ProximityAuthLocalStatePrefManager::SetHasShownLoginDisabledMessage(
   new_current_user_prefs->SetKey(
       prefs::kProximityAuthHasShownLoginDisabledMessage,
       base::Value(has_shown));
-  update->SetWithoutPathExpansion(active_user_.GetUserEmail(),
-                                  std::move(new_current_user_prefs));
+  update->SetKey(
+      active_user_.GetUserEmail(),
+      base::Value::FromUniquePtrValue(std::move(new_current_user_prefs)));
 }
 
 bool ProximityAuthLocalStatePrefManager::HasShownLoginDisabledMessage() const {

@@ -33,7 +33,7 @@ void ExtensionMigrator::StartLoading() {
     entry->SetKey(ExternalProviderImpl::kExternalUpdateUrl,
                   base::Value(extension_urls::GetWebstoreUpdateUrl().spec()));
 
-    prefs->SetWithoutPathExpansion(new_id_, std::move(entry));
+    prefs->SetKey(new_id_, base::Value::FromUniquePtrValue(std::move(entry)));
   }
 
   LoadFinished(std::move(prefs));

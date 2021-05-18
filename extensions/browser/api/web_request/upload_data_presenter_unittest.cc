@@ -29,7 +29,8 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   std::unique_ptr<base::ListValue> values(new base::ListValue);
   values->AppendString("value");
   base::DictionaryValue expected_form;
-  expected_form.SetWithoutPathExpansion("key.with.dots", std::move(values));
+  expected_form.SetKey("key.with.dots",
+                       base::Value::FromUniquePtrValue(std::move(values)));
 
   // Real output.
   std::unique_ptr<ParsedDataPresenter> parsed_data_presenter(

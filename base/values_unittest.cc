@@ -1552,8 +1552,7 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
 
   {
     DictionaryValue dict;
-    Value* blank_ptr = dict.SetWithoutPathExpansion(
-        "foo.bar", std::make_unique<base::Value>());
+    Value* blank_ptr = dict.SetKey("foo.bar", base::Value());
     EXPECT_EQ(Value::Type::NONE, blank_ptr->type());
   }
 
@@ -1633,7 +1632,7 @@ TEST(ValuesTest, DictionaryRemoval) {
 TEST(ValuesTest, DictionaryWithoutPathExpansion) {
   DictionaryValue dict;
   dict.Set("this.is.expanded", std::make_unique<Value>());
-  dict.SetWithoutPathExpansion("this.isnt.expanded", std::make_unique<Value>());
+  dict.SetKey("this.isnt.expanded", Value());
 
   EXPECT_FALSE(dict.HasKey("this.is.expanded"));
   EXPECT_TRUE(dict.HasKey("this"));
@@ -2042,8 +2041,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   // Remove empty lists and dictionaries.
   root->Set("empty_dict", std::make_unique<DictionaryValue>());
   root->Set("empty_list", std::make_unique<ListValue>());
-  root->SetWithoutPathExpansion("a.b.c.d.e",
-                                std::make_unique<DictionaryValue>());
+  root->SetKey("a.b.c.d.e", DictionaryValue());
   root = root->DeepCopyWithoutEmptyChildren();
   EXPECT_TRUE(root->DictEmpty());
 

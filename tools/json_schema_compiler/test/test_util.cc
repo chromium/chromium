@@ -48,7 +48,7 @@ std::unique_ptr<base::DictionaryValue> Dictionary(
     const std::string& ak,
     std::unique_ptr<base::Value> av) {
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetWithoutPathExpansion(ak, std::move(av));
+  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
   return dict;
 }
 std::unique_ptr<base::DictionaryValue> Dictionary(
@@ -57,8 +57,8 @@ std::unique_ptr<base::DictionaryValue> Dictionary(
     const std::string& bk,
     std::unique_ptr<base::Value> bv) {
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetWithoutPathExpansion(ak, std::move(av));
-  dict->SetWithoutPathExpansion(bk, std::move(bv));
+  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
+  dict->SetKey(bk, base::Value::FromUniquePtrValue(std::move(bv)));
   return dict;
 }
 std::unique_ptr<base::DictionaryValue> Dictionary(
@@ -69,9 +69,9 @@ std::unique_ptr<base::DictionaryValue> Dictionary(
     const std::string& ck,
     std::unique_ptr<base::Value> cv) {
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetWithoutPathExpansion(ak, std::move(av));
-  dict->SetWithoutPathExpansion(bk, std::move(bv));
-  dict->SetWithoutPathExpansion(ck, std::move(cv));
+  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
+  dict->SetKey(bk, base::Value::FromUniquePtrValue(std::move(bv)));
+  dict->SetKey(ck, base::Value::FromUniquePtrValue(std::move(cv)));
   return dict;
 }
 

@@ -237,7 +237,8 @@ void UrlConditionCaseTest::CheckCondition(
   if (use_list_of_strings_) {
     auto list = std::make_unique<base::ListValue>();
     list->AppendString(value);
-    condition.SetWithoutPathExpansion(condition_key_, std::move(list));
+    condition.SetKey(condition_key_,
+                     base::Value::FromUniquePtrValue(std::move(list)));
   } else {
     condition.SetKey(condition_key_, base::Value(value));
   }

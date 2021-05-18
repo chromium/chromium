@@ -105,8 +105,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
 
   DictionaryPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateUserPrefs);
-  update->SetWithoutPathExpansion(account_id_.GetUserEmail(),
-                                  std::move(user_prefs_dict));
+  update->SetKey(account_id_.GetUserEmail(),
+                 base::Value::FromUniquePtrValue(std::move(user_prefs_dict)));
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockAllowed() const {

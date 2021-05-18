@@ -274,8 +274,9 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              const std::string& pref_name) {
   DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
   auto wallpaper_info_dict = CreateWallpaperInfoDict(info);
-  wallpaper_update->SetWithoutPathExpansion(account_id.GetUserEmail(),
-                                            std::move(wallpaper_info_dict));
+  wallpaper_update->SetKey(
+      account_id.GetUserEmail(),
+      base::Value::FromUniquePtrValue(std::move(wallpaper_info_dict)));
 }
 
 void AssertWallpaperInfoInPrefs(const PrefService* pref_service,

@@ -43,7 +43,7 @@ void AppendKeyValuePair(const char* key,
                         std::unique_ptr<base::Value> value,
                         base::ListValue* list) {
   std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
-  dictionary->SetWithoutPathExpansion(key, std::move(value));
+  dictionary->SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
   list->Append(std::move(dictionary));
 }
 

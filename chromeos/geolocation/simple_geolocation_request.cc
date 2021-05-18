@@ -396,8 +396,8 @@ std::string SimpleGeolocationRequest::FormatRequestBody() const {
     for (const WifiAccessPoint& access_point : *wifi_data_) {
       wifi_access_points->Append(CreateAccessPointDictionary(access_point));
     }
-    request->SetWithoutPathExpansion(kWifiAccessPoints,
-                                     std::move(wifi_access_points));
+    request->SetKey(kWifiAccessPoints, base::Value::FromUniquePtrValue(
+                                           std::move(wifi_access_points)));
   }
 
   if (cell_tower_data_) {
@@ -405,7 +405,8 @@ std::string SimpleGeolocationRequest::FormatRequestBody() const {
     for (const CellTower& cell_tower : *cell_tower_data_) {
       cell_towers->Append(CreateCellTowerDictionary(cell_tower));
     }
-    request->SetWithoutPathExpansion(kCellTowers, std::move(cell_towers));
+    request->SetKey(kCellTowers,
+                    base::Value::FromUniquePtrValue(std::move(cell_towers)));
   }
 
   std::string result;

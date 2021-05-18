@@ -163,11 +163,13 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   base::DictionaryValue plugins_data_pref;
   auto dict = std::make_unique<base::DictionaryValue>();
   constexpr char kFlagKey[] = "flashPreviouslyChanged";
-  plugins_data_pref.SetWithoutPathExpansion(kFlagKey, std::move(dict));
+  plugins_data_pref.SetKey(kFlagKey,
+                           base::Value::FromUniquePtrValue(std::move(dict)));
 
   auto data_for_pattern = std::make_unique<base::DictionaryValue>();
   data_for_pattern->SetInteger("setting", CONTENT_SETTING_ALLOW);
-  pref_data.SetWithoutPathExpansion(kPattern, std::move(data_for_pattern));
+  pref_data.SetKey(
+      kPattern, base::Value::FromUniquePtrValue(std::move(data_for_pattern)));
   prefs->Set(kFullscreenPrefPath, pref_data);
 #if !defined(OS_ANDROID)
   prefs->Set(kMouselockPrefPath, pref_data);
@@ -381,8 +383,7 @@ TEST_F(PrefProviderTest, Deadlock) {
   {
     DictionaryPrefUpdate update(&prefs, info->pref_name());
     base::DictionaryValue* mutable_settings = update.Get();
-    mutable_settings->SetWithoutPathExpansion(
-        "www.example.com,*", std::make_unique<base::DictionaryValue>());
+    mutable_settings->SetKey("www.example.com,*", base::DictionaryValue());
   }
   EXPECT_TRUE(observer.notification_received());
 

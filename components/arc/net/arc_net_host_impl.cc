@@ -524,8 +524,8 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                         base::Value(details->passphrase.value()));
     }
   }
-  properties->SetWithoutPathExpansion(onc::network_config::kWiFi,
-                                      std::move(wifi_dict));
+  properties->SetKey(onc::network_config::kWiFi,
+                     base::Value::FromUniquePtrValue(std::move(wifi_dict)));
 
   std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
   // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
@@ -737,19 +737,21 @@ ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   ip_dict->SetKey(onc::ipconfig::kRoutingPrefix, base::Value(32));
   ip_dict->SetKey(onc::ipconfig::kGateway, base::Value(cfg.ipv4_gateway));
 
-  ip_dict->SetWithoutPathExpansion(onc::ipconfig::kNameServers,
-                                   TranslateStringListToValue(cfg.nameservers));
-  ip_dict->SetWithoutPathExpansion(onc::ipconfig::kSearchDomains,
-                                   TranslateStringListToValue(cfg.domains));
-  ip_dict->SetWithoutPathExpansion(
-      onc::ipconfig::kIncludedRoutes,
-      TranslateStringListToValue(cfg.split_include));
-  ip_dict->SetWithoutPathExpansion(
-      onc::ipconfig::kExcludedRoutes,
-      TranslateStringListToValue(cfg.split_exclude));
+  ip_dict->SetKey(onc::ipconfig::kNameServers,
+                  base::Value::FromUniquePtrValue(
+                      TranslateStringListToValue(cfg.nameservers)));
+  ip_dict->SetKey(
+      onc::ipconfig::kSearchDomains,
+      base::Value::FromUniquePtrValue(TranslateStringListToValue(cfg.domains)));
+  ip_dict->SetKey(onc::ipconfig::kIncludedRoutes,
+                  base::Value::FromUniquePtrValue(
+                      TranslateStringListToValue(cfg.split_include)));
+  ip_dict->SetKey(onc::ipconfig::kExcludedRoutes,
+                  base::Value::FromUniquePtrValue(
+                      TranslateStringListToValue(cfg.split_exclude)));
 
-  top_dict->SetWithoutPathExpansion(onc::network_config::kStaticIPConfig,
-                                    std::move(ip_dict));
+  top_dict->SetKey(onc::network_config::kStaticIPConfig,
+                   base::Value::FromUniquePtrValue(std::move(ip_dict)));
 
   // VPN dictionary
   std::unique_ptr<base::DictionaryValue> vpn_dict =
@@ -763,10 +765,11 @@ ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   arcvpn_dict->SetKey(
       onc::arc_vpn::kTunnelChrome,
       base::Value(cfg.tunnel_chrome_traffic ? "true" : "false"));
-  vpn_dict->SetWithoutPathExpansion(onc::vpn::kArcVpn, std::move(arcvpn_dict));
+  vpn_dict->SetKey(onc::vpn::kArcVpn,
+                   base::Value::FromUniquePtrValue(std::move(arcvpn_dict)));
 
-  top_dict->SetWithoutPathExpansion(onc::network_config::kVPN,
-                                    std::move(vpn_dict));
+  top_dict->SetKey(onc::network_config::kVPN,
+                   base::Value::FromUniquePtrValue(std::move(vpn_dict)));
 
   return top_dict;
 }

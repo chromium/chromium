@@ -60,7 +60,8 @@ bool PopDictionaryEntries(MessageReader* reader,
     std::unique_ptr<base::Value> value = PopDataAsValue(&entry_reader);
     if (!value)
       return false;
-    dictionary_value->SetWithoutPathExpansion(key_string, std::move(value));
+    dictionary_value->SetKey(key_string,
+                             base::Value::FromUniquePtrValue(std::move(value)));
   }
   return true;
 }

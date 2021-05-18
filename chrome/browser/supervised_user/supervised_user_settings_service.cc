@@ -160,14 +160,15 @@ void SupervisedUserSettingsService::PushItemToSync(
     base::RecordAction(UserMetricsAction("ManagedUsers_UploadItem_Queued"));
     dict = GetQueuedItems();
   }
-  dict->SetWithoutPathExpansion(key_suffix, std::move(value));
+  dict->SetKey(key_suffix, base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 void SupervisedUserSettingsService::SetLocalSetting(
     const std::string& key,
     std::unique_ptr<base::Value> value) {
   if (value)
-    local_settings_->SetWithoutPathExpansion(key, std::move(value));
+    local_settings_->SetKey(key,
+                            base::Value::FromUniquePtrValue(std::move(value)));
   else
     local_settings_->RemoveKey(key);
 
@@ -241,7 +242,7 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     std::unique_ptr<base::Value> value =
         JSONReader::ReadDeprecated(supervised_user_setting.value());
     // Wrongly formatted input will cause null values.
-    // SetWithoutPathExpansion below requires non-null values.
+    // SetKey below requires non-null values.
     if (!value) {
       DLOG(ERROR) << "Invalid managed user setting value: "
                   << supervised_user_setting.value()
@@ -251,7 +252,8 @@ SupervisedUserSettingsService::MergeDataAndStartSyncing(
     std::string name_suffix = supervised_user_setting.name();
     std::string name_key = name_suffix;
     base::DictionaryValue* dict = GetDictionaryAndSplitKey(&name_suffix);
-    dict->SetWithoutPathExpansion(name_suffix, std::move(value));
+    dict->SetKey(name_suffix,
+                 base::Value::FromUniquePtrValue(std::move(value)));
     if (seen_keys.find(name_key) == seen_keys.end()) {
       added_sync_keys.insert(name_key);
     }
@@ -342,7 +344,7 @@ SupervisedUserSettingsService::ProcessSyncChanges(
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_UPDATE)
               << "Value for key " << key << " doesn't exist yet";
         }
-        dict->SetWithoutPathExpansion(key, std::move(value));
+        dict->SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
         break;
       }
       case SyncChange::ACTION_DELETE: {

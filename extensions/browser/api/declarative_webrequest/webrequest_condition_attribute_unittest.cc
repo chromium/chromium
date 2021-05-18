@@ -268,7 +268,8 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
           dictionary->RemoveWithoutPathExpansion(*name, &entry_owned);
           list->Append(std::move(entry_owned));
           list->AppendString(*value);
-          dictionary->SetWithoutPathExpansion(*name, std::move(list));
+          dictionary->SetKey(*name,
+                             base::Value::FromUniquePtrValue(std::move(list)));
           break;
         }
         case base::Value::Type::LIST:  // Just append to the list.

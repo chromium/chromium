@@ -115,7 +115,8 @@ TEST_F(PlistWriterTest, KeysWithPeriods) {
   std::unique_ptr<base::DictionaryValue> period_dict2(
       new base::DictionaryValue());
   period_dict2->SetKey("g.h.i.j", base::Value(1));
-  period_dict.SetWithoutPathExpansion("d.e.f", std::move(period_dict2));
+  period_dict.SetKey("d.e.f",
+                     base::Value::FromUniquePtrValue(std::move(period_dict2)));
   EXPECT_TRUE(PlistWrite(period_dict, &output_plist));
   EXPECT_EQ(base::StrCat({header_,       " <dict>",
                           PLIST_NEWLINE, "  <key>a.b</key>",

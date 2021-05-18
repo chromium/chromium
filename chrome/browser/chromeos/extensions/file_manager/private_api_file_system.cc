@@ -1282,7 +1282,7 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   for (const auto& hash : hashes) {
-    result->SetWithoutPathExpansion(hash, std::make_unique<base::ListValue>());
+    result->SetKey(hash, base::ListValue());
   }
 
   for (const auto& hashAndPath : search_results) {

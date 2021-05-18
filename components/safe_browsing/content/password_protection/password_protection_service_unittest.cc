@@ -464,14 +464,16 @@ class PasswordProtectionServiceBaseTest
 
     std::unique_ptr<base::DictionaryValue> invalid_cache_expression_entry =
         std::make_unique<base::DictionaryValue>();
-    invalid_cache_expression_entry->SetWithoutPathExpansion(
-        "invalid_cache_expression", std::move(invalid_verdict_entry));
-    verdict_dictionary->SetWithoutPathExpansion(
+    invalid_cache_expression_entry->SetKey(
+        "invalid_cache_expression",
+        base::Value::FromUniquePtrValue(std::move(invalid_verdict_entry)));
+    verdict_dictionary->SetKey(
         base::NumberToString(static_cast<std::underlying_type_t<PasswordType>>(
             password_protection_service_
                 ->ConvertReusedPasswordAccountTypeToPasswordType(
                     password_type))),
-        std::move(invalid_cache_expression_entry));
+        base::Value::FromUniquePtrValue(
+            std::move(invalid_cache_expression_entry)));
     content_setting_map_->SetWebsiteSettingDefaultScope(
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
         std::move(verdict_dictionary));

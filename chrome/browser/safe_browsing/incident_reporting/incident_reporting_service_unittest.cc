@@ -1319,12 +1319,12 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
       new base::DictionaryValue());
   auto type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("foo", base::Value("47"));
-  incidents_sent->SetWithoutPathExpansion(blocklist_load_type,
-                                          std::move(type_dict));
+  incidents_sent->SetKey(blocklist_load_type,
+                         base::Value::FromUniquePtrValue(std::move(type_dict)));
   type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("bar", base::Value("43"));
-  incidents_sent->SetWithoutPathExpansion(preference_type,
-                                          std::move(type_dict));
+  incidents_sent->SetKey(preference_type,
+                         base::Value::FromUniquePtrValue(std::move(type_dict)));
 
   // Add a profile.
   Profile* profile =

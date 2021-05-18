@@ -53,7 +53,7 @@ void ExtensionManagementPrefUpdaterBase::UnsetPerExtensionSettings(
 void ExtensionManagementPrefUpdaterBase::ClearPerExtensionSettings(
     const ExtensionId& id) {
   DCHECK(crx_file::id_util::IdIsValid(id));
-  pref_->SetWithoutPathExpansion(id, std::make_unique<base::DictionaryValue>());
+  pref_->SetKey(id, base::DictionaryValue());
 }
 
 // Helper functions for 'installation_mode' manipulation -----------------------

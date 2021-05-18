@@ -76,8 +76,8 @@ DictionaryPtr GetEditableFlags(const base::DictionaryValue& policy) {
       continue;
     }
 
-    result_editable->SetWithoutPathExpansion(it.key(),
-                                             GetEditableFlags(*child_policy));
+    result_editable->SetKey(it.key(), base::Value::FromUniquePtrValue(
+                                          GetEditableFlags(*child_policy)));
   }
   return result_editable;
 }
@@ -137,7 +137,8 @@ class MergeListOfDictionaries {
         }
 
         if (merged_value)
-          result->SetWithoutPathExpansion(key, std::move(merged_value));
+          result->SetKey(
+              key, base::Value::FromUniquePtrValue(std::move(merged_value)));
       }
     }
     return result;

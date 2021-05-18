@@ -167,7 +167,7 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
     info->SetString(kAccountIdKey, params.account_id.GetAccountIdKey());
   info->SetBoolKey(prefs::kSignedInWithCredentialProvider,
                    params.is_signed_in_with_credential_provider);
-  cache->SetWithoutPathExpansion(key, std::move(info));
+  cache->SetKey(key, base::Value::FromUniquePtrValue(std::move(info)));
   ProfileAttributesEntry* entry = InitEntryWithKey(key, params.is_omitted);
   entry->InitializeLastNameToDisplay();
 
@@ -517,7 +517,7 @@ void ProfileInfoCache::SetInfoForProfileAtIndex(
     std::unique_ptr<base::DictionaryValue> info) {
   DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
   base::DictionaryValue* cache = update.Get();
-  cache->SetWithoutPathExpansion(keys_[index], std::move(info));
+  cache->SetKey(keys_[index], base::Value::FromUniquePtrValue(std::move(info)));
 }
 
 std::string ProfileInfoCache::CacheKeyFromProfilePath(

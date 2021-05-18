@@ -62,8 +62,7 @@ ValueStore::ReadResult TestingValueStore::Get(
   for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
     base::Value* value = NULL;
     if (storage_.GetWithoutPathExpansion(*it, &value)) {
-      settings->SetWithoutPathExpansion(
-          *it, base::Value::ToUniquePtrValue(value->Clone()));
+      settings->SetKey(*it, value->Clone());
     }
   }
   return ReadResult(std::move(settings), CreateStatusCopy(status_));
@@ -79,8 +78,7 @@ ValueStore::ReadResult TestingValueStore::Get() {
 ValueStore::WriteResult TestingValueStore::Set(
     WriteOptions options, const std::string& key, const base::Value& value) {
   base::DictionaryValue settings;
-  settings.SetWithoutPathExpansion(
-      key, base::Value::ToUniquePtrValue(value.Clone()));
+  settings.SetKey(key, value.Clone());
   return Set(options, settings);
 }
 
@@ -101,8 +99,7 @@ ValueStore::WriteResult TestingValueStore::Set(
                                ? absl::optional<base::Value>(old_value->Clone())
                                : absl::nullopt,
                            it.value().Clone());
-      storage_.SetWithoutPathExpansion(
-          it.key(), base::Value::ToUniquePtrValue(it.value().Clone()));
+      storage_.SetKey(it.key(), it.value().Clone());
     }
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));

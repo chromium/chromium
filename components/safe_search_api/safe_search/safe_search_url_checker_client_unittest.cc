@@ -35,8 +35,8 @@ std::string BuildResponse(bool is_porn) {
     classification_dict->SetBoolean("pornography", is_porn);
   auto classifications_list = std::make_unique<base::ListValue>();
   classifications_list->Append(std::move(classification_dict));
-  dict.SetWithoutPathExpansion("classifications",
-                               std::move(classifications_list));
+  dict.SetKey("classifications",
+              base::Value::FromUniquePtrValue(std::move(classifications_list)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

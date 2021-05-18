@@ -62,8 +62,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
                         base::Value(kIsEasyUnlockEnabled1));
     DictionaryPrefUpdate update1(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
-    update1->SetWithoutPathExpansion(user1_.GetUserEmail(),
-                                     std::move(user1_prefs));
+    update1->SetKey(user1_.GetUserEmail(),
+                    base::Value::FromUniquePtrValue(std::move(user1_prefs)));
 
     std::unique_ptr<base::DictionaryValue> user2_prefs(
         new base::DictionaryValue());
@@ -77,8 +77,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
 
     DictionaryPrefUpdate update2(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
-    update2->SetWithoutPathExpansion(user2_.GetUserEmail(),
-                                     std::move(user2_prefs));
+    update2->SetKey(user2_.GetUserEmail(),
+                    base::Value::FromUniquePtrValue(std::move(user2_prefs)));
   }
 
   AccountId user1_;

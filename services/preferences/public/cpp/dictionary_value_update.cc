@@ -115,7 +115,7 @@ void DictionaryValueUpdate::SetWithoutPathExpansion(
     return;
   }
   RecordKey(key);
-  value_->SetWithoutPathExpansion(key, std::move(in_value));
+  value_->SetKey(key, base::Value::FromUniquePtrValue(std::move(in_value)));
 }
 
 std::unique_ptr<DictionaryValueUpdate>
@@ -123,8 +123,8 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
     base::StringPiece path,
     std::unique_ptr<base::DictionaryValue> in_value) {
   RecordKey(path);
-  auto* dictionary_value = static_cast<base::DictionaryValue*>(
-      value_->SetWithoutPathExpansion(path, std::move(in_value)));
+  auto* dictionary_value = static_cast<base::DictionaryValue*>(value_->SetKey(
+      path, base::Value::FromUniquePtrValue(std::move(in_value))));
 
   std::vector<std::string> full_path = path_;
   full_path.push_back(std::string(path));

@@ -234,7 +234,8 @@ KioskAppsHandler::GetSettingsDictionary() {
     PopulateAppDict(app_data, app_info.get());
     apps_list->Append(std::move(app_info));
   }
-  settings->SetWithoutPathExpansion("apps", std::move(apps_list));
+  settings->SetKey("apps",
+                   base::Value::FromUniquePtrValue(std::move(apps_list)));
 
   return settings;
 }

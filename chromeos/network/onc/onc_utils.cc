@@ -285,7 +285,8 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
   }
 
   onc_object->RemoveKey(key_guid_ref_list);
-  onc_object->SetWithoutPathExpansion(key_pem_list, std::move(pem_list));
+  onc_object->SetKey(key_pem_list,
+                     base::Value::FromUniquePtrValue(std::move(pem_list)));
   return true;
 }
 
@@ -306,7 +307,8 @@ bool ResolveSingleCertRefToList(const CertPEMsByGUIDMap& certs_by_guid,
   std::unique_ptr<base::ListValue> pem_list(new base::ListValue);
   pem_list->AppendString(pem_encoded);
   onc_object->RemoveKey(key_guid_ref);
-  onc_object->SetWithoutPathExpansion(key_pem_list, std::move(pem_list));
+  onc_object->SetKey(key_pem_list,
+                     base::Value::FromUniquePtrValue(std::move(pem_list)));
   return true;
 }
 
@@ -494,7 +496,8 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
   url_dict->SetKey(::onc::proxy::kHost, base::Value(host));
   url_dict->SetKey(::onc::proxy::kPort,
                    base::Value(server.host_port_pair().port()));
-  dict->SetWithoutPathExpansion(onc_scheme, std::move(url_dict));
+  dict->SetKey(onc_scheme,
+               base::Value::FromUniquePtrValue(std::move(url_dict)));
 }
 
 // Returns the NetworkConfiugration with |guid| from |network_configs|, or

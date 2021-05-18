@@ -346,10 +346,11 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
       case TrackedPreferenceType::SPLIT: {
         const base::DictionaryValue* dict_value = nullptr;
         pref_store_contents->GetDictionary(changed_path, &dict_value);
-        changed_paths_macs->SetWithoutPathExpansion(
+        changed_paths_macs->SetKey(
             changed_path,
-            external_validation_hash_store_pair_->first->ComputeSplitMacs(
-                changed_path, dict_value));
+            base::Value::FromUniquePtrValue(
+                external_validation_hash_store_pair_->first->ComputeSplitMacs(
+                    changed_path, dict_value)));
         break;
       }
     }

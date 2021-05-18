@@ -54,7 +54,8 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
       }
       const base::Value* child = NULL;
       dict->GetWithoutPathExpansion(it.key(), &child);
-      dict_copy->SetWithoutPathExpansion(it.key(), SmartDeepCopy(child));
+      dict_copy->SetKey(it.key(),
+                        base::Value::FromUniquePtrValue(SmartDeepCopy(child)));
     }
     return std::move(dict_copy);
   } else if (value->GetAsList(&list)) {

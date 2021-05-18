@@ -80,16 +80,19 @@ void RememberFakeFileSystem(TestingProfile* profile,
       persistent_origins_value->AppendString(subscriber_it.first.spec());
   }
 
-  watcher_value->SetWithoutPathExpansion(kPrefKeyWatcherPersistentOrigins,
-                                         std::move(persistent_origins_value));
+  watcher_value->SetKey(
+      kPrefKeyWatcherPersistentOrigins,
+      base::Value::FromUniquePtrValue(std::move(persistent_origins_value)));
   auto watchers = std::make_unique<base::DictionaryValue>();
-  watchers->SetWithoutPathExpansion(watcher.entry_path.value(),
-                                    std::move(watcher_value));
-  file_system->SetWithoutPathExpansion(kPrefKeyWatchers, std::move(watchers));
+  watchers->SetKey(watcher.entry_path.value(),
+                   base::Value::FromUniquePtrValue(std::move(watcher_value)));
+  file_system->SetKey(kPrefKeyWatchers,
+                      base::Value::FromUniquePtrValue(std::move(watchers)));
   auto file_systems = std::make_unique<base::DictionaryValue>();
-  file_systems->SetWithoutPathExpansion(kFileSystemId, std::move(file_system));
-  extensions.SetWithoutPathExpansion(kProviderId.ToString(),
-                                     std::move(file_systems));
+  file_systems->SetKey(kFileSystemId,
+                       base::Value::FromUniquePtrValue(std::move(file_system)));
+  extensions.SetKey(kProviderId.ToString(),
+                    base::Value::FromUniquePtrValue(std::move(file_systems)));
   pref_service->Set(prefs::kFileSystemProviderMounted, extensions);
 }
 

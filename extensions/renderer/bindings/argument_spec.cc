@@ -564,8 +564,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       }
       if (preserve_null_ && prop_value->IsNull()) {
         if (result) {
-          result->SetWithoutPathExpansion(*utf8_key,
-                                          std::make_unique<base::Value>());
+          result->SetKey(*utf8_key, base::Value());
         }
         if (convert_to_v8)
           v8_result.Set(*utf8_key, prop_value);
@@ -584,7 +583,8 @@ bool ArgumentSpec::ParseArgumentToObject(
       return false;
     }
     if (out_value)
-      result->SetWithoutPathExpansion(*utf8_key, std::move(property));
+      result->SetKey(*utf8_key,
+                     base::Value::FromUniquePtrValue(std::move(property)));
     if (convert_to_v8)
       v8_result.Set(*utf8_key, v8_property);
   }

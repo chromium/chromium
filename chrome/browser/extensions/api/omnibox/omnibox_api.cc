@@ -75,9 +75,7 @@ bool SetOmniboxDefaultSuggestion(
   std::unique_ptr<base::DictionaryValue> dict = suggestion.ToValue();
   // Add the content field so that the dictionary can be used to populate an
   // omnibox::SuggestResult.
-  dict->SetWithoutPathExpansion(
-      kSuggestionContent,
-      std::make_unique<base::Value>(base::Value::Type::STRING));
+  dict->SetKey(kSuggestionContent, base::Value(base::Value::Type::STRING));
   prefs->UpdateExtensionPref(extension_id, kOmniboxDefaultSuggestion,
                              std::move(dict));
 

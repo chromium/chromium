@@ -120,7 +120,8 @@ void AppWindowGeometryCache::SyncToStorage() {
       value->SetInteger("state", it->second.window_state);
       value->SetString(
           "ts", base::NumberToString(it->second.last_change.ToInternalValue()));
-      dict->SetWithoutPathExpansion(it->first, std::move(value));
+      dict->SetKey(it->first,
+                   base::Value::FromUniquePtrValue(std::move(value)));
 
       for (auto& observer : observers_)
         observer.OnGeometryCacheChanged(extension_id, it->first, bounds);

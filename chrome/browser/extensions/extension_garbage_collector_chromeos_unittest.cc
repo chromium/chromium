@@ -112,8 +112,8 @@ class ExtensionGarbageCollectorChromeOSUnitTest
     }
     version_info->Set(ExtensionAssetsManagerChromeOS::kSharedExtensionUsers,
                       std::move(users));
-    extension_info_weak->SetWithoutPathExpansion(version,
-                                                 std::move(version_info));
+    extension_info_weak->SetKey(
+        version, base::Value::FromUniquePtrValue(std::move(version_info)));
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id,

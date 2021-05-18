@@ -83,8 +83,8 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
   auto new_pref_entry = std::make_unique<base::DictionaryValue>();
   new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
 
-  update->SetWithoutPathExpansion(public_key_spki_der_b64,
-                                  std::move(new_pref_entry));
+  update->SetKey(public_key_spki_der_b64,
+                 base::Value::FromUniquePtrValue(std::move(new_pref_entry)));
 }
 
 }  // namespace internal

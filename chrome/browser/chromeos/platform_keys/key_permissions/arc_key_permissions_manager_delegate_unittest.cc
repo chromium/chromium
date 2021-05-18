@@ -109,8 +109,8 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
                                  base::Value(allowed));
 
     base::DictionaryValue policy_value;
-    policy_value.SetWithoutPathExpansion(package_name,
-                                         std::move(corporate_key_usage));
+    policy_value.SetKey(package_name, base::Value::FromUniquePtrValue(
+                                          std::move(corporate_key_usage)));
 
     policy::PolicyMap policy_map;
     policy_map.Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,

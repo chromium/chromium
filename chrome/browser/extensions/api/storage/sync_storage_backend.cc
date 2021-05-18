@@ -194,7 +194,8 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     DCHECK(!settings->HasKey(data.key()))
         << "Duplicate settings for " << data.extension_id() << "/"
         << data.key();
-    settings->SetWithoutPathExpansion(data.key(), data.PassValue());
+    settings->SetKey(data.key(),
+                     base::Value::FromUniquePtrValue(data.PassValue()));
   }
 
   // Start syncing all existing storage areas.  Any storage areas created in

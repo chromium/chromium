@@ -28,7 +28,7 @@ class NetworkStateTest : public testing::Test {
  protected:
   bool SetProperty(const std::string& key, std::unique_ptr<base::Value> value) {
     const bool result = network_state_.PropertyChanged(key, *value);
-    properties_.SetWithoutPathExpansion(key, std::move(value));
+    properties_.SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
     return result;
   }
 

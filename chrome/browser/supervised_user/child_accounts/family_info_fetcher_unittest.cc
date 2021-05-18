@@ -58,8 +58,10 @@ std::string BuildGetFamilyProfileResponse(
   std::unique_ptr<base::DictionaryValue> profile_dict =
       std::make_unique<base::DictionaryValue>();
   profile_dict->SetKey("name", base::Value(family.name));
-  family_dict->SetWithoutPathExpansion("profile", std::move(profile_dict));
-  dict.SetWithoutPathExpansion("family", std::move(family_dict));
+  family_dict->SetKey("profile",
+                      base::Value::FromUniquePtrValue(std::move(profile_dict)));
+  dict.SetKey("family",
+              base::Value::FromUniquePtrValue(std::move(family_dict)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -67,8 +69,7 @@ std::string BuildGetFamilyProfileResponse(
 
 std::string BuildEmptyGetFamilyProfileResponse() {
   base::DictionaryValue dict;
-  dict.SetWithoutPathExpansion("family",
-                               std::make_unique<base::DictionaryValue>());
+  dict.SetKey("family", base::DictionaryValue());
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -100,11 +101,12 @@ std::string BuildGetFamilyMembersResponse(
         profile_dict->SetKey("profileImageUrl",
                              base::Value(member.profile_image_url));
 
-      member_dict->SetWithoutPathExpansion("profile", std::move(profile_dict));
+      member_dict->SetKey(
+          "profile", base::Value::FromUniquePtrValue(std::move(profile_dict)));
     }
     list->Append(std::move(member_dict));
   }
-  dict.SetWithoutPathExpansion("members", std::move(list));
+  dict.SetKey("members", base::Value::FromUniquePtrValue(std::move(list)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

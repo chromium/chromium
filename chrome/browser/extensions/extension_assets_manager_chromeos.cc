@@ -410,8 +410,8 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
           base::BindOnce(std::move(info.callback), shared_version_dir));
   }
   version_info->Set(kSharedExtensionUsers, std::move(users));
-  extension_info_weak->SetWithoutPathExpansion(version,
-                                               std::move(version_info));
+  extension_info_weak->SetKey(
+      version, base::Value::FromUniquePtrValue(std::move(version_info)));
 }
 
 // static

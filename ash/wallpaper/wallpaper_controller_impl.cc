@@ -2138,8 +2138,9 @@ void WallpaperControllerImpl::CacheProminentColors(
   auto wallpaper_colors = std::make_unique<base::ListValue>();
   for (SkColor color : colors)
     wallpaper_colors->Append(static_cast<double>(color));
-  wallpaper_colors_update->SetWithoutPathExpansion(current_location,
-                                                   std::move(wallpaper_colors));
+  wallpaper_colors_update->SetKey(
+      current_location,
+      base::Value::FromUniquePtrValue(std::move(wallpaper_colors)));
 }
 
 absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(

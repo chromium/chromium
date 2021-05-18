@@ -155,7 +155,8 @@ void TopSitesImpl::AddBlockedUrl(const GURL& url) {
   {
     DictionaryPrefUpdate update(pref_service_, kBlockedUrlsPrefsKey);
     base::DictionaryValue* blocked_urls = update.Get();
-    blocked_urls->SetWithoutPathExpansion(GetURLHash(url), std::move(dummy));
+    blocked_urls->SetKey(GetURLHash(url),
+                         base::Value::FromUniquePtrValue(std::move(dummy)));
   }
 
   ResetThreadSafeCache();
