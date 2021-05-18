@@ -32,9 +32,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1154794
   "policy.DefaultGeolocationSetting",
 
-  # crbug.com/1204092
-  "policy.DisableScreenshotsExtension",
-
   # crbug.com/1115622
   "inputs.VirtualKeyboardOOBE",
 
