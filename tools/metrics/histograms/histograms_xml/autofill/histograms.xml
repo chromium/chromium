@@ -2139,12 +2139,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.UsedCachedServerCard" units="uses"
     expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of times that the cache for unmasked server cards has
     been accessed for a given card. For example, if the cache is being accessed
     and it has already been accessed for the card twice before, then
     &quot;3&quot; is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.UsedCachedVirtualCard" units="uses"
+    expires_after="2021-12-20">
+  <owner>jsaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of times that the cache for virtual cards has been
+    accessed for a given card. For example, if the cache is being accessed and
+    it has already been accessed for the card twice before, then &quot;3&quot;
+    is recorded.
   </summary>
 </histogram>
 

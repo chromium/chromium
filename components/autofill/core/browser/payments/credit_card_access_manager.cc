@@ -45,6 +45,9 @@ constexpr int64_t kUnmaskDetailsResponseTimeoutMs = 3 * 1000;  // 3 sec
 // Time to wait between multiple calls to GetUnmaskDetails().
 constexpr int64_t kDelayForGetUnmaskDetails = 3 * 60 * 1000;  // 3 min
 
+// Suffix for server IDs in the cache indicating that a card is a virtual card.
+const char kVirtualCardIdentifier[] = "_vcn";
+
 // Used for asynchronously waiting for |event| to be signaled.
 bool WaitForEvent(base::WaitableEvent* event) {
   event->declare_only_used_while_idle();
@@ -273,14 +276,19 @@ void CreditCardAccessManager::FetchCreditCard(
   }
 
   // If card has been previously unmasked, use cached data.
+  std::string identifier = card->record_type() == CreditCard::VIRTUAL_CARD
+                               ? card->server_id() + kVirtualCardIdentifier
+                               : card->server_id();
   std::unordered_map<std::string, CachedServerCardInfo>::iterator it =
-      unmasked_card_cache_.find(card->server_id());
+      unmasked_card_cache_.find(identifier);
   if (it != unmasked_card_cache_.end()) {  // key is in cache
     accessor->OnCreditCardFetched(/*did_succeed=*/true,
                                   /*credit_card=*/&it->second.card,
                                   /*cvc=*/it->second.cvc);
-    base::UmaHistogramCounts1000("Autofill.UsedCachedServerCard",
-                                 ++it->second.cache_uses);
+    std::string metrics_name = card->record_type() == CreditCard::VIRTUAL_CARD
+                                   ? "Autofill.UsedCachedVirtualCard"
+                                   : "Autofill.UsedCachedServerCard";
+    base::UmaHistogramCounts1000(metrics_name, ++it->second.cache_uses);
     return;
   }
 
@@ -384,9 +392,13 @@ void CreditCardAccessManager::SignalCanFetchUnmaskDetails() {
 
 void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
                                                     const std::u16string& cvc) {
-  DCHECK_EQ(card.record_type(), CreditCard::FULL_SERVER_CARD);
-  CachedServerCardInfo card_info = {card, cvc, 0};
-  unmasked_card_cache_[card.server_id()] = card_info;
+  DCHECK(card.record_type() == CreditCard::FULL_SERVER_CARD ||
+         card.record_type() == CreditCard::VIRTUAL_CARD);
+  std::string identifier = card.record_type() == CreditCard::VIRTUAL_CARD
+                               ? card.server_id() + kVirtualCardIdentifier
+                               : card.server_id();
+  CachedServerCardInfo card_info = {card, cvc, /*cache_uses=*/0};
+  unmasked_card_cache_[identifier] = card_info;
 }
 
 UnmaskAuthFlowType CreditCardAccessManager::GetAuthenticationType(

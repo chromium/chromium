@@ -1860,10 +1860,24 @@ TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
   credit_card_access_manager_->FetchCreditCard(masked_card,
                                                accessor_->GetWeakPtr());
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 1, 1);
-
   credit_card_access_manager_->FetchCreditCard(masked_card,
                                                accessor_->GetWeakPtr());
   histogram_tester.ExpectBucketCount("Autofill.UsedCachedServerCard", 2, 1);
+
+  // Create a virtual card.
+  CreditCard virtual_card = CreditCard();
+  test::SetCreditCardInfo(&virtual_card, "Elvis Presley", kTestNumber,
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1");
+  virtual_card.set_record_type(CreditCard::VIRTUAL_CARD);
+  credit_card_access_manager_->CacheUnmaskedCardInfo(virtual_card, kTestCvc16);
+
+  // Mocks that user selects the virtual card option of the masked card.
+  masked_card->set_record_type(CreditCard::VIRTUAL_CARD);
+  credit_card_access_manager_->FetchCreditCard(masked_card,
+                                               accessor_->GetWeakPtr());
+
+  histogram_tester.ExpectBucketCount("Autofill.UsedCachedVirtualCard", 1, 1);
 }
 
 TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
