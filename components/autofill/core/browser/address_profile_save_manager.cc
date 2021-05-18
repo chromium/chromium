@@ -74,7 +74,7 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
 void AddressProfileSaveManager::OfferSavePrompt(
     std::unique_ptr<ProfileImportProcess> import_process) {
   // The prompt should not have been shown yet.
-  DCHECK(import_process->prompt_shown());
+  DCHECK(!import_process->prompt_shown());
 
   // TODO(crbug.com/1175693): Pass the correct SaveAddressProfilePromptOptions
   // below.
