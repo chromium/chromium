@@ -5,12 +5,15 @@
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/password_manager/core/browser/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -24,13 +27,19 @@
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Pointee;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
+using autofill::mojom::FocusedFieldType;
+using base::test::RunOnceCallback;
+using password_manager::BiometricAuthRequester;
+using password_manager::BiometricsAvailability;
+using password_manager::MockBiometricAuthenticator;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
+
 using CallbackFunctionMock = testing::MockFunction<void()>;
-using autofill::mojom::FocusedFieldType;
 
 using DismissCallback = base::MockCallback<base::OnceCallback<void()>>;
 
@@ -68,6 +77,11 @@ class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
+
+  MOCK_METHOD(scoped_refptr<password_manager::BiometricAuthenticator>,
+              GetBiometricAuthenticator,
+              (),
+              (override));
 };
 
 UiCredential MakeUiCredential(const std::u16string& username,
@@ -134,6 +148,10 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     return *mock_pwd_manager_client_.get();
   }
 
+  scoped_refptr<password_manager::MockBiometricAuthenticator> authenticator() {
+    return mock_authenticator_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_env_;
   MockPasswordManagerDriver driver_;
@@ -145,6 +163,8 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
   std::unique_ptr<AllPasswordsBottomSheetController> all_passwords_controller_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_ =
       std::make_unique<MockPasswordManagerClient>();
+  scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
+      base::MakeRefCounted<MockBiometricAuthenticator>();
 };
 
 TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
@@ -171,12 +191,93 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
   RunUntilIdle();
 }
 
-TEST_F(AllPasswordsBottomSheetControllerTest, OnCredentialSelected) {
+TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
+  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
+
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator).Times(0);
+  EXPECT_CALL(driver(),
+              FillIntoFocusedField(false, std::u16string(kUsername1)));
+  EXPECT_CALL(dismissal_callback(), Run());
+
+  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
   UiCredential credential = MakeUiCredential(kUsername1, kPassword);
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
+  EXPECT_CALL(dismissal_callback(), Run());
 
   all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator)
+      .WillOnce(Return(authenticator()));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticate)
+      .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
+  EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
+  EXPECT_CALL(dismissal_callback(), Run());
+
+  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator)
+      .WillOnce(Return(authenticator()));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticate)
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator().get(),
+              Authenticate(BiometricAuthRequester::kAllPasswordsList, _))
+      .WillOnce(RunOnceCallback<1>(true));
+
+  EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
+  EXPECT_CALL(dismissal_callback(), Run());
+
+  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator)
+      .WillOnce(Return(authenticator()));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticate)
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator().get(),
+              Authenticate(BiometricAuthRequester::kAllPasswordsList, _))
+      .WillOnce(RunOnceCallback<1>(false));
+
+  EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)))
+      .Times(0);
+  EXPECT_CALL(dismissal_callback(), Run());
+
+  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator)
+      .WillOnce(Return(authenticator()));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticate)
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_CALL(*authenticator().get(),
+              Authenticate(BiometricAuthRequester::kAllPasswordsList, _));
+
+  EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)))
+      .Times(0);
+
+  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+
+  EXPECT_CALL(*authenticator().get(),
+              Cancel(BiometricAuthRequester::kAllPasswordsList));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {

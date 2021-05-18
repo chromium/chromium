@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -57,8 +58,12 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
   client_ = ChromePasswordManagerClient::FromWebContents(web_contents_);
 }
 
-AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() =
-    default;
+AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() {
+  if (authenticator_) {
+    authenticator_->Cancel(
+        password_manager::BiometricAuthRequester::kAllPasswordsList);
+  }
+}
 
 void AllPasswordsBottomSheetController::Show() {
   store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
@@ -80,20 +85,34 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     const std::u16string password) {
   const bool is_password_field =
       focused_field_type_ == FocusedFieldType::kFillablePasswordField;
-  DCHECK(driver_);
-  if (is_password_field) {
-    driver_->FillIntoFocusedField(is_password_field, password);
+  if (!driver_) {
+    OnDismiss();
+    return;
+  }
 
+  if (is_password_field) {
     // `client_` is guaranteed to be valid here.
     // Both the `client_` and `PasswordAccessoryController` are attached to
     // WebContents. And AllPasswordBottomSheetController is owned by
     // PasswordAccessoryController.
     DCHECK(client_);
-    client_->OnPasswordSelected(password);
+    scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+        client_->GetBiometricAuthenticator();
+    if (authenticator &&
+        authenticator->CanAuthenticate() ==
+            password_manager::BiometricsAvailability::kAvailable) {
+      authenticator_ = std::move(authenticator);
+      authenticator_->Authenticate(
+          password_manager::BiometricAuthRequester::kAllPasswordsList,
+          base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
+                         base::Unretained(this), password));
+      return;
+    }
+
+    FillPassword(password);
   } else {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
-
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.
   OnDismiss();
@@ -105,4 +124,26 @@ void AllPasswordsBottomSheetController::OnDismiss() {
 
 const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
   return driver_->GetLastCommittedURL();
+}
+
+void AllPasswordsBottomSheetController::OnReauthCompleted(
+    const std::u16string& password,
+    bool auth_succeeded) {
+  authenticator_.reset();
+
+  if (auth_succeeded) {
+    FillPassword(password);
+  }
+
+  // Consumes the dismissal callback to destroy the native controller and java
+  // controller after the user selects a credential.
+  OnDismiss();
+}
+
+void AllPasswordsBottomSheetController::FillPassword(
+    const std::u16string& password) {
+  if (!driver_)
+    return;
+  driver_->FillIntoFocusedField(true, password);
+  client_->OnPasswordSelected(password);
 }

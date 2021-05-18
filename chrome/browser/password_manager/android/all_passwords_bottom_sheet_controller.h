@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -71,6 +72,13 @@ class AllPasswordsBottomSheetController
   const GURL& GetFrameUrl();
 
  private:
+  // Called when the biometric re-auth completes. |password| is the password
+  // to be filled and |auth_succeded| is the authentication result.
+  void OnReauthCompleted(const std::u16string& password, bool auth_succeeded);
+
+  // Fills the password into the focused field.
+  void FillPassword(const std::u16string& password);
+
   // The controller takes |view_| ownership.
   std::unique_ptr<AllPasswordsBottomSheetView> view_;
 
@@ -88,6 +96,9 @@ class AllPasswordsBottomSheetController
   // Either |driver_| is created and owned by this controller or received in
   // constructor specified for tests.
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
+
+  // Authenticator used to trigger a biometric re-auth before password filling.
+  scoped_refptr<password_manager::BiometricAuthenticator> authenticator_;
 
   // The type of field on which the user is focused, e.g. PASSWORD.
   autofill::mojom::FocusedFieldType focused_field_type_;

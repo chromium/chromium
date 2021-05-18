@@ -33,6 +33,10 @@ enum class BiometricAuthRequester {
 
   // The keyboard accessory sheet displaying suggestions for manual filling.
   kFallbackSheet = 2,
+
+  // The list displaying all saved passwords. Can be used for filling on
+  // Android.
+  kAllPasswordsList = 3,
 };
 
 // This interface encapsulates operations related to biometric authentication.
