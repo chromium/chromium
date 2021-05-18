@@ -411,7 +411,7 @@ void CleanerLoggingService::EnableUploads(bool enable,
   // Make sure not to keep any scheduled logs upload if the user opts-out of
   // logs upload. TODO(csharp): maybe we should also clear all other pending
   // logs, not just ours.
-  if (!enable)
+  if (!enable && registry_logger)
     ClearTempLogFile(registry_logger);
 }
 

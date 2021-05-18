@@ -14,6 +14,7 @@ extern const char kCleaningTimeoutMinutesSwitch[];
 extern const char kCleanupIdSwitch[];
 extern const char kCrashHandlerSwitch[];
 extern const char kCrashSwitch[];
+extern const char kDenyElevationForTestingSwitch[];
 extern const char kDumpRawLogsSwitch[];
 extern const char kElevatedSwitch[];
 extern const char kFileSizeLimitSwitch[];

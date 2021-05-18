@@ -40,6 +40,9 @@
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 #include "components/chrome_cleaner/test/test_name_helper.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -589,13 +592,17 @@ INSTANTIATE_TEST_SUITE_P(EsetFeatures,
 // cleaner depending on the response from Chrome. They only run under the
 // test-only engine, because the ESET engine is slower and they don't depend on
 // the implementation of the UwS scanner, only on its output.
-class CleanerScanningModeTest : public CleanerTestBase {
+// Parameters are (enable scanning mode logs, enable cleaning mode logs).
+class CleanerScanningModeTest
+    : public CleanerTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   using StrictMockChromePromptResponder =
       ::testing::StrictMock<MockChromePromptResponder>;
 
   void SetUp() override {
     CleanerTestBase::SetUp();
+
     command_line_ =
         BuildCommandLine(kCleanerExecutable, ExecutionMode::kScanning);
     chrome_cleaner::ChromePromptPipeHandles pipe_handles =
@@ -605,6 +612,43 @@ class CleanerScanningModeTest : public CleanerTestBase {
     ASSERT_TRUE(pipe_handles.IsValid());
     mock_responder_ = std::make_unique<StrictMockChromePromptResponder>(
         std::move(pipe_handles));
+
+    // Start a test server to receive logs uploads.
+    test_safe_browsing_server_.RegisterRequestHandler(
+        base::BindRepeating(&CleanerScanningModeTest::HandleLogsUploadRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(test_server_handle_ =
+                    test_safe_browsing_server_.StartAndReturnHandle());
+    command_line_.AppendSwitchASCII(
+        chrome_cleaner::kTestLoggingURLSwitch,
+        test_safe_browsing_server_.base_url().spec());
+    // kNoReportUploadsSwitch was added in the base class by AppendTestSwitches
+    // to prevent tests from uploading logs to the real safe browsing server.
+    command_line_.RemoveSwitch(chrome_cleaner::kNoReportUploadSwitch);
+
+    // See SwReporterInvocationType at
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h;l=55;drc=4a5ef27e49b17f08b306284ad933d243a1d6b310
+    // for a full description of when logs are sent. It boils down to two
+    // scenarios:
+    // - If the user initiated a scan from the Settings page and chose "report
+    //   details to Google", send logs from the cleaner in scanning mode.
+    // - Otherwise, do not send logs in scanning mode. (Either because the user
+    //   has opted out of logs entirely, or because they were already sent by
+    //   the reporter.)
+    // In both cases, if removable UwS is found, the response from PromptUser
+    // will control whether logs are sent in cleaning mode.
+    std::tie(scanning_mode_logs_, cleaning_mode_logs_) = GetParam();
+    if (scanning_mode_logs_) {
+      // kWithScanningModeLogs is added by Chrome when the user has allowed
+      // "report details to Google" in the UI.
+      command_line_.AppendSwitch(chrome_cleaner::kWithScanningModeLogsSwitch);
+    }
+  }
+
+  void TearDown() override {
+    // Add an error to all tests if there were any malformed logs requests.
+    EXPECT_EQ(logs_upload_errors_, 0);
+    CleanerTestBase::TearDown();
   }
 
   void LaunchCleanerAndExpectExitCode(int expected_exit_code) {
@@ -618,13 +662,42 @@ class CleanerScanningModeTest : public CleanerTestBase {
             InvokeWithoutArgs([this] { mock_responder_->StopReading(); }));
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> HandleLogsUploadRequest(
+      const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    if (!request.has_content) {
+      logs_upload_errors_++;
+      return http_response;
+    }
+    chrome_cleaner::ChromeCleanerReport report;
+    if (!report.ParseFromString(request.content)) {
+      logs_upload_errors_++;
+      return http_response;
+    }
+    if (report.exit_code() == chrome_cleaner::RESULT_CODE_PENDING)
+      intermediate_logs_upload_request_count_++;
+    else
+      logs_upload_request_count_++;
+    return http_response;
+  }
+
  protected:
   base::CommandLine command_line_{base::CommandLine::NO_PROGRAM};
   base::HandlesToInheritVector handles_to_inherit_;
   std::unique_ptr<StrictMockChromePromptResponder> mock_responder_;
+
+  bool scanning_mode_logs_ = false;
+  bool cleaning_mode_logs_ = false;
+  int logs_upload_request_count_ = 0;
+  int intermediate_logs_upload_request_count_ = 0;
+  int logs_upload_errors_ = 0;
+  net::test_server::EmbeddedTestServer test_safe_browsing_server_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 
-TEST_F(CleanerScanningModeTest, ReportOnly) {
+TEST_P(CleanerScanningModeTest, ReportOnly) {
   // Report-only UwS should not be reported to the user (files to remove should
   // be empty). Chrome will automatically reply with DENIED instead of showing
   // a prompt.
@@ -640,9 +713,15 @@ TEST_F(CleanerScanningModeTest, ReportOnly) {
       chrome_cleaner::RESULT_CODE_REPORT_ONLY_PUPS_FOUND);
 
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
+
+  // Cleaning mode did not run so the only logs are from scanning mode.
+  EXPECT_EQ(logs_upload_request_count_, scanning_mode_logs_ ? 1 : 0);
+
+  // Intermediate logs are only sent before starting a cleanup.
+  EXPECT_EQ(intermediate_logs_upload_request_count_, 0);
 }
 
-TEST_F(CleanerScanningModeTest, RemovableDenied) {
+TEST_P(CleanerScanningModeTest, RemovableDenied) {
   CreateRemovableUwS();
 
   // Removable UwS is reported to the user, who denies the cleanup.
@@ -662,9 +741,15 @@ TEST_F(CleanerScanningModeTest, RemovableDenied) {
 
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
   EXPECT_TRUE(base::PathExists(removable_test_uws_));
+
+  // Cleaning mode did not run so the only logs are from scanning mode.
+  EXPECT_EQ(logs_upload_request_count_, scanning_mode_logs_ ? 1 : 0);
+
+  // Intermediate logs are only sent before starting a cleanup.
+  EXPECT_EQ(intermediate_logs_upload_request_count_, 0);
 }
 
-TEST_F(CleanerScanningModeTest, RemovableAcceptedWithLogs) {
+TEST_P(CleanerScanningModeTest, RemovableAccepted) {
   CreateRemovableUwS();
 
   // Removable UwS is reported to the user, who accepts the cleanup.
@@ -676,7 +761,8 @@ TEST_F(CleanerScanningModeTest, RemovableAcceptedWithLogs) {
                     IsEmpty()))
         .WillOnce(InvokeWithoutArgs([this] {
           mock_responder_->SendPromptUserResponse(
-              PromptUserResponse::ACCEPTED_WITH_LOGS);
+              cleaning_mode_logs_ ? PromptUserResponse::ACCEPTED_WITH_LOGS
+                                  : PromptUserResponse::ACCEPTED_WITHOUT_LOGS);
         }));
     ExpectCloseConnectionRequest();
   }
@@ -684,13 +770,28 @@ TEST_F(CleanerScanningModeTest, RemovableAcceptedWithLogs) {
 
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
   EXPECT_FALSE(base::PathExists(removable_test_uws_));
+
+  // The final log should not be sent until cleaning is finished, so the
+  // cleaning mode logs setting controls uploads.
+  EXPECT_EQ(logs_upload_request_count_, cleaning_mode_logs_ ? 1 : 0);
+
+  // Intermediate logs are sent before the cleanup in each mode that has logs
+  // enabled.
+  int expected_intermediate_logs = 0;
+  if (scanning_mode_logs_)
+    expected_intermediate_logs++;
+  if (cleaning_mode_logs_)
+    expected_intermediate_logs++;
+  EXPECT_EQ(intermediate_logs_upload_request_count_,
+            expected_intermediate_logs);
 }
 
-TEST_F(CleanerScanningModeTest, RemovableAcceptedWithoutLogs) {
+TEST_P(CleanerScanningModeTest, RemovableAcceptedElevationDenied) {
   CreateRemovableUwS();
 
-  // Removable UwS is reported to the user, who accepts the cleanup but denies
-  // logs uploads.
+  // Removable UwS is reported to the user, who accepts the cleanup but then
+  // refuses the Windows UAC elevation prompt.
+  command_line_.AppendSwitch(chrome_cleaner::kDenyElevationForTestingSwitch);
   {
     ::testing::InSequence seq;
     EXPECT_CALL(*mock_responder_,
@@ -699,14 +800,30 @@ TEST_F(CleanerScanningModeTest, RemovableAcceptedWithoutLogs) {
                     IsEmpty()))
         .WillOnce(InvokeWithoutArgs([this] {
           mock_responder_->SendPromptUserResponse(
-              PromptUserResponse::ACCEPTED_WITHOUT_LOGS);
+              cleaning_mode_logs_ ? PromptUserResponse::ACCEPTED_WITH_LOGS
+                                  : PromptUserResponse::ACCEPTED_WITHOUT_LOGS);
         }));
     ExpectCloseConnectionRequest();
   }
-  LaunchCleanerAndExpectExitCode(chrome_cleaner::RESULT_CODE_SUCCESS);
+  LaunchCleanerAndExpectExitCode(
+      chrome_cleaner::RESULT_CODE_ELEVATION_PROMPT_DECLINED);
 
   EXPECT_TRUE(base::PathExists(scan_only_test_uws_));
-  EXPECT_FALSE(base::PathExists(removable_test_uws_));
+  EXPECT_TRUE(base::PathExists(removable_test_uws_));
+
+  // Cleaning mode did not actually run so the scanning mode logs should be
+  // sent.
+  EXPECT_EQ(logs_upload_request_count_, scanning_mode_logs_ ? 1 : 0);
+
+  // Intermediate logs are sent from scanning mode before the cleanup was
+  // attempted.
+  EXPECT_EQ(intermediate_logs_upload_request_count_,
+            scanning_mode_logs_ ? 1 : 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(AllLogsScenarios,
+                         CleanerScanningModeTest,
+                         Combine(Values(true, false), Values(true, false)),
+                         chrome_cleaner::GetParamNameForTest());
 
 }  // namespace

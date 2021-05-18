@@ -237,6 +237,7 @@ source_set("integration_test_sources") {
     "//components/chrome_cleaner/public/constants",
     "//components/chrome_cleaner/public/proto",
     "//components/chrome_cleaner/test:test_name_helper",
+    "//net:test_support",
     "//testing/gtest",
   ]
 

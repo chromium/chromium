@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
+#include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
@@ -128,17 +129,29 @@ class ElevatingCleaner : public Cleaner {
     done_callback_ = std::move(done_callback);
 
     // Re-launch with administrator privileges.
-    privileged_process_ =
-        chrome_cleaner::HasAdminRights()
-            ? base::LaunchProcess(GetElevatedCommandLine(),
-                                  base::LaunchOptions())
-            : LaunchElevatedProcessWithAssociatedWindow(
-                  GetElevatedCommandLine(), GetForegroundChromeWindow());
+    DCHECK(!privileged_process_.IsValid());
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kDenyElevationForTestingSwitch)) {
+      privileged_process_ =
+          chrome_cleaner::HasAdminRights()
+              ? base::LaunchProcess(GetElevatedCommandLine(),
+                                    base::LaunchOptions())
+              : LaunchElevatedProcessWithAssociatedWindow(
+                    GetElevatedCommandLine(), GetForegroundChromeWindow());
+    }
 
     if (!privileged_process_.IsValid()) {
       ReportDone(RESULT_CODE_ELEVATION_PROMPT_DECLINED);
     } else {
       process_started_at_ = base::Time::Now();
+
+      // The privileged process will take over logs uploading. It's not
+      // important to clear pending uploads from the registry logger since the
+      // user is not opting out here - if the privileged process fails, pending
+      // logs should still be uploaded.
+      LoggingServiceAPI::GetInstance()->EnableUploads(
+          false, /*registry_logger=*/nullptr);
+
       CheckDone();
     }
   }
