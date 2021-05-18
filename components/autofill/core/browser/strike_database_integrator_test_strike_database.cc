@@ -8,7 +8,6 @@
 
 namespace autofill {
 
-const char kProjectPrefix[] = "StrikeDatabaseIntegratorTest";
 const int kMaxStrikesLimit = 6;
 
 StrikeDatabaseIntegratorTestStrikeDatabase::
@@ -26,11 +25,21 @@ StrikeDatabaseIntegratorTestStrikeDatabase::
 }
 
 StrikeDatabaseIntegratorTestStrikeDatabase::
+    StrikeDatabaseIntegratorTestStrikeDatabase(
+        StrikeDatabase* strike_database,
+        absl::optional<base::TimeDelta> expiry_time_delta,
+        std::string& project_prefix)
+    : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database,
+                                                 expiry_time_delta) {
+  project_prefix_ = project_prefix;
+}
+
+StrikeDatabaseIntegratorTestStrikeDatabase::
     ~StrikeDatabaseIntegratorTestStrikeDatabase() = default;
 
 std::string StrikeDatabaseIntegratorTestStrikeDatabase::GetProjectPrefix()
     const {
-  return kProjectPrefix;
+  return project_prefix_;
 }
 
 int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() const {

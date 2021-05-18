@@ -23,6 +23,12 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
       absl::optional<base::TimeDelta> expiry_time_delta);
   explicit StrikeDatabaseIntegratorTestStrikeDatabase(
       StrikeDatabase* strike_database);
+  // This constructor initializes the TestStrikeDatabase with a non-default
+  // project prefix.
+  StrikeDatabaseIntegratorTestStrikeDatabase(
+      StrikeDatabase* strike_database,
+      absl::optional<base::TimeDelta> expiry_time_delta,
+      std::string& project_prefix);
   ~StrikeDatabaseIntegratorTestStrikeDatabase() override;
 
   absl::optional<size_t> GetMaximumEntries() const override;
@@ -42,6 +48,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
 
   absl::optional<size_t> maximum_entries_ = 10;
   absl::optional<size_t> maximum_entries_after_cleanup_ = 5;
+  std::string project_prefix_ = "StrikeDatabaseIntegratorTest";
 };
 
 }  // namespace autofill
