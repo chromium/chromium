@@ -19,18 +19,12 @@ class UtilCCHelper(object):
                             else 'PopulateArrayFromList')
     return ('%s::%s') % (_API_UTIL_NAMESPACE, populate_list_fn)
 
-  def CreateValueFromArray(self, src, optional):
+  def CreateValueFromArray(self, src):
     """Generates code to create a scoped_pt<Value> from the array at src.
 
     |src| The variable to convert, either a vector or std::unique_ptr<vector>.
-    |optional| Whether |type_| was optional. Optional types are pointers so
-        must be treated differently.
     """
-    if optional:
-      name = 'CreateValueFromOptionalArray'
-    else:
-      name = 'CreateValueFromArray'
-    return '%s::%s(%s)' % (_API_UTIL_NAMESPACE, name, src)
+    return '%s::CreateValueFromArray(%s)' % (_API_UTIL_NAMESPACE, src)
 
   def GetIncludePath(self):
     return '#include "tools/json_schema_compiler/util.h"'

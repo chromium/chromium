@@ -807,7 +807,9 @@ class _Generator(object):
         var = '*%s' % var
       return 'std::make_unique<base::Value>(%s)' % var
     elif underlying_type.property_type == PropertyType.ARRAY:
-      return '%s' % self._util_cc_helper.CreateValueFromArray(var, is_ptr)
+      if is_ptr:
+        var = '*%s' % var
+      return '%s' % self._util_cc_helper.CreateValueFromArray(var)
     elif (underlying_type.property_type.is_fundamental or
               underlying_type.is_serializable_function):
       if is_ptr:

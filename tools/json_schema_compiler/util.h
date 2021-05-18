@@ -182,12 +182,6 @@ std::unique_ptr<base::Value> CreateValueFromArray(const std::vector<T>& from) {
   return std::move(list);
 }
 
-template <class T>
-std::unique_ptr<base::Value> CreateValueFromOptionalArray(
-    const std::unique_ptr<std::vector<T>>& from) {
-  return from ? CreateValueFromArray(*from) : nullptr;
-}
-
 }  // namespace util
 }  // namespace json_schema_compiler
 
