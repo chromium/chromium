@@ -79,6 +79,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
     ~Entry();
 
     void WriteIntoTrace(perfetto::TracedValue context);
+    // Indicates whether or not all the |render_view_hosts| in this entry have
+    // received the acknowledgement from renderer that it finished running
+    // handlers.
+    bool AllRenderViewHostsReceivedAckFromRenderer();
 
     // The main document being stored.
     std::unique_ptr<RenderFrameHostImpl> render_frame_host;

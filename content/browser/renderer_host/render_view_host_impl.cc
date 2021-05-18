@@ -599,6 +599,10 @@ void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
   }
 }
 
+void RenderViewHostImpl::EnforceBackForwardCacheSizeLimit() {
+  frame_tree_->controller().GetBackForwardCache().EnforceCacheSizeLimit();
+}
+
 bool RenderViewHostImpl::DidReceiveBackForwardCacheAck() {
   return GetPageLifecycleStateManager()->DidReceiveBackForwardCacheAck();
 }

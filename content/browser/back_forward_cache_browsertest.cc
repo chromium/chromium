@@ -3633,6 +3633,59 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// Navigates from page A -> page B -> page C -> page B -> page C. Page B becomes
+// ineligible for bfcache in pagehide handler, so Page A stays in bfcache
+// without being evicted even after the navigation to Page C.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
+    PagehideMakesPageIneligibleForBackForwardCacheAndNotCountedInCacheSize) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL(
+      "b.com", "/back_forward_cache/page_with_broadcastchannel.html"));
+  GURL url_c(https_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to a.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate to b.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameDeletedObserver deleted_observer_rfh_b(rfh_b);
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // Acquire broadcast in pagehide. Now b.com is not eligible for bfcache.
+  EXPECT_TRUE(
+      ExecJs(rfh_b, "setShouldAcquireBroadcastChannelInPageHide(true);"));
+
+  // 3) Navigate to c.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  // RenderFrameHostImpl* rfh_c = current_frame_host();
+  // Since the b.com is not eligible for bfcache, |rfh_a| should stay in
+  // bfcache.
+  deleted_observer_rfh_b.WaitUntilDeleted();
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 4) Navigate back to b.com.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
+      FROM_HERE);
+  RenderFrameHostImpl* rfh_b_2 = current_frame_host();
+  // Do not acquire broadcast channel. Now b.com is eligible for bfcache.
+  EXPECT_TRUE(
+      ExecJs(rfh_b_2, "setShouldAcquireBroadcastChannelInPageHide(false);"));
+
+  // 5) Navigate forward to c.com.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+  // b.com was eligible for bfcache and should stay in bfcache.
+  EXPECT_TRUE(rfh_b_2->IsInBackForwardCache());
+}
+
 // Track the events dispatched when a page is deemed ineligible for back-forward
 // cache after we've dispatched the 'pagehide' event with persisted set to true.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

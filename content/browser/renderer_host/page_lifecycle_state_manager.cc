@@ -214,6 +214,14 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
   // features into account.
   render_view_host_impl_->MaybeEvictFromBackForwardCache();
 
+  // A page that has not yet received an acknowledgement from renderer is not
+  // counted against the cache size limit because it might still be ineligible
+  // for caching after the ack, i.e., after running handlers. After it receives
+  // the ack and we call |MaybeEvictFromBackForwardCache()|, we know whether it
+  // is eligible for caching and we should reconsider the cache size limits
+  // again.
+  render_view_host_impl_->EnforceBackForwardCacheSizeLimit();
+
   if (last_acknowledged_state_->is_in_back_forward_cache) {
     back_forward_cache_timeout_monitor_.reset(nullptr);
   }

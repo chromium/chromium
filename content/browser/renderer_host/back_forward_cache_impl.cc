@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
@@ -329,6 +330,18 @@ bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
     }
   }
   return false;
+}
+
+// Returns true if all of the RenderViewHosts in this Entry have received the
+// acknowledgement from renderer.
+bool AllRenderViewHostsReceivedAckFromRenderer(
+    BackForwardCacheImpl::Entry& entry) {
+  for (auto* rvh : entry.render_view_hosts) {
+    if (!rvh->DidReceiveBackForwardCacheAck()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -700,11 +713,16 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
     bool foregrounded_only) {
   size_t count = 0;
+  size_t not_received_ack_count = 0;
   for (auto& stored_entry : entries_) {
     if (stored_entry->render_frame_host->is_evicted_from_back_forward_cache())
       continue;
     if (foregrounded_only && !HasForegroundedProcess(*stored_entry))
       continue;
+    if (!AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
+      not_received_ack_count++;
+      continue;
+    }
     if (++count > limit) {
       stored_entry->render_frame_host->EvictFromBackForwardCacheWithReason(
           foregrounded_only
@@ -713,6 +731,10 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
               : BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
     }
   }
+  UMA_HISTOGRAM_COUNTS_100(
+      "BackForwardCache.AllSites.HistoryNavigationOutcome."
+      "CountEntriesWithoutRendererAck",
+      not_received_ack_count);
   return count;
 }
 

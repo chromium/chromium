@@ -243,6 +243,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   void SetIsFrozen(bool frozen);
   void OnBackForwardCacheTimeout();
   void MaybeEvictFromBackForwardCache();
+  void EnforceBackForwardCacheSizeLimit();
 
   PageLifecycleStateManager* GetPageLifecycleStateManager() {
     return page_lifecycle_state_manager_.get();
