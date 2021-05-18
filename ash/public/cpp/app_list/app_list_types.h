@@ -135,7 +135,9 @@ enum class AppListLaunchType {
   kAppSearchResult,
 };
 
-// Type of the search result, which is set in Chrome.
+// Type of the search result, which is set in Chrome. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
 enum class AppListSearchResultType {
   kUnknown,       // Unknown type. Don't use over IPC
   kInstalledApp,  // Installed apps.
@@ -159,6 +161,7 @@ enum class AppListSearchResultType {
   kFileSearch,             // Local file search results.
   kDriveSearch,            // Drive file search results.
   // Add new values here.
+  kMaxValue = kDriveSearch,
 };
 
 // Which UI container(s) the result should be displayed in.
