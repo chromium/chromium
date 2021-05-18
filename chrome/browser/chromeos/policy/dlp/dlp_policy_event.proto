@@ -40,6 +40,7 @@ message DlpPolicyEvent {
   enum Mode {
     UNDEFINED_MODE = 0;
     BLOCK = 1;
+    REPORT = 2;
   }
 
   optional DlpPolicyEventSource source = 1;

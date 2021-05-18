@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
-#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -27,9 +28,10 @@ DlpPolicyEvent_Mode DlpRulesManagerLevel2DlpEventMode(
       return DlpPolicyEvent_Mode_BLOCK;
     case DlpRulesManager::Level::kWarn:
       return DlpPolicyEvent_Mode_BLOCK;
+    case DlpRulesManager::Level::kReport:
+      return DlpPolicyEvent_Mode_REPORT;
     case DlpRulesManager::Level::kNotSet:
-      return DlpPolicyEvent_Mode_UNDEFINED_MODE;
-    default:
+    case DlpRulesManager::Level::kAllow:
       return DlpPolicyEvent_Mode_UNDEFINED_MODE;
   }
 }
@@ -48,8 +50,28 @@ DlpPolicyEvent_Restriction DlpRulesManagerRestriction2DlpEventRestriction(
       return DlpPolicyEvent_Restriction_EPRIVACY;
     case DlpRulesManager::Restriction::kClipboard:
       return DlpPolicyEvent_Restriction_CLIPBOARD;
-    default:
+    case DlpRulesManager::Restriction::kFiles:
+    case DlpRulesManager::Restriction::kUnknownRestriction:
       return DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION;
+  }
+}
+
+// TODO(1187477, marcgrimme): revisit if this should be refactored.
+DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
+    DlpPolicyEvent_Restriction restriction) {
+  switch (restriction) {
+    case DlpPolicyEvent_Restriction_PRINTING:
+      return DlpRulesManager::Restriction::kPrinting;
+    case DlpPolicyEvent_Restriction_SCREENSHOT:
+      return DlpRulesManager::Restriction::kScreenshot;
+    case DlpPolicyEvent_Restriction_SCREENCAST:
+      return DlpRulesManager::Restriction::kScreenShare;
+    case DlpPolicyEvent_Restriction_EPRIVACY:
+      return DlpRulesManager::Restriction::kPrivacyScreen;
+    case DlpPolicyEvent_Restriction_CLIPBOARD:
+      return DlpRulesManager::Restriction::kClipboard;
+    case DlpPolicyEvent_Restriction_UNDEFINED_RESTRICTION:
+      return DlpRulesManager::Restriction::kUnknownRestriction;
   }
 }
 
@@ -117,22 +139,19 @@ DlpReportingManager::~DlpReportingManager() = default;
 
 DlpReportingManager::ReportQueueSetterCallback
 DlpReportingManager::GetReportQueueSetter() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return base::BindOnce(&DlpReportingManager::SetReportQueue,
                         weak_factory_.GetWeakPtr());
 }
 
 void DlpReportingManager::SetReportQueue(
     std::unique_ptr<reporting::ReportQueue> report_queue) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   report_queue_ = std::move(report_queue);
 }
 
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
                                       DlpRulesManager::Restriction restriction,
                                       DlpRulesManager::Level level) const {
-  auto event = CreateDlpPolicyEvent(
-      src_pattern, DlpRulesManager::Restriction::kPrinting, level);
+  auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
   ReportEvent(std::move(event));
 }
 
@@ -160,6 +179,9 @@ void DlpReportingManager::OnEventEnqueued(reporting::Status status) const {
     VLOG(1) << "Could not enqueue event to DLP reporting queue because of "
             << status;
   }
+  base::UmaHistogramEnumeration(
+      GetDlpHistogramPrefix() + dlp::kReportedEventStatus, status.code(),
+      reporting::error::Code::MAX_VALUE);
 }
 
 void DlpReportingManager::ReportEvent(DlpPolicyEvent event) const {
@@ -174,6 +196,22 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) const {
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
   report_queue_->Enqueue(&event, reporting::Priority::IMMEDIATE,
                          std::move(callback));
+
+  switch (event.mode()) {
+    case DlpPolicyEvent_Mode_BLOCK:
+      base::UmaHistogramEnumeration(
+          GetDlpHistogramPrefix() + dlp::kReportedBlockLevelRestriction,
+          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+      break;
+    case DlpPolicyEvent_Mode_REPORT:
+      base::UmaHistogramEnumeration(
+          GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
+          DlpEventRestriction2DlpRulesManagerRestriction(event.restriction()));
+      break;
+    case DlpPolicyEvent_Mode_UNDEFINED_MODE:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace policy

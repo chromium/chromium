@@ -54,9 +54,10 @@ void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
                     reporting::ReportQueue::EnqueueCallback callback) {
             DlpPolicyEvent event;
             event.ParseFromString(std::string(record));
-            // Don't use this code in a multithreaded env as it can course
+            // Don't use this code in a multithreaded env as it can cause
             // concurrency issues with the events in the vector.
             events.push_back(event);
+            std::move(callback).Run(reporting::Status::StatusOK());
           });
   manager->GetReportQueueSetter().Run(std::move(report_queue));
 }

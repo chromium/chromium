@@ -28,6 +28,11 @@ constexpr char kScreenSharePausedOrResumedUMA[] = "ScreenSharePausedOrResumed";
 constexpr char kScreenshotBlockedUMA[] = "ScreenshotBlocked";
 constexpr char kVideoCaptureInterruptedUMA[] = "VideoCaptureInterrupted";
 constexpr char kVideoCaptureBlockedUMA[] = "VideoCaptureBlocked";
+constexpr char kReportedBlockLevelRestriction[] =
+    "ReportedBlockLevelRestriction";
+constexpr char kReportedReportLevelRestriction[] =
+    "ReportedReportLevelRestriction";
+constexpr char kReportedEventStatus[] = "ReportedEventStatus";
 
 }  // namespace dlp
 

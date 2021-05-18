@@ -6,15 +6,12 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/reporting/client/mock_report_queue.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/web_contents_tester.h"
+#include "components/reporting/util/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,20 +30,10 @@ class DlpReportingManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
     SetReportQueueForReportingManager(&manager_, events_);
   }
 
-  std::unique_ptr<content::WebContents> CreateWebContents() const {
-    return content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                             nullptr);
-  }
-
  protected:
-  // BrowserTaskEnvironment needs to be destroyed before TestEnvironment
-  // so that tasks on other threads don't run after they are destroyed.
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   DlpReportingManager manager_;
   std::vector<DlpPolicyEvent> events_;
 };
@@ -85,6 +72,26 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
                               kCompanyPattern, DlpRulesManager::Component::kArc,
                               DlpRulesManager::Restriction::kClipboard,
                               DlpRulesManager::Level::kBlock)));
+}
+
+TEST_F(DlpReportingManagerTest, MetricsReported) {
+  base::HistogramTester histogram_tester;
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+  manager_.ReportEvent(kCompanyPattern,
+                       DlpRulesManager::Restriction::kScreenshot,
+                       DlpRulesManager::Level::kReport);
+
+  EXPECT_EQ(events_.size(), 2);
+  histogram_tester.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
+      reporting::error::Code::OK, 2);
+  histogram_tester.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kReportedBlockLevelRestriction,
+      DlpRulesManager::Restriction::kPrinting, 1);
+  histogram_tester.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
+      DlpRulesManager::Restriction::kScreenshot, 1);
 }
 
 }  // namespace policy

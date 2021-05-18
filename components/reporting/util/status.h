@@ -35,6 +35,8 @@ enum Code : int32_t {
   INTERNAL = 13,
   UNAVAILABLE = 14,
   DATA_LOSS = 15,
+  // The value should always be kept last.
+  MAX_VALUE
 };
 }  // namespace error
 

@@ -605,6 +605,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.ReportedBlockLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;block&quot; level was
+    reported. Identifies which restriction was blocked and reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedEventStatus" enum="GoogleRpcCode"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of enqueueing Data Leak Prevention event to the reporting queue.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedReportLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;report&quot; level was
+    reported. Identifies which restriction was reported.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.RestrictionConfigured"
     enum="EnterpriseDlpPolicyRestriction" expires_after="2022-03-01">
   <owner>poromov@chromium.org</owner>
