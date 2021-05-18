@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.Backend" enum="LocalSearchServiceBackend"
-    expires_after="2021-06-30">
+    expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
@@ -98,7 +98,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.DailySearch" units="count"
-    expires_after="2021-06-30">
+    expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
-    enum="DailyEventIntervalType" expires_after="2021-06-30">
+    enum="DailyEventIntervalType" expires_after="2021-12-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.NumberDocuments" units="count"
-    expires_after="2021-06-30">
+    expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
@@ -152,7 +152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.NumberResults" units="count"
-    expires_after="2021-06-30">
+    expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2021-06-30">
+    enum="LocalSearchServiceResponseStatus" expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalSearchService.SearchLatency" units="ms"
-    expires_after="2021-06-30">
+    expires_after="2021-12-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
   <owner>tby@chromium.org</owner>
