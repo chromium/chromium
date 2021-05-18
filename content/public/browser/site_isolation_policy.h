@@ -60,6 +60,10 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // heuristics for turning on site isolation.
   static bool IsSiteIsolationForCOOPEnabled();
 
+  // Return true if sites that were isolated due to COOP headers should be
+  // persisted across restarts.
+  static bool ShouldPersistIsolatedCOOPSites();
+
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.
   // See also AreIsolatedOriginsEnabled. These origins apply globally to the

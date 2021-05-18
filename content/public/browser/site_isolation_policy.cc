@@ -181,6 +181,15 @@ bool SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites() {
+  if (!IsSiteIsolationForCOOPEnabled())
+    return false;
+
+  return features::kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam
+      .Get();
+}
+
+// static
 std::string SiteIsolationPolicy::GetIsolatedOriginsFromCommandLine() {
   std::string cmdline_arg =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

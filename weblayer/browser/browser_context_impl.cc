@@ -276,6 +276,8 @@ void BrowserContextImpl::RegisterPrefs(
       embedder_support::kAlternateErrorPagesEnabled, true);
   pref_registry->RegisterListPref(
       site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  pref_registry->RegisterDictionaryPref(
+      site_isolation::prefs::kWebTriggeredIsolatedOrigins);
 
   StatefulSSLHostStateDelegate::RegisterProfilePrefs(pref_registry);
   HostContentSettingsMap::RegisterProfilePrefs(pref_registry);

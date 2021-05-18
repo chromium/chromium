@@ -2423,8 +2423,10 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     return false;
 
   // There's no need for additional isolation if the site already requires a
-  // dedicated process (e.g., if the site was isolated via other isolation
-  // mechanisms or from a prior visit to the site with COOP headers).
+  // dedicated process via other isolation mechanisms.  However, we still
+  // return true if the site has been isolated due to COOP previously, so that
+  // we can go through the COOP isolation flow to update the timestamp of when
+  // the COOP isolation for this site was last used.
   //
   // Note: we can use `site_info_` here, since that has been assigned at
   // request start time and updated by redirects, but it is not (currently)
@@ -2437,9 +2439,14 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
   DCHECK(!site_info_.does_site_request_dedicated_process_for_coop());
   if (site_info_.RequiresDedicatedProcess(
           GetStartingSiteInstance()->GetIsolationContext())) {
-    return false;
+    // Note: use process_lock_url() to check isolation on the actual site
+    // rather than the effective URL in the case of hosted apps.
+    bool is_already_isolated_due_to_coop =
+        ChildProcessSecurityPolicyImpl::GetInstance()->IsIsolatedSiteFromSource(
+            url::Origin::Create(site_info_.process_lock_url()),
+            ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
+    return is_already_isolated_due_to_coop;
   }
-
   return true;
 }
 

@@ -723,6 +723,18 @@ const base::Feature kServiceWorkerSubresourceFilter{
 const base::Feature kSiteIsolationForCrossOriginOpenerPolicy{
     "SiteIsolationForCrossOriginOpenerPolicy",
     base::FEATURE_DISABLED_BY_DEFAULT};
+// This feature param (true by default) controls whether sites are persisted
+// across restarts.
+const base::FeatureParam<bool>
+    kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam{
+        &kSiteIsolationForCrossOriginOpenerPolicy,
+        "should_persist_across_restarts", true};
+// This feature param controls the maximum size of stored sites.  Only used
+// when persistence is also enabled.
+const base::FeatureParam<int>
+    kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam{
+        &kSiteIsolationForCrossOriginOpenerPolicy, "stored_sites_max_size",
+        100};
 
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.

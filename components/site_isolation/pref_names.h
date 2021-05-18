@@ -9,6 +9,7 @@ namespace site_isolation {
 namespace prefs {
 
 extern const char kUserTriggeredIsolatedOrigins[];
+extern const char kWebTriggeredIsolatedOrigins[];
 
 }  // namespace prefs
 }  // namespace site_isolation

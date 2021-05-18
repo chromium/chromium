@@ -5311,7 +5311,7 @@ void RenderFrameHostImpl::MaybeIsolateForUserActivation() {
           GetSiteInstance()->GetBrowserContext(),
           GetMainFrame()->GetLastCommittedURL(),
           ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED,
-          false /* should_persist */);
+          SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites());
     }
   }
 }

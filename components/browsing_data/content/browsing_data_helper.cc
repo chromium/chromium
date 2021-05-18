@@ -81,6 +81,7 @@ void RemovePrerenderCacheData(
 
 void RemoveSiteIsolationData(PrefService* prefs) {
   prefs->ClearPref(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  prefs->ClearPref(site_isolation::prefs::kWebTriggeredIsolatedOrigins);
   // Note that this does not clear these sites from the in-memory map in
   // ChildProcessSecurityPolicy, since that is not supported at runtime. That
   // list of isolated sites is not directly exposed to users, though, and

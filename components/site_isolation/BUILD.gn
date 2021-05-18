@@ -49,6 +49,7 @@ source_set("site_isolation") {
   deps = [
     ":buildflags",
     "//base",
+    "//base/util/values:values_util",
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",

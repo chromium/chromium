@@ -238,7 +238,8 @@ function loadIsolatedOriginInfo() {
     $('web-triggered-isolated-origins').textContent =
         'The following origins are isolated based on runtime heuristics ' +
         'triggered directly by web pages, such as Cross-Origin-Opener-Policy ' +
-        'headers. This list is cleared after a restart.';
+        'headers. Clear cookies or history to wipe this list; this takes ' +
+        'effect after a restart.';
 
     const list = document.createElement('ul');
     for (const origin of response.isolatedOrigins) {

@@ -2422,3 +2422,212 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, RedirectFlow) {
                   ->GetProcess()
                   ->IsProcessLockedToSiteForTesting());
 }
+
+// This test class turns on the mode where sites served with
+// Cross-Origin-Opener-Policy headers are site-isolated.  This complements
+// COOPIsolationTest in content_browsertests and focuses on persistence of COOP
+// sites in user prefs, which requires the //chrome layer.
+class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
+ public:
+  // Use an HTTP server, since the COOP header is only populated for HTTPS.
+  SiteIsolationForCOOPBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // Enable COOP isolation with a max of 3 stored sites.
+    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        kEnabledFeatures = {
+            {::features::kSiteIsolationForCrossOriginOpenerPolicy,
+             {{"stored_sites_max_size", base::NumberToString(3)},
+              {"should_persist_across_restarts", "true"}}}};
+    // Disable full site isolation so we can observe effects of COOP isolation.
+    const std::vector<base::Feature> kDisabledFeatures = {
+        features::kSitePerProcess};
+    feature_list_.InitWithFeaturesAndParameters(kEnabledFeatures,
+                                                kDisabledFeatures);
+  }
+
+  // Returns the list of COOP sites currently stored in user prefs.
+  std::vector<std::string> GetSavedIsolatedSites(Profile* profile) {
+    PrefService* prefs = profile->GetPrefs();
+    auto* dict = prefs->GetDictionary(
+        site_isolation::prefs::kWebTriggeredIsolatedOrigins);
+    std::vector<std::string> sites;
+    for (const auto& site_time_pair : dict->DictItems())
+      sites.push_back(site_time_pair.first);
+    return sites;
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeNavigationBrowserTest::SetUpCommandLine(command_line);
+
+    // Allow HTTPS server to be used on sites other than localhost.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  void SetUp() override {
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    ChromeNavigationBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.StartAcceptingConnections();
+    ChromeNavigationBrowserTest::SetUpOnMainThread();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+// Verifies that sites isolated due to COOP headers are persisted across
+// restarts.  Note that persistence requires both visiting the COOP site and
+// interacting with it via a user activation.  Part 1/2.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest,
+                       PRE_PersistAcrossRestarts) {
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()), IsEmpty());
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a couple of URLs with COOP and trigger user activation on each
+  // one to add them to the saved list in user prefs.
+  GURL coop_url = https_server()->GetURL(
+      "saved.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  GURL coop_url2 = https_server()->GetURL(
+      "saved2.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  ui_test_utils::NavigateToURL(browser(), coop_url);
+  // Simulate user activation.
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  ui_test_utils::NavigateToURL(browser(), coop_url2);
+  // Simulate user activation.
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  // Check that saved.com and saved2.com were saved to disk.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()),
+              UnorderedElementsAre("https://saved.com", "https://saved2.com"));
+}
+
+// Verifies that sites isolated due to COOP headers with a user activation are
+// persisted across restarts.  Part 2/2.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest, PersistAcrossRestarts) {
+  // Check that saved.com and saved2.com are still saved after a restart.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()),
+              UnorderedElementsAre("https://saved.com", "https://saved2.com"));
+
+  // Check that these sites have been loaded as isolated on startup and utilize
+  // a dedicated process after restarting even without serving COOP headers.
+  GURL saved_url(https_server()->GetURL("saved.com", "/title1.html"));
+  GURL saved2_url(https_server()->GetURL("saved2.com", "/title2.html"));
+  ui_test_utils::NavigateToURL(browser(), saved_url);
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+  ui_test_utils::NavigateToURL(browser(), saved2_url);
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  // Sanity check that an unrelated non-isolated foo.com URL does not require a
+  // dedicated process.
+  GURL foo_url(https_server()->GetURL("foo.com", "/title3.html"));
+  ui_test_utils::NavigateToURL(browser(), foo_url);
+  EXPECT_FALSE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+}
+
+// Check that COOP sites are not persisted in Incognito; the isolation should
+// only persist for the duration of the Incognito session.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest, Incognito) {
+  Browser* incognito = CreateIncognitoBrowser();
+
+  GURL coop_url = https_server()->GetURL(
+      "foo.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+
+  ui_test_utils::NavigateToURL(incognito, coop_url);
+  content::WebContents* contents =
+      incognito->tab_strip_model()->GetActiveWebContents();
+  // Simulate user activation to isolate foo.com for the rest of the incognito
+  // session.
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  // Check that navigations to foo.com (even without COOP) are isolated in
+  // future BrowsingInstances in Incognito.
+  AddBlankTabAndShow(incognito);
+  GURL foo_url = https_server()->GetURL("foo.com", "/title1.html");
+  ui_test_utils::NavigateToURL(incognito, foo_url);
+  contents = incognito->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  // foo.com should not be isolated in the regular profile.
+  AddBlankTabAndShow(browser());
+  ui_test_utils::NavigateToURL(browser(), foo_url);
+  contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      contents->GetMainFrame()->GetSiteInstance()->RequiresDedicatedProcess());
+
+  // Neither profile should've saved foo.com to COOP isolated sites prefs.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()), IsEmpty());
+  EXPECT_THAT(GetSavedIsolatedSites(incognito->profile()), IsEmpty());
+}
+
+// Verify that when a COOP-isolated site is visited again, the timestamp in its
+// stored pref entry is updated correctly and taken into consideration when
+// trimming the list of stored COOP sites to its maximum size.
+IN_PROC_BROWSER_TEST_F(SiteIsolationForCOOPBrowserTest,
+                       TimestampUpdateOnSecondVisit) {
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()), IsEmpty());
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const std::string kCoopPath =
+      "/set-header?Cross-Origin-Opener-Policy: same-origin";
+  GURL coop1 = https_server()->GetURL("coop1.com", kCoopPath);
+  GURL coop2 = https_server()->GetURL("coop2.com", kCoopPath);
+  GURL coop3 = https_server()->GetURL("coop3.com", kCoopPath);
+  GURL coop4 = https_server()->GetURL("coop4.com", kCoopPath);
+
+  // Navigate to three COOP sites and trigger user actuvation on each one to
+  // add them all to the list of persistently isolated COOP sites.
+  ui_test_utils::NavigateToURL(browser(), coop1);
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));  // Simulate user activation.
+  ui_test_utils::NavigateToURL(browser(), coop2);
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));  // Simulate user activation.
+  ui_test_utils::NavigateToURL(browser(), coop3);
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));  // Simulate user activation.
+
+  // At this point, the first three sites should be saved to prefs.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()),
+              UnorderedElementsAre("https://coop1.com", "https://coop2.com",
+                                   "https://coop3.com"));
+
+  // Visit coop1.com again.  This should update its timestamp to be more recent
+  // than coop2.com and coop3.com.  The set of saved sites shouldn't change.
+  AddBlankTabAndShow(browser());
+  contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), coop1);
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));  // Simulate user activation.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()),
+              UnorderedElementsAre("https://coop1.com", "https://coop2.com",
+                                   "https://coop3.com"));
+
+  // Now, visit coop4.com.  Since the maximum number of saved COOP sites is 3
+  // in this test, the oldest site should be evicted.  That evicted site should
+  // be coop2.com, since coop1.com's timestamp was just updated.
+  ui_test_utils::NavigateToURL(browser(), coop4);
+  EXPECT_TRUE(ExecJs(contents, "// no-op"));  // Simulate user activation.
+  EXPECT_THAT(GetSavedIsolatedSites(browser()->profile()),
+              UnorderedElementsAre("https://coop1.com", "https://coop3.com",
+                                   "https://coop4.com"));
+}

@@ -87,6 +87,14 @@ class SiteIsolationPolicy {
   static bool ShouldPdfCompositorBeEnabledForOopifs();
 
  private:
+  // Helpers for implementing PersistIsolatedOrigin().
+  static void PersistUserTriggeredIsolatedOrigin(
+      content::BrowserContext* context,
+      const url::Origin& origin);
+  static void PersistWebTriggeredIsolatedOrigin(
+      content::BrowserContext* context,
+      const url::Origin& origin);
+
   DISALLOW_IMPLICIT_CONSTRUCTORS(SiteIsolationPolicy);
 };
 

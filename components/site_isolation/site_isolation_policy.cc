@@ -5,8 +5,9 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -16,8 +17,16 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/common/content_features.h"
 
 namespace site_isolation {
+
+namespace {
+
+using IsolatedOriginSource =
+    content::ChildProcessSecurityPolicy::IsolatedOriginSource;
+
+}  // namespace
 
 // static
 bool SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled() {
@@ -133,12 +142,30 @@ bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold() {
 void SiteIsolationPolicy::PersistIsolatedOrigin(
     content::BrowserContext* context,
     const url::Origin& origin,
-    content::ChildProcessSecurityPolicy::IsolatedOriginSource source) {
+    IsolatedOriginSource source) {
+  DCHECK(context);
   DCHECK(!context->IsOffTheRecord());
-  // TODO(alexmos): Support web-triggered IsolatedOriginSources.
-  DCHECK_EQ(source, content::ChildProcessSecurityPolicy::IsolatedOriginSource::
-                        USER_TRIGGERED);
+  DCHECK(!origin.opaque());
 
+  // This function currently supports two sources for persistence, for
+  // user-triggered and web-triggered isolated origins.
+  if (source == IsolatedOriginSource::USER_TRIGGERED) {
+    PersistUserTriggeredIsolatedOrigin(context, origin);
+  } else if (source == IsolatedOriginSource::WEB_TRIGGERED) {
+    PersistWebTriggeredIsolatedOrigin(context, origin);
+  } else {
+    NOTREACHED();
+  }
+}
+
+// static
+void SiteIsolationPolicy::PersistUserTriggeredIsolatedOrigin(
+    content::BrowserContext* context,
+    const url::Origin& origin) {
+  // User-triggered isolated origins are currently stored in a simple list of
+  // unlimited size.
+  // TODO(alexmos): Cap the maximum number of entries and evict older entries.
+  // See https://crbug.com/1172407.
   ListPrefUpdate update(user_prefs::UserPrefs::Get(context),
                         site_isolation::prefs::kUserTriggeredIsolatedOrigins);
   base::ListValue* list = update.Get();
@@ -148,31 +175,91 @@ void SiteIsolationPolicy::PersistIsolatedOrigin(
 }
 
 // static
+void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
+    content::BrowserContext* context,
+    const url::Origin& origin) {
+  // Web-triggered isolated origins are stored in a dictionary of (origin,
+  // timestamp) pairs.  The number of entries is capped by a field trial param,
+  // and older entries are evicted.
+  DictionaryPrefUpdate update(
+      user_prefs::UserPrefs::Get(context),
+      site_isolation::prefs::kWebTriggeredIsolatedOrigins);
+  base::DictionaryValue* dict = update.Get();
+
+  // Add the origin.  If it already exists, this will just update the
+  // timestamp.
+  dict->SetKey(origin.Serialize(), util::TimeToValue(base::Time::Now()));
+
+  // Check whether the maximum number of stored sites was exceeded and remove
+  // one or more entries, starting with the oldest timestamp. Note that more
+  // than one entry may need to be removed, since the maximum number of entries
+  // could change over time (via a change in the field trial param).
+  size_t max_size =
+      ::features::kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam.Get();
+  while (dict->DictSize() > max_size) {
+    auto items = dict->DictItems();
+    auto oldest_site_time_pair = std::min_element(
+        items.begin(), items.end(), [](auto pair_a, auto pair_b) {
+          absl::optional<base::Time> time_a = util::ValueToTime(pair_a.second);
+          absl::optional<base::Time> time_b = util::ValueToTime(pair_b.second);
+          // has_value() should always be true unless the prefs were corrupted.
+          // In that case, prioritize the corrupted entry for removal.
+          return (time_a.has_value() ? time_a.value() : base::Time::Min()) <
+                 (time_b.has_value() ? time_b.value() : base::Time::Min());
+        });
+    dict->RemoveKey(oldest_site_time_pair->first);
+  }
+}
+
+// static
 void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     content::BrowserContext* browser_context) {
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+
   // If the user turned off password-triggered isolation, don't apply any
   // stored isolated origins, but also don't clear them from prefs, so that
   // they can be used if password-triggered isolation is re-enabled later.
-  if (!IsIsolationForPasswordSitesEnabled())
-    return;
+  if (IsIsolationForPasswordSitesEnabled()) {
+    std::vector<url::Origin> origins;
+    for (const auto& value : user_prefs::UserPrefs::Get(browser_context)
+                                 ->GetList(prefs::kUserTriggeredIsolatedOrigins)
+                                 ->GetList()) {
+      origins.push_back(url::Origin::Create(GURL(value.GetString())));
+    }
 
-  std::vector<url::Origin> origins;
-  for (const auto& value : user_prefs::UserPrefs::Get(browser_context)
-                               ->GetList(prefs::kUserTriggeredIsolatedOrigins)
-                               ->GetList()) {
-    origins.push_back(url::Origin::Create(GURL(value.GetString())));
+    if (!origins.empty()) {
+      policy->AddFutureIsolatedOrigins(
+          origins, IsolatedOriginSource::USER_TRIGGERED, browser_context);
+    }
+
+    base::UmaHistogramCounts1000(
+        "SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size", origins.size());
   }
 
-  if (!origins.empty()) {
-    auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-    using IsolatedOriginSource =
-        content::ChildProcessSecurityPolicy::IsolatedOriginSource;
-    policy->AddFutureIsolatedOrigins(
-        origins, IsolatedOriginSource::USER_TRIGGERED, browser_context);
-  }
+  // Similarly, load saved web-triggered isolated origins only if isolation of
+  // COOP sites (currently the only source of these origins) is enabled with
+  // persistence, but don't remove them from prefs otherwise.
+  if (content::SiteIsolationPolicy::ShouldPersistIsolatedCOOPSites()) {
+    std::vector<url::Origin> origins;
 
-  UMA_HISTOGRAM_COUNTS_1000(
-      "SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size", origins.size());
+    // TODO(alexmos): Implement support for skipping and expiring entries that
+    // are older than a predefined threshold.
+
+    auto* dict = user_prefs::UserPrefs::Get(browser_context)
+                     ->GetDictionary(prefs::kWebTriggeredIsolatedOrigins);
+    if (dict) {
+      for (const auto& site_time_pair : dict->DictItems())
+        origins.push_back(url::Origin::Create(GURL(site_time_pair.first)));
+    }
+
+    if (!origins.empty()) {
+      policy->AddFutureIsolatedOrigins(
+          origins, IsolatedOriginSource::WEB_TRIGGERED, browser_context);
+    }
+
+    base::UmaHistogramCounts100(
+        "SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size", origins.size());
+  }
 }
 
 // static

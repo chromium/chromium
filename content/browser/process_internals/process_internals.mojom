@@ -70,8 +70,8 @@ interface ProcessInternalsHandler {
   // added in response to heuristics triggered directly by web sites, such
   // as headers that suggest the site might benefit from isolation.  Like
   // user-triggered isolated origins, these isolated origins apply within
-  // the current profile only, though currently they aren't preserved across
-  // restarts.
+  // the current profile only, they are preserved across
+  // restarts, and they are cleared when the user clears browsing data.
   GetWebTriggeredIsolatedOrigins() => (array<string> isolated_origins);
 
   // Returns a list of isolated origins that apply globally in all profiles.
