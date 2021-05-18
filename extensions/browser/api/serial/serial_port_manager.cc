@@ -125,8 +125,7 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveInfo receive_info;
     receive_info.connection_id = params.connection_id;
     receive_info.data = std::move(data);
-    std::unique_ptr<base::ListValue> args =
-        serial::OnReceive::Create(receive_info);
+    auto args = serial::OnReceive::Create(receive_info);
     std::unique_ptr<extensions::Event> event(
         new extensions::Event(extensions::events::SERIAL_ON_RECEIVE,
                               serial::OnReceive::kEventName, std::move(args)));
@@ -143,8 +142,7 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveErrorInfo error_info;
     error_info.connection_id = params.connection_id;
     error_info.error = error;
-    std::unique_ptr<base::ListValue> args =
-        serial::OnReceiveError::Create(error_info);
+    auto args = serial::OnReceiveError::Create(error_info);
     std::unique_ptr<extensions::Event> event(new extensions::Event(
         extensions::events::SERIAL_ON_RECEIVE_ERROR,
         serial::OnReceiveError::kEventName, std::move(args)));

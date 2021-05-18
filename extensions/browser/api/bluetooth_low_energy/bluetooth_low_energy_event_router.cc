@@ -875,8 +875,7 @@ void BluetoothLowEnergyEventRouter::GattServiceRemoved(
   apibtle::Service api_service;
   PopulateService(service, &api_service);
 
-  std::unique_ptr<base::ListValue> args =
-      apibtle::OnServiceRemoved::Create(api_service);
+  auto args = apibtle::OnServiceRemoved::Create(api_service);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_LOW_ENERGY_ON_SERVICE_REMOVED,
                 apibtle::OnServiceRemoved::kEventName, std::move(args)));
@@ -897,8 +896,7 @@ void BluetoothLowEnergyEventRouter::GattDiscoveryCompleteForService(
   apibtle::Service api_service;
   PopulateService(service, &api_service);
 
-  std::unique_ptr<base::ListValue> args =
-      apibtle::OnServiceAdded::Create(api_service);
+  auto args = apibtle::OnServiceAdded::Create(api_service);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_LOW_ENERGY_ON_SERVICE_ADDED,
                 apibtle::OnServiceAdded::kEventName, std::move(args)));

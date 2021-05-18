@@ -145,7 +145,7 @@ void ImeObserver::OnActivate(const std::string& component_id) {
   if (extension_id_.empty())
     return;
 
-  std::unique_ptr<base::ListValue> args(input_ime::OnActivate::Create(
+  auto args(input_ime::OnActivate::Create(
       component_id, input_ime::ParseScreenType(GetCurrentScreenType())));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_ACTIVATE,
@@ -170,8 +170,7 @@ void ImeObserver::OnFocus(
   context_value.spell_check = ConvertInputContextSpellCheck(context);
   context_value.should_do_learning = context.should_do_learning;
 
-  std::unique_ptr<base::ListValue> args(
-      input_ime::OnFocus::Create(context_value));
+  auto args(input_ime::OnFocus::Create(context_value));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_FOCUS,
                            input_ime::OnFocus::kEventName, std::move(args));
@@ -181,7 +180,7 @@ void ImeObserver::OnBlur(const std::string& engine_id, int context_id) {
   if (extension_id_.empty() || !HasListener(input_ime::OnBlur::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(input_ime::OnBlur::Create(context_id));
+  auto args(input_ime::OnBlur::Create(context_id));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_BLUR,
                            input_ime::OnBlur::kEventName, std::move(args));
@@ -236,7 +235,7 @@ void ImeObserver::OnKeyEvent(
   keyboard_event.shift_key = std::make_unique<bool>(event.IsShiftDown());
   keyboard_event.caps_lock = std::make_unique<bool>(event.IsCapsLockOn());
 
-  std::unique_ptr<base::ListValue> args(
+  auto args(
       input_ime::OnKeyEvent::Create(component_id, keyboard_event, request_id));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_KEY_EVENT,
@@ -247,8 +246,7 @@ void ImeObserver::OnReset(const std::string& component_id) {
   if (extension_id_.empty() || !HasListener(input_ime::OnReset::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(
-      input_ime::OnReset::Create(component_id));
+  auto args(input_ime::OnReset::Create(component_id));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_RESET,
                            input_ime::OnReset::kEventName, std::move(args));
@@ -259,8 +257,7 @@ void ImeObserver::OnDeactivated(const std::string& component_id) {
       !HasListener(input_ime::OnDeactivated::kEventName))
     return;
 
-  std::unique_ptr<base::ListValue> args(
-      input_ime::OnDeactivated::Create(component_id));
+  auto args(input_ime::OnDeactivated::Create(component_id));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_DEACTIVATED,
                            input_ime::OnDeactivated::kEventName,
@@ -289,8 +286,7 @@ void ImeObserver::OnSurroundingTextChanged(const std::string& component_id,
   info.focus = cursor_pos;
   info.anchor = anchor_pos;
   info.offset = offset_pos;
-  std::unique_ptr<base::ListValue> args(
-      input_ime::OnSurroundingTextChanged::Create(component_id, info));
+  auto args(input_ime::OnSurroundingTextChanged::Create(component_id, info));
 
   DispatchEventToExtension(
     extensions::events::INPUT_IME_ON_SURROUNDING_TEXT_CHANGED,

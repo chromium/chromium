@@ -95,8 +95,7 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
     menu_items.push_back(std::move(menu_item));
   }
 
-  std::unique_ptr<base::ListValue> args =
-      OnImeMenuItemsChanged::Create(engine_id, menu_items);
+  auto args = OnImeMenuItemsChanged::Create(engine_id, menu_items);
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(

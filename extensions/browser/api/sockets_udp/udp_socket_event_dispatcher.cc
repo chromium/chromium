@@ -123,8 +123,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
     receive_info.remote_address = address;
     receive_info.remote_port = port;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceive::Create(receive_info);
+    auto args = sockets_udp::OnReceive::Create(receive_info);
     std::unique_ptr<Event> event(new Event(events::SOCKETS_UDP_ON_RECEIVE,
                                            sockets_udp::OnReceive::kEventName,
                                            std::move(args)));
@@ -147,8 +146,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     sockets_udp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceiveError::Create(receive_error_info);
+    auto args = sockets_udp::OnReceiveError::Create(receive_error_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_UDP_ON_RECEIVE_ERROR,
                   sockets_udp::OnReceiveError::kEventName, std::move(args)));

@@ -57,10 +57,8 @@ void AutofillPrivateEventRouter::OnPersonalDataChanged() {
   autofill_util::CreditCardEntryList creditCardList =
       extensions::autofill_util::GenerateCreditCardList(*personal_data_);
 
-  std::unique_ptr<base::ListValue> args(
-      api::autofill_private::OnPersonalDataChanged::Create(addressList,
-                                                           creditCardList)
-          .release());
+  auto args(api::autofill_private::OnPersonalDataChanged::Create(
+      addressList, creditCardList));
 
   std::unique_ptr<Event> extension_event(
       new Event(events::AUTOFILL_PRIVATE_ON_PERSONAL_DATA_CHANGED,

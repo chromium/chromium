@@ -71,8 +71,7 @@ void SignedInDevicesChangeObserver::OnDeviceInfoChange() {
     args.push_back(std::move(api_device));
   }
 
-  std::unique_ptr<base::ListValue> result =
-      api::signed_in_devices::OnDeviceInfoChange::Create(args);
+  auto result = api::signed_in_devices::OnDeviceInfoChange::Create(args);
   auto event = std::make_unique<Event>(
       events::SIGNED_IN_DEVICES_ON_DEVICE_INFO_CHANGE,
       api::signed_in_devices::OnDeviceInfoChange::kEventName, std::move(result),

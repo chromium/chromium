@@ -982,7 +982,7 @@ void ArcAccessibilityHelperBridge::DispatchEventTextAnnouncement(
   if (!event_data->event_text.has_value())
     return;
 
-  std::unique_ptr<base::ListValue> event_args(
+  auto event_args(
       extensions::api::accessibility_private::OnAnnounceForAccessibility::
           Create(*(event_data->event_text)));
   std::unique_ptr<extensions::Event> event(new extensions::Event(
@@ -995,9 +995,8 @@ void ArcAccessibilityHelperBridge::DispatchEventTextAnnouncement(
 
 void ArcAccessibilityHelperBridge::DispatchCustomSpokenFeedbackToggled(
     bool enabled) const {
-  std::unique_ptr<base::ListValue> event_args(
-      extensions::api::accessibility_private::OnCustomSpokenFeedbackToggled::
-          Create(enabled));
+  auto event_args(extensions::api::accessibility_private::
+                      OnCustomSpokenFeedbackToggled::Create(enabled));
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::
           ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED,

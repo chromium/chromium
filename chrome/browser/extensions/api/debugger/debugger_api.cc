@@ -333,8 +333,7 @@ void ExtensionDevToolsClientHost::SendDetachedEvent() {
   if (!EventRouter::Get(profile_))
     return;
 
-  std::unique_ptr<base::ListValue> args(
-      OnDetach::Create(debuggee_, detach_reason_));
+  auto args(OnDetach::Create(debuggee_, detach_reason_));
   auto event =
       std::make_unique<Event>(events::DEBUGGER_ON_DETACH, OnDetach::kEventName,
                               std::move(args), profile_);
@@ -387,8 +386,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     if (dictionary->GetDictionary("params", &params_value))
       params.additional_properties.Swap(params_value);
 
-    std::unique_ptr<base::ListValue> args(
-        OnEvent::Create(debuggee_, method_name, params));
+    auto args(OnEvent::Create(debuggee_, method_name, params));
     auto event =
         std::make_unique<Event>(events::DEBUGGER_ON_EVENT, OnEvent::kEventName,
                                 std::move(args), profile_);

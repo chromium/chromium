@@ -433,8 +433,7 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemListAddedOrRemoved() {
 
   auto item_ids = clipboard_history_controller->GetHistoryItemIds();
 
-  std::unique_ptr<base::ListValue> ids =
-      keyboard_api::OnClipboardHistoryChanged::Create(item_ids);
+  auto ids = keyboard_api::OnClipboardHistoryChanged::Create(item_ids);
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED,
@@ -479,7 +478,7 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated(
       clipboard_item.id = item.FindKey("idToken")->GetString();
     }
 
-    std::unique_ptr<base::ListValue> item_value =
+    auto item_value =
         keyboard_api::OnClipboardItemUpdated::Create(clipboard_item);
 
     auto event = std::make_unique<extensions::Event>(

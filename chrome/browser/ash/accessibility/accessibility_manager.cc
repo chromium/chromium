@@ -696,9 +696,9 @@ void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  std::unique_ptr<base::ListValue> event_args = extensions::api::
-      accessibility_private::OnScrollableBoundsForPointRequested::Create(
-          point_in_screen.x(), point_in_screen.y());
+  auto event_args = extensions::api::accessibility_private::
+      OnScrollableBoundsForPointRequested::Create(point_in_screen.x(),
+                                                  point_in_screen.y());
   std::unique_ptr<extensions::Event> event =
       std::make_unique<extensions::Event>(
           extensions::events::

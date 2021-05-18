@@ -61,7 +61,7 @@ bool TabGroupsEventRouter::ShouldTrackBrowser(Browser* browser) {
 }
 
 void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnCreated::Create(
+  auto args(api::tab_groups::OnCreated::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_CREATED,
@@ -69,7 +69,7 @@ void TabGroupsEventRouter::DispatchGroupCreated(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupRemoved(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnRemoved::Create(
+  auto args(api::tab_groups::OnRemoved::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_REMOVED,
@@ -77,7 +77,7 @@ void TabGroupsEventRouter::DispatchGroupRemoved(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupMoved(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnMoved::Create(
+  auto args(api::tab_groups::OnMoved::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_MOVED,
@@ -85,7 +85,7 @@ void TabGroupsEventRouter::DispatchGroupMoved(tab_groups::TabGroupId group) {
 }
 
 void TabGroupsEventRouter::DispatchGroupUpdated(tab_groups::TabGroupId group) {
-  std::unique_ptr<base::ListValue> args(api::tab_groups::OnUpdated::Create(
+  auto args(api::tab_groups::OnUpdated::Create(
       *tab_groups_util::CreateTabGroupObject(group)));
 
   DispatchEvent(events::TAB_GROUPS_ON_UPDATED,

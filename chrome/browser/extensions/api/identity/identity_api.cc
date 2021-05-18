@@ -176,7 +176,7 @@ void IdentityAPI::FireOnAccountSignInChanged(const std::string& gaia_id,
   api::identity::AccountInfo api_account_info;
   api_account_info.id = gaia_id;
 
-  std::unique_ptr<base::ListValue> args =
+  auto args =
       api::identity::OnSignInChanged::Create(api_account_info, is_signed_in);
   std::unique_ptr<Event> event(new Event(
       events::IDENTITY_ON_SIGN_IN_CHANGED,

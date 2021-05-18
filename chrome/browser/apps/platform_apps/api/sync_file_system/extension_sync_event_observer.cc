@@ -78,8 +78,7 @@ void ExtensionSyncEventObserver::OnSyncStateUpdated(
   sync_file_system::ServiceInfo service_info;
   service_info.state = SyncServiceStateToExtensionEnum(state);
   service_info.description = description;
-  std::unique_ptr<base::ListValue> params(
-      sync_file_system::OnServiceStatusChanged::Create(service_info));
+  auto params(sync_file_system::OnServiceStatusChanged::Create(service_info));
 
   BroadcastOrDispatchEvent(
       app_origin,

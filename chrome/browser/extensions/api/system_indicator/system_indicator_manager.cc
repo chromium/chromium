@@ -95,8 +95,7 @@ void ExtensionIndicatorIcon::SetDynamicIcon(gfx::Image dynamic_icon) {
 }
 
 void ExtensionIndicatorIcon::OnStatusIconClicked() {
-  std::unique_ptr<base::ListValue> params(
-      api::system_indicator::OnClicked::Create());
+  auto params(api::system_indicator::OnClicked::Create());
 
   EventRouter* event_router = EventRouter::Get(profile_);
   std::unique_ptr<Event> event(new Event(

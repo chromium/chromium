@@ -115,9 +115,8 @@ void AutomationEventRouter::DispatchTreeDestroyedEvent(
     return;
 
   browser_context = browser_context ? browser_context : active_context_;
-  std::unique_ptr<base::ListValue> args(
-      api::automation_internal::OnAccessibilityTreeDestroyed::Create(
-          tree_id.ToString()));
+  auto args(api::automation_internal::OnAccessibilityTreeDestroyed::Create(
+      tree_id.ToString()));
   auto event = std::make_unique<Event>(
       events::AUTOMATION_INTERNAL_ON_ACCESSIBILITY_TREE_DESTROYED,
       api::automation_internal::OnAccessibilityTreeDestroyed::kEventName,
@@ -135,9 +134,8 @@ void AutomationEventRouter::DispatchActionResult(
   if (listeners_.empty())
     return;
 
-  std::unique_ptr<base::ListValue> args(
-      api::automation_internal::OnActionResult::Create(
-          data.target_tree_id.ToString(), data.request_id, result));
+  auto args(api::automation_internal::OnActionResult::Create(
+      data.target_tree_id.ToString(), data.request_id, result));
   auto event = std::make_unique<Event>(
       events::AUTOMATION_INTERNAL_ON_ACTION_RESULT,
       api::automation_internal::OnActionResult::kEventName, std::move(args),
@@ -166,8 +164,7 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
   }
   params.request_id = data.request_id;
 
-  std::unique_ptr<base::ListValue> args(
-      api::automation_internal::OnGetTextLocationResult::Create(params));
+  auto args(api::automation_internal::OnGetTextLocationResult::Create(params));
   auto event = std::make_unique<Event>(
       events::AUTOMATION_INTERNAL_ON_GET_TEXT_LOCATION_RESULT,
       api::automation_internal::OnGetTextLocationResult::kEventName,

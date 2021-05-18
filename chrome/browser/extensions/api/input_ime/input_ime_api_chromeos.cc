@@ -186,8 +186,8 @@ class ImeObserverChromeOS : public ui::ImeObserver {
         break;
     }
 
-    std::unique_ptr<base::ListValue> args(input_ime::OnCandidateClicked::Create(
-        component_id, candidate_id, button_enum));
+    auto args(input_ime::OnCandidateClicked::Create(component_id, candidate_id,
+                                                    button_enum));
 
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_CANDIDATE_CLICKED,
                              input_ime::OnCandidateClicked::kEventName,
@@ -200,8 +200,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
         !HasListener(input_ime::OnMenuItemActivated::kEventName))
       return;
 
-    std::unique_ptr<base::ListValue> args(
-        input_ime::OnMenuItemActivated::Create(component_id, menu_id));
+    auto args(input_ime::OnMenuItemActivated::Create(component_id, menu_id));
 
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_MENU_ITEM_ACTIVATED,
@@ -288,8 +287,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
       chromeos::input_host_helper::PopulateInputHost(&host);
       input_context.app_key = std::make_unique<std::string>(host.app_key);
 
-      std::unique_ptr<base::ListValue> args(
-          input_method_private::OnFocus::Create(input_context));
+      auto args(input_method_private::OnFocus::Create(input_context));
 
       DispatchEventToExtension(
           extensions::events::INPUT_METHOD_PRIVATE_ON_FOCUS,
@@ -310,8 +308,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
     details.button_id = ConvertAssistiveWindowButton(button.id);
     details.window_type = ConvertAssistiveWindowType(button.window_type);
 
-    std::unique_ptr<base::ListValue> args(
-        input_ime::OnAssistiveWindowButtonClicked::Create(details));
+    auto args(input_ime::OnAssistiveWindowButtonClicked::Create(details));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_ASSISTIVE_WINDOW_BUTTON_CLICKED,
         input_ime::OnAssistiveWindowButtonClicked::kEventName, std::move(args));
@@ -319,8 +316,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
 
   void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) override {
-    std::unique_ptr<base::ListValue> args(
-        input_method_private::OnSuggestionsChanged::Create(suggestions));
+    auto args(input_method_private::OnSuggestionsChanged::Create(suggestions));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_SUGGESTIONS_CHANGED,
         input_method_private::OnSuggestionsChanged::kEventName,
@@ -328,7 +324,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   }
 
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {
-    std::unique_ptr<base::ListValue> args(
+    auto args(
         input_method_private::OnInputMethodOptionsChanged::Create(engine_id));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_INPUT_METHOD_OPTIONS_CHANGED,

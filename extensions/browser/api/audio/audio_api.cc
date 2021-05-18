@@ -106,8 +106,7 @@ void AudioAPI::OnLevelChanged(const std::string& id, int level) {
   raw_event.device_id = id;
   raw_event.level = level;
 
-  std::unique_ptr<base::ListValue> event_args =
-      audio::OnLevelChanged::Create(raw_event);
+  auto event_args = audio::OnLevelChanged::Create(raw_event);
   auto event = std::make_unique<Event>(events::AUDIO_ON_LEVEL_CHANGED,
                                        audio::OnLevelChanged::kEventName,
                                        std::move(event_args));
@@ -124,8 +123,7 @@ void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
   raw_event.stream_type =
       is_input ? audio::STREAM_TYPE_INPUT : audio::STREAM_TYPE_OUTPUT;
   raw_event.is_muted = is_muted;
-  std::unique_ptr<base::ListValue> event_args =
-      audio::OnMuteChanged::Create(raw_event);
+  auto event_args = audio::OnMuteChanged::Create(raw_event);
   auto event = std::make_unique<Event>(events::AUDIO_ON_MUTE_CHANGED,
                                        audio::OnMuteChanged::kEventName,
                                        std::move(event_args));
@@ -137,8 +135,7 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
   if (!event_router)
     return;
 
-  std::unique_ptr<base::ListValue> args =
-      audio::OnDeviceListChanged::Create(devices);
+  auto args = audio::OnDeviceListChanged::Create(devices);
   auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICES_CHANGED,
                                        audio::OnDeviceListChanged::kEventName,
                                        std::move(args));

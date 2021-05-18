@@ -404,7 +404,7 @@ void BluetoothEventRouter::DeviceAddressChanged(
   bluetooth::Device extension_device;
   bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
 
-  std::unique_ptr<base::ListValue> args =
+  auto args =
       bt_private::OnDeviceAddressChanged::Create(extension_device, old_address);
   auto event = std::make_unique<Event>(
       events::BLUETOOTH_PRIVATE_ON_DEVICE_ADDRESS_CHANGED,
@@ -444,8 +444,7 @@ void BluetoothEventRouter::DispatchAdapterStateEvent() {
   CHECK(adapter_.get());
   PopulateAdapterState(*adapter_, &state);
 
-  std::unique_ptr<base::ListValue> args =
-      bluetooth::OnAdapterStateChanged::Create(state);
+  auto args = bluetooth::OnAdapterStateChanged::Create(state);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_ON_ADAPTER_STATE_CHANGED,
                 bluetooth::OnAdapterStateChanged::kEventName, std::move(args)));
@@ -460,8 +459,7 @@ void BluetoothEventRouter::DispatchDeviceEvent(
   CHECK(device);
   bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
 
-  std::unique_ptr<base::ListValue> args =
-      bluetooth::OnDeviceAdded::Create(extension_device);
+  auto args = bluetooth::OnDeviceAdded::Create(extension_device);
   std::unique_ptr<Event> event(
       new Event(histogram_value, event_name, std::move(args)));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));

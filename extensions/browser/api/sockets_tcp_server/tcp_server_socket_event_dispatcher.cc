@@ -144,8 +144,7 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     sockets_tcp_server::AcceptInfo accept_info;
     accept_info.socket_id = params.socket_id;
     accept_info.client_socket_id = client_socket_id;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp_server::OnAccept::Create(accept_info);
+    auto args = sockets_tcp_server::OnAccept::Create(accept_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_TCP_SERVER_ON_ACCEPT,
                   sockets_tcp_server::OnAccept::kEventName, std::move(args)));
@@ -163,8 +162,7 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
     sockets_tcp_server::AcceptErrorInfo accept_error_info;
     accept_error_info.socket_id = params.socket_id;
     accept_error_info.result_code = result_code;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp_server::OnAcceptError::Create(accept_error_info);
+    auto args = sockets_tcp_server::OnAcceptError::Create(accept_error_info);
     std::unique_ptr<Event> event(new Event(
         events::SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR,
         sockets_tcp_server::OnAcceptError::kEventName, std::move(args)));

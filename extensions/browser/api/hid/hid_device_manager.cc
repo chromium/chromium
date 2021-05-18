@@ -248,8 +248,7 @@ void HidDeviceManager::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
     PopulateHidDeviceInfo(&api_device_info, *devices_[new_id]);
 
     if (api_device_info.collections.size() > 0) {
-      std::unique_ptr<base::ListValue> args(
-          hid::OnDeviceAdded::Create(api_device_info));
+      auto args(hid::OnDeviceAdded::Create(api_device_info));
       DispatchEvent(events::HID_ON_DEVICE_ADDED, hid::OnDeviceAdded::kEventName,
                     std::move(args), *devices_[new_id]);
     }
@@ -268,8 +267,7 @@ void HidDeviceManager::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
 
   if (event_router_) {
     DCHECK(enumeration_ready_);
-    std::unique_ptr<base::ListValue> args(
-        hid::OnDeviceRemoved::Create(resource_id));
+    auto args(hid::OnDeviceRemoved::Create(resource_id));
     DispatchEvent(events::HID_ON_DEVICE_REMOVED,
                   hid::OnDeviceRemoved::kEventName, std::move(args), *device);
   }

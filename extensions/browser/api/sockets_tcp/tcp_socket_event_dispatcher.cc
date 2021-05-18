@@ -137,8 +137,7 @@ void TCPSocketEventDispatcher::ReadCallback(
     sockets_tcp::ReceiveInfo receive_info;
     receive_info.socket_id = params.socket_id;
     receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp::OnReceive::Create(receive_info);
+    auto args = sockets_tcp::OnReceive::Create(receive_info);
     std::unique_ptr<Event> event(new Event(events::SOCKETS_TCP_ON_RECEIVE,
                                            sockets_tcp::OnReceive::kEventName,
                                            std::move(args)));
@@ -159,8 +158,7 @@ void TCPSocketEventDispatcher::ReadCallback(
     sockets_tcp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    std::unique_ptr<base::ListValue> args =
-        sockets_tcp::OnReceiveError::Create(receive_error_info);
+    auto args = sockets_tcp::OnReceiveError::Create(receive_error_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_TCP_ON_RECEIVE_ERROR,
                   sockets_tcp::OnReceiveError::kEventName, std::move(args)));

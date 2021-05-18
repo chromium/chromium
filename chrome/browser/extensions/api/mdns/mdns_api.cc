@@ -171,7 +171,7 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
     args.push_back(std::move(mdns_service));
   }
 
-  std::unique_ptr<base::ListValue> results = mdns::OnServiceList::Create(args);
+  auto results = mdns::OnServiceList::Create(args);
   auto event = std::make_unique<Event>(events::MDNS_ON_SERVICE_LIST,
                                        mdns::OnServiceList::kEventName,
                                        std::move(results), browser_context_);

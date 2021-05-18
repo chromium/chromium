@@ -650,7 +650,7 @@ void QuickUnlockPrivateSetModesFunction::FireEvent(
     return;
   }
 
-  std::unique_ptr<base::ListValue> args = OnActiveModesChanged::Create(modes);
+  auto args = OnActiveModesChanged::Create(modes);
   auto event = std::make_unique<Event>(
       events::QUICK_UNLOCK_PRIVATE_ON_ACTIVE_MODES_CHANGED,
       OnActiveModesChanged::kEventName, std::move(args));

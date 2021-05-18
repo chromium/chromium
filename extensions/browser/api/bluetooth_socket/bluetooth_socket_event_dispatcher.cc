@@ -198,8 +198,7 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
   bluetooth_socket::ReceiveInfo receive_info;
   receive_info.socket_id = params.socket_id;
   receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnReceive::Create(receive_info);
+  auto args = bluetooth_socket::OnReceive::Create(receive_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE,
                 bluetooth_socket::OnReceive::kEventName, std::move(args)));
@@ -233,8 +232,7 @@ void BluetoothSocketEventDispatcher::ReceiveErrorCallback(
   receive_error_info.socket_id = params.socket_id;
   receive_error_info.error_message = error;
   receive_error_info.error = MapReceiveErrorReason(error_reason);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnReceiveError::Create(receive_error_info);
+  auto args = bluetooth_socket::OnReceiveError::Create(receive_error_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE_ERROR,
                 bluetooth_socket::OnReceiveError::kEventName, std::move(args)));
@@ -294,8 +292,7 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
   bluetooth_socket::AcceptInfo accept_info;
   accept_info.socket_id = params.socket_id;
   accept_info.client_socket_id = client_socket_id;
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnAccept::Create(accept_info);
+  auto args = bluetooth_socket::OnAccept::Create(accept_info);
   std::unique_ptr<Event> event(new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT,
                                          bluetooth_socket::OnAccept::kEventName,
                                          std::move(args)));
@@ -329,8 +326,7 @@ void BluetoothSocketEventDispatcher::AcceptErrorCallback(
   accept_error_info.socket_id = params.socket_id;
   accept_error_info.error_message = error;
   accept_error_info.error = MapAcceptErrorReason(error_reason);
-  std::unique_ptr<base::ListValue> args =
-      bluetooth_socket::OnAcceptError::Create(accept_error_info);
+  auto args = bluetooth_socket::OnAcceptError::Create(accept_error_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT_ERROR,
                 bluetooth_socket::OnAcceptError::kEventName, std::move(args)));

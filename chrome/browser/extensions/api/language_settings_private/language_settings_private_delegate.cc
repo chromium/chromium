@@ -171,7 +171,7 @@ void LanguageSettingsPrivateDelegate::InputMethodChanged(
 
 void LanguageSettingsPrivateDelegate::OnInputMethodExtensionAdded(
     const std::string& extension_id) {
-  std::unique_ptr<base::ListValue> args(
+  auto args(
       language_settings_private::OnInputMethodAdded::Create(extension_id));
   std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_ADDED,
@@ -182,7 +182,7 @@ void LanguageSettingsPrivateDelegate::OnInputMethodExtensionAdded(
 
 void LanguageSettingsPrivateDelegate::OnInputMethodExtensionRemoved(
     const std::string& extension_id) {
-  std::unique_ptr<base::ListValue> args(
+  auto args(
       language_settings_private::OnInputMethodRemoved::Create(extension_id));
   std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_REMOVED,
@@ -221,9 +221,8 @@ void LanguageSettingsPrivateDelegate::OnCustomDictionaryChanged(
                                   change.to_add().end());
   std::vector<std::string> to_remove(change.to_remove().begin(),
                                      change.to_remove().end());
-  std::unique_ptr<base::ListValue> args(
-      language_settings_private::OnCustomDictionaryChanged::Create(to_add,
-                                                                   to_remove));
+  auto args(language_settings_private::OnCustomDictionaryChanged::Create(
+      to_add, to_remove));
   std::unique_ptr<Event> extension_event(new Event(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_CUSTOM_DICTIONARY_CHANGED,
       language_settings_private::OnCustomDictionaryChanged::kEventName,
@@ -336,9 +335,8 @@ void LanguageSettingsPrivateDelegate::BroadcastDictionariesChangedEvent() {
   std::vector<language_settings_private::SpellcheckDictionaryStatus> statuses =
       GetHunspellDictionaryStatuses();
 
-  std::unique_ptr<base::ListValue> args(
-      language_settings_private::OnSpellcheckDictionariesChanged::Create(
-          statuses));
+  auto args(language_settings_private::OnSpellcheckDictionariesChanged::Create(
+      statuses));
   std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_SPELLCHECK_DICTIONARIES_CHANGED,
       language_settings_private::OnSpellcheckDictionariesChanged::kEventName,

@@ -115,9 +115,8 @@ void VpnService::VpnConfiguration::OnPacketReceived(
   if (pepper_vpn_provider_proxy_) {
     pepper_vpn_provider_proxy_->SendOnPacketReceived(data);
   } else {
-    std::unique_ptr<base::ListValue> event_args =
-        api_vpn::OnPacketReceived::Create(
-            std::vector<uint8_t>(data.begin(), data.end()));
+    auto event_args = api_vpn::OnPacketReceived::Create(
+        std::vector<uint8_t>(data.begin(), data.end()));
     vpn_service_->SendSignalToExtension(
         extension_id_, extensions::events::VPN_PROVIDER_ON_PACKET_RECEIVED,
         api_vpn::OnPacketReceived::kEventName, std::move(event_args));
@@ -148,9 +147,8 @@ void VpnService::VpnConfiguration::OnPlatformMessage(uint32_t message) {
 
   // TODO(kaliamoorthi): Update the lower layers to get the error message and
   // pass in the error instead of std::string().
-  std::unique_ptr<base::ListValue> event_args =
-      api_vpn::OnPlatformMessage::Create(configuration_name_, platform_message,
-                                         std::string());
+  auto event_args = api_vpn::OnPlatformMessage::Create(
+      configuration_name_, platform_message, std::string());
 
   vpn_service_->SendSignalToExtension(
       extension_id_, extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
@@ -159,7 +157,7 @@ void VpnService::VpnConfiguration::OnPlatformMessage(uint32_t message) {
 
 class VpnService::VpnServiceProxyImpl : public content::VpnServiceProxy {
  public:
-  VpnServiceProxyImpl(base::WeakPtr<VpnService> vpn_service);
+  explicit VpnServiceProxyImpl(base::WeakPtr<VpnService> vpn_service);
 
   void Bind(const std::string& extension_id,
             const std::string& configuration_id,
@@ -293,7 +291,7 @@ void VpnService::OnConfigurationRemoved(const std::string& service_path,
 
   VpnConfiguration* configuration =
       service_path_to_configuration_map_[service_path];
-  std::unique_ptr<base::ListValue> event_args =
+  auto event_args =
       api_vpn::OnConfigRemoved::Create(configuration->configuration_name());
   SendSignalToExtension(configuration->extension_id(),
                         extensions::events::VPN_PROVIDER_ON_CONFIG_REMOVED,

@@ -147,8 +147,7 @@ void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
                                       const history::URLRow& row,
                                       const history::RedirectList& redirects,
                                       base::Time visit_time) {
-  std::unique_ptr<base::ListValue> args =
-      OnVisited::Create(GetHistoryItem(row));
+  auto args = OnVisited::Create(GetHistoryItem(row));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,
                 api::history::OnVisited::kEventName, std::move(args));
 }
@@ -164,7 +163,7 @@ void HistoryEventRouter::OnURLsDeleted(
     urls->push_back(row.url().spec());
   removed.urls.reset(urls);
 
-  std::unique_ptr<base::ListValue> args = OnVisitRemoved::Create(removed);
+  auto args = OnVisitRemoved::Create(removed);
   DispatchEvent(profile_, events::HISTORY_ON_VISIT_REMOVED,
                 api::history::OnVisitRemoved::kEventName, std::move(args));
 }
