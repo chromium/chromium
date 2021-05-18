@@ -92,10 +92,7 @@ class StorageArea final : public ScriptWrappable,
 
  private:
   void RecordModificationInMetrics();
-
-  void OnDocumentActivatedForPrerendering();
-
-  scoped_refptr<CachedStorageArea> cached_area_;
+  const scoped_refptr<CachedStorageArea> cached_area_;
   StorageType storage_type_;
   const bool should_enqueue_events_;
 

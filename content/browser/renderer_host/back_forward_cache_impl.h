@@ -44,11 +44,6 @@ constexpr base::Feature kRecordBackForwardCacheMetricsWithoutEnabling{
     "RecordBackForwardCacheMetricsWithoutEnabling",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Removes the time limit for cached content. This is used on bots to identify
-// accidentally passing tests.
-constexpr base::Feature kBackForwardCacheNoTimeEviction{
-    "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // BackForwardCache:
 //
 // After the user navigates away from a document, the old one goes into the

@@ -102,13 +102,10 @@ bool CachedStorageArea::SetItem(const String& key,
   KURL page_url = source->GetPageUrl();
   String source_id = areas_->at(source);
   String source_string = PackSource(page_url, source_id);
-
-  if (!is_session_storage_for_prerendering_) {
-    remote_area_->Put(StringToUint8Vector(key, GetKeyFormat()),
-                      StringToUint8Vector(value, value_format),
-                      optional_old_value, source_string,
-                      MakeSuccessCallback(source));
-  }
+  remote_area_->Put(StringToUint8Vector(key, GetKeyFormat()),
+                    StringToUint8Vector(value, value_format),
+                    optional_old_value, source_string,
+                    MakeSuccessCallback(source));
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, value, old_value, source_string);
   else if (old_value != value)
@@ -130,11 +127,9 @@ void CachedStorageArea::RemoveItem(const String& key, Source* source) {
   KURL page_url = source->GetPageUrl();
   String source_id = areas_->at(source);
   String source_string = PackSource(page_url, source_id);
-  if (!is_session_storage_for_prerendering_) {
-    remote_area_->Delete(StringToUint8Vector(key, GetKeyFormat()),
-                         optional_old_value, source_string,
-                         MakeSuccessCallback(source));
-  }
+  remote_area_->Delete(StringToUint8Vector(key, GetKeyFormat()),
+                       optional_old_value, source_string,
+                       MakeSuccessCallback(source));
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, String(), old_value, source_string);
   else
@@ -169,10 +164,8 @@ void CachedStorageArea::Clear(Source* source) {
   KURL page_url = source->GetPageUrl();
   String source_id = areas_->at(source);
   String source_string = PackSource(page_url, source_id);
-  if (!is_session_storage_for_prerendering_) {
-    remote_area_->DeleteAll(source_string, std::move(new_observer),
-                            MakeSuccessCallback(source));
-  }
+  remote_area_->DeleteAll(source_string, std::move(new_observer),
+                          MakeSuccessCallback(source));
   if (!IsSessionStorage())
     EnqueuePendingMutation(String(), String(), String(), source_string);
   else if (!already_empty)
@@ -189,12 +182,10 @@ CachedStorageArea::CachedStorageArea(
     AreaType type,
     scoped_refptr<const SecurityOrigin> origin,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    StorageNamespace* storage_namespace,
-    bool is_session_storage_for_prerendering)
+    StorageNamespace* storage_namespace)
     : type_(type),
       origin_(std::move(origin)),
       storage_namespace_(storage_namespace),
-      is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
       task_runner_(std::move(task_runner)),
       areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
   BindStorageArea();
@@ -227,7 +218,6 @@ void CachedStorageArea::BindStorageArea(
 
 void CachedStorageArea::ResetConnection(
     mojo::PendingRemote<mojom::blink::StorageArea> new_area) {
-  DCHECK(!is_session_storage_for_prerendering_);
   remote_area_.reset();
   BindStorageArea(std::move(new_area));
 

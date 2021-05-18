@@ -18,23 +18,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/mojom/storage_service.mojom.h"
-#include "components/services/storage/public/mojom/test_api.test-mojom.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -243,13 +238,12 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     return prerender_helper_.get();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) final {
     // Useful for testing CSP:prefetch-src
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
-
- private:
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -1787,280 +1781,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
   // loading=lazy.
   EXPECT_EQ(GetRequestCount(kImageUrl), 1);
 }
-
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       SessionStorageAfterBackNavigation_NoProcessReuse) {
-  // When BackForwardCache feature is enabled, this test doesn't work, because
-  // this test is checking the behavior of a new renderer process which is
-  // created for a back forward navigation from a prerendered page.
-  if (IsBackForwardCacheEnabled())
-    return;
-
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  std::unique_ptr<RenderProcessHostWatcher> process_host_watcher =
-      std::make_unique<RenderProcessHostWatcher>(
-          current_frame_host()->GetProcess(),
-          RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  // Make sure that the initial renderer process is destroyed. So that the
-  // initial renderer process will not be reused after the back forward
-  // navigation below.
-  process_host_watcher->Wait();
-
-  // Navigate back to the initial page.
-  content::TestNavigationObserver observer(shell()->web_contents());
-  shell()->GoBackOrForward(-1);
-  observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       SessionStorageAfterBackNavigation_KeepInitialProcess) {
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  RenderProcessHostImpl* initial_process_host =
-      static_cast<RenderProcessHostImpl*>(current_frame_host()->GetProcess());
-  // Increment the keep alive ref count of the renderer process to keep it alive
-  // so it is reused on the back navigation below. The test checks that the
-  // session storage state changed in the activated page is correctly propagated
-  // after a back navigation that uses an existing renderer process. (Note: This
-  // is not working correctly now.)
-  initial_process_host->IncrementKeepAliveRefCount();
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  // Navigate back to the initial page.
-  content::TestNavigationObserver observer(shell()->web_contents());
-  shell()->GoBackOrForward(-1);
-  observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // There is a known issue that when the initial renderer process is reused
-  // after the back navigation, the session storage state changed in the
-  // activated is not correctly propagated to the initial renderer process.
-  // TODO(crbug.com/1197383): Fix this issue.
-  EXPECT_EQ(
-      // This should be "activated, initial".
-      "initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
-class PrerenderSingleProcessBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderSingleProcessBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    PrerenderBrowserTest::SetUpCommandLine(cmd_line);
-    cmd_line->AppendSwitch("single-process");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrerenderSingleProcessBrowserTest,
-                       SessionStorageAfterBackNavigation) {
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  // Navigate back to the initial page.
-  content::TestNavigationObserver observer(shell()->web_contents());
-  shell()->GoBackOrForward(-1);
-  observer.Wait();
-  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
-class PrerenderBackForwardCacheBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderBackForwardCacheBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{"enable_same_site", "true"}}},
-         {kBackForwardCacheNoTimeEviction, {}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
-                       SessionStorageAfterBackNavigation) {
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  RenderFrameDeletedObserver deleted_observer(
-      shell()->web_contents()->GetMainFrame());
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  // Navigate back to the initial page.
-  shell()->GoBackOrForward(-1);
-  WaitForLoadStop(shell()->web_contents());
-
-  // Expect the navigation to be served from the back-forward cache to verify
-  // the test is testing what is intended.
-  ASSERT_EQ(shell()->web_contents()->GetMainFrame(),
-            deleted_observer.render_frame_host());
-
-  // There is a known issue that when the initial renderer process is reused
-  // after the back navigation, the session storage state changed in the
-  // activated is not correctly propagated to the initial renderer process.
-  // TODO(crbug.com/1197383): Fix this issue.
-  EXPECT_EQ(
-      // This should be "activated, initial".
-      "initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
-#if !defined(OS_ANDROID)
-// StorageServiceOutOfProcess is not implemented on Android.
-
-class PrerenderRestartStorageServiceBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderRestartStorageServiceBrowserTest() {
-    // These tests only make sense when the service is running
-    // out-of-process.
-    feature_list_.InitAndEnableFeature(features::kStorageServiceOutOfProcess);
-  }
-
- protected:
-  void CrashStorageServiceAndWaitForRestart() {
-    mojo::Remote<storage::mojom::StorageService>& service =
-        StoragePartitionImpl::GetStorageServiceForTesting();
-    base::RunLoop loop;
-    service.set_disconnect_handler(base::BindLambdaForTesting([&] {
-      loop.Quit();
-      service.reset();
-    }));
-    mojo::Remote<storage::mojom::TestApi> test_api;
-    StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
-        test_api.BindNewPipeAndPassReceiver().PassPipe());
-    test_api->CrashNow();
-    loop.Run();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrerenderRestartStorageServiceBrowserTest,
-                       RestartStorageServiceBeforePrerendering) {
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  CrashStorageServiceAndWaitForRestart();
-
-  EXPECT_EQ(
-      "initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-
-  AddPrerender(kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderRestartStorageServiceBrowserTest,
-                       RestartStorageServiceWhilePrerendering) {
-  const GURL kInitialUrl = GetUrl("/prerender/session_storage.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/session_storage.html?prerendering=");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  const int host_id = AddPrerender(kPrerenderingUrl);
-
-  CrashStorageServiceAndWaitForRestart();
-
-  EXPECT_EQ(
-      "initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-  EXPECT_EQ(
-      "initial, prerendering",
-      EvalJs(GetPrerenderedMainFrameHost(host_id), "getSessionStorageKeys()")
-          .ExtractString());
-
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  EXPECT_EQ("initial", EvalJs(current_frame_host(),
-                              "window.sessionKeysInPrerenderingchange")
-                           .ExtractString());
-  EXPECT_EQ(
-      "activated, initial",
-      EvalJs(current_frame_host(), "getSessionStorageKeys()").ExtractString());
-}
-#endif
 
 class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
  public:

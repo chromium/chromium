@@ -40,6 +40,11 @@ namespace {
 
 using blink::scheduler::WebSchedulerTrackedFeature;
 
+// Removes the time limit for cached content. This is used on bots to identify
+// accidentally passing tests.
+const base::Feature kBackForwardCacheNoTimeEviction{
+    "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The default number of entries the BackForwardCache can hold per tab.
 static constexpr size_t kDefaultBackForwardCacheSize = 1;
 
