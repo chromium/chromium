@@ -6724,13 +6724,9 @@ crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on
 # Sheriff 2021-04-15
 crbug.com/1199380 virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/overflow-scroll-root-frame-animates.html [ Skip ]
 crbug.com/1194460 virtual/scroll-unification/fast/events/mouseenter-mouseleave-chained-listeners.html [ Skip ]
-crbug.com/1199522 [ Mac ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Pass Failure ]
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Pass Failure ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Pass Failure ]
 crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html [ Pass Failure ]
-
-# Sheriff 2021-04-16
-crbug.com/1199803 [ Linux ] http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Pass Failure ]
 
 # Sheriff 2021-04-20
 crbug.com/1200671 [ Mac11.0 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Pass Failure ]
@@ -6937,6 +6933,7 @@ crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Failure Pas
 # Sheriff 2021-05-17
 crbug.com/1193920 virtual/scroll-unification/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Timeout ]
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Pass Failure ]
+crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Pass Failure ]
 
 # Failing css-transforms-2 web platform tests.
 crbug.com/753080 external/wpt/css/css-transforms/transform3d-sorting-002.html [ Failure ]
