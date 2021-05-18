@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
@@ -49,6 +50,10 @@ const NativeMessageBuiltInHost kBuiltInHosts[] = {
      drive::kDriveFsNativeMessageHostOrigins,
      drive::kDriveFsNativeMessageHostOriginsSize,
      &drive::CreateDriveFsNativeMessageHost},
+    {ash::guest_os::VmSKForwardingNativeMessageHost::kHostName,
+     ash::guest_os::VmSKForwardingNativeMessageHost::kOrigins,
+     ash::guest_os::VmSKForwardingNativeMessageHost::kOriginCount,
+     &ash::guest_os::VmSKForwardingNativeMessageHost::CreateFromExtension},
 };
 
 const size_t kBuiltInHostsCount = base::size(kBuiltInHosts);
