@@ -1828,14 +1828,25 @@ void StyleResolver::PropagateStyleToViewport() {
     // TODO(954423): Remove once propagation logic change is complete.
     if (document_element_style && overflow_style &&
         overflow_style != document_element_style) {
-      bool overscroll_behavior_is_different =
-          overflow_style->OverscrollBehaviorX() !=
-              document_element_style->OverscrollBehaviorX() ||
-          overflow_style->OverscrollBehaviorY() !=
-              document_element_style->OverscrollBehaviorY();
-      if (overscroll_behavior_is_different) {
+      EOverscrollBehavior document_x =
+          document_element_style->OverscrollBehaviorX();
+      EOverscrollBehavior document_y =
+          document_element_style->OverscrollBehaviorY();
+      EOverscrollBehavior body_x = overflow_style->OverscrollBehaviorX();
+      EOverscrollBehavior body_y = overflow_style->OverscrollBehaviorY();
+      // Document style is auto but body is not: fixing crbug.com/954423 might
+      // break the page.
+      if ((document_x == EOverscrollBehavior::kAuto && document_x != body_x) ||
+          (document_y == EOverscrollBehavior::kAuto && document_y != body_y)) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kOversrollBehaviorOnViewportBreaks);
+      }
+      // Body style is auto but document is not: currently we are showing the
+      // wrong behavior, and fixing crbug.com/954423 gives the correct behavior.
+      if ((body_x == EOverscrollBehavior::kAuto && document_x != body_x) ||
+          (body_y == EOverscrollBehavior::kAuto && document_y != body_y)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kOverscrollBehaviorWillBeFixed);
       }
     }
 

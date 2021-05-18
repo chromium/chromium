@@ -32536,6 +32536,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3913" label="GetBBoxForText"/>
   <int value="3914" label="SVGTextHangingFromPath"/>
   <int value="3915" label="ClientHintsPrefersColorScheme"/>
+  <int value="3916" label="OverscrollBehaviorWillBeFixed"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -3228,6 +3228,7 @@ enum WebFeature {
   kGetBBoxForText = 3913,
   kSVGTextHangingFromPath = 3914,
   kClientHintsPrefersColorScheme = 3915,
+  kOverscrollBehaviorWillBeFixed = 3916,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
