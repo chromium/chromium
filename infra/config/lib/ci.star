@@ -609,6 +609,7 @@ def linux_builder(
         notifies = ("chromium.linux",),
         extra_notifies = None,
         **kwargs):
+    kwargs.setdefault("os", builders.os.LINUX_BIONIC_REMOVE)
     return ci.builder(
         name = name,
         builder_group = "chromium.linux",
@@ -661,6 +662,7 @@ def memory_builder(
         tree_closing = True,
         **kwargs):
     if name.startswith("Linux"):
+        kwargs.setdefault("os", builders.os.LINUX_BIONIC_REMOVE)
         notifies = (notifies or []) + ["linux-memory"]
 
     return ci.builder(

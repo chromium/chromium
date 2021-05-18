@@ -3054,6 +3054,7 @@ ci.fyi_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3102,6 +3103,7 @@ ci.fyi_builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3119,6 +3121,7 @@ ci.fyi_builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3153,6 +3156,7 @@ ci.fyi_builder(
         ),
     ],
     notifies = ["cr-fuchsia"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3170,6 +3174,7 @@ ci.fyi_builder(
         short_name = "lnx",
     ),
     notifies = ["annotator-rel"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3231,6 +3236,7 @@ ci.fyi_builder(
         category = "linux|blink",
         short_name = "CM",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3240,6 +3246,7 @@ ci.fyi_builder(
         short_name = "VF",
     ),
     notifies = ["linux-blink-fyi-bots"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3249,6 +3256,7 @@ ci.fyi_builder(
         short_name = "VO",
     ),
     notifies = ["linux-blink-fyi-bots"],
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3315,6 +3323,7 @@ ci.fyi_builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3324,6 +3333,7 @@ ci.fyi_builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3333,6 +3343,7 @@ ci.fyi_builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.fyi_builder(
@@ -3342,6 +3353,7 @@ ci.fyi_builder(
     ),
     experimental = True,
     goma_backend = goma.backend.RBE_PROD,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -5864,6 +5876,7 @@ ci.memory_builder(
         short_name = "asn",
     ),
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.memory_builder(
@@ -5873,6 +5886,7 @@ ci.memory_builder(
         short_name = "lk",
     ),
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.memory_builder(
@@ -5882,6 +5896,7 @@ ci.memory_builder(
         short_name = "msn",
     ),
     main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.memory_builder(
@@ -5904,6 +5919,7 @@ ci.memory_builder(
     cores = 32,
     main_console_view = "main",
     tree_closing = False,
+    os = os.LINUX_BIONIC_REMOVE,
 )
 
 ci.memory_builder(
