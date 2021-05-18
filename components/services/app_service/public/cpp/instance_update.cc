@@ -17,10 +17,10 @@ void InstanceUpdate::Merge(Instance* state, const Instance* delta) {
     return;
   }
   if ((delta->AppId() != state->AppId()) ||
-      delta->Window() != state->Window()) {
-    LOG(ERROR) << "inconsistent (app_id, window): (" << delta->AppId() << ", "
-               << delta->Window() << ") vs (" << state->AppId() << ", "
-               << state->Window() << ") ";
+      delta->GetInstanceKey() != state->GetInstanceKey()) {
+    LOG(ERROR) << "inconsistent (app_id, instance_key): (" << delta->AppId()
+               << ", " << delta->GetInstanceKey() << ") vs (" << state->AppId()
+               << ", " << state->GetInstanceKey() << ") ";
     DCHECK(false);
     return;
   }
@@ -52,10 +52,10 @@ bool InstanceUpdate::Equals(const Instance* state, const Instance* delta) {
   }
 
   if ((delta->AppId() != state->AppId()) ||
-      delta->Window() != state->Window()) {
-    LOG(ERROR) << "inconsistent (app_id, window): (" << delta->AppId() << ", "
-               << delta->Window() << ") vs (" << state->AppId() << ", "
-               << state->Window() << ") ";
+      delta->GetInstanceKey() != state->GetInstanceKey()) {
+    LOG(ERROR) << "inconsistent (app_id, instance_key): (" << delta->AppId()
+               << ", " << delta->GetInstanceKey() << ") vs (" << state->AppId()
+               << ", " << state->GetInstanceKey() << ") ";
     DCHECK(false);
     return false;
   }
@@ -81,7 +81,7 @@ InstanceUpdate::InstanceUpdate(Instance* state, Instance* delta)
   DCHECK(state_ || delta_);
   if (state_ && delta_) {
     DCHECK(state_->AppId() == delta->AppId());
-    DCHECK(state_->Window() == delta->Window());
+    DCHECK(state_->GetInstanceKey() == delta->GetInstanceKey());
   }
 }
 
@@ -103,7 +103,11 @@ const std::string& InstanceUpdate::AppId() const {
 }
 
 aura::Window* InstanceUpdate::Window() const {
-  return delta_ ? delta_->Window() : state_->Window();
+  return InstanceKey().Window();
+}
+
+const Instance::InstanceKey& InstanceUpdate::InstanceKey() const {
+  return delta_ ? delta_->GetInstanceKey() : state_->GetInstanceKey();
 }
 
 const std::string& InstanceUpdate::LaunchId() const {

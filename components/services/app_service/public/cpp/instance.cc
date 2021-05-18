@@ -51,3 +51,8 @@ void Instance::SetBrowserContext(content::BrowserContext* browser_context) {
 }
 
 }  // namespace apps
+
+std::ostream& operator<<(std::ostream& os,
+                         const apps::Instance::InstanceKey& instance_key) {
+  return os << "InstanceKey {Window: " << instance_key.Window() << "}";
+}

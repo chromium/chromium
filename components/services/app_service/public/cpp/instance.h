@@ -78,4 +78,7 @@ class Instance {
 
 }  // namespace apps
 
+std::ostream& operator<<(std::ostream& os,
+                         const apps::Instance::InstanceKey& instance_key);
+
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_H_
