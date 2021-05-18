@@ -13,7 +13,6 @@
       android:id="@+id/subtitle"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="4dp"
       android:paddingStart="@dimen/dialog_padding_sides"
       android:paddingEnd="@dimen/dialog_padding_sides"
       android:ellipsize="end"
@@ -23,6 +22,7 @@
   <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
       android:layout_width="match_parent"
       android:layout_height="0dp"
+      android:layout_marginTop="4dp"
       android:layout_weight="1"
       android:fadeScrollbars="false">
 

@@ -88,14 +88,23 @@ std::u16string SaveAddressProfilePromptController::GetPhoneNumber() {
 
 std::u16string SaveAddressProfilePromptController::GetSubtitle() {
   DCHECK(original_profile_);
-  return u"For " + GetDescriptionForProfileToUpdate(
-                       original_profile_.value(),
-                       g_browser_process->GetApplicationLocale());
+  const std::string locale = g_browser_process->GetApplicationLocale();
+  std::vector<ProfileValueDifference> differences =
+      GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
+  bool address_updated =
+      std::find_if(differences.begin(), differences.end(),
+                   [](const ProfileValueDifference& diff) {
+                     return diff.type == ADDRESS_HOME_ADDRESS;
+                   }) != differences.end();
+  return GetProfileDescription(
+      original_profile_.value(), locale,
+      /*include_address_and_contacts=*/!address_updated);
 }
 
 std::pair<std::u16string, std::u16string>
 SaveAddressProfilePromptController::GetDiffFromOldToNewProfile() {
   DCHECK(original_profile_);
+  // TODO(crbug.com/1167061): Switch to using GetProfileDifferenceForUi.
   base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
       differences = AutofillProfileComparator::GetProfileDifferenceMap(
           original_profile_.value(), profile_,

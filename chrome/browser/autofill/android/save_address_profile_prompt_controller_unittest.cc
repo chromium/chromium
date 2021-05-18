@@ -183,7 +183,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplay_Update) {
   SetUpController(/*is_update=*/true);
   EXPECT_EQ(u"Update address?", controller_->GetTitle());
-  EXPECT_EQ(u"For John Doe — 666 Erebus St.", controller_->GetSubtitle());
+  EXPECT_EQ(u"John Doe, 666 Erebus St.", controller_->GetSubtitle());
   std::pair<std::u16string, std::u16string> differences =
       controller_->GetDiffFromOldToNewProfile();
   EXPECT_EQ(u"John Doe", differences.first);

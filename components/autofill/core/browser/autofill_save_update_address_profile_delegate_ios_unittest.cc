@@ -57,7 +57,7 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   EXPECT_EQ(delegate->GetMessageActionText(), std::u16string(u"Update..."));
   EXPECT_EQ(delegate->GetMessageText(), std::u16string(u"Update Address?"));
   EXPECT_EQ(delegate->GetDescription(),
-            std::u16string(u"John Doe \x2014 666 Erebus St."));
+            std::u16string(u"John Doe, 666 Erebus St."));
 }
 
 // Tests that delegate returns the correct profile difference.

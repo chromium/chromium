@@ -198,9 +198,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
               /*horizontal=*/0));
 
   views::Label* subtitle_label = AddChildView(std::make_unique<views::Label>(
-      GetDescriptionForProfileToUpdate(
-          *controller_->GetOriginalProfile(),
-          g_browser_process->GetApplicationLocale()),
+      // TODO(crbug.com/1167060): Pass proper `include_address_and_contacts`
+      // value and handle empty description if needed.
+      GetProfileDescription(*controller_->GetOriginalProfile(),
+                            g_browser_process->GetApplicationLocale(),
+                            /*include_address_and_contacts=*/true),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   subtitle_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 

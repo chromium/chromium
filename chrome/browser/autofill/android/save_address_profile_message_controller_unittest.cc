@@ -150,7 +150,7 @@ TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
 
   EXPECT_EQ(u"Update address?", GetMessageWrapper()->GetTitle());
   EXPECT_EQ(u"Update…", GetMessageWrapper()->GetPrimaryButtonText());
-  EXPECT_EQ(u"For Jane A. Smith — 123 Main Street",
+  EXPECT_EQ(u"Jane A. Smith, 123 Main Street",
             GetMessageWrapper()->GetDescription());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
             GetMessageWrapper()->GetIconResourceId());

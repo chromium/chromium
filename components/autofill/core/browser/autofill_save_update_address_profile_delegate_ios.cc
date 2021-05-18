@@ -63,9 +63,11 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
     const {
-  return original_profile_
-             ? GetDescriptionForProfileToUpdate(*original_profile_, locale_)
-             : GetDescriptionForProfileToSave(profile_, locale_);
+  // TODO(crbug.com/1167062): Pass proper `include_address_and_contacts` value
+  // and handle in UI empty description if needed.
+  return GetProfileDescription(
+      original_profile_ ? *original_profile_ : profile_, locale_,
+      /*include_address_and_contacts=*/true);
 }
 
 std::u16string

@@ -113,19 +113,14 @@ void SaveAddressProfileMessageController::RunSaveAddressProfileCallback(
 
 std::u16string SaveAddressProfileMessageController::GetTitle() {
   // TODO(crbug.com/1167061): Replace with proper localized strings.
-  // TODO(crbug.com/1167061): Make update title reflect fields to be updated.
   return original_profile_ ? u"Update address?" : u"Save address?";
 }
 
 std::u16string SaveAddressProfileMessageController::GetDescription() {
-  const std::string locale = g_browser_process->GetApplicationLocale();
-  if (original_profile_) {
-    // TODO(crbug.com/1167061): Replace with proper localized string.
-    return u"For " +
-           GetDescriptionForProfileToUpdate(*original_profile_, locale);
-  } else {
-    return GetDescriptionForProfileToSave(profile_, locale);
-  }
+  return GetProfileDescription(
+      original_profile_ ? *original_profile_ : profile_,
+      g_browser_process->GetApplicationLocale(),
+      /*include_address_and_contacts=*/true);
 }
 
 std::u16string SaveAddressProfileMessageController::GetPrimaryButtonText() {

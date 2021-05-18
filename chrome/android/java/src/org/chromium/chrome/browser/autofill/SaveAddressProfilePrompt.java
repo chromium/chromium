@@ -148,7 +148,7 @@ public class SaveAddressProfilePrompt {
      */
     @CalledByNative
     private void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
-        ((TextView) mDialogView.findViewById(R.id.subtitle)).setText(subtitle);
+        showTextIfNotEmpty(mDialogView.findViewById(R.id.subtitle), subtitle);
         showHeaders(!TextUtils.isEmpty(oldDetails));
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_old), oldDetails);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_new), newDetails);

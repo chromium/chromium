@@ -48,18 +48,12 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
 
 // Returns a one-line `profile` description, listing (at max) 2 significant
 // user-visible fields with respect to UI BCP 47 language code in
-// `ui_language_code`.
-std::u16string GetDescriptionForProfileToSave(
-    const AutofillProfile& profile,
-    const std::string& ui_language_code);
-
-// Returns a one-line `profile` description with respect to UI BCP 47
-// language code in `ui_language_code`. It consists of (at max) 2 user-visible
-// fields: the label referring to the profile (full name if exists) and other
-// details, separated by hyphen.
-std::u16string GetDescriptionForProfileToUpdate(
-    const AutofillProfile& profile,
-    const std::string& ui_language_code);
+// `ui_language_code`. If `include_address_and_contacts` is false, only full
+// name is included, and the returned string can be empty if the name is not
+// present.
+std::u16string GetProfileDescription(const AutofillProfile& profile,
+                                     const std::string& ui_language_code,
+                                     bool include_address_and_contacts);
 
 // Fields in order they should appear in differences for AutofillProfile update.
 static constexpr ServerFieldType kVisibleTypesForProfileDifferences[] = {
