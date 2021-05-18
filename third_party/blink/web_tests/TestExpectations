@@ -6888,8 +6888,6 @@ crbug.com/1206108 external/wpt/pointerevents/pointerevent_click_is_a_pointereven
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 crbug.com/1207849 virtual/plz-service-worker/external/wpt/service-workers/service-worker/no-dynamic-import-in-module.any.serviceworker-module.html [ Pass Failure Crash ]
 
-crbug.com/1207851 virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.sharedworker.html [ Pass Failure Timeout ]
-crbug.com/1207851 virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
 crbug.com/1207851 virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-05-10
