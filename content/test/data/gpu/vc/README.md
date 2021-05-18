@@ -52,9 +52,9 @@ webgpu_videos_mxn.html?codec=vp8
 ```
 
 For webgpu_videos_mxn.html only:
-To remove the UI or force the UI to CSS icons. Use `ui=none` or `ui=css`.
+To remove the UI icons. Use `ui=none`.
 ```
-webgpu_videos_mxn.html?ui=css
+webgpu_videos_mxn.html?ui=none
 ```
 
 For webgpu_videos_mxn.html only:

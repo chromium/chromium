@@ -64,10 +64,23 @@ fn main([[location(0)]] position : vec2<f32>)
 }
 `,
 
-    fragment_output_red: `
+    fragment_output_blue: `
 [[stage(fragment)]]
 fn main() -> [[location(0)]] vec4<f32> {
-  return vec4<f32>(1.0, 0.0, 0.0, 1.0);
+  return vec4<f32>(0.11328125, 0.4296875, 0.84375, 1.0);
+}
+`,
+    fragment_output_light_blue: `
+[[stage(fragment)]]
+fn main() -> [[location(0)]] vec4<f32> {
+  return vec4<f32>(0.3515625, 0.50390625, 0.75390625, 1.0);
+}
+`,
+
+    fragment_output_white: `
+[[stage(fragment)]]
+fn main() -> [[location(0)]] vec4<f32> {
+  return vec4<f32>(1.0, 1.0, 1.0, 1.0);
 }
 `,
   };
@@ -78,12 +91,14 @@ function createVertexBuffer(device, videos, videoRows, videoColumns) {
   // The small video at the corner is included in the vertex buffer.
   const rectVerts = new Float32Array(videos.length * 24);
 
+  // Width and height of the video.
   const maxColRow = Math.max(videoColumns, videoRows);
   let w = 2.0 / maxColRow;
   let h = 2.0 / maxColRow;
   for (let row = 0; row < videoRows; ++row) {
     for (let column = 0; column < videoColumns; ++column) {
       const array_index = (row * videoColumns + column) * 24;
+      // X and y of the video.
       const x = -1.0 + w * column;
       const y = 1.0 - h * row;
 
@@ -102,7 +117,7 @@ function createVertexBuffer(device, videos, videoRows, videoColumns) {
   w = w / videos[0].width * videos[videos.length - 1].width;
   h = h / videos[0].height * videos[videos.length - 1].height;
   const x = 1.0 - w;
-  const y = 1.0;
+  const y = 1.0 - (2.0 / maxColRow) + h;
   const array_index = (videos.length - 1) * 24;
 
   rectVerts.set([
@@ -128,23 +143,27 @@ function createVertexBuffer(device, videos, videoRows, videoColumns) {
 }
 
 function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
-  // Each video takes 6 vertices (2 triangles). Each vertice has 2 floats.
+  // Each icon takes 6 vertices (2 triangles). Each vertice has 2 floats.
   // Therefore, each video needs 12 floats.
   const rectVerts = new Float32Array(videos.length * 12);
 
+  // Width and height of the video.
   const maxColRow = Math.max(videoColumns, videoRows);
   let w = 2.0 / maxColRow;
   let h = 2.0 / maxColRow;
-  let wIcon = w / 10.0;
-  let hIcon = h / 10.0;
+  // Width and height of the icon.
+  let wIcon = w / videos[0].width * videos[0].height / 8.0;
+  let hIcon = h / 8.0;
 
   for (let row = 0; row < videoRows; ++row) {
     for (let column = 0; column < videoColumns; ++column) {
       const array_index = (row * videoColumns + column) * 12;
+      // X and y of the video.
       const x = -1.0 + w * column;
       const y = 1.0 - h * row;
-      const xIcon = x + wIcon;
-      const yIcon = y - h + hIcon * 2;
+      // X and y of the icon.
+      const xIcon = x + w - wIcon * 2;
+      const yIcon = y - hIcon;
 
       rectVerts.set([
         (xIcon + wIcon), yIcon,
@@ -157,16 +176,20 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
     }
   }
 
-  // For the small video at the corner, the last one in |videos|.
+  // For the icon of the small video at the corner, the last one in |videos|.
+  // Width and height of the small video.
   w = w / videos[0].width * videos[videos.length - 1].width;
   h = h / videos[0].height * videos[videos.length - 1].height;
-  wIcon = w / 10.0;
-  hIcon = h / 10.0;
+  // Width and height of the small icon.
+  wIcon = w / videos[0].width * videos[0].height / 8.0;
+  hIcon = h / 8.0;
 
+  // X and y of the small video.
   const x = 1.0 - w;
-  const y = 1.0;
-  const xIcon = x + wIcon;
-  const yIcon = y - h + hIcon * 2;
+  const y = 1.0 - (2.0 / maxColRow) + h;
+  // X and y of the small icon.
+  const xIcon = x + w - wIcon * 2;
+  const yIcon = y - hIcon;
 
   array_index = (videos.length - 1) * 12;
   rectVerts.set([
@@ -176,6 +199,72 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
     (xIcon + wIcon), yIcon,
     xIcon, (yIcon - hIcon),
     xIcon, yIcon,
+  ], array_index);
+
+  const verticesBuffer = device.createBuffer({
+    size: rectVerts.byteLength,
+    usage: GPUBufferUsage.VERTEX,
+    mappedAtCreation: true,
+  });
+
+  new Float32Array(verticesBuffer.getMappedRange()).set(rectVerts);
+  verticesBuffer.unmap();
+
+  return verticesBuffer;
+}
+
+function createVertexBufferForAnimation(
+            device, videos, videoRows, videoColumns) {
+  // Create voice bar animation and borders of the last video.
+  // (1) Generate 10 differnt lengths of voice bar. Each bar takes 2 triangles,
+  // which are 6 vertices.
+  // (2) Generate borders, consisting of 4 lines. Each line takes 2 vertices.
+  // Each vertice has 2 floats.
+  // Total are 10*6*2 + 4*2*2  = 120 + 16 = 136 floats.
+  const rectVerts = new Float32Array(136);
+
+  // (1) Voice bars.
+  // X, Y, width and height of the last video.
+  const maxColRow = Math.max(videoColumns, videoRows);
+  const w = 2.0 / maxColRow;
+  const h = 2.0 / maxColRow;
+  const x = -1.0 + w * (videoColumns - 1);
+  const y = 1.0 - h * (videoRows - 1);
+
+  // Width and height of the icon.
+  const wIcon = w / videos[0].width * videos[0].height / 8.0;
+  const hIcon = h / 8.0;
+
+  // X, Y, width and height of the animated bar.
+  const wPixel = w / videos[0].width;
+  const wBar = wPixel * 5;
+  const xBar = x + w - wIcon * 1.5 - (wPixel * 2);
+  const delta = (hIcon - (wPixel * 4)) / 10;
+
+  // 10 different length for animation.
+  const bar_count = 10;
+  for (let i = 0; i < bar_count; ++i) {
+    const array_index = i * 12;
+    const hBar = (i+1) * delta;
+    const yBar = y - hIcon * 2 + hBar;
+
+    rectVerts.set([
+      (xBar + wBar), yBar,
+      (xBar + wBar), (yBar - hBar),
+      xBar, (yBar - hBar),
+      (xBar + wBar), yBar,
+      xBar, (yBar - hBar),
+      xBar, yBar,
+    ], array_index);
+  }
+
+  // (2) Borders of the last video
+  const array_index = 10 * 12;
+  rectVerts.set([
+    x, y, (x + w), y,
+    (x + w), y, (x + w), (y - h),
+    (x + w), (y - h), x, (y - h),
+    x, (y - h), x, y,
   ], array_index);
 
   const verticesBuffer = device.createBuffer({
@@ -242,7 +331,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const renderPassDescriptor = {
     colorAttachments: [
       {
-        attachment: undefined, // Assigned later
+        view: undefined, // Assigned later
         loadValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
         storeOp: 'store',
       },
@@ -263,7 +352,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         depthOrArrayLayers: 1,
       },
       format: 'rgba8unorm',
-      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
+      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED |
+        GPUTextureUsage.RENDER_ATTACHMENT,
     });
   }
 
@@ -288,7 +378,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const verticesBufferForIcons =
     createVertexBufferForIcons(device, videos, videoRows, videoColumns);
 
-  const pipelineForIcons = device.createRenderPipeline({
+  const renderPipelineDescriptorForIcon = {
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex_icons,
@@ -305,9 +395,6 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       }],
     },
     fragment: {
-      module: device.createShaderModule({
-        code: wgslShaders.fragment_output_red,
-      }),
       entryPoint: 'main',
       targets: [{
         format: swapChainFormat,
@@ -316,7 +403,29 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     primitive: {
       topology: 'triangle-list',
     }
+  };
+
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_blue,
   });
+  const pipelineForIcons = device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+  // For rendering the voice bar animation
+  const vertexBufferForAnimation =
+          createVertexBufferForAnimation(
+            device, videos, videoRows, videoColumns);
+
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_white,
+  });
+  const pipelineForAnimation = device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+  // For rendering the borders of the last video
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_light_blue,
+  });
+  renderPipelineDescriptorForIcon.primitive.topology = 'line-list' ;
+  const pipelineForVideoBorders = device.createRenderPipeline(renderPipelineDescriptorForIcon);
 
   // videos #0-#3 : 30 fps.
   // videos #3-#15: 15 fps.
@@ -345,6 +454,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   // for comparison.
   const frameTime30Fps = 32;
   let lastTimestamp = performance.now();
+  let index_voice_bar = 0;
 
   const oneFrame = (timestamp) => {
     const elapsed = timestamp - lastTimestamp;
@@ -355,7 +465,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     lastTimestamp = timestamp;
 
     const swapChainTexture = swapChain.getCurrentTexture();
-    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
+    renderPassDescriptor.colorAttachments[0].view = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
@@ -390,9 +500,28 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
         // Add UI on Top of all videos.
         if (addUI) {
+          // Icons
           passEncoder.setPipeline(pipelineForIcons);
           passEncoder.setVertexBuffer(0, verticesBufferForIcons);
           passEncoder.draw(videos.length * 6);
+
+          // Animated voice bar on the last video.
+          index_voice_bar++;
+          if (index_voice_bar >= 10)
+            index_voice_bar = 0;
+
+          passEncoder.setPipeline(pipelineForAnimation);
+          passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+          passEncoder.draw(/*vertexCount=*/6, 1, /*firstVertex=*/index_voice_bar * 6, 0);
+
+          // Borders of the last video
+          // Is there a way to set the line width?
+          passEncoder.setPipeline(pipelineForVideoBorders);
+          passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+          // vertexCount = 4 lines * 2 vertices = 8;
+          // firstVertex = the end of the voice bar vetices =
+          // 10 steps * 6 vertices = 60;
+          passEncoder.draw(/*vertexCount=*/8, 1, /*firstVertex=*/60, 0);
         }
         passEncoder.endPass();
         device.queue.submit([commandEncoder.finish()]);
@@ -419,7 +548,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     }
 
     const swapChainTexture = swapChain.getCurrentTexture();
-    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
+    renderPassDescriptor.colorAttachments[0].view = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
@@ -449,9 +578,28 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
     // Add UI on Top of all videos.
     if (addUI) {
+      // Icons
       passEncoder.setPipeline(pipelineForIcons);
       passEncoder.setVertexBuffer(0, verticesBufferForIcons);
       passEncoder.draw(videos.length * 6);
+
+      // Animated voice bar on the last video.
+      index_voice_bar++;
+      if (index_voice_bar >= 10)
+        index_voice_bar = 0;
+
+      passEncoder.setPipeline(pipelineForAnimation);
+      passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+      passEncoder.draw(/*vertexCount=*/6, 1, /*firstVertex=*/index_voice_bar * 6, 0);
+
+      // Borders of the last video
+      // Is there a way to set the line width?
+      passEncoder.setPipeline(pipelineForVideoBorders);
+      passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+      // vertexCount = 4 lines * 2 vertices = 8;
+      // firstVertex = the end of the voice bar vetices =
+      // 10 steps * 6 vertices = 60;
+      passEncoder.draw(/*vertexCount=*/8, 1, /*firstVertex=*/60, 0);
     }
     passEncoder.endPass();
     device.queue.submit([commandEncoder.finish()]);

@@ -22,7 +22,6 @@ found in the LICENSE file.
     const _totalVideoWidth = 1600;
     const _totalVideoHeight = 900;
     var hasUIOnTop = true;
-    var useWebGpuForUI = true;
     var useImportTextureApi = true;
     var codec = 'vp9';
 
@@ -87,8 +86,6 @@ found in the LICENSE file.
       const uiOption = parsedString['ui'];
       if (uiOption == 'none')
         hasUIOnTop = false;
-      else if (uiOption == 'css')
-        useWebGpuForUI = false;
 
       const api = parsedString['import_texture_api']
       if (api == '0')
@@ -142,8 +139,8 @@ found in the LICENSE file.
         videos.push(video);
       }
       // For the small video at the upper right corner.
-      videos[videoRows * videoColumns].width = 89;
-      videos[videoRows * videoColumns].height = 50;
+      videos[videoRows * videoColumns].width = videoWidth / 3;
+      videos[videoRows * videoColumns].height = videoHeight / 3;
       // Use the 640x360 source to simulate the local camera.
       videos[videoRows * videoColumns].src = GetVideoSource(1, 1, codec);
 
@@ -152,37 +149,9 @@ found in the LICENSE file.
 
       // Simulate video playback by WebGpu rendering.
       webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-        hasUIOnTop && useWebGpuForUI, useImportTextureApi);
-
-      // Add CSS icons on top of videos if this is preferred.
-      if (hasUIOnTop && !useWebGpuForUI) {
-        for (let row = 0; row < videoRows; ++row) {
-          for (let column = 0; column < videoColumns; ++column) {
-            const video_top = row * videoHeight;
-            const video_left = column * videoWidth;
-            // Create an icon on top of each video.
-            createOneIcon(video_top, video_left, videoWidth, videoHeight);
-          }
-        }
-      }
-      // Create an icon for the samll video at the corner.
-      createOneIcon(0, _totalVideoWidth - 89, 89, 50);
+        hasUIOnTop , useImportTextureApi);
     }
 
-    function createOneIcon(video_top, video_left, video_width, video_height) {
-      const icon = document.createElement('icon');
-      const icon_width = video_width / 10;
-      const icon_height = video_height / 10;
-
-      icon.style.backgroundColor = "red";
-      icon.style.position = "absolute";
-      icon.style.width = icon_width;
-      icon.style.height = icon_height;
-      icon.style.top = video_top + video_height - icon_height * 2;
-      icon.style.left = video_left + icon_width;
-
-      container.appendChild(icon);
-    }
   </script>
 </head>
 <body onload="startMxNVideos()">
