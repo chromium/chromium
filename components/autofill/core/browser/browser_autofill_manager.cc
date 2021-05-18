@@ -2618,12 +2618,23 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   context->conditional_ablation_group =
       !suggestions->empty() ? ablation_group : AblationGroup::kDefault;
 
+  // In both cases (credit card and address forms), we inform the other event
+  // logger also about the ablation.
+  // This prevents for example that for an encountered address form we log a
+  // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be recorded
+  // by the credit_card_form_event_logger_).
+  // For the complementary event logger, the conditional ablation status is
+  // logged as kDefault to not imply that data would be filled without ablation.
   if (context->is_filling_credit_card) {
     credit_card_form_event_logger_->SetAblationStatus(
         context->ablation_group, context->conditional_ablation_group);
+    address_form_event_logger_->SetAblationStatus(context->ablation_group,
+                                                  AblationGroup::kDefault);
   } else {
     address_form_event_logger_->SetAblationStatus(
         context->ablation_group, context->conditional_ablation_group);
+    credit_card_form_event_logger_->SetAblationStatus(context->ablation_group,
+                                                      AblationGroup::kDefault);
   }
 
   if (!suggestions->empty() && ablation_group == AblationGroup::kAblation) {

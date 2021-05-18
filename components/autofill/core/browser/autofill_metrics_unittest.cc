@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -11016,6 +11017,83 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
     histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FormSubmission.Autofilled.Address",
         user_submitted_form ? 1 : 0, 1);
+  }
+}
+
+// Verify that no key metrics are logged in the ablation state.
+TEST_F(AutofillMetricsFunnelTest, AblationState) {
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
+      {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
+      {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
+       "1000"},
+  };
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillEnableAblationStudy, feature_parameters);
+
+  // Create a profile.
+  RecreateProfile(/*is_server=*/false);
+
+  // Load a fillable form.
+  FormData form;
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
+  form.url = GURL("https://example.com/form.html");
+  form.action = GURL("https://example.com/submit.html");
+  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+
+  FormFieldData field;
+  std::vector<ServerFieldType> field_types;
+  test::CreateTestFormField("State", "state", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(ADDRESS_HOME_STATE);
+  test::CreateTestFormField("City", "city", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(ADDRESS_HOME_CITY);
+  test::CreateTestFormField("Street", "street", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(ADDRESS_HOME_STREET_ADDRESS);
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate that the autofill manager has seen this form on page load.
+  browser_autofill_manager_->OnFormsSeen({form});
+
+  // Simulate interacting with the form.
+  browser_autofill_manager_->OnQueryFormFieldAutofill(
+      /*query_id=*/0, form, form.fields[0], gfx::RectF(),
+      /*autoselect_first_suggestion=*/false);
+
+  // Don't simulate a suggestion but simulate the user typing.
+  browser_autofill_manager_->OnTextFieldDidChange(form, form.fields[0],
+                                                  gfx::RectF(), TimeTicks());
+
+  // Simulate form submission.
+  browser_autofill_manager_->OnFormSubmitted(form, /*known_success=*/false,
+                                             SubmissionSource::FORM_SUBMISSION);
+
+  // Reset |browser_autofill_manager_| to commit UMA metrics.
+  browser_autofill_manager_.reset();
+
+  // Phase 2: Validate Funnel expectations.
+  const char* kMetrics[] = {
+      "Autofill.Funnel.ParsedAsType",
+      "Autofill.Funnel.InteractionAfterParsedAsType",
+      "Autofill.Funnel.SuggestionAfterInteraction",
+      "Autofill.Funnel.FillAfterSuggestion",
+      "Autofill.Funnel.SubmissionAfterFill",
+      "Autofill.KeyMetrics.FillingReadiness",
+      "Autofill.KeyMetrics.FillingAcceptance",
+      "Autofill.KeyMetrics.FillingCorrectness",
+      "Autofill.KeyMetrics.FillingAssistance",
+      "Autofill.Autocomplete.NotOff.FillingAcceptance",
+      "Autofill.Autocomplete.Off.FillingAcceptance",
+  };
+  for (const char* metric : kMetrics) {
+    histogram_tester.ExpectTotalCount(base::StrCat({metric, ".Address"}), 0);
+    histogram_tester.ExpectTotalCount(base::StrCat({metric, ".CreditCard"}), 0);
   }
 }
 

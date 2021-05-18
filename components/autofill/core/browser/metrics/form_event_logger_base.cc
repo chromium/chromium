@@ -46,7 +46,10 @@ FormEventLoggerBase::FormEventLoggerBase(
       log_manager_(log_manager) {}
 
 FormEventLoggerBase::~FormEventLoggerBase() {
-  RecordFunnelAndKeyMetrics();
+  // Don't record Funnel and Key metrics for the ablation group as they don't
+  // represent the true quality metrics.
+  if (ablation_group_ != AblationGroup::kAblation)
+    RecordFunnelAndKeyMetrics();
   RecordAblationMetrics();
 }
 
