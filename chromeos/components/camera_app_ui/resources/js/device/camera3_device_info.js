@@ -24,8 +24,10 @@ export class Camera3DeviceInfo {
    * @param {!Array<!VideoConfig>} videoResolFpses Supported available video
    *     resolutions and maximal capture fps of the video device.
    * @param {!FpsRangeList} fpsRanges Supported fps ranges of the video device.
+   * @param {boolean} supportPTZ Is supported PTZ controls.
    */
-  constructor(deviceInfo, facing, photoResols, videoResolFpses, fpsRanges) {
+  constructor(
+      deviceInfo, facing, photoResols, videoResolFpses, fpsRanges, supportPTZ) {
     /**
      * @const {string}
      * @public
@@ -62,6 +64,12 @@ export class Camera3DeviceInfo {
      */
     this.fpsRanges = fpsRanges;
 
+    /**
+     * @const {boolean}
+     * @public
+     */
+    this.supportPTZ = supportPTZ;
+
     videoResolFpses.filter(({maxFps}) => maxFps >= 24)
         .forEach(({width, height, maxFps}) => {
           const r = new Resolution(width, height);
@@ -87,6 +95,10 @@ export class Camera3DeviceInfo {
       throw new Error('Device operation is not supported');
     }
     const facing = await deviceOperator.getCameraFacing(deviceId);
+    const supportPTZ =
+        (await deviceOperator.getPanDefault(deviceId)) !== undefined ||
+        (await deviceOperator.getTiltDefault(deviceId)) !== undefined ||
+        (await deviceOperator.getZoomDefault(deviceId)) !== undefined;
     const photoResolution = await deviceOperator.getPhotoResolutions(deviceId);
     const videoConfigs = await deviceOperator.getVideoConfigs(deviceId);
     const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
@@ -95,6 +107,6 @@ export class Camera3DeviceInfo {
 
     return new Camera3DeviceInfo(
         deviceInfo, facing, photoResolution, filteredVideoConfigs,
-        supportedFpsRanges);
+        supportedFpsRanges, supportPTZ);
   }
 }

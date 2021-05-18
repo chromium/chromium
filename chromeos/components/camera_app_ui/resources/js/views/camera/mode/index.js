@@ -64,6 +64,14 @@ class ModeConfig {
   async isSupported(deviceId) {}
 
   /**
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} previewResolution
+   * @return {boolean}
+   * @abstract
+   */
+  isSupportPTZ(captureResolution, previewResolution) {}
+
+  /**
    * Get general stream constraints of this mode for fake cameras.
    * @param {?string} deviceId
    * @return {!Array<!MediaStreamConstraints>}
@@ -164,6 +172,12 @@ export class Modes {
       });
     };
 
+    // Workaround for b/184089334 on PTZ camera to use preview frame as photo
+    // result.
+    const checkSupportPTZForPhotoMode =
+        (captureResolution, previewResolution) =>
+            captureResolution.equals(previewResolution);
+
     /**
      * Mode classname and related functions and attributes.
      * @type {!Object<!Mode, !ModeConfig>}
@@ -173,6 +187,7 @@ export class Modes {
       [Mode.VIDEO]: {
         captureFactory: new VideoFactory(videoHandler),
         isSupported: async () => true,
+        isSupportPTZ: () => true,
         constraintsPreferrer: videoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, true),
@@ -181,6 +196,7 @@ export class Modes {
       [Mode.PHOTO]: {
         captureFactory: new PhotoFactory(photoHandler),
         isSupported: async () => true,
+        isSupportPTZ: checkSupportPTZForPhotoMode,
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -189,6 +205,7 @@ export class Modes {
       [Mode.SQUARE]: {
         captureFactory: new SquareFactory(photoHandler),
         isSupported: async () => true,
+        isSupportPTZ: checkSupportPTZForPhotoMode,
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -206,6 +223,7 @@ export class Modes {
           }
           return await deviceOperator.isPortraitModeSupported(deviceId);
         },
+        isSupportPTZ: checkSupportPTZForPhotoMode,
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -338,6 +356,17 @@ export class Modes {
       }
     }
     return supportedModes;
+  }
+
+  /**
+   * @param {!Mode} mode
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} previewResolution
+   * @return {boolean}
+   */
+  isSupportPTZ(mode, captureResolution, previewResolution) {
+    return this.allModes_[mode].isSupportPTZ(
+        captureResolution, previewResolution);
   }
 
   /**

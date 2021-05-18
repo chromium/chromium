@@ -47,6 +47,13 @@ export class PhotoHandler {
    * Plays UI effect when taking photo.
    */
   playShutterEffect() {}
+
+  /**
+   * Gets frame image blob from current preview.
+   * @return {!Promise<!Blob>}
+   * @abstract
+   */
+  getPreviewFrame() {}
 }
 
 /**
@@ -91,6 +98,15 @@ export class Photo extends ModeBase {
   }
 
   /**
+   * @return {boolean}
+   */
+  supportPTZ_() {
+    const {pan, tilt, zoom} =
+        this.stream_.getVideoTracks()[0].getCapabilities();
+    return pan !== undefined || tilt !== undefined || zoom !== undefined;
+  }
+
+  /**
    * @override
    */
   async start_() {
@@ -99,43 +115,19 @@ export class Photo extends ModeBase {
           new CrosImageCapture(this.stream_.getVideoTracks()[0]);
     }
 
-    await this.takePhoto_();
-  }
-
-  /**
-   * Takes and saves a photo.
-   * @return {!Promise}
-   * @private
-   */
-  async takePhoto_() {
     const imageName = (new Filenamer()).newImageName();
     if (this.metadataObserverId_ !== null) {
       this.metadataNames_.push(Filenamer.getMetadataName(imageName));
     }
 
-    let photoSettings;
-    if (this.captureResolution_) {
-      photoSettings = /** @type {!PhotoSettings} */ ({
-        imageWidth: this.captureResolution_.width,
-        imageHeight: this.captureResolution_.height,
-      });
-    } else {
-      const caps = await this.crosImageCapture_.getPhotoCapabilities();
-      photoSettings = /** @type {!PhotoSettings} */ ({
-        imageWidth: caps.imageWidth.max,
-        imageHeight: caps.imageHeight.max,
-      });
-    }
 
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
     try {
-      const results = await this.crosImageCapture_.takePhoto(photoSettings);
-
       state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {facing: this.facing_});
       this.handler_.playShutterEffect();
 
       state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
-      const blob = await results[0];
+      const blob = await this.takePhoto_();
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
       await this.handler_.handleResultPhoto({resolution, blob}, imageName);
@@ -149,6 +141,32 @@ export class Photo extends ModeBase {
       toast.show('error_msg_take_photo_failed');
       throw e;
     }
+  }
+
+  /**
+   * @return {!Promise<!Blob>}
+   */
+  async takePhoto_() {
+    if (this.supportPTZ_()) {
+      // Workaround for b/184089334 on PTZ camera to use preview frame as
+      // photo result.
+      return this.handler_.getPreviewFrame();
+    }
+    let photoSettings;
+    if (this.captureResolution_) {
+      photoSettings = /** @type {!PhotoSettings} */ ({
+        imageWidth: this.captureResolution_.width,
+        imageHeight: this.captureResolution_.height,
+      });
+    } else {
+      const caps = await this.crosImageCapture_.getPhotoCapabilities();
+      photoSettings = /** @type {!PhotoSettings} */ ({
+        imageWidth: caps.imageWidth.max,
+        imageHeight: caps.imageHeight.max,
+      });
+    }
+    const results = await this.crosImageCapture_.takePhoto(photoSettings);
+    return results[0];
   }
 
   /**

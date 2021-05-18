@@ -10,7 +10,7 @@ import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import {Facing, Mode} from '../../type.js';
+import {Facing, Mode, Resolution} from '../../type.js';
 import * as util from '../../util.js';
 import {windowController} from '../../window_controller.js';
 
@@ -151,6 +151,24 @@ export class Preview {
   }
 
   /**
+   * If the preview camera support PTZ controls.
+   * @return {boolean}
+   */
+  isSupportPTZ() {
+    const {pan, tilt, zoom} = this.getVideoTrack_().getCapabilities();
+    return pan !== undefined || tilt !== undefined || zoom !== undefined;
+  }
+
+  /**
+   * Preview resolution.
+   * @return {!Resolution}
+   */
+  getResolution() {
+    const {videoWidth, videoHeight} = this.video_;
+    return new Resolution(videoWidth, videoHeight);
+  }
+
+  /**
    * @override
    */
   toString() {
@@ -227,14 +245,6 @@ export class Preview {
         }
       }
 
-      const {pan, tilt, zoom} = this.getVideoTrack_().getCapabilities();
-      // PTZ function is excluded from builtin camera until we set up its AVL
-      // calibration standard.
-      state.set(
-          state.State.HAS_PTZ_SUPPORT,
-          (this.facing_ === Facing.NOT_SET ||
-           this.facing_ === Facing.EXTERNAL) &&
-              (pan !== undefined || tilt !== undefined || zoom !== undefined));
       state.set(state.State.STREAMING, true);
     } catch (e) {
       await this.close();

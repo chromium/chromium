@@ -590,6 +590,12 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
      */
     this.deviceCapturePreviewResolutionMap_ = new Map();
 
+    /**
+     * Maps from device id as key to whether PTZ is support from device level.
+     * @type {!Map<string, boolean>}
+     */
+    this.devicePTZSupportMap_ = new Map();
+
     this.restoreResolutionPreference_('devicePhotoResolution');
   }
 
@@ -612,6 +618,8 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
   updateDevicesInfo(devices) {
     this.deviceCapturePreviewResolutionMap_ = new Map();
     this.supportedResolutions_ = new Map();
+    this.devicePTZSupportMap_ = new Map(
+        devices.map(({deviceId, supportPTZ}) => [deviceId, supportPTZ]));
 
     devices.forEach(({deviceId, photoResols, videoResols: previewResols}) => {
       const previewRatios = this.groupResolutionRatio_(previewResols);
@@ -665,6 +673,7 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
   getSortedCandidates(deviceId) {
     /** @type {!Resolution} */
     const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+    const supportPTZ = this.devicePTZSupportMap_.get(deviceId) || false;
 
     /**
      * @param {{captureRs: !ResolutionList, previewRs: !ResolutionList}} capture
@@ -675,6 +684,13 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
       if (!captureRs.some((r) => r.equals(prefR))) {
         captureR = captureRs.reduce(
             (captureR, r) => (r.width > captureR.width ? r : captureR));
+      }
+
+      // Use workaround for b/184089334 on PTZ camera to use preview frame as
+      // photo result.
+      if (supportPTZ &&
+          previewRs.find((r) => captureR.equals(r)) !== undefined) {
+        previewRs = [captureR];
       }
 
       const /** !Array<!MediaStreamConstraints> */ previewCandidates =

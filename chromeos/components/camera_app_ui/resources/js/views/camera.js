@@ -384,7 +384,7 @@ export class Camera extends View {
     };
 
     this.addConfigureCompleteListener_(async () => {
-      if (!state.get(state.State.HAS_PTZ_SUPPORT)) {
+      if (!state.get(state.State.ENABLE_PTZ)) {
         highlight(false);
         return;
       }
@@ -707,6 +707,28 @@ export class Camera extends View {
           }
           const stream = await this.preview_.open(constraints);
           this.facingMode_ = this.preview_.getFacing();
+
+          const enablePTZ = (() => {
+            if (!this.preview_.isSupportPTZ()) {
+              return false;
+            }
+            if (deviceOperator === null) {
+              // All fake VCD support PTZ controls.
+              return true;
+            }
+            if (this.facingMode_ !== Facing.EXTERNAL) {
+              // PTZ function is excluded from builtin camera until we set up
+              // its AVL calibration standard.
+              return false;
+            }
+            return this.modes_.isSupportPTZ(
+                mode,
+                captureR,
+                this.preview_.getResolution(),
+            );
+          })();
+          state.set(state.State.ENABLE_PTZ, enablePTZ);
+
           this.options_.updateValues(stream, this.facingMode_);
           factory.setPreviewStream(stream);
           factory.setFacing(this.facingMode_);

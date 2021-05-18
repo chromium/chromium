@@ -635,7 +635,7 @@ body.max-wnd #options-group {
   margin: var(--option-item-vpadding) 0;
 }
 
-body:not(.has-ptz-support) #open-ptz-panel {
+body:not(.enable-ptz) #open-ptz-panel {
   display: none;
 }
 
