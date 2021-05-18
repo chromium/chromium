@@ -202,14 +202,15 @@ gfx::Rect ComputeDamageExcludingIndex(
     SurfaceDamageRectList* surface_damage_rect_list,
     const gfx::Rect& existing_damage,
     const gfx::Rect& display_rect,
-    bool is_opaque_pure_overlay) {
+    bool is_opaque,
+    bool is_underlay) {
   gfx::Rect root_damage_rect;
 
   if (overlay_damage_index == OverlayCandidate::kInvalidDamageIndex) {
     // An opaque overlay that is on top will hide any damage underneath.
     // TODO(petermcneeley): This is a special case optimization which could be
     // removed if we had more reliable damage.
-    if (is_opaque_pure_overlay) {
+    if (is_opaque && !is_underlay) {
       return gfx::SubtractRects(existing_damage, display_rect);
     }
     return existing_damage;
@@ -235,7 +236,9 @@ gfx::Rect ComputeDamageExcludingIndex(
       // |surface_damage_rect_list| is ordered such that from here on the
       // |display_rect| for the overlay will act as an occluder for damage
       // after.
-      occluding_rect = display_rect;
+      if (is_opaque) {
+        occluding_rect = display_rect;
+      }
     }
   }
   return root_damage_rect;
@@ -272,12 +275,11 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
       // If an overlay candidate comes from output surface, its z-order should
       // be 0.
       overlay_damage_rect_.Union(this_frame_overlay_rect);
-      if (overlay.is_opaque) {
-        is_opaque_overlay = true;
-        exclude_overlay_index = overlay.overlay_damage_index;
-      }
+      is_opaque_overlay = overlay.is_opaque;
+      exclude_overlay_index = overlay.overlay_damage_index;
     } else {
       // Underlay candidate is assumed to be opaque.
+      is_opaque_overlay = true;
       is_underlay = true;
       exclude_overlay_index = overlay.overlay_damage_index;
     }
@@ -292,7 +294,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
   // Removes all damage from this overlay and occluded surface damages.
   *damage_rect = ComputeDamageExcludingIndex(
       exclude_overlay_index, surface_damage_rect_list, *damage_rect,
-      this_frame_overlay_rect, is_opaque_overlay && !is_underlay);
+      this_frame_overlay_rect, is_opaque_overlay, is_underlay);
 
   // Drawing on the overlay_rect usually occurs on a different plane, but we
   // still need to damage the overlay_rect when certain changes occur from one
@@ -307,7 +309,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     // black transparent hole is made for the underlay to show through
     // but its possible that the damage for this quad is less than the
     // complete size of the underlay.  https://crbug.com/1130733
-    if (!is_opaque_overlay) {
+    if (is_underlay) {
       damage_rect->Union(this_frame_overlay_rect);
     }
   }

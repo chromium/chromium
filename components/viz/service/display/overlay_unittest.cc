@@ -45,6 +45,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
@@ -1047,6 +1048,69 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
         std::move(surface_damage_rect_list), nullptr, &candidate_list,
         &damage_rect_, &content_bounds_);
 
+    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+  }
+}
+
+TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
+  // This tests a specific damage optimization where a pure overlay (aka not an
+  // underlay) which is non opaque removes the damage associated with the
+  // overlay quad but occludes no other surface damage. This is in contrast to
+  // opaque overlays which can occlude damage beneath them.
+  constexpr int kCandidateSmall = 64;
+  const gfx::Rect kOverlayDisplayRect = {10, 10, kCandidateSmall,
+                                         kCandidateSmall};
+  const gfx::Rect kInFrontDamage = {0, 0, 16, 16};
+  const gfx::Rect kBehindOverlayDamage = {10, 10, 32, 32};
+
+  const gfx::Rect kExpectedDamage[] = {
+      kInFrontDamage, kInFrontDamage,
+      gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage)};
+
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
+  for (size_t i = 0; i < base::size(kExpectedDamage); ++i) {
+    SCOPED_TRACE(i);
+
+    auto pass = CreateRenderPass();
+    SharedQuadState* damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    damaged_shared_quad_state->no_damage = false;
+
+    // Create surface damages corresponding to the in front damage, the overlay
+    // damage, and finally the behind overlay damage.
+    SurfaceDamageRectList surface_damage_rect_list;
+    surface_damage_rect_list.push_back(kInFrontDamage);
+    surface_damage_rect_list.push_back(kOverlayDisplayRect);
+    damaged_shared_quad_state->overlay_damage_index = 1;
+    surface_damage_rect_list.push_back(kBehindOverlayDamage);
+
+    auto* quad = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), damaged_shared_quad_state, pass.get(),
+        kOverlayDisplayRect);
+
+    // On the last iteration we test non opaque overlays.
+    quad->needs_blending = i == 2;
+
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               pass->shared_quad_state_list.back(), pass.get());
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+
+    pass_list.push_back(std::move(pass));
+    damage_rect_ = kOverlayRect;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    LOG(ERROR) << "iter=" << i << " damage =" << damage_rect_.ToString();
     EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
   }
 }
