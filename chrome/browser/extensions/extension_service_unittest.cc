@@ -95,6 +95,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -159,6 +161,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -5100,18 +5103,25 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
       base::BindOnce(&CreateDatabase, base::Unretained(db_tracker), origin_id));
   task_environment()->RunUntilIdle();
 
-  // Create local storage. We only simulate this by creating the backing files.
-  // Note: This test depends on details of how the dom_storage library
-  // stores data in the host file system.
-  base::FilePath lso_dir_path =
-      profile()->GetPath().AppendASCII("Local Storage");
-  base::FilePath lso_file_path = lso_dir_path.AppendASCII(origin_id)
-      .AddExtension(FILE_PATH_LITERAL(".localstorage"));
-  EXPECT_TRUE(base::CreateDirectory(lso_dir_path));
-  EXPECT_EQ(0, base::WriteFile(lso_file_path, nullptr, 0));
-  EXPECT_TRUE(base::PathExists(lso_file_path));
+  // Create local storage.
+  auto* local_storage_control =
+      profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
+  mojo::Remote<blink::mojom::StorageArea> area;
+  local_storage_control->BindStorageArea(url::Origin::Create(ext_url),
+                                         area.BindNewPipeAndPassReceiver());
+  {
+    bool success = false;
+    base::RunLoop run_loop;
+    area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
+              "source", base::BindLambdaForTesting([&](bool success_in) {
+                success = success_in;
+                run_loop.Quit();
+              }));
+    run_loop.Run();
+    ASSERT_TRUE(success);
+  }
 
-  // Create indexed db. Similarly, it is enough to only simulate this by
+  // Create indexed db. It is enough to only simulate this by
   // creating the directory on the disk, and resetting the caches of
   // "known" origins.
   auto& idb_control =
@@ -5161,8 +5171,18 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
                      base::Unretained(db_tracker)));
   task_environment()->RunUntilIdle();
 
-  // Check that the LSO file has been removed.
-  EXPECT_FALSE(base::PathExists(lso_file_path));
+  // Check that the localStorage data been removed.
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
+  {
+    base::RunLoop run_loop;
+    local_storage_control->GetUsage(base::BindLambdaForTesting(
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
+          usage_infos.swap(usage_infos_in);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_TRUE(usage_infos.empty());
 
   // Check if the indexed db has disappeared too.
   EXPECT_FALSE(base::DirectoryExists(idb_path));
@@ -5258,18 +5278,25 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       base::BindOnce(&CreateDatabase, base::Unretained(db_tracker), origin_id));
   task_environment()->RunUntilIdle();
 
-  // Create local storage. We only simulate this by creating the backing files.
-  // Note: This test depends on details of how the dom_storage library
-  // stores data in the host file system.
-  base::FilePath lso_dir_path =
-      profile()->GetPath().AppendASCII("Local Storage");
-  base::FilePath lso_file_path = lso_dir_path.AppendASCII(origin_id)
-      .AddExtension(FILE_PATH_LITERAL(".localstorage"));
-  EXPECT_TRUE(base::CreateDirectory(lso_dir_path));
-  EXPECT_EQ(0, base::WriteFile(lso_file_path, nullptr, 0));
-  EXPECT_TRUE(base::PathExists(lso_file_path));
+  // Create local storage.
+  auto* local_storage_control =
+      profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
+  mojo::Remote<blink::mojom::StorageArea> area;
+  local_storage_control->BindStorageArea(url::Origin::Create(origin1),
+                                         area.BindNewPipeAndPassReceiver());
+  {
+    bool success = false;
+    base::RunLoop run_loop;
+    area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
+              "source", base::BindLambdaForTesting([&](bool success_in) {
+                success = success_in;
+                run_loop.Quit();
+              }));
+    run_loop.Run();
+    ASSERT_TRUE(success);
+  }
 
-  // Create indexed db. Similarly, it is enough to only simulate this by
+  // Create indexed db. It is enough to only simulate this by
   // creating the directory on the disk, and resetting the caches of
   // "known" origins.
   auto& idb_control =
@@ -5341,8 +5368,18 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
                      base::Unretained(db_tracker)));
   task_environment()->RunUntilIdle();
 
-  // Check that the LSO file has been removed.
-  EXPECT_FALSE(base::PathExists(lso_file_path));
+  // Check that the localStorage data been removed.
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
+  {
+    base::RunLoop run_loop;
+    local_storage_control->GetUsage(base::BindLambdaForTesting(
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
+          usage_infos.swap(usage_infos_in);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  EXPECT_TRUE(usage_infos.empty());
 
   // Check if the indexed db has disappeared too.
   EXPECT_FALSE(base::DirectoryExists(idb_path));
