@@ -27,21 +27,29 @@ class SuggestionsServiceClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(SuggestionsServiceClientTest, ReturnsResultsFromMojoService) {
+machine_learning::mojom::TextSuggesterResultPtr GenerateMultiWordResult(
+    std::string text,
+    float score) {
+  auto result = machine_learning::mojom::TextSuggesterResult::New();
+  result->status = machine_learning::mojom::TextSuggesterResult::Status::OK;
+  auto multi_word = machine_learning::mojom::MultiWordSuggestionCandidate::New(
+      /*text=*/text, /*normalized_score=*/score);
+  auto candidate = machine_learning::mojom::TextSuggestionCandidate::New();
+  candidate->set_multi_word(std::move(multi_word));
+  result->candidates.emplace_back(std::move(candidate));
+  return result;
+}
+
+TEST_F(SuggestionsServiceClientTest, ReturnsCompletionResultsFromMojoService) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);
   machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Construct fake output
-  auto result = machine_learning::mojom::TextSuggesterResult::New();
-  result->status = machine_learning::mojom::TextSuggesterResult::Status::OK;
-  auto multi_word = machine_learning::mojom::MultiWordSuggestionCandidate::New(
-      /*text=*/"hi there", /*normalized_score=*/0.5f);
-  auto candidate = machine_learning::mojom::TextSuggestionCandidate::New();
-  candidate->set_multi_word(std::move(multi_word));
-  result->candidates.emplace_back(std::move(candidate));
-  fake_service_connection.SetOutputTextSuggesterResult(result);
+  machine_learning::mojom::TextSuggesterResultPtr result =
+      GenerateMultiWordResult("hi there completion", 0.5f);
+  fake_service_connection.SetOutputTextSuggesterResult(std::move(result));
 
   SuggestionsServiceClient client;
   base::RunLoop().RunUntilIdle();
@@ -60,18 +68,23 @@ TEST_F(SuggestionsServiceClientTest, ReturnsResultsFromMojoService) {
   std::vector<TextSuggestion> expected_results = {
       TextSuggestion{.mode = TextSuggestionMode::kCompletion,
                      .type = TextSuggestionType::kMultiWord,
-                     .text = "hi there"},
+                     .text = "hi there completion"},
   };
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(returned_results, expected_results);
 }
 
-TEST_F(SuggestionsServiceClientTest, DoesntRequestPredictionCandidates) {
+TEST_F(SuggestionsServiceClientTest, ReturnsPredictionResultsFromMojoService) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);
   machine_learning::ServiceConnection::GetInstance()->Initialize();
+
+  // Construct fake output
+  machine_learning::mojom::TextSuggesterResultPtr result =
+      GenerateMultiWordResult("hi there prediction", 0.5f);
+  fake_service_connection.SetOutputTextSuggesterResult(std::move(result));
 
   SuggestionsServiceClient client;
   base::RunLoop().RunUntilIdle();
@@ -87,8 +100,14 @@ TEST_F(SuggestionsServiceClientTest, DoesntRequestPredictionCandidates) {
             returned_results = results;
           }));
 
+  std::vector<TextSuggestion> expected_results = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there prediction"},
+  };
+
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(returned_results.empty());
+  EXPECT_EQ(returned_results, expected_results);
 }
 
 }  // namespace

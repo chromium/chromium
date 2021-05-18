@@ -33,6 +33,7 @@ class SuggestionsServiceClient : public AsyncSuggestionsSource {
   // Called when results are returned from the suggestions service
   void OnSuggestionsReturned(
       RequestSuggestionsCallback callback,
+      ime::TextSuggestionMode suggestion_mode_requested,
       chromeos::machine_learning::mojom::TextSuggesterResultPtr result);
 
   mojo::Remote<chromeos::machine_learning::mojom::TextSuggester>

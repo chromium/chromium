@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/input_method/suggestions_service_client.h"
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {
@@ -19,19 +19,27 @@ using ::chromeos::machine_learning::mojom::TextSuggesterQuery;
 using ::chromeos::machine_learning::mojom::TextSuggesterResultPtr;
 using ::chromeos::machine_learning::mojom::TextSuggestionCandidatePtr;
 
-absl::optional<TextSuggestion> ToTextSuggestion(
-    const TextSuggestionCandidatePtr& candidate) {
+machine_learning::mojom::TextSuggestionMode ToTextSuggestionModeMojom(
+    TextSuggestionMode suggestion_mode) {
+  switch (suggestion_mode) {
+    case TextSuggestionMode::kCompletion:
+      return machine_learning::mojom::TextSuggestionMode::kCompletion;
+    case TextSuggestionMode::kPrediction:
+      return machine_learning::mojom::TextSuggestionMode::kPrediction;
+  }
+}
+
+base::Optional<TextSuggestion> ToTextSuggestion(
+    const TextSuggestionCandidatePtr& candidate,
+    const TextSuggestionMode& suggestion_mode) {
   if (!candidate->is_multi_word()) {
     // TODO(crbug/1146266): Handle emoji suggestions
     return absl::nullopt;
   }
 
-  return TextSuggestion{
-      // TODO(crbug/1146266): Introduce suggestion mode to suggestion service
-      // interface. For the moment, everything is a completion.
-      .mode = TextSuggestionMode::kCompletion,
-      .type = TextSuggestionType::kMultiWord,
-      .text = candidate->get_multi_word()->text};
+  return TextSuggestion{.mode = suggestion_mode,
+                        .type = TextSuggestionType::kMultiWord,
+                        .text = candidate->get_multi_word()->text};
 }
 
 }  // namespace
@@ -58,16 +66,14 @@ void SuggestionsServiceClient::RequestSuggestions(
     const ime::TextSuggestionMode& suggestion_mode,
     const std::vector<ime::TextCompletionCandidate>& completion_candidates,
     RequestSuggestionsCallback callback) {
-  if (!IsAvailable() ||
-      suggestion_mode != ime::TextSuggestionMode::kCompletion) {
-    // TODO(crbug/1146266): Support prediction requests when suggestion mojo
-    // service introduces suggestion_mode to interface.
+  if (!IsAvailable()) {
     std::move(callback).Run({});
     return;
   }
 
   auto query = TextSuggesterQuery::New();
   query->text = preceding_text;
+  query->suggestion_mode = ToTextSuggestionModeMojom(suggestion_mode);
 
   for (const auto& candidate : completion_candidates) {
     auto next_word_candidate = NextWordCompletionCandidate::New();
@@ -79,16 +85,19 @@ void SuggestionsServiceClient::RequestSuggestions(
   text_suggester_->Suggest(
       std::move(query),
       base::BindOnce(&SuggestionsServiceClient::OnSuggestionsReturned,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), std::move(callback),
+                     suggestion_mode));
 }
 
 void SuggestionsServiceClient::OnSuggestionsReturned(
     RequestSuggestionsCallback callback,
+    TextSuggestionMode suggestion_mode_requested,
     chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
   std::vector<TextSuggestion> suggestions;
 
   for (const auto& candidate : result->candidates) {
-    auto suggestion = ToTextSuggestion(std::move(candidate));
+    auto suggestion =
+        ToTextSuggestion(std::move(candidate), suggestion_mode_requested);
     if (suggestion) {
       // Drop any unknown suggestions
       suggestions.push_back(suggestion.value());
